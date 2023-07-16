@@ -1,0 +1,49 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.7.13'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+}
+
+group = 'page.clab'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator' // 모니터링
+	implementation 'org.springframework.boot:spring-boot-starter-web' // 웹 MVC
+	implementation 'org.springframework.boot:spring-boot-starter-validation' // 유효성 검사
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 템플릿 엔진
+	developmentOnly 'org.springframework.boot:spring-boot-devtools' // 개발 도구
+
+	compileOnly 'org.projectlombok:lombok' // 롬복
+	annotationProcessor 'org.projectlombok:lombok' // 롬복
+	implementation 'javax.xml.bind:jaxb-api:2.3.1' // XML 바인딩
+	implementation 'com.google.code.gson:gson:2.10.1' // JSON 라이브러리
+
+	// Swagger
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
+
+	// DB
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client' // MariaDB JDBC 드라이버
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
+	implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final' // Bean Validation
+
+	// OAuth
+	implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // OAuth 2.0 Client
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server' // OAuth 2.0 Resource Server
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5' // JWT 라이브러리
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // JWT 구현체
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JWT Jackson 모듈
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
