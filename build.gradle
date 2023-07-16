@@ -42,6 +42,10 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5' // JWT 라이브러리
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // JWT 구현체
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JWT Jackson 모듈
+
+	// Test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot Test
+	testImplementation 'org.springframework.security:spring-security-test' // Spring Security Test
 }
 
 tasks.named('test') {
