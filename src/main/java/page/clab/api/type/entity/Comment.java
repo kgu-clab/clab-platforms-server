@@ -1,0 +1,43 @@
+package page.clab.api.type.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import javax.persistence.*;
+import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
+
+@Entity
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class Comment {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    @Size(max = 500)
+    private String content;
+
+    @Column(name = "update_time")
+    private LocalDateTime updateTime;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User writer;
+
+    @ManyToOne
+    @JoinColumn(name = "board_id")
+    private Board board;
+
+}
