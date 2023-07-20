@@ -34,6 +34,9 @@ dependencies {
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client' // MariaDB JDBC 드라이버
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
 	implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final' // Bean Validation
+	implementation 'javax.validation:validation-api:2.0.1.Final' // Bean Validation
+	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
+
 
 	// OAuth
 	implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
