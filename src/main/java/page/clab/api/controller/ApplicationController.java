@@ -48,7 +48,7 @@ public class ApplicationController {
         String userId = "201912156"; // 임시 테스트용
         List<Application> applications = applicationService.getAllApplication(userId);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData("application", applications);
+        responseModel.addData(applications);
         return responseModel;
     }
 
@@ -61,7 +61,7 @@ public class ApplicationController {
         String userId = "201912156"; // 임시 테스트용
         Application application = applicationService.getApplication(applicationId, userId);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData("application", application);
+        responseModel.addData(application);
         return responseModel;
     }
 

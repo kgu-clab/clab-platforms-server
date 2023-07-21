@@ -5,10 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Setter
 @Getter
@@ -17,16 +13,12 @@ import java.util.Map;
 public class ResponseModel {
 
     @Builder.Default
-    private HttpStatus httpStatus = HttpStatus.OK;
+    private Boolean success = true;
 
-    @Builder.Default
-    private String message = "요청에 성공하였습니다.";
+    private Object data;
 
-    @Builder.Default
-    private Map<String, Object> data = new HashMap<>();
-
-    public void addData(String name, Object data) {
-        this.data.put(name, data);
+    public void addData(Object data) {
+        this.data = data;
     }
 
     public String toJson() {
