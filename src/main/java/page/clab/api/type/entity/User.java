@@ -12,6 +12,8 @@ import page.clab.api.type.etc.Role;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,6 +46,8 @@ public class User {
     private String department;
 
     @Column(nullable = false)
+    @Min(1)
+    @Max(4)
     private Long grade;
 
     @Column(nullable = false)
