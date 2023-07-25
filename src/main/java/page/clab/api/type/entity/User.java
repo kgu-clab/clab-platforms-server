@@ -17,6 +17,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Data
@@ -24,10 +25,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-
     @Id
     @Size(min = 9, max = 9)
     private String id;
+
+    @Column(nullable = false)
+    @Size(min = 6)
+    private String password;
 
     private String uid;
 
@@ -72,5 +76,33 @@ public class User {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    // UserService로 빠질 예정
+    public static User toUser(Application application) {
+        User user = User.builder()
+                .id(application.getStudentId())
+                .password(generatePassword(application.getBirth()))
+                .name(application.getName())
+                .contact(application.getContact())
+                .email(application.getEmail())
+                .department(application.getDepartment())
+                .grade(application.getGrade())
+                .birth(application.getBirth())
+                .address(application.getAddress())
+                .isInSchool(true)
+                .role(Role.USER)
+                .provider(OAuthProvider.LOCAL)
+                .build();
+        return user;
+    }
+
+    // UserService로 빠질 예정
+    public static String generatePassword(LocalDate birthDate) {
+        if (birthDate == null) {
+            throw new IllegalArgumentException("생년월일이 올바르지 않습니다.");
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
+        return birthDate.format(formatter);
+    }
 
 }
