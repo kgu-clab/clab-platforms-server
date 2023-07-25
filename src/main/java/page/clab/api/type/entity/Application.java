@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
-import page.clab.api.type.dto.ApplicationRequestDto;
-import page.clab.api.type.dto.ApplicationResponseDto;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
