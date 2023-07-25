@@ -58,39 +58,4 @@ public class Application {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    // ApplicationService로 빠질 예정
-    public static Application toApplication(ApplicationRequestDto applicationRequestDto) {
-        Application application = Application.builder()
-                .studentId(applicationRequestDto.getStudentId())
-                .name(applicationRequestDto.getName())
-                .contact(applicationRequestDto.getContact())
-                .email(applicationRequestDto.getEmail())
-                .department(applicationRequestDto.getDepartment())
-                .grade(applicationRequestDto.getGrade())
-                .birth(applicationRequestDto.getBirth())
-                .address(applicationRequestDto.getAddress())
-                .interests(applicationRequestDto.getInterests())
-                .otherActivities(applicationRequestDto.getOtherActivities())
-                .build();
-        return application;
-    }
-
-    public static ApplicationResponseDto toApplicationResponseDto(Application application) {
-        ApplicationResponseDto applicationResponseDto = ApplicationResponseDto.builder()
-                .studentId(application.getStudentId())
-                .name(application.getName())
-                .contact(application.getContact())
-                .email(application.getEmail())
-                .department(application.getDepartment())
-                .grade(application.getGrade())
-                .birth(application.getBirth())
-                .address(application.getAddress())
-                .interests(application.getInterests())
-                .otherActivities(application.getOtherActivities())
-                .isPass(false)
-                .createdAt(application.getCreatedAt())
-                .build();
-        return applicationResponseDto;
-    }
-
 }
