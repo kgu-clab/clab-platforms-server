@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.ApplicationService;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
@@ -46,7 +47,7 @@ public class ApplicationController {
 
     @Operation(summary = "동아리 가입 신청자 전체 목록", description = "동아리 가입 신청자 전체 목록")
     @GetMapping("/list")
-    public ResponseModel getApplications() {
+    public ResponseModel getApplications() throws PermissionDeniedException {
         List<ApplicationResponseDto> applications = applicationService.getApplications();
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applications);
@@ -58,7 +59,7 @@ public class ApplicationController {
     public ResponseModel getApplicationsBetweenDates(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
-    ) {
+    ) throws PermissionDeniedException {
         List<ApplicationResponseDto> applications = applicationService.getApplicationsBetweenDates(startDate, endDate);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applications);
@@ -69,7 +70,7 @@ public class ApplicationController {
     @GetMapping("/list/{applicationId}")
     public ResponseModel getApplication(
             @PathVariable String applicationId
-    ) {
+    ) throws PermissionDeniedException {
         ApplicationResponseDto application = applicationService.getApplicationById(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(application);
@@ -80,7 +81,7 @@ public class ApplicationController {
     @GetMapping("/search")
     public ResponseModel searchApplication(
             @RequestParam String name
-    ) {
+    ) throws PermissionDeniedException {
         ApplicationResponseDto application = applicationService.searchApplication(name);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(application);
@@ -91,7 +92,7 @@ public class ApplicationController {
     @PostMapping("/approve/{applicationId}")
     public ResponseModel approveApplication(
             @PathVariable String applicationId
-    ) {
+    ) throws PermissionDeniedException {
         applicationService.approveApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -101,7 +102,7 @@ public class ApplicationController {
     @DeleteMapping("/cancel/{applicationId}")
     public ResponseModel cancelApplication(
             @PathVariable String applicationId
-    ) {
+    ) throws PermissionDeniedException {
         applicationService.cancelApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -109,7 +110,7 @@ public class ApplicationController {
 
     @Operation(summary = "동아리 가입 합격자 목록", description = "동아리 가입 합격자 목록을 조회합니다.")
     @GetMapping("/pass")
-    public ResponseModel getApprovedApplications() {
+    public ResponseModel getApprovedApplications() throws PermissionDeniedException {
         List<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications();
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(approvedApplications);
