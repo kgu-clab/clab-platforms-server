@@ -4,12 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import page.clab.api.service.ApplicationService;
 import page.clab.api.type.dto.ApplicationRequestDto;
+import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.dto.ResponseModel;
-import page.clab.api.type.entity.Application;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -29,6 +31,7 @@ public class ApplicationController {
             "String email;<br>" +
             "String department;<br>" +
             "Long grade;<br>" +
+            "LocalDate birth;<br>" +
             "String address;<br>" +
             "String interests;<br>" +
             "String otherActivities;")
@@ -43,12 +46,22 @@ public class ApplicationController {
 
     @Operation(summary = "동아리 가입 신청자 전체 목록", description = "동아리 가입 신청자 전체 목록")
     @GetMapping("/list")
-    public ResponseModel getAllApplication() {
-//        String userId = AuthUtil.getAuthenticationInfoUserId();
-        String userId = "201912156"; // 임시 테스트용
-        List<Application> applications = applicationService.getAllApplication(userId);
+    public ResponseModel getApplications() {
+        List<ApplicationResponseDto> applications = applicationService.getApplications();
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData("application", applications);
+        responseModel.addData(applications);
+        return responseModel;
+    }
+
+    @Operation(summary = "동아리 가입 신청자 목록 필터링(날짜 기준)", description = "전달된 날짜 사이의 신청자를 필터링함")
+    @PostMapping("/list")
+    public ResponseModel getApplicationsBetweenDates(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        List<ApplicationResponseDto> applications = applicationService.getApplicationsBetweenDates(startDate, endDate);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(applications);
         return responseModel;
     }
 
@@ -57,11 +70,49 @@ public class ApplicationController {
     public ResponseModel getApplication(
             @PathVariable String applicationId
     ) {
-//        String userId = AuthUtil.getAuthenticationInfoUserId();
-        String userId = "201912156"; // 임시 테스트용
-        Application application = applicationService.getApplication(applicationId, userId);
+        ApplicationResponseDto application = applicationService.getApplicationById(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData("application", application);
+        responseModel.addData(application);
+        return responseModel;
+    }
+
+    @Operation(summary = "동아리 가입 신청자 검색", description = "동아리 가입 신청자 검색(이름 기반)")
+    @GetMapping("/search")
+    public ResponseModel searchApplication(
+            @RequestParam String name
+    ) {
+        ApplicationResponseDto application = applicationService.searchApplication(name);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(application);
+        return responseModel;
+    }
+
+    @Operation(summary = "동아리 가입 신청 승인", description = "동아리 가입 신청 승인")
+    @PostMapping("/approve/{applicationId}")
+    public ResponseModel approveApplication(
+            @PathVariable String applicationId
+    ) {
+        applicationService.approveApplication(applicationId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        return responseModel;
+    }
+
+    @Operation(summary = "동아리 가입 신청 취소", description = "동아리 가입 신청 취소 (24시간 내에만 가능)")
+    @DeleteMapping("/cancel/{applicationId}")
+    public ResponseModel cancelApplication(
+            @PathVariable String applicationId
+    ) {
+        applicationService.cancelApplication(applicationId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        return responseModel;
+    }
+
+    @Operation(summary = "동아리 가입 합격자 목록", description = "동아리 가입 합격자 목록을 조회합니다.")
+    @GetMapping("/pass")
+    public ResponseModel getApprovedApplications() {
+        List<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications();
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(approvedApplications);
         return responseModel;
     }
 

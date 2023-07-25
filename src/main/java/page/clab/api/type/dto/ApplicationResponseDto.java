@@ -6,12 +6,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @Builder
-public class ApplicationRequestDto {
+public class ApplicationResponseDto {
 
     private String studentId;
 
@@ -32,5 +33,9 @@ public class ApplicationRequestDto {
     private String interests;
 
     private String otherActivities;
+
+    private boolean isPass;
+
+    private LocalDateTime createdAt;
 
 }
