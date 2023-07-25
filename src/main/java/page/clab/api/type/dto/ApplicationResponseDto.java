@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @Builder
-public class ApplicationRequestDto {
+public class ApplicationResponseDto {
 
     private String studentId;
 
@@ -33,5 +33,9 @@ public class ApplicationRequestDto {
     private String interests;
 
     private String otherActivities;
+
+    private boolean isPass;
+
+    private LocalDateTime createdAt;
 
 }
