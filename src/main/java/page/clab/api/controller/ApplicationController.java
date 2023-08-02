@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/application")
+@RequestMapping("/applications")
 @RequiredArgsConstructor
 @Tag(name = "Application")
 @Slf4j
@@ -98,12 +98,22 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "동아리 가입 신청 취소", description = "동아리 가입 신청 취소 (24시간 내에만 가능)")
+    @Operation(summary = "동아리 가입 승인 취소", description = "동아리 가입 신청 취소 (24시간 내에만 가능)")
     @DeleteMapping("/cancel/{applicationId}")
     public ResponseModel cancelApplication(
             @PathVariable String applicationId
     ) throws PermissionDeniedException {
         applicationService.cancelApplication(applicationId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        return responseModel;
+    }
+
+    @Operation(summary = "동아리 가입 신청서 삭제", description = "동아리 가입 신청서 삭제")
+    @DeleteMapping("/delete/{applicationId}")
+    public ResponseModel deleteApplication(
+            @PathVariable String applicationId
+    ) throws PermissionDeniedException {
+        applicationService.deleteApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
