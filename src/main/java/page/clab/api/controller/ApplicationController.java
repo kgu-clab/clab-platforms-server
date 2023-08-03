@@ -66,23 +66,13 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "동아리 가입 신청자 정보 상세보기", description = "동아리 가입 신청자 정보 상세보기")
-    @GetMapping("/list/{applicationId}")
-    public ResponseModel getApplication(
-            @PathVariable String applicationId
-    ) throws PermissionDeniedException {
-        ApplicationResponseDto application = applicationService.getApplicationById(applicationId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(application);
-        return responseModel;
-    }
-
-    @Operation(summary = "동아리 가입 신청자 검색", description = "동아리 가입 신청자 검색(이름 기반)")
+    @Operation(summary = "동아리 가입 신청자 검색", description = "신청자의 학번 또는 이름을 기반으로 검색")
     @GetMapping("/search")
     public ResponseModel searchApplication(
-            @RequestParam String name
+            @RequestParam(required = false) String applicationId,
+            @RequestParam(required = false) String name
     ) throws PermissionDeniedException {
-        ApplicationResponseDto application = applicationService.searchApplication(name);
+        ApplicationResponseDto application = applicationService.searchApplication(applicationId, name);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(application);
         return responseModel;
