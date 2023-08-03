@@ -6,14 +6,17 @@ import page.clab.api.auth.util.AuthUtil;
 import page.clab.api.exception.AssociatedAccountExistsException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
+import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.UserRepository;
 import page.clab.api.type.dto.UserRequestDto;
+import page.clab.api.type.dto.UserResponseDto;
 import page.clab.api.type.entity.User;
 import page.clab.api.type.etc.OAuthProvider;
 import page.clab.api.type.etc.Role;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -30,16 +33,30 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public List<User> getUsers() throws PermissionDeniedException {
+    public List<UserResponseDto> getUsers() throws PermissionDeniedException {
         checkUserAdminRole();
         List<User> users = userRepository.findAll();
-        return users;
+        List<UserResponseDto> userResponseDtos = new ArrayList<>();
+        for (User user : users) {
+            UserResponseDto userResponseDto = toUserResponseDto(user);
+            userResponseDtos.add(userResponseDto);
+        }
+        return userResponseDtos;
     }
 
-    public User getUser(String userId) throws PermissionDeniedException {
+    public UserResponseDto searchUser(String userId, String name) throws PermissionDeniedException {
         checkUserAdminRole();
-        User user = getUserByIdOrThrow(userId);
-        return user;
+        User user = null;
+        if (userId != null)
+            user = getUserByIdOrThrow(userId);
+        else if (name != null)
+            user = getUserByNameOrThrow(name);
+        else
+            throw new IllegalArgumentException("적어도 userId 또는 name 중 하나를 제공해야 합니다.");
+
+        if (user == null)
+            throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
+        return toUserResponseDto(user);
     }
 
     public void deleteUserByAdmin(String userId) throws PermissionDeniedException {
@@ -66,6 +83,11 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("해당 유저가 없습니다."));
     }
 
+    public User getUserByNameOrThrow(String name) {
+        return userRepository.findByName(name)
+                .orElseThrow(() -> new NotFoundException("해당 유저가 없습니다."));
+    }
+
     private User toUser(UserRequestDto userRequestDto) {
         User user = User.builder()
                 .id(userRequestDto.getId())
@@ -82,6 +104,25 @@ public class UserService {
                 .provider(OAuthProvider.LOCAL)
                 .build();
         return user;
+    }
+
+    private UserResponseDto toUserResponseDto(User user) {
+        UserResponseDto userResponseDto = UserResponseDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .contact(user.getContact())
+                .email(user.getEmail())
+                .department(user.getDepartment())
+                .grade(user.getGrade())
+                .birth(user.getBirth())
+                .address(user.getAddress())
+                .isInSchool(user.getIsInSchool())
+                .imageUrl(user.getImageUrl())
+                .role(user.getRole())
+                .provider(user.getProvider())
+                .createdAt(user.getCreatedAt())
+                .build();
+        return userResponseDto;
     }
 
     public String generatePassword(LocalDate birthDate) {

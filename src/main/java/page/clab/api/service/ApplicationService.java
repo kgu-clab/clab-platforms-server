@@ -75,35 +75,18 @@ public class ApplicationService {
     }
 
     public ApplicationResponseDto searchApplication(String applicationId, String name) throws PermissionDeniedException {
-        ApplicationResponseDto appResponseDto = null;
+        checkUserAdminRole();
+        Application application = null;
         if (applicationId != null)
-            appResponseDto = searchApplicationById(applicationId);
+            application = getApplicationByIdOrThrow(applicationId);
         else if (name != null)
-            appResponseDto = searchApplicationByName(name);
+            application = getApplicationByNameOrThrow(name);
         else
             throw new IllegalArgumentException("적어도 applicationId 또는 name 중 하나를 제공해야 합니다.");
 
-        if (appResponseDto == null)
+        if (application == null)
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
-        return appResponseDto;
-    }
-
-    public ApplicationResponseDto searchApplicationById(String applicationId) throws PermissionDeniedException {
-        checkUserAdminRole();
-        Application application = getApplicationByIdOrThrow(applicationId);
-        ApplicationResponseDto appRequestDto = createApplicationResponseDto(application);
-        if (appRequestDto == null)
-            throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
-        return appRequestDto;
-    }
-
-    public ApplicationResponseDto searchApplicationByName(String name) throws PermissionDeniedException {
-        checkUserAdminRole();
-        Application application = getApplicationByNameOrThrow(name);
-        ApplicationResponseDto appRequestDto = createApplicationResponseDto(application);
-        if (appRequestDto == null)
-            throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
-        return appRequestDto;
+        return createApplicationResponseDto(application);
     }
 
     @Transactional
