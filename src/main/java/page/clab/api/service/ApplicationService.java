@@ -64,13 +64,6 @@ public class ApplicationService {
         return appRequestDtos;
     }
 
-    public ApplicationResponseDto getApplicationById(String applicationId) throws PermissionDeniedException {
-        checkUserAdminRole();
-        Application application = getApplicationByIdOrThrow(applicationId);
-        ApplicationResponseDto appRequestDto = createApplicationResponseDto(application);
-        return appRequestDto;
-    }
-
     @Transactional
     public List<ApplicationResponseDto> getApprovedApplications() throws PermissionDeniedException {
         checkUserAdminRole();
@@ -81,7 +74,30 @@ public class ApplicationService {
                 .collect(Collectors.toList());
     }
 
-    public ApplicationResponseDto searchApplication(String name) throws PermissionDeniedException {
+    public ApplicationResponseDto searchApplication(String applicationId, String name) throws PermissionDeniedException {
+        ApplicationResponseDto appResponseDto = null;
+        if (applicationId != null)
+            appResponseDto = searchApplicationById(applicationId);
+        else if (name != null)
+            appResponseDto = searchApplicationByName(name);
+        else
+            throw new IllegalArgumentException("적어도 applicationId 또는 name 중 하나를 제공해야 합니다.");
+
+        if (appResponseDto == null)
+            throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
+        return appResponseDto;
+    }
+
+    public ApplicationResponseDto searchApplicationById(String applicationId) throws PermissionDeniedException {
+        checkUserAdminRole();
+        Application application = getApplicationByIdOrThrow(applicationId);
+        ApplicationResponseDto appRequestDto = createApplicationResponseDto(application);
+        if (appRequestDto == null)
+            throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
+        return appRequestDto;
+    }
+
+    public ApplicationResponseDto searchApplicationByName(String name) throws PermissionDeniedException {
         checkUserAdminRole();
         Application application = getApplicationByNameOrThrow(name);
         ApplicationResponseDto appRequestDto = createApplicationResponseDto(application);
