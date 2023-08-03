@@ -9,7 +9,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.UserService;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.UserRequestDto;
-import page.clab.api.type.entity.User;
+import page.clab.api.type.dto.UserResponseDto;
 
 import java.util.List;
 
@@ -45,18 +45,19 @@ public class UserController {
     @Operation(summary = "유저 정보", description = "프로필 정보 조회")
     @GetMapping("/list")
     public ResponseModel getUsers() throws PermissionDeniedException {
-        List<User> users = userService.getUsers();
+        List<UserResponseDto> users = userService.getUsers();
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(users);
         return responseModel;
     }
 
-    @Operation(summary = "유저 정보", description = "프로필 정보 조회")
-    @GetMapping("/list/{userId}")
-    public ResponseModel getUser(
-            @PathVariable("userId") String userId
+    @Operation(summary = "유저 검색", description = "유저의 ID 또는 이름을 기반으로 검색")
+    @GetMapping("/search")
+    public ResponseModel searchUser(
+            @RequestParam(required = false) String userId,
+            @RequestParam(required = false) String name
     ) throws PermissionDeniedException {
-        User user = userService.getUser(userId);
+        UserResponseDto user = userService.searchUser(userId, name);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(user);
         return responseModel;
