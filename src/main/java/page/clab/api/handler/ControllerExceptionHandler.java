@@ -8,6 +8,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import page.clab.api.auth.exception.TokenValidateException;
 import page.clab.api.auth.exception.UnAuthorizeException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
@@ -43,7 +44,8 @@ public class ControllerExceptionHandler {
     @ExceptionHandler({
             UnAuthorizeException.class,
             AccessDeniedException.class,
-            PermissionDeniedException.class
+            PermissionDeniedException.class,
+            TokenValidateException.class
     })
     public ResponseModel unAuthorizeRequestError(HttpServletRequest request, HttpServletResponse response,
                                                  Exception e) {

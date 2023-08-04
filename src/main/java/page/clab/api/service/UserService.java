@@ -61,8 +61,8 @@ public class UserService {
     }
 
     public void updateUserInfoByUser(UpdateUserRequestDto updateUserRequestDto) {
-//        User user = AuthUtil.getAuthenticationInfo();
-        User user = userRepository.findById("201912156").get(); // 임시 테스트용 | 로그인 구현 후 삭제할 것
+        String userId = AuthUtil.getAuthenticationInfoUserId();
+        User user = userRepository.findById(userId).get();
         user.setPassword(updateUserRequestDto.getPassword());
         user.setName(updateUserRequestDto.getName());
         user.setContact(updateUserRequestDto.getContact());
@@ -88,8 +88,8 @@ public class UserService {
     }
 
     private void checkUserAdminRole() throws PermissionDeniedException {
-//        User user = AuthUtil.getAuthenticationInfo();
-        User user = userRepository.findById("201912156").get(); // 임시 테스트용 | 로그인 구현 후 삭제할 것
+        String userId = AuthUtil.getAuthenticationInfoUserId();
+        User user = userRepository.findById(userId).get();
         if (!user.getRole().equals(Role.ADMIN)) {
             throw new PermissionDeniedException("권한이 부족합니다.");
         }
