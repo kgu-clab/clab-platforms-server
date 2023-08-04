@@ -7,10 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.UserService;
-import page.clab.api.type.dto.ResponseModel;
-import page.clab.api.type.dto.UpdateUserRequestDto;
-import page.clab.api.type.dto.UserRequestDto;
-import page.clab.api.type.dto.UserResponseDto;
+import page.clab.api.type.dto.*;
 
 import java.util.List;
 
