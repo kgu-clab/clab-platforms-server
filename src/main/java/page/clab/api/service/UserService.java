@@ -8,6 +8,7 @@ import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.UserRepository;
+import page.clab.api.type.dto.UpdateUserRequestDto;
 import page.clab.api.type.dto.UserRequestDto;
 import page.clab.api.type.dto.UserResponseDto;
 import page.clab.api.type.entity.User;
@@ -57,6 +58,22 @@ public class UserService {
         if (user == null)
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         return toUserResponseDto(user);
+    }
+
+    public void updateUserInfoByUser(UpdateUserRequestDto updateUserRequestDto) {
+//        User user = AuthUtil.getAuthenticationInfo();
+        User user = userRepository.findById("201912156").get(); // 임시 테스트용 | 로그인 구현 후 삭제할 것
+        user.setPassword(updateUserRequestDto.getPassword());
+        user.setName(updateUserRequestDto.getName());
+        user.setContact(updateUserRequestDto.getContact());
+        user.setEmail(updateUserRequestDto.getEmail());
+        user.setDepartment(updateUserRequestDto.getDepartment());
+        user.setGrade(updateUserRequestDto.getGrade());
+        user.setBirth(updateUserRequestDto.getBirth());
+        user.setAddress(updateUserRequestDto.getAddress());
+        user.setIsInSchool(updateUserRequestDto.getIsInSchool());
+        user.setImageUrl(updateUserRequestDto.getImageUrl());
+        userRepository.save(user);
     }
 
     public void deleteUserByAdmin(String userId) throws PermissionDeniedException {
