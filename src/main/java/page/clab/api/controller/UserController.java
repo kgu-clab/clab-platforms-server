@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.UserService;
 import page.clab.api.type.dto.ResponseModel;
+import page.clab.api.type.dto.UpdateUserRequestDto;
 import page.clab.api.type.dto.UserRequestDto;
 import page.clab.api.type.dto.UserResponseDto;
 
@@ -60,6 +61,26 @@ public class UserController {
         UserResponseDto user = userService.searchUser(userId, name);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(user);
+        return responseModel;
+    }
+
+    @Operation(summary = "유저 정보 수정", description = "본인 정보 수정<br>" +
+            "String password;<br>"+
+            "String name;<br>" +
+            "String contact;<br>" +
+            "String email;<br>" +
+            "String department;<br>" +
+            "Long grade;<br>" +
+            "LocalDate birth; (ex: 2023-01-01)<br>" +
+            "String address;<br>" +
+            "Boolean isInSchool<br>" +
+            "String imageUrl;")
+    @PutMapping("/update")
+    public ResponseModel updateUserInfoByUser(
+            @RequestBody UpdateUserRequestDto updateUserRequestDto
+    ) {
+        userService.updateUserInfoByUser(updateUserRequestDto);
+        ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
