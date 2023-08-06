@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import page.clab.api.auth.exception.TokenValidateException;
 import page.clab.api.auth.exception.UnAuthorizeException;
+import page.clab.api.exception.AssociatedAccountExistsException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
@@ -61,6 +62,18 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel searchResultNotExistError(HttpServletRequest request, HttpServletResponse response,
                                                    Exception e) {
+        ResponseModel responseModel = ResponseModel.builder()
+                .success(false)
+                .build();
+        response.setStatus(404);
+        return responseModel;
+    }
+
+    @ExceptionHandler({
+            AssociatedAccountExistsException.class
+    })
+    public ResponseModel AssociatedAccountExistsExceptionError(HttpServletRequest request, HttpServletResponse response,
+                                                               Exception e) {
         ResponseModel responseModel = ResponseModel.builder()
                 .success(false)
                 .build();
