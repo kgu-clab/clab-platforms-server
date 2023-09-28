@@ -11,6 +11,9 @@ import org.hibernate.validator.constraints.URL;
 import org.springframework.format.annotation.DateTimeFormat;
 import page.clab.api.type.dto.UserRequestDto;
 import page.clab.api.type.dto.UserResponseDto;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import page.clab.api.type.etc.OAuthProvider;
 import page.clab.api.type.etc.Role;
 import page.clab.api.util.ModelMapperUtil;
@@ -28,6 +31,8 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.Collections;
 
 @Entity
 @Getter
@@ -36,9 +41,10 @@ import java.time.format.DateTimeFormatter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name="\"user\"")
-public class User {
+public class User implements UserDetails {
 
     @Id
+    @Column(updatable = false, unique = true, nullable = false)
     @Size(min = 9, max = 9)
     private String id;
 
@@ -95,6 +101,41 @@ public class User {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority(getRole().getKey()));
+    }
+
+    @Override
+    public String getUsername() {
+        return id;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
     public static User of(UserRequestDto userRequestDto) {
         return ModelMapperUtil.getModelMapper().map(userRequestDto, User.class);
     }
@@ -119,5 +160,5 @@ public class User {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
         return birthDate.format(formatter);
     }
-
+  
 }

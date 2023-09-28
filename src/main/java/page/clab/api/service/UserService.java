@@ -8,6 +8,7 @@ import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.UserRepository;
+import page.clab.api.type.dto.UpdateUserRequestDto;
 import page.clab.api.type.dto.UserRequestDto;
 import page.clab.api.type.dto.UserResponseDto;
 import page.clab.api.type.entity.User;
@@ -56,6 +57,22 @@ public class UserService {
         return UserResponseDto.of(user);
     }
 
+    public void updateUserInfoByUser(UpdateUserRequestDto updateUserRequestDto) {
+        String userId = AuthUtil.getAuthenticationInfoUserId();
+        User user = userRepository.findById(userId).get();
+        user.setPassword(updateUserRequestDto.getPassword());
+        user.setName(updateUserRequestDto.getName());
+        user.setContact(updateUserRequestDto.getContact());
+        user.setEmail(updateUserRequestDto.getEmail());
+        user.setDepartment(updateUserRequestDto.getDepartment());
+        user.setGrade(updateUserRequestDto.getGrade());
+        user.setBirth(updateUserRequestDto.getBirth());
+        user.setAddress(updateUserRequestDto.getAddress());
+        user.setIsInSchool(updateUserRequestDto.getIsInSchool());
+        user.setImageUrl(updateUserRequestDto.getImageUrl());
+        userRepository.save(user);
+    }
+
     public void deleteUserByAdmin(String userId) throws PermissionDeniedException {
         checkUserAdminRole();
         getUserByIdOrThrow(userId);
@@ -68,8 +85,8 @@ public class UserService {
     }
 
     private void checkUserAdminRole() throws PermissionDeniedException {
-//        User user = AuthUtil.getAuthenticationInfo();
-        User user = userRepository.findById("201912156").get(); // 임시 테스트용 | 로그인 구현 후 삭제할 것
+        String userId = AuthUtil.getAuthenticationInfoUserId();
+        User user = userRepository.findById(userId).get();
         if (!user.getRole().equals(Role.ADMIN)) {
             throw new PermissionDeniedException("권한이 부족합니다.");
         }
