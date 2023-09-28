@@ -3,15 +3,17 @@ package page.clab.api.type.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.modelmapper.ModelMapper;
 import page.clab.api.type.entity.User;
+import page.clab.api.util.ModelMapperUtil;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class UserRequestDto {
 
@@ -35,10 +37,8 @@ public class UserRequestDto {
 
     private Boolean isInSchool;
 
-    private static ModelMapper modelMapper;
-
     public static UserRequestDto of(User user) {
-        return modelMapper.map(user, UserRequestDto.class);
+        return ModelMapperUtil.getModelMapper().map(user, UserRequestDto.class);
     }
 
 }
