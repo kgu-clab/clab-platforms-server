@@ -1,12 +1,16 @@
 package page.clab.api.type.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
+import org.modelmapper.ModelMapper;
 import org.springframework.format.annotation.DateTimeFormat;
+import page.clab.api.type.dto.UserRequestDto;
+import page.clab.api.type.dto.UserResponseDto;
 import page.clab.api.type.etc.OAuthProvider;
 import page.clab.api.type.etc.Role;
 
@@ -28,12 +32,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
+
     @Id
     @Size(min = 9, max = 9)
     private String id;
 
     @Column(nullable = false)
     @Size(min = 6)
+    @JsonIgnore
     private String password;
 
     private String uid;
@@ -83,5 +89,15 @@ public class User {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    private static ModelMapper modelMapper = new ModelMapper();
+
+    public static User of(UserRequestDto userRequestDto) {
+        return modelMapper.map(userRequestDto, User.class);
+    }
+
+    public static User of(UserResponseDto userResponseDto) {
+        return modelMapper.map(userResponseDto, User.class);
+    }
 
 }

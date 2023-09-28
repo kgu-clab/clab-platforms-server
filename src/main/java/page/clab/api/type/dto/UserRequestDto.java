@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.modelmapper.ModelMapper;
+import page.clab.api.type.entity.User;
 
 import java.time.LocalDate;
 
@@ -32,5 +34,11 @@ public class UserRequestDto {
     private String address;
 
     private Boolean isInSchool;
+
+    private static ModelMapper modelMapper;
+
+    public static UserRequestDto of(User user) {
+        return modelMapper.map(user, UserRequestDto.class);
+    }
 
 }

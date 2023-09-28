@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.modelmapper.ModelMapper;
+import page.clab.api.type.entity.User;
 import page.clab.api.type.etc.OAuthProvider;
 import page.clab.api.type.etc.Role;
 
@@ -41,5 +43,11 @@ public class UserResponseDto {
     private OAuthProvider provider;
 
     private LocalDateTime createdAt;
+
+    private static ModelMapper modelMapper;
+
+    public static UserResponseDto of(User user) {
+        return modelMapper.map(user, UserResponseDto.class);
+    }
 
 }
