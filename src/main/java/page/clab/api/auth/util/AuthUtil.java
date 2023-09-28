@@ -1,10 +1,5 @@
 package page.clab.api.auth.util;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-//import page.clab.api.type.dto.UserPrincipal;
-import page.clab.api.type.entity.User;
-
 public class AuthUtil {
 
 //    public static User getAuthenticationInfo() {

@@ -10,7 +10,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import page.clab.api.type.etc.OAuthProvider;
 import page.clab.api.type.etc.Role;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
