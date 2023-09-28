@@ -40,7 +40,7 @@ public class UserController {
             "LocalDate birth; (ex: 2023-01-01)<br>" +
             "String address;<br>" +
             "Boolean isInSchool<br>")
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseModel createUser(
             @RequestBody UserRequestDto userRequestDto
     ) throws PermissionDeniedException {
@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @Operation(summary = "유저 정보", description = "프로필 정보 조회")
-    @GetMapping("/list")
+    @GetMapping("")
     public ResponseModel getUsers() throws PermissionDeniedException {
         List<UserResponseDto> users = userService.getUsers();
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -71,7 +71,7 @@ public class UserController {
     }
 
     @Operation(summary = "유저 삭제(관리자 전용)", description = "관리자에 의한 유저 삭제(모든 계정 삭제 가능)")
-    @DeleteMapping("/delete/{userId}")
+    @DeleteMapping("/{userId}")
     public ResponseModel deleteUserByAdmin(
             @PathVariable("userId") String userId
     ) throws PermissionDeniedException {
@@ -81,7 +81,7 @@ public class UserController {
     }
 
     @Operation(summary = "유저 삭제(일반 유저 전용)", description = "본인 계정 삭제")
-    @DeleteMapping("/delete")
+    @DeleteMapping("")
     public ResponseModel deleteUserByUser() {
         userService.deleteUserByUser();
         ResponseModel responseModel = ResponseModel.builder().build();

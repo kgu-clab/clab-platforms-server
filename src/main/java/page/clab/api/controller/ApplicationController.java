@@ -43,7 +43,7 @@ public class ApplicationController {
             "String address;<br>" +
             "String interests;<br>" +
             "String otherActivities;")
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseModel createApplication (
             @RequestBody ApplicationRequestDto applicationRequestDto
     ) {
@@ -53,7 +53,7 @@ public class ApplicationController {
     }
 
     @Operation(summary = "동아리 가입 신청자 전체 목록", description = "동아리 가입 신청자 전체 목록")
-    @GetMapping("/list")
+    @GetMapping("")
     public ResponseModel getApplications() throws PermissionDeniedException {
         List<ApplicationResponseDto> applications = applicationService.getApplications();
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -62,7 +62,7 @@ public class ApplicationController {
     }
 
     @Operation(summary = "동아리 가입 신청자 목록 필터링(날짜 기준)", description = "전달된 날짜 사이의 신청자를 필터링함")
-    @PostMapping("/list")
+    @GetMapping("/list")
     public ResponseModel getApplicationsBetweenDates(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
@@ -106,7 +106,7 @@ public class ApplicationController {
     }
 
     @Operation(summary = "동아리 가입 신청서 삭제", description = "동아리 가입 신청서 삭제")
-    @DeleteMapping("/delete/{applicationId}")
+    @DeleteMapping("/{applicationId}")
     public ResponseModel deleteApplication(
             @PathVariable String applicationId
     ) throws PermissionDeniedException {
