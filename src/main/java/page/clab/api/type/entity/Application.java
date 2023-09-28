@@ -2,13 +2,14 @@ package page.clab.api.type.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.modelmapper.ModelMapper;
 import org.springframework.format.annotation.DateTimeFormat;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
+import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +20,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -61,14 +63,12 @@ public class Application {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    private static ModelMapper modelMapper;
-
     public static Application of(ApplicationRequestDto applicationRequestDto) {
-        return modelMapper.map(applicationRequestDto, Application.class);
+        return ModelMapperUtil.getModelMapper().map(applicationRequestDto, Application.class);
     }
 
     public static Application of(ApplicationResponseDto applicationResponseDto) {
-        return modelMapper.map(applicationResponseDto, Application.class);
+        return ModelMapperUtil.getModelMapper().map(applicationResponseDto, Application.class);
     }
 
 }

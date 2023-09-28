@@ -3,9 +3,10 @@ package page.clab.api.type.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.modelmapper.ModelMapper;
 import page.clab.api.type.entity.Application;
+import page.clab.api.util.ModelMapperUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class ApplicationResponseDto {
 
@@ -40,10 +42,8 @@ public class ApplicationResponseDto {
 
     private LocalDateTime createdAt;
 
-    private static ModelMapper modelMapper;
-
     public static ApplicationResponseDto of(Application application) {
-        return modelMapper.map(application, ApplicationResponseDto.class);
+        return ModelMapperUtil.getModelMapper().map(application, ApplicationResponseDto.class);
     }
 
 }
