@@ -29,7 +29,9 @@ dependencies {
 	implementation 'javax.xml.bind:jaxb-api:2.3.1' // XML 바인딩
 	implementation 'com.google.code.gson:gson:2.10.1' // JSON 라이브러리
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.12' // Swagger
-	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.1.1' // ModelMapper
+	implementation 'org.modelmapper:modelmapper:3.1.1' // ModelMapper
+	implementation 'commons-io:commons-io:2.13.0' // Apache Commons IO
+	implementation 'com.google.guava:guava:32.1.2-jre' // Google Core Libraries For Java
 
 	// DB
 	implementation 'org.postgresql:postgresql:42.6.0' // PostgreSQL JDBC Driver
