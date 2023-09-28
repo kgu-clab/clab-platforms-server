@@ -5,7 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.modelmapper.ModelMapper;
 import org.springframework.format.annotation.DateTimeFormat;
+import page.clab.api.type.dto.ApplicationRequestDto;
+import page.clab.api.type.dto.ApplicationResponseDto;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -57,5 +60,15 @@ public class Application {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    private static ModelMapper modelMapper;
+
+    public static Application of(ApplicationRequestDto applicationRequestDto) {
+        return modelMapper.map(applicationRequestDto, Application.class);
+    }
+
+    public static Application of(ApplicationResponseDto applicationResponseDto) {
+        return modelMapper.map(applicationResponseDto, Application.class);
+    }
 
 }

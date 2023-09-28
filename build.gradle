@@ -16,27 +16,26 @@ repositories {
 }
 
 dependencies {
+	// Spring Project
 	implementation 'org.springframework.boot:spring-boot-starter-actuator' // 모니터링
 	implementation 'org.springframework.boot:spring-boot-starter-web' // 웹 MVC
 	implementation 'org.springframework.boot:spring-boot-starter-validation' // 유효성 검사
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 템플릿 엔진
 	developmentOnly 'org.springframework.boot:spring-boot-devtools' // 개발 도구
 
+	// Util
 	compileOnly 'org.projectlombok:lombok' // 롬복
 	annotationProcessor 'org.projectlombok:lombok' // 롬복
 	implementation 'javax.xml.bind:jaxb-api:2.3.1' // XML 바인딩
 	implementation 'com.google.code.gson:gson:2.10.1' // JSON 라이브러리
-
-	// Swagger
-	implementation 'org.springdoc:springdoc-openapi-ui:1.6.12'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.12' // Swagger
+	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.1.1' // ModelMapper
 
 	// DB
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client' // MariaDB JDBC 드라이버
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
 	implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final' // Bean Validation
-	implementation 'javax.validation:validation-api:2.0.1.Final' // Bean Validation
-	implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
-
+	implementation 'javax.validation:validation-api:2.0.1.Final' // Javax Bean Validation
 
 	// OAuth
 	implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
