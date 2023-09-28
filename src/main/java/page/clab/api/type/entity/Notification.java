@@ -2,8 +2,9 @@ package page.clab.api.type.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.CascadeType;
@@ -18,7 +19,8 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
