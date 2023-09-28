@@ -5,7 +5,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.ApplicationService;
 import page.clab.api.type.dto.ApplicationRequestDto;
@@ -36,7 +43,7 @@ public class ApplicationController {
             "String address;<br>" +
             "String interests;<br>" +
             "String otherActivities;")
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseModel createApplication (
             @RequestBody ApplicationRequestDto applicationRequestDto
     ) {
@@ -46,7 +53,7 @@ public class ApplicationController {
     }
 
     @Operation(summary = "동아리 가입 신청자 전체 목록", description = "동아리 가입 신청자 전체 목록")
-    @GetMapping("/list")
+    @GetMapping("")
     public ResponseModel getApplications() throws PermissionDeniedException {
         List<ApplicationResponseDto> applications = applicationService.getApplications();
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -55,7 +62,7 @@ public class ApplicationController {
     }
 
     @Operation(summary = "동아리 가입 신청자 목록 필터링(날짜 기준)", description = "전달된 날짜 사이의 신청자를 필터링함")
-    @PostMapping("/list")
+    @GetMapping("/list")
     public ResponseModel getApplicationsBetweenDates(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
@@ -99,7 +106,7 @@ public class ApplicationController {
     }
 
     @Operation(summary = "동아리 가입 신청서 삭제", description = "동아리 가입 신청서 삭제")
-    @DeleteMapping("/delete/{applicationId}")
+    @DeleteMapping("/{applicationId}")
     public ResponseModel deleteApplication(
             @PathVariable String applicationId
     ) throws PermissionDeniedException {

@@ -15,7 +15,6 @@ import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.entity.Application;
 import page.clab.api.type.entity.User;
-import page.clab.api.type.etc.OAuthProvider;
 import page.clab.api.type.etc.Role;
 
 import javax.transaction.Transactional;
@@ -37,7 +36,7 @@ public class ApplicationService {
     private final UserService userService;
 
     public void createApplication(ApplicationRequestDto appRequestDto) {
-        Application application = toApplication(appRequestDto);
+        Application application = Application.of(appRequestDto);
         applicationRepository.save(application);
     }
 
@@ -96,7 +95,7 @@ public class ApplicationService {
         if (userRepository.existsById(applicationId))
             throw new AlreadyApprovedException("이미 승인된 신청자입니다.");
         Application application = getApplicationByIdOrThrow(applicationId);
-        User approvedUser = toUser(application);
+        User approvedUser = User.of(application);
         userRepository.save(approvedUser);
     }
 
@@ -135,62 +134,10 @@ public class ApplicationService {
     }
 
     private ApplicationResponseDto createApplicationResponseDto(Application application) {
-        ApplicationResponseDto appRequestDto = toApplicationResponseDto(application);
+        ApplicationResponseDto appRequestDto = ApplicationResponseDto.of(application);
         if (userRepository.findById(application.getStudentId()).isPresent())
             appRequestDto.setPass(true);
         return appRequestDto;
-    }
-
-    private Application toApplication(ApplicationRequestDto appRequestDto) {
-        Application application = Application.builder()
-                .studentId(appRequestDto.getStudentId())
-                .name(appRequestDto.getName())
-                .contact(appRequestDto.getContact())
-                .email(appRequestDto.getEmail())
-                .department(appRequestDto.getDepartment())
-                .grade(appRequestDto.getGrade())
-                .birth(appRequestDto.getBirth())
-                .address(appRequestDto.getAddress())
-                .interests(appRequestDto.getInterests())
-                .otherActivities(appRequestDto.getOtherActivities())
-                .build();
-        return application;
-    }
-
-    private ApplicationResponseDto toApplicationResponseDto(Application application) {
-        ApplicationResponseDto appRequestDto = ApplicationResponseDto.builder()
-                .studentId(application.getStudentId())
-                .name(application.getName())
-                .contact(application.getContact())
-                .email(application.getEmail())
-                .department(application.getDepartment())
-                .grade(application.getGrade())
-                .birth(application.getBirth())
-                .address(application.getAddress())
-                .interests(application.getInterests())
-                .otherActivities(application.getOtherActivities())
-                .isPass(false)
-                .createdAt(application.getCreatedAt())
-                .build();
-        return appRequestDto;
-    }
-
-    private User toUser(Application application) {
-        User user = User.builder()
-                .id(application.getStudentId())
-                .password(userService.generatePassword(application.getBirth()))
-                .name(application.getName())
-                .contact(application.getContact())
-                .email(application.getEmail())
-                .department(application.getDepartment())
-                .grade(application.getGrade())
-                .birth(application.getBirth())
-                .address(application.getAddress())
-                .isInSchool(true)
-                .role(Role.USER)
-                .provider(OAuthProvider.LOCAL)
-                .build();
-        return user;
     }
 
 }

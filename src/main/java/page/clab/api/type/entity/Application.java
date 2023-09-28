@@ -2,19 +2,26 @@ package page.clab.api.type.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
+import page.clab.api.type.dto.ApplicationRequestDto;
+import page.clab.api.type.dto.ApplicationResponseDto;
+import page.clab.api.util.ModelMapperUtil;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -55,5 +62,13 @@ public class Application {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    public static Application of(ApplicationRequestDto applicationRequestDto) {
+        return ModelMapperUtil.getModelMapper().map(applicationRequestDto, Application.class);
+    }
+
+    public static Application of(ApplicationResponseDto applicationResponseDto) {
+        return ModelMapperUtil.getModelMapper().map(applicationResponseDto, Application.class);
+    }
 
 }

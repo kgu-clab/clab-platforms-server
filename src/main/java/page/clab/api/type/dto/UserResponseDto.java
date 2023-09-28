@@ -3,9 +3,12 @@ package page.clab.api.type.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.type.entity.User;
 import page.clab.api.type.etc.OAuthProvider;
 import page.clab.api.type.etc.Role;
+import page.clab.api.util.ModelMapperUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class UserResponseDto {
 
@@ -41,5 +45,9 @@ public class UserResponseDto {
     private OAuthProvider provider;
 
     private LocalDateTime createdAt;
+
+    public static UserResponseDto of(User user) {
+        return ModelMapperUtil.getModelMapper().map(user, UserResponseDto.class);
+    }
 
 }
