@@ -12,11 +12,8 @@ import page.clab.api.type.dto.UpdateUserRequestDto;
 import page.clab.api.type.dto.UserRequestDto;
 import page.clab.api.type.dto.UserResponseDto;
 import page.clab.api.type.entity.User;
-import page.clab.api.type.etc.OAuthProvider;
 import page.clab.api.type.etc.Role;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +27,7 @@ public class UserService {
         checkUserAdminRole();
         if (userRepository.findById(userRequestDto.getId()).isPresent())
             throw new AssociatedAccountExistsException();
-        User user = toUser(userRequestDto);
+        User user = User.of(userRequestDto);
         userRepository.save(user);
     }
 
@@ -39,7 +36,7 @@ public class UserService {
         List<User> users = userRepository.findAll();
         List<UserResponseDto> userResponseDtos = new ArrayList<>();
         for (User user : users) {
-            UserResponseDto userResponseDto = toUserResponseDto(user);
+            UserResponseDto userResponseDto = UserResponseDto.of(user);
             userResponseDtos.add(userResponseDto);
         }
         return userResponseDtos;
@@ -57,7 +54,7 @@ public class UserService {
 
         if (user == null)
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
-        return toUserResponseDto(user);
+        return UserResponseDto.of(user);
     }
 
     public void updateUserInfoByUser(UpdateUserRequestDto updateUserRequestDto) {
@@ -103,51 +100,6 @@ public class UserService {
     public User getUserByNameOrThrow(String name) {
         return userRepository.findByName(name)
                 .orElseThrow(() -> new NotFoundException("해당 유저가 없습니다."));
-    }
-
-    private User toUser(UserRequestDto userRequestDto) {
-        User user = User.builder()
-                .id(userRequestDto.getId())
-                .password(userRequestDto.getPassword())
-                .name(userRequestDto.getName())
-                .contact(userRequestDto.getContact())
-                .email(userRequestDto.getEmail())
-                .department(userRequestDto.getDepartment())
-                .grade(userRequestDto.getGrade())
-                .birth(userRequestDto.getBirth())
-                .address(userRequestDto.getAddress())
-                .isInSchool(userRequestDto.getIsInSchool())
-                .role(Role.USER)
-                .provider(OAuthProvider.LOCAL)
-                .build();
-        return user;
-    }
-
-    private UserResponseDto toUserResponseDto(User user) {
-        UserResponseDto userResponseDto = UserResponseDto.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .contact(user.getContact())
-                .email(user.getEmail())
-                .department(user.getDepartment())
-                .grade(user.getGrade())
-                .birth(user.getBirth())
-                .address(user.getAddress())
-                .isInSchool(user.getIsInSchool())
-                .imageUrl(user.getImageUrl())
-                .role(user.getRole())
-                .provider(user.getProvider())
-                .createdAt(user.getCreatedAt())
-                .build();
-        return userResponseDto;
-    }
-
-    public String generatePassword(LocalDate birthDate) {
-        if (birthDate == null) {
-            throw new IllegalArgumentException("생년월일이 올바르지 않습니다.");
-        }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
-        return birthDate.format(formatter);
     }
 
 }
