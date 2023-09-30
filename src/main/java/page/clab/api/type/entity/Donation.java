@@ -30,8 +30,8 @@ public class Donation {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User donor;
+    @JoinColumn(name = "member_id")
+    private Member donor;
 
     @Column(nullable = false)
     private Double amount;

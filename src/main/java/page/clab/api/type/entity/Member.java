@@ -12,8 +12,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import page.clab.api.type.dto.UserRequestDto;
-import page.clab.api.type.dto.UserResponseDto;
+import page.clab.api.type.dto.MemberRequestDto;
+import page.clab.api.type.dto.MemberResponseDto;
 import page.clab.api.type.etc.OAuthProvider;
 import page.clab.api.type.etc.Role;
 import page.clab.api.util.ModelMapperUtil;
@@ -23,7 +23,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -40,8 +39,7 @@ import java.util.Collections;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="\"user\"")
-public class User implements UserDetails {
+public class Member implements UserDetails {
 
     @Id
     @Column(updatable = false, unique = true, nullable = false)
@@ -136,21 +134,21 @@ public class User implements UserDetails {
         return true;
     }
 
-    public static User of(UserRequestDto userRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(userRequestDto, User.class);
+    public static Member of(MemberRequestDto memberRequestDto) {
+        return ModelMapperUtil.getModelMapper().map(memberRequestDto, Member.class);
     }
 
-    public static User of(UserResponseDto userResponseDto) {
-        return ModelMapperUtil.getModelMapper().map(userResponseDto, User.class);
+    public static Member of(MemberResponseDto memberResponseDto) {
+        return ModelMapperUtil.getModelMapper().map(memberResponseDto, Member.class);
     }
 
-    public static User of(Application application) {
-        User user = ModelMapperUtil.getModelMapper().map(application, User.class);
-        user.setPassword(user.generatePassword(user.getBirth()));
-        user.setIsInSchool(true);
-        user.setRole(Role.USER);
-        user.setProvider(OAuthProvider.LOCAL);
-        return user;
+    public static Member of(Application application) {
+        Member member = ModelMapperUtil.getModelMapper().map(application, Member.class);
+        member.setPassword(member.generatePassword(member.getBirth()));
+        member.setIsInSchool(true);
+        member.setRole(Role.USER);
+        member.setProvider(OAuthProvider.LOCAL);
+        return member;
     }
 
     public String generatePassword(LocalDate birthDate) {

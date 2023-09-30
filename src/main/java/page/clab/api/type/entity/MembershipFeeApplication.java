@@ -43,7 +43,7 @@ public class MembershipFeeApplication {
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User applicant;
+    @JoinColumn(name = "member_id")
+    private Member applicant;
 
 }

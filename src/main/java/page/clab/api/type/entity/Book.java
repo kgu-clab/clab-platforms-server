@@ -45,7 +45,7 @@ public class Book {
     private LocalDateTime updateTime;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User borrower;
+    @JoinColumn(name = "member_id")
+    private Member borrower;
 
 }

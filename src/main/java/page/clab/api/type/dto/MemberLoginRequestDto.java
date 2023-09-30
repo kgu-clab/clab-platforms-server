@@ -3,7 +3,7 @@ package page.clab.api.type.dto;
 import lombok.Data;
 
 @Data
-public class UserLoginRequestDto {
+public class MemberLoginRequestDto {
 
     private String id;
 

@@ -17,10 +17,10 @@ public class BlacklistService {
 
     private final BlacklistIpRepository blacklistIpRepository;
 
-    private final UserService userService;
+    private final MemberService memberService;
 
     public void addBlacklistedIp(String ipAddress) throws PermissionDeniedException {
-        userService.checkUserAdminRole();
+        memberService.checkMemberAdminRole();
         if (!isBlacklistedIp(ipAddress)) {
             BlacklistIp blacklistIp = BlacklistIp.builder().ipAddress(ipAddress).build();
             blacklistIpRepository.save(blacklistIp);
@@ -31,14 +31,14 @@ public class BlacklistService {
     }
 
     public List<BlacklistIp> getBlacklistedIps() throws PermissionDeniedException {
-        userService.checkUserAdminRole();
+        memberService.checkMemberAdminRole();
         List<BlacklistIp> blacklistedIps = blacklistIpRepository.findAll();
         return blacklistedIps;
     }
 
     @Transactional
     public void deleteBlacklistedIp(String ipAddress) throws PermissionDeniedException {
-        userService.checkUserAdminRole();
+        memberService.checkMemberAdminRole();
         if (isBlacklistedIp(ipAddress)) {
             blacklistIpRepository.deleteByIpAddress(ipAddress);
             log.info("IP address {} removed from the blacklist", ipAddress);
@@ -48,7 +48,7 @@ public class BlacklistService {
     }
 
     public void clearBlacklist() throws PermissionDeniedException {
-        userService.checkUserAdminRole();
+        memberService.checkMemberAdminRole();
         blacklistIpRepository.deleteAll();
         log.info("Blacklist cleared");
     }

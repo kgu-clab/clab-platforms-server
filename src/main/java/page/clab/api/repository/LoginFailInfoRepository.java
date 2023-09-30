@@ -9,6 +9,6 @@ import java.util.Optional;
 @Repository
 public interface LoginFailInfoRepository extends JpaRepository<LoginFailInfo, Long> {
 
-    Optional<LoginFailInfo> findByUser_Id(String id);
+    Optional<LoginFailInfo> findByMember_Id(String id);
 
 }

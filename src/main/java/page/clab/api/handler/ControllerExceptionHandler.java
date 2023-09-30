@@ -17,7 +17,7 @@ import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
-import page.clab.api.exception.UserLockedException;
+import page.clab.api.exception.MemberLockedException;
 import page.clab.api.type.dto.ResponseModel;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,7 +65,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler({
             LoginFaliedException.class,
-            UserLockedException.class,
+            MemberLockedException.class,
             BadCredentialsException.class
     })
     public ResponseModel LoginFailedError(HttpServletRequest request, HttpServletResponse response,
