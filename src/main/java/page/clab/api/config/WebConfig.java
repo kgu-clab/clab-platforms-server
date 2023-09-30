@@ -3,14 +3,17 @@ package page.clab.api.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
+import page.clab.api.handler.ApiLoggingInterceptor;
 import page.clab.api.util.HtmlCharacterEscapes;
 
 import java.io.FileNotFoundException;
@@ -22,6 +25,9 @@ import java.io.IOException;
 public class WebConfig implements WebMvcConfigurer {
 
     private final ObjectMapper objectMapper;
+
+    @Autowired
+    private ApiLoggingInterceptor apiLoggingInterceptor;
 
     @Value("${resource.file.path}")
     private String filePath;
@@ -53,6 +59,11 @@ public class WebConfig implements WebMvcConfigurer {
         ObjectMapper copy = objectMapper.copy();
         copy.getFactory().setCharacterEscapes(new HtmlCharacterEscapes());
         return new MappingJackson2HttpMessageConverter(copy);
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(apiLoggingInterceptor);
     }
 
 }
