@@ -15,6 +15,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import page.clab.api.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.auth.jwt.JwtTokenProvider;
+import page.clab.api.repository.BlacklistIpRepository;
 
 import java.util.List;
 
@@ -25,8 +26,11 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+    private final BlacklistIpRepository blacklistIpRepository;
+
     private static final String[] PERMIT_ALL = {
             "/login/**",
+            "/resources/files/**",
             "/v2/api-docs",
             "/swagger-resources",
             "/swagger-resources/**",
@@ -52,7 +56,7 @@ public class SecurityConfig {
                 .antMatchers(PERMIT_ALL).permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
