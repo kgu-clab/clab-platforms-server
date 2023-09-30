@@ -2,6 +2,7 @@ package page.clab.api.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import page.clab.api.auth.exception.UnAuthorizeException;
 import page.clab.api.auth.util.AuthUtil;
@@ -10,10 +11,12 @@ import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.ApplicationRepository;
+import page.clab.api.repository.LoginFailInfoRepository;
 import page.clab.api.repository.UserRepository;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.entity.Application;
+import page.clab.api.type.entity.LoginFailInfo;
 import page.clab.api.type.entity.User;
 import page.clab.api.type.etc.Role;
 
@@ -33,10 +36,15 @@ public class ApplicationService {
 
     private final UserRepository userRepository;
 
+    private final LoginFailInfoRepository loginFailInfoRepository;
+
     private final UserService userService;
+
+    private final PasswordEncoder passwordEncoder;
 
     public void createApplication(ApplicationRequestDto appRequestDto) {
         Application application = Application.of(appRequestDto);
+        application.setContact(userService.removeHyphensFromContact(application.getContact()));
         applicationRepository.save(application);
     }
 
@@ -96,7 +104,14 @@ public class ApplicationService {
             throw new AlreadyApprovedException("이미 승인된 신청자입니다.");
         Application application = getApplicationByIdOrThrow(applicationId);
         User approvedUser = User.of(application);
+        approvedUser.setPassword(passwordEncoder.encode(approvedUser.getPassword()));
         userRepository.save(approvedUser);
+        LoginFailInfo loginFailInfo = LoginFailInfo.builder()
+                .user(approvedUser)
+                .loginFailCount(0L)
+                .isLock(false)
+                .build();
+        loginFailInfoRepository.save(loginFailInfo);
     }
 
     @Transactional

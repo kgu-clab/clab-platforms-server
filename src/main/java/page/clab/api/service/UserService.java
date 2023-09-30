@@ -1,6 +1,7 @@
 package page.clab.api.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import page.clab.api.auth.util.AuthUtil;
 import page.clab.api.exception.AssociatedAccountExistsException;
@@ -23,11 +24,17 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     public void createUser(UserRequestDto userRequestDto) throws PermissionDeniedException {
-        checkUserAdminRole();
+//        checkUserAdminRole();
         if (userRepository.findById(userRequestDto.getId()).isPresent())
             throw new AssociatedAccountExistsException();
+        if (userRepository.findByContact(userRequestDto.getContact()).isPresent())
+            throw new AssociatedAccountExistsException();
         User user = User.of(userRequestDto);
+        user.setContact(removeHyphensFromContact(user.getContact()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
@@ -84,7 +91,7 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
-    private void checkUserAdminRole() throws PermissionDeniedException {
+    public void checkUserAdminRole() throws PermissionDeniedException {
         String userId = AuthUtil.getAuthenticationInfoUserId();
         User user = userRepository.findById(userId).get();
         if (!user.getRole().equals(Role.ADMIN)) {
@@ -100,6 +107,10 @@ public class UserService {
     public User getUserByNameOrThrow(String name) {
         return userRepository.findByName(name)
                 .orElseThrow(() -> new NotFoundException("해당 유저가 없습니다."));
+    }
+
+    public String removeHyphensFromContact(String contact) {
+        return contact.replaceAll("-", "");
     }
 
 }

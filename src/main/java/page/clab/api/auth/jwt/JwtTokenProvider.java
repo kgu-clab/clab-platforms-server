@@ -26,7 +26,9 @@ public class JwtTokenProvider {
 
     private final Key key;
 
-    private static final long TOKEN_DURATION = 30L * 60L * 1000L; // 30분
+    private static final long ACCESS_TOKEN_DURATION = 30L * 60L * 1000L; // 30분
+
+    private static final long REFRESH_TOKEN_DURATION = 40L * 60L * 1000L; // 40분
 
     public JwtTokenProvider(@Value("${jwt.secret-key}") String secretKey) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
@@ -40,23 +42,25 @@ public class JwtTokenProvider {
                 .collect(Collectors.joining(","));
 
         Date expiry = new Date();
-        expiry.setTime(expiry.getTime() + (TOKEN_DURATION));
         // Access Token 생성
+        Date accessTokenExpiry = new Date(expiry.getTime() + (ACCESS_TOKEN_DURATION));
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("role", authorities)
-                .setExpiration(expiry)
+                .setExpiration(accessTokenExpiry)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
         // Refresh Token 생성
+        Date refreshTokenExpiry = new Date(expiry.getTime() + (REFRESH_TOKEN_DURATION));
         String refreshToken = Jwts.builder()
-                .setExpiration(expiry)
+                .setSubject(authentication.getName())
+                .claim("role", authorities)
+                .setExpiration(refreshTokenExpiry)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
         return TokenInfo.builder()
-                .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -66,8 +70,8 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String accessToken) {
         // 토큰 복호화
         Claims claims = parseClaims(accessToken);
-        log.info("claims : {}", claims);
-        log.info("accessToken : {}", accessToken);
+        log.debug("claims : {}", claims);
+        log.debug("accessToken : {}", accessToken);
 
         if (claims.get("role") == null) {
             throw new TokenValidateException("권한 정보가 없는 토큰입니다.");
@@ -90,18 +94,18 @@ public class JwtTokenProvider {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
+            log.info("Invalid JWT Token");
         } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
+            log.info("Expired JWT Token");
         } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
+            log.info("Unsupported JWT Token");
         } catch (IllegalArgumentException e) {
-            log.info("JWT claims string is empty.", e);
+            log.info("JWT claims string is empty.");
         }
         return false;
     }
 
-    private Claims parseClaims(String accessToken) {
+    public Claims parseClaims(String accessToken) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
         } catch (ExpiredJwtException e) {
