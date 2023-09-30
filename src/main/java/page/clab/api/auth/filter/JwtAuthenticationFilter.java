@@ -1,11 +1,13 @@
 package page.clab.api.auth.filter;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 import page.clab.api.auth.jwt.JwtTokenProvider;
+import page.clab.api.repository.BlacklistIpRepository;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -15,9 +17,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final JwtTokenProvider jwtTokenProvider;
+
+    private final BlacklistIpRepository blacklistIpRepository;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -30,12 +35,19 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // 블랙리스트 IP 검사
+            String clientIpAddress = request.getRemoteAddr();
+            log.debug("clientIpAddress : {}", clientIpAddress);
+            if (blacklistIpRepository.existsByIpAddress(clientIpAddress)) {
+                throw new SecurityException("Blacklisted IP address");
+            }
         }
         chain.doFilter(request, response);
     }
 
     // Request Header 에서 토큰 정보 추출
-    private String resolveToken(HttpServletRequest request) {
+    public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
             return bearerToken.substring(7);

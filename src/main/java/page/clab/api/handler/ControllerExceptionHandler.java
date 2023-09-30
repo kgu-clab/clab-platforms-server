@@ -4,6 +4,7 @@ import com.google.gson.stream.MalformedJsonException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -12,9 +13,11 @@ import page.clab.api.auth.exception.TokenValidateException;
 import page.clab.api.auth.exception.UnAuthorizeException;
 import page.clab.api.exception.AssociatedAccountExistsException;
 import page.clab.api.exception.FileUploadFailException;
+import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
+import page.clab.api.exception.UserLockedException;
 import page.clab.api.type.dto.ResponseModel;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +60,20 @@ public class ControllerExceptionHandler {
                 .success(false)
                 .build();
         response.setStatus(401);
+        return responseModel;
+    }
+
+    @ExceptionHandler({
+            LoginFaliedException.class,
+            UserLockedException.class,
+            BadCredentialsException.class
+    })
+    public ResponseModel LoginFailedError(HttpServletRequest request, HttpServletResponse response,
+                                          Exception e) throws Exception {
+        ResponseModel responseModel = ResponseModel.builder()
+                .success(false)
+                .build();
+        response.setStatus(403);
         return responseModel;
     }
 

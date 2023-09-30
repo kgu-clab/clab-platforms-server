@@ -2,6 +2,7 @@ package page.clab.api.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import page.clab.api.auth.exception.UnAuthorizeException;
 import page.clab.api.auth.util.AuthUtil;
@@ -29,14 +30,19 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ApplicationService {
 
+    private final UserService userService;
+
+    private final LoginFailInfoService loginFailInfoService;
+
     private final ApplicationRepository applicationRepository;
 
     private final UserRepository userRepository;
 
-    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     public void createApplication(ApplicationRequestDto appRequestDto) {
         Application application = Application.of(appRequestDto);
+        application.setContact(userService.removeHyphensFromContact(application.getContact()));
         applicationRepository.save(application);
     }
 
@@ -96,7 +102,9 @@ public class ApplicationService {
             throw new AlreadyApprovedException("이미 승인된 신청자입니다.");
         Application application = getApplicationByIdOrThrow(applicationId);
         User approvedUser = User.of(application);
+        approvedUser.setPassword(passwordEncoder.encode(approvedUser.getPassword()));
         userRepository.save(approvedUser);
+        loginFailInfoService.createLoginFailInfo(approvedUser);
     }
 
     @Transactional
