@@ -4,13 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.LoginFaliedException;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.UserLockedException;
 import page.clab.api.service.LoginService;
 import page.clab.api.type.dto.RefreshTokenDto;
@@ -18,6 +16,7 @@ import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.TokenDto;
 import page.clab.api.type.dto.TokenInfo;
 import page.clab.api.type.dto.UserLoginRequestDto;
+import page.clab.api.type.etc.Role;
 
 @RestController
 @RequestMapping("/login")
@@ -54,26 +53,6 @@ public class LoginController {
         return responseModel;
     }
 
-    @Operation(summary = "유저 밴 처리", description = "유저 밴 처리")
-    @PostMapping("/ban/{userId}")
-    public ResponseModel banUser(
-            @PathVariable String userId
-    ) throws PermissionDeniedException {
-        loginService.banUserById(userId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
-    }
-
-    @Operation(summary = "유저 밴 해제", description = "유저 밴 해제")
-    @PostMapping("/unban/{userId}")
-    public ResponseModel unbanUser(
-            @PathVariable String userId
-    ) throws PermissionDeniedException {
-        loginService.unbanUserById(userId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
-    }
-
     @Operation(summary = "유저 토큰 권한 검사", description = "유저 토큰 권한 검사<br>" +
             "String token;")
     @PostMapping("/role")
@@ -82,7 +61,7 @@ public class LoginController {
     ) {
         boolean isAdminRole = loginService.checkTokenRole(tokenDto);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData((isAdminRole ? "ROLE_ADMIN" : "ROLE_USER"));
+        responseModel.addData((isAdminRole ? Role.ADMIN.getKey() : Role.USER.getKey()));
         return responseModel;
     }
 
