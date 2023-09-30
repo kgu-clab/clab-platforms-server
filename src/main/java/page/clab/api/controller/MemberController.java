@@ -14,19 +14,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
-import page.clab.api.service.UserService;
+import page.clab.api.service.MemberService;
 import page.clab.api.type.dto.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/members")
 @RequiredArgsConstructor
-@Tag(name = "User")
+@Tag(name = "Member")
 @Slf4j
-public class UserController {
+public class MemberController {
 
-    private final UserService userService;
+    private final MemberService memberService;
 
     @Operation(summary = "신규 유저 생성", description = "신규 유저 생성<br>" +
             "String id;<br>"+
@@ -40,18 +40,18 @@ public class UserController {
             "String address;<br>" +
             "Boolean isInSchool<br>")
     @PostMapping("")
-    public ResponseModel createUser(
-            @RequestBody UserRequestDto userRequestDto
+    public ResponseModel createMember(
+            @RequestBody MemberRequestDto memberRequestDto
     ) throws PermissionDeniedException {
-        userService.createUser(userRequestDto);
+        memberService.createMember(memberRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
     @Operation(summary = "유저 정보", description = "프로필 정보 조회")
     @GetMapping("")
-    public ResponseModel getUsers() throws PermissionDeniedException {
-        List<UserResponseDto> users = userService.getUsers();
+    public ResponseModel getMembers() throws PermissionDeniedException {
+        List<MemberResponseDto> users = memberService.getMembers();
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(users);
         return responseModel;
@@ -59,11 +59,11 @@ public class UserController {
 
     @Operation(summary = "유저 검색", description = "유저의 ID 또는 이름을 기반으로 검색")
     @GetMapping("/search")
-    public ResponseModel searchUser(
-            @RequestParam(required = false) String userId,
+    public ResponseModel searchMember(
+            @RequestParam(required = false) String memberId,
             @RequestParam(required = false) String name
     ) throws PermissionDeniedException {
-        UserResponseDto user = userService.searchUser(userId, name);
+        MemberResponseDto user = memberService.searchMember(memberId, name);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(user);
         return responseModel;
@@ -81,28 +81,28 @@ public class UserController {
             "Boolean isInSchool<br>" +
             "String imageUrl;")
     @PatchMapping("")
-    public ResponseModel updateUserInfoByUser(
-            @RequestBody UpdateUserRequestDto updateUserRequestDto
+    public ResponseModel updateMemberInfoByMember(
+            @RequestBody MemberUpdateRequestDto memberUpdateRequestDto
     ) {
-        userService.updateUserInfoByUser(updateUserRequestDto);
+        memberService.updateMemberInfoByMember(memberUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
     @Operation(summary = "유저 삭제(관리자 전용)", description = "관리자에 의한 유저 삭제(모든 계정 삭제 가능)")
-    @DeleteMapping("/{userId}")
-    public ResponseModel deleteUserByAdmin(
-            @PathVariable("userId") String userId
+    @DeleteMapping("/{memberId}")
+    public ResponseModel deleteMemberByAdmin(
+            @PathVariable("memberId") String memberId
     ) throws PermissionDeniedException {
-        userService.deleteUserByAdmin(userId);
+        memberService.deleteMemberByAdmin(memberId);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
     @Operation(summary = "유저 삭제(일반 유저 전용)", description = "본인 계정 삭제")
     @DeleteMapping("")
-    public ResponseModel deleteUserByUser() {
-        userService.deleteUserByUser();
+    public ResponseModel deleteMemberByMember() {
+        memberService.deleteMemberByMember();
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }

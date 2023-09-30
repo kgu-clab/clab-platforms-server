@@ -6,10 +6,10 @@ import org.springframework.stereotype.Service;
 import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
-import page.clab.api.exception.UserLockedException;
+import page.clab.api.exception.MemberLockedException;
 import page.clab.api.repository.LoginFailInfoRepository;
 import page.clab.api.type.entity.LoginFailInfo;
-import page.clab.api.type.entity.User;
+import page.clab.api.type.entity.Member;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Slf4j
 public class LoginFailInfoService {
 
-    private final UserService userService;
+    private final MemberService memberService;
 
     private final LoginFailInfoRepository loginFailInfoRepository;
 
@@ -26,9 +26,9 @@ public class LoginFailInfoService {
 
     private static final int LOCK_DURATION_MINUTES = 5;
 
-    public LoginFailInfo createLoginFailInfo(User user) {
+    public LoginFailInfo createLoginFailInfo(Member member) {
         LoginFailInfo loginFailInfo = LoginFailInfo.builder()
-                .user(user)
+                .member(member)
                 .loginFailCount(0L)
                 .isLock(false)
                 .build();
@@ -36,9 +36,9 @@ public class LoginFailInfoService {
         return loginFailInfo;
     }
 
-    public void banUserById(String userId) throws PermissionDeniedException {
-        userService.checkUserAdminRole();
-        LoginFailInfo loginFailInfo = getLoginFailInfoByUserIdOrThrow(userId);
+    public void banMemberById(String memberId) throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        LoginFailInfo loginFailInfo = getLoginFailInfoByMemberIdOrThrow(memberId);
         if (loginFailInfo != null) {
             loginFailInfo.setIsLock(true);
             loginFailInfo.setLatestTryLoginDate(LocalDateTime.now().plusYears(100));
@@ -46,28 +46,28 @@ public class LoginFailInfoService {
         }
     }
 
-    public void unbanUserById(String userId) throws PermissionDeniedException {
-        userService.checkUserAdminRole();
-        LoginFailInfo loginFailInfo = getLoginFailInfoByUserIdOrThrow(userId);
+    public void unbanMemberById(String memberId) throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        LoginFailInfo loginFailInfo = getLoginFailInfoByMemberIdOrThrow(memberId);
         if (loginFailInfo != null) {
             loginFailInfo.setIsLock(false);
             loginFailInfoRepository.save(loginFailInfo);
         }
     }
 
-    public void handleLoginFailInfo(String userId) throws UserLockedException {
-        LoginFailInfo loginFailInfo = getLoginFailInfoByUserId(userId);
+    public void handleLoginFailInfo(String memberId) throws MemberLockedException {
+        LoginFailInfo loginFailInfo = getLoginFailInfoByMemberId(memberId);
         if (loginFailInfo == null) {
-            User user = userService.getUserByIdOrThrow(userId);
-            loginFailInfo = createLoginFailInfo(user);
+            Member member = memberService.getMemberByIdOrThrow(memberId);
+            loginFailInfo = createLoginFailInfo(member);
         }
-        checkUserLocked(loginFailInfo);
+        checkMemberLocked(loginFailInfo);
         resetLoginFailInfo(loginFailInfo);
     }
 
-    public void checkUserLocked(LoginFailInfo loginFailInfo) throws UserLockedException {
+    public void checkMemberLocked(LoginFailInfo loginFailInfo) throws MemberLockedException {
         if (loginFailInfo != null && loginFailInfo.getIsLock() && isLockedForDuration(loginFailInfo)) {
-            throw new UserLockedException();
+            throw new MemberLockedException();
         }
     }
 
@@ -84,8 +84,8 @@ public class LoginFailInfoService {
         }
     }
 
-    public void updateLoginFailInfo(String userId) throws LoginFaliedException {
-        LoginFailInfo loginFailInfo = getLoginFailInfoByUserIdOrThrow(userId);
+    public void updateLoginFailInfo(String memberId) throws LoginFaliedException {
+        LoginFailInfo loginFailInfo = getLoginFailInfoByMemberIdOrThrow(memberId);
         if (loginFailInfo != null) {
             incrementFailCountAndLock(loginFailInfo);
         }
@@ -103,13 +103,13 @@ public class LoginFailInfoService {
         loginFailInfoRepository.save(loginFailInfo);
     }
 
-    public LoginFailInfo getLoginFailInfoByUserIdOrThrow(String userId) {
-        return loginFailInfoRepository.findByUser_Id(userId)
+    public LoginFailInfo getLoginFailInfoByMemberIdOrThrow(String memberId) {
+        return loginFailInfoRepository.findByMember_Id(memberId)
                 .orElseThrow(() -> new NotFoundException("해당 유저가 없습니다."));
     }
 
-    public LoginFailInfo getLoginFailInfoByUserId(String userId) {
-        return loginFailInfoRepository.findByUser_Id(userId).orElse(null);
+    public LoginFailInfo getLoginFailInfoByMemberId(String memberId) {
+        return loginFailInfoRepository.findByMember_Id(memberId).orElse(null);
     }
 
 }

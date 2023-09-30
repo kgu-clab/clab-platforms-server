@@ -14,7 +14,7 @@ public class AuthUtil {
         return (User) authentication.getPrincipal();
     }
 
-    public static String getAuthenticationInfoUserId() {
+    public static String getAuthenticationInfoMemberId() {
         return getAuthenticationInfo().getUsername();
     }
 

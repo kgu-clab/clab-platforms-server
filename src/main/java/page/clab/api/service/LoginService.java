@@ -10,7 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import page.clab.api.auth.jwt.JwtTokenProvider;
 import page.clab.api.exception.LoginFaliedException;
-import page.clab.api.exception.UserLockedException;
+import page.clab.api.exception.MemberLockedException;
 import page.clab.api.type.dto.RefreshTokenDto;
 import page.clab.api.type.dto.TokenDto;
 import page.clab.api.type.dto.TokenInfo;
@@ -30,7 +30,7 @@ public class LoginService {
     private final LoginFailInfoService loginFailInfoService;
 
     @Transactional
-    public TokenInfo login(String id, String password) throws LoginFaliedException, UserLockedException {
+    public TokenInfo login(String id, String password) throws LoginFaliedException, MemberLockedException {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
         try {
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
