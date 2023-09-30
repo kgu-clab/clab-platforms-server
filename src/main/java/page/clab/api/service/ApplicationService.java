@@ -11,12 +11,10 @@ import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.ApplicationRepository;
-import page.clab.api.repository.LoginFailInfoRepository;
 import page.clab.api.repository.UserRepository;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.entity.Application;
-import page.clab.api.type.entity.LoginFailInfo;
 import page.clab.api.type.entity.User;
 import page.clab.api.type.etc.Role;
 
@@ -32,13 +30,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ApplicationService {
 
+    private final UserService userService;
+
+    private final LoginFailInfoService loginFailInfoService;
+
     private final ApplicationRepository applicationRepository;
 
     private final UserRepository userRepository;
-
-    private final LoginFailInfoRepository loginFailInfoRepository;
-
-    private final UserService userService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -106,12 +104,7 @@ public class ApplicationService {
         User approvedUser = User.of(application);
         approvedUser.setPassword(passwordEncoder.encode(approvedUser.getPassword()));
         userRepository.save(approvedUser);
-        LoginFailInfo loginFailInfo = LoginFailInfo.builder()
-                .user(approvedUser)
-                .loginFailCount(0L)
-                .isLock(false)
-                .build();
-        loginFailInfoRepository.save(loginFailInfo);
+        loginFailInfoService.createLoginFailInfo(approvedUser);
     }
 
     @Transactional
