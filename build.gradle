@@ -48,6 +48,11 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // JWT 구현체
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JWT Jackson 모듈
 
+	// XSS Filter
+	implementation 'com.navercorp.lucy:lucy-xss-servlet:2.0.0' // Lucy XSS Servlet Filter
+	implementation 'com.navercorp.lucy:lucy-xss:1.6.3' // Lucy XSS Filter
+	implementation 'org.apache.commons:commons-text:1.10.0' // Apache Commons Text
+
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot Test
 	testImplementation 'org.springframework.security:spring-security-test' // Spring Security Test
