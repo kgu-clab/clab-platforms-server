@@ -19,8 +19,8 @@ public class FileHandler {
     @Value("${resource.file.path}")
     private String filePath;
 
-    @Value("${resource.file.allow-extension}")
-    private String[] allowExtensions;
+    @Value("${resource.file.disallow-extension}")
+    private String[] disallowExtensions;
 
     public String saveFile(MultipartFile multipartFile, String category) throws FileUploadFailException {
         String originalFilename = multipartFile.getOriginalFilename();
@@ -56,12 +56,12 @@ public class FileHandler {
     }
 
     private boolean validateExtension(String extension) {
-        for (String allowExtension : allowExtensions) {
-            if (allowExtension.equals(extension)) {
-                return true;
+        for (String disallowExtension : disallowExtensions) {
+            if (disallowExtension.toLowerCase().equals(extension.toLowerCase())) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     private boolean validateFilename(String fileName) {
