@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @Builder
-public class UpdateUserRequestDto {
+public class MemberUpdateRequestDto {
 
     private String password;
 

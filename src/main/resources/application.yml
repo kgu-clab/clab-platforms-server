@@ -2,8 +2,3 @@
 logging:
   level:
     org.springframework: info
-
-spring:
-  # Set Profile
-  profiles:
-    active: dev

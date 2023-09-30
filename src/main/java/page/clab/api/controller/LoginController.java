@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.LoginFaliedException;
-import page.clab.api.exception.UserLockedException;
+import page.clab.api.exception.MemberLockedException;
 import page.clab.api.service.LoginService;
 import page.clab.api.type.dto.RefreshTokenDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.TokenDto;
 import page.clab.api.type.dto.TokenInfo;
-import page.clab.api.type.dto.UserLoginRequestDto;
+import page.clab.api.type.dto.MemberLoginRequestDto;
 import page.clab.api.type.etc.Role;
 
 @RestController
@@ -32,11 +32,11 @@ public class LoginController {
             "String paasword;")
     @PostMapping()
     public ResponseModel login(
-            @RequestBody UserLoginRequestDto userLoginRequestDto
-    ) throws UserLockedException, LoginFaliedException {
+            @RequestBody MemberLoginRequestDto memberLoginRequestDto
+    ) throws MemberLockedException, LoginFaliedException {
         ResponseModel responseModel = ResponseModel.builder().build();
-        String id = userLoginRequestDto.getId();
-        String password = userLoginRequestDto.getPassword();
+        String id = memberLoginRequestDto.getId();
+        String password = memberLoginRequestDto.getPassword();
         TokenInfo tokenInfo = loginService.login(id, password);
         responseModel.addData(tokenInfo);
         return responseModel;

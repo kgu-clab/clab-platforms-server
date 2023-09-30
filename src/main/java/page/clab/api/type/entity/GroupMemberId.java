@@ -18,7 +18,7 @@ import java.io.Serializable;
 public class GroupMemberId implements Serializable {
 
     @EqualsAndHashCode.Include
-    private Long user;
+    private Long member;
 
     @EqualsAndHashCode.Include
     private Long activityGroup;
