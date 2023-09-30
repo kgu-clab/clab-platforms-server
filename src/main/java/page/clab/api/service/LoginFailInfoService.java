@@ -55,6 +55,16 @@ public class LoginFailInfoService {
         }
     }
 
+    public void handleLoginFailInfo(String userId) throws UserLockedException {
+        LoginFailInfo loginFailInfo = getLoginFailInfoByUserId(userId);
+        if (loginFailInfo == null) {
+            User user = userService.getUserByIdOrThrow(userId);
+            loginFailInfo = createLoginFailInfo(user);
+        }
+        checkUserLocked(loginFailInfo);
+        resetLoginFailInfo(loginFailInfo);
+    }
+
     public void checkUserLocked(LoginFailInfo loginFailInfo) throws UserLockedException {
         if (loginFailInfo != null && loginFailInfo.getIsLock() && isLockedForDuration(loginFailInfo)) {
             throw new UserLockedException();
@@ -96,6 +106,10 @@ public class LoginFailInfoService {
     public LoginFailInfo getLoginFailInfoByUserIdOrThrow(String userId) {
         return loginFailInfoRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new NotFoundException("해당 유저가 없습니다."));
+    }
+
+    public LoginFailInfo getLoginFailInfoByUserId(String userId) {
+        return loginFailInfoRepository.findByUser_Id(userId).orElse(null);
     }
 
 }

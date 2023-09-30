@@ -14,8 +14,6 @@ import page.clab.api.exception.UserLockedException;
 import page.clab.api.type.dto.RefreshTokenDto;
 import page.clab.api.type.dto.TokenDto;
 import page.clab.api.type.dto.TokenInfo;
-import page.clab.api.type.entity.LoginFailInfo;
-import page.clab.api.type.entity.User;
 import page.clab.api.type.etc.Role;
 
 import javax.transaction.Transactional;
@@ -31,28 +29,17 @@ public class LoginService {
 
     private final LoginFailInfoService loginFailInfoService;
 
-    private final UserService userService;
-
     @Transactional
     public TokenInfo login(String id, String password) throws LoginFaliedException, UserLockedException {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
         try {
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-            LoginFailInfo loginFailInfo = loginFailInfoService.getLoginFailInfoByUserIdOrThrow(authentication.getName());
-            if (loginFailInfo == null) {
-                User user = userService.getUserByIdOrThrow(authentication.getName());
-                loginFailInfo = loginFailInfoService.createLoginFailInfo(user);
-            }
-            loginFailInfoService.checkUserLocked(loginFailInfo);
-            loginFailInfoService.resetLoginFailInfo(loginFailInfo);
-
+            loginFailInfoService.handleLoginFailInfo(authentication.getName());
             TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
-
             return tokenInfo;
         } catch (BadCredentialsException e) {
             loginFailInfoService.updateLoginFailInfo(id);
         }
-
         return null;
     }
 
