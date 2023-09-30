@@ -22,21 +22,21 @@ public class LoginFailInfoController {
     private final LoginFailInfoService loginFailInfoService;
 
     @Operation(summary = "유저 밴 처리", description = "유저 밴 처리")
-    @PostMapping("/ban/{userId}")
-    public ResponseModel banUser(
-            @PathVariable String userId
+    @PostMapping("/ban/{memberId}")
+    public ResponseModel banMember(
+            @PathVariable String memberId
     ) throws PermissionDeniedException {
-        loginFailInfoService.banUserById(userId);
+        loginFailInfoService.banMemberById(memberId);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
     @Operation(summary = "유저 밴 해제", description = "유저 밴 해제")
-    @PostMapping("/unban/{userId}")
-    public ResponseModel unbanUser(
-            @PathVariable String userId
+    @PostMapping("/unban/{memberId}")
+    public ResponseModel unbanMember(
+            @PathVariable String memberId
     ) throws PermissionDeniedException {
-        loginFailInfoService.unbanUserById(userId);
+        loginFailInfoService.unbanMemberById(memberId);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }

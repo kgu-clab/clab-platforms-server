@@ -11,11 +11,11 @@ import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.ApplicationRepository;
-import page.clab.api.repository.UserRepository;
+import page.clab.api.repository.MemberRepository;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.entity.Application;
-import page.clab.api.type.entity.User;
+import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.Role;
 
 import javax.transaction.Transactional;
@@ -30,24 +30,24 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ApplicationService {
 
-    private final UserService userService;
+    private final MemberService memberService;
 
     private final LoginFailInfoService loginFailInfoService;
 
     private final ApplicationRepository applicationRepository;
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     private final PasswordEncoder passwordEncoder;
 
     public void createApplication(ApplicationRequestDto appRequestDto) {
         Application application = Application.of(appRequestDto);
-        application.setContact(userService.removeHyphensFromContact(application.getContact()));
+        application.setContact(memberService.removeHyphensFromContact(application.getContact()));
         applicationRepository.save(application);
     }
 
     public List<ApplicationResponseDto> getApplications() throws PermissionDeniedException {
-        checkUserAdminRole();
+        checkMemberAdminRole();
         List<Application> applications = applicationRepository.findAll();
         List<ApplicationResponseDto> appRequestDtos = new ArrayList<>();
         for (Application application : applications) {
@@ -58,7 +58,7 @@ public class ApplicationService {
     }
 
     public List<ApplicationResponseDto> getApplicationsBetweenDates(LocalDate startDate, LocalDate endDate) throws PermissionDeniedException {
-        checkUserAdminRole();
+        checkMemberAdminRole();
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
         List<Application> applicationsBetweenDates = applicationRepository.findApplicationsBetweenDates(startDateTime, endDateTime);
@@ -72,7 +72,7 @@ public class ApplicationService {
 
     @Transactional
     public List<ApplicationResponseDto> getApprovedApplications() throws PermissionDeniedException {
-        checkUserAdminRole();
+        checkMemberAdminRole();
         List<Application> applications = applicationRepository.findAll();
         return applications.stream()
                 .map(this::createApplicationResponseDto)
@@ -81,7 +81,7 @@ public class ApplicationService {
     }
 
     public ApplicationResponseDto searchApplication(String applicationId, String name) throws PermissionDeniedException {
-        checkUserAdminRole();
+        checkMemberAdminRole();
         Application application = null;
         if (applicationId != null)
             application = getApplicationByIdOrThrow(applicationId);
@@ -97,36 +97,36 @@ public class ApplicationService {
 
     @Transactional
     public void approveApplication(String applicationId) throws PermissionDeniedException {
-        checkUserAdminRole();
-        if (userRepository.existsById(applicationId))
+        checkMemberAdminRole();
+        if (memberRepository.existsById(applicationId))
             throw new AlreadyApprovedException("이미 승인된 신청자입니다.");
         Application application = getApplicationByIdOrThrow(applicationId);
-        User approvedUser = User.of(application);
-        approvedUser.setPassword(passwordEncoder.encode(approvedUser.getPassword()));
-        userRepository.save(approvedUser);
-        loginFailInfoService.createLoginFailInfo(approvedUser);
+        Member approvedMember = Member.of(application);
+        approvedMember.setPassword(passwordEncoder.encode(approvedMember.getPassword()));
+        memberRepository.save(approvedMember);
+        loginFailInfoService.createLoginFailInfo(approvedMember);
     }
 
     @Transactional
     public void cancelApplication(String applicationId) throws PermissionDeniedException {
-        checkUserAdminRole();
+        checkMemberAdminRole();
         Application application = getApplicationByIdOrThrow(applicationId);
-        User approvedUser = userService.getUserByIdOrThrow(applicationId);
-        if (approvedUser.getCreatedAt().isBefore(LocalDateTime.now().minusDays(1)))
+        Member approvedMember = memberService.getMemberByIdOrThrow(applicationId);
+        if (approvedMember.getCreatedAt().isBefore(LocalDateTime.now().minusDays(1)))
             throw new UnAuthorizeException("취소할 수 없는 신청입니다.");
-        userRepository.delete(approvedUser);
+        memberRepository.delete(approvedMember);
     }
 
     public void deleteApplication(String applicationId) throws PermissionDeniedException {
-        checkUserAdminRole();
+        checkMemberAdminRole();
         Application application = getApplicationByIdOrThrow(applicationId);
         applicationRepository.delete(application);
     }
 
-    private void checkUserAdminRole() throws PermissionDeniedException {
-        String userId = AuthUtil.getAuthenticationInfoUserId();
-        User user = userRepository.findById(userId).get();
-        if (!user.getRole().equals(Role.ADMIN)) {
+    private void checkMemberAdminRole() throws PermissionDeniedException {
+        String memberId = AuthUtil.getAuthenticationInfoMemberId();
+        Member member = memberRepository.findById(memberId).get();
+        if (!member.getRole().equals(Role.ADMIN)) {
             throw new PermissionDeniedException("권한이 부족합니다.");
         }
     }
@@ -143,7 +143,7 @@ public class ApplicationService {
 
     private ApplicationResponseDto createApplicationResponseDto(Application application) {
         ApplicationResponseDto appRequestDto = ApplicationResponseDto.of(application);
-        if (userRepository.findById(application.getStudentId()).isPresent())
+        if (memberRepository.findById(application.getStudentId()).isPresent())
             appRequestDto.setPass(true);
         return appRequestDto;
     }
