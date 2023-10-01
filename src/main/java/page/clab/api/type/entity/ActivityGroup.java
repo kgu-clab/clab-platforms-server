@@ -12,7 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -31,11 +30,9 @@ public class ActivityGroup {
     private String category;
 
     @Column(nullable = false)
-    @Size(max = 30)
     private String name;
 
     @Column(nullable = false)
-    @Size(max = 1000)
     private String content;
 
     private String imageUrl;
