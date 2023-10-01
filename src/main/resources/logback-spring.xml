@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <!--Discord Log-->
+    <springProperty name="DISCORD_WEBHOOK_URI" source="logging.discord.webhook-uri"/>
+    <appender name="DISCORD" class="com.github.napstr.logback.DiscordAppender">
+        <webhookUri>${DISCORD_WEBHOOK_URI}</webhookUri>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %msg %n</pattern>
+        </layout>
+        <username>Server Log</username>
+        <avatarUrl>https://img.freepik.com/premium-photo/server-logs-analysis-closeup-developing-programming-and-coding-technologies-developer-working-on-web-sites-codes-in-office_372999-779.jpg</avatarUrl>
+        <tts>false</tts>
+    </appender>
+
+    <!--Consol appender 설정-->
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>%d %-5level %logger{35} - %msg%n</Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC_DISCORD" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="DISCORD" />
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
+    <!--로그 레벨 지정-->
+    <root level="INFO">
+        <appender-ref ref="Console"/>
+        <appender-ref ref="ASYNC_DISCORD" />
+    </root>
+</configuration>
