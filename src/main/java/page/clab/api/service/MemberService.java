@@ -67,17 +67,11 @@ public class MemberService {
     public void updateMemberInfoByMember(MemberUpdateRequestDto memberUpdateRequestDto) {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
         Member member = memberRepository.findById(memberId).get();
-        member.setPassword(memberUpdateRequestDto.getPassword());
-        member.setName(memberUpdateRequestDto.getName());
-        member.setContact(memberUpdateRequestDto.getContact());
-        member.setEmail(memberUpdateRequestDto.getEmail());
-        member.setDepartment(memberUpdateRequestDto.getDepartment());
-        member.setGrade(memberUpdateRequestDto.getGrade());
-        member.setBirth(memberUpdateRequestDto.getBirth());
-        member.setAddress(memberUpdateRequestDto.getAddress());
-        member.setIsInSchool(memberUpdateRequestDto.getIsInSchool());
-        member.setImageUrl(memberUpdateRequestDto.getImageUrl());
-        memberRepository.save(member);
+        Member updatedMember = Member.of(memberUpdateRequestDto);
+        updatedMember.setId(member.getId());
+        updatedMember.setRole(member.getRole());
+        updatedMember.setProvider(member.getProvider());
+        memberRepository.save(updatedMember);
     }
 
     public void deleteMemberByAdmin(String memberId) throws PermissionDeniedException {
