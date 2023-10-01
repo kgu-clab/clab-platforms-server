@@ -13,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
+import page.clab.api.type.dto.MemberUpdateRequestDto;
 import page.clab.api.type.etc.OAuthProvider;
 import page.clab.api.type.etc.Role;
 import page.clab.api.util.ModelMapperUtil;
@@ -124,6 +125,10 @@ public class Member implements UserDetails {
 
     public static Member of(MemberResponseDto memberResponseDto) {
         return ModelMapperUtil.getModelMapper().map(memberResponseDto, Member.class);
+    }
+
+    public static Member of(MemberUpdateRequestDto memberUpdateRequestDto) {
+        return ModelMapperUtil.getModelMapper().map(memberUpdateRequestDto, Member.class);
     }
 
     public static Member of(Application application) {
