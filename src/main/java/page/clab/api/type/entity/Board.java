@@ -37,7 +37,7 @@ public class Board {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     @Size(max = 1000)
     private String content;
 
