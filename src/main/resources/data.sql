@@ -15,6 +15,13 @@ VALUES ('201912033', '김관식', '01021344323', 'gwansik@naver.com', '컴퓨터
 INSERT INTO "application" (student_id, name, contact, email, department, grade, birth, address, interests, other_activities, created_at)
 VALUES ('201912034', '박동민', '01012345678', 'dongmin@naver.com', '컴퓨터공학부', 3, '2000-01-01', '수원시', '', '', '2022-07-25 18:12:48.000000');
 
+-- -- Board
+-- INSERT INTO "board" (category, title, content, writer, created_at)
+-- VALUES ('질문','스프링은 무엇인가요?', '<h1>스프링 짱짱</h1>', 'admin', '2022-07-25 18:12:43.000000');
+--
+-- INSERT INTO "board" (category, title, content, writer, created_at)
+-- VALUES ('졸업', '카카오 문열어', '<h1>네이버 흥해라</h1>', 'admin', '2022-07-25 18:12:43.000000');
+
 insert into login_fail_info(member_id, login_fail_count, is_lock)
 values ('admin', 0, false);
 insert into login_fail_info(member_id, login_fail_count, is_lock)

@@ -107,4 +107,9 @@ public class MemberService {
         return contact.replaceAll("-", "");
     }
 
+    public Member getCurrentMember(){
+        String memberId = AuthUtil.getAuthenticationInfoMemberId();
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
+    }
 }
