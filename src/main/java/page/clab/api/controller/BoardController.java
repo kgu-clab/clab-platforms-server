@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.service.BoardService;
 import page.clab.api.service.MemberService;
@@ -39,9 +38,9 @@ public class BoardController {
         return ResponseModel.builder().build();
     }
 
-    @GetMapping("/{boardId}")
+    @GetMapping("/{boardId}/detail")
     @Operation(summary = "커뮤니티 게시판 조회", description = "커뮤니티 게시판 조회")
-    public ResponseModel getBoards(@RequestParam Long boardId) {
+    public ResponseModel getBoards(@PathVariable Long boardId) {
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boardService.getBoards(boardId));
         return responseModel;
@@ -64,9 +63,9 @@ public class BoardController {
         return responseModel;
     }
 
-    @GetMapping("/{category}")
+    @GetMapping("/{category}/list")
     @Operation(summary = "카테고리 별로 게시글 조회", description = "카테고리 별로 게시글 조회")
-    public ResponseModel getBoardListByCategory(@RequestParam String category) {
+    public ResponseModel getBoardListByCategory(@PathVariable String category) {
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boardService.getBoardListByCategory(category));
         return responseModel;
