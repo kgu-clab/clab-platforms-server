@@ -16,7 +16,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -37,7 +36,7 @@ public class Board {
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT",nullable = false)
     @Size(max = 1000)
     private String content;
 

@@ -55,4 +55,26 @@ public class FileController {
         return responseModel;
     }
 
+    @Operation(summary = "유저 프로필 사진 업로드", description = "유저 프로필 사진 업로드")
+    @PostMapping("/profiles")
+    public ResponseModel profilesUpload(
+            @RequestParam(value = "file", required = true) MultipartFile multipartFile
+    ) throws FileUploadFailException {
+        String url = fileUploadService.saveFile(multipartFile, "profiles");
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(url);
+        return responseModel;
+    }
+
+    @Operation(summary = "양식 업로드", description = "양식 업로드")
+    @PostMapping("/forms")
+    public ResponseModel formsUpload(
+            @RequestParam(value = "file", required = true) MultipartFile multipartFile
+    ) throws FileUploadFailException {
+        String url = fileUploadService.saveFile(multipartFile, "forms");
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(url);
+        return responseModel;
+    }
+
 }

@@ -10,6 +10,8 @@ import page.clab.api.exception.FileUploadFailException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Component
@@ -19,8 +21,13 @@ public class FileHandler {
     @Value("${resource.file.path}")
     private String filePath;
 
-    @Value("${resource.file.allow-extension}")
-    private String[] allowExtensions;
+    private final Set<String> disallowExtensions = new HashSet<>();
+
+    public FileHandler(@Value("${resource.file.disallow-extension}") String[] disallowExtensions) {
+        for (String extension : disallowExtensions) {
+            this.disallowExtensions.add(extension.toLowerCase());
+        }
+    }
 
     public String saveFile(MultipartFile multipartFile, String category) throws FileUploadFailException {
         String originalFilename = multipartFile.getOriginalFilename();
@@ -56,12 +63,7 @@ public class FileHandler {
     }
 
     private boolean validateExtension(String extension) {
-        for (String allowExtension : allowExtensions) {
-            if (allowExtension.equals(extension)) {
-                return true;
-            }
-        }
-        return false;
+        return !disallowExtensions.contains(extension.toLowerCase());
     }
 
     private boolean validateFilename(String fileName) {

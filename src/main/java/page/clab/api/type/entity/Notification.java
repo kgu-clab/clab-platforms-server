@@ -15,7 +15,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -31,7 +30,6 @@ public class Notification {
     private Long id;
 
     @Column(nullable = false)
-    @Size(max = 100)
     private String content;
 
     @CreationTimestamp
