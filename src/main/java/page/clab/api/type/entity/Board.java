@@ -49,15 +49,12 @@ public class Board {
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member writer;
 
     public static Board of(BoardDto boardDto) {
         return ModelMapperUtil.getModelMapper().map(boardDto, Board.class);
     }
 
-    public void update(BoardDto boardDto) {
-        ModelMapperUtil.getModelMapper().map(boardDto, this);
-    }
 
 }
