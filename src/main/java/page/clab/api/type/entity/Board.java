@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import page.clab.api.type.dto.BoardDto;
+import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,7 +36,8 @@ public class Board {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT",nullable = false)
+    @Size(max = 1000)
     private String content;
 
     @Column(name = "update_time")
@@ -45,7 +48,12 @@ public class Board {
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member writer;
+
+    public static Board of(BoardDto boardDto) {
+        return ModelMapperUtil.getModelMapper().map(boardDto, Board.class);
+    }
+
 
 }
