@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.repository.MemberRepository;
 import page.clab.api.service.BoardService;
 import page.clab.api.service.MemberService;
 import page.clab.api.type.dto.BoardDto;
@@ -29,25 +29,25 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     @PostMapping("")
     @Operation(summary = "커뮤니티 게시판 생성", description = "커뮤니티 게시판 생성")
     public ResponseModel createBoard(@RequestBody BoardDto boardDto) {
-        Member member = MemberService.getCurrentMember(memberRepository);
-        boardService.createBoard(member, boardDto);
+        Member member = memberService.getCurrentMember();
+        boardService.createBoard(boardDto, member);
         return ResponseModel.builder().build();
     }
 
-    @GetMapping("")
+    @GetMapping("/{boardId}")
     @Operation(summary = "커뮤니티 게시판 조회", description = "커뮤니티 게시판 조회")
-    public ResponseModel getBoards(@PathVariable Long boardId) {
+    public ResponseModel getBoards(@RequestParam Long boardId) {
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boardService.getBoards(boardId));
         return responseModel;
     }
 
-    @GetMapping("")
+    @GetMapping("/list")
     @Operation(summary = "커뮤니티 게시판 리스팅", description = "커뮤니티 게시판 리스팅")
     public ResponseModel getBoardList() {
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -55,35 +55,35 @@ public class BoardController {
         return responseModel;
     }
 
-    @GetMapping("")
+    @GetMapping("/my")
     @Operation(summary = "내가 쓴 커뮤니티 게시글 조회", description = "내가 쓴 커뮤니티 게시글 조회")
     public ResponseModel getMyBoardList() {
-        Member member = MemberService.getCurrentMember(memberRepository);
+        Member member = memberService.getCurrentMember();
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(boardService.getBoardList(member));
+        responseModel.addData(boardService.getMyBoardList(member));
         return responseModel;
     }
 
-    @GetMapping("")
+    @GetMapping("/{category}")
     @Operation(summary = "카테고리 별로 게시글 조회", description = "카테고리 별로 게시글 조회")
-    public ResponseModel getBoardListByCategory(@PathVariable String category) {
+    public ResponseModel getBoardListByCategory(@RequestParam String category) {
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(boardService.getBoardList(category));
+        responseModel.addData(boardService.getBoardListByCategory(category));
         return responseModel;
     }
 
-    @PutMapping("")
+    @PutMapping("{boardId}/update")
     @Operation(summary = "커뮤니티 게시판 수정", description = "커뮤니티 게시판 수정")
     public ResponseModel updateBoard(@PathVariable Long boardId, @RequestBody BoardDto boardDto) {
-        Member member = MemberService.getCurrentMember(memberRepository);
+        Member member = memberService.getCurrentMember();
         boardService.updateBoard(member, boardId, boardDto);
         return ResponseModel.builder().build();
     }
 
-    @DeleteMapping("")
+    @DeleteMapping("{boardId}/delete")
     @Operation(summary = "커뮤니티 게시판 삭제", description = "커뮤니티 게시판 삭제")
     public ResponseModel deleteBoard(@PathVariable Long boardId) {
-        Member member = MemberService.getCurrentMember(memberRepository);
+        Member member = memberService.getCurrentMember();
         boardService.deleteBoard(member, boardId);
         return ResponseModel.builder().build();
     }

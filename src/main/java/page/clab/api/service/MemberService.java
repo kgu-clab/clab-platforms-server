@@ -113,8 +113,9 @@ public class MemberService {
         return contact.replaceAll("-", "");
     }
 
-    public static Member getCurrentMember(MemberRepository memberRepository){
+    public Member getCurrentMember(){
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
-        return memberRepository.findById(memberId).orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
     }
 }

@@ -27,5 +27,7 @@ public class BoardDto {
 
     private String createdAt;
 
-
+    public static BoardDto of(Board board) {
+        return ModelMapperUtil.getModelMapper().map(board, BoardDto.class);
+    }
 }
