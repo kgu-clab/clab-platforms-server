@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.auth.exception.TokenValidateException;
 import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.MemberLockedException;
 import page.clab.api.service.LoginService;
@@ -58,7 +59,7 @@ public class LoginController {
     @PostMapping("/role")
     public ResponseModel checkTokenRole(
             @RequestBody TokenDto tokenDto
-    ) {
+    ) throws TokenValidateException {
         boolean isAdminRole = loginService.checkTokenRole(tokenDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData((isAdminRole ? Role.ADMIN.getKey() : Role.USER.getKey()));

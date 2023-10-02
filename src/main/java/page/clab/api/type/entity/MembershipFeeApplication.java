@@ -14,7 +14,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -33,7 +32,6 @@ public class MembershipFeeApplication {
     private String category;
 
     @Column(nullable = false)
-    @Size(max = 500)
     private String content;
 
     private String imageUrl;

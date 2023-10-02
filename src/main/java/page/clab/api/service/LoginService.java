@@ -8,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import page.clab.api.auth.exception.TokenValidateException;
 import page.clab.api.auth.jwt.JwtTokenProvider;
 import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.MemberLockedException;
@@ -53,13 +54,16 @@ public class LoginService {
         return null;
     }
 
-    public boolean checkTokenRole(TokenDto tokenDto) {
+    public boolean checkTokenRole(TokenDto tokenDto) throws TokenValidateException {
         String token = tokenDto.getToken();
         if (tokenDto != null && jwtTokenProvider.validateToken(token)) {
             Claims claims = jwtTokenProvider.parseClaims(token);
             if (claims.get("role").toString().equals(Role.ADMIN.getKey())) {
                 return true;
             }
+        }
+        else {
+            throw new TokenValidateException();
         }
         return false;
     }
