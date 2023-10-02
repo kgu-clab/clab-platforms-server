@@ -1,5 +1,6 @@
 package page.clab.api.type.entity;
 
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,7 +37,7 @@ public class Board {
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT",nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     @Size(max = 1000)
     private String content;
 
