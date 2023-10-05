@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface NewsRepository  extends JpaRepository<News, Long> {
 
-    List<News> findAllByTitle(String title);
+    List<News> findAllByTitleContains(String title);
 
     List<News> findAllByCategory(String category);
 }

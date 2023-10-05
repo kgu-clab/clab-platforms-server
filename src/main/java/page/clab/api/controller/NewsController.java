@@ -6,15 +6,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
-import page.clab.api.service.MemberService;
 import page.clab.api.service.NewsService;
 import page.clab.api.type.dto.NewsDto;
 import page.clab.api.type.dto.ResponseModel;
@@ -22,24 +21,22 @@ import page.clab.api.type.dto.ResponseModel;
 @RestController
 @RequestMapping("/news")
 @RequiredArgsConstructor
-@Tag(name = "news")
+@Tag(name = "News")
 @Slf4j
 public class NewsController {
 
     private final NewsService newsService;
 
-    private final MemberService memberService;
 
     @Operation(summary = "뉴스 생성", description = "뉴스 생성")
     @PostMapping("")
     public ResponseModel createNews(@RequestBody NewsDto newsDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
         newsService.createNews(newsDto);
         return ResponseModel.builder().build();
     }
 
     @Operation(summary = "뉴스 리스트 조회", description = "뉴스 리스트 조회")
-    @GetMapping("/list")
+    @GetMapping("")
     public ResponseModel readNewsList() {
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(newsService.readNewsList());
@@ -47,10 +44,10 @@ public class NewsController {
     }
 
     @Operation(summary = "뉴스 상세 조회", description = "뉴스 상세 조회")
-    @GetMapping("/{newsId}/detail")
+    @GetMapping("/{newsId}")
     public ResponseModel readNews(@PathVariable Long newsId) {
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(newsService.readNews(newsId));
+        responseModel.addData(newsService.readNewsById(newsId));
         return responseModel;
     }
 
@@ -59,15 +56,13 @@ public class NewsController {
     public ResponseModel searchNews(@RequestParam(required = false) String title,
                                     @RequestParam(required = false) String category) {
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(newsService.searchTitle(title));
-        responseModel.addData(newsService.searchCategory(category));
+        responseModel.addData(newsService.searchNewsByTitleAndCategory(title, category));
         return responseModel;
     }
 
     @Operation(summary = "뉴스 수정", description = "뉴스 수정")
-    @PutMapping("/{newsId}")
+    @PatchMapping("/{newsId}")
     public ResponseModel updateNews(@PathVariable Long newsId, @RequestBody NewsDto newsDto) throws PermissionDeniedException{
-        memberService.checkMemberAdminRole();
         newsService.updateNews(newsId, newsDto);
         return ResponseModel.builder().build();
     }
@@ -75,7 +70,6 @@ public class NewsController {
     @Operation(summary = "뉴스 삭제", description = "뉴스 삭제")
     @DeleteMapping("/{newsId}")
     public ResponseModel deleteNews(@PathVariable Long newsId) throws PermissionDeniedException{
-        memberService.checkMemberAdminRole();
         newsService.deleteNews(newsId);
         return ResponseModel.builder().build();
     }

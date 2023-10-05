@@ -40,7 +40,7 @@ public class News {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Column(nullable = true)
+    @Column
     private String url;
 
     @CreationTimestamp
