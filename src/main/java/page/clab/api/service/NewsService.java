@@ -2,6 +2,7 @@ package page.clab.api.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.NewsRepository;
 import page.clab.api.type.dto.NewsDto;
 import page.clab.api.type.entity.News;
@@ -16,7 +17,10 @@ public class NewsService {
 
     private final NewsRepository newsRepository;
 
-    public void createNews(NewsDto newsDto){
+    private final MemberService memberService;
+
+    public void createNews(NewsDto newsDto) throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
         News news = News.of(newsDto);
         newsRepository.save(news);
     }
@@ -31,13 +35,14 @@ public class NewsService {
         return newsDtoList;
     }
 
-    public NewsDto readNews(Long newsId){
+    public NewsDto readNewsById(Long newsId){
         News news = getNewsById(newsId);
         return NewsDto.of(news);
     }
 
-    public List<NewsDto> searchTitle(String title){
-        List<News> newsList = newsRepository.findAllByTitle(title);
+    public List<NewsDto> searchNewsByTitleAndCategory(String title, String category){
+        List<News> newsList = newsRepository.findAllByTitleContains(title);
+        newsList.addAll(newsRepository.findAllByCategory(category));
         List<NewsDto> newsDtoList = new ArrayList<>();
         for (News news : newsList) {
             NewsDto newsDto = NewsDto.of(news);
@@ -46,28 +51,22 @@ public class NewsService {
         return newsDtoList;
     }
 
-    public List<NewsDto> searchCategory(String category){
-        List<News> newsList = newsRepository.findAllByCategory(category);
-        List<NewsDto> newsDtoList = new ArrayList<>();
-        for (News news : newsList) {
-            NewsDto newsDto = NewsDto.of(news);
-            newsDtoList.add(newsDto);
-        }
-        return newsDtoList;
-    }
-
-    public void updateNews(Long newsId, NewsDto newsDto){
+    public void updateNews(Long newsId, NewsDto newsDto) throws PermissionDeniedException{
+        memberService.checkMemberAdminRole();
         News news = getNewsById(newsId);
-        news.setTitle(newsDto.getTitle());
-        news.setContent(newsDto.getContent());
-        news.setCategory(newsDto.getCategory());
-        news.setSubtitle(newsDto.getSubtitle());
-        news.setUrl(newsDto.getUrl());
-        news.setUpdateTime(LocalDateTime.now());
-        newsRepository.save(news);
+        News updateNews = News.of(newsDto);
+        updateNews.setId(news.getId());
+        updateNews.setTitle(newsDto.getTitle());
+        updateNews.setContent(newsDto.getContent());
+        updateNews.setCategory(newsDto.getCategory());
+        updateNews.setSubtitle(newsDto.getSubtitle());
+        updateNews.setUrl(newsDto.getUrl());
+        updateNews.setUpdateTime(LocalDateTime.now());
+        newsRepository.save(updateNews);
     }
 
-    public void deleteNews(Long newsId){
+    public void deleteNews(Long newsId) throws PermissionDeniedException{
+        memberService.checkMemberAdminRole();
         News news = getNewsById(newsId);
         newsRepository.delete(news);
     }

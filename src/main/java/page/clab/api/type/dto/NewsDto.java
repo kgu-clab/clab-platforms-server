@@ -27,8 +27,8 @@ public class NewsDto {
 
     private LocalDateTime updateTime;
 
-    public static NewsDto of(News News){
-        return ModelMapperUtil.getModelMapper().map(News, NewsDto.class);
+    public static NewsDto of(News news){
+        return ModelMapperUtil.getModelMapper().map(news, NewsDto.class);
     }
 
 }
