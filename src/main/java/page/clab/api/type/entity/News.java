@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import page.clab.api.type.dto.NewsDto;
+import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,10 +37,21 @@ public class News {
     @Column(nullable = false)
     private String subtitle;
 
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String content;
+
+    @Column
     private String url;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "update_time")
+    private LocalDateTime updateTime;
+
+    public static News of(NewsDto newsDto) {
+        return ModelMapperUtil.getModelMapper().map(newsDto, News.class);
+    }
 
 }
