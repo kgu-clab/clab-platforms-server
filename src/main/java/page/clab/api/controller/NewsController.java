@@ -27,9 +27,15 @@ public class NewsController {
 
     private final NewsService newsService;
 
-
-    @Operation(summary = "뉴스 생성", description = "뉴스 생성")
     @PostMapping("")
+    @Operation(summary = "뉴스 생성", description = "뉴스 생성" +
+            "String category;<br>" +
+            "String title;<br>" +
+            "String subtitle;<br>" +
+            "String content;<br>" +
+            "String url;<br>" +
+            "LocalDateTime createdAt;<br>" +
+            "LocalDateTime updateTime;<br>")
     public ResponseModel createNews(@RequestBody NewsDto newsDto) throws PermissionDeniedException {
         newsService.createNews(newsDto);
         return ResponseModel.builder().build();
@@ -45,7 +51,7 @@ public class NewsController {
 
     @Operation(summary = "뉴스 상세 조회", description = "뉴스 상세 조회")
     @GetMapping("/{newsId}")
-    public ResponseModel readNews(@PathVariable Long newsId) {
+    public ResponseModel readNews(@PathVariable("newsId") Long newsId) {
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(newsService.readNewsById(newsId));
         return responseModel;
@@ -60,16 +66,23 @@ public class NewsController {
         return responseModel;
     }
 
-    @Operation(summary = "뉴스 수정", description = "뉴스 수정")
     @PatchMapping("/{newsId}")
-    public ResponseModel updateNews(@PathVariable Long newsId, @RequestBody NewsDto newsDto) throws PermissionDeniedException{
+    @Operation(summary = "뉴스 수정", description = "뉴스 수정" +
+            "String category;<br>" +
+            "String title;<br>" +
+            "String subtitle;<br>" +
+            "String content;<br>" +
+            "String url;<br>" +
+            "LocalDateTime createdAt;<br>" +
+            "LocalDateTime updateTime;<br>")
+    public ResponseModel updateNews(@PathVariable("newsId") Long newsId, @RequestBody NewsDto newsDto) throws PermissionDeniedException{
         newsService.updateNews(newsId, newsDto);
         return ResponseModel.builder().build();
     }
 
     @Operation(summary = "뉴스 삭제", description = "뉴스 삭제")
     @DeleteMapping("/{newsId}")
-    public ResponseModel deleteNews(@PathVariable Long newsId) throws PermissionDeniedException{
+    public ResponseModel deleteNews(@PathVariable("newsId") Long newsId) throws PermissionDeniedException{
         newsService.deleteNews(newsId);
         return ResponseModel.builder().build();
     }
