@@ -30,8 +30,15 @@ public class BoardController {
 
     private final MemberService memberService;
 
+
+    @Operation(summary = "커뮤니티 게시판 생성", description = "커뮤니티 게시판 생성<br>" +
+            "String category; <br>" +
+            "String title; <br>" +
+            "String content; <br>" +
+            "LocalDateTime updateTime; <br>" +
+            "LocalDateTime createdAt; <br>" +
+            "String writer; <br>")
     @PostMapping("")
-    @Operation(summary = "커뮤니티 게시판 생성", description = "커뮤니티 게시판 생성")
     public ResponseModel createBoard(@RequestBody BoardDto boardDto) {
         Member member = memberService.getCurrentMember();
         boardService.createBoard(boardDto, member);
@@ -40,7 +47,7 @@ public class BoardController {
 
     @GetMapping("/{boardId}/detail")
     @Operation(summary = "커뮤니티 게시판 조회", description = "커뮤니티 게시판 조회")
-    public ResponseModel getBoards(@PathVariable Long boardId) {
+    public ResponseModel getBoards(@PathVariable("boardId") Long boardId) {
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boardService.getBoards(boardId));
         return responseModel;
@@ -65,15 +72,21 @@ public class BoardController {
 
     @GetMapping("/{category}/list")
     @Operation(summary = "카테고리 별로 게시글 조회", description = "카테고리 별로 게시글 조회")
-    public ResponseModel getBoardListByCategory(@PathVariable String category) {
+    public ResponseModel getBoardListByCategory(@PathVariable("category") String category) {
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boardService.getBoardListByCategory(category));
         return responseModel;
     }
 
     @PutMapping("{boardId}/update")
-    @Operation(summary = "커뮤니티 게시판 수정", description = "커뮤니티 게시판 수정")
-    public ResponseModel updateBoard(@PathVariable Long boardId, @RequestBody BoardDto boardDto) {
+    @Operation(summary = "커뮤니티 게시판 수정", description = "커뮤니티 게시판 수정<br>" +
+            "String category; <br>" +
+            "String title; <br>" +
+            "String content; <br>" +
+            "LocalDateTime updateTime; <br>" +
+            "LocalDateTime createdAt; <br>" +
+            "String writer; <br>")
+    public ResponseModel updateBoard(@PathVariable("boardId") Long boardId, @RequestBody BoardDto boardDto) {
         Member member = memberService.getCurrentMember();
         boardService.updateBoard(member, boardId, boardDto);
         return ResponseModel.builder().build();
@@ -81,7 +94,7 @@ public class BoardController {
 
     @DeleteMapping("{boardId}/delete")
     @Operation(summary = "커뮤니티 게시판 삭제", description = "커뮤니티 게시판 삭제")
-    public ResponseModel deleteBoard(@PathVariable Long boardId) {
+    public ResponseModel deleteBoard(@PathVariable("boardId") Long boardId) {
         Member member = memberService.getCurrentMember();
         boardService.deleteBoard(member, boardId);
         return ResponseModel.builder().build();
