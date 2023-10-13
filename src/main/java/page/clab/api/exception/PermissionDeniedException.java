@@ -2,7 +2,7 @@ package page.clab.api.exception;
 
 public class PermissionDeniedException extends Exception {
 
-    private static final String DEFAULT_MESSAGE = "Permission Denied!";
+    private static final String DEFAULT_MESSAGE = "권한이 부족합니다.";
 
     public PermissionDeniedException() {
         super(DEFAULT_MESSAGE);
