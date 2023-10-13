@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import page.clab.api.type.dto.NotificationRequestDto;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -36,8 +36,16 @@ public class Notification {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne()
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public static Notification of(NotificationRequestDto notificationRequestDto) {
+        Notification notification = Notification.builder()
+                .content(notificationRequestDto.getContent())
+                .member(Member.builder().id(notificationRequestDto.getMemberId()).build())
+                .build();
+        return notification;
+    }
 
 }
