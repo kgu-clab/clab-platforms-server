@@ -51,3 +51,13 @@ insert into notification(content, created_at, member_id)
 values ('씨랩 좋아요', '2022-10-13 16:40:54.000000', '201912156');
 insert into notification(content, created_at, member_id)
 values ('씨랩 사랑해요', '2022-10-13 18:42:09.000000', '201912033');
+
+-- MembershipFee
+insert into membership_fee(category, content, image_url, created_at, member_id)
+values ('신청', '스프링 책 사고 싶어요', 'https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9788960773431.jpg', '2023-10-14 02:18:04.461149', 'admin');
+insert into membership_fee(category, content, image_url, created_at, member_id)
+values ('신청', '리액트 책 사고 싶어요', 'https://image.yes24.com/goods/78233628/XL', '2023-10-14 02:18:04.461149', '201912156');
+insert into membership_fee(category, content, image_url, created_at, member_id)
+values ('후원', '씨랩 화이팅', '', '2022-09-26 18:32:00.000000', '201912033');
+insert into membership_fee(category, content, image_url, created_at, member_id)
+values ('후원', '씨랩 화이팅', '', '2022-10-12 23:59:03.000000', '201912033');
