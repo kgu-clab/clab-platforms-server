@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import page.clab.api.type.dto.DonationRequestDto;
+import page.clab.api.type.dto.DonationUpdateRequestDto;
+import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,5 +43,21 @@ public class Donation {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    public static Donation of(DonationRequestDto donationRequestDto) {
+        Donation donation = Donation.builder()
+                .amount(donationRequestDto.getAmount())
+                .message(donationRequestDto.getMessage())
+                .build();
+        return donation;
+    }
+
+    public static Donation of(DonationUpdateRequestDto donationUpdateRequestDto) {
+        Donation donation = ModelMapperUtil.getModelMapper().map(donationUpdateRequestDto, Donation.class);
+        Member donor = new Member();
+        donor.setId(donationUpdateRequestDto.getDonorId());
+        donation.setDonor(donor);
+        return donation;
+    }
 
 }

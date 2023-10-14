@@ -110,6 +110,6 @@ public class MemberService {
     public Member getCurrentMember(){
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 유저가 없습니다."));
     }
 }
