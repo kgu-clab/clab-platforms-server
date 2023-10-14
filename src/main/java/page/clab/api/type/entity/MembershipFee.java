@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import page.clab.api.type.dto.MembershipFeeRequestDto;
+import page.clab.api.type.dto.MembershipFeeUpdateRequestDto;
+import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,7 +25,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class MembershipFeeApplication {
+public class MembershipFee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,5 +46,13 @@ public class MembershipFeeApplication {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member applicant;
+
+    public static MembershipFee of(MembershipFeeRequestDto membershipFeeRequestDto) {
+        return ModelMapperUtil.getModelMapper().map(membershipFeeRequestDto, MembershipFee.class);
+    }
+
+    public static MembershipFee of(MembershipFeeUpdateRequestDto membershipFeeUpdateRequestDto) {
+        return ModelMapperUtil.getModelMapper().map(membershipFeeUpdateRequestDto, MembershipFee.class);
+    }
 
 }
