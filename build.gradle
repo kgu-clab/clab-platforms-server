@@ -7,6 +7,12 @@ plugins {
 group = 'page.clab'
 version = '0.0.1-SNAPSHOT'
 
+bootJar {
+	archivesBaseName = "clab"
+	archiveFileName = "clab.jar"
+	archiveVersion = "0.0.1"
+}
+
 java {
 	sourceCompatibility = '17'
 }
