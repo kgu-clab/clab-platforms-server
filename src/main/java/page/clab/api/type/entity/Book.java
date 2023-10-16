@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import page.clab.api.type.dto.BookRequestDto;
+import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,11 +44,19 @@ public class Book {
 
     private String imageUrl;
 
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
     @Column(name = "update_time")
     private LocalDateTime updateTime;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member borrower;
+
+    public static Book of(BookRequestDto bookRequestDto) {
+        return ModelMapperUtil.getModelMapper().map(bookRequestDto, Book.class);
+    }
 
 }
