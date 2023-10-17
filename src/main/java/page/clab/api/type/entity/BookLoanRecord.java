@@ -1,13 +1,12 @@
 package page.clab.api.type.entity;
 
+
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import page.clab.api.type.dto.BookRequestDto;
-import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,36 +23,23 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Book {
+public class BookLoanRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String category;
-
-    @Column(nullable = false)
-    private String title;
-
-    @Column(nullable = false)
-    private String author;
-
-    @Column(nullable = false)
-    private String publisher;
-
-    private String imageUrl;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @ManyToOne
+    @JoinColumn(name = "book_id")
+    private Book book;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member borrower;
 
-    public static Book of(BookRequestDto bookRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(bookRequestDto, Book.class);
-    }
+    @Column(updatable = false)
+    private LocalDateTime borrowedAt;
+
+    private LocalDateTime returnedAt;
 
 }
