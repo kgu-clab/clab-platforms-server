@@ -76,7 +76,6 @@ public class BookService {
                 .collect(Collectors.toList());
     }
 
-
     public void updateBookInfo(Long bookId, BookRequestDto bookRequestDto) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         Book book = getBookByIdOrThrow(bookId);
