@@ -69,3 +69,13 @@ insert into book(category, title, author, publisher, image_url, created_at)
 values ('개발', '토비의 스프링 3', '이일민', '에이콘출판', 'https://shopping-phinf.pstatic.net/main_3250387/32503877629.20220527022132.jpg?type=w300', '2023-10-16 07:39:39.042000');
 insert into book(category, title, author, publisher, image_url, created_at)
 values ('개발', '토비의 스프링 3', '이일민', '에이콘출판', 'https://shopping-phinf.pstatic.net/main_3250387/32503877629.20220527022132.jpg?type=w300', '2023-10-16 07:39:39.042000');
+
+-- SharedAccount
+insert into shared_account(username, password, platform_name, platform_url)
+values ('test1', 'test1', 'test1', 'test1');
+insert into shared_account(username, password, platform_name, platform_url)
+values ('test2', 'test2', 'test2', 'test2');
+insert into shared_account(username, password, platform_name, platform_url)
+values ('test3', 'test3', 'test3', 'test3');
+insert into shared_account(username, password, platform_name, platform_url)
+values ('test4', 'test4', 'test4', 'test4');
