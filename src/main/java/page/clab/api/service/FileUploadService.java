@@ -16,6 +16,8 @@ public class FileUploadService {
 
     private final FileHandler fileHandler;
 
+    private final MemberService memberService;
+
     @Value("${resource.file.url}")
     private String fileURL;
 
@@ -29,8 +31,20 @@ public class FileUploadService {
     }
 
     public String saveFile(MultipartFile multipartFile, String path) throws FileUploadFailException {
+        if (path.startsWith("members/")) {
+            String memberId = path.split("/")[1]; // members/{memberId}
+            double usage = memberService.getCloudUsageByMemberId(memberId).getUsage();
+            if (multipartFile.getSize() + usage > (10 * 1024 * 1024)) { // 10MB 제한
+                return "저장 공간이 부족합니다.";
+            }
+        }
         String realFilename = fileHandler.saveFile(multipartFile, path);
         return fileURL + "/" + realFilename;
+    }
+
+
+    public String downloadCloudFile(String memberId, String fileName) {
+        return fileHandler.downloadCloudFile(memberId, fileName);
     }
 
 }
