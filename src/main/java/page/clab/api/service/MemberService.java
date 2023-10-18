@@ -1,6 +1,7 @@
 package page.clab.api.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import page.clab.api.auth.util.AuthUtil;
@@ -9,14 +10,19 @@ import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.MemberRepository;
-import page.clab.api.type.dto.MemberUpdateRequestDto;
+import page.clab.api.type.dto.CloudUsageInfo;
+import page.clab.api.type.dto.FileInfo;
 import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
+import page.clab.api.type.dto.MemberUpdateRequestDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.Role;
+import page.clab.api.util.FileSystemUtil;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +31,9 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${resource.file.path}")
+    private String filePath;
 
     public void createMember(MemberRequestDto memberRequestDto) throws PermissionDeniedException {
         checkMemberAdminRole();
@@ -41,12 +50,9 @@ public class MemberService {
     public List<MemberResponseDto> getMembers() throws PermissionDeniedException {
         checkMemberAdminRole();
         List<Member> members = memberRepository.findAll();
-        List<MemberResponseDto> memberResponseDtos = new ArrayList<>();
-        for (Member member : members) {
-            MemberResponseDto memberResponseDto = MemberResponseDto.of(member);
-            memberResponseDtos.add(memberResponseDto);
-        }
-        return memberResponseDtos;
+        return members.stream()
+                .map(MemberResponseDto::of)
+                .collect(Collectors.toList());
     }
 
     public MemberResponseDto searchMember(String memberId, String name) throws PermissionDeniedException {
@@ -85,6 +91,35 @@ public class MemberService {
         memberRepository.deleteById(memberId);
     }
 
+    public List<CloudUsageInfo> getAllCloudUsages() {
+        List<Member> members = memberRepository.findAll();
+        return members.stream()
+                .map(member -> getCloudUsageByMemberId(member.getId()))
+                .collect(Collectors.toList());
+    }
+
+    public CloudUsageInfo getCloudUsageByMemberId(String memberId) {
+        Member member = getMemberByIdOrThrow(memberId);
+        File directory = new File(filePath + "/members/" + memberId);
+        long usage = FileSystemUtil.calculateDirectorySize(directory);
+        if (usage == -1) {
+            throw new NotFoundException("올바르지 않은 접근입니다.");
+        }
+        CloudUsageInfo cloudUsageInfo = CloudUsageInfo.builder()
+                .memberId(memberId)
+                .usage(usage)
+                .build();
+        return cloudUsageInfo;
+    }
+
+    public List<FileInfo> getFilesInMemberDirectory(String memberId) {
+        File directory = new File(filePath + "/members/" + memberId);
+        File[] files = FileSystemUtil.getFilesInDirectory(directory).toArray(new File[0]);
+        return Arrays.stream(files)
+                .map(FileInfo::of)
+                .collect(Collectors.toList());
+    }
+
     public void checkMemberAdminRole() throws PermissionDeniedException {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
         Member member = memberRepository.findById(memberId).get();
@@ -112,4 +147,5 @@ public class MemberService {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("해당 유저가 없습니다."));
     }
+
 }

@@ -4,12 +4,15 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.exception.FileUploadFailException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -38,9 +41,9 @@ public class FileHandler {
         if (!validateExtension(extension)) {
             throw new FileUploadFailException("허용되지 않은 확장자 : " + originalFilename);
         }
-        String newFilename = System.nanoTime() + "_" + UUID.randomUUID() + "." + extension;
+        String newFilename = category.startsWith("members/") ? originalFilename :
+                System.nanoTime() + "_" + UUID.randomUUID() + "." + extension;
         String destPath = filePath + File.separator + category + File.separator + newFilename;
-        log.info("destPath : {}", destPath);
         File file = new File(destPath);
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
@@ -58,8 +61,24 @@ public class FileHandler {
         } catch (IOException e) {
             throw new FileUploadFailException("파일 저장 실패", e);
         }
-        log.info("file location : {}", category + "/" + newFilename);
         return category + "/" + newFilename;
+    }
+
+    public String downloadCloudFile(String memberId, String fileName) {
+        try {
+            String destPath = filePath + "/members/" + memberId + File.separator + fileName;
+            File downloadFile = new File(destPath);
+            if (!downloadFile.exists()) {
+                return null;
+            }
+            byte[] fileContent = Files.readAllBytes(downloadFile.toPath());
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
+            headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+            return Base64.getEncoder().encodeToString(fileContent);
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     private boolean validateExtension(String extension) {
