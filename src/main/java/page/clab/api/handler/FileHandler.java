@@ -4,15 +4,12 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.exception.FileUploadFailException;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -62,23 +59,6 @@ public class FileHandler {
             throw new FileUploadFailException("파일 저장 실패", e);
         }
         return category + "/" + newFilename;
-    }
-
-    public String downloadCloudFile(String memberId, String fileName) {
-        try {
-            String destPath = filePath + "/members/" + memberId + File.separator + fileName;
-            File downloadFile = new File(destPath);
-            if (!downloadFile.exists()) {
-                return null;
-            }
-            byte[] fileContent = Files.readAllBytes(downloadFile.toPath());
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
-            headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
-            return Base64.getEncoder().encodeToString(fileContent);
-        } catch (IOException e) {
-            return null;
-        }
     }
 
     private boolean validateExtension(String extension) {
