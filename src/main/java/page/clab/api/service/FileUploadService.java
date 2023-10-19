@@ -42,10 +42,5 @@ public class FileUploadService {
         return fileURL + "/" + realFilename;
     }
 
-
-    public String downloadCloudFile(String memberId, String fileName) {
-        return fileHandler.downloadCloudFile(memberId, fileName);
-    }
-
 }
 

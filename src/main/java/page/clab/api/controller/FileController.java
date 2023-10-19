@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -88,19 +87,6 @@ public class FileController {
         String url = fileUploadService.saveFile(multipartFile, "forms");
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
-        return responseModel;
-    }
-
-    @Operation(summary = "클라우드 업로드 파일 다운로드", description = "클라우드 업로드 파일 다운로드<br>" +
-            "Base64 디코딩 후 Blob으로 변환하여 다운로드할 것")
-    @GetMapping("/download/{memberId}/{fileName:.+}")
-    public ResponseModel downloadCloudFile (
-            @PathVariable("memberId") String memberId,
-            @PathVariable("fileName") String fileName
-    ) {
-        String downloadFile = fileUploadService.downloadCloudFile(memberId, fileName);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(downloadFile);
         return responseModel;
     }
 
