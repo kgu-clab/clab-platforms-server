@@ -38,9 +38,9 @@ public class FileHandler {
         if (!validateExtension(extension)) {
             throw new FileUploadFailException("허용되지 않은 확장자 : " + originalFilename);
         }
-        String newFilename = System.nanoTime() + "_" + UUID.randomUUID() + "." + extension;
+        String newFilename = category.startsWith("members/") ? originalFilename :
+                System.nanoTime() + "_" + UUID.randomUUID() + "." + extension;
         String destPath = filePath + File.separator + category + File.separator + newFilename;
-        log.info("destPath : {}", destPath);
         File file = new File(destPath);
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
@@ -58,7 +58,6 @@ public class FileHandler {
         } catch (IOException e) {
             throw new FileUploadFailException("파일 저장 실패", e);
         }
-        log.info("file location : {}", category + "/" + newFilename);
         return category + "/" + newFilename;
     }
 

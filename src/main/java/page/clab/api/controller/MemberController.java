@@ -48,7 +48,7 @@ public class MemberController {
         return responseModel;
     }
 
-    @Operation(summary = "유저 정보", description = "프로필 정보 조회")
+    @Operation(summary = "모든 유저 정보 조회", description = "모든 유저 정보 조회")
     @GetMapping("")
     public ResponseModel getMembers() throws PermissionDeniedException {
         List<MemberResponseDto> users = memberService.getMembers();
@@ -104,6 +104,39 @@ public class MemberController {
     public ResponseModel deleteMemberByMember() {
         memberService.deleteMemberByMember();
         ResponseModel responseModel = ResponseModel.builder().build();
+        return responseModel;
+    }
+
+    @Operation(summary = "모든 유저의 클라우드 사용량 조회", description = "모든 유저의 클라우드 사용량 조회<br>" +
+            "usage 단위: byte")
+    @GetMapping("/cloud")
+    public ResponseModel getAllCloudUsages() {
+        List<CloudUsageInfo> cloudUsageInfos = memberService.getAllCloudUsages();
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(cloudUsageInfos);
+        return responseModel;
+    }
+
+    @Operation(summary = "유저의 클라우드 사용량 조회", description = "유저의 클라우드 사용량 조회<br>" +
+            "usage 단위: byte")
+    @GetMapping("/cloud/{memberId}")
+    public ResponseModel getCloudUsageByMemberId(
+            @PathVariable String memberId
+    ) {
+        CloudUsageInfo usage = memberService.getCloudUsageByMemberId(memberId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(usage);
+        return responseModel;
+    }
+
+    @Operation(summary = "유저 업로드 파일 리스트 조회", description = "유저 업로드 파일 리스트 조회")
+    @GetMapping("/{memberId}/files")
+    public ResponseModel getMemberUploadedFiles(
+            @PathVariable String memberId
+    ) {
+        List<FileInfo> files = memberService.getFilesInMemberDirectory(memberId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(files);
         return responseModel;
     }
 
