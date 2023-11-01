@@ -1,12 +1,12 @@
 -- User
-INSERT INTO "member" (id, password, uid, name, contact, email, department, grade, birth, address, is_in_school, image_url, role, provider, created_at)
-VALUES ('admin', '{bcrypt}$2a$10$ri5DhfHYNcqjN3HGP4oCYuZ7d8sxULvUOl4gE3OONygd4QUE.1AG2', '', '관리자', '01012341234', 'noop103@kyonggi.ac.kr', '컴퓨터공학부', 3, '2000-05-27', '수원시', true, '', 'ADMIN', 'LOCAL', '2023-06-30 06:00:00.000000');
+INSERT INTO "member" (id, password, uid, name, contact, email, department, grade, birth, address, is_in_school, image_url, member_status, role, provider, created_at)
+VALUES ('admin', '{bcrypt}$2a$10$ri5DhfHYNcqjN3HGP4oCYuZ7d8sxULvUOl4gE3OONygd4QUE.1AG2', '', '관리자', '01012341234', 'noop103@kyonggi.ac.kr', '컴퓨터공학부', 3, '2000-05-27', '수원시', true, '', 'ACTIVE', 'ADMIN', 'LOCAL', '2023-06-30 06:00:00.000000');
 
-INSERT INTO "member" (id, password, uid, name, contact, email, department, grade, birth, address, is_in_school, image_url, role, provider, created_at)
-VALUES ('201912156', '{bcrypt}$2a$10$uQn6DnXLZEFmRh57SbJzIuIU2vmkVSaXMnjZjcRFwJjmXMD.7OIfS', '', '한관희', '01051476788', 'noop103@naver.com', '컴퓨터공학부', 3, '2000-05-27', '수원시', true, '', 'ADMIN', 'LOCAL', '2023-06-30 06:19:51.000000');
+INSERT INTO "member" (id, password, uid, name, contact, email, department, grade, birth, address, is_in_school, image_url, member_status, role, provider, created_at)
+VALUES ('201912156', '{bcrypt}$2a$10$uQn6DnXLZEFmRh57SbJzIuIU2vmkVSaXMnjZjcRFwJjmXMD.7OIfS', '', '한관희', '01051476788', 'noop103@naver.com', '컴퓨터공학부', 3, '2000-05-27', '수원시', true, '', 'ACTIVE', 'ADMIN', 'LOCAL', '2023-06-30 06:19:51.000000');
 
-INSERT INTO "member" (id, password, uid, name, contact, email, department, grade, birth, address, is_in_school, image_url, role, provider, created_at)
-VALUES ('201912033', '{bcrypt}$2a$10$CqdfE.qyDbKFAS0w.WBvt.jhH.YbfMvo1MSGv9Ut7j06wUOoW365q', '', '김관식', '01021344323', 'gwansik@naver.com', '컴퓨터공학부', 3, '2000-03-23', '수원시', true, '', 'USER', 'LOCAL', '2023-07-01 13:10:01.000000');
+INSERT INTO "member" (id, password, uid, name, contact, email, department, grade, birth, address, is_in_school, image_url, member_status, role, provider, created_at)
+VALUES ('201912033', '{bcrypt}$2a$10$CqdfE.qyDbKFAS0w.WBvt.jhH.YbfMvo1MSGv9Ut7j06wUOoW365q', '', '김관식', '01021344323', 'gwansik@naver.com', '컴퓨터공학부', 3, '2000-03-23', '수원시', true, '', 'ACTIVE', 'USER', 'LOCAL', '2023-07-01 13:10:01.000000');
 
 -- Application
 INSERT INTO "application" (student_id, name, contact, email, department, grade, birth, address, interests, other_activities, created_at)
@@ -61,3 +61,21 @@ insert into membership_fee(category, content, image_url, created_at, member_id)
 values ('후원', '씨랩 화이팅', '', '2022-09-26 18:32:00.000000', '201912033');
 insert into membership_fee(category, content, image_url, created_at, member_id)
 values ('후원', '씨랩 화이팅', '', '2022-10-12 23:59:03.000000', '201912033');
+
+-- Book
+insert into book(category, title, author, publisher, image_url, created_at)
+values ('개발', '토비의 스프링 3', '이일민', '에이콘출판', 'https://shopping-phinf.pstatic.net/main_3250387/32503877629.20220527022132.jpg?type=w300', '2023-10-16 07:39:39.042000');
+insert into book(category, title, author, publisher, image_url, created_at)
+values ('개발', '토비의 스프링 3', '이일민', '에이콘출판', 'https://shopping-phinf.pstatic.net/main_3250387/32503877629.20220527022132.jpg?type=w300', '2023-10-16 07:39:39.042000');
+insert into book(category, title, author, publisher, image_url, created_at)
+values ('개발', '토비의 스프링 3', '이일민', '에이콘출판', 'https://shopping-phinf.pstatic.net/main_3250387/32503877629.20220527022132.jpg?type=w300', '2023-10-16 07:39:39.042000');
+
+-- SharedAccount
+insert into shared_account(username, password, platform_name, platform_url)
+values ('test1', 'test1', 'test1', 'test1');
+insert into shared_account(username, password, platform_name, platform_url)
+values ('test2', 'test2', 'test2', 'test2');
+insert into shared_account(username, password, platform_name, platform_url)
+values ('test3', 'test3', 'test3', 'test3');
+insert into shared_account(username, password, platform_name, platform_url)
+values ('test4', 'test4', 'test4', 'test4');
