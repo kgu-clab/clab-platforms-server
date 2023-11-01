@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.OAuthProvider;
 import page.clab.api.type.etc.Role;
 import page.clab.api.util.ModelMapperUtil;
@@ -39,6 +40,8 @@ public class MemberResponseDto {
     private Boolean isInSchool;
 
     private String imageUrl;
+
+    private MemberStatus memberStatus;
 
     private Role role;
 
