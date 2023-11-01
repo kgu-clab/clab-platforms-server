@@ -16,10 +16,12 @@ import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
 import page.clab.api.type.dto.MemberUpdateRequestDto;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.Role;
 import page.clab.api.util.FileSystemUtil;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,19 +57,24 @@ public class MemberService {
                 .collect(Collectors.toList());
     }
 
-    public MemberResponseDto searchMember(String memberId, String name) throws PermissionDeniedException {
+    public List<MemberResponseDto> searchMember(String memberId, String name, MemberStatus memberStatus) throws PermissionDeniedException {
         checkMemberAdminRole();
-        Member member = null;
-        if (memberId != null)
-            member = getMemberByIdOrThrow(memberId);
-        else if (name != null)
-            member = getMemberByNameOrThrow(name);
-        else
-            throw new IllegalArgumentException("적어도 memberId 또는 name 중 하나를 제공해야 합니다.");
-
-        if (member == null)
+        List<Member> members = new ArrayList<>();
+        if (memberId != null) {
+            members.add(getMemberByIdOrThrow(memberId));
+        } else if (name != null) {
+            members.add(getMemberByNameOrThrow(name));
+        } else if (memberStatus != null) {
+            members.addAll(getMemberByMemberStatus(memberStatus));
+        } else {
+            throw new IllegalArgumentException("적어도 memberId, name, memberStatus 중 하나를 제공해야 합니다.");
+        }
+        if (members.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
-        return MemberResponseDto.of(member);
+        }
+        return members.stream()
+                .map(MemberResponseDto::of)
+                .collect(Collectors.toList());
     }
 
     public void updateMemberInfoByMember(MemberUpdateRequestDto memberUpdateRequestDto) {
@@ -80,15 +87,11 @@ public class MemberService {
         memberRepository.save(updatedMember);
     }
 
-    public void deleteMemberByAdmin(String memberId) throws PermissionDeniedException {
+    public void updateMemberStatusByAdmin(String memberId, MemberStatus memberStatus) throws PermissionDeniedException {
         checkMemberAdminRole();
-        getMemberByIdOrThrow(memberId);
-        memberRepository.deleteById(memberId);
-    }
-
-    public void deleteMemberByMember() {
-        String memberId = AuthUtil.getAuthenticationInfoMemberId();
-        memberRepository.deleteById(memberId);
+        Member member = getMemberByIdOrThrow(memberId);
+        member.setMemberStatus(memberStatus);
+        memberRepository.save(member);
     }
 
     public List<CloudUsageInfo> getAllCloudUsages() {
@@ -130,12 +133,16 @@ public class MemberService {
 
     public Member getMemberByIdOrThrow(String memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("해당 유저가 없습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
     }
 
     public Member getMemberByNameOrThrow(String name) {
         return memberRepository.findByName(name)
-                .orElseThrow(() -> new NotFoundException("해당 유저가 없습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
+    }
+
+    public List<Member> getMemberByMemberStatus(MemberStatus memberStatus) {
+        return memberRepository.findByMemberStatus(memberStatus);
     }
 
     public String removeHyphensFromContact(String contact) {
@@ -145,7 +152,7 @@ public class MemberService {
     public Member getCurrentMember(){
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("해당 유저가 없습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
     }
 
 }
