@@ -32,8 +32,11 @@ public class CommentController {
             "String writer;<br>" +
             "Long boardId;<br>" )
     @PostMapping("")
-    public ResponseModel createComment(@RequestBody CommentDto commentDto) throws PermissionDeniedException {
-        commentService.createComment(commentDto);
+    public ResponseModel createComment(
+            @RequestParam Long boardId,
+            @RequestBody CommentDto commentDto
+    ) throws PermissionDeniedException {
+        commentService.createComment(boardId, commentDto);
         return ResponseModel.builder().build();
     }
 
