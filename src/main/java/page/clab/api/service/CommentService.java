@@ -7,6 +7,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.BoardRepository;
 import page.clab.api.repository.CommentRepository;
 import page.clab.api.type.dto.CommentDto;
+import page.clab.api.type.entity.Board;
 import page.clab.api.type.entity.Comment;
 
 import javax.persistence.EntityManager;
@@ -31,11 +32,12 @@ public class CommentService {
 
     private final EntityManager entityManager;
 
-    public void createComment(CommentDto commentDto) throws PermissionDeniedException {
+    public void createComment(Long boardId, CommentDto commentDto) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
-        boardRepository.findById(commentDto.getBoard().getId())
+        Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
         Comment comment = Comment.of(commentDto);
+        comment.setBoard(board);
         commentRepository.save(comment);
     }
 
