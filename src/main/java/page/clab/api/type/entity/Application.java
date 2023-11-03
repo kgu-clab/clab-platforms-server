@@ -8,10 +8,13 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
+import page.clab.api.type.etc.ApplicationType;
 import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import java.time.LocalDate;
@@ -53,6 +56,11 @@ public class Application {
     private String interests;
 
     private String otherActivities;
+
+    private String githubUrl;
+
+    @Enumerated(EnumType.STRING)
+    private ApplicationType applicationType;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.entity.Application;
+import page.clab.api.type.etc.ApplicationType;
 import page.clab.api.util.ModelMapperUtil;
 
 import java.time.LocalDate;
@@ -37,6 +38,10 @@ public class ApplicationResponseDto {
     private String interests;
 
     private String otherActivities;
+
+    private String githubUrl;
+
+    private ApplicationType applicationType;
 
     private boolean isPass;
 

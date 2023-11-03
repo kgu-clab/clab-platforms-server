@@ -31,18 +31,7 @@ public class ApplicationController {
 
     private final ApplicationService applicationService;
 
-    @Operation(summary = "동아리 가입 신청", description = "동아리 가입 신청<br>" +
-            "ApplicationRequestDto<br>" +
-            "String studentId;<br>" +
-            "String name;<br>" +
-            "String contact;<br>" +
-            "String email;<br>" +
-            "String department;<br>" +
-            "Long grade;<br>" +
-            "LocalDate birth;<br>" +
-            "String address;<br>" +
-            "String interests;<br>" +
-            "String otherActivities;")
+    @Operation(summary = "동아리 가입 신청", description = "동아리 가입 신청")
     @PostMapping("")
     public ResponseModel createApplication (
             @RequestBody ApplicationRequestDto applicationRequestDto
@@ -115,7 +104,7 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "동아리 가입 합격자 목록", description = "동아리 가입 합격자 목록을 조회합니다.")
+    @Operation(summary = "동아리 합격자 목록", description = "동아리 합격자 목록을 조회합니다.")
     @GetMapping("/pass")
     public ResponseModel getApprovedApplications() throws PermissionDeniedException {
         List<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications();
