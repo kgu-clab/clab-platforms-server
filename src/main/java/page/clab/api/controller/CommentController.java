@@ -48,17 +48,6 @@ public class CommentController {
         return responseModel;
     }
 
-    @Operation(summary = "내 댓글 검색", description = "내 댓글 검색")
-    @GetMapping("/search")
-    public ResponseModel searchComment(
-            @RequestParam(required = false) Long memberId,
-            @RequestParam(required = false) String name
-    ) throws PermissionDeniedException {
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(commentService.searchComment(memberId, name));
-        return responseModel;
-    }
-
     @Operation(summary = "댓글 수정", description = "댓글 수정<br> +" +
             "String content;<br>" +
             "String writer;<br>" +

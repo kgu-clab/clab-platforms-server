@@ -11,13 +11,8 @@ import page.clab.api.type.entity.Board;
 import page.clab.api.type.entity.Comment;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +40,7 @@ public class CommentService {
         memberService.checkMemberAdminRole();
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("댓글을 찾을 수 없습니다."));
-        if (comment.getWriter() != memberService.getCurrentMember()){
+        if (!Objects.equals(commentDto.getWriter_id(), comment.getWriter().getId())){
             throw new PermissionDeniedException("댓글 작성자만 수정할 수 있습니다.");
         }
         Comment updateComment = Comment.of(commentDto);
@@ -61,7 +56,7 @@ public class CommentService {
         memberService.checkMemberAdminRole();
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("댓글을 찾을 수 없습니다."));
-        if (comment.getWriter() != memberService.getCurrentMember()) {
+        if (!Objects.equals(comment.getWriter().getId(), memberService.getCurrentMember().getId())) {
             throw new PermissionDeniedException("댓글 작성자만 삭제할 수 있습니다.");
         }
         commentRepository.delete(comment);
@@ -69,26 +64,6 @@ public class CommentService {
 
     public List<CommentDto> getComments(Long boardId) {
         List<Comment> comments = commentRepository.findAllByBoardId(boardId);
-        return comments.stream()
-                .map(CommentDto::of)
-                .collect(Collectors.toList());
-    }
-
-    public List<CommentDto> searchComment(Long memberId, String name) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Comment> criteriaQuery = criteriaBuilder.createQuery(Comment.class);
-        Root<Comment> commentRoot = criteriaQuery.from(Comment.class);
-
-        List<Predicate> predicates = new ArrayList<>();
-        if (memberId != null) {
-            predicates.add(criteriaBuilder.equal(commentRoot.get("memberId"), memberId));
-        }
-        if (name != null) {
-            predicates.add(criteriaBuilder.like(commentRoot.get("name"), "%" + name + "%"));
-        }
-        criteriaQuery.where(predicates.toArray(new Predicate[0]));
-        TypedQuery<Comment> query = entityManager.createQuery(criteriaQuery);
-        List<Comment> comments = query.getResultList();
         return comments.stream()
                 .map(CommentDto::of)
                 .collect(Collectors.toList());
