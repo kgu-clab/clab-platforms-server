@@ -7,17 +7,17 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
+
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
 public class OpenApiConfig {
-
-    private Environment env;
 
     @Bean
     public OpenAPI openAPI(@Value("${springdoc.version}") String appVersion) {
@@ -28,8 +28,10 @@ public class OpenApiConfig {
                 .license(new License().name("C-Lab Page License Version 1.0").url("https://github.com/KGU-C-Lab/Clab-Server"));
 
         final String securitySchemeName = "bearerAuth";
+        List<Server> servers = List.of(new Server().url("http://localhost:5001"), new Server().url("https://api.clab.page"));
 
         return new OpenAPI()
+                .servers(servers)
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(
                         new Components()
