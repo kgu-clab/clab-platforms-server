@@ -80,18 +80,8 @@ public class ApplicationService {
                 .collect(Collectors.toList());
     }
 
-    public ApplicationResponseDto searchApplication(String applicationId, String name) throws PermissionDeniedException {
-        checkMemberAdminRole();
-        Application application = null;
-        if (applicationId != null)
-            application = getApplicationByIdOrThrow(applicationId);
-        else if (name != null)
-            application = getApplicationByNameOrThrow(name);
-        else
-            throw new IllegalArgumentException("적어도 applicationId 또는 name 중 하나를 제공해야 합니다.");
-
-        if (application == null)
-            throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
+    public ApplicationResponseDto searchApplication(String applicationId) {
+        Application application = getApplicationByIdOrThrow(applicationId);
         return createApplicationResponseDto(application);
     }
 
