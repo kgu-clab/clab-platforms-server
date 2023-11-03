@@ -23,6 +23,9 @@ repositories {
 }
 
 dependencies {
+	// email
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 	// Spring Project
 	implementation 'org.springframework.boot:spring-boot-starter-actuator' // 모니터링
 	implementation 'org.springframework.boot:spring-boot-starter-web' // 웹 MVC
