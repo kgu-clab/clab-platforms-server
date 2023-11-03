@@ -12,11 +12,14 @@ import page.clab.api.auth.exception.TokenValidateException;
 import page.clab.api.auth.jwt.JwtTokenProvider;
 import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.MemberLockedException;
+import page.clab.api.type.dto.MemberLoginRequestDto;
 import page.clab.api.type.dto.RefreshTokenDto;
 import page.clab.api.type.dto.TokenDto;
 import page.clab.api.type.dto.TokenInfo;
+import page.clab.api.type.etc.LoginAttemptResult;
 import page.clab.api.type.etc.Role;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 @Service
@@ -32,18 +35,25 @@ public class LoginService {
 
     private final MemberService memberService;
 
+    private final LoginAttemptLogService loginAttemptLogService;
+
     @Transactional
-    public TokenInfo login(String id, String password) throws LoginFaliedException, MemberLockedException {
+    public TokenInfo login(HttpServletRequest httpServletRequest, MemberLoginRequestDto memberLoginRequestDto) throws LoginFaliedException, MemberLockedException {
+        String id = memberLoginRequestDto.getId();
+        String password = memberLoginRequestDto.getPassword();
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
         try {
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
             loginFailInfoService.handleLoginFailInfo(authentication.getName());
             TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
             memberService.setLastLoginTime(authentication.getName());
+            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, authentication.getName(), LoginAttemptResult.SUCCESS);
             return tokenInfo;
         } catch (BadCredentialsException e) {
+            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
             loginFailInfoService.updateLoginFailInfo(id);
         }
+        loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
         return null;
     }
 
