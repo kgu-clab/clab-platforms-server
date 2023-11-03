@@ -49,6 +49,8 @@ public class MemberResponseDto {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime lastLoginTime;
+
     public static MemberResponseDto of(Member member) {
         return ModelMapperUtil.getModelMapper().map(member, MemberResponseDto.class);
     }
