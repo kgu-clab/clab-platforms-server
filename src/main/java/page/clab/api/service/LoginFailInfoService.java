@@ -103,6 +103,11 @@ public class LoginFailInfoService {
         loginFailInfoRepository.save(loginFailInfo);
     }
 
+    public void deleteLoginFailInfo(String memberId) {
+        LoginFailInfo loginFailInfo = getLoginFailInfoByMemberIdOrThrow(memberId);
+        loginFailInfoRepository.delete(loginFailInfo);
+    }
+
     public LoginFailInfo getLoginFailInfoByMemberIdOrThrow(String memberId) {
         return loginFailInfoRepository.findByMember_Id(memberId)
                 .orElseThrow(() -> new NotFoundException("해당 유저가 없습니다."));

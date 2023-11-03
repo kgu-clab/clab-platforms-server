@@ -114,6 +114,7 @@ public class ApplicationService {
         Member approvedMember = memberService.getMemberByIdOrThrow(applicationId);
         if (approvedMember.getCreatedAt().isBefore(LocalDateTime.now().minusDays(1)))
             throw new UnAuthorizeException("취소할 수 없는 신청입니다.");
+        loginFailInfoService.deleteLoginFailInfo(applicationId);
         memberRepository.delete(approvedMember);
     }
 
