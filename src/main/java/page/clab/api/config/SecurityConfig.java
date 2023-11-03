@@ -72,7 +72,13 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        corsConfiguration.setAllowedOriginPatterns(List.of("http://clab.page", "https://clab.page", "http://*.clab.page", "https://*.clab.page"));
+        corsConfiguration.setAllowedOriginPatterns(
+                List.of(
+                        "http://clab.page", "https://clab.page",
+                        "http://*.clab.page", "https://*.clab.page",
+                        "http://localhost:5173"
+                )
+        );
         corsConfiguration.setAllowedMethods(List.of("*"));
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setAllowCredentials(true);
