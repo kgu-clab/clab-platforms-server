@@ -19,6 +19,8 @@ import page.clab.api.type.dto.TokenInfo;
 import page.clab.api.type.dto.MemberLoginRequestDto;
 import page.clab.api.type.etc.Role;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/login")
 @RequiredArgsConstructor
@@ -28,17 +30,14 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    @Operation(summary = "유저 로그인", description = "JWT 인증 로그인<br>" +
-            "String id;<br>" +
-            "String paasword;")
+    @Operation(summary = "유저 로그인", description = "JWT 인증 로그인")
     @PostMapping()
     public ResponseModel login(
+            HttpServletRequest httpServletRequest,
             @RequestBody MemberLoginRequestDto memberLoginRequestDto
     ) throws MemberLockedException, LoginFaliedException {
         ResponseModel responseModel = ResponseModel.builder().build();
-        String id = memberLoginRequestDto.getId();
-        String password = memberLoginRequestDto.getPassword();
-        TokenInfo tokenInfo = loginService.login(id, password);
+        TokenInfo tokenInfo = loginService.login(httpServletRequest, memberLoginRequestDto);
         responseModel.addData(tokenInfo);
         return responseModel;
     }

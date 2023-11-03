@@ -22,13 +22,13 @@ public class LoginAttemptLogResponseDto {
 
     private String userAgent;
 
-    private LocalDateTime loginAttemptTime;
-
     private String ipAddress;
 
     private String location;
 
     private LoginAttemptResult loginAttemptResult;
+
+    private LocalDateTime loginAttemptTime;
 
     public static LoginAttemptLogResponseDto of(LoginAttemptLog loginAttemptLog) {
         return ModelMapperUtil.getModelMapper().map(loginAttemptLog, LoginAttemptLogResponseDto.class);
