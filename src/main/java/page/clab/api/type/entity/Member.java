@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
 import page.clab.api.type.dto.MemberUpdateRequestDto;
+import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.OAuthProvider;
 import page.clab.api.type.etc.Role;
 import page.clab.api.util.ModelMapperUtil;
@@ -75,6 +76,9 @@ public class Member implements UserDetails {
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
+    private MemberStatus memberStatus;
+
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Enumerated(EnumType.STRING)
@@ -120,7 +124,11 @@ public class Member implements UserDetails {
     }
 
     public static Member of(MemberRequestDto memberRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(memberRequestDto, Member.class);
+        Member member = ModelMapperUtil.getModelMapper().map(memberRequestDto, Member.class);
+        member.setMemberStatus(MemberStatus.ACTIVE);
+        member.setRole(Role.USER);
+        member.setProvider(OAuthProvider.LOCAL);
+        return member;
     }
 
     public static Member of(MemberResponseDto memberResponseDto) {
