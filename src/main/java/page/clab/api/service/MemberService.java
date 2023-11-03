@@ -21,6 +21,7 @@ import page.clab.api.type.etc.Role;
 import page.clab.api.util.FileSystemUtil;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -121,6 +122,12 @@ public class MemberService {
         return Arrays.stream(files)
                 .map(FileInfo::of)
                 .collect(Collectors.toList());
+    }
+
+    public void setLastLoginTime(String memberId) {
+        Member member = getMemberByIdOrThrow(memberId);
+        member.setLastLoginTime(LocalDateTime.now());
+        memberRepository.save(member);
     }
 
     public void checkMemberAdminRole() throws PermissionDeniedException {
