@@ -65,10 +65,9 @@ public class ApplicationController {
     @Operation(summary = "동아리 가입 신청자 검색", description = "신청자의 학번 또는 이름을 기반으로 검색")
     @GetMapping("/search")
     public ResponseModel searchApplication(
-            @RequestParam(required = false) String applicationId,
-            @RequestParam(required = false) String name
-    ) throws PermissionDeniedException {
-        ApplicationResponseDto application = applicationService.searchApplication(applicationId, name);
+            @RequestParam String applicationId
+    ) {
+        ApplicationResponseDto application = applicationService.searchApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(application);
         return responseModel;
