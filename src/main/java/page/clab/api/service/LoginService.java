@@ -30,6 +30,8 @@ public class LoginService {
 
     private final LoginFailInfoService loginFailInfoService;
 
+    private final MemberService memberService;
+
     @Transactional
     public TokenInfo login(String id, String password) throws LoginFaliedException, MemberLockedException {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
@@ -37,6 +39,7 @@ public class LoginService {
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
             loginFailInfoService.handleLoginFailInfo(authentication.getName());
             TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
+            memberService.setLastLoginTime(authentication.getName());
             return tokenInfo;
         } catch (BadCredentialsException e) {
             loginFailInfoService.updateLoginFailInfo(id);

@@ -38,80 +38,110 @@ public class ControllerExceptionHandler {
             MethodArgumentTypeMismatchException.class,
             NullPointerException.class,
             DataIntegrityViolationException.class,
-            FileUploadFailException.class
-    })
-    public ResponseModel parameterError(HttpServletRequest request, HttpServletResponse response, Exception e) {
-        ResponseModel responseModel = ResponseModel.builder()
-                .success(false)
-                .build();
-        response.setStatus(400);
-        return responseModel;
-    }
-
-    @ExceptionHandler({
+            FileUploadFailException.class,
             UnAuthorizeException.class,
             AccessDeniedException.class,
             PermissionDeniedException.class,
-            TokenValidateException.class
-    })
-    public ResponseModel unAuthorizeRequestError(HttpServletRequest request, HttpServletResponse response,
-                                                 Exception e) {
-        ResponseModel responseModel = ResponseModel.builder()
-                .success(false)
-                .build();
-        response.setStatus(401);
-        return responseModel;
-    }
-
-    @ExceptionHandler({
+            TokenValidateException.class,
             LoginFaliedException.class,
             MemberLockedException.class,
-            BadCredentialsException.class
-    })
-    public ResponseModel LoginFailedError(HttpServletRequest request, HttpServletResponse response,
-                                          Exception e) throws Exception {
-        ResponseModel responseModel = ResponseModel.builder()
-                .success(false)
-                .build();
-        response.setStatus(403);
-        return responseModel;
-    }
-
-    @ExceptionHandler({
+            BadCredentialsException.class,
             SearchResultNotExistException.class,
-            FileNotFoundException.class
-    })
-    public ResponseModel searchResultNotExistError(HttpServletRequest request, HttpServletResponse response,
-                                                   Exception e) {
-        ResponseModel responseModel = ResponseModel.builder()
-                .success(false)
-                .build();
-        response.setStatus(404);
-        return responseModel;
-    }
-
-    @ExceptionHandler({
-            AssociatedAccountExistsException.class
-    })
-    public ResponseModel AssociatedAccountExistsExceptionError(HttpServletRequest request, HttpServletResponse response,
-                                                               Exception e) {
-        ResponseModel responseModel = ResponseModel.builder()
-                .success(false)
-                .build();
-        response.setStatus(404);
-        return responseModel;
-    }
-
-    @ExceptionHandler({
+            FileNotFoundException.class,
             NotFoundException.class,
+            AssociatedAccountExistsException.class,
             Exception.class
     })
-    public ResponseModel unExceptedError(HttpServletRequest request, HttpServletResponse response, Exception e) {
+    public ResponseModel Exception(HttpServletRequest request, HttpServletResponse response, Exception e) {
         ResponseModel responseModel = ResponseModel.builder()
                 .success(false)
                 .build();
-        response.setStatus(500);
+        response.setStatus(200);
         return responseModel;
     }
+
+//    @ExceptionHandler({
+//            NoSuchElementException.class,
+//            MissingServletRequestParameterException.class,
+//            MalformedJsonException.class,
+//            HttpMessageNotReadableException.class,
+//            MethodArgumentTypeMismatchException.class,
+//            NullPointerException.class,
+//            DataIntegrityViolationException.class,
+//            FileUploadFailException.class
+//    })
+//    public ResponseModel parameterError(HttpServletRequest request, HttpServletResponse response, Exception e) {
+//        ResponseModel responseModel = ResponseModel.builder()
+//                .success(false)
+//                .build();
+//        response.setStatus(400);
+//        return responseModel;
+//    }
+//
+//    @ExceptionHandler({
+//            UnAuthorizeException.class,
+//            AccessDeniedException.class,
+//            PermissionDeniedException.class,
+//            TokenValidateException.class
+//    })
+//    public ResponseModel unAuthorizeRequestError(HttpServletRequest request, HttpServletResponse response,
+//                                                 Exception e) {
+//        ResponseModel responseModel = ResponseModel.builder()
+//                .success(false)
+//                .build();
+//        response.setStatus(401);
+//        return responseModel;
+//    }
+//
+//    @ExceptionHandler({
+//            LoginFaliedException.class,
+//            MemberLockedException.class,
+//            BadCredentialsException.class
+//    })
+//    public ResponseModel LoginFailedError(HttpServletRequest request, HttpServletResponse response,
+//                                          Exception e) throws Exception {
+//        ResponseModel responseModel = ResponseModel.builder()
+//                .success(false)
+//                .build();
+//        response.setStatus(403);
+//        return responseModel;
+//    }
+//
+//    @ExceptionHandler({
+//            SearchResultNotExistException.class,
+//            FileNotFoundException.class,
+//            NotFoundException.class
+//    })
+//    public ResponseModel searchResultNotExistError(HttpServletRequest request, HttpServletResponse response,
+//                                                   Exception e) {
+//        ResponseModel responseModel = ResponseModel.builder()
+//                .success(false)
+//                .build();
+//        response.setStatus(404);
+//        return responseModel;
+//    }
+//
+//    @ExceptionHandler({
+//            AssociatedAccountExistsException.class
+//    })
+//    public ResponseModel AssociatedAccountExistsExceptionError(HttpServletRequest request, HttpServletResponse response,
+//                                                               Exception e) {
+//        ResponseModel responseModel = ResponseModel.builder()
+//                .success(false)
+//                .build();
+//        response.setStatus(404);
+//        return responseModel;
+//    }
+//
+//    @ExceptionHandler({
+//            Exception.class
+//    })
+//    public ResponseModel unExceptedError(HttpServletRequest request, HttpServletResponse response, Exception e) {
+//        ResponseModel responseModel = ResponseModel.builder()
+//                .success(false)
+//                .build();
+//        response.setStatus(500);
+//        return responseModel;
+//    }
 
 }
