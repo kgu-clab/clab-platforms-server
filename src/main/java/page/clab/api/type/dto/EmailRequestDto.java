@@ -7,10 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class EmailDto {
+public class EmailRequestDto {
 
-    private String title;
-
-    private String content;
+    private String to;
 
 }
