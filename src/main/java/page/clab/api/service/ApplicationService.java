@@ -85,9 +85,11 @@ public class ApplicationService {
         Application application = getApplicationByIdOrThrow(applicationId);
         if (application.getIsPass()) {
             application.setIsPass(false);
+            application.setUpdateTime(LocalDateTime.now());
             applicationRepository.save(application);
         } else {
             application.setIsPass(true);
+            application.setUpdateTime(LocalDateTime.now());
             applicationRepository.save(application);
         }
     }
