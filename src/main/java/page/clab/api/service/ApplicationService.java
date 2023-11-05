@@ -38,7 +38,7 @@ public class ApplicationService {
     }
 
     public List<ApplicationResponseDto> getApplications() throws PermissionDeniedException {
-        checkMemberAdminRole();
+        memberService.checkMemberAdminRole();
         List<Application> applications = applicationRepository.findAll();
         return applications.stream()
                 .map(ApplicationResponseDto::of)
@@ -46,7 +46,7 @@ public class ApplicationService {
     }
 
     public List<ApplicationResponseDto> getApplicationsBetweenDates(LocalDate startDate, LocalDate endDate) throws PermissionDeniedException {
-        checkMemberAdminRole();
+        memberService.checkMemberAdminRole();
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
         List<Application> applicationsBetweenDates = applicationRepository.findApplicationsBetweenDates(startDateTime, endDateTime);
@@ -57,7 +57,7 @@ public class ApplicationService {
 
     @Transactional
     public List<ApplicationResponseDto> getApprovedApplications() throws PermissionDeniedException {
-        checkMemberAdminRole();
+        memberService.checkMemberAdminRole();
         List<Application> applications = applicationRepository.findAll();
         return applications.stream()
                 .map(ApplicationResponseDto::of)
@@ -71,7 +71,7 @@ public class ApplicationService {
 
     @Transactional
     public void approveApplication(String applicationId) throws PermissionDeniedException {
-        checkMemberAdminRole();
+        memberService.checkMemberAdminRole();
         Application application = getApplicationByIdOrThrow(applicationId);
         if (application.getIsPass() == null || !application.getIsPass()) {
             application.setIsPass(true);
@@ -83,17 +83,9 @@ public class ApplicationService {
     }
 
     public void deleteApplication(String applicationId) throws PermissionDeniedException {
-        checkMemberAdminRole();
+        memberService.checkMemberAdminRole();
         Application application = getApplicationByIdOrThrow(applicationId);
         applicationRepository.delete(application);
-    }
-
-    private void checkMemberAdminRole() throws PermissionDeniedException {
-        String memberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = memberRepository.findById(memberId).get();
-        if (!member.getRole().equals(Role.ADMIN)) {
-            throw new PermissionDeniedException("권한이 부족합니다.");
-        }
     }
 
     public Application getApplicationByIdOrThrow(String applicationId) {
