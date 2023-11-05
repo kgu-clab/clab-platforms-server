@@ -57,7 +57,7 @@ public class SecurityConfig {
                 .antMatchers(PERMIT_ALL).permitAll()
                 .antMatchers(HttpMethod.POST, "/applications").permitAll()
                 .antMatchers(HttpMethod.GET, "/applications/search").permitAll()
-                .antMatchers(HttpMethod.GET, "/recruitments/recent").permitAll()
+                .antMatchers(HttpMethod.GET, "/recruitments").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class);
