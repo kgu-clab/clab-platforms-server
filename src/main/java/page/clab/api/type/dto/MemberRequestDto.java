@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.StudentStatus;
 import page.clab.api.util.ModelMapperUtil;
 
 import java.time.LocalDate;
@@ -35,7 +36,7 @@ public class MemberRequestDto {
 
     private String address;
 
-    private Boolean isInSchool;
+    private StudentStatus studentStatus;
 
     public static MemberRequestDto of(Member member) {
         return ModelMapperUtil.getModelMapper().map(member, MemberRequestDto.class);

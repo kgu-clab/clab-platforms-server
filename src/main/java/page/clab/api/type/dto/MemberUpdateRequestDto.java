@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import page.clab.api.type.etc.StudentStatus;
 
 import java.time.LocalDate;
 
@@ -29,7 +30,7 @@ public class MemberUpdateRequestDto {
 
     private String address;
 
-    private Boolean isInSchool;
+    private StudentStatus studentStatus;
 
     private String imageUrl;
 
