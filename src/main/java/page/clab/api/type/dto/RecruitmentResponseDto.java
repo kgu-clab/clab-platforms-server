@@ -20,7 +20,9 @@ public class RecruitmentResponseDto {
 
     private Long id;
 
-    private String period;
+    private LocalDateTime startDate;
+
+    private LocalDateTime endDate;
 
     private ApplicationType applicationType;
 

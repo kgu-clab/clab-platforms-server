@@ -30,7 +30,9 @@ public class Recruitment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String period;
+    private LocalDateTime startDate;
+
+    private LocalDateTime endDate;
 
     @Enumerated(EnumType.STRING)
     private ApplicationType applicationType;

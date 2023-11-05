@@ -9,6 +9,8 @@ import page.clab.api.type.entity.Recruitment;
 import page.clab.api.type.etc.ApplicationType;
 import page.clab.api.util.ModelMapperUtil;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,7 +18,9 @@ import page.clab.api.util.ModelMapperUtil;
 @Builder
 public class RecruitmentRequestDto {
 
-    private String period;
+    private LocalDateTime startDate;
+
+    private LocalDateTime endDate;
 
     private ApplicationType applicationType;
 
