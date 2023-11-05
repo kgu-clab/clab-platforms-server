@@ -39,6 +39,7 @@ public class Donation {
     @Column(nullable = false)
     private Double amount;
 
+    @Column(length = 300)
     @Size(max = 300)
     private String message;
 

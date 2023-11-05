@@ -65,6 +65,7 @@ public class Application {
 
     private String interests;
 
+    @Column(length = 1000)
     @Size(max = 1000)
     private String otherActivities;
 

@@ -36,7 +36,7 @@ public class MembershipFee {
     @Column(nullable = false)
     private String category;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 300)
     @Size(max = 300)
     private String content;
 
