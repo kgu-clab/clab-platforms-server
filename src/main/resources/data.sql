@@ -9,11 +9,11 @@ INSERT INTO "member" (id, password, uid, name, contact, email, department, grade
 VALUES ('201912033', '{bcrypt}$2a$10$CqdfE.qyDbKFAS0w.WBvt.jhH.YbfMvo1MSGv9Ut7j06wUOoW365q', '', '김관식', '01021344323', 'gwansik@naver.com', '컴퓨터공학부', 3, '2000-03-23', '수원시', 'CURRENT', '', 'ACTIVE', 'USER', 'LOCAL', '2023-07-01 13:10:01.000000');
 
 -- Application
-INSERT INTO "application" (student_id, name, contact, email, department, grade, birth, address, interests, other_activities, application_type, is_pass, created_at)
-VALUES ('201912023', '김관식', '01021344323', 'gwansik@naver.com', '컴퓨터공학부', 3, '2000-03-23', '수원시', '', '', 'CORE_TEAM', true, '2023-07-25 18:12:43.000000');
+INSERT INTO "application" (student_id, name, contact, email, department, grade, birth, address, interests, other_activities, application_type, is_pass, update_time, created_at)
+VALUES ('201912023', '김관식', '01021344323', 'gwansik@naver.com', '컴퓨터공학부', 3, '2000-03-23', '수원시', '', '', 'CORE_TEAM', true, '2023-07-25 18:12:43.000000', '2023-07-25 18:12:43.000000');
 
-INSERT INTO "application" (student_id, name, contact, email, department, grade, birth, address, interests, other_activities, application_type, is_pass, created_at)
-VALUES ('201912034', '박동민', '01012345678', 'dongmin@naver.com', '컴퓨터공학부', 3, '2000-01-01', '수원시', '', '', 'NORMAL', false, '2022-07-25 18:12:48.000000');
+INSERT INTO "application" (student_id, name, contact, email, department, grade, birth, address, interests, other_activities, application_type, is_pass, update_time, created_at)
+VALUES ('201912034', '박동민', '01012345678', 'dongmin@naver.com', '컴퓨터공학부', 3, '2000-01-01', '수원시', '', '', 'NORMAL', false, '2022-07-25 18:12:48.000000', '2022-07-25 18:12:48.000000');
 
 -- -- Board
 -- INSERT INTO "board" (category, title, content, writer, created_at)
