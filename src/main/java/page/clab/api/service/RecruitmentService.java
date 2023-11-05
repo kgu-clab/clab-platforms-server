@@ -40,7 +40,7 @@ public class RecruitmentService {
         Recruitment updatedRecruitment = Recruitment.of(recruitmentRequestDto);
         updatedRecruitment.setId(recruitment.getId());
         updatedRecruitment.setCreatedAt(recruitment.getCreatedAt());
-        updatedRecruitment.setUpdatedAt(LocalDateTime.now());
+        updatedRecruitment.setUpdateTime(LocalDateTime.now());
         recruitmentRepository.save(updatedRecruitment);
     }
 

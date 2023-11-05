@@ -28,7 +28,7 @@ public class RecruitmentResponseDto {
 
     private String status;
 
-    private LocalDateTime updatedAt;
+    private LocalDateTime updateTime;
 
     public static RecruitmentResponseDto of(Recruitment recruitment) {
         return ModelMapperUtil.getModelMapper().map(recruitment, RecruitmentResponseDto.class);
