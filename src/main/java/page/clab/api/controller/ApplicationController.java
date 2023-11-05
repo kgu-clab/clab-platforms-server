@@ -73,22 +73,13 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "동아리 가입 신청 승인", description = "동아리 가입 신청 승인")
+    @Operation(summary = "동아리 가입 신청 승인/취소", description = "동아리 가입 신청 승인/취소<br>" +
+        "승인/취소 상태가 반전됨")
     @PostMapping("/approve/{applicationId}")
     public ResponseModel approveApplication(
             @PathVariable String applicationId
     ) throws PermissionDeniedException {
         applicationService.approveApplication(applicationId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
-    }
-
-    @Operation(summary = "동아리 가입 승인 취소", description = "동아리 가입 신청 취소 (24시간 내에만 가능)")
-    @DeleteMapping("/cancel/{applicationId}")
-    public ResponseModel cancelApplication(
-            @PathVariable String applicationId
-    ) throws PermissionDeniedException {
-        applicationService.cancelApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
