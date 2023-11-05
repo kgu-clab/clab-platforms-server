@@ -65,9 +65,10 @@ public class ApplicationController {
     @Operation(summary = "동아리 가입 신청자 검색", description = "신청자의 학번 또는 이름을 기반으로 검색")
     @GetMapping("/search")
     public ResponseModel searchApplication(
-            @RequestParam String applicationId
-    ) {
-        ApplicationResponseDto application = applicationService.searchApplication(applicationId);
+            @RequestParam(required = false) String applicationId,
+            @RequestParam(required = false) String name
+    ) throws PermissionDeniedException {
+        List<ApplicationResponseDto> application = applicationService.searchApplication(applicationId, name);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(application);
         return responseModel;
@@ -84,6 +85,15 @@ public class ApplicationController {
         return responseModel;
     }
 
+    @Operation(summary = "동아리 합격자 목록", description = "동아리 합격자 목록을 조회합니다.")
+    @GetMapping("/pass")
+    public ResponseModel getApprovedApplications() throws PermissionDeniedException {
+        List<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications();
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(approvedApplications);
+        return responseModel;
+    }
+
     @Operation(summary = "동아리 가입 신청서 삭제", description = "동아리 가입 신청서 삭제")
     @DeleteMapping("/{applicationId}")
     public ResponseModel deleteApplication(
@@ -91,15 +101,6 @@ public class ApplicationController {
     ) throws PermissionDeniedException {
         applicationService.deleteApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
-    }
-
-    @Operation(summary = "동아리 합격자 목록", description = "동아리 합격자 목록을 조회합니다.")
-    @GetMapping("/pass")
-    public ResponseModel getApprovedApplications() throws PermissionDeniedException {
-        List<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications();
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(approvedApplications);
         return responseModel;
     }
 
