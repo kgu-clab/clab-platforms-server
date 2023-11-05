@@ -13,7 +13,6 @@ import page.clab.api.type.entity.Application;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,19 +63,12 @@ public class ApplicationService {
         }
     }
 
-    public List<ApplicationResponseDto> searchApplication(String applicationId, String name) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
-        List<Application> applications = new ArrayList<>();
+    public ApplicationResponseDto searchApplication(String applicationId) {
+        Application application = null;
         if (applicationId != null) {
-            applications.add(getApplicationByIdOrThrow(applicationId));
-        } else if (name != null) {
-            applications.addAll(getApplicationByName(name));
-        } else {
-            throw new IllegalArgumentException("적어도 applicationId, name 중 하나를 제공해야 합니다.");
+            application = getApplicationByIdOrThrow(applicationId);
         }
-        return applications.stream()
-                .map(ApplicationResponseDto::of)
-                .collect(Collectors.toList());
+        return ApplicationResponseDto.of(application);
     }
 
     @Transactional
