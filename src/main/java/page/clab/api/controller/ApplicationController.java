@@ -19,6 +19,7 @@ import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class ApplicationController {
             "ApplicationType: NORMAL / CORE_TEAM")
     @PostMapping("")
     public ResponseModel createApplication (
-            @RequestBody ApplicationRequestDto applicationRequestDto
+            @RequestBody @Valid ApplicationRequestDto applicationRequestDto
     ) {
         applicationService.createApplication(applicationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
