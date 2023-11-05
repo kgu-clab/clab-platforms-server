@@ -9,6 +9,8 @@ import page.clab.api.type.entity.Recruitment;
 import page.clab.api.type.etc.ApplicationType;
 import page.clab.api.util.ModelMapperUtil;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,6 +27,8 @@ public class RecruitmentResponseDto {
     private String target;
 
     private String status;
+
+    private LocalDateTime updatedAt;
 
     public static RecruitmentResponseDto of(Recruitment recruitment) {
         return ModelMapperUtil.getModelMapper().map(recruitment, RecruitmentResponseDto.class);
