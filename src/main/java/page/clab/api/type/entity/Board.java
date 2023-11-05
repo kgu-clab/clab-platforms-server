@@ -35,10 +35,10 @@ public class Board {
     private String category;
 
     @Column(nullable = false)
+    @Size(max = 100)
     private String title;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    @Size(max = 1000)
     private String content;
 
     @Column(name = "update_time")

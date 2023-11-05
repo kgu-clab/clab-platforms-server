@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.URL;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.etc.ApplicationType;
 import page.clab.api.util.ModelMapperUtil;
@@ -16,6 +17,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -28,12 +30,15 @@ import java.time.LocalDateTime;
 public class Application {
 
     @Id
+    @Size(min = 9, max = 9)
     private String studentId;
 
     @Column(nullable = false)
+    @Size(max = 10)
     private String name;
 
     @Column(nullable = false)
+    @Size(max = 11)
     private String contact;
 
     @Column(nullable = false)
@@ -54,8 +59,10 @@ public class Application {
 
     private String interests;
 
+    @Size(max = 1000)
     private String otherActivities;
 
+    @URL
     private String githubUrl;
 
     @Enumerated(EnumType.STRING)
