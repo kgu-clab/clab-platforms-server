@@ -31,7 +31,8 @@ public class ApplicationController {
 
     private final ApplicationService applicationService;
 
-    @Operation(summary = "동아리 가입 신청", description = "동아리 가입 신청")
+    @Operation(summary = "동아리 가입 신청", description = "동아리 가입 신청<br>" +
+            "ApplicationType: NORMAL / CORE_TEAM")
     @PostMapping("")
     public ResponseModel createApplication (
             @RequestBody ApplicationRequestDto applicationRequestDto
