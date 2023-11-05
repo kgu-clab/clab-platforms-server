@@ -1,6 +1,6 @@
 -- User
 INSERT INTO "member" (id, password, uid, name, contact, email, department, grade, birth, address, student_status, image_url, member_status, role, provider, created_at)
-VALUES ('admin', '{bcrypt}$2a$10$ri5DhfHYNcqjN3HGP4oCYuZ7d8sxULvUOl4gE3OONygd4QUE.1AG2', '', '관리자', '01012341234', 'noop103@kyonggi.ac.kr', '컴퓨터공학부', 3, '2000-05-27', '수원시', 'CURRENT', '', 'ACTIVE', 'ADMIN', 'LOCAL', '2023-06-30 06:00:00.000000');
+VALUES ('admin', '{bcrypt}$2a$10$ri5DhfHYNcqjN3HGP4oCYuZ7d8sxULvUOl4gE3OONygd4QUE.1AG2', '', '관리자', '01012341234', 'noop103@kyonggi.ac.kr', '컴퓨터공학부', 3, '2000-05-27', '수원시', 'CURRENT', '', 'ACTIVE', 'SUPER', 'LOCAL', '2023-06-30 06:00:00.000000');
 
 INSERT INTO "member" (id, password, uid, name, contact, email, department, grade, birth, address, student_status, image_url, member_status, role, provider, created_at)
 VALUES ('201912156', '{bcrypt}$2a$10$uQn6DnXLZEFmRh57SbJzIuIU2vmkVSaXMnjZjcRFwJjmXMD.7OIfS', '', '한관희', '01051476788', 'noop103@naver.com', '컴퓨터공학부', 3, '2000-05-27', '수원시', 'CURRENT', '', 'ACTIVE', 'ADMIN', 'LOCAL', '2023-06-30 06:19:51.000000');
