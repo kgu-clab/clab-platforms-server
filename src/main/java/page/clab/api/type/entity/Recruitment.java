@@ -10,6 +10,7 @@ import page.clab.api.type.dto.RecruitmentRequestDto;
 import page.clab.api.type.etc.ApplicationType;
 import page.clab.api.util.ModelMapperUtil;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -30,15 +31,19 @@ public class Recruitment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private LocalDateTime startDate;
 
+    @Column(nullable = false)
     private LocalDateTime endDate;
 
     @Enumerated(EnumType.STRING)
     private ApplicationType applicationType;
 
+    @Column(nullable = false)
     private String target;
 
+    @Column(nullable = false)
     private String status;
 
     private LocalDateTime updateTime;
