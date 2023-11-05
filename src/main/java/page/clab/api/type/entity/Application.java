@@ -19,6 +19,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,6 +34,7 @@ public class Application {
 
     @Id
     @Size(min = 9, max = 9)
+    @Pattern(regexp = "^[0-9]+$")
     private String studentId;
 
     @Column(nullable = false)
@@ -69,6 +71,7 @@ public class Application {
     @URL
     private String githubUrl;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ApplicationType applicationType;
 
