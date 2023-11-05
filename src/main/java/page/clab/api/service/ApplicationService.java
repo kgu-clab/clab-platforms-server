@@ -50,19 +50,6 @@ public class ApplicationService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public List<ApplicationResponseDto> getApprovedApplications() throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
-        List<Application> applications = applicationRepository.findAllByIsPass(true);
-        if (applications.isEmpty()) {
-            throw new NotFoundException("승인된 신청자가 없습니다.");
-        } else {
-            return applications.stream()
-                    .map(ApplicationResponseDto::of)
-                    .collect(Collectors.toList());
-        }
-    }
-
     public ApplicationResponseDto searchApplication(String applicationId) {
         Application application = null;
         if (applicationId != null) {
@@ -86,6 +73,27 @@ public class ApplicationService {
         }
     }
 
+    @Transactional
+    public List<ApplicationResponseDto> getApprovedApplications() throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        List<Application> applications = applicationRepository.findAllByIsPass(true);
+        if (applications.isEmpty()) {
+            throw new NotFoundException("승인된 신청자가 없습니다.");
+        } else {
+            return applications.stream()
+                    .map(ApplicationResponseDto::of)
+                    .collect(Collectors.toList());
+        }
+    }
+
+    public Boolean getApplicationPass(String applicationId) {
+        Application application = getApplicationById(applicationId);
+        if (application == null) {
+            return false;
+        }
+        return application.getIsPass();
+    }
+
     public void deleteApplication(String applicationId) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         Application application = getApplicationByIdOrThrow(applicationId);
@@ -97,8 +105,9 @@ public class ApplicationService {
                 .orElseThrow(() -> new NotFoundException("해당 신청자가 없습니다."));
     }
 
-    private List<Application> getApplicationByName(String name) {
-        return applicationRepository.findAllByName(name);
+    private Application getApplicationById(String applicationId) {
+        return applicationRepository.findById(applicationId)
+                .orElse(null);
     }
 
 }
