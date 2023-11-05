@@ -11,12 +11,11 @@ import page.clab.api.repository.MemberRepository;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.entity.Application;
-import page.clab.api.type.entity.Member;
-import page.clab.api.type.etc.Role;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,9 +67,19 @@ public class ApplicationService {
         }
     }
 
-    public ApplicationResponseDto searchApplication(String applicationId) {
-        Application application = getApplicationByIdOrThrow(applicationId);
-        return ApplicationResponseDto.of(application);
+    public List<ApplicationResponseDto> searchApplication(String applicationId, String name) throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        List<Application> applications = new ArrayList<>();
+        if (applicationId != null) {
+            applications.add(getApplicationByIdOrThrow(applicationId));
+        } else if (name != null) {
+            applications = getApplicationByName(name);
+        } else {
+            throw new IllegalArgumentException("적어도 applicationId, name 중 하나를 제공해야 합니다.");
+        }
+        return applications.stream()
+                .map(ApplicationResponseDto::of)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -92,9 +101,13 @@ public class ApplicationService {
         applicationRepository.delete(application);
     }
 
-    public Application getApplicationByIdOrThrow(String applicationId) {
+    private Application getApplicationByIdOrThrow(String applicationId) {
         return applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new NotFoundException("해당 신청자가 없습니다."));
+    }
+
+    private List<Application> getApplicationByName(String name) {
+        return applicationRepository.findAllByName(name);
     }
 
 }
