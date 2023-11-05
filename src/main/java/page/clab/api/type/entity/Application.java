@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.type.dto.ApplicationRequestDto;
-import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.etc.ApplicationType;
 import page.clab.api.util.ModelMapperUtil;
 
@@ -63,6 +62,8 @@ public class Application {
     private ApplicationType applicationType;
 
     private Boolean isPass;
+
+    private LocalDateTime updateTime;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
