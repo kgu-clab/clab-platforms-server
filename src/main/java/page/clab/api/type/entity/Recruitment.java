@@ -30,7 +30,9 @@ public class Recruitment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String period;
+    private LocalDateTime startDate;
+
+    private LocalDateTime endDate;
 
     @Enumerated(EnumType.STRING)
     private ApplicationType applicationType;
@@ -39,10 +41,10 @@ public class Recruitment {
 
     private String status;
 
+    private LocalDateTime updateTime;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
 
     public static Recruitment of(RecruitmentRequestDto recruitmentRequestDto) {
         return ModelMapperUtil.getModelMapper().map(recruitmentRequestDto, Recruitment.class);
