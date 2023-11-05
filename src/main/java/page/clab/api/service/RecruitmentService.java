@@ -9,6 +9,7 @@ import page.clab.api.type.dto.RecruitmentRequestDto;
 import page.clab.api.type.dto.RecruitmentResponseDto;
 import page.clab.api.type.entity.Recruitment;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,13 +27,6 @@ public class RecruitmentService {
         recruitmentRepository.save(recruitment);
     }
 
-    public List<RecruitmentResponseDto> getRecruitments() {
-        List<Recruitment> recruitments = recruitmentRepository.findAll();
-        return recruitments.stream()
-                .map(RecruitmentResponseDto::of)
-                .collect(Collectors.toList());
-    }
-
     public List<RecruitmentResponseDto> getRecentRecruitments() {
         List<Recruitment> recruitments = recruitmentRepository.findTop5ByOrderByCreatedAtDesc();
         return recruitments.stream()
@@ -46,6 +40,7 @@ public class RecruitmentService {
         Recruitment updatedRecruitment = Recruitment.of(recruitmentRequestDto);
         updatedRecruitment.setId(recruitment.getId());
         updatedRecruitment.setCreatedAt(recruitment.getCreatedAt());
+        updatedRecruitment.setUpdatedAt(LocalDateTime.now());
         recruitmentRepository.save(updatedRecruitment);
     }
 
