@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.type.dto.ApplicationRequestDto;
-import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.etc.ApplicationType;
 import page.clab.api.util.ModelMapperUtil;
 
@@ -62,16 +61,16 @@ public class Application {
     @Enumerated(EnumType.STRING)
     private ApplicationType applicationType;
 
+    private Boolean isPass;
+
+    private LocalDateTime updateTime;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     public static Application of(ApplicationRequestDto applicationRequestDto) {
         return ModelMapperUtil.getModelMapper().map(applicationRequestDto, Application.class);
-    }
-
-    public static Application of(ApplicationResponseDto applicationResponseDto) {
-        return ModelMapperUtil.getModelMapper().map(applicationResponseDto, Application.class);
     }
 
 }

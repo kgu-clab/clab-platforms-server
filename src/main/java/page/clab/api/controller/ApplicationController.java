@@ -31,7 +31,8 @@ public class ApplicationController {
 
     private final ApplicationService applicationService;
 
-    @Operation(summary = "동아리 가입 신청", description = "동아리 가입 신청")
+    @Operation(summary = "동아리 가입 신청", description = "동아리 가입 신청<br>" +
+            "ApplicationType: NORMAL / CORE_TEAM")
     @PostMapping("")
     public ResponseModel createApplication (
             @RequestBody ApplicationRequestDto applicationRequestDto
@@ -65,40 +66,22 @@ public class ApplicationController {
     @Operation(summary = "동아리 가입 신청자 검색", description = "신청자의 학번 또는 이름을 기반으로 검색")
     @GetMapping("/search")
     public ResponseModel searchApplication(
-            @RequestParam String applicationId
-    ) {
-        ApplicationResponseDto application = applicationService.searchApplication(applicationId);
+            @RequestParam(required = false) String applicationId,
+            @RequestParam(required = false) String name
+    ) throws PermissionDeniedException {
+        List<ApplicationResponseDto> application = applicationService.searchApplication(applicationId, name);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(application);
         return responseModel;
     }
 
-    @Operation(summary = "동아리 가입 신청 승인", description = "동아리 가입 신청 승인")
+    @Operation(summary = "동아리 가입 신청 승인/취소", description = "동아리 가입 신청 승인/취소<br>" +
+        "승인/취소 상태가 반전됨")
     @PostMapping("/approve/{applicationId}")
     public ResponseModel approveApplication(
             @PathVariable String applicationId
     ) throws PermissionDeniedException {
         applicationService.approveApplication(applicationId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
-    }
-
-    @Operation(summary = "동아리 가입 승인 취소", description = "동아리 가입 신청 취소 (24시간 내에만 가능)")
-    @DeleteMapping("/cancel/{applicationId}")
-    public ResponseModel cancelApplication(
-            @PathVariable String applicationId
-    ) throws PermissionDeniedException {
-        applicationService.cancelApplication(applicationId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
-    }
-
-    @Operation(summary = "동아리 가입 신청서 삭제", description = "동아리 가입 신청서 삭제")
-    @DeleteMapping("/{applicationId}")
-    public ResponseModel deleteApplication(
-            @PathVariable String applicationId
-    ) throws PermissionDeniedException {
-        applicationService.deleteApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
@@ -109,6 +92,16 @@ public class ApplicationController {
         List<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications();
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(approvedApplications);
+        return responseModel;
+    }
+
+    @Operation(summary = "동아리 가입 신청서 삭제", description = "동아리 가입 신청서 삭제")
+    @DeleteMapping("/{applicationId}")
+    public ResponseModel deleteApplication(
+            @PathVariable String applicationId
+    ) throws PermissionDeniedException {
+        applicationService.deleteApplication(applicationId);
+        ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
