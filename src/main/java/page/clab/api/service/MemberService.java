@@ -133,7 +133,7 @@ public class MemberService {
     public void checkMemberAdminRole() throws PermissionDeniedException {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
         Member member = memberRepository.findById(memberId).get();
-        if (!member.getRole().equals(Role.ADMIN)) {
+        if (member.getRole().equals(Role.USER)) {
             throw new PermissionDeniedException("권한이 부족합니다.");
         }
     }
