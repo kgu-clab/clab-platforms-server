@@ -9,8 +9,6 @@ import java.util.List;
 
 public interface ApplicationRepository extends JpaRepository<Application, String> {
 
-    List<Application> findAllByName(String name);
-
     @Query("SELECT a FROM Application a WHERE a.updateTime >= :startDate AND a.updateTime <= :endDate")
     List<Application> findApplicationsBetweenDates(LocalDateTime startDate, LocalDateTime endDate);
 
