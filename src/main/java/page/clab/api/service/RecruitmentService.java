@@ -27,13 +27,6 @@ public class RecruitmentService {
         recruitmentRepository.save(recruitment);
     }
 
-    public List<RecruitmentResponseDto> getRecruitments() {
-        List<Recruitment> recruitments = recruitmentRepository.findAll();
-        return recruitments.stream()
-                .map(RecruitmentResponseDto::of)
-                .collect(Collectors.toList());
-    }
-
     public List<RecruitmentResponseDto> getRecentRecruitments() {
         List<Recruitment> recruitments = recruitmentRepository.findTop5ByOrderByCreatedAtDesc();
         return recruitments.stream()
@@ -55,11 +48,6 @@ public class RecruitmentService {
         memberService.checkMemberAdminRole();
         Recruitment recruitment = getRecruitmentByIdOrThrow(recruitmentId);
         recruitmentRepository.delete(recruitment);
-    }
-
-    public void deleteAllRecruitment() throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
-        recruitmentRepository.deleteAll();
     }
 
     private Recruitment getRecruitmentByIdOrThrow(Long recruitmentId) {
