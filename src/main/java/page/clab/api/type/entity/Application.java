@@ -63,6 +63,7 @@ public class Application {
 
     private Boolean isPass;
 
+    @CreationTimestamp
     private LocalDateTime updateTime;
 
     @CreationTimestamp
