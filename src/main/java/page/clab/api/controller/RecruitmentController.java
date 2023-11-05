@@ -40,17 +40,8 @@ public class RecruitmentController {
         return responseModel;
     }
 
-    @Operation(summary = "모집 공고 목록", description = "모집 공고 목록")
-    @GetMapping("")
-    public ResponseModel getRecruitments() {
-        List<RecruitmentResponseDto> recruitments = recruitmentService.getRecruitments();
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(recruitments);
-        return responseModel;
-    }
-
     @Operation(summary = "모집 공고 목록(최근 5건)", description = "모집 공고 목록(최근 5건)")
-    @GetMapping("/recent")
+    @GetMapping("")
     public ResponseModel getRecentRecruitments() {
         List<RecruitmentResponseDto> recruitments = recruitmentService.getRecentRecruitments();
         ResponseModel responseModel = ResponseModel.builder().build();
