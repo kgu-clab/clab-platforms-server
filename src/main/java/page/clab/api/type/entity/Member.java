@@ -17,6 +17,7 @@ import page.clab.api.type.dto.MemberUpdateRequestDto;
 import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.OAuthProvider;
 import page.clab.api.type.etc.Role;
+import page.clab.api.type.etc.StudentStatus;
 import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Column;
@@ -70,8 +71,8 @@ public class Member implements UserDetails {
     @Column(nullable = false)
     private String address;
 
-    @Column(nullable = false)
-    private Boolean isInSchool;
+    @Enumerated(EnumType.STRING)
+    private StudentStatus studentStatus;
 
     private String imageUrl;
 
@@ -144,7 +145,7 @@ public class Member implements UserDetails {
     public static Member of(Application application) {
         Member member = ModelMapperUtil.getModelMapper().map(application, Member.class);
         member.setPassword(member.generatePassword(member.getBirth()));
-        member.setIsInSchool(true);
+        member.setStudentStatus(StudentStatus.CURRENT);
         member.setRole(Role.USER);
         member.setProvider(OAuthProvider.LOCAL);
         return member;
