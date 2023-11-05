@@ -52,7 +52,7 @@ public class ApplicationController {
     }
 
     @Operation(summary = "동아리 가입 신청자 목록 필터링(업데이트 날짜 기준)", description = "전달된 날짜 사이의 신청자를 필터링함")
-    @GetMapping("/list")
+    @GetMapping("/filter")
     public ResponseModel getApplicationsBetweenDates(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
@@ -76,7 +76,7 @@ public class ApplicationController {
 
     @Operation(summary = "동아리 가입 신청 승인/취소", description = "동아리 가입 신청 승인/취소<br>" +
         "승인/취소 상태가 반전됨")
-    @PostMapping("/approve/{applicationId}")
+    @PostMapping("/{applicationId}")
     public ResponseModel approveApplication(
             @PathVariable String applicationId
     ) throws PermissionDeniedException {
@@ -91,6 +91,17 @@ public class ApplicationController {
         List<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications();
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(approvedApplications);
+        return responseModel;
+    }
+
+    @Operation(summary = "동아리 합격 여부 조회", description = "동아리 합격 여부 조회")
+    @GetMapping("/{applicationId}")
+    public ResponseModel getApplicationPass(
+            @PathVariable String applicationId
+    ) {
+        Boolean isPass = applicationService.getApplicationPass(applicationId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(isPass);
         return responseModel;
     }
 
