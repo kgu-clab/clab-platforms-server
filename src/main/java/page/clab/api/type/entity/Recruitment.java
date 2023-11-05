@@ -39,10 +39,10 @@ public class Recruitment {
 
     private String status;
 
+    private LocalDateTime updateTime;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
 
     public static Recruitment of(RecruitmentRequestDto recruitmentRequestDto) {
         return ModelMapperUtil.getModelMapper().map(recruitmentRequestDto, Recruitment.class);
