@@ -51,7 +51,7 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "동아리 가입 신청자 목록 필터링(날짜 기준)", description = "전달된 날짜 사이의 신청자를 필터링함")
+    @Operation(summary = "동아리 가입 신청자 목록 필터링(업데이트 날짜 기준)", description = "전달된 날짜 사이의 신청자를 필터링함")
     @GetMapping("/list")
     public ResponseModel getApplicationsBetweenDates(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
