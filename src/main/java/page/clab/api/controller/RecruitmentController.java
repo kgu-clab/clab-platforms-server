@@ -80,4 +80,12 @@ public class RecruitmentController {
         return responseModel;
     }
 
+    @Operation(summary = "모집 공고 전체 삭제", description = "모집 공고 전체 삭제")
+    @DeleteMapping("")
+    public ResponseModel deleteAllRecruitment() throws PermissionDeniedException {
+        recruitmentService.deleteAllRecruitment();
+        ResponseModel responseModel = ResponseModel.builder().build();
+        return responseModel;
+    }
+
 }

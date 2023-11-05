@@ -9,6 +9,7 @@ import page.clab.api.type.dto.RecruitmentRequestDto;
 import page.clab.api.type.dto.RecruitmentResponseDto;
 import page.clab.api.type.entity.Recruitment;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,7 @@ public class RecruitmentService {
         Recruitment updatedRecruitment = Recruitment.of(recruitmentRequestDto);
         updatedRecruitment.setId(recruitment.getId());
         updatedRecruitment.setCreatedAt(recruitment.getCreatedAt());
+        updatedRecruitment.setUpdatedAt(LocalDateTime.now());
         recruitmentRepository.save(updatedRecruitment);
     }
 
@@ -53,6 +55,11 @@ public class RecruitmentService {
         memberService.checkMemberAdminRole();
         Recruitment recruitment = getRecruitmentByIdOrThrow(recruitmentId);
         recruitmentRepository.delete(recruitment);
+    }
+
+    public void deleteAllRecruitment() throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        recruitmentRepository.deleteAll();
     }
 
     private Recruitment getRecruitmentByIdOrThrow(Long recruitmentId) {
