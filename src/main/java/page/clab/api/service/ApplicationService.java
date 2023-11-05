@@ -70,7 +70,7 @@ public class ApplicationService {
         if (applicationId != null) {
             applications.add(getApplicationByIdOrThrow(applicationId));
         } else if (name != null) {
-            applications = getApplicationByName(name);
+            applications.addAll(getApplicationByName(name));
         } else {
             throw new IllegalArgumentException("적어도 applicationId, name 중 하나를 제공해야 합니다.");
         }
@@ -85,9 +85,11 @@ public class ApplicationService {
         Application application = getApplicationByIdOrThrow(applicationId);
         if (application.getIsPass()) {
             application.setIsPass(false);
+            application.setUpdateTime(LocalDateTime.now());
             applicationRepository.save(application);
         } else {
             application.setIsPass(true);
+            application.setUpdateTime(LocalDateTime.now());
             applicationRepository.save(application);
         }
     }

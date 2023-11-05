@@ -5,11 +5,11 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Role {
+public enum StudentStatus {
 
-    USER("ROLE_USER", "Normal User"),
-    ADMIN("ROLE_ADMIN", "Administrator"),
-    SUPER("ROLE_SUPER", "Super Administrator");
+    CURRENT("CURRENT", "재학생"),
+    ON_LEAVE("ON_LEAVE", "휴학생"),
+    GRADUATED("GRADUATED", "졸업생");
 
     private String key;
     private String description;
