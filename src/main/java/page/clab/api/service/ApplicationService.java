@@ -3,11 +3,9 @@ package page.clab.api.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import page.clab.api.auth.util.AuthUtil;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.ApplicationRepository;
-import page.clab.api.repository.MemberRepository;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.entity.Application;
@@ -28,11 +26,10 @@ public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
 
-    private final MemberRepository memberRepository;
-
     public void createApplication(ApplicationRequestDto appRequestDto) {
         Application application = Application.of(appRequestDto);
         application.setContact(memberService.removeHyphensFromContact(application.getContact()));
+        application.setIsPass(false);
         applicationRepository.save(application);
     }
 
@@ -86,11 +83,11 @@ public class ApplicationService {
     public void approveApplication(String applicationId) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         Application application = getApplicationByIdOrThrow(applicationId);
-        if (application.getIsPass() == null || !application.getIsPass()) {
-            application.setIsPass(true);
+        if (application.getIsPass()) {
+            application.setIsPass(false);
             applicationRepository.save(application);
         } else {
-            application.setIsPass(false);
+            application.setIsPass(true);
             applicationRepository.save(application);
         }
     }
