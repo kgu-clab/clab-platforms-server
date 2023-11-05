@@ -20,7 +20,9 @@ public class RecruitmentResponseDto {
 
     private Long id;
 
-    private String period;
+    private LocalDateTime startDate;
+
+    private LocalDateTime endDate;
 
     private ApplicationType applicationType;
 
@@ -28,7 +30,7 @@ public class RecruitmentResponseDto {
 
     private String status;
 
-    private LocalDateTime updatedAt;
+    private LocalDateTime updateTime;
 
     public static RecruitmentResponseDto of(Recruitment recruitment) {
         return ModelMapperUtil.getModelMapper().map(recruitment, RecruitmentResponseDto.class);
