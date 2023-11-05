@@ -9,11 +9,11 @@ INSERT INTO "member" (id, password, uid, name, contact, email, department, grade
 VALUES ('201912033', '{bcrypt}$2a$10$CqdfE.qyDbKFAS0w.WBvt.jhH.YbfMvo1MSGv9Ut7j06wUOoW365q', '', '김관식', '01021344323', 'gwansik@naver.com', '컴퓨터공학부', 3, '2000-03-23', '수원시', true, '', 'ACTIVE', 'USER', 'LOCAL', '2023-07-01 13:10:01.000000');
 
 -- Application
-INSERT INTO "application" (student_id, name, contact, email, department, grade, birth, address, interests, other_activities, application_type, created_at)
-VALUES ('201912033', '김관식', '01021344323', 'gwansik@naver.com', '컴퓨터공학부', 3, '2000-03-23', '수원시', '', '', 'CORE_TEAM', '2023-07-25 18:12:43.000000');
+INSERT INTO "application" (student_id, name, contact, email, department, grade, birth, address, interests, other_activities, application_type, is_pass, created_at)
+VALUES ('201912023', '김관식', '01021344323', 'gwansik@naver.com', '컴퓨터공학부', 3, '2000-03-23', '수원시', '', '', 'CORE_TEAM', true, '2023-07-25 18:12:43.000000');
 
-INSERT INTO "application" (student_id, name, contact, email, department, grade, birth, address, interests, other_activities, application_type, created_at)
-VALUES ('201912034', '박동민', '01012345678', 'dongmin@naver.com', '컴퓨터공학부', 3, '2000-01-01', '수원시', '', '', 'NORMAL', '2022-07-25 18:12:48.000000');
+INSERT INTO "application" (student_id, name, contact, email, department, grade, birth, address, interests, other_activities, application_type, is_pass, created_at)
+VALUES ('201912034', '박동민', '01012345678', 'dongmin@naver.com', '컴퓨터공학부', 3, '2000-01-01', '수원시', '', '', 'NORMAL', false, '2022-07-25 18:12:48.000000');
 
 -- -- Board
 -- INSERT INTO "board" (category, title, content, writer, created_at)
@@ -79,3 +79,11 @@ insert into shared_account(username, password, platform_name, platform_url)
 values ('test3', 'test3', 'test3', 'test3');
 insert into shared_account(username, password, platform_name, platform_url)
 values ('test4', 'test4', 'test4', 'test4');
+
+-- Recruitment
+insert into recruitment(period, application_type, target, status, created_at)
+values ('22.02.20 ~ 22.03.3', 'NORMAL', '1~2학년', '종료', '2022-02-20 00:00:00.000000');
+insert into recruitment(period, application_type, target, status, created_at)
+values ('22.08.01 ~ 22.08.12', 'NORMAL', '1~2학년', '종료', '2022-08-01 00:00:00.000000');
+insert into recruitment(period, application_type, target, status, created_at)
+values ('23.11.06 ~ 23.11.08', 'CORE_TEAM', '2~3학년', '모집중', '2023-11-05 00:00:00.000000');
