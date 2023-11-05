@@ -79,3 +79,11 @@ insert into shared_account(username, password, platform_name, platform_url)
 values ('test3', 'test3', 'test3', 'test3');
 insert into shared_account(username, password, platform_name, platform_url)
 values ('test4', 'test4', 'test4', 'test4');
+
+-- Recruitment
+insert into recruitment(period, application_type, target, status, created_at)
+values ('22.02.20 ~ 22.03.3', 'NORMAL', '1~2학년', '종료', '2022-02-20 00:00:00.000000');
+insert into recruitment(period, application_type, target, status, created_at)
+values ('22.08.01 ~ 22.08.12', 'NORMAL', '1~2학년', '종료', '2022-08-01 00:00:00.000000');
+insert into recruitment(period, application_type, target, status, created_at)
+values ('23.11.06 ~ 23.11.08', 'CORE_TEAM', '2~3학년', '모집중', '2023-11-05 00:00:00.000000');
