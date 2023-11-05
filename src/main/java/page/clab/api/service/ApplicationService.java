@@ -58,10 +58,14 @@ public class ApplicationService {
     @Transactional
     public List<ApplicationResponseDto> getApprovedApplications() throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
-        List<Application> applications = applicationRepository.findAll();
-        return applications.stream()
-                .map(ApplicationResponseDto::of)
-                .collect(Collectors.toList());
+        List<Application> applications = applicationRepository.findAllByIsPass(true);
+        if (applications.isEmpty()) {
+            throw new NotFoundException("승인된 신청자가 없습니다.");
+        } else {
+            return applications.stream()
+                    .map(ApplicationResponseDto::of)
+                    .collect(Collectors.toList());
+        }
     }
 
     public ApplicationResponseDto searchApplication(String applicationId) {

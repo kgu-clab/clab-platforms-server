@@ -32,11 +32,23 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler({
             NoSuchElementException.class,
+            NullPointerException.class,
+            SearchResultNotExistException.class,
+            NotFoundException.class
+    })
+    public ResponseModel Exception(HttpServletRequest request, HttpServletResponse response, Exception e) {
+        ResponseModel responseModel = ResponseModel.builder()
+                .success(true)
+                .build();
+        response.setStatus(200);
+        return responseModel;
+    }
+
+    @ExceptionHandler({
             MissingServletRequestParameterException.class,
             MalformedJsonException.class,
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class,
-            NullPointerException.class,
             DataIntegrityViolationException.class,
             FileUploadFailException.class,
             UnAuthorizeException.class,
@@ -46,13 +58,11 @@ public class ControllerExceptionHandler {
             LoginFaliedException.class,
             MemberLockedException.class,
             BadCredentialsException.class,
-            SearchResultNotExistException.class,
             FileNotFoundException.class,
-            NotFoundException.class,
             AssociatedAccountExistsException.class,
             Exception.class
     })
-    public ResponseModel Exception(HttpServletRequest request, HttpServletResponse response, Exception e) {
+    public ResponseModel errorException(HttpServletRequest request, HttpServletResponse response, Exception e) {
         ResponseModel responseModel = ResponseModel.builder()
                 .success(false)
                 .build();
