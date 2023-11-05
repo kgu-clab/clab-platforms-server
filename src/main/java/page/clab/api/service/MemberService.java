@@ -64,7 +64,7 @@ public class MemberService {
         if (memberId != null) {
             members.add(getMemberByIdOrThrow(memberId));
         } else if (name != null) {
-            members.add(getMemberByNameOrThrow(name));
+            members.addAll(getMemberByName(name));
         } else if (memberStatus != null) {
             members.addAll(getMemberByMemberStatus(memberStatus));
         } else {
@@ -143,9 +143,8 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
     }
 
-    public Member getMemberByNameOrThrow(String name) {
-        return memberRepository.findByName(name)
-                .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
+    public List<Member> getMemberByName(String name) {
+        return memberRepository.findAllByName(name);
     }
 
     public List<Member> getMemberByMemberStatus(MemberStatus memberStatus) {
