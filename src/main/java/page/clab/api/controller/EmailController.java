@@ -53,14 +53,5 @@ public class EmailController {
         return ResponseModel.builder().build();
     }
 
-    @Operation(summary = "Broadcast email to group", description = "Broadcast email to group")
-    @PostMapping(path="/group", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseModel broadcastEmailToGroup(@RequestParam String group,
-                                               @RequestParam String subject,
-                                               @RequestParam String content,
-                                               @RequestParam(value = "multipartfile", required = false) MultipartFile file) {
-
-        return ResponseModel.builder().build();
-    }
 
 }
