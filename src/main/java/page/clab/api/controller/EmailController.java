@@ -17,7 +17,6 @@ import page.clab.api.type.dto.MemberResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 import javax.mail.MessagingException;
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -36,20 +35,33 @@ public class EmailController {
     public ResponseModel sendEmail(@RequestParam String to,
                                    @RequestParam String subject,
                                    @RequestParam String content,
-                                   @RequestParam(value = "multipartfile", required = false) MultipartFile file
-    ) throws MessagingException, IOException {
-        emailService.sendEmail(to, subject, content, file);
+                                   @RequestParam(value = "multipartfile", required = false) List<MultipartFile> files
+    ) throws MessagingException {
+        emailService.sendEmail(to, subject, content, files);
         return ResponseModel.builder().build();
     }
+
 
     @Operation(summary = "Broadcast email", description = "Broadcast email")
     @PostMapping(path="/broadcast", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseModel broadcastEmailToAllMember(@RequestParam String subject,
                                                    @RequestParam String content,
-                                                   @RequestParam(value = "multipartfile", required = false) MultipartFile file
-    ) throws PermissionDeniedException, MessagingException, IOException {
+                                                   @RequestParam(value = "multipartfile", required = false) List<MultipartFile> file
+    ) throws PermissionDeniedException, MessagingException {
         List<MemberResponseDto> memberList = memberService.getMembers();
         emailService.broadcastEmailToAllMember(memberList, subject, content, file);
+        return ResponseModel.builder().build();
+    }
+
+
+    @Operation(summary = "Broadcast email to specific member", description = "Broadcast email to specific member")
+    @PostMapping(path="/group", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseModel broadcastEmailToGroup(@RequestParam List<String> emailList,
+                                               @RequestParam String subject,
+                                               @RequestParam String content,
+                                               @RequestParam(value = "multipartfile", required = false) List<MultipartFile> file
+    ) throws MessagingException {
+        emailService.broadcastEmailToGroup(emailList, subject, content, file);
         return ResponseModel.builder().build();
     }
 
