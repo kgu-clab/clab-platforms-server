@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.ApplicationService;
+import page.clab.api.type.dto.ApplicationPassResponseDto;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.dto.ResponseModel;
@@ -100,9 +101,9 @@ public class ApplicationController {
     public ResponseModel getApplicationPass(
             @PathVariable String applicationId
     ) {
-        Boolean isPass = applicationService.getApplicationPass(applicationId);
+        ApplicationPassResponseDto applicationPassResponseDto = applicationService.getApplicationPass(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(isPass);
+        responseModel.addData(applicationPassResponseDto);
         return responseModel;
     }
 
