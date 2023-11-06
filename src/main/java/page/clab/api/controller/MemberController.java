@@ -122,4 +122,14 @@ public class MemberController {
         return responseModel;
     }
 
+    @Operation(summary = "활동 그룹 팀장 권한 부여", description = "활동 그룹 팀장 권한 부여")
+    @PostMapping("/{memberId}/appointment")
+    public ResponseModel grantActivityGroupLeaderRole(
+            @PathVariable String memberId,
+            @RequestParam Long activityGroupId
+    ) throws PermissionDeniedException {
+        memberService.grantActivityGroupLeaderRole(memberId, activityGroupId);
+        return ResponseModel.builder().build();
+    }
+
 }

@@ -9,12 +9,15 @@ import page.clab.api.exception.AssociatedAccountExistsException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
+import page.clab.api.repository.GroupMemberRepository;
 import page.clab.api.repository.MemberRepository;
 import page.clab.api.type.dto.CloudUsageInfo;
 import page.clab.api.type.dto.FileInfo;
 import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
 import page.clab.api.type.dto.MemberUpdateRequestDto;
+import page.clab.api.type.entity.ActivityGroup;
+import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.MemberStatus;
@@ -33,6 +36,10 @@ import java.util.stream.Collectors;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+
+    private final GroupMemberRepository groupMemberRepository;
+
+    private final ActivityGroupService activityGroupService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -176,6 +183,15 @@ public class MemberService {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
+    }
+
+    public void grantActivityGroupLeaderRole(String memberId, Long ActivityGroupId) throws PermissionDeniedException {
+        checkMemberAdminRole();
+        Member member = getMemberByIdOrThrow(memberId);
+        ActivityGroup activityGroup = activityGroupService.findById(ActivityGroupId);
+        GroupMember groupMember = GroupMember.of(member, activityGroup);
+        groupMember.setRole(ActivityGroupRole.LEADER);
+        groupMemberRepository.save(groupMember);
     }
 
 }
