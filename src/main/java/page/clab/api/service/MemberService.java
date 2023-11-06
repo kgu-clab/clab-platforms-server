@@ -16,6 +16,7 @@ import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
 import page.clab.api.type.dto.MemberUpdateRequestDto;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.Role;
 import page.clab.api.util.FileSystemUtil;
@@ -134,6 +135,22 @@ public class MemberService {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
         Member member = memberRepository.findById(memberId).get();
         if (member.getRole().equals(Role.USER)) {
+            throw new PermissionDeniedException("권한이 부족합니다.");
+        }
+    }
+
+    public void checkMemberGroupLeaderRole() throws PermissionDeniedException {
+        String memberId = AuthUtil.getAuthenticationInfoMemberId();
+        Member member = memberRepository.findById(memberId).get();
+        if (!member.getRole().equals(ActivityGroupRole.LEADER)) {
+            throw new PermissionDeniedException("권한이 부족합니다.");
+        }
+    }
+
+    public void checkMemberGroupMemberRole() throws PermissionDeniedException {
+        String memberId = AuthUtil.getAuthenticationInfoMemberId();
+        Member member = memberRepository.findById(memberId).get();
+        if (!member.getRole().equals(ActivityGroupRole.MEMBER)) {
             throw new PermissionDeniedException("권한이 부족합니다.");
         }
     }
