@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.ApplicationRepository;
+import page.clab.api.type.dto.ApplicationPassResponseDto;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.entity.Application;
@@ -86,12 +87,14 @@ public class ApplicationService {
         }
     }
 
-    public Boolean getApplicationPass(String applicationId) {
+    public ApplicationPassResponseDto getApplicationPass(String applicationId) {
         Application application = getApplicationById(applicationId);
         if (application == null) {
-            return false;
+            return ApplicationPassResponseDto.builder()
+                    .isPass(false)
+                    .build();
         }
-        return application.getIsPass();
+        return ApplicationPassResponseDto.of(application);
     }
 
     public void deleteApplication(String applicationId) throws PermissionDeniedException {
