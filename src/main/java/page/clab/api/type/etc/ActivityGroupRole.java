@@ -5,13 +5,11 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Role {
+public enum ActivityGroupRole {
 
-    USER("ROLE_USER", "Normal User"),
-    ADMIN("ROLE_ADMIN", "Administrator"),
-    SUPER("ROLE_SUPER", "Super Administrator");
+    LEADER("LEADER", "Leader"),
+    MEMBER("MEMBER", "Member");
 
     private String key;
     private String description;
-
 }
