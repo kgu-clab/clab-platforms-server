@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.type.dto.GroupMemberDto;
+import page.clab.api.type.etc.ActivityGroupRole;
+import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -34,6 +37,17 @@ public class GroupMember {
     private ActivityGroup activityGroup;
 
     @Enumerated(EnumType.STRING)
-    private String role;
+    private ActivityGroupRole role;
+
+    public static GroupMember of(GroupMemberDto groupMemberDto) {
+        return ModelMapperUtil.getModelMapper().map(groupMemberDto, GroupMember.class);
+    }
+
+    public static GroupMember of(Member member, ActivityGroup activityGroup) {
+        return GroupMember.builder()
+                .member(member)
+                .activityGroup(activityGroup)
+                .build();
+    }
 
 }
