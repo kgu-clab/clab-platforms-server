@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.URL;
 import page.clab.api.type.dto.BookRequestDto;
 import page.clab.api.util.ModelMapperUtil;
 
@@ -42,6 +43,7 @@ public class Book {
     @Column(nullable = false)
     private String publisher;
 
+    @URL
     private String imageUrl;
 
     @CreationTimestamp

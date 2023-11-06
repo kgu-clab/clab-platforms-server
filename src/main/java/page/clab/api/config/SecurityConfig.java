@@ -56,7 +56,9 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers(PERMIT_ALL).permitAll()
                 .antMatchers(HttpMethod.POST, "/applications").permitAll()
-                .antMatchers(HttpMethod.GET, "/applications/search").permitAll()
+                .antMatchers("/applications/filter", "/applications/pass", "/applications/search").hasAnyRole("ADMIN", "SUPER")
+                .antMatchers(HttpMethod.GET, "/applications/{applicationId}").permitAll()
+                .antMatchers(HttpMethod.GET, "/recruitments").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class);

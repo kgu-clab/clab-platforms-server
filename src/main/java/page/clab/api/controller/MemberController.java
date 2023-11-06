@@ -34,16 +34,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @Operation(summary = "신규 멤버 생성", description = "신규 멤버 생성<br>" +
-            "String id;<br>"+
-            "String password;<br>" +
-            "String name;<br>" +
-            "String contact;<br>" +
-            "String email;<br>" +
-            "String department;<br>" +
-            "Long grade;<br>" +
-            "LocalDate birth; (ex: 2023-01-01)<br>" +
-            "String address;<br>" +
-            "Boolean isInSchool<br>")
+            "StudentStatus: CURRENT / ON_LEAVE / GRADUATED<br>" +
+            "MemberStatus: ACTIVE / INACTIVE")
     @PostMapping("")
     public ResponseModel createMember(
             @RequestBody MemberRequestDto memberRequestDto
@@ -76,16 +68,7 @@ public class MemberController {
     }
 
     @Operation(summary = "멤버 정보 수정", description = "본인 정보 수정<br>" +
-            "String password;<br>"+
-            "String name;<br>" +
-            "String contact;<br>" +
-            "String email;<br>" +
-            "String department;<br>" +
-            "Long grade;<br>" +
-            "LocalDate birth; (ex: 2023-01-01)<br>" +
-            "String address;<br>" +
-            "Boolean isInSchool<br>" +
-            "String imageUrl;")
+            "StudentStatus: CURRENT / ON_LEAVE / GRADUATED")
     @PatchMapping("")
     public ResponseModel updateMemberInfoByMember(
             @RequestBody MemberUpdateRequestDto memberUpdateRequestDto

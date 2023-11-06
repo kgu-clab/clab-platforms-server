@@ -17,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -38,6 +39,8 @@ public class Donation {
     @Column(nullable = false)
     private Double amount;
 
+    @Column(length = 300)
+    @Size(max = 300)
     private String message;
 
     @CreationTimestamp

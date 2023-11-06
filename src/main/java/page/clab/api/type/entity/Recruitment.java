@@ -6,14 +6,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.validator.constraints.URL;
+import page.clab.api.type.dto.RecruitmentRequestDto;
+import page.clab.api.type.etc.ApplicationType;
+import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,30 +25,34 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActivityGroup {
+public class Recruitment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String category;
+    private LocalDateTime startDate;
 
     @Column(nullable = false)
-    @Size(max = 30)
-    private String name;
+    private LocalDateTime endDate;
+
+    @Enumerated(EnumType.STRING)
+    private ApplicationType applicationType;
 
     @Column(nullable = false)
-    @Size(max = 1000)
-    private String content;
+    private String target;
 
-    @URL
-    private String imageUrl;
+    @Column(nullable = false)
+    private String status;
 
-    private LocalDateTime schedule;
+    private LocalDateTime updateTime;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    public static Recruitment of(RecruitmentRequestDto recruitmentRequestDto) {
+        return ModelMapperUtil.getModelMapper().map(recruitmentRequestDto, Recruitment.class);
+    }
 
 }
