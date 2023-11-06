@@ -9,6 +9,7 @@ public enum Role {
 
     USER("ROLE_USER", "Normal User"),
     ADMIN("ROLE_ADMIN", "Administrator"),
+    TEAM_LEADER("ROLE_TEAM_LEADER", "Team Leader"),
     SUPER("ROLE_SUPER", "Super Administrator");
 
     private String key;
