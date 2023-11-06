@@ -30,7 +30,7 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    @Operation(summary = "유저 로그인", description = "JWT 인증 로그인")
+    @Operation(summary = "유저 로그인", description = "경기대학교 ID, PW로 로그인")
     @PostMapping()
     public ResponseModel login(
             HttpServletRequest httpServletRequest,

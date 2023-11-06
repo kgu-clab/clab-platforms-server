@@ -28,6 +28,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web' // 웹 MVC
 	implementation 'org.springframework.boot:spring-boot-starter-validation' // 유효성 검사
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 템플릿 엔진
+	implementation 'org.springframework.boot:spring-boot-starter-webflux' // WebFlux
 	developmentOnly 'org.springframework.boot:spring-boot-devtools' // 개발 도구
 
 	// Util
