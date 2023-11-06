@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.entity.Application;
+import page.clab.api.type.etc.ApplicationType;
 import page.clab.api.util.ModelMapperUtil;
 
 @Getter
@@ -16,6 +17,8 @@ import page.clab.api.util.ModelMapperUtil;
 public class ApplicationPassResponseDto {
 
     private String name;
+
+    private ApplicationType applicationType;
 
     private Boolean isPass;
 
