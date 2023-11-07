@@ -112,7 +112,7 @@ public class MemberController {
     }
 
     @Operation(summary = "멤버 업로드 파일 리스트 조회", description = "멤버 업로드 파일 리스트 조회")
-    @GetMapping("/{memberId}/files")
+    @GetMapping("/files/{memberId}")
     public ResponseModel getMemberUploadedFiles(
             @PathVariable String memberId
     ) {
