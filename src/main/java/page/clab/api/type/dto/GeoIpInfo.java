@@ -13,6 +13,8 @@ import lombok.Setter;
 @Builder
 public class GeoIpInfo {
 
+    private String location;
+
     private String city;
 
     private String country;

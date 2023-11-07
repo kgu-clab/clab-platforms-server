@@ -26,7 +26,6 @@ public class GeoIpUtil {
 
     public static GeoIpInfo getInfoByIp(String ipAddress) {
         GeoIpInfo geoIpInfo = new GeoIpInfo();
-
         try {
             InetAddress ip = InetAddress.getByName(ipAddress);
             CityResponse response = databaseReader.city(ip);
@@ -35,15 +34,21 @@ public class GeoIpUtil {
             Country country = response.getCountry();
             Location location = response.getLocation();
 
+            geoIpInfo.setLocation(city.getName() + " " + country.getName());
             geoIpInfo.setCity(city.getName());
             geoIpInfo.setCountry(country.getName());
             geoIpInfo.setLatitude(location.getLatitude());
             geoIpInfo.setLongitude(location.getLongitude());
-
         } catch (IOException | GeoIp2Exception e) {
-            throw new RuntimeException(e);
+            return GeoIpInfo.builder()
+                    .location("Unknown")
+                    .city(null)
+                    .country(null)
+                    .latitude(null)
+                    .longitude(null)
+                    .build();
         }
-
         return geoIpInfo;
     }
+
 }
