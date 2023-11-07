@@ -1,6 +1,8 @@
 package page.clab.api.handler;
 
 import com.google.gson.stream.MalformedJsonException;
+import com.maxmind.geoip2.exception.AddressNotFoundException;
+import com.maxmind.geoip2.exception.GeoIp2Exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -23,6 +25,7 @@ import page.clab.api.type.dto.ResponseModel;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.util.NoSuchElementException;
 
@@ -60,6 +63,9 @@ public class ControllerExceptionHandler {
             BadCredentialsException.class,
             FileNotFoundException.class,
             AssociatedAccountExistsException.class,
+            GeoIp2Exception.class,
+            AddressNotFoundException.class,
+            IOException.class,
             Exception.class
     })
     public ResponseModel errorException(HttpServletRequest request, HttpServletResponse response, Exception e) {
