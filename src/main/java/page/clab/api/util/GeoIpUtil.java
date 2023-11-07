@@ -35,15 +35,16 @@ public class GeoIpUtil {
             Country country = response.getCountry();
             Location location = response.getLocation();
 
+            geoIpInfo.setLocation(city.getName() + " " + country.getName());
             geoIpInfo.setCity(city.getName());
             geoIpInfo.setCountry(country.getName());
             geoIpInfo.setLatitude(location.getLatitude());
             geoIpInfo.setLongitude(location.getLongitude());
-
         } catch (IOException | GeoIp2Exception e) {
-            throw new RuntimeException(e);
+            return GeoIpInfo.builder()
+                    .location("Unknown")
+                    .build();
         }
-
         return geoIpInfo;
     }
 }
