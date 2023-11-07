@@ -14,9 +14,13 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import page.clab.api.auth.exception.TokenValidateException;
 import page.clab.api.auth.exception.UnAuthorizeException;
 import page.clab.api.exception.AssociatedAccountExistsException;
+import page.clab.api.exception.BookAlreadyBorrowedException;
 import page.clab.api.exception.FileUploadFailException;
+import page.clab.api.exception.InvalidBorrowerException;
+import page.clab.api.exception.LoanSuspensionException;
 import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.NotFoundException;
+import page.clab.api.exception.OverdueException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.exception.MemberLockedException;
@@ -66,6 +70,10 @@ public class ControllerExceptionHandler {
             GeoIp2Exception.class,
             AddressNotFoundException.class,
             IOException.class,
+            BookAlreadyBorrowedException.class,
+            InvalidBorrowerException.class,
+            LoanSuspensionException.class,
+            OverdueException.class,
             Exception.class
     })
     public ResponseModel errorException(HttpServletRequest request, HttpServletResponse response, Exception e) {
