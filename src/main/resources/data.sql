@@ -87,3 +87,15 @@ insert into recruitment(start_date, end_date, application_type, target, status, 
 values ('2022-08-01 00:00:00.000000', '2022-08-12 00:00:00.000000', 'NORMAL', '1~2학년', '종료', '2022-08-01 00:00:00.000000');
 insert into recruitment(start_date, end_date, application_type, target, status, created_at)
 values ('2023-11-06 00:00:00.000000', '2023-11-08 00:00:00.000000', 'CORE_TEAM', '2~3학년', '모집중', '2023-11-05 00:00:00.000000');
+
+-- Review
+insert into review(member_id, content, is_public, created_at)
+values ('admin', '씨랩 화이팅', true, '2022-07-02 12:14:45.000000');
+insert into review(member_id, content, is_public, created_at)
+values ('admin', '씨랩 화이팅', false, '2022-07-15 07:43:12.000000');
+insert into review(member_id, content, is_public, created_at)
+values ('201912156', '씨랩 화이팅', false, '2022-08-02 09:46:00.000000');
+insert into review(member_id, content, is_public, created_at)
+values ('201912033', '씨랩 화이팅', true, '2022-09-26 18:32:00.000000');
+insert into review(member_id, content, is_public, created_at)
+values ('201912033', '씨랩 화이팅', false, '2022-10-12 23:59:03.000000');
