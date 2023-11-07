@@ -104,6 +104,8 @@ public class Member implements UserDetails {
 
     private LocalDateTime lastLoginTime;
 
+    private LocalDateTime loanSuspensionDate;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(getRole().getKey()));
