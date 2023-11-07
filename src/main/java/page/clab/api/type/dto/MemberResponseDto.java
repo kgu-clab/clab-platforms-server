@@ -52,6 +52,8 @@ public class MemberResponseDto {
 
     private LocalDateTime lastLoginTime;
 
+    private LocalDateTime loanSuspensionDate;
+
     public static MemberResponseDto of(Member member) {
         return ModelMapperUtil.getModelMapper().map(member, MemberResponseDto.class);
     }
