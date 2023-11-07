@@ -117,6 +117,9 @@ public class MemberService {
     }
 
     public List<FileInfo> getFilesInMemberDirectory(String memberId) {
+        if (!(isMemberAdminRole() || getCurrentMember().getId().equals(memberId))) {
+            return new ArrayList<>();
+        }
         File directory = new File(filePath + "/members/" + memberId);
         File[] files = FileSystemUtil.getFilesInDirectory(directory).toArray(new File[0]);
         return Arrays.stream(files)
@@ -136,6 +139,15 @@ public class MemberService {
         if (member.getRole().equals(Role.USER)) {
             throw new PermissionDeniedException("권한이 부족합니다.");
         }
+    }
+
+    public boolean isMemberAdminRole() {
+        String memberId = AuthUtil.getAuthenticationInfoMemberId();
+        Member member = memberRepository.findById(memberId).get();
+        if (member.getRole().equals(Role.USER)) {
+            return false;
+        }
+        return true;
     }
 
     public Member getMemberByIdOrThrow(String memberId) {
