@@ -151,6 +151,10 @@ public class MemberService {
         return memberRepository.findByMemberStatus(memberStatus);
     }
 
+    public Member saveMember(Member updatedMember) {
+        return memberRepository.save(updatedMember);
+    }
+
     public String removeHyphensFromContact(String contact) {
         return contact.replaceAll("-", "");
     }
