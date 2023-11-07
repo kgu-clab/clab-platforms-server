@@ -1,7 +1,5 @@
 package page.clab.api.type.entity;
 
-
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,5 +39,7 @@ public class BookLoanRecord {
     private LocalDateTime borrowedAt;
 
     private LocalDateTime returnedAt;
+
+    private LocalDateTime loanExtensionDate;
 
 }
