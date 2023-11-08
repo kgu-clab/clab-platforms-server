@@ -26,9 +26,6 @@ public class AwardRequestDto {
     private String awardName;
 
     @NotNull
-    private String participants;
-
-    @NotNull
     private LocalDateTime awardDate;
 
 }

@@ -25,8 +25,6 @@ public class AwardResponseDto {
 
     private String awardName;
 
-    private String participants;
-
     private LocalDateTime awardDate;
 
     public static AwardResponseDto of(Award award) {
