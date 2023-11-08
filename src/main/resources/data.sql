@@ -125,3 +125,11 @@ insert into work_experience(company_name, position, start_date, end_date, member
 values ('씨랩', '개발자', '2022-08-02 09:46:00.000000', '2022-08-02 09:46:00.000000', '201912156');
 insert into work_experience(company_name, position, start_date, end_date, member_id)
 values ('씨랩', '개발자', '2022-08-02 09:46:00.000000', '2022-08-02 09:46:00.000000', '201912033');
+
+-- Blog
+insert into blog(member_id, title, sub_title, content, tag, update_time, created_at)
+values ('admin', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', '2022-08-02 09:46:00.000000', '2022-08-02 09:46:00.000000');
+insert into blog(member_id, title, sub_title, content, tag, update_time, created_at)
+values ('201912156', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', '2022-08-02 09:46:00.000000', '2022-08-02 09:46:00.000000');
+insert into blog(member_id, title, sub_title, content, tag, update_time, created_at)
+values ('201912033', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', '2022-08-02 09:46:00.000000', '2022-08-02 09:46:00.000000');
