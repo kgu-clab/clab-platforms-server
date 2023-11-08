@@ -127,9 +127,13 @@ insert into work_experience(company_name, position, start_date, end_date, member
 values ('씨랩', '개발자', '2022-08-02 09:46:00.000000', '2022-08-02 09:46:00.000000', '201912033');
 
 -- Blog
-insert into blog(member_id, title, sub_title, content, tag, update_time, created_at)
-values ('admin', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', '2022-08-02 09:46:00.000000', '2022-08-02 09:46:00.000000');
-insert into blog(member_id, title, sub_title, content, tag, update_time, created_at)
-values ('201912156', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', '2022-08-02 09:46:00.000000', '2022-08-02 09:46:00.000000');
-insert into blog(member_id, title, sub_title, content, tag, update_time, created_at)
-values ('201912033', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', '2022-08-02 09:46:00.000000', '2022-08-02 09:46:00.000000');
+insert into blog(member_id, title, sub_title, content, image_url, tag, update_time, created_at)
+values ('admin', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', 'https://shopping-phinf.pstatic.net/main_3250387/32503877629.20220527022132.jpg?type=w300', '씨랩 화이팅', '2022-07-02 12:14:45.000000', '2022-07-02 12:14:45.000000');
+insert into blog(member_id, title, sub_title, content, image_url, tag, update_time, created_at)
+values ('admin', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', 'https://shopping-phinf.pstatic.net/main_3250387/32503877629.20220527022132.jpg?type=w300', '씨랩 화이팅', '2022-07-15 07:43:12.000000', '2022-07-15 07:43:12.000000');
+insert into blog(member_id, title, sub_title, content, image_url, tag, update_time, created_at)
+values ('201912156', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', 'https://shopping-phinf.pstatic.net/main_3250387/32503877629.20220527022132.jpg?type=w300', '씨랩 화이팅', '2022-08-02 09:46:00.000000', '2022-08-02 09:46:00.000000');
+insert into blog(member_id, title, sub_title, content, image_url, tag, update_time, created_at)
+values ('201912033', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', 'https://shopping-phinf.pstatic.net/main_3250387/32503877629.20220527022132.jpg?type=w300', '씨랩 화이팅', '2022-09-26 18:32:00.000000', '2022-09-26 18:32:00.000000');
+insert into blog(member_id, title, sub_title, content, image_url, tag, update_time, created_at)
+values ('201912033', '씨랩 화이팅', '씨랩 화이팅', '씨랩 화이팅', 'https://shopping-phinf.pstatic.net/main_3250387/32503877629.20220527022132.jpg?type=w300', '씨랩 화이팅', '2022-10-12 23:59:03.000000', '2022-10-12 23:59:03.000000');

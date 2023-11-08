@@ -23,6 +23,8 @@ public class BlogRequestDto {
     @NotNull
     private String content;
 
+    private String imageUrl;
+
     private String tag;
 
 }

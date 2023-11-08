@@ -43,6 +43,8 @@ public class Blog {
     @Column(nullable = false)
     private String content;
 
+    private String imageUrl;
+
     private String tag;
 
     private LocalDateTime updateTime;
