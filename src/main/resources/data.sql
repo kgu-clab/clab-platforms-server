@@ -117,3 +117,11 @@ insert into award(competition_name, organizer, award_name, award_date, member_id
 values ('제10회 소프트웨어 개발보안 시큐어코딩 해커톤', '한국정보보호학회', '우수상', '2022-08-02 09:46:00.000000', '201912156');
 insert into award(competition_name, organizer, award_name, award_date, member_id)
 values ('제10회 소프트웨어 개발보안 시큐어코딩 해커톤', '한국정보보호학회', '우수상', '2022-08-02 09:46:00.000000', '201912033');
+
+-- WorkExperience
+insert into work_experience(company_name, position, start_date, end_date, member_id)
+values ('씨랩', '개발자', '2022-08-02 09:46:00.000000', '2022-08-02 09:46:00.000000', 'admin');
+insert into work_experience(company_name, position, start_date, end_date, member_id)
+values ('씨랩', '개발자', '2022-08-02 09:46:00.000000', '2022-08-02 09:46:00.000000', '201912156');
+insert into work_experience(company_name, position, start_date, end_date, member_id)
+values ('씨랩', '개발자', '2022-08-02 09:46:00.000000', '2022-08-02 09:46:00.000000', '201912033');
