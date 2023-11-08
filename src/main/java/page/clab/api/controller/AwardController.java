@@ -40,21 +40,21 @@ public class AwardController {
         return responseModel;
     }
 
-    @Operation(summary = "수상 이력 조회", description = "수상 이력 조회")
+    @Operation(summary = "내 수상 이력 조회", description = "수상 이력 조회")
     @GetMapping("")
-    public ResponseModel getAwards() {
-        List<AwardResponseDto> awardResponseDtos = awardService.getAwards();
+    public ResponseModel getMyAwards() {
+        List<AwardResponseDto> awardResponseDtos = awardService.getMyAwards();
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(awardResponseDtos);
         return responseModel;
     }
 
-    @Operation(summary = "수상 이력 검색", description = "대회명, 주최, 상장명, 참가 멤버를 기준으로 검색")
+    @Operation(summary = "수상 이력 검색", description = "학번을 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel searchAwards(
-            @RequestParam String keyword
+            @RequestParam String memberId
     ) {
-        List<AwardResponseDto> awardResponseDtos = awardService.searchAwards(keyword);
+        List<AwardResponseDto> awardResponseDtos = awardService.searchAwards(memberId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(awardResponseDtos);
         return responseModel;

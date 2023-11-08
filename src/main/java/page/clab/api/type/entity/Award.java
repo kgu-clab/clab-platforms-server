@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
 @Entity
@@ -37,10 +38,10 @@ public class Award {
     private String awardName;
 
     @Column(nullable = false)
-    private String participants;
-
-    @Column(nullable = false)
     private LocalDateTime awardDate;
+
+    @ManyToOne
+    private Member member;
 
     public static Award of(AwardRequestDto awardRequestDto) {
         return ModelMapperUtil.getModelMapper().map(awardRequestDto, Award.class);
