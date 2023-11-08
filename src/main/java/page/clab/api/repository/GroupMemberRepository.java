@@ -6,4 +6,6 @@ import page.clab.api.type.entity.GroupMember;
 
 @Repository
 public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> {
+
+    GroupMember findByMemberId(String memberId);
 }

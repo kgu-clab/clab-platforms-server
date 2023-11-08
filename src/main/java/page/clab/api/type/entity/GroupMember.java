@@ -47,6 +47,7 @@ public class GroupMember {
         return GroupMember.builder()
                 .member(member)
                 .activityGroup(activityGroup)
+                .role(ActivityGroupRole.LEADER)
                 .build();
     }
 

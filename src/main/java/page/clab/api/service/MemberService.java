@@ -39,7 +39,7 @@ public class MemberService {
 
     private final GroupMemberRepository groupMemberRepository;
 
-    private final ActivityGroupService activityGroupService;
+    private final ActivityGroupMemberService activityGroupService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -148,15 +148,16 @@ public class MemberService {
 
     public void checkMemberGroupLeaderRole() throws PermissionDeniedException {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
+        GroupMember groupMember = groupMemberRepository.findByMemberId(memberId);
         Member member = memberRepository.findById(memberId).get();
-        if (!member.getRole().equals(ActivityGroupRole.LEADER)) {
+        if (groupMember.getRole().equals(ActivityGroupRole.MEMBER) || member.getRole().equals(Role.USER)) {
             throw new PermissionDeniedException("권한이 부족합니다.");
         }
     }
 
     public void checkMemberGroupMemberRole() throws PermissionDeniedException {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = memberRepository.findById(memberId).get();
+        GroupMember member = groupMemberRepository.findByMemberId(memberId);
         if (!member.getRole().equals(ActivityGroupRole.MEMBER)) {
             throw new PermissionDeniedException("권한이 부족합니다.");
         }
