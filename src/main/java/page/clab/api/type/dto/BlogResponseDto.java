@@ -31,6 +31,8 @@ public class BlogResponseDto {
 
     private String content;
 
+    private String imageUrl;
+
     private String tag;
 
     private LocalDateTime updateTime;
