@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -32,28 +33,28 @@ import page.clab.api.util.ModelMapperUtil;
 public class Application {
 
     @Id
-    @Size(min = 9, max = 9)
-    @Pattern(regexp = "^[0-9]+$")
+    @Size(min = 9, max = 9, message = "{size.application.studentId}")
+    @Pattern(regexp = "^[0-9]+$", message = "{pattern.application.studentId}")
     private String studentId;
 
     @Column(nullable = false)
-    @Size(min = 1, max = 10)
+    @Size(min = 1, max = 10, message = "{size.application.name}")
     private String name;
 
     @Column(nullable = false)
-    @Size(min = 11, max = 11)
+    @Size(min = 11, max = 11, message = "{size.application.contact}")
     private String contact;
 
     @Column(nullable = false)
-    @Email
+    @Email(message = "{email.application.email}")
     private String email;
 
     @Column(nullable = false)
     private String department;
 
     @Column(nullable = false)
-    @Min(1)
-    @Max(4)
+    @Min(value = 1, message = "{min.application.grade}")
+    @Max(value = 4, message = "{max.application.grade}")
     private Long grade;
 
     @Column(nullable = false)
@@ -66,16 +67,17 @@ public class Application {
     private String interests;
 
     @Column(length = 1000)
-    @Size(max = 1000)
+    @Size(max = 1000, message = "{size.application.otherActivities}")
     private String otherActivities;
 
-    @URL
+    @URL(message = "{url.application.githubUrl}")
     private String githubUrl;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ApplicationType applicationType;
 
+    @NotNull
     private Boolean isPass;
 
     @CreationTimestamp
