@@ -21,7 +21,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "activity_group")
 @Getter
 @Setter
 @Builder
@@ -36,7 +36,7 @@ public class ActivityGroup {
     @Column(nullable = false)
     private String category;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false)
     @Size(max = 30)
     private String name;
 
@@ -48,13 +48,15 @@ public class ActivityGroup {
     @Enumerated(EnumType.STRING)
     private ActivityGroupStatus status;
 
-    @Column
+    @Column(nullable = false)
+    @Size(max = 100, min=0)
     private Long progress;
 
-    @Column
+    @Column(nullable = true)
     private String code;
 
     @URL
+    @Column(name = "image_url", nullable = true)
     private String imageUrl;
 
 

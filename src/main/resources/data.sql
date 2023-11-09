@@ -22,6 +22,15 @@ VALUES ('201912034', '박동민', '01012345678', 'dongmin@naver.com', '컴퓨터
 -- INSERT INTO "board" (category, title, content, writer, created_at)
 -- VALUES ('졸업', '카카오 문열어', '<h1>네이버 흥해라</h1>', 'admin', '2022-07-25 18:12:43.000000');
 
+-- Activity group
+-- INSERT INTO "activity_group" (id, category, name, content, status, progress, code, image_url, created_at)
+-- VALUES ('1', 'project', '스프링', '스프링 스터디', '활동중', 70, 1234,'http://image.png', '2022-07-25 18:12:43.000000');
+--
+-- INSERT INTO "activity_group" (id, category, name, content, status, progress, code, image_url, created_at)
+-- VALUES ('2', 'study', '리액트', '리액트 스터디', '활동중', 30, 1111, 'http://image.png', '2022-07-25 18:12:43.000000');
+
+-- Group schedule
+
 -- LoginFailInfo
 insert into login_fail_info(member_id, login_fail_count, is_lock)
 values ('admin', 0, false);
