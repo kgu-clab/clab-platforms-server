@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.WorkExperienceService;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.WorkExperienceRequestDto;
@@ -66,7 +67,7 @@ public class WorkExperienceController {
     public ResponseModel updateWorkExperience(
             @PathVariable Long workExperienceId,
             @RequestBody WorkExperienceRequestDto workExperienceRequestDto
-    ) {
+    ) throws PermissionDeniedException {
         workExperienceService.updateWorkExperience(workExperienceId, workExperienceRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -76,7 +77,7 @@ public class WorkExperienceController {
     @DeleteMapping("/{workExperienceId}")
     public ResponseModel deleteWorkExperience(
             @PathVariable Long workExperienceId
-    ) {
+    ) throws PermissionDeniedException {
         workExperienceService.deleteWorkExperience(workExperienceId);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;

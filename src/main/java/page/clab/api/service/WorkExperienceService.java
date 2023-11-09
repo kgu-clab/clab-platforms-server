@@ -2,6 +2,8 @@ package page.clab.api.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import page.clab.api.exception.NotFoundException;
+import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.WorkExperienceRepository;
 import page.clab.api.type.dto.WorkExperienceRequestDto;
 import page.clab.api.type.dto.WorkExperienceResponseDto;
@@ -42,11 +44,11 @@ public class WorkExperienceService {
                 .collect(Collectors.toList());
     }
 
-    public void updateWorkExperience(Long workExperienceId, WorkExperienceRequestDto workExperienceRequestDto) {
+    public void updateWorkExperience(Long workExperienceId, WorkExperienceRequestDto workExperienceRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
         if (!(workExperience.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
-            throw new IllegalArgumentException("해당 경력사항을 수정할 권한이 없습니다.");
+            throw new PermissionDeniedException("해당 경력사항을 수정할 권한이 없습니다.");
         }
         WorkExperience updatedWorkExperience = WorkExperience.of(workExperienceRequestDto);
         updatedWorkExperience.setId(workExperienceId);
@@ -54,18 +56,18 @@ public class WorkExperienceService {
         workExperienceRepository.save(updatedWorkExperience);
     }
 
-    public void deleteWorkExperience(Long workExperienceId) {
+    public void deleteWorkExperience(Long workExperienceId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
         if (!(workExperience.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
-            throw new IllegalArgumentException("해당 경력사항을 삭제할 권한이 없습니다.");
+            throw new PermissionDeniedException("해당 경력사항을 삭제할 권한이 없습니다.");
         }
         workExperienceRepository.deleteById(workExperienceId);
     }
 
     private WorkExperience getWorkExperienceByIdOrThrow(Long workExperienceId) {
-        return workExperienceRepository.findById(workExperienceId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 경력사항이 존재하지 않습니다."));
+    return workExperienceRepository.findById(workExperienceId)
+            .orElseThrow(() -> new NotFoundException("해당 경력사항이 존재하지 않습니다."));
     }
 
 }
