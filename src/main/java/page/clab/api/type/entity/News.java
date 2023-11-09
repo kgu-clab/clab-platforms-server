@@ -1,5 +1,12 @@
 package page.clab.api.type.entity;
 
+import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,14 +16,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.type.dto.NewsDto;
 import page.clab.api.util.ModelMapperUtil;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -34,17 +33,15 @@ public class News {
     private String category;
 
     @Column(nullable = false)
-    @Size(max = 100)
+    @Size(min = 1, max = 100)
     private String title;
 
-    @Column(nullable = false)
     @Size(max = 100)
     private String subtitle;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Column
     @URL
     private String url;
 

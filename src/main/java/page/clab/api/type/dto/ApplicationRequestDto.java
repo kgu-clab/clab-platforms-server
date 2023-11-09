@@ -1,5 +1,12 @@
 package page.clab.api.type.dto;
 
+import java.time.LocalDate;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,14 +15,6 @@ import lombok.Setter;
 import page.clab.api.type.entity.Application;
 import page.clab.api.type.etc.ApplicationType;
 import page.clab.api.util.ModelMapperUtil;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -29,11 +28,11 @@ public class ApplicationRequestDto {
     private String studentId;
 
     @NotNull
-    @Size(max = 10)
+    @Size(min = 1, max = 10)
     private String name;
 
     @NotNull
-    @Size(max = 11)
+    @Size(min = 11, max = 11)
     private String contact;
 
     @NotNull

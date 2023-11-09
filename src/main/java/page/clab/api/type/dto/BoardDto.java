@@ -1,5 +1,7 @@
 package page.clab.api.type.dto;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,12 +17,17 @@ import page.clab.api.util.ModelMapperUtil;
 @Builder
 public class BoardDto {
 
+    @NotNull
     private String category;
 
+    @NotNull
+    @Size(min = 1, max = 100)
     private String title;
 
+    @NotNull
     private String content;
 
+    @NotNull
     private String writer;
 
     private String updateTime;

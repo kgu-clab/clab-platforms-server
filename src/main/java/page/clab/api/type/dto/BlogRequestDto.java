@@ -1,11 +1,12 @@
 package page.clab.api.type.dto;
 
-import jakarta.validation.constraints.NotNull;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.URL;
 
 @Getter
 @Setter
@@ -23,6 +24,7 @@ public class BlogRequestDto {
     @NotNull
     private String content;
 
+    @URL
     private String imageUrl;
 
     private String tag;
