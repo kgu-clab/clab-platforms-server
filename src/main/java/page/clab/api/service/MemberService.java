@@ -117,6 +117,9 @@ public class MemberService {
     }
 
     public List<FileInfo> getFilesInMemberDirectory(String memberId) {
+        if (!(isMemberAdminRole() || getCurrentMember().getId().equals(memberId))) {
+            return new ArrayList<>();
+        }
         File directory = new File(filePath + "/members/" + memberId);
         File[] files = FileSystemUtil.getFilesInDirectory(directory).toArray(new File[0]);
         return Arrays.stream(files)
@@ -138,6 +141,15 @@ public class MemberService {
         }
     }
 
+    public boolean isMemberAdminRole() {
+        String memberId = AuthUtil.getAuthenticationInfoMemberId();
+        Member member = memberRepository.findById(memberId).get();
+        if (member.getRole().equals(Role.USER)) {
+            return false;
+        }
+        return true;
+    }
+
     public Member getMemberByIdOrThrow(String memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
@@ -149,6 +161,10 @@ public class MemberService {
 
     public List<Member> getMemberByMemberStatus(MemberStatus memberStatus) {
         return memberRepository.findByMemberStatus(memberStatus);
+    }
+
+    public Member saveMember(Member updatedMember) {
+        return memberRepository.save(updatedMember);
     }
 
     public String removeHyphensFromContact(String contact) {

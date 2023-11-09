@@ -35,13 +35,13 @@ public class LoginAttemptLog {
 
     private String userAgent;
 
-    private LocalDateTime loginAttemptTime;
-
     private String ipAddress;
 
     private String location;
 
     @Enumerated(EnumType.STRING)
     private LoginAttemptResult loginAttemptResult;
+
+    private LocalDateTime loginAttemptTime;
 
 }
