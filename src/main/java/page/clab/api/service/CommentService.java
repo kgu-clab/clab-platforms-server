@@ -24,9 +24,9 @@ public class CommentService {
     private final MemberService memberService;
 
     public void createComment(Long boardId, CommentDto commentDto) {
-        Board board = boardService.getBoardById(boardId)
-                .orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
+        Board board = boardService.getBoardById(boardId);
         Comment comment = Comment.of(commentDto);
+        comment.setWriter(memberService.getCurrentMember());
         comment.setBoard(board);
         commentRepository.save(comment);
     }
