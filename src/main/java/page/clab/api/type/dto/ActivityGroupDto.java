@@ -21,9 +21,7 @@ public class ActivityGroupDto {
 
     private String content;
 
-    private String imageUrl;
-
-    private String schedule;
+//    private String imageUrl;
 
     public static ActivityGroupDto of(ActivityGroup activityGroup) {
         return ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupDto.class);
