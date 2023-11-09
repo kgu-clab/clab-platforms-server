@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.URL;
 import page.clab.api.type.entity.Application;
 import page.clab.api.type.etc.ApplicationType;
 import page.clab.api.util.ModelMapperUtil;
@@ -23,46 +24,46 @@ import page.clab.api.util.ModelMapperUtil;
 @Builder
 public class ApplicationRequestDto {
 
-    @Size(min = 9, max = 9)
-    @Pattern(regexp = "^[0-9]+$")
+    @Size(min = 9, max = 9, message = "{size.application.studentId}")
+    @Pattern(regexp = "^[0-9]+$", message = "{pattern.application.studentId}")
     private String studentId;
 
-    @NotNull
-    @Size(min = 1, max = 10)
+    @NotNull(message = "{notNull.application.name}")
+    @Size(min = 1, max = 10, message = "{size.application.name}")
     private String name;
 
-    @NotNull
-    @Size(min = 11, max = 11)
+    @NotNull(message = "{notNull.application.contact}")
+    @Size(min = 11, max = 11, message = "{size.application.contact}")
     private String contact;
 
-    @NotNull
-    @Email
+    @NotNull(message = "{notNull.application.email}")
+    @Email(message = "{email.application.email}")
     private String email;
 
-    @NotNull
+    @NotNull(message = "{notNull.application.department}")
     private String department;
 
-    @NotNull
-    @Min(1)
-    @Max(4)
+    @NotNull(message = "{notNull.application.grade}")
+    @Min(value = 1, message = "{min.application.grade}")
+    @Max(value = 4, message = "{max.application.grade}")
     private Long grade;
 
-    @NotNull
+    @NotNull(message = "{notNull.application.birth}")
     private LocalDate birth;
 
-    @NotNull
+    @NotNull(message = "{notNull.application.address}")
     private String address;
 
-    @NotNull
+    @NotNull(message = "{notNull.application.interests}")
     private String interests;
 
-    @Size(max = 1000)
+    @Size(max = 1000, message = "{size.application.otherActivities}")
     private String otherActivities;
 
-    @NotNull
+    @URL(message = "{url.application.githubUrl}")
     private String githubUrl;
 
-    @NotNull
+    @NotNull(message = "{notNull.application.applicationType}")
     private ApplicationType applicationType;
 
     public static ApplicationRequestDto of(Application application) {
