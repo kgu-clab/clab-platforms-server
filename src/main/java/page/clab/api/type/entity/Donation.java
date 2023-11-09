@@ -39,8 +39,8 @@ public class Donation {
     @Column(nullable = false)
     private Double amount;
 
-    @Column(length = 300)
-    @Size(max = 300)
+    @Column(nullable = false, length = 1000)
+    @Size(max = 1000)
     private String message;
 
     @CreationTimestamp

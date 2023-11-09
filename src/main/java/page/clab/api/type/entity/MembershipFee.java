@@ -36,8 +36,8 @@ public class MembershipFee {
     @Column(nullable = false)
     private String category;
 
-    @Column(nullable = false, length = 300)
-    @Size(max = 300)
+    @Column(nullable = false, length = 1000)
+    @Size(max = 1000)
     private String content;
 
     @URL

@@ -30,8 +30,8 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 500)
-    @Size(max = 500)
+    @Column(nullable = false, length = 1000)
+    @Size(max = 1000)
     private String content;
 
     @CreationTimestamp
