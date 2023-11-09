@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.URL;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,6 +18,7 @@ import page.clab.api.type.dto.MemberUpdateRequestDto;
 import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.OAuthProvider;
 import page.clab.api.type.etc.Role;
+import page.clab.api.type.etc.StudentStatus;
 import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Column;
@@ -24,6 +26,10 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -40,6 +46,8 @@ public class Member implements UserDetails {
 
     @Id
     @Column(updatable = false, unique = true, nullable = false)
+
+    @Size(min = 9, max = 9)
     private String id;
 
     @Column(nullable = false)
@@ -49,18 +57,23 @@ public class Member implements UserDetails {
     private String uid;
 
     @Column(nullable = false)
+    @Size(max = 10)
     private String name;
 
     @Column(nullable = false)
+    @Size(max = 11)
     private String contact;
 
     @Column(unique = true, nullable = false)
+    @Email
     private String email;
 
     @Column(nullable = false)
     private String department;
 
     @Column(nullable = false)
+    @Min(1)
+    @Max(4)
     private Long grade;
 
     @Column(nullable = false)
@@ -70,9 +83,10 @@ public class Member implements UserDetails {
     @Column(nullable = false)
     private String address;
 
-    @Column(nullable = false)
-    private Boolean isInSchool;
+    @Enumerated(EnumType.STRING)
+    private StudentStatus studentStatus;
 
+    @URL
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
@@ -87,6 +101,8 @@ public class Member implements UserDetails {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    private LocalDateTime lastLoginTime;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -142,7 +158,7 @@ public class Member implements UserDetails {
     public static Member of(Application application) {
         Member member = ModelMapperUtil.getModelMapper().map(application, Member.class);
         member.setPassword(member.generatePassword(member.getBirth()));
-        member.setIsInSchool(true);
+        member.setStudentStatus(StudentStatus.CURRENT);
         member.setRole(Role.USER);
         member.setProvider(OAuthProvider.LOCAL);
         return member;
