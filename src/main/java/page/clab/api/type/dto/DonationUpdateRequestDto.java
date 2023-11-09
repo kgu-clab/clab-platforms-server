@@ -1,6 +1,12 @@
 package page.clab.api.type.dto;
 
-import lombok.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -9,12 +15,17 @@ import lombok.*;
 @Builder
 public class DonationUpdateRequestDto {
 
+    @NotNull
     private Long id;
 
+    @NotNull
     private String donorId;
 
+    @NotNull
     private Double amount;
 
+    @NotNull
+    @Size(min = 1, max = 1000)
     private String message;
 
 }

@@ -1,16 +1,7 @@
 package page.clab.api.type.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.validator.constraints.URL;
-import page.clab.api.type.dto.ApplicationRequestDto;
-import page.clab.api.type.etc.ApplicationType;
-import page.clab.api.util.ModelMapperUtil;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -21,8 +12,16 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.URL;
+import page.clab.api.type.dto.ApplicationRequestDto;
+import page.clab.api.type.etc.ApplicationType;
+import page.clab.api.util.ModelMapperUtil;
 
 @Entity
 @Getter
@@ -38,11 +37,11 @@ public class Application {
     private String studentId;
 
     @Column(nullable = false)
-    @Size(max = 10)
+    @Size(min = 1, max = 10)
     private String name;
 
     @Column(nullable = false)
-    @Size(max = 11)
+    @Size(min = 11, max = 11)
     private String contact;
 
     @Column(nullable = false)
@@ -63,6 +62,7 @@ public class Application {
     @Column(nullable = false)
     private String address;
 
+    @Column(nullable = false)
     private String interests;
 
     @Column(length = 1000)

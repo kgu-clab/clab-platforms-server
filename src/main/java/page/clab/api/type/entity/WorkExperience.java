@@ -1,5 +1,12 @@
 package page.clab.api.type.entity;
 
+import java.time.LocalDate;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,14 +14,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.dto.WorkExperienceRequestDto;
 import page.clab.api.util.ModelMapperUtil;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import java.time.LocalDate;
 
 @Entity
 @Getter

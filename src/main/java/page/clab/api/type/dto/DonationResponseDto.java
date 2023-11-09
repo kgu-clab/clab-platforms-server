@@ -1,10 +1,9 @@
 package page.clab.api.type.dto;
 
+import java.time.LocalDateTime;
 import lombok.*;
 import page.clab.api.type.entity.Donation;
 import page.clab.api.util.ModelMapperUtil;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
