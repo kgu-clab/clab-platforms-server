@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.CommentService;
-import page.clab.api.type.dto.CommentDto;
+import page.clab.api.type.dto.CommentRequestDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -34,15 +34,17 @@ public class CommentController {
     @PostMapping("")
     public ResponseModel createComment(
             @RequestParam Long boardId,
-            @RequestBody CommentDto commentDto
+            @RequestBody CommentRequestDto commentRequestDto
     ) {
-        commentService.createComment(boardId, commentDto);
+        commentService.createComment(boardId, commentRequestDto);
         return ResponseModel.builder().build();
     }
 
     @Operation(summary = "댓글 리스트 조회", description = "댓글 리스트 조회")
     @GetMapping("")
-    public ResponseModel getComments(@RequestParam(required = false) Long boardId) {
+    public ResponseModel getComments(
+            @RequestParam(required = false) Long boardId
+    ) {
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(commentService.getComments(boardId));
         return responseModel;
@@ -55,14 +57,17 @@ public class CommentController {
     @PatchMapping("")
     public ResponseModel updateComment(
             @RequestParam Long commentId,
-            @RequestBody CommentDto commentDto) throws PermissionDeniedException {
-        commentService.updateComment(commentId, commentDto);
+            @RequestBody CommentRequestDto commentRequestDto
+    ) throws PermissionDeniedException {
+        commentService.updateComment(commentId, commentRequestDto);
         return ResponseModel.builder().build();
     }
 
     @Operation(summary = "댓글 삭제", description = "댓글 삭제")
     @DeleteMapping("/{commentId}")
-    public ResponseModel deleteComment(@PathVariable("commentId") Long commentId) throws PermissionDeniedException {
+    public ResponseModel deleteComment(
+            @PathVariable("commentId") Long commentId
+    ) throws PermissionDeniedException {
         commentService.deleteComment(commentId);
         return ResponseModel.builder().build();
     }
