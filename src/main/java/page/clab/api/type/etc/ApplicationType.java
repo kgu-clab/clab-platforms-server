@@ -5,11 +5,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Role {
+public enum ApplicationType {
 
-    USER("ROLE_USER", "Normal User"),
-    ADMIN("ROLE_ADMIN", "Administrator"),
-    SUPER("ROLE_SUPER", "Super Administrator");
+    NORMAL("NORMAL", "일반 회원"),
+    CORE_TEAM("CORE_TEAM", "코어팀");
 
     private String key;
     private String description;

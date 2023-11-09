@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.ApplicationService;
+import page.clab.api.type.dto.ApplicationPassResponseDto;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -32,20 +34,10 @@ public class ApplicationController {
     private final ApplicationService applicationService;
 
     @Operation(summary = "동아리 가입 신청", description = "동아리 가입 신청<br>" +
-            "ApplicationRequestDto<br>" +
-            "String studentId;<br>" +
-            "String name;<br>" +
-            "String contact;<br>" +
-            "String email;<br>" +
-            "String department;<br>" +
-            "Long grade;<br>" +
-            "LocalDate birth;<br>" +
-            "String address;<br>" +
-            "String interests;<br>" +
-            "String otherActivities;")
+            "ApplicationType: NORMAL / CORE_TEAM")
     @PostMapping("")
     public ResponseModel createApplication (
-            @RequestBody ApplicationRequestDto applicationRequestDto
+            @RequestBody @Valid ApplicationRequestDto applicationRequestDto
     ) {
         applicationService.createApplication(applicationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -61,8 +53,8 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "동아리 가입 신청자 목록 필터링(날짜 기준)", description = "전달된 날짜 사이의 신청자를 필터링함")
-    @GetMapping("/list")
+    @Operation(summary = "동아리 가입 신청자 목록 필터링(업데이트 날짜 기준)", description = "전달된 날짜 사이의 신청자를 필터링함")
+    @GetMapping("/filter")
     public ResponseModel getApplicationsBetweenDates(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
@@ -73,20 +65,20 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "동아리 가입 신청자 검색", description = "신청자의 학번 또는 이름을 기반으로 검색")
+    @Operation(summary = "동아리 가입 신청자 검색", description = "신청자의 학번을 기반으로 검색")
     @GetMapping("/search")
     public ResponseModel searchApplication(
-            @RequestParam(required = false) String applicationId,
-            @RequestParam(required = false) String name
-    ) throws PermissionDeniedException {
-        ApplicationResponseDto application = applicationService.searchApplication(applicationId, name);
+            @RequestParam String applicationId
+    ) {
+        ApplicationResponseDto application = applicationService.searchApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(application);
         return responseModel;
     }
 
-    @Operation(summary = "동아리 가입 신청 승인", description = "동아리 가입 신청 승인")
-    @PostMapping("/approve/{applicationId}")
+    @Operation(summary = "동아리 가입 신청 승인/취소", description = "동아리 가입 신청 승인/취소<br>" +
+        "승인/취소 상태가 반전됨")
+    @PostMapping("/{applicationId}")
     public ResponseModel approveApplication(
             @PathVariable String applicationId
     ) throws PermissionDeniedException {
@@ -95,13 +87,23 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "동아리 가입 승인 취소", description = "동아리 가입 신청 취소 (24시간 내에만 가능)")
-    @DeleteMapping("/cancel/{applicationId}")
-    public ResponseModel cancelApplication(
-            @PathVariable String applicationId
-    ) throws PermissionDeniedException {
-        applicationService.cancelApplication(applicationId);
+    @Operation(summary = "동아리 합격자 목록", description = "동아리 합격자 목록을 조회합니다.")
+    @GetMapping("/pass")
+    public ResponseModel getApprovedApplications() throws PermissionDeniedException {
+        List<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications();
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(approvedApplications);
+        return responseModel;
+    }
+
+    @Operation(summary = "동아리 합격 여부 조회", description = "동아리 합격 여부 조회")
+    @GetMapping("/{applicationId}")
+    public ResponseModel getApplicationPass(
+            @PathVariable String applicationId
+    ) {
+        ApplicationPassResponseDto applicationPassResponseDto = applicationService.getApplicationPass(applicationId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(applicationPassResponseDto);
         return responseModel;
     }
 
@@ -112,15 +114,6 @@ public class ApplicationController {
     ) throws PermissionDeniedException {
         applicationService.deleteApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
-    }
-
-    @Operation(summary = "동아리 가입 합격자 목록", description = "동아리 가입 합격자 목록을 조회합니다.")
-    @GetMapping("/pass")
-    public ResponseModel getApprovedApplications() throws PermissionDeniedException {
-        List<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications();
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(approvedApplications);
         return responseModel;
     }
 

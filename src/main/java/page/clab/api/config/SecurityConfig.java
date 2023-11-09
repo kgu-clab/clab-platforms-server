@@ -3,6 +3,7 @@ package page.clab.api.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -54,6 +55,10 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers(PERMIT_ALL).permitAll()
+                .antMatchers(HttpMethod.POST, "/applications").permitAll()
+                .antMatchers("/applications/filter", "/applications/pass", "/applications/search").hasAnyRole("ADMIN", "SUPER")
+                .antMatchers(HttpMethod.GET, "/applications/{applicationId}").permitAll()
+                .antMatchers(HttpMethod.GET, "/recruitments").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class);
@@ -69,7 +74,13 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        corsConfiguration.setAllowedOriginPatterns(List.of("https://clab.page"));
+        corsConfiguration.setAllowedOriginPatterns(
+                List.of(
+                        "http://clab.page", "https://clab.page",
+                        "http://*.clab.page", "https://*.clab.page",
+                        "http://localhost:5173"
+                )
+        );
         corsConfiguration.setAllowedMethods(List.of("*"));
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setAllowCredentials(true);

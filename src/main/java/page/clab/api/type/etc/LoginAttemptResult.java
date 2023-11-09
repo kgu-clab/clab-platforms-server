@@ -5,11 +5,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Role {
+public enum LoginAttemptResult {
 
-    USER("ROLE_USER", "Normal User"),
-    ADMIN("ROLE_ADMIN", "Administrator"),
-    SUPER("ROLE_SUPER", "Super Administrator");
+    SUCCESS("SUCCESS", "로그인 성공"),
+    FAILURE("FAILURE", "로그인 실패");
 
     private String key;
     private String description;
