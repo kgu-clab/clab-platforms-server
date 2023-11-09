@@ -67,6 +67,17 @@ public class FileController {
         return responseModel;
     }
 
+    @Operation(summary = "함께하는 활동 사진 업로드", description = "함께하는 활동 업로드")
+    @PostMapping("/activities")
+    public ResponseModel activityUpload(
+            @RequestParam(value = "file", required = true) MultipartFile multipartFile
+    ) throws FileUploadFailException {
+        String url = fileUploadService.saveFile(multipartFile, "activities");
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(url);
+        return responseModel;
+    }
+
     @Operation(summary = "멤버 클라우드 파일 업로드", description = "유저 클라우드 파일 업로드")
     @PostMapping("/members/{memberId}")
     public ResponseModel memberCloudUpload(
