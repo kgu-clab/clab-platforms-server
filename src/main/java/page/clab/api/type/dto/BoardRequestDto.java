@@ -15,26 +15,21 @@ import page.clab.api.util.ModelMapperUtil;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BoardDto {
+public class BoardRequestDto {
 
-    @NotNull
+    @NotNull(message = "{notNull.board.category}")
+    @Size(min = 1, max = 50, message = "{size.board.category}")
     private String category;
 
-    @NotNull
-    @Size(min = 1, max = 100)
+    @NotNull(message = "{notNull.board.title}")
+    @Size(min = 1, max = 100, message = "{size.board.title}")
     private String title;
 
-    @NotNull
+    @NotNull(message = "{notNull.board.content}")
     private String content;
 
-    @NotNull
-    private String writer;
-
-    private String updateTime;
-
-    private String createdAt;
-
-    public static BoardDto of(Board board) {
-        return ModelMapperUtil.getModelMapper().map(board, BoardDto.class);
+    public static BoardRequestDto of(Board board) {
+        return ModelMapperUtil.getModelMapper().map(board, BoardRequestDto.class);
     }
+
 }
