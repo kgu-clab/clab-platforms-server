@@ -1,12 +1,13 @@
 package page.clab.api.type.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,16 +29,19 @@ public class Award {
     private Long id;
 
     @Column(nullable = false)
+    @Size(min = 1, max = 255, message = "{size.award.competitionName}")
     private String competitionName;
 
     @Column(nullable = false)
+    @Size(min = 1, max = 255, message = "{size.award.organizer}")
     private String organizer;
 
     @Column(nullable = false)
+    @Size(min = 1, max = 255, message = "{size.award.awardName}")
     private String awardName;
 
     @Column(nullable = false)
-    private LocalDateTime awardDate;
+    private LocalDate awardDate;
 
     @ManyToOne
     private Member member;

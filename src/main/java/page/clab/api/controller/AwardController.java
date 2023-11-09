@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,6 +21,7 @@ import page.clab.api.type.dto.AwardRequestDto;
 import page.clab.api.type.dto.AwardResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -33,8 +36,12 @@ public class AwardController {
     @Operation(summary = "수상 이력 등록", description = "수상 이력 등록")
     @PostMapping("")
     public ResponseModel createAward(
-            @RequestBody AwardRequestDto awardRequestDto
-    ) {
+            @Valid @RequestBody AwardRequestDto awardRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         awardService.createAward(awardRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -60,12 +67,16 @@ public class AwardController {
         return responseModel;
     }
 
-    @Operation(summary = "수상 이력 수정", description = "수상 이력 수정")
-    @PatchMapping("/{awardId}")
-    public ResponseModel updateAward(
-            @PathVariable Long awardId,
-            @RequestBody AwardRequestDto awardRequestDto
-    ) throws PermissionDeniedException {
+  @Operation(summary = "수상 이력 수정", description = "수상 이력 수정")
+  @PatchMapping("/{awardId}")
+  public ResponseModel updateAward(
+      @PathVariable Long awardId,
+      @Valid @RequestBody AwardRequestDto awardRequestDto,
+      BindingResult result
+  ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         awardService.updateAward(awardId, awardRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
