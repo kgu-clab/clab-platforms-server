@@ -21,7 +21,7 @@ public class CommentRequestDto {
 
     private LocalDateTime updateTime;
 
-    private String writer_id;
+    private String writerId;
 
 
     public static CommentResponseDto of(Comment comment) {

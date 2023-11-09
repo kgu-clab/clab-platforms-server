@@ -43,7 +43,7 @@ public class CommentController {
     @Operation(summary = "댓글 리스트 조회", description = "댓글 리스트 조회")
     @GetMapping("")
     public ResponseModel getComments(
-            @RequestParam(required = false) Long boardId
+            @RequestParam Long boardId
     ) {
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(commentService.getComments(boardId));

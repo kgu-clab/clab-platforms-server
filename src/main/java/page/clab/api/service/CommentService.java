@@ -48,7 +48,7 @@ public class CommentService {
 
     public void deleteComment(Long commentId) throws PermissionDeniedException{
         Comment comment = getCommentByIdOrThrow(commentId);
-        if (!Objects.equals(comment.getWriter().getId(), memberService.getCurrentMember().getId())) {
+        if (!Objects.equals(comment.getWriter().getId(), memberService.getCurrentMember().getId()) || !memberService.isMemberAdminRole()) {
             throw new PermissionDeniedException("댓글 작성자만 삭제할 수 있습니다.");
         }
         commentRepository.delete(comment);
