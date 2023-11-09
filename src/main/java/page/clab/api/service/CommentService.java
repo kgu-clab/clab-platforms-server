@@ -4,13 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
-import page.clab.api.repository.BoardRepository;
 import page.clab.api.repository.CommentRepository;
 import page.clab.api.type.dto.CommentDto;
 import page.clab.api.type.entity.Board;
 import page.clab.api.type.entity.Comment;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -21,15 +19,12 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
 
-    private final BoardRepository boardRepository;
+    private final BoardService boardService;
 
     private final MemberService memberService;
 
-    private final EntityManager entityManager;
-
-    public void createComment(Long boardId, CommentDto commentDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
-        Board board = boardRepository.findById(boardId)
+    public void createComment(Long boardId, CommentDto commentDto) {
+        Board board = boardService.getBoardById(boardId)
                 .orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
         Comment comment = Comment.of(commentDto);
         comment.setBoard(board);
@@ -37,9 +32,7 @@ public class CommentService {
     }
 
     public void updateComment(Long commentId, CommentDto commentDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NotFoundException("댓글을 찾을 수 없습니다."));
+        Comment comment = getCommentByIdOrThrow(commentId);
         if (!Objects.equals(commentDto.getWriter_id(), comment.getWriter().getId())){
             throw new PermissionDeniedException("댓글 작성자만 수정할 수 있습니다.");
         }
@@ -53,9 +46,7 @@ public class CommentService {
     }
 
     public void deleteComment(Long commentId) throws PermissionDeniedException{
-        memberService.checkMemberAdminRole();
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new NotFoundException("댓글을 찾을 수 없습니다."));
+        Comment comment = getCommentByIdOrThrow(commentId);
         if (!Objects.equals(comment.getWriter().getId(), memberService.getCurrentMember().getId())) {
             throw new PermissionDeniedException("댓글 작성자만 삭제할 수 있습니다.");
         }
@@ -67,6 +58,11 @@ public class CommentService {
         return comments.stream()
                 .map(CommentDto::of)
                 .collect(Collectors.toList());
+    }
+
+    public Comment getCommentByIdOrThrow(Long id){
+        return commentRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("댓글을 찾을 수 없습니다."));
     }
 
 }

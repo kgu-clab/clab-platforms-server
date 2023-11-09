@@ -35,7 +35,7 @@ public class CommentController {
     public ResponseModel createComment(
             @RequestParam Long boardId,
             @RequestBody CommentDto commentDto
-    ) throws PermissionDeniedException {
+    ) {
         commentService.createComment(boardId, commentDto);
         return ResponseModel.builder().build();
     }
