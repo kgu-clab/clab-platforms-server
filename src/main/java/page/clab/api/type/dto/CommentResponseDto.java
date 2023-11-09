@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CommentDto {
+public class CommentResponseDto {
 
     private String content;
 
@@ -24,7 +24,7 @@ public class CommentDto {
     private String writer_id;
 
 
-    public static CommentDto of(Comment comment) {
-        return ModelMapperUtil.getModelMapper().map(comment, CommentDto.class);
+    public static CommentResponseDto of(Comment comment) {
+        return ModelMapperUtil.getModelMapper().map(comment, CommentResponseDto.class);
     }
 }

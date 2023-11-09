@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import page.clab.api.type.dto.CommentDto;
+import page.clab.api.type.dto.CommentRequestDto;
 import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Column;
@@ -48,8 +48,8 @@ public class Comment {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    public static Comment of(CommentDto commentDto) {
-        return ModelMapperUtil.getModelMapper().map(commentDto, Comment.class);
+    public static Comment of(CommentRequestDto commentRequestDto) {
+        return ModelMapperUtil.getModelMapper().map(commentRequestDto, Comment.class);
     }
 
 }
