@@ -21,6 +21,7 @@ import page.clab.api.type.etc.Role;
 import page.clab.api.util.FileSystemUtil;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,7 +64,7 @@ public class MemberService {
         if (memberId != null) {
             members.add(getMemberByIdOrThrow(memberId));
         } else if (name != null) {
-            members.add(getMemberByNameOrThrow(name));
+            members.addAll(getMemberByName(name));
         } else if (memberStatus != null) {
             members.addAll(getMemberByMemberStatus(memberStatus));
         } else {
@@ -116,6 +117,10 @@ public class MemberService {
     }
 
     public List<FileInfo> getFilesInMemberDirectory(String memberId) {
+        Member member = getMemberByIdOrThrow(memberId);
+        if (!(isMemberAdminRole(member) || getCurrentMember().getId().equals(memberId))) {
+            return new ArrayList<>();
+        }
         File directory = new File(filePath + "/members/" + memberId);
         File[] files = FileSystemUtil.getFilesInDirectory(directory).toArray(new File[0]);
         return Arrays.stream(files)
@@ -123,12 +128,25 @@ public class MemberService {
                 .collect(Collectors.toList());
     }
 
+    public void setLastLoginTime(String memberId) {
+        Member member = getMemberByIdOrThrow(memberId);
+        member.setLastLoginTime(LocalDateTime.now());
+        memberRepository.save(member);
+    }
+
     public void checkMemberAdminRole() throws PermissionDeniedException {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
         Member member = memberRepository.findById(memberId).get();
-        if (!member.getRole().equals(Role.ADMIN)) {
+        if (member.getRole().equals(Role.USER)) {
             throw new PermissionDeniedException("권한이 부족합니다.");
         }
+    }
+
+    public boolean isMemberAdminRole(Member member) {
+        if (member.getRole().equals(Role.USER)) {
+            return false;
+        }
+        return true;
     }
 
     public Member getMemberByIdOrThrow(String memberId) {
@@ -136,13 +154,16 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
     }
 
-    public Member getMemberByNameOrThrow(String name) {
-        return memberRepository.findByName(name)
-                .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
+    public List<Member> getMemberByName(String name) {
+        return memberRepository.findAllByName(name);
     }
 
     public List<Member> getMemberByMemberStatus(MemberStatus memberStatus) {
         return memberRepository.findByMemberStatus(memberStatus);
+    }
+
+    public Member saveMember(Member updatedMember) {
+        return memberRepository.save(updatedMember);
     }
 
     public String removeHyphensFromContact(String contact) {

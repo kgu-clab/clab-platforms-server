@@ -17,8 +17,6 @@ import java.time.LocalDateTime;
 @Builder
 public class BookLoanRecordResponseDto {
 
-    private Long id;
-
     private Long bookId;
 
     private String borrowerId;
@@ -26,6 +24,8 @@ public class BookLoanRecordResponseDto {
     private LocalDateTime borrowedAt;
 
     private LocalDateTime returnedAt;
+
+    private LocalDateTime loanExtensionDate;
 
     public static BookLoanRecordResponseDto of(BookLoanRecord bookLoanRecord) {
         BookLoanRecordResponseDto bookLoanRecordResponseDto = ModelMapperUtil.getModelMapper()
