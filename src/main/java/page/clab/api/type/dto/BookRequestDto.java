@@ -15,19 +15,19 @@ import org.hibernate.validator.constraints.URL;
 @Builder
 public class BookRequestDto {
 
-    @NotNull
+    @NotNull(message = "{notNull.book.category}")
     private String category;
 
-    @NotNull
+    @NotNull(message = "{notNull.book.title}")
     private String title;
 
-    @NotNull
+    @NotNull(message = "{notNull.book.author}")
     private String author;
 
-    @NotNull
+    @NotNull(message = "{notNull.book.publisher}")
     private String publisher;
 
-    @URL
+    @URL(message = "{url.book.imageUrl}")
     private String imageUrl;
 
 }
