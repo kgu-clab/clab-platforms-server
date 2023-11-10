@@ -40,10 +40,9 @@ public class CommentService {
         if (!Objects.equals(memberService.getCurrentMember().getId(), comment.getWriter().getId())){
             throw new PermissionDeniedException("댓글 작성자만 수정할 수 있습니다.");
         }
-        Comment updateComment = Comment.of(commentRequestDto);
-        updateComment.setUpdateTime(LocalDateTime.now());
-        updateComment.setContent(commentRequestDto.getContent());
-        commentRepository.save(updateComment);
+        comment.setContent(commentRequestDto.getContent());
+        comment.setUpdateTime(LocalDateTime.now());
+        commentRepository.save(comment);
     }
 
     public void deleteComment(Long commentId) throws PermissionDeniedException{

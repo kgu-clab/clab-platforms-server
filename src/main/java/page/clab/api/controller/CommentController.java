@@ -32,7 +32,6 @@ public class CommentController {
 
     @Operation(summary = "댓글 생성", description = "댓글 생성<br> +" +
             "String content;<br>" +
-            "String writer;<br>" +
             "Long boardId;<br>" )
     @PostMapping("")
     public ResponseModel createComment(
@@ -56,7 +55,6 @@ public class CommentController {
 
     @Operation(summary = "댓글 수정", description = "댓글 수정<br> +" +
             "String content;<br>" +
-            "String writer;<br>" +
             "Long boardId;<br>" )
     @PatchMapping("")
     public ResponseModel updateComment(
@@ -75,4 +73,5 @@ public class CommentController {
         commentService.deleteComment(commentId);
         return ResponseModel.builder().build();
     }
+
 }

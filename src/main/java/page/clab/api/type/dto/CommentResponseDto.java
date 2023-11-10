@@ -21,9 +21,6 @@ public class CommentResponseDto {
 
     private LocalDateTime updateTime;
 
-    private String writerId;
-
-
     public static CommentResponseDto of(Comment comment) {
         return ModelMapperUtil.getModelMapper().map(comment, CommentResponseDto.class);
     }
