@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,8 +36,8 @@ public class Review {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(nullable = false, length = 1000)
-    @Size(min = 1, max = 1000)
+    @NotNull(message = "{notNull.review.content}")
+    @Size(min = 1, max = 1000, message = "{size.review.content}")
     private String content;
 
     @Column(nullable = false)

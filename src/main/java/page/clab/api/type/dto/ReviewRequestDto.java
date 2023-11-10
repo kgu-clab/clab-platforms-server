@@ -15,8 +15,8 @@ import lombok.Setter;
 @Builder
 public class ReviewRequestDto {
 
-    @NotNull
-    @Size(min = 1, max = 1000)
+    @NotNull(message = "{notNull.review.content}")
+    @Size(min = 1, max = 1000, message = "{size.review.content}")
     private String content;
 
 }

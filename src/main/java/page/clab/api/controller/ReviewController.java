@@ -2,8 +2,12 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,8 +24,6 @@ import page.clab.api.type.dto.ReviewRequestDto;
 import page.clab.api.type.dto.ReviewResponseDto;
 import page.clab.api.type.dto.ReviewUpdateRequestDto;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/reviews")
 @RequiredArgsConstructor
@@ -34,8 +36,12 @@ public class ReviewController {
     @Operation(summary = "리뷰 등록", description = "리뷰 등록")
     @PostMapping("")
     public ResponseModel createReview(
-            @RequestBody ReviewRequestDto reviewRequestDto
-    ) {
+            @Valid @RequestBody ReviewRequestDto reviewRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         reviewService.createReview(reviewRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -84,8 +90,12 @@ public class ReviewController {
     @PatchMapping("/{reviewId}")
     public ResponseModel updateReview(
             @PathVariable Long reviewId,
-            @RequestBody ReviewUpdateRequestDto reviewUpdateRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody ReviewUpdateRequestDto reviewUpdateRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         reviewService.updateReview(reviewId, reviewUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
