@@ -2,6 +2,7 @@ package page.clab.api.type.dto;
 
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,19 +19,21 @@ import page.clab.api.util.ModelMapperUtil;
 @Builder
 public class RecruitmentRequestDto {
 
-    @NotNull
+    @NotNull(message = "{notNull.recruitment.startDate}")
     private LocalDateTime startDate;
 
-    @NotNull
+    @NotNull(message = "{notNull.recruitment.endDate}")
     private LocalDateTime endDate;
 
-    @NotNull
+    @NotNull(message = "{notNull.recruitment.applicationType}")
     private ApplicationType applicationType;
 
-    @NotNull
+    @NotNull(message = "{notNull.recruitment.target}")
+    @Size(min = 1, message = "{size.recruitment.target}")
     private String target;
 
-    @NotNull
+    @NotNull(message = "{notNull.recruitment.status}")
+    @Size(min = 1, message = "{size.recruitment.status}")
     private String status;
 
     public static RecruitmentRequestDto of(Recruitment recruitment) {
