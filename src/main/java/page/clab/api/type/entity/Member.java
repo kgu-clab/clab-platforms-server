@@ -25,7 +25,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import page.clab.api.type.dto.MemberRequestDto;
-import page.clab.api.type.dto.MemberUpdateRequestDto;
 import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.OAuthProvider;
 import page.clab.api.type.etc.Role;
@@ -42,43 +41,46 @@ public class Member implements UserDetails {
 
     @Id
     @Column(updatable = false, unique = true, nullable = false)
-
-    @Size(min = 9, max = 9)
+    @Size(min = 9, max = 9, message = "{size.member.id}")
     private String id;
 
     @JsonIgnore
     private String password;
 
     @Column(nullable = false)
-    @Size(min = 1, max = 10)
+    @Size(min = 1, max = 10, message = "{size.member.name}")
     private String name;
 
     @Column(nullable = false)
-    @Size(min = 11, max = 11)
+    @Size(min = 11, max = 11, message = "{size.member.contact}")
     private String contact;
 
     @Column(unique = true, nullable = false)
-    @Email
+    @Email(message = "{email.member.email}")
+    @Size(min = 1, message = "{size.member.email}")
     private String email;
 
     @Column(nullable = false)
+    @Size(min = 1, message = "{size.member.department}")
     private String department;
 
     @Column(nullable = false)
-    @Min(1)
-    @Max(4)
+    @Min(value = 1, message = "{min.member.grade}")
+    @Max(value = 4, message = "{max.member.grade}")
     private Long grade;
 
     @Column(nullable = false)
     private LocalDate birth;
 
     @Column(nullable = false)
+    @Size(min = 1, message = "{size.member.address}")
     private String address;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private StudentStatus studentStatus;
 
-    @URL
+    @URL(message = "{url.member.imageUrl}")
     private String imageUrl;
 
     @Column(nullable = false)
@@ -140,10 +142,6 @@ public class Member implements UserDetails {
         member.setRole(Role.USER);
         member.setProvider(OAuthProvider.LOCAL);
         return member;
-    }
-
-    public static Member of(MemberUpdateRequestDto memberUpdateRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(memberUpdateRequestDto, Member.class);
     }
   
 }
