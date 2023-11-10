@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
-import page.clab.api.type.dto.NewsDto;
+import page.clab.api.type.dto.NewsRequestDto;
 import page.clab.api.util.ModelMapperUtil;
 
 @Entity
@@ -30,6 +30,7 @@ public class News {
     private Long id;
 
     @Column(nullable = false)
+    @Size(min = 1)
     private String category;
 
     @Column(nullable = false)
@@ -40,6 +41,7 @@ public class News {
     private String subtitle;
 
     @Column(columnDefinition = "TEXT", nullable = false)
+    @Size(min = 1)
     private String content;
 
     @URL
@@ -52,8 +54,8 @@ public class News {
     @Column(name = "update_time")
     private LocalDateTime updateTime;
 
-    public static News of(NewsDto newsDto) {
-        return ModelMapperUtil.getModelMapper().map(newsDto, News.class);
+    public static News of(NewsRequestDto newsRequestDto) {
+        return ModelMapperUtil.getModelMapper().map(newsRequestDto, News.class);
     }
 
 }
