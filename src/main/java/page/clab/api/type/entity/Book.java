@@ -42,7 +42,7 @@ public class Book {
     @Column(nullable = false)
     private String publisher;
 
-    @URL
+    @URL(message = "{url.book.imageUrl}")
     private String imageUrl;
 
     @CreationTimestamp

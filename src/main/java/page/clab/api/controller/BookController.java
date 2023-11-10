@@ -2,8 +2,12 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,8 +23,6 @@ import page.clab.api.type.dto.BookRequestDto;
 import page.clab.api.type.dto.BookResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/books")
 @RequiredArgsConstructor
@@ -30,16 +32,15 @@ public class BookController {
 
     private final BookService bookService;
 
-    @Operation(summary = "도서 등록", description = "도서 등록<br>" +
-            "String category;<br>" +
-            "String title;<br>" +
-            "String author;<br>" +
-            "String publisher;<br>" +
-            "String imageUrl;<br>")
+    @Operation(summary = "도서 등록", description = "도서 등록")
     @PostMapping("")
     public ResponseModel createBook(
-            @RequestBody BookRequestDto bookRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody BookRequestDto bookRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         bookService.createBook(bookRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -69,17 +70,16 @@ public class BookController {
         return responseModel;
     }
 
-    @Operation(summary = "도서 정보 수정", description = "도서 정보 수정<br>" +
-            "String category;<br>" +
-            "String title;<br>" +
-            "String author;<br>" +
-            "String publisher;<br>" +
-            "String imageUrl;<br>")
+    @Operation(summary = "도서 정보 수정", description = "도서 정보 수정")
     @PatchMapping("")
     public ResponseModel updateBookInfo(
             @RequestParam Long bookId,
-            @RequestBody BookRequestDto bookRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody BookRequestDto bookRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         bookService.updateBookInfo(bookId, bookRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
