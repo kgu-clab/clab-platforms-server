@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,10 +37,11 @@ public class Donation {
     private Member donor;
 
     @Column(nullable = false)
+    @Min(value = 1, message = "{min.donation.amount}")
     private Double amount;
 
     @Column(nullable = false, length = 1000)
-    @Size(min = 1, max = 1000)
+    @Size(min = 1, max = 1000, message = "{size.donation.message}")
     private String message;
 
     @CreationTimestamp

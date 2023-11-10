@@ -1,5 +1,6 @@
 package page.clab.api.type.dto;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -15,14 +16,15 @@ import lombok.Setter;
 @Builder
 public class DonationRequestDto {
 
-    @NotNull
+    @NotNull(message = "{notNull.donation.donorId}")
     private String donorId;
 
-    @NotNull
+    @NotNull(message = "{notNull.donation.amount}")
+    @Min(value = 1, message = "{min.donation.amount}")
     private Double amount;
 
-    @NotNull
-    @Size(min = 1, max = 1000)
+    @NotNull(message = "{notNull.donation.message}")
+    @Size(min = 1, max = 1000, message = "{size.donation.message}")
     private String message;
 
 }
