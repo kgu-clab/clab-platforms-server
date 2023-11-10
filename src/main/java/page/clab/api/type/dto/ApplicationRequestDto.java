@@ -38,9 +38,11 @@ public class ApplicationRequestDto {
 
     @NotNull(message = "{notNull.application.email}")
     @Email(message = "{email.application.email}")
+    @Size(min = 1, message = "{size.application.email}")
     private String email;
 
     @NotNull(message = "{notNull.application.department}")
+    @Size(min = 1, message = "{size.application.department}")
     private String department;
 
     @NotNull(message = "{notNull.application.grade}")
@@ -52,6 +54,7 @@ public class ApplicationRequestDto {
     private LocalDate birth;
 
     @NotNull(message = "{notNull.application.address}")
+    @Size(min = 1, message = "{size.application.address}")
     private String address;
 
     @NotNull(message = "{notNull.application.interests}")
