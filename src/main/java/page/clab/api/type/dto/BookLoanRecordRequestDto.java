@@ -14,10 +14,10 @@ import lombok.Setter;
 @Builder
 public class BookLoanRecordRequestDto {
 
-    @NotNull
+    @NotNull(message = "{notNull.bookLoanRecord.bookId}")
     private Long bookId;
 
-    @NotNull
+    @NotNull(message = "{notNull.bookLoanRecord.borrowerId}")
     private String borrowerId;
 
 }
