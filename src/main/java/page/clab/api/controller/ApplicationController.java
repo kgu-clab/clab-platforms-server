@@ -48,7 +48,7 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "신청자 전체 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Operation(summary = "[A] 신청자 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getApplications() throws PermissionDeniedException {
         List<ApplicationResponseDto> applications = applicationService.getApplications();
@@ -57,7 +57,7 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "신청자 목록 필터링(업데이트 날짜 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[A] 신청자 목록 필터링(업데이트 날짜 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "전달된 날짜 사이의 신청자를 필터링하여 반환")
     @GetMapping("/filter")
     public ResponseModel getApplicationsBetweenDates(
@@ -70,7 +70,7 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "신청자 검색", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[A] 신청자 검색", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "신청자의 학번을 기반으로 검색")
     @GetMapping("/search")
     public ResponseModel searchApplication(
@@ -82,7 +82,7 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "가입 신청 승인/취소", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[A] 가입 신청 승인/취소", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "승인/취소 상태가 반전됨")
     @PostMapping("/{applicationId}")
     public ResponseModel approveApplication(
@@ -93,7 +93,7 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "합격자 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Operation(summary = "[A] 합격자 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @GetMapping("/pass")
     public ResponseModel getApprovedApplications() throws PermissionDeniedException {
         List<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications();
@@ -113,7 +113,7 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "가입 신청서 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Operation(summary = "[A] 가입 신청서 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @DeleteMapping("/{applicationId}")
     public ResponseModel deleteApplication(
             @PathVariable String applicationId

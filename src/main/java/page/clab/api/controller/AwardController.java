@@ -32,7 +32,7 @@ public class AwardController {
 
     private final AwardService awardService;
 
-    @Operation(summary = "수상 이력 등록", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 수상 이력 등록", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createAward(
             @Valid @RequestBody AwardRequestDto awardRequestDto,
@@ -46,7 +46,7 @@ public class AwardController {
         return responseModel;
     }
 
-    @Operation(summary = "나의 수상 이력 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 나의 수상 이력 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getMyAwards() {
         List<AwardResponseDto> awardResponseDtos = awardService.getMyAwards();
@@ -55,7 +55,7 @@ public class AwardController {
         return responseModel;
     }
 
-    @Operation(summary = "수상 이력 검색", description = "ROLE_USER 이상의 권한이 필요함" +
+    @Operation(summary = "[U] 수상 이력 검색", description = "ROLE_USER 이상의 권한이 필요함" +
             "학번을 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel searchAwards(
@@ -67,7 +67,7 @@ public class AwardController {
         return responseModel;
     }
 
-  @Operation(summary = "수상 이력 수정", description = "ROLE_USER 이상의 권한이 필요함")
+  @Operation(summary = "[U] 수상 이력 수정", description = "ROLE_USER 이상의 권한이 필요함")
   @PatchMapping("/{awardId}")
   public ResponseModel updateAward(
       @PathVariable Long awardId,
@@ -82,7 +82,7 @@ public class AwardController {
         return responseModel;
     }
 
-    @Operation(summary = "수상 이력 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 수상 이력 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @DeleteMapping("/{awardId}")
     public ResponseModel deleteAward(
             @PathVariable Long awardId

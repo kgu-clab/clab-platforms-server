@@ -75,7 +75,12 @@ public class DonationService {
         donationRepository.save(updatedDonation);
     }
 
-    public void deleteDonation(Long donationId) {
+    public void deleteDonation(Long donationId) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
+        Donation donation = getDonationByIdOrThrow(donationId);
+        if (!(donation.getDonor().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
+            throw new PermissionDeniedException("해당 후원 정보를 삭제할 권한이 없습니다.");
+        }
         donationRepository.deleteById(donationId);
     }
 

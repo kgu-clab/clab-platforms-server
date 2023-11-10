@@ -26,13 +26,13 @@ import page.clab.api.type.dto.ResponseModel;
 @RestController
 @RequestMapping("/news")
 @RequiredArgsConstructor
-@Tag(name = "News")
+@Tag(name = "News", description = "뉴스 관련 API")
 @Slf4j
 public class NewsController {
 
     private final NewsService newsService;
 
-    @Operation(summary = "뉴스 등록", description = "뉴스 등록")
+    @Operation(summary = "뉴스 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createNews(
             @Valid @RequestBody NewsRequestDto newsRequestDto,
@@ -46,7 +46,7 @@ public class NewsController {
         return responseModel;
     }
 
-    @Operation(summary = "뉴스 목록 조회", description = "뉴스 목록 조회")
+    @Operation(summary = "[U] 뉴스 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getNews() {
         List<NewsResponseDto> news = newsService.getNews();
@@ -55,8 +55,8 @@ public class NewsController {
         return responseModel;
     }
 
-    @Operation(summary = "뉴스 검색", description = "뉴스 검색<br>" +
-            "newId, category, title를 기반으로 검색")
+    @Operation(summary = "[U] 뉴스 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "뉴스 ID, 카테고리, 제목을 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel searchNews(
             @RequestParam(required = false) Long newsId,
@@ -69,7 +69,7 @@ public class NewsController {
         return responseModel;
     }
 
-    @Operation(summary = "뉴스 수정", description = "뉴스 수정")
+    @Operation(summary = "[A] 뉴스 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PatchMapping("/{newsId}")
     public ResponseModel updateNews(
             @PathVariable Long newsId,
@@ -84,7 +84,7 @@ public class NewsController {
         return responseModel;
     }
 
-    @Operation(summary = "뉴스 삭제", description = "뉴스 삭제")
+    @Operation(summary = "[A] 뉴스 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @DeleteMapping("/{newsId}")
     public ResponseModel deleteNews(
             @PathVariable Long newsId
