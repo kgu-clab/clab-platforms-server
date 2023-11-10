@@ -2,9 +2,14 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,10 +25,6 @@ import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.List;
-
 @RestController
 @RequestMapping("/applications")
 @RequiredArgsConstructor
@@ -37,8 +38,12 @@ public class ApplicationController {
             "ApplicationType: NORMAL / CORE_TEAM")
     @PostMapping("")
     public ResponseModel createApplication (
-            @RequestBody @Valid ApplicationRequestDto applicationRequestDto
-    ) {
+            @Validated @RequestBody ApplicationRequestDto applicationRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         applicationService.createApplication(applicationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;

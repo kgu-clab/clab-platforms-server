@@ -4,17 +4,21 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.BookLoanRecordService;
 import page.clab.api.type.dto.BookLoanRecordRequestDto;
 import page.clab.api.type.dto.BookLoanRecordResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -29,8 +33,12 @@ public class BookLoanRecordController {
     @Operation(summary = "도서 대출", description = "도서 대출")
     @PostMapping("/borrow")
     public ResponseModel borrowBook(
-            @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto
-    ) {
+            @Valid @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         bookLoanRecordService.borrowBook(bookLoanRecordRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;

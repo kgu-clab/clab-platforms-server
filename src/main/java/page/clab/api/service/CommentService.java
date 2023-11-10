@@ -1,5 +1,8 @@
 package page.clab.api.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
@@ -10,11 +13,6 @@ import page.clab.api.type.dto.CommentResponseDto;
 import page.clab.api.type.entity.Board;
 import page.clab.api.type.entity.Comment;
 import page.clab.api.type.entity.Member;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,17 +25,34 @@ public class CommentService {
     private final MemberService memberService;
 
     public void createComment(Long boardId, CommentRequestDto commentRequestDto) {
-        Board board = boardService.getBoardById(boardId);
+        Member member = memberService.getCurrentMember();
+        Board board = boardService.getBoardByIdOrThrow(boardId);
         Comment comment = Comment.of(commentRequestDto);
-        comment.setWriter(memberService.getCurrentMember());
-        comment.setCreatedAt(LocalDateTime.now());
         comment.setBoard(board);
+        comment.setWriter(member);
+        comment.setCreatedAt(LocalDateTime.now());
         commentRepository.save(comment);
     }
 
+    public List<CommentResponseDto> getComments(Long boardId) {
+        List<Comment> comments = commentRepository.findAllByBoardId(boardId);
+        return comments.stream()
+                .map(CommentResponseDto::of)
+                .collect(Collectors.toList());
+    }
+
+    public List<CommentResponseDto> getMyComments() {
+        Member member = memberService.getCurrentMember();
+        List<Comment> comments = getCommentsByWriter(member);
+        return comments.stream()
+                .map(CommentResponseDto::of)
+                .collect(Collectors.toList());
+    }
+
     public void updateComment(Long commentId, CommentRequestDto commentRequestDto) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
-        if (!Objects.equals(memberService.getCurrentMember().getId(), comment.getWriter().getId())){
+        if (!(comment.getWriter().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("댓글 작성자만 수정할 수 있습니다.");
         }
         comment.setContent(commentRequestDto.getContent());
@@ -48,22 +63,19 @@ public class CommentService {
     public void deleteComment(Long commentId) throws PermissionDeniedException{
         Member member = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
-        if (!Objects.equals(comment.getWriter().getId(), member.getId()) || !memberService.isMemberAdminRole(member)) {
+        if (!(comment.getWriter().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("댓글 작성자만 삭제할 수 있습니다.");
         }
         commentRepository.delete(comment);
     }
 
-    public List<CommentResponseDto> getComments(Long boardId) {
-        List<Comment> comments = commentRepository.findAllByBoardId(boardId);
-        return comments.stream()
-                .map(CommentResponseDto::of)
-                .collect(Collectors.toList());
-    }
-
     public Comment getCommentByIdOrThrow(Long id){
         return commentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("댓글을 찾을 수 없습니다."));
+    }
+
+    private List<Comment> getCommentsByWriter(Member member) {
+        return commentRepository.findAllByWriter(member);
     }
 
 }

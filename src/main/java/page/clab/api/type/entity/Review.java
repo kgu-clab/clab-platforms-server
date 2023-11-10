@@ -1,5 +1,15 @@
 package page.clab.api.type.entity;
 
+import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,16 +19,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.type.dto.ReviewRequestDto;
 import page.clab.api.type.dto.ReviewUpdateRequestDto;
 import page.clab.api.util.ModelMapperUtil;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -36,8 +36,8 @@ public class Review {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(nullable = false, length = 1000)
-    @Size(max = 1000)
+    @NotNull(message = "{notNull.review.content}")
+    @Size(min = 1, max = 1000, message = "{size.review.content}")
     private String content;
 
     @Column(nullable = false)

@@ -2,8 +2,12 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,14 +16,12 @@ import page.clab.api.auth.exception.TokenValidateException;
 import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.MemberLockedException;
 import page.clab.api.service.LoginService;
+import page.clab.api.type.dto.LoginRequestDto;
 import page.clab.api.type.dto.RefreshTokenDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.TokenDto;
 import page.clab.api.type.dto.TokenInfo;
-import page.clab.api.type.dto.MemberLoginRequestDto;
 import page.clab.api.type.etc.Role;
-
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/login")
@@ -34,10 +36,14 @@ public class LoginController {
     @PostMapping()
     public ResponseModel login(
             HttpServletRequest httpServletRequest,
-            @RequestBody MemberLoginRequestDto memberLoginRequestDto
-    ) throws MemberLockedException, LoginFaliedException {
+            @Valid @RequestBody LoginRequestDto loginRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, MemberLockedException, LoginFaliedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         ResponseModel responseModel = ResponseModel.builder().build();
-        TokenInfo tokenInfo = loginService.login(httpServletRequest, memberLoginRequestDto);
+        TokenInfo tokenInfo = loginService.login(httpServletRequest, loginRequestDto);
         responseModel.addData(tokenInfo);
         return responseModel;
     }
@@ -57,8 +63,12 @@ public class LoginController {
             "String token;")
     @PostMapping("/role")
     public ResponseModel checkTokenRole(
-            @RequestBody TokenDto tokenDto
-    ) throws TokenValidateException {
+            @Valid @RequestBody TokenDto tokenDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, TokenValidateException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         boolean isAdminRole = loginService.checkTokenRole(tokenDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData((isAdminRole ? Role.ADMIN.getKey() : Role.USER.getKey()));
