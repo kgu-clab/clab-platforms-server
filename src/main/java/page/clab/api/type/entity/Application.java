@@ -47,9 +47,11 @@ public class Application {
 
     @Column(nullable = false)
     @Email(message = "{email.application.email}")
+    @Size(min = 1, message = "{size.application.email}")
     private String email;
 
     @Column(nullable = false)
+    @Size(min = 1, message = "{size.application.department}")
     private String department;
 
     @Column(nullable = false)
@@ -61,6 +63,7 @@ public class Application {
     private LocalDate birth;
 
     @Column(nullable = false)
+    @Size(min = 1, message = "{size.application.address}")
     private String address;
 
     @Column(nullable = false)
