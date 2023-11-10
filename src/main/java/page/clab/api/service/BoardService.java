@@ -48,7 +48,7 @@ public class BoardService {
     public List<BoardResonseDto> searchBoards(Long boardId, String category) {
         List<Board> boards = new ArrayList<>();
         if (boardId != null) {
-            boards.add(getBoardsByIdOrThrow(boardId));
+            boards.add(getBoardByIdOrThrow(boardId));
         } else if (category != null) {
             boards.addAll(boardRepository.findAllByCategory(category));
         } else {
@@ -65,7 +65,7 @@ public class BoardService {
 
     public void updateBoard(Long boardId, BoardRequestDto boardRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        Board board = getBoardsByIdOrThrow(boardId);
+        Board board = getBoardByIdOrThrow(boardId);
         if (!board.getMember().getId().equals(member.getId())) {
             throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
         }
@@ -79,14 +79,14 @@ public class BoardService {
 
     public void deleteBoard(Long boardId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        Board board = getBoardsByIdOrThrow(boardId);
+        Board board = getBoardByIdOrThrow(boardId);
         if (!(board.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
         }
         boardRepository.delete(board);
     }
 
-    private Board getBoardsByIdOrThrow(Long boardId) {
+    public Board getBoardByIdOrThrow(Long boardId) {
         return boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundException("해당 게시글이 존재하지 않습니다."));
     }

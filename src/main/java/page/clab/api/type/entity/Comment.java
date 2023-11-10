@@ -15,6 +15,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import page.clab.api.type.dto.CommentRequestDto;
+import page.clab.api.util.ModelMapperUtil;
 
 @Entity
 @Getter
@@ -28,6 +30,14 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "board_id")
+    private Board board;
+
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member writer;
+
     @Column(nullable = false, length = 1000)
     @Size(min = 1, max = 1000)
     private String content;
@@ -39,12 +49,8 @@ public class Comment {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member writer;
-
-    @ManyToOne
-    @JoinColumn(name = "board_id")
-    private Board board;
+    public static Comment of(CommentRequestDto commentRequestDto) {
+        return ModelMapperUtil.getModelMapper().map(commentRequestDto, Comment.class);
+    }
 
 }
