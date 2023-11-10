@@ -9,7 +9,9 @@ import page.clab.api.type.dto.CommentRequestDto;
 import page.clab.api.type.dto.CommentResponseDto;
 import page.clab.api.type.entity.Board;
 import page.clab.api.type.entity.Comment;
+import page.clab.api.type.entity.Member;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -28,27 +30,26 @@ public class CommentService {
         Board board = boardService.getBoardById(boardId);
         Comment comment = Comment.of(commentRequestDto);
         comment.setWriter(memberService.getCurrentMember());
+        comment.setCreatedAt(LocalDateTime.now());
         comment.setBoard(board);
         commentRepository.save(comment);
     }
 
     public void updateComment(Long commentId, CommentRequestDto commentRequestDto) throws PermissionDeniedException {
         Comment comment = getCommentByIdOrThrow(commentId);
-        if (!Objects.equals(commentRequestDto.getWriter_id(), comment.getWriter().getId())){
+        if (!Objects.equals(memberService.getCurrentMember().getId(), comment.getWriter().getId())){
             throw new PermissionDeniedException("댓글 작성자만 수정할 수 있습니다.");
         }
         Comment updateComment = Comment.of(commentRequestDto);
-        updateComment.setId(comment.getId());
-        updateComment.setBoard(comment.getBoard());
-        updateComment.setWriter(comment.getWriter());
-        updateComment.setUpdateTime(commentRequestDto.getUpdateTime());
+        updateComment.setUpdateTime(LocalDateTime.now());
         updateComment.setContent(commentRequestDto.getContent());
         commentRepository.save(updateComment);
     }
 
     public void deleteComment(Long commentId) throws PermissionDeniedException{
+        Member member = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
-        if (!Objects.equals(comment.getWriter().getId(), memberService.getCurrentMember().getId()) || !memberService.isMemberAdminRole()) {
+        if (!Objects.equals(comment.getWriter().getId(), member.getId()) || !memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("댓글 작성자만 삭제할 수 있습니다.");
         }
         commentRepository.delete(comment);

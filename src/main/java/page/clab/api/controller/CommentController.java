@@ -16,7 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.CommentService;
 import page.clab.api.type.dto.CommentRequestDto;
+import page.clab.api.type.dto.CommentResponseDto;
 import page.clab.api.type.dto.ResponseModel;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/comments")
@@ -46,7 +49,8 @@ public class CommentController {
             @RequestParam Long boardId
     ) {
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(commentService.getComments(boardId));
+        List<CommentResponseDto> comments = commentService.getComments(boardId);
+        responseModel.addData(comments);
         return responseModel;
     }
 
