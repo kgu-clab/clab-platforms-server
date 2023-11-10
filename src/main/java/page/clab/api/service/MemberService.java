@@ -117,7 +117,8 @@ public class MemberService {
     }
 
     public List<FileInfo> getFilesInMemberDirectory(String memberId) {
-        if (!(isMemberAdminRole() || getCurrentMember().getId().equals(memberId))) {
+        Member member = getMemberByIdOrThrow(memberId);
+        if (!(isMemberAdminRole(member) || getCurrentMember().getId().equals(memberId))) {
             return new ArrayList<>();
         }
         File directory = new File(filePath + "/members/" + memberId);
@@ -141,9 +142,7 @@ public class MemberService {
         }
     }
 
-    public boolean isMemberAdminRole() {
-        String memberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = memberRepository.findById(memberId).get();
+    public boolean isMemberAdminRole(Member member) {
         if (member.getRole().equals(Role.USER)) {
             return false;
         }
