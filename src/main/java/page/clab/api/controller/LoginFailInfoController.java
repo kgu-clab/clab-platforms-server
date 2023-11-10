@@ -15,13 +15,13 @@ import page.clab.api.type.dto.ResponseModel;
 @RestController
 @RequestMapping("/login-fail-info")
 @RequiredArgsConstructor
-@Tag(name = "Login")
+@Tag(name = "Login", description = "로그인 관련 API")
 @Slf4j
 public class LoginFailInfoController {
 
     private final LoginFailInfoService loginFailInfoService;
 
-    @Operation(summary = "유저 밴 처리", description = "유저 밴 처리")
+    @Operation(summary = "[A] 유저 밴 처리", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PostMapping("/ban/{memberId}")
     public ResponseModel banMember(
             @PathVariable String memberId
@@ -31,7 +31,7 @@ public class LoginFailInfoController {
         return responseModel;
     }
 
-    @Operation(summary = "유저 밴 해제", description = "유저 밴 해제")
+    @Operation(summary = "[A] 유저 밴 해제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PostMapping("/unban/{memberId}")
     public ResponseModel unbanMember(
             @PathVariable String memberId
