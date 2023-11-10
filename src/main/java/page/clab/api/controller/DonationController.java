@@ -13,7 +13,6 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.DonationService;
 import page.clab.api.type.dto.DonationRequestDto;
 import page.clab.api.type.dto.DonationResponseDto;
-import page.clab.api.type.dto.DonationUpdateRequestDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -30,7 +29,7 @@ public class DonationController {
     public ResponseModel createDonation(
             @Valid @RequestBody DonationRequestDto donationRequestDto,
             BindingResult result
-    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+    ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
@@ -43,6 +42,15 @@ public class DonationController {
     @GetMapping("")
     public ResponseModel getDonations() {
         List<DonationResponseDto> donations = donationService.getDonations();
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(donations);
+        return responseModel;
+    }
+
+    @Operation(summary = "나의 후원 정보", description = "나의 후원 정보")
+    @GetMapping("/my-donations")
+    public ResponseModel getMyDonations() {
+        List<DonationResponseDto> donations = donationService.getMyDonations();
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(donations);
         return responseModel;
@@ -61,15 +69,16 @@ public class DonationController {
     }
 
     @Operation(summary = "후원 정보 수정", description = "후원 정보 수정")
-    @PatchMapping("")
+    @PatchMapping("/{donationId}")
     public ResponseModel updateDonation(
-            @Valid @RequestBody DonationUpdateRequestDto donationUpdateRequestDto,
+            @PathVariable Long donationId,
+            @Valid @RequestBody DonationRequestDto donationRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        donationService.updateDonation(donationUpdateRequestDto);
+        donationService.updateDonation(donationId, donationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }

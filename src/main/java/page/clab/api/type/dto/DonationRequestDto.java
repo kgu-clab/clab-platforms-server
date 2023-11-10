@@ -16,9 +16,6 @@ import lombok.Setter;
 @Builder
 public class DonationRequestDto {
 
-    @NotNull(message = "{notNull.donation.donorId}")
-    private String donorId;
-
     @NotNull(message = "{notNull.donation.amount}")
     @Min(value = 1, message = "{min.donation.amount}")
     private Double amount;
