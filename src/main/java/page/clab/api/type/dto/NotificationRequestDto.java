@@ -15,11 +15,11 @@ import lombok.Setter;
 @Builder
 public class NotificationRequestDto {
 
-    @NotNull
+    @NotNull(message = "{notNull.notification.memberId}")
     private String memberId;
 
-    @NotNull
-    @Size(min = 1, max = 1000)
+    @NotNull(message = "{notNull.notification.content}")
+    @Size(min = 1, max = 1000, message = "{size.notification.content}")
     private String content;
 
 }
