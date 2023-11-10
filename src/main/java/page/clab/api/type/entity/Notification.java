@@ -30,7 +30,7 @@ public class Notification {
     private Long id;
 
     @Column(nullable = false, length = 1000)
-    @Size(min = 1, max = 1000)
+    @Size(min = 1, max = 1000, message = "{size.notification.content}")
     private String content;
 
     @CreationTimestamp
