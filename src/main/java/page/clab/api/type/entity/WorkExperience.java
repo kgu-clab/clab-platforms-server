@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,9 +29,11 @@ public class WorkExperience {
     private Long id;
 
     @Column(nullable = false)
+    @Size(min = 1, message = "{size.workExperience.companyName}")
     private String companyName;
 
     @Column(nullable = false)
+    @Size(min = 1, message = "{size.workExperience.position}")
     private String position;
 
     @Column(nullable = false)

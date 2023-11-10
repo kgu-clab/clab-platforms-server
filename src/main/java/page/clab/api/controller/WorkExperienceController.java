@@ -2,8 +2,12 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,8 +23,6 @@ import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.WorkExperienceRequestDto;
 import page.clab.api.type.dto.WorkExperienceResponseDto;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/work-experiences")
 @RequiredArgsConstructor
@@ -33,8 +35,12 @@ public class WorkExperienceController {
     @Operation(summary = "경력사항 등록", description = "경력사항 등록")
     @PostMapping("")
     public ResponseModel createWorkExperience(
-            @RequestBody WorkExperienceRequestDto workExperienceRequestDto
-    ) {
+            @Valid @RequestBody WorkExperienceRequestDto workExperienceRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         workExperienceService.createWorkExperience(workExperienceRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -66,8 +72,12 @@ public class WorkExperienceController {
     @PatchMapping("/{workExperienceId}")
     public ResponseModel updateWorkExperience(
             @PathVariable Long workExperienceId,
-            @RequestBody WorkExperienceRequestDto workExperienceRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody WorkExperienceRequestDto workExperienceRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         workExperienceService.updateWorkExperience(workExperienceId, workExperienceRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
