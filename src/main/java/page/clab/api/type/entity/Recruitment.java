@@ -8,6 +8,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,9 +42,11 @@ public class Recruitment {
     private ApplicationType applicationType;
 
     @Column(nullable = false)
+    @Size(min = 1, message = "{size.recruitment.target}")
     private String target;
 
     @Column(nullable = false)
+    @Size(min = 1, message = "{size.recruitment.status}")
     private String status;
 
     private LocalDateTime updateTime;
