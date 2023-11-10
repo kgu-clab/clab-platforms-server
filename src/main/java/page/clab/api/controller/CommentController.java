@@ -3,8 +3,11 @@ package page.clab.api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -32,8 +35,12 @@ public class CommentController {
     @PostMapping("/{boardId}")
     public ResponseModel createComment(
             @PathVariable Long boardId,
-            @RequestBody CommentRequestDto commentRequestDto
-    ) {
+            @Valid @RequestBody CommentRequestDto commentRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         commentService.createComment(boardId, commentRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -63,8 +70,12 @@ public class CommentController {
     @PatchMapping("/{commentId}")
     public ResponseModel updateComment(
             @PathVariable Long commentId,
-            @RequestBody CommentRequestDto commentRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody CommentRequestDto commentRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         commentService.updateComment(commentId, commentRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
