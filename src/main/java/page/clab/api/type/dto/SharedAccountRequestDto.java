@@ -1,6 +1,7 @@
 package page.clab.api.type.dto;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,17 +16,20 @@ import org.hibernate.validator.constraints.URL;
 @Builder
 public class SharedAccountRequestDto {
 
-    @NotNull
+    @NotNull(message = "{notNull.sharedAccount.username}")
+    @Size(min = 1, message = "{size.sharedAccount.username}")
     private String username;
 
-    @NotNull
+    @NotNull(message = "{notNull.sharedAccount.password}")
+    @Size(min = 1, message = "{size.sharedAccount.password}")
     private String password;
 
-    @NotNull
+    @NotNull(message = "{notNull.sharedAccount.platformName}")
+    @Size(min = 1, message = "{size.sharedAccount.platformName}")
     private String platformName;
 
-    @NotNull
-    @URL
+    @NotNull(message = "{notNull.sharedAccount.platformUrl}")
+    @URL(message = "{url.sharedAccount.platformUrl}")
     private String platformUrl;
 
 }

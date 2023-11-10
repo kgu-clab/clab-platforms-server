@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,16 +28,19 @@ public class SharedAccount {
     private Long id;
 
     @Column(nullable = false)
+    @Size(min = 1, message = "{size.sharedAccount.username}")
     private String username;
 
     @Column(nullable = false)
+    @Size(min = 1, message = "{size.sharedAccount.password}")
     private String password;
 
     @Column(nullable = false)
+    @Size(min = 1, message = "{size.sharedAccount.platformName}")
     private String platformName;
 
     @Column(nullable = false)
-    @URL
+    @URL(message = "{url.sharedAccount.platformUrl}")
     private String platformUrl;
 
     public static SharedAccount of(SharedAccountRequestDto sharedAccountRequestDto) {
