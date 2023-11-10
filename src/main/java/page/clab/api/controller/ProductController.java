@@ -2,8 +2,12 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,8 +23,6 @@ import page.clab.api.type.dto.ProductRequestDto;
 import page.clab.api.type.dto.ProductResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
@@ -33,8 +35,12 @@ public class ProductController {
     @Operation(summary = "서비스 등록", description = "서비스 등록")
     @PostMapping("")
     public ResponseModel createProduct(
-            @RequestBody ProductRequestDto productRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody ProductRequestDto productRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         productService.createProduct(productRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -64,8 +70,12 @@ public class ProductController {
     @PatchMapping("/{productId}")
     public ResponseModel updateProduct(
             @PathVariable Long productId,
-            @RequestBody ProductRequestDto productRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody ProductRequestDto productRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         productService.updateProduct(productId, productRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;

@@ -16,14 +16,15 @@ import org.hibernate.validator.constraints.URL;
 @Builder
 public class ProductRequestDto {
 
-    @NotNull
+    @NotNull(message = "{notNull.product.name}")
+    @Size(min = 1, message = "{size.product.name}")
     private String name;
 
-    @NotNull
-    @Size(min = 1, max = 1000)
+    @NotNull(message = "{notNull.product.description}")
+    @Size(min = 1, max = 1000, message = "{size.product.description}")
     private String description;
 
-    @URL
+    @URL(message = "{url.product.url}")
     private String url;
 
 }
