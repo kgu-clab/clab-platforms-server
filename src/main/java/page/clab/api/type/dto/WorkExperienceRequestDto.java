@@ -1,7 +1,8 @@
 package page.clab.api.type.dto;
 
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,16 +16,18 @@ import lombok.Setter;
 @Builder
 public class WorkExperienceRequestDto {
 
-    @NotNull
+    @NotNull(message = "{notNull.workExperience.companyName}")
+    @Size(min = 1, message = "{size.workExperience.companyName}")
     private String companyName;
 
-    @NotNull
+    @NotNull(message = "{notNull.workExperience.position}")
+    @Size(min = 1, message = "{size.workExperience.position}")
     private String position;
 
-    @NotNull
+    @NotNull(message = "{notNull.workExperience.startDate}")
     private LocalDate startDate;
 
-    @NotNull
+    @NotNull(message = "{notNull.workExperience.endDate}")
     private LocalDate endDate;
 
 }
