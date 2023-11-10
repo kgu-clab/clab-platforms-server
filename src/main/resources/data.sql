@@ -16,11 +16,18 @@ INSERT INTO "application" (student_id, name, contact, email, department, grade, 
 VALUES ('201912034', '박동민', '01012345678', 'dongmin@naver.com', '컴퓨터공학부', 3, '2000-01-01', '수원시', '', '', 'NORMAL', false, '2022-07-25 18:12:48.000000', '2022-07-25 18:12:48.000000');
 
 -- -- Board
--- INSERT INTO "board" (category, title, content, writer, created_at)
--- VALUES ('질문','스프링은 무엇인가요?', '<h1>스프링 짱짱</h1>', 'admin', '2022-07-25 18:12:43.000000');
---
--- INSERT INTO "board" (category, title, content, writer, created_at)
--- VALUES ('졸업', '카카오 문열어', '<h1>네이버 흥해라</h1>', 'admin', '2022-07-25 18:12:43.000000');
+INSERT INTO "board" (category, title, content, member_id, created_at)
+VALUES ('질문','스프링은 무엇인가요?', '<h1>스프링 짱짱</h1>', 'admin', '2022-07-25 18:12:43.000000');
+
+INSERT INTO "board" (category, title, content, member_id, created_at)
+VALUES ('졸업', '카카오 문열어', '<h1>네이버 흥해라</h1>', 'admin', '2022-07-25 18:12:43.000000');
+
+-- -- Comment (Board)
+INSERT INTO "comment" (content, member_id, board_id, created_at)
+VALUES ('스프링은 좋은 프레임워크입니다.', '201912156', 1, '2022-07-25 18:12:43.000000');
+
+INSERT INTO "comment" (content, member_id, board_id, created_at)
+VALUES ('네이버는 좋은 회사입니다.', '201912033', 2, '2022-07-25 18:12:43.000000');
 
 -- LoginFailInfo
 insert into login_fail_info(member_id, login_fail_count, is_lock)

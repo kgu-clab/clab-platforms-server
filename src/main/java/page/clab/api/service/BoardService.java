@@ -2,7 +2,6 @@ package page.clab.api.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import page.clab.api.exception.NotFoundException;
 import page.clab.api.repository.BoardRepository;
 import page.clab.api.type.dto.BoardDto;
 import page.clab.api.type.entity.Board;
@@ -81,8 +80,7 @@ public class BoardService {
     }
 
     public Board getBoardById(Long boardId) {
-        return boardRepository.findById(boardId)
-                .orElseThrow(() -> new NotFoundException("커뮤니티 글이 존재하지 않습니다."));
+        return boardRepository.findById(boardId).orElseThrow();
     }
 
 }
