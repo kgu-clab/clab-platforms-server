@@ -4,8 +4,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-import page.clab.api.exception.PermissionDeniedException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.service.BookLoanRecordService;
 import page.clab.api.type.dto.BookLoanRecordRequestDto;
 import page.clab.api.type.dto.BookLoanRecordResponseDto;
@@ -22,26 +26,32 @@ public class BookLoanRecordController {
 
     private final BookLoanRecordService bookLoanRecordService;
 
-    @Operation(summary = "도서 대출", description = "도서 대출<br>" +
-            "Long bookId;<br>" +
-            "String borrowerId;")
+    @Operation(summary = "도서 대출", description = "도서 대출")
     @PostMapping("/borrow")
     public ResponseModel borrowBook(
             @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto
-    ) throws PermissionDeniedException {
+    ) {
         bookLoanRecordService.borrowBook(bookLoanRecordRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
-    @Operation(summary = "도서 반납", description = "도서 반납<br>" +
-            "Long bookId;<br>" +
-            "String borrowerId;")
+    @Operation(summary = "도서 반납", description = "도서 반납")
     @PostMapping("/return")
     public ResponseModel returnBook(
             @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto
-    ) throws PermissionDeniedException {
+    ) {
         bookLoanRecordService.returnBook(bookLoanRecordRequestDto);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        return responseModel;
+    }
+
+    @Operation(summary = "도서 대출 연장", description = "도서 대출 연장")
+    @PostMapping("/extend")
+    public ResponseModel extendBookLoan(
+            @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto
+    ) {
+        bookLoanRecordService.extendBookLoan(bookLoanRecordRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
