@@ -51,7 +51,8 @@ public class ApplicationService {
                 .collect(Collectors.toList());
     }
 
-    public ApplicationResponseDto searchApplication(String applicationId) {
+    public ApplicationResponseDto searchApplication(String applicationId) throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
         Application application = null;
         if (applicationId != null) {
             application = getApplicationByIdOrThrow(applicationId);
