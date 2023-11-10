@@ -18,14 +18,15 @@ import page.clab.api.util.ModelMapperUtil;
 @Builder
 public class MembershipFeeRequestDto {
 
-    @NotNull
+    @NotNull(message = "{notNull.membershipFee.category}")
+    @Size(min = 1, message = "{size.membershipFee.category}")
     private String category;
 
-    @NotNull
-    @Size(min = 1, max = 1000)
+    @NotNull(message = "{notNull.membershipFee.content}")
+    @Size(min = 1, max = 1000, message = "{size.membershipFee.content}")
     private String content;
 
-    @URL
+    @URL(message = "{url.membershipFee.imageUrl}")
     private String imageUrl;
 
     public static MembershipFeeRequestDto of(MembershipFee membershipFee) {

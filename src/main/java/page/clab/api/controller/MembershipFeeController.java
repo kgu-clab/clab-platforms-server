@@ -2,17 +2,18 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.MembershipFeeService;
 import page.clab.api.type.dto.MembershipFeeRequestDto;
 import page.clab.api.type.dto.MembershipFeeResponseDto;
-import page.clab.api.type.dto.MembershipFeeUpdateRequestDto;
 import page.clab.api.type.dto.ResponseModel;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/membership-fees")
@@ -23,14 +24,15 @@ public class MembershipFeeController {
     
     private final MembershipFeeService membershipFeeService;
 
-    @Operation(summary = "회비 신청", description = "회비 신청<br>" +
-            "String category;<br>"+
-            "Double content;<br>" +
-            "String imageUrl;")
+    @Operation(summary = "회비 신청", description = "회비 신청")
     @PostMapping("")
     public ResponseModel createMembershipFee(
-            @RequestBody MembershipFeeRequestDto MembershipFeeRequestDto
-    ) {
+            @Valid @RequestBody MembershipFeeRequestDto MembershipFeeRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         membershipFeeService.createMembershipFee(MembershipFeeRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -56,16 +58,17 @@ public class MembershipFeeController {
         return responseModel;
     }
 
-    @Operation(summary = "회비 정보 수정", description = "회비 정보 수정<br>" +
-            "Long id;<br>" +
-            "String category;<br>"+
-            "Double content;<br>" +
-            "String imageUrl;")
-    @PatchMapping("")
+    @Operation(summary = "회비 정보 수정", description = "회비 정보 수정")
+    @PatchMapping("/{membershipFeeId}")
     public ResponseModel updateMembershipFee(
-            @RequestBody MembershipFeeUpdateRequestDto MembershipFeeUpdateRequestDto
-    ) throws PermissionDeniedException {
-        membershipFeeService.updateMembershipFee(MembershipFeeUpdateRequestDto);
+            @PathVariable Long membershipFeeId,
+            @Valid @RequestBody MembershipFeeRequestDto membershipFeeRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
+        membershipFeeService.updateMembershipFee(membershipFeeId, membershipFeeRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
