@@ -1,5 +1,13 @@
 package page.clab.api.type.entity;
 
+import java.time.LocalDate;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,14 +15,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.dto.WorkExperienceRequestDto;
 import page.clab.api.util.ModelMapperUtil;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -29,9 +29,11 @@ public class WorkExperience {
     private Long id;
 
     @Column(nullable = false)
+    @Size(min = 1, message = "{size.workExperience.companyName}")
     private String companyName;
 
     @Column(nullable = false)
+    @Size(min = 1, message = "{size.workExperience.position}")
     private String position;
 
     @Column(nullable = false)

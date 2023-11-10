@@ -2,8 +2,12 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,11 +22,8 @@ import page.clab.api.type.dto.CloudUsageInfo;
 import page.clab.api.type.dto.FileInfo;
 import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
-import page.clab.api.type.dto.MemberUpdateRequestDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.etc.MemberStatus;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/members")
@@ -33,13 +34,15 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @Operation(summary = "신규 멤버 생성", description = "신규 멤버 생성<br>" +
-            "StudentStatus: CURRENT / ON_LEAVE / GRADUATED<br>" +
-            "MemberStatus: ACTIVE / INACTIVE")
+    @Operation(summary = "신규 멤버 생성", description = "신규 멤버 생성")
     @PostMapping("")
     public ResponseModel createMember(
-            @RequestBody MemberRequestDto memberRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody MemberRequestDto memberRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         memberService.createMember(memberRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -67,13 +70,17 @@ public class MemberController {
         return responseModel;
     }
 
-    @Operation(summary = "멤버 정보 수정", description = "본인 정보 수정<br>" +
-            "StudentStatus: CURRENT / ON_LEAVE / GRADUATED")
-    @PatchMapping("")
-    public ResponseModel updateMemberInfoByMember(
-            @RequestBody MemberUpdateRequestDto memberUpdateRequestDto
-    ) {
-        memberService.updateMemberInfoByMember(memberUpdateRequestDto);
+  @Operation(summary = "멤버 정보 수정", description = "본인 정보 수정")
+  @PatchMapping("/{memberId}")
+  public ResponseModel updateMemberInfoByMember(
+      @PathVariable String memberId,
+      @Valid @RequestBody MemberRequestDto memberRequestDto,
+      BindingResult result)
+      throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
+        memberService.updateMemberInfo(memberId, memberRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
@@ -81,7 +88,7 @@ public class MemberController {
     @Operation(summary = "계정 상태 변경(관리자 전용)", description = "관리자에 의한 계정 상태 변경")
     @PatchMapping("/status/{memberId}")
     public ResponseModel updateMemberStatusByAdmin(
-            @PathVariable("memberId") String memberId,
+            @PathVariable String memberId,
             @RequestParam MemberStatus memberStatus
     ) throws PermissionDeniedException {
         memberService.updateMemberStatusByAdmin(memberId, memberStatus);

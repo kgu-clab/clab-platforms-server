@@ -2,8 +2,12 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,8 +22,6 @@ import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.SharedAccountRequestDto;
 import page.clab.api.type.dto.SharedAccountResponseDto;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/shared-accounts")
 @RequiredArgsConstructor
@@ -32,8 +34,12 @@ public class SharedAccountController {
     @Operation(summary = "공동계정 추가", description = "공동계정 추가")
     @PostMapping("")
     public ResponseModel createSharedAccount(
-            @RequestBody SharedAccountRequestDto sharedAccountRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody SharedAccountRequestDto sharedAccountRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         sharedAccountService.createSharedAccount(sharedAccountRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -52,8 +58,12 @@ public class SharedAccountController {
     @PatchMapping("/{accountId}")
     public ResponseModel updateSharedAccount(
             @PathVariable("accountId") Long accountId,
-            @RequestBody SharedAccountRequestDto sharedAccountRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody SharedAccountRequestDto sharedAccountRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         sharedAccountService.updateSharedAccount(accountId, sharedAccountRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;

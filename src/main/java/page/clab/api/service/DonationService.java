@@ -1,20 +1,19 @@
 package page.clab.api.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.DonationRepository;
 import page.clab.api.type.dto.DonationRequestDto;
 import page.clab.api.type.dto.DonationResponseDto;
-import page.clab.api.type.dto.DonationUpdateRequestDto;
 import page.clab.api.type.entity.Donation;
 import page.clab.api.type.entity.Member;
-
-import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,16 +24,23 @@ public class DonationService {
     private final DonationRepository donationRepository;
 
     @Transactional
-    public void createDonation(DonationRequestDto donationRequestDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public void createDonation(DonationRequestDto donationRequestDto) {
+        Member member = memberService.getCurrentMember();
         Donation donation = Donation.of(donationRequestDto);
-        Member donor = memberService.getMemberByIdOrThrow(donationRequestDto.getDonorId());
-        donation.setDonor(donor);
+        donation.setDonor(member);
         donationRepository.save(donation);
     }
 
     public List<DonationResponseDto> getDonations() {
         List<Donation> donations = donationRepository.findAll();
+        return donations.stream()
+                .map(DonationResponseDto::of)
+                .collect(Collectors.toList());
+    }
+
+    public List<DonationResponseDto> getMyDonations() {
+        Member member = memberService.getCurrentMember();
+        List<Donation> donations = getDonationsByDonor(member);
         return donations.stream()
                 .map(DonationResponseDto::of)
                 .collect(Collectors.toList());
@@ -56,14 +62,30 @@ public class DonationService {
                 .collect(Collectors.toList());
     }
 
-    public void updateDonation(DonationUpdateRequestDto donationUpdateRequestDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
-        Donation donation = Donation.of(donationUpdateRequestDto);
-        donationRepository.save(donation);
+    public void updateDonation(Long donationId, DonationRequestDto donationRequestDto) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
+        Donation donation = getDonationByIdOrThrow(donationId);
+        if (!(donation.getDonor().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
+            throw new PermissionDeniedException("해당 후원 정보를 수정할 권한이 없습니다.");
+        }
+        Donation updatedDonation = Donation.of(donationRequestDto);
+        updatedDonation.setDonor(donation.getDonor());
+        updatedDonation.setId(donation.getId());
+        updatedDonation.setCreatedAt(donation.getCreatedAt());
+        donationRepository.save(updatedDonation);
     }
 
     public void deleteDonation(Long donationId) {
         donationRepository.deleteById(donationId);
+    }
+
+    private Donation getDonationByIdOrThrow(Long donationId) {
+        return donationRepository.findById(donationId)
+                .orElseThrow(() -> new NotFoundException("해당 후원 정보가 존재하지 않습니다."));
+    }
+
+    private List<Donation> getDonationsByDonor(Member member) {
+        return donationRepository.findByDonor(member);
     }
 
     private List<Donation> getDonationByDonorIdOrThrow(String memberId) {

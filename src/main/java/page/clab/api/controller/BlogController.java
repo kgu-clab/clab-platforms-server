@@ -2,8 +2,12 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,8 +23,6 @@ import page.clab.api.type.dto.BlogRequestDto;
 import page.clab.api.type.dto.BlogResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/blogs")
 @RequiredArgsConstructor
@@ -33,8 +35,12 @@ public class BlogController {
     @Operation(summary = "블로그 포스트 생성", description = "블로그 포스트 생성")
     @PostMapping("")
     public ResponseModel createBlog(
-            @RequestBody BlogRequestDto blogRequestDto
-    ) {
+            @Valid @RequestBody BlogRequestDto blogRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         blogService.createBlog(blogRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -65,8 +71,12 @@ public class BlogController {
     @PatchMapping("/{blogId}")
     public ResponseModel updateBlog(
             @PathVariable Long blogId,
-            @RequestBody BlogRequestDto blogRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody BlogRequestDto blogRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         blogService.updateBlog(blogId, blogRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
