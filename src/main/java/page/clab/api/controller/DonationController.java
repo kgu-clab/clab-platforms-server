@@ -2,8 +2,12 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.DonationService;
@@ -11,8 +15,6 @@ import page.clab.api.type.dto.DonationRequestDto;
 import page.clab.api.type.dto.DonationResponseDto;
 import page.clab.api.type.dto.DonationUpdateRequestDto;
 import page.clab.api.type.dto.ResponseModel;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/donations")
@@ -23,14 +25,15 @@ public class DonationController {
 
     private final DonationService donationService;
 
-    @Operation(summary = "후원 생성", description = "후원 생성<br>" +
-            "String donorId;<br>"+
-            "Double amount;<br>" +
-            "String message;")
+    @Operation(summary = "후원 생성", description = "후원 생성")
     @PostMapping("")
     public ResponseModel createDonation(
-            @RequestBody DonationRequestDto donationRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody DonationRequestDto donationRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         donationService.createDonation(donationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -57,15 +60,15 @@ public class DonationController {
         return responseModel;
     }
 
-    @Operation(summary = "후원 정보 수정", description = "후원 정보 수정<br>" +
-            "Long id;<br>" +
-            "String donorId;<br>"+
-            "Double amount;<br>" +
-            "String message;")
+    @Operation(summary = "후원 정보 수정", description = "후원 정보 수정")
     @PatchMapping("")
     public ResponseModel updateDonation(
-            @RequestBody DonationUpdateRequestDto donationUpdateRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody DonationUpdateRequestDto donationUpdateRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         donationService.updateDonation(donationUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
