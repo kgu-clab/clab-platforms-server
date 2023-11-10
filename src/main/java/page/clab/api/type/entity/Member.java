@@ -54,8 +54,6 @@ public class Member implements UserDetails {
     @JsonIgnore
     private String password;
 
-    private String uid;
-
     @Column(nullable = false)
     @Size(max = 10)
     private String name;
@@ -149,29 +147,8 @@ public class Member implements UserDetails {
         return member;
     }
 
-    public static Member of(MemberResponseDto memberResponseDto) {
-        return ModelMapperUtil.getModelMapper().map(memberResponseDto, Member.class);
-    }
-
     public static Member of(MemberUpdateRequestDto memberUpdateRequestDto) {
         return ModelMapperUtil.getModelMapper().map(memberUpdateRequestDto, Member.class);
-    }
-
-    public static Member of(Application application) {
-        Member member = ModelMapperUtil.getModelMapper().map(application, Member.class);
-        member.setPassword(member.generatePassword(member.getBirth()));
-        member.setStudentStatus(StudentStatus.CURRENT);
-        member.setRole(Role.USER);
-        member.setProvider(OAuthProvider.LOCAL);
-        return member;
-    }
-
-    public String generatePassword(LocalDate birthDate) {
-        if (birthDate == null) {
-            throw new IllegalArgumentException("생년월일이 올바르지 않습니다.");
-        }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
-        return birthDate.format(formatter);
     }
   
 }
