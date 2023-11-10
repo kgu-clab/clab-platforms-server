@@ -39,7 +39,7 @@ public class Comment {
     private Member writer;
 
     @Column(nullable = false, length = 1000)
-    @Size(min = 1, max = 1000)
+    @Size(min = 1, max = 1000, message = "{size.comment.content}")
     private String content;
 
     @Column(name = "update_time")
