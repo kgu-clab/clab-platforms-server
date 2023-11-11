@@ -1,26 +1,10 @@
 package page.clab.api.type.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.validator.constraints.URL;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import page.clab.api.type.dto.MemberRequestDto;
-import page.clab.api.type.dto.MemberResponseDto;
-import page.clab.api.type.dto.MemberUpdateRequestDto;
-import page.clab.api.type.etc.MemberStatus;
-import page.clab.api.type.etc.OAuthProvider;
-import page.clab.api.type.etc.Role;
-import page.clab.api.type.etc.StudentStatus;
-import page.clab.api.util.ModelMapperUtil;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -30,11 +14,22 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.Collections;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.URL;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import page.clab.api.type.dto.MemberRequestDto;
+import page.clab.api.type.etc.MemberStatus;
+import page.clab.api.type.etc.OAuthProvider;
+import page.clab.api.type.etc.Role;
+import page.clab.api.type.etc.StudentStatus;
+import page.clab.api.util.ModelMapperUtil;
 
 @Entity
 @Getter
@@ -46,49 +41,49 @@ public class Member implements UserDetails {
 
     @Id
     @Column(updatable = false, unique = true, nullable = false)
-
-    @Size(min = 9, max = 9)
+    @Size(min = 9, max = 9, message = "{size.member.id}")
     private String id;
 
-    @Column(nullable = false)
     @JsonIgnore
     private String password;
 
-    private String uid;
-
     @Column(nullable = false)
-    @Size(max = 10)
+    @Size(min = 1, max = 10, message = "{size.member.name}")
     private String name;
 
     @Column(nullable = false)
-    @Size(max = 11)
+    @Size(min = 11, max = 11, message = "{size.member.contact}")
     private String contact;
 
     @Column(unique = true, nullable = false)
-    @Email
+    @Email(message = "{email.member.email}")
+    @Size(min = 1, message = "{size.member.email}")
     private String email;
 
     @Column(nullable = false)
+    @Size(min = 1, message = "{size.member.department}")
     private String department;
 
     @Column(nullable = false)
-    @Min(1)
-    @Max(4)
+    @Min(value = 1, message = "{min.member.grade}")
+    @Max(value = 4, message = "{max.member.grade}")
     private Long grade;
 
     @Column(nullable = false)
-    @DateTimeFormat
     private LocalDate birth;
 
     @Column(nullable = false)
+    @Size(min = 1, message = "{size.member.address}")
     private String address;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private StudentStatus studentStatus;
 
-    @URL
+    @URL(message = "{url.member.imageUrl}")
     private String imageUrl;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private MemberStatus memberStatus;
 
@@ -103,6 +98,8 @@ public class Member implements UserDetails {
     private LocalDateTime createdAt;
 
     private LocalDateTime lastLoginTime;
+
+    private LocalDateTime loanSuspensionDate;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -145,31 +142,6 @@ public class Member implements UserDetails {
         member.setRole(Role.USER);
         member.setProvider(OAuthProvider.LOCAL);
         return member;
-    }
-
-    public static Member of(MemberResponseDto memberResponseDto) {
-        return ModelMapperUtil.getModelMapper().map(memberResponseDto, Member.class);
-    }
-
-    public static Member of(MemberUpdateRequestDto memberUpdateRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(memberUpdateRequestDto, Member.class);
-    }
-
-    public static Member of(Application application) {
-        Member member = ModelMapperUtil.getModelMapper().map(application, Member.class);
-        member.setPassword(member.generatePassword(member.getBirth()));
-        member.setStudentStatus(StudentStatus.CURRENT);
-        member.setRole(Role.USER);
-        member.setProvider(OAuthProvider.LOCAL);
-        return member;
-    }
-
-    public String generatePassword(LocalDate birthDate) {
-        if (birthDate == null) {
-            throw new IllegalArgumentException("생년월일이 올바르지 않습니다.");
-        }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
-        return birthDate.format(formatter);
     }
   
 }

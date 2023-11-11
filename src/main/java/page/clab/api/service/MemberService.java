@@ -1,5 +1,11 @@
 package page.clab.api.service;
 
+import java.io.File;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,37 +15,21 @@ import page.clab.api.exception.AssociatedAccountExistsException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
-import page.clab.api.repository.GroupMemberRepository;
 import page.clab.api.repository.MemberRepository;
 import page.clab.api.type.dto.CloudUsageInfo;
 import page.clab.api.type.dto.FileInfo;
 import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
-import page.clab.api.type.dto.MemberUpdateRequestDto;
-import page.clab.api.type.entity.ActivityGroup;
-import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.Member;
-import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.Role;
 import page.clab.api.util.FileSystemUtil;
-
-import java.io.File;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
-
-    private final GroupMemberRepository groupMemberRepository;
-
-    private final ActivityGroupMemberService activityGroupService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -86,13 +76,18 @@ public class MemberService {
                 .collect(Collectors.toList());
     }
 
-    public void updateMemberInfoByMember(MemberUpdateRequestDto memberUpdateRequestDto) {
-        String memberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = memberRepository.findById(memberId).get();
-        Member updatedMember = Member.of(memberUpdateRequestDto);
-        updatedMember.setId(member.getId());
+    public void updateMemberInfo(String memberId, MemberRequestDto memberRequestDto) throws PermissionDeniedException {
+        Member currentMember = getCurrentMember();
+        Member member = getMemberByIdOrThrow(memberId);
+        if (!(member.getId().equals(currentMember.getId()) || isMemberAdminRole(currentMember))) {
+            throw new PermissionDeniedException("멤버 수정 권한이 부족합니다.");
+        }
+        Member updatedMember = Member.of(memberRequestDto);
+        updatedMember.setMemberStatus(member.getMemberStatus());
         updatedMember.setRole(member.getRole());
         updatedMember.setProvider(member.getProvider());
+        updatedMember.setLastLoginTime(member.getLastLoginTime());
+        updatedMember.setLoanSuspensionDate(member.getLoanSuspensionDate());
         memberRepository.save(updatedMember);
     }
 
@@ -125,6 +120,11 @@ public class MemberService {
     }
 
     public List<FileInfo> getFilesInMemberDirectory(String memberId) {
+        Member currentMember = getCurrentMember();
+        Member member = getMemberByIdOrThrow(memberId);
+        if (!(isMemberAdminRole(member) || currentMember.getId().equals(memberId))) {
+            return new ArrayList<>();
+        }
         File directory = new File(filePath + "/members/" + memberId);
         File[] files = FileSystemUtil.getFilesInDirectory(directory).toArray(new File[0]);
         return Arrays.stream(files)
@@ -146,21 +146,11 @@ public class MemberService {
         }
     }
 
-    public void checkMemberGroupLeaderRole() throws PermissionDeniedException {
-        String memberId = AuthUtil.getAuthenticationInfoMemberId();
-        GroupMember groupMember = groupMemberRepository.findByMemberId(memberId);
-        Member member = memberRepository.findById(memberId).get();
-        if (groupMember.getRole().equals(ActivityGroupRole.MEMBER) || member.getRole().equals(Role.USER)) {
-            throw new PermissionDeniedException("권한이 부족합니다.");
+    public boolean isMemberAdminRole(Member member) {
+        if (member.getRole().equals(Role.USER)) {
+            return false;
         }
-    }
-
-    public void checkMemberGroupMemberRole() throws PermissionDeniedException {
-        String memberId = AuthUtil.getAuthenticationInfoMemberId();
-        GroupMember member = groupMemberRepository.findByMemberId(memberId);
-        if (!member.getRole().equals(ActivityGroupRole.MEMBER)) {
-            throw new PermissionDeniedException("권한이 부족합니다.");
-        }
+        return true;
     }
 
     public Member getMemberByIdOrThrow(String memberId) {
@@ -176,6 +166,10 @@ public class MemberService {
         return memberRepository.findByMemberStatus(memberStatus);
     }
 
+    public Member saveMember(Member updatedMember) {
+        return memberRepository.save(updatedMember);
+    }
+
     public String removeHyphensFromContact(String contact) {
         return contact.replaceAll("-", "");
     }
@@ -184,15 +178,6 @@ public class MemberService {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
-    }
-
-    public void grantActivityGroupLeaderRole(String memberId, Long ActivityGroupId) throws PermissionDeniedException {
-        checkMemberAdminRole();
-        Member member = getMemberByIdOrThrow(memberId);
-        ActivityGroup activityGroup = activityGroupService.findById(ActivityGroupId);
-        GroupMember groupMember = GroupMember.of(member, activityGroup);
-        groupMember.setRole(ActivityGroupRole.LEADER);
-        groupMemberRepository.save(groupMember);
     }
 
 }
