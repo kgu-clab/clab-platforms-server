@@ -12,11 +12,9 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.EmailService;
 import page.clab.api.service.MemberService;
 import page.clab.api.type.dto.EmailDto;
-import page.clab.api.type.dto.MemberResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 import javax.mail.MessagingException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/emails")
@@ -42,9 +40,8 @@ public class EmailController {
     @PostMapping("/broadcast")
     public ResponseModel broadcastEmailToAllMember(
             @RequestBody EmailDto emailDto
-    ) throws PermissionDeniedException, MessagingException {
-        List<MemberResponseDto> memberList = memberService.getMembers();
-        emailService.broadcastEmailToAllMember(memberList, emailDto);
+    ) throws PermissionDeniedException {
+        emailService.broadcastEmailToAllMember(emailDto);
         return ResponseModel.builder().build();
     }
 
