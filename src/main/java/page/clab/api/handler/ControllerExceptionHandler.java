@@ -27,6 +27,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.type.dto.ResponseModel;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
@@ -76,7 +77,8 @@ public class ControllerExceptionHandler {
             InvalidBorrowerException.class,
             LoanSuspensionException.class,
             OverdueException.class,
-            Exception.class
+            Exception.class,
+            MessagingException.class
     })
     public ResponseModel errorException(HttpServletRequest request, HttpServletResponse response, Exception e) {
         ResponseModel responseModel = ResponseModel.builder()
