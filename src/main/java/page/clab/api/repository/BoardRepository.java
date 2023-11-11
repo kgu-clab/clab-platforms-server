@@ -10,7 +10,8 @@ import java.util.List;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    List<Board> findAllByWriter(Member writer);
+    List<Board> findAllByMember(Member member);
 
     List<Board> findAllByCategory(String category);
+
 }

@@ -2,8 +2,12 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,8 +21,6 @@ import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.NotificationResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/notifications")
 @RequiredArgsConstructor
@@ -28,19 +30,21 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @Operation(summary = "알림 생성", description = "알림 생성<br>" +
-            "String memberId<br>" +
-            "String content;")
+    @Operation(summary = "알림 생성", description = "알림 생성")
     @PostMapping("")
     public ResponseModel createNotification(
-            @RequestBody NotificationRequestDto notificationRequestDto
-    ) {
+            @Valid @RequestBody NotificationRequestDto notificationRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         notificationService.createNotification(notificationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
-    @Operation(summary = "알림 조회", description = "알림 조회")
+    @Operation(summary = "나의 알림 조회", description = "나의 알림 조회")
     @GetMapping("")
     public ResponseModel getNotifications() {
         List<NotificationResponseDto> notifications = notificationService.getNotifications();

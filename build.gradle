@@ -28,6 +28,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web' // 웹 MVC
 	implementation 'org.springframework.boot:spring-boot-starter-validation' // 유효성 검사
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 템플릿 엔진
+	implementation 'org.springframework.boot:spring-boot-starter-webflux' // WebFlux
 	developmentOnly 'org.springframework.boot:spring-boot-devtools' // 개발 도구
 
 	// Util
@@ -44,9 +45,11 @@ dependencies {
 	// DB
 	implementation 'org.postgresql:postgresql:42.6.0' // PostgreSQL JDBC Driver
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
-	implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final' // Bean Validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation' // Hibernate Validator
+	implementation 'org.hibernate.validator:hibernate-validator:6.2.5.Final' // Bean Validation
 	implementation 'javax.validation:validation-api:2.0.1.Final' // Javax Bean Validation
-	implementation 'jakarta.validation:jakarta.validation-api:3.0.2' // Jakarta Bean Validation
+	implementation 'jakarta.validation:jakarta.validation-api:2.0.2' // Jakarta Bean Validation
+	implementation 'com.maxmind.geoip2:geoip2:4.1.0' // GeoIP2
 
 	// OAuth
 	implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
