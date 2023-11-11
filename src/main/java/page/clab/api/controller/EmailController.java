@@ -7,14 +7,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.EmailService;
-import page.clab.api.service.MemberService;
 import page.clab.api.type.dto.EmailDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import javax.mail.MessagingException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/emails")
@@ -25,23 +26,23 @@ public class EmailController {
 
     private final EmailService emailService;
 
-    private final MemberService memberService;
-
     @Operation(summary = "Send email", description = "Send email")
-    @PostMapping("")
+    @PostMapping(path ="")
     public ResponseModel broadcastEmail(
-            @RequestBody EmailDto emailDto
-    ) throws MessagingException, PermissionDeniedException {
-        emailService.broadcastEmail(emailDto);
+            @RequestBody EmailDto emailDto,
+            @RequestPart List<MultipartFile> files
+    ) throws PermissionDeniedException {
+        emailService.broadcastEmail(emailDto, files);
         return ResponseModel.builder().build();
     }
 
     @Operation(summary = "Broadcast email", description = "Broadcast email")
-    @PostMapping("/broadcast")
+    @PostMapping(path ="/all")
     public ResponseModel broadcastEmailToAllMember(
-            @RequestBody EmailDto emailDto
+            @RequestBody EmailDto emailDto,
+            @RequestPart List<MultipartFile> files
     ) throws PermissionDeniedException {
-        emailService.broadcastEmailToAllMember(emailDto);
+        emailService.broadcastEmailToAllMember(emailDto, files);
         return ResponseModel.builder().build();
     }
 
