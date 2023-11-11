@@ -38,18 +38,26 @@ public class EmailService {
         javaMailSender.send(message);
     }
 
-    public void broadcastEmail(EmailDto emailDto) throws MessagingException, PermissionDeniedException {
-//        memberService.checkMemberAdminRole();
-        for (String member : emailDto.getTo()) {
-            sendEmail(member, emailDto.getSubject(), emailDto.getContent(), emailDto.getFiles());
-        }
+    public void broadcastEmail(EmailDto emailDto) throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        emailDto.getTo().parallelStream().forEach(member -> {
+            try {
+                sendEmail(member, emailDto.getSubject(), emailDto.getContent(), emailDto.getFiles());
+            } catch (MessagingException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
-    public void broadcastEmailToAllMember(List<MemberResponseDto> memberList, EmailDto emailDto) throws MessagingException, PermissionDeniedException {
-//        memberService.checkMemberAdminRole();
-        for (MemberResponseDto member : memberList) {
-            sendEmail(member.getEmail(), emailDto.getSubject(), emailDto.getContent(), emailDto.getFiles());
-        }
+    public void broadcastEmailToAllMember(EmailDto emailDto) throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        List<MemberResponseDto> memberList = memberService.getMembers();
+         memberList.parallelStream().forEach(member -> {
+             try {
+                 sendEmail(member.getEmail(), emailDto.getSubject(), emailDto.getContent(), emailDto.getFiles());
+             } catch (MessagingException e) {
+                 throw new RuntimeException(e);
+             }
+    });
     }
-
 }
