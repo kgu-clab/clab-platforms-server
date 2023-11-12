@@ -17,13 +17,13 @@ import page.clab.api.type.dto.ResponseModel;
 @RestController
 @RequestMapping("/files")
 @RequiredArgsConstructor
-@Tag(name = "File")
+@Tag(name = "File", description = "파일 업로드 관련 API")
 @Slf4j
 public class FileController {
 
     private final FileUploadService fileUploadService;
 
-    @Operation(summary = "게시글 사진 업로드", description = "게시글 사진 업로드")
+    @Operation(summary = "[U] 게시글 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/boards")
     public ResponseModel boardUpload(
             @RequestParam(value = "file", required = true) MultipartFile multipartFile
@@ -34,7 +34,7 @@ public class FileController {
         return responseModel;
     }
 
-    @Operation(summary = "뉴스 사진 업로드", description = "뉴스 사진 업로드")
+    @Operation(summary = "[U] 뉴스 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/news")
     public ResponseModel newsUpload(
             @RequestParam(value = "file", required = true) MultipartFile multipartFile
@@ -45,7 +45,7 @@ public class FileController {
         return responseModel;
     }
 
-    @Operation(summary = "도서 사진 업로드", description = "도서 사진 업로드")
+    @Operation(summary = "[U] 도서 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/books")
     public ResponseModel bookUpload(
             @RequestParam(value = "file", required = true) MultipartFile multipartFile
@@ -56,7 +56,7 @@ public class FileController {
         return responseModel;
     }
 
-    @Operation(summary = "멤버 프로필 사진 업로드", description = "유저 프로필 사진 업로드")
+    @Operation(summary = "[U] 멤버 프로필 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/profiles")
     public ResponseModel profileUpload(
             @RequestParam(value = "file", required = true) MultipartFile multipartFile
@@ -67,7 +67,7 @@ public class FileController {
         return responseModel;
     }
 
-    @Operation(summary = "함께하는 활동 사진 업로드", description = "함께하는 활동 업로드")
+    @Operation(summary = "[U] 함께하는 활동 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/activities")
     public ResponseModel activityUpload(
             @RequestParam(value = "file", required = true) MultipartFile multipartFile
@@ -78,7 +78,7 @@ public class FileController {
         return responseModel;
     }
 
-    @Operation(summary = "멤버 클라우드 파일 업로드", description = "유저 클라우드 파일 업로드")
+    @Operation(summary = "[U] 멤버 클라우드 파일 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/members/{memberId}")
     public ResponseModel memberCloudUpload(
             @PathVariable("memberId") String memberId,
@@ -90,7 +90,7 @@ public class FileController {
         return responseModel;
     }
 
-    @Operation(summary = "양식 업로드", description = "양식 업로드")
+    @Operation(summary = "[U] 양식 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/forms")
     public ResponseModel formUpload(
             @RequestParam(value = "file", required = true) MultipartFile multipartFile

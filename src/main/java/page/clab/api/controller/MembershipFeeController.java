@@ -18,13 +18,13 @@ import page.clab.api.type.dto.ResponseModel;
 @RestController
 @RequestMapping("/membership-fees")
 @RequiredArgsConstructor
-@Tag(name = "MembershipFee")
+@Tag(name = "MembershipFee", description = "회비 관련 API")
 @Slf4j
 public class MembershipFeeController {
     
     private final MembershipFeeService membershipFeeService;
 
-    @Operation(summary = "회비 신청", description = "회비 신청")
+    @Operation(summary = "[U] 회비 신청", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createMembershipFee(
             @Valid @RequestBody MembershipFeeRequestDto MembershipFeeRequestDto,
@@ -38,7 +38,7 @@ public class MembershipFeeController {
         return responseModel;
     }
 
-    @Operation(summary = "회비 정보 조회", description = "회비 정보 조회")
+    @Operation(summary = "[U] 회비 정보 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getMembershipFees() {
         List<MembershipFeeResponseDto> MembershipFees = membershipFeeService.getMembershipFees();
@@ -47,7 +47,8 @@ public class MembershipFeeController {
         return responseModel;
     }
 
-    @Operation(summary = "회비 검색", description = "카테고리 기반 검색")
+    @Operation(summary = "[U] 회비 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "카테고리를 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel getMembershipFee(
             @RequestParam String category
@@ -58,7 +59,7 @@ public class MembershipFeeController {
         return responseModel;
     }
 
-    @Operation(summary = "회비 정보 수정", description = "회비 정보 수정")
+    @Operation(summary = "[A] 회비 정보 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PatchMapping("/{membershipFeeId}")
     public ResponseModel updateMembershipFee(
             @PathVariable Long membershipFeeId,
@@ -73,7 +74,7 @@ public class MembershipFeeController {
         return responseModel;
     }
 
-    @Operation(summary = "회비 삭제", description = "회비 삭제")
+    @Operation(summary = "[A] 회비 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @DeleteMapping("/{membershipFeeId}")
     public ResponseModel deleteMembershipFee(
             @PathVariable Long membershipFeeId

@@ -98,7 +98,8 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public List<CloudUsageInfo> getAllCloudUsages() {
+    public List<CloudUsageInfo> getAllCloudUsages() throws PermissionDeniedException {
+        checkMemberAdminRole();
         List<Member> members = memberRepository.findAll();
         return members.stream()
                 .map(member -> getCloudUsageByMemberId(member.getId()))

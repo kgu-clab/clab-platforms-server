@@ -26,13 +26,13 @@ import page.clab.api.type.dto.WorkExperienceResponseDto;
 @RestController
 @RequestMapping("/work-experiences")
 @RequiredArgsConstructor
-@Tag(name = "WorkExperience")
+@Tag(name = "WorkExperience", description = "경력사항 관련 API")
 @Slf4j
 public class WorkExperienceController {
 
     private final WorkExperienceService workExperienceService;
 
-    @Operation(summary = "경력사항 등록", description = "경력사항 등록")
+    @Operation(summary = "[U] 경력사항 등록", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createWorkExperience(
             @Valid @RequestBody WorkExperienceRequestDto workExperienceRequestDto,
@@ -46,7 +46,7 @@ public class WorkExperienceController {
         return responseModel;
     }
 
-    @Operation(summary = "내 경력사항 조회", description = "내 경력사항 조회<br>" +
+    @Operation(summary = "[U] 나의 경력사항 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌")
     @GetMapping("")
     public ResponseModel getMyWorkExperience() {
@@ -56,7 +56,7 @@ public class WorkExperienceController {
         return responseModel;
     }
 
-    @Operation(summary = "멤버의 경력사항 검색", description = "멤버의 경력사항 검색<br>" +
+    @Operation(summary = "[U] 멤버의 경력사항 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌")
     @GetMapping("/search")
     public ResponseModel searchWorkExperience(
@@ -68,7 +68,7 @@ public class WorkExperienceController {
         return responseModel;
     }
 
-    @Operation(summary = "경력사항 수정", description = "경력사항 수정")
+    @Operation(summary = "[U] 경력사항 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @PatchMapping("/{workExperienceId}")
     public ResponseModel updateWorkExperience(
             @PathVariable Long workExperienceId,
@@ -83,7 +83,7 @@ public class WorkExperienceController {
         return responseModel;
     }
 
-    @Operation(summary = "경력사항 삭제", description = "경력사항 삭제")
+    @Operation(summary = "[U] 경력사항 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @DeleteMapping("/{workExperienceId}")
     public ResponseModel deleteWorkExperience(
             @PathVariable Long workExperienceId
