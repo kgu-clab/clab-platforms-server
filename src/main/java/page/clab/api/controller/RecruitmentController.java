@@ -2,8 +2,12 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,29 +22,31 @@ import page.clab.api.type.dto.RecruitmentRequestDto;
 import page.clab.api.type.dto.RecruitmentResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/recruitments")
 @RequiredArgsConstructor
-@Tag(name = "Recruitment")
+@Tag(name = "Recruitment", description = "모집 공고 관련 API")
 @Slf4j
 public class RecruitmentController {
 
     private final RecruitmentService recruitmentService;
 
-    @Operation(summary = "모집 공고 등록", description = "모집 공고 등록<br>" +
-            "ApplicationType: NORMAL / CORE_TEAM")
+    @Operation(summary = "[A] 모집 공고 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createRecruitment(
-            @RequestBody RecruitmentRequestDto recruitmentRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody RecruitmentRequestDto recruitmentRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         recruitmentService.createRecruitment(recruitmentRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
-    @Operation(summary = "모집 공고 목록(최근 5건)", description = "모집 공고 목록(최근 5건)")
+    @Operation(summary = "모집 공고 목록(최근 5건)", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
+            "최근 5건의 모집 공고를 조회")
     @GetMapping("")
     public ResponseModel getRecentRecruitments() {
         List<RecruitmentResponseDto> recruitments = recruitmentService.getRecentRecruitments();
@@ -49,19 +55,22 @@ public class RecruitmentController {
         return responseModel;
     }
 
-    @Operation(summary = "모집 공고 수정", description = "모집 공고 수정<br>" +
-            "ApplicationType: NORMAL / CORE_TEAM")
+    @Operation(summary = "[A] 모집 공고 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PatchMapping("/{recruitmentId}")
     public ResponseModel updateRecruitment(
             @PathVariable Long recruitmentId,
-            @RequestBody RecruitmentRequestDto recruitmentRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody RecruitmentRequestDto recruitmentRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         recruitmentService.updateRecruitment(recruitmentId, recruitmentRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
-    @Operation(summary = "모집 공고 삭제", description = "모집 공고 삭제")
+    @Operation(summary = "[A] 모집 공고 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @DeleteMapping("/{recruitmentId}")
     public ResponseModel deleteRecruitment(
             @PathVariable Long recruitmentId

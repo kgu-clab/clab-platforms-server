@@ -3,10 +3,28 @@ package page.clab.api.handler;
 import com.google.gson.stream.MalformedJsonException;
 import com.maxmind.geoip2.exception.AddressNotFoundException;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.AccessDeniedException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.transaction.TransactionSystemException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -27,17 +45,12 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.type.dto.ResponseModel;
 
-import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.AccessDeniedException;
-import java.util.NoSuchElementException;
-
 @RestControllerAdvice(basePackages = "page.clab.api.controller")
+@RequiredArgsConstructor
 @Slf4j
 public class ControllerExceptionHandler {
+
+    private final MessageSource messageSource;
 
     @ExceptionHandler({
             NoSuchElementException.class,
@@ -63,7 +76,6 @@ public class ControllerExceptionHandler {
             UnAuthorizeException.class,
             AccessDeniedException.class,
             PermissionDeniedException.class,
-            MessagingException.class,
             TokenValidateException.class,
             LoginFaliedException.class,
             MemberLockedException.class,
@@ -78,7 +90,9 @@ public class ControllerExceptionHandler {
             InvalidBorrowerException.class,
             LoanSuspensionException.class,
             OverdueException.class,
-            Exception.class,
+            TransactionSystemException.class,
+            MessagingException.class,
+            Exception.class
     })
     public ResponseModel errorException(HttpServletRequest request, HttpServletResponse response, Exception e) {
         ResponseModel responseModel = ResponseModel.builder()
@@ -88,88 +102,31 @@ public class ControllerExceptionHandler {
         return responseModel;
     }
 
-//    @ExceptionHandler({
-//            NoSuchElementException.class,
-//            MissingServletRequestParameterException.class,
-//            MalformedJsonException.class,
-//            HttpMessageNotReadableException.class,
-//            MethodArgumentTypeMismatchException.class,
-//            NullPointerException.class,
-//            DataIntegrityViolationException.class,
-//            FileUploadFailException.class
-//    })
-//    public ResponseModel parameterError(HttpServletRequest request, HttpServletResponse response, Exception e) {
-//        ResponseModel responseModel = ResponseModel.builder()
-//                .success(false)
-//                .build();
-//        response.setStatus(400);
-//        return responseModel;
-//    }
-//
-//    @ExceptionHandler({
-//            UnAuthorizeException.class,
-//            AccessDeniedException.class,
-//            PermissionDeniedException.class,
-//            TokenValidateException.class
-//    })
-//    public ResponseModel unAuthorizeRequestError(HttpServletRequest request, HttpServletResponse response,
-//                                                 Exception e) {
-//        ResponseModel responseModel = ResponseModel.builder()
-//                .success(false)
-//                .build();
-//        response.setStatus(401);
-//        return responseModel;
-//    }
-//
-//    @ExceptionHandler({
-//            LoginFaliedException.class,
-//            MemberLockedException.class,
-//            BadCredentialsException.class
-//    })
-//    public ResponseModel LoginFailedError(HttpServletRequest request, HttpServletResponse response,
-//                                          Exception e) throws Exception {
-//        ResponseModel responseModel = ResponseModel.builder()
-//                .success(false)
-//                .build();
-//        response.setStatus(403);
-//        return responseModel;
-//    }
-//
-//    @ExceptionHandler({
-//            SearchResultNotExistException.class,
-//            FileNotFoundException.class,
-//            NotFoundException.class
-//    })
-//    public ResponseModel searchResultNotExistError(HttpServletRequest request, HttpServletResponse response,
-//                                                   Exception e) {
-//        ResponseModel responseModel = ResponseModel.builder()
-//                .success(false)
-//                .build();
-//        response.setStatus(404);
-//        return responseModel;
-//    }
-//
-//    @ExceptionHandler({
-//            AssociatedAccountExistsException.class
-//    })
-//    public ResponseModel AssociatedAccountExistsExceptionError(HttpServletRequest request, HttpServletResponse response,
-//                                                               Exception e) {
-//        ResponseModel responseModel = ResponseModel.builder()
-//                .success(false)
-//                .build();
-//        response.setStatus(404);
-//        return responseModel;
-//    }
-//
-//    @ExceptionHandler({
-//            Exception.class
-//    })
-//    public ResponseModel unExceptedError(HttpServletRequest request, HttpServletResponse response, Exception e) {
-//        ResponseModel responseModel = ResponseModel.builder()
-//                .success(false)
-//                .build();
-//        response.setStatus(500);
-//        return responseModel;
-//    }
+    @ExceptionHandler({
+            MethodArgumentNotValidException.class
+    })
+    public ResponseModel handleValidationException(HttpServletRequest request, HttpServletResponse response, MethodArgumentNotValidException ex) {
+        BindingResult result = ex.getBindingResult();
+        List<Map<String, String>> errorList = new ArrayList<>();
+
+        for (FieldError fieldError : result.getFieldErrors()) {
+            Map<String, String> error = new HashMap<>();
+            error.put("fieldName", fieldError.getField());
+            error.put("message", getMessage(fieldError.getDefaultMessage()));
+            errorList.add(error);
+        }
+
+        ResponseModel responseModel = ResponseModel.builder()
+                .success(false)
+                .data(errorList)
+                .build();
+        response.setStatus(200);
+        log.info("Validation error: {}", errorList);
+        return responseModel;
+    }
+
+    private String getMessage(String code) {
+        return messageSource.getMessage(code, null, Locale.getDefault());
+    }
 
 }

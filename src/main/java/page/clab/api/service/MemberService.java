@@ -1,5 +1,11 @@
 package page.clab.api.service;
 
+import java.io.File;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,18 +20,10 @@ import page.clab.api.type.dto.CloudUsageInfo;
 import page.clab.api.type.dto.FileInfo;
 import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
-import page.clab.api.type.dto.MemberUpdateRequestDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.Role;
 import page.clab.api.util.FileSystemUtil;
-
-import java.io.File;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -78,13 +76,18 @@ public class MemberService {
                 .collect(Collectors.toList());
     }
 
-    public void updateMemberInfoByMember(MemberUpdateRequestDto memberUpdateRequestDto) {
-        String memberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = memberRepository.findById(memberId).get();
-        Member updatedMember = Member.of(memberUpdateRequestDto);
-        updatedMember.setId(member.getId());
+    public void updateMemberInfo(String memberId, MemberRequestDto memberRequestDto) throws PermissionDeniedException {
+        Member currentMember = getCurrentMember();
+        Member member = getMemberByIdOrThrow(memberId);
+        if (!(member.getId().equals(currentMember.getId()) || isMemberAdminRole(currentMember))) {
+            throw new PermissionDeniedException("멤버 수정 권한이 부족합니다.");
+        }
+        Member updatedMember = Member.of(memberRequestDto);
+        updatedMember.setMemberStatus(member.getMemberStatus());
         updatedMember.setRole(member.getRole());
         updatedMember.setProvider(member.getProvider());
+        updatedMember.setLastLoginTime(member.getLastLoginTime());
+        updatedMember.setLoanSuspensionDate(member.getLoanSuspensionDate());
         memberRepository.save(updatedMember);
     }
 
@@ -95,7 +98,8 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public List<CloudUsageInfo> getAllCloudUsages() {
+    public List<CloudUsageInfo> getAllCloudUsages() throws PermissionDeniedException {
+        checkMemberAdminRole();
         List<Member> members = memberRepository.findAll();
         return members.stream()
                 .map(member -> getCloudUsageByMemberId(member.getId()))
@@ -117,8 +121,9 @@ public class MemberService {
     }
 
     public List<FileInfo> getFilesInMemberDirectory(String memberId) {
+        Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
-        if (!(isMemberAdminRole(member) || getCurrentMember().getId().equals(memberId))) {
+        if (!(isMemberAdminRole(member) || currentMember.getId().equals(memberId))) {
             return new ArrayList<>();
         }
         File directory = new File(filePath + "/members/" + memberId);

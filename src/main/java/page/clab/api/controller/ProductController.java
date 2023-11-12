@@ -2,8 +2,12 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,28 +23,30 @@ import page.clab.api.type.dto.ProductRequestDto;
 import page.clab.api.type.dto.ProductResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
-@Tag(name = "Product")
+@Tag(name = "Product", description = "서비스 관련 API")
 @Slf4j
 public class ProductController {
 
     private final ProductService productService;
 
-    @Operation(summary = "서비스 등록", description = "서비스 등록")
+    @Operation(summary = "[A] 서비스 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createProduct(
-            @RequestBody ProductRequestDto productRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody ProductRequestDto productRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         productService.createProduct(productRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
-    @Operation(summary = "서비스 조회", description = "서비스 조회")
+    @Operation(summary = "[U] 서비스 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getProducts() {
         List<ProductResponseDto> productResponseDtos = productService.getProducts();
@@ -49,7 +55,8 @@ public class ProductController {
         return responseModel;
     }
 
-    @Operation(summary = "서비스 검색", description = "서비스의 이름을 기반으로 검색")
+    @Operation(summary = "[U] 서비스 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "서비스명을 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel searchProduct(
             @RequestParam String productName
@@ -60,18 +67,22 @@ public class ProductController {
         return responseModel;
     }
 
-    @Operation(summary = "서비스 수정", description = "서비스 수정")
+    @Operation(summary = "[A] 서비스 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PatchMapping("/{productId}")
     public ResponseModel updateProduct(
             @PathVariable Long productId,
-            @RequestBody ProductRequestDto productRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody ProductRequestDto productRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         productService.updateProduct(productId, productRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
-    @Operation(summary = "서비스 삭제", description = "서비스 삭제")
+    @Operation(summary = "[A] 서비스 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @DeleteMapping("")
     public ResponseModel deleteProduct(
             @RequestParam Long productId

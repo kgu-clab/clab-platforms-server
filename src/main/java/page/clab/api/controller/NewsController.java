@@ -2,8 +2,12 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -15,76 +19,79 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.NewsService;
-import page.clab.api.type.dto.NewsDto;
+import page.clab.api.type.dto.NewsRequestDto;
+import page.clab.api.type.dto.NewsResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
 @RequestMapping("/news")
 @RequiredArgsConstructor
-@Tag(name = "News")
+@Tag(name = "News", description = "뉴스 관련 API")
 @Slf4j
 public class NewsController {
 
     private final NewsService newsService;
 
+    @Operation(summary = "뉴스 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PostMapping("")
-    @Operation(summary = "뉴스 생성", description = "뉴스 생성" +
-            "String category;<br>" +
-            "String title;<br>" +
-            "String subtitle;<br>" +
-            "String content;<br>" +
-            "String url;<br>" +
-            "LocalDateTime createdAt;<br>" +
-            "LocalDateTime updateTime;<br>")
-    public ResponseModel createNews(@RequestBody NewsDto newsDto) throws PermissionDeniedException {
-        newsService.createNews(newsDto);
-        return ResponseModel.builder().build();
+    public ResponseModel createNews(
+            @Valid @RequestBody NewsRequestDto newsRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
+        newsService.createNews(newsRequestDto);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        return responseModel;
     }
 
-    @Operation(summary = "뉴스 리스트 조회", description = "뉴스 리스트 조회")
+    @Operation(summary = "[U] 뉴스 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
-    public ResponseModel readNewsList() {
+    public ResponseModel getNews() {
+        List<NewsResponseDto> news = newsService.getNews();
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(newsService.readNewsList());
+        responseModel.addData(news);
         return responseModel;
     }
 
-    @Operation(summary = "뉴스 상세 조회", description = "뉴스 상세 조회")
-    @GetMapping("/{newsId}")
-    public ResponseModel readNews(@PathVariable("newsId") Long newsId) {
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(newsService.readNewsById(newsId));
-        return responseModel;
-    }
-
-    @Operation(summary = "뉴스 검색", description = "뉴스 검색, 제목과 카테고리 기반 검색")
+    @Operation(summary = "[U] 뉴스 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "뉴스 ID, 카테고리, 제목을 기준으로 검색")
     @GetMapping("/search")
-    public ResponseModel searchNews(@RequestParam(required = false) String title,
-                                    @RequestParam(required = false) String category) {
+    public ResponseModel searchNews(
+            @RequestParam(required = false) Long newsId,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String title
+    ) {
+        List<NewsResponseDto> news = newsService.searchNews(newsId, category, title);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(newsService.searchNewsByTitleAndCategory(title, category));
+        responseModel.addData(news);
         return responseModel;
     }
 
+    @Operation(summary = "[A] 뉴스 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PatchMapping("/{newsId}")
-    @Operation(summary = "뉴스 수정", description = "뉴스 수정" +
-            "String category;<br>" +
-            "String title;<br>" +
-            "String subtitle;<br>" +
-            "String content;<br>" +
-            "String url;<br>" +
-            "LocalDateTime createdAt;<br>" +
-            "LocalDateTime updateTime;<br>")
-    public ResponseModel updateNews(@PathVariable("newsId") Long newsId, @RequestBody NewsDto newsDto) throws PermissionDeniedException{
-        newsService.updateNews(newsId, newsDto);
-        return ResponseModel.builder().build();
+    public ResponseModel updateNews(
+            @PathVariable Long newsId,
+            @Valid @RequestBody NewsRequestDto newsRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
+        newsService.updateNews(newsId, newsRequestDto);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        return responseModel;
     }
 
-    @Operation(summary = "뉴스 삭제", description = "뉴스 삭제")
+    @Operation(summary = "[A] 뉴스 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @DeleteMapping("/{newsId}")
-    public ResponseModel deleteNews(@PathVariable("newsId") Long newsId) throws PermissionDeniedException{
+    public ResponseModel deleteNews(
+            @PathVariable Long newsId
+    ) throws PermissionDeniedException {
         newsService.deleteNews(newsId);
-        return ResponseModel.builder().build();
+        ResponseModel responseModel = ResponseModel.builder().build();
+        return responseModel;
     }
 
 }

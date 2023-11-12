@@ -2,6 +2,7 @@ package page.clab.api.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.LoginAttemptLogRepository;
 import page.clab.api.type.dto.GeoIpInfo;
 import page.clab.api.type.dto.LoginAttemptLogResponseDto;
@@ -36,7 +37,11 @@ public class LoginAttemptLogService {
         loginAttemptLogRepository.save(loginAttemptLog);
     }
 
-    public List<LoginAttemptLogResponseDto> getLoginAttemptLogs(String memberId) {
+    public List<LoginAttemptLogResponseDto> getLoginAttemptLogs(String memberId) throws PermissionDeniedException {
+        Member currentMember = memberService.getCurrentMember();
+        if (!memberService.isMemberAdminRole(currentMember)) {
+            throw new PermissionDeniedException("관리자만 조회할 수 있습니다.");
+        }
         Member member = memberService.getMemberByIdOrThrow(memberId);
         List<LoginAttemptLog> loginAttemptLogs = loginAttemptLogRepository.findAllByMember(member);
         return loginAttemptLogs.stream()

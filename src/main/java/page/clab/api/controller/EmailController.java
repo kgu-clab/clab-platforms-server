@@ -2,10 +2,10 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,35 +15,35 @@ import page.clab.api.service.EmailService;
 import page.clab.api.type.dto.EmailDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/emails")
 @RequiredArgsConstructor
-@Tag(name = "Email")
+@Tag(name = "Email", description = "이메일 관련 API")
 @Slf4j
 public class EmailController {
 
     private final EmailService emailService;
 
-    @Operation(summary = "Send email", description = "Send email")
-    @PostMapping(path ="")
+    @Operation(summary = "[A] 메일 전송", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @PostMapping(path ="", consumes = "multipart/form-data")
     public ResponseModel broadcastEmail(
-            @RequestBody EmailDto emailDto,
-            @RequestPart List<MultipartFile> files
+            EmailDto emailDto,
+            @RequestPart(required = false) List<MultipartFile> files
     ) throws PermissionDeniedException {
         emailService.broadcastEmail(emailDto, files);
-        return ResponseModel.builder().build();
+        ResponseModel responseModel = ResponseModel.builder().build();
+        return responseModel;
     }
 
-    @Operation(summary = "Broadcast email", description = "Broadcast email")
-    @PostMapping(path ="/all")
+    @Operation(summary = "[A] 전체 메일 전송", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @PostMapping(path ="/all", consumes = "multipart/form-data")
     public ResponseModel broadcastEmailToAllMember(
-            @RequestBody EmailDto emailDto,
-            @RequestPart List<MultipartFile> files
+            EmailDto emailDto,
+            @RequestPart(required = false) List<MultipartFile> files
     ) throws PermissionDeniedException {
         emailService.broadcastEmailToAllMember(emailDto, files);
-        return ResponseModel.builder().build();
+        ResponseModel responseModel = ResponseModel.builder().build();
+        return responseModel;
     }
 
 }

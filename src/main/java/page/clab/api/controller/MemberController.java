@@ -2,8 +2,12 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,34 +22,33 @@ import page.clab.api.type.dto.CloudUsageInfo;
 import page.clab.api.type.dto.FileInfo;
 import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
-import page.clab.api.type.dto.MemberUpdateRequestDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.etc.MemberStatus;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
-@Tag(name = "Member")
+@Tag(name = "Member", description = "멤버 관련 API")
 @Slf4j
 public class MemberController {
 
     private final MemberService memberService;
 
-    @Operation(summary = "신규 멤버 생성", description = "신규 멤버 생성<br>" +
-            "StudentStatus: CURRENT / ON_LEAVE / GRADUATED<br>" +
-            "MemberStatus: ACTIVE / INACTIVE")
+    @Operation(summary = "[A] 신규 멤버 생성", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createMember(
-            @RequestBody MemberRequestDto memberRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody MemberRequestDto memberRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         memberService.createMember(memberRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
-    @Operation(summary = "모든 멤버 정보 조회", description = "모든 멤버 정보 조회")
+    @Operation(summary = "[A] 모든 멤버 정보 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getMembers() throws PermissionDeniedException {
         List<MemberResponseDto> members = memberService.getMembers();
@@ -54,34 +57,39 @@ public class MemberController {
         return responseModel;
     }
 
-    @Operation(summary = "멤버 검색", description = "멤버의 ID 또는 이름을 기반으로 검색")
+    @Operation(summary = "[A] 멤버 검색", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
+            "멤버 ID, 이름, 상태를 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel searchMember(
             @RequestParam(required = false) String memberId,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) MemberStatus memberStatus
-            ) throws PermissionDeniedException {
+    ) throws PermissionDeniedException {
         List<MemberResponseDto> members = memberService.searchMember(memberId, name, memberStatus);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(members);
         return responseModel;
     }
 
-    @Operation(summary = "멤버 정보 수정", description = "본인 정보 수정<br>" +
-            "StudentStatus: CURRENT / ON_LEAVE / GRADUATED")
-    @PatchMapping("")
-    public ResponseModel updateMemberInfoByMember(
-            @RequestBody MemberUpdateRequestDto memberUpdateRequestDto
-    ) {
-        memberService.updateMemberInfoByMember(memberUpdateRequestDto);
+  @Operation(summary = "[U] 멤버 정보 수정", description = "ROLE_USER 이상의 권한이 필요함")
+  @PatchMapping("/{memberId}")
+  public ResponseModel updateMemberInfoByMember(
+      @PathVariable String memberId,
+      @Valid @RequestBody MemberRequestDto memberRequestDto,
+      BindingResult result)
+      throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
+        memberService.updateMemberInfo(memberId, memberRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
-    @Operation(summary = "계정 상태 변경(관리자 전용)", description = "관리자에 의한 계정 상태 변경")
+    @Operation(summary = "[A] 계정 상태 변경", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PatchMapping("/status/{memberId}")
     public ResponseModel updateMemberStatusByAdmin(
-            @PathVariable("memberId") String memberId,
+            @PathVariable String memberId,
             @RequestParam MemberStatus memberStatus
     ) throws PermissionDeniedException {
         memberService.updateMemberStatusByAdmin(memberId, memberStatus);
@@ -89,17 +97,17 @@ public class MemberController {
         return responseModel;
     }
 
-    @Operation(summary = "모든 멤버의 클라우드 사용량 조회", description = "모든 멤버의 클라우드 사용량 조회<br>" +
+    @Operation(summary = "[A] 모든 멤버의 클라우드 사용량 조회", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "usage 단위: byte")
     @GetMapping("/cloud")
-    public ResponseModel getAllCloudUsages() {
+    public ResponseModel getAllCloudUsages() throws PermissionDeniedException {
         List<CloudUsageInfo> cloudUsageInfos = memberService.getAllCloudUsages();
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(cloudUsageInfos);
         return responseModel;
     }
 
-    @Operation(summary = "멤버의 클라우드 사용량 조회", description = "멤버의 클라우드 사용량 조회<br>" +
+    @Operation(summary = "[U] 멤버의 클라우드 사용량 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "usage 단위: byte")
     @GetMapping("/cloud/{memberId}")
     public ResponseModel getCloudUsageByMemberId(
@@ -111,7 +119,7 @@ public class MemberController {
         return responseModel;
     }
 
-    @Operation(summary = "멤버 업로드 파일 리스트 조회", description = "멤버 업로드 파일 리스트 조회")
+    @Operation(summary = "[U] 멤버 업로드 파일 리스트 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/files/{memberId}")
     public ResponseModel getMemberUploadedFiles(
             @PathVariable String memberId
