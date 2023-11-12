@@ -2,8 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
@@ -24,6 +22,9 @@ import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.etc.MemberStatus;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/members")
@@ -129,14 +130,14 @@ public class MemberController {
         return responseModel;
     }
 
-    @Operation(summary = "활동 그룹 팀장 권한 부여", description = "활동 그룹 팀장 권한 부여")
-    @PostMapping("/{memberId}/appointment")
-    public ResponseModel grantActivityGroupLeaderRole(
-            @PathVariable String memberId,
-            @RequestParam Long activityGroupId
-    ) throws PermissionDeniedException {
-        memberService.grantActivityGroupLeaderRole(memberId, activityGroupId);
-        return ResponseModel.builder().build();
-    }
+//    @Operation(summary = "활동 그룹 팀장 권한 부여", description = "활동 그룹 팀장 권한 부여")
+//    @PostMapping("/{memberId}/appointment")
+//    public ResponseModel grantActivityGroupLeaderRole(
+//            @PathVariable String memberId,
+//            @RequestParam Long activityGroupId
+//    ) throws PermissionDeniedException {
+//        memberService.grantActivityGroupLeaderRole(memberId, activityGroupId);
+//        return ResponseModel.builder().build();
+//    }
 
 }

@@ -1,11 +1,5 @@
 package page.clab.api.service;
 
-import java.io.File;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,15 +9,25 @@ import page.clab.api.exception.AssociatedAccountExistsException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
+import page.clab.api.repository.GroupMemberRepository;
 import page.clab.api.repository.MemberRepository;
 import page.clab.api.type.dto.CloudUsageInfo;
 import page.clab.api.type.dto.FileInfo;
 import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
+import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.Role;
 import page.clab.api.util.FileSystemUtil;
+
+import java.io.File;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +36,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final GroupMemberRepository groupMemberRepository;
 
     @Value("${resource.file.path}")
     private String filePath;
@@ -146,6 +152,14 @@ public class MemberService {
         }
     }
 
+    public void checkMemberGroupLeaderRole() throws PermissionDeniedException {
+        String memberId = AuthUtil.getAuthenticationInfoMemberId();
+        Member member = memberRepository.findById(memberId).get();
+        if (!member.getRole().equals(ActivityGroupRole.LEADER)) {
+            throw new PermissionDeniedException("권한이 부족합니다.");
+        }
+    }
+
     public boolean isMemberAdminRole(Member member) {
         if (member.getRole().equals(Role.USER)) {
             return false;
@@ -178,6 +192,14 @@ public class MemberService {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
+    }
+
+    // 굳이 필요없음
+    public void grantActivityGroupLeaderRole(String memberId) throws PermissionDeniedException {
+        checkMemberAdminRole();
+        GroupMember groupMember = groupMemberRepository.findByMemberId(memberId).orElseThrow();
+        groupMember.setRole(ActivityGroupRole.LEADER);
+        groupMemberRepository.save(groupMember);
     }
 
 }

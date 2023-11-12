@@ -30,13 +30,17 @@ INSERT INTO "comment" (content, member_id, board_id, created_at)
 VALUES ('네이버는 좋은 회사입니다.', '201912033', 2, '2022-07-25 18:12:43.000000');
 
 -- Activity group
--- INSERT INTO "activity_group" (id, category, name, content, status, progress, code, image_url, created_at)
--- VALUES ('1', 'project', '스프링', '스프링 스터디', '활동중', 70, 1234,'http://image.png', '2022-07-25 18:12:43.000000');
---
--- INSERT INTO "activity_group" (id, category, name, content, status, progress, code, image_url, created_at)
--- VALUES ('2', 'study', '리액트', '리액트 스터디', '활동중', 30, 1111, 'http://image.png', '2022-07-25 18:12:43.000000');
+INSERT INTO "activity_group" (category, name, content, status, progress, code, image_url, created_at)
+VALUES ('project', '스프링', '스프링 스터디', '활동중', 70, 1234,'http://image.png', '2022-07-25 18:12:43.000000');
 
--- Group schedule
+INSERT INTO "activity_group" (category, name, content, status, progress, code, image_url, created_at)
+VALUES ('study', '리액트', '리액트 스터디', '승인대기', 30, 1111, 'http://image.png', '2022-07-25 18:12:43.000000');
+
+INSERT INTO "activity_group" (category, name, content, status, progress, code, image_url, created_at)
+VALUES ('project', '스프링부트', '스프링 스터디', '활동중', 70, 1234,'http://image.png', '2022-07-25 18:12:43.000000');
+
+INSERT INTO "activity_group" (category, name, content, status, progress, code, image_url, created_at)
+VALUES ('study', '넥스트', '넥스트 스터디', '활동중', 30, 1111, 'http://image.png', '2022-07-25 18:12:43.000000');
 
 -- LoginFailInfo
 insert into login_fail_info(member_id, login_fail_count, is_lock)

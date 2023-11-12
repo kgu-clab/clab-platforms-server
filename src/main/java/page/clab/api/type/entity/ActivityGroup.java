@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.type.dto.ActivityGroupDto;
 import page.clab.api.type.etc.ActivityGroupStatus;
@@ -48,15 +49,15 @@ public class ActivityGroup {
     @Enumerated(EnumType.STRING)
     private ActivityGroupStatus status;
 
-    @Column(nullable = false)
-    @Size(max = 100, min=0)
+    @Column(nullable = true)
+    @Range(min = 0, max = 100)
     private Long progress;
 
     @Column(nullable = true)
     private String code;
 
     @URL
-    @Column(name = "image_url", nullable = true)
+    @Column(name = "image_url")
     private String imageUrl;
 
 

@@ -12,7 +12,6 @@ import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.GroupSchedule;
 import page.clab.api.type.entity.Member;
-import page.clab.api.type.etc.ActivityGroupStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +25,8 @@ public class ActivityGroupMemberService {
     private final GroupScheduleRepository groupScheduleRepository;
 
     private final GroupMemberRepository groupMemberRepository;
+
+    private final MemberService memberService;
 
     public List<ActivityGroupDto> getProjectList() {
         List<ActivityGroup> activityGroupList = activityGroupRepository.findAllByCategory("project");
@@ -73,10 +74,12 @@ public class ActivityGroupMemberService {
         return groupMemberDtoList;
     }
 
-    public void authenticateActivityMember(Long id, Member member, String code) {
-        ActivityGroup activityGroup = getActiveGroup(id);
-        if (!activityGroup.getCode().equals(code))
-            throw new IllegalStateException();
+    public void authenticateActivityMember(Long id, String code) {
+        ActivityGroup activityGroup = findById(id);
+        Member member = memberService.getCurrentMember();
+        if(!activityGroup.getCode().equals(code)) {
+            throw new IllegalArgumentException("인증 코드가 일치하지 않습니다.");
+        }
         GroupMember groupMember = GroupMember.of(member, activityGroup);
         groupMemberRepository.save(groupMember);
     }
@@ -85,10 +88,4 @@ public class ActivityGroupMemberService {
         return activityGroupRepository.findById(id).orElseThrow();
     }
 
-    public ActivityGroup getActiveGroup(Long id) {
-        ActivityGroup activityGroup = activityGroupRepository.findById(id).orElseThrow();
-        if (activityGroup.getStatus() != ActivityGroupStatus.활동중)
-            throw new IllegalStateException();
-        return activityGroup;
-    }
 }
