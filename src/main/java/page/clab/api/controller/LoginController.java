@@ -26,14 +26,15 @@ import page.clab.api.type.etc.Role;
 @RestController
 @RequestMapping("/login")
 @RequiredArgsConstructor
-@Tag(name = "Login")
+@Tag(name = "Login", description = "로그인 관련 API")
 @Slf4j
 public class LoginController {
 
     private final LoginService loginService;
 
-    @Operation(summary = "유저 로그인", description = "경기대학교 ID, PW로 로그인")
-    @PostMapping()
+    @Operation(summary = "유저 로그인", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
+            "경기대학교 ID, PW로 로그인")
+    @PostMapping("")
     public ResponseModel login(
             HttpServletRequest httpServletRequest,
             @Valid @RequestBody LoginRequestDto loginRequestDto,
@@ -48,7 +49,7 @@ public class LoginController {
         return responseModel;
     }
 
-    @Operation(summary = "유저 토큰 재발급", description = "유저 토큰 재발급")
+    @Operation(summary = "유저 토큰 재발급", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/reissue")
     public ResponseModel reissue(
             @RequestBody RefreshTokenDto refreshTokenDto
@@ -59,8 +60,7 @@ public class LoginController {
         return responseModel;
     }
 
-    @Operation(summary = "유저 토큰 권한 검사", description = "유저 토큰 권한 검사<br>" +
-            "String token;")
+    @Operation(summary = "유저 토큰 권한 검사", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/role")
     public ResponseModel checkTokenRole(
             @Valid @RequestBody TokenDto tokenDto,

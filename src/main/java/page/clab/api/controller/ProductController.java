@@ -26,13 +26,13 @@ import page.clab.api.type.dto.ResponseModel;
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
-@Tag(name = "Product")
+@Tag(name = "Product", description = "서비스 관련 API")
 @Slf4j
 public class ProductController {
 
     private final ProductService productService;
 
-    @Operation(summary = "서비스 등록", description = "서비스 등록")
+    @Operation(summary = "[A] 서비스 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createProduct(
             @Valid @RequestBody ProductRequestDto productRequestDto,
@@ -46,7 +46,7 @@ public class ProductController {
         return responseModel;
     }
 
-    @Operation(summary = "서비스 조회", description = "서비스 조회")
+    @Operation(summary = "[U] 서비스 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getProducts() {
         List<ProductResponseDto> productResponseDtos = productService.getProducts();
@@ -55,7 +55,8 @@ public class ProductController {
         return responseModel;
     }
 
-    @Operation(summary = "서비스 검색", description = "서비스의 이름을 기반으로 검색")
+    @Operation(summary = "[U] 서비스 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "서비스명을 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel searchProduct(
             @RequestParam String productName
@@ -66,7 +67,7 @@ public class ProductController {
         return responseModel;
     }
 
-    @Operation(summary = "서비스 수정", description = "서비스 수정")
+    @Operation(summary = "[A] 서비스 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PatchMapping("/{productId}")
     public ResponseModel updateProduct(
             @PathVariable Long productId,
@@ -81,7 +82,7 @@ public class ProductController {
         return responseModel;
     }
 
-    @Operation(summary = "서비스 삭제", description = "서비스 삭제")
+    @Operation(summary = "[A] 서비스 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @DeleteMapping("")
     public ResponseModel deleteProduct(
             @RequestParam Long productId

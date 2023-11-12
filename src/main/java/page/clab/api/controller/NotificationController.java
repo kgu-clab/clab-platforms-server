@@ -24,13 +24,13 @@ import page.clab.api.type.dto.ResponseModel;
 @RestController
 @RequestMapping("/notifications")
 @RequiredArgsConstructor
-@Tag(name = "Notification")
+@Tag(name = "Notification", description = "알림 관련 API")
 @Slf4j
 public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @Operation(summary = "알림 생성", description = "알림 생성")
+    @Operation(summary = "[U] 알림 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createNotification(
             @Valid @RequestBody NotificationRequestDto notificationRequestDto,
@@ -44,7 +44,7 @@ public class NotificationController {
         return responseModel;
     }
 
-    @Operation(summary = "나의 알림 조회", description = "나의 알림 조회")
+    @Operation(summary = "[U] 나의 알림 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getNotifications() {
         List<NotificationResponseDto> notifications = notificationService.getNotifications();
@@ -53,7 +53,7 @@ public class NotificationController {
         return responseModel;
     }
 
-    @Operation(summary = "알림 삭제", description = "알림 삭제")
+    @Operation(summary = "[U] 알림 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @DeleteMapping("/{notificationId}")
     public ResponseModel deleteNotification(
             @PathVariable("notificationId") Long notificationId
