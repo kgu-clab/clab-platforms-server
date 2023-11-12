@@ -26,13 +26,13 @@ import page.clab.api.type.dto.ResponseModel;
 @RestController
 @RequestMapping("/boards")
 @RequiredArgsConstructor
-@Tag(name = "Board")
+@Tag(name = "Board", description = "커뮤니티 게시판 관련 API")
 @Slf4j
 public class BoardController {
 
     private final BoardService boardService;
     
-    @Operation(summary = "커뮤니티 게시판 생성", description = "커뮤니티 게시판 생성")
+    @Operation(summary = "[U] 커뮤니티 게시판 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createBoard(
             @Valid @RequestBody BoardRequestDto boardRequestDto,
@@ -47,7 +47,7 @@ public class BoardController {
     }
 
     @GetMapping("")
-    @Operation(summary = "커뮤니티 게시판 전체 목록", description = "커뮤니티 게시판 전체 목록")
+    @Operation(summary = "[U] 커뮤니티 게시판 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     public ResponseModel getBoards() {
         List<BoardResonseDto> boards = boardService.getBoards();
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -56,7 +56,7 @@ public class BoardController {
     }
 
     @GetMapping("/my-boards")
-    @Operation(summary = "내가 쓴 커뮤니티 게시글 조회", description = "내가 쓴 커뮤니티 게시글 조회")
+    @Operation(summary = "[U] 내가 쓴 커뮤니티 게시글 조회", description = "ROLE_USER 이상의 권한이 필요함")
     public ResponseModel getMyBoards() {
         List<BoardResonseDto> board = boardService.getMyBoards();
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -65,7 +65,8 @@ public class BoardController {
     }
 
     @GetMapping("/search")
-    @Operation(summary = "커뮤니티 게시판 검색", description = "커뮤니티 게시판 검색")
+    @Operation(summary = "[U] 커뮤니티 게시판 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "게시판 ID, 카테고리를 기준으로 검색")
     public ResponseModel searchBoards(
             @RequestParam(required = false) Long boardId,
             @RequestParam(required = false) String category
@@ -77,7 +78,7 @@ public class BoardController {
     }
 
     @PatchMapping("/{boardId}")
-    @Operation(summary = "커뮤니티 게시판 수정", description = "커뮤니티 게시판 수정")
+    @Operation(summary = "[U] 커뮤니티 게시판 수정", description = "ROLE_USER 이상의 권한이 필요함")
     public ResponseModel updateBoard(
             @PathVariable Long boardId,
             @Valid @RequestBody BoardRequestDto boardDto,
@@ -92,7 +93,7 @@ public class BoardController {
     }
 
     @DeleteMapping("/{boardId}")
-    @Operation(summary = "커뮤니티 게시판 삭제", description = "커뮤니티 게시판 삭제")
+    @Operation(summary = "[U] 커뮤니티 게시판 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     public ResponseModel deleteBoard(
             @PathVariable Long boardId
     ) throws PermissionDeniedException {

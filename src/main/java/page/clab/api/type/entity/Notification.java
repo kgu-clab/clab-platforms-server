@@ -33,13 +33,14 @@ public class Notification {
     @Size(min = 1, max = 1000, message = "{size.notification.content}")
     private String content;
 
+    @ManyToOne()
+    @JoinColumn(name = "member_id")
+    @Size(min = 1, message = "{size.notification.memberId}")
+    private Member member;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-
-    @ManyToOne()
-    @JoinColumn(name = "member_id")
-    private Member member;
 
     public static Notification of(NotificationRequestDto notificationRequestDto) {
         Notification notification = Notification.builder()

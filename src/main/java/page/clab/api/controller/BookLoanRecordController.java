@@ -24,13 +24,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/book-loan-records")
 @RequiredArgsConstructor
-@Tag(name = "BookLoanRecord")
+@Tag(name = "BookLoanRecord", description = "도서 대출 관련 API")
 @Slf4j
 public class BookLoanRecordController {
 
     private final BookLoanRecordService bookLoanRecordService;
 
-    @Operation(summary = "도서 대출", description = "도서 대출")
+    @Operation(summary = "[U] 도서 대출", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/borrow")
     public ResponseModel borrowBook(
             @Valid @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto,
@@ -44,7 +44,7 @@ public class BookLoanRecordController {
         return responseModel;
     }
 
-    @Operation(summary = "도서 반납", description = "도서 반납")
+    @Operation(summary = "[U] 도서 반납", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/return")
     public ResponseModel returnBook(
             @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto
@@ -54,7 +54,7 @@ public class BookLoanRecordController {
         return responseModel;
     }
 
-    @Operation(summary = "도서 대출 연장", description = "도서 대출 연장")
+    @Operation(summary = "[U] 도서 대출 연장", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/extend")
     public ResponseModel extendBookLoan(
             @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto
@@ -64,7 +64,7 @@ public class BookLoanRecordController {
         return responseModel;
     }
 
-    @Operation(summary = "도서 대출 내역 조회", description = "도서 대출 내역 조회")
+    @Operation(summary = "[U] 도서 대출 내역 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getBookLoanRecords() {
         List<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.getBookLoanRecords();
@@ -73,7 +73,8 @@ public class BookLoanRecordController {
         return responseModel;
     }
 
-    @Operation(summary = "도서 대출 내역 검색", description = "도서 아이디와 멤버 아이디를 기반으로 검색")
+    @Operation(summary = "[U] 도서 대출 내역 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "도서 ID, 대출자 ID를 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel searchBookLoanRecord(
             @RequestParam(required = false) Long bookId,
@@ -85,7 +86,7 @@ public class BookLoanRecordController {
         return responseModel;
     }
 
-    @Operation(summary = "미반납 도서 조회", description = "미반납 도서 조회")
+    @Operation(summary = "[U] 대출 상태의 도서 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/unreturned")
     public ResponseModel getUnreturnedBooks() {
         List<BookLoanRecordResponseDto> unreturnedBooks = bookLoanRecordService.getUnreturnedBooks();

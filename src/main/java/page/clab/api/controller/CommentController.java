@@ -25,13 +25,13 @@ import page.clab.api.type.dto.ResponseModel;
 @RestController
 @RequestMapping("/comments")
 @RequiredArgsConstructor
-@Tag(name = "Comment")
+@Tag(name = "Comment", description = "댓글 관련 API")
 @Slf4j
 public class CommentController {
 
     private final CommentService commentService;
 
-    @Operation(summary = "댓글 생성", description = "댓글 생성")
+    @Operation(summary = "[U] 댓글 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/{boardId}")
     public ResponseModel createComment(
             @PathVariable Long boardId,
@@ -46,7 +46,7 @@ public class CommentController {
         return responseModel;
     }
 
-    @Operation(summary = "댓글 리스트 조회", description = "댓글 리스트 조회")
+    @Operation(summary = "[U] 댓글 리스트 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/{boardId}")
     public ResponseModel getComments(
             @PathVariable Long boardId
@@ -57,7 +57,7 @@ public class CommentController {
         return responseModel;
     }
 
-    @Operation(summary = "나의 댓글 조회", description = "나의 댓글 조회")
+    @Operation(summary = "[U] 나의 댓글 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/my-comments")
     public ResponseModel getMyComments() {
         List<CommentResponseDto> comments = commentService.getMyComments();
@@ -66,7 +66,7 @@ public class CommentController {
         return responseModel;
     }
 
-    @Operation(summary = "댓글 수정", description = "댓글 수정")
+    @Operation(summary = "[U] 댓글 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @PatchMapping("/{commentId}")
     public ResponseModel updateComment(
             @PathVariable Long commentId,
@@ -81,7 +81,7 @@ public class CommentController {
         return responseModel;
     }
 
-    @Operation(summary = "댓글 삭제", description = "댓글 삭제")
+    @Operation(summary = "[U] 댓글 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @DeleteMapping("/{commentId}")
     public ResponseModel deleteComment(
             @PathVariable Long commentId

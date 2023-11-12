@@ -26,13 +26,13 @@ import page.clab.api.type.dto.ResponseModel;
 @RestController
 @RequestMapping("/blogs")
 @RequiredArgsConstructor
-@Tag(name = "Blog")
+@Tag(name = "Blog", description = "블로그 포스트 관련 API")
 @Slf4j
 public class BlogController {
 
     private final BlogService blogService;
 
-    @Operation(summary = "블로그 포스트 생성", description = "블로그 포스트 생성")
+    @Operation(summary = "[U] 블로그 포스트 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createBlog(
             @Valid @RequestBody BlogRequestDto blogRequestDto,
@@ -46,7 +46,7 @@ public class BlogController {
         return responseModel;
     }
 
-    @Operation(summary = "블로그 포스트 목록 조회", description = "블로그 포스트 목록 조회")
+    @Operation(summary = "[U] 블로그 포스트 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getBlogs() {
         List<BlogResponseDto> blogs = blogService.getBlogs();
@@ -55,8 +55,8 @@ public class BlogController {
         return responseModel;
     }
 
-    @Operation(summary = "블로그 포스트 검색", description = "블로그 포스트 검색<br>" +
-            "검색어는 제목, 부제목, 내용, 태그, 작성자명에 대해 검색됨")
+    @Operation(summary = "[U] 블로그 포스트 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "검색어에는 제목, 부제목, 내용, 태그, 작성자명가 포함됨")
     @GetMapping("/search")
     public ResponseModel searchBlog(
             @RequestParam String keyword
@@ -67,7 +67,7 @@ public class BlogController {
         return responseModel;
     }
 
-    @Operation(summary = "블로그 포스트 수정", description = "블로그 포스트 수정")
+    @Operation(summary = "[U] 블로그 포스트 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @PatchMapping("/{blogId}")
     public ResponseModel updateBlog(
             @PathVariable Long blogId,
@@ -82,7 +82,7 @@ public class BlogController {
         return responseModel;
     }
 
-    @Operation(summary = "블로그 포스트 삭제", description = "블로그 포스트 삭제")
+    @Operation(summary = "[U] 블로그 포스트 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @DeleteMapping("/{blogId}")
     public ResponseModel deleteBlog(
             @PathVariable Long blogId

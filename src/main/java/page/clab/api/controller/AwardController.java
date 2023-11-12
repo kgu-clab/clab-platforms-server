@@ -2,6 +2,8 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
@@ -21,19 +23,16 @@ import page.clab.api.type.dto.AwardRequestDto;
 import page.clab.api.type.dto.AwardResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import javax.validation.Valid;
-import java.util.List;
-
 @RestController
 @RequestMapping("/award")
 @RequiredArgsConstructor
-@Tag(name = "Award")
+@Tag(name = "Award", description = "수상 이력 관련 API")
 @Slf4j
 public class AwardController {
 
     private final AwardService awardService;
 
-    @Operation(summary = "수상 이력 등록", description = "수상 이력 등록")
+    @Operation(summary = "[U] 수상 이력 등록", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createAward(
             @Valid @RequestBody AwardRequestDto awardRequestDto,
@@ -47,7 +46,7 @@ public class AwardController {
         return responseModel;
     }
 
-    @Operation(summary = "내 수상 이력 조회", description = "수상 이력 조회")
+    @Operation(summary = "[U] 나의 수상 이력 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getMyAwards() {
         List<AwardResponseDto> awardResponseDtos = awardService.getMyAwards();
@@ -56,7 +55,8 @@ public class AwardController {
         return responseModel;
     }
 
-    @Operation(summary = "수상 이력 검색", description = "학번을 기준으로 검색")
+    @Operation(summary = "[U] 수상 이력 검색", description = "ROLE_USER 이상의 권한이 필요함" +
+            "학번을 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel searchAwards(
             @RequestParam String memberId
@@ -67,7 +67,7 @@ public class AwardController {
         return responseModel;
     }
 
-  @Operation(summary = "수상 이력 수정", description = "수상 이력 수정")
+  @Operation(summary = "[U] 수상 이력 수정", description = "ROLE_USER 이상의 권한이 필요함")
   @PatchMapping("/{awardId}")
   public ResponseModel updateAward(
       @PathVariable Long awardId,
@@ -82,7 +82,7 @@ public class AwardController {
         return responseModel;
     }
 
-    @Operation(summary = "수상 이력 삭제", description = "수상 이력 삭제")
+    @Operation(summary = "[U] 수상 이력 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @DeleteMapping("/{awardId}")
     public ResponseModel deleteAward(
             @PathVariable Long awardId
