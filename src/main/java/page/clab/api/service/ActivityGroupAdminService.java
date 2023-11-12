@@ -2,6 +2,7 @@ package page.clab.api.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.ActivityGroupRepository;
 import page.clab.api.repository.GroupMemberRepository;
 import page.clab.api.repository.GroupScheduleRepository;
@@ -11,6 +12,7 @@ import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.GroupSchedule;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
 
 import java.time.LocalDateTime;
@@ -21,84 +23,102 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ActivityGroupAdminService {
 
+    private final MemberService memberService;
+
     private final ActivityGroupRepository activityGroupRepository;
 
     private final GroupMemberRepository groupMemberRepository;
 
     private final GroupScheduleRepository groupScheduleRepository;
 
-    public List<ActivityGroupDto> getWaitingActivityGroup() {
-        List<ActivityGroup> activityGroupList = activityGroupRepository.findAllByStatus(ActivityGroupStatus.승인대기);
+    //
+    public List<ActivityGroupDto> getWaitingActivityGroup() throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        List<ActivityGroup> activityGroupList = findAllByStatus(ActivityGroupStatus.승인대기);
         List<ActivityGroupDto> activityGroupDtoList = new ArrayList<>();
         for (ActivityGroup activityGroup : activityGroupList) {
             activityGroupDtoList.add(ActivityGroupDto.of(activityGroup));
         }
         return activityGroupDtoList;
     }
-    public void approveActivityGroup(Long id) {
-        ActivityGroup activityGroup = activityGroupRepository.findById(id).orElseThrow();
+    public void approveActivityGroup(Long id) throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        ActivityGroup activityGroup = findGroupById(id);
         activityGroup.setStatus(ActivityGroupStatus.활동중);
         activityGroupRepository.save(activityGroup);
     }
 
-    public void completeActivityGroup(Long id) {
-        ActivityGroup activityGroup = activityGroupRepository.findById(id).orElseThrow();
+    public void completeActivityGroup(Long id) throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        ActivityGroup activityGroup = findGroupById(id);
         activityGroup.setStatus(ActivityGroupStatus.활동종료);
         activityGroupRepository.save(activityGroup);
     }
 
-    public void createActivityGroup(Member member, ActivityGroupDto activityGroupDto) {
+    public void createActivityGroup(ActivityGroupDto activityGroupDto) {
+        Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = ActivityGroup.of(activityGroupDto);
         activityGroup.setStatus(ActivityGroupStatus.승인대기);
         activityGroup.setProgress(0L);
         activityGroup.setCreatedAt(LocalDateTime.now());
         activityGroupRepository.save(activityGroup);
 
-        GroupMember groupMember = GroupMember.of(member, activityGroup);
-        groupMemberRepository.save(groupMember);
+        GroupMember groupLeader = GroupMember.of(member, activityGroup);
+        groupMemberRepository.save(groupLeader);
     }
 
-    public void updateActivityGroup(Long id, ActivityGroupDto activityGroupDto) {
-        ActivityGroup activityGroup = activityGroupRepository.findById(id).orElseThrow();
+    public void updateActivityGroup(Long id, ActivityGroupDto activityGroupDto) throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        ActivityGroup activityGroup = findGroupById(id);
         activityGroup.setCategory(activityGroupDto.getCategory());
         activityGroup.setName(activityGroupDto.getName());
         activityGroup.setContent(activityGroupDto.getContent());
-//        activityGroup.setImageUrl(activityGroupDto.getImageUrl());
+        activityGroup.setImageUrl(activityGroupDto.getImageUrl());
         activityGroupRepository.save(activityGroup);
     }
 
-    public void deleteActivityGroup(Long id) {
-        ActivityGroup activityGroup = activityGroupRepository.findById(id).orElseThrow();
+    public void deleteActivityGroup(Long id) throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        ActivityGroup activityGroup = findGroupById(id);
         activityGroupRepository.delete(activityGroup);
+
+        List<GroupMember> groupMemberList = groupMemberRepository.findAllByActivityGroupId(id);
+        groupMemberRepository.deleteAll(groupMemberList);
     }
 
-    public void updateProjectProgress(Long id, int progress){
-        ActivityGroup activityGroup = getActiveGroup(id);
-        activityGroup.setProgress((long) progress);
+    public void updateProjectProgress(Long id, Long progress) throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        ActivityGroup activityGroup = findGroupById(id);
+        activityGroup.setProgress(progress);
         activityGroupRepository.save(activityGroup);
     }
 
-    public void addSchedule(Long id, List<GroupScheduleDto> groupScheduleDto){
-        ActivityGroup activityGroup = getActiveGroup(id);
-        List<GroupSchedule> groupScheduleList = groupScheduleRepository.findAllByActivityGroupId(id);
-        for (GroupScheduleDto dto : groupScheduleDto) {
-            groupScheduleList.add(GroupSchedule.of(activityGroup, dto));
+    public void addSchedule(Long id, List<GroupScheduleDto> groupScheduleDto) throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        ActivityGroup activityGroup = findGroupById(id);
+        GroupSchedule groupSchedule;
+        for (GroupScheduleDto scheduleDto : groupScheduleDto) {
+            groupSchedule = GroupSchedule.of(activityGroup, scheduleDto);
+            groupScheduleRepository.save(groupSchedule);
         }
     }
 
-
-
-    public void createMemberAuthCode(Long id, String code){
-        ActivityGroup activityGroup = getActiveGroup(id);
+    public void createMemberAuthCode(Long id, String code) throws PermissionDeniedException {
+        ActivityGroup activityGroup = findGroupById(id);
+        GroupMember member = groupMemberRepository.findByActivityGroupIdAndRole(id, ActivityGroupRole.LEADER).orElseThrow();
+        if (!member.getMember().getId().equals(memberService.getCurrentMember().getId())) {
+            throw new PermissionDeniedException("권한이 없습니다.");
+        }
         activityGroup.setCode(code);
         activityGroupRepository.save(activityGroup);
     }
 
-    public ActivityGroup getActiveGroup(Long id) {
-        ActivityGroup activityGroup = activityGroupRepository.findById(id).orElseThrow();
-        if (activityGroup.getStatus() != ActivityGroupStatus.활동중)
-            throw new IllegalStateException();
-        return activityGroup;
+    public ActivityGroup findGroupById(Long id) {
+        return activityGroupRepository.findById(id).orElseThrow();
+    }
+
+    public List<ActivityGroup> findAllByStatus(ActivityGroupStatus status) {
+        return activityGroupRepository.findAllByStatus(status);
     }
 
 }

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.service.ActivityGroupMemberService;
 import page.clab.api.service.MemberService;
 import page.clab.api.type.dto.ResponseModel;
-import page.clab.api.type.entity.Member;
 
 @RestController
 @RequestMapping("/activity-group/member")
@@ -65,9 +64,9 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "활동 일정 조회")
-    @GetMapping("/{id}/schedule")
+    @GetMapping("/schedule")
     public ResponseModel getGroupScheduleList(
-            @PathVariable Long id
+            @RequestParam Long id
     ) {
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroupMemberService.getGroupScheduleList(id));
@@ -75,9 +74,9 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "활동 멤버 조회")
-    @GetMapping("/{id}/member")
+    @GetMapping("/members")
     public ResponseModel getActivityGroupMemberList(
-            @PathVariable Long id
+            @RequestParam Long id
     ) {
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroupMemberService.getActivityGroupMemberList(id));
@@ -85,14 +84,14 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "활동 멤버 인증")
-    @PostMapping("/{id}/authenticate")
+    @PostMapping("/auth")
     public ResponseModel authenticateActivityMember(
-            @PathVariable Long id,
+            @RequestParam Long id,
             @RequestParam String code
     ) {
-        Member member = memberService.getCurrentMember();
-        activityGroupMemberService.authenticateActivityMember(id, member, code);
-        return ResponseModel.builder().build();
+        ResponseModel responseModel = ResponseModel.builder().build();
+        activityGroupMemberService.authenticateActivityMember(id, code);
+        return responseModel;
     }
 
 }
