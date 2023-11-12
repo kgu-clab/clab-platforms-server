@@ -1,7 +1,9 @@
 package page.clab.api.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -10,21 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
-import page.clab.api.auth.exception.TokenValidateException;
 import page.clab.api.auth.jwt.JwtTokenProvider;
 import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.MemberLockedException;
-import page.clab.api.type.dto.MemberLoginRequestDto;
+import page.clab.api.type.dto.LoginRequestDto;
 import page.clab.api.type.dto.RefreshTokenDto;
-import page.clab.api.type.dto.TokenDto;
 import page.clab.api.type.dto.TokenInfo;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.LoginAttemptResult;
-import page.clab.api.type.etc.Role;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -40,9 +35,9 @@ public class LoginService {
     private final LoginAttemptLogService loginAttemptLogService;
 
     @Transactional
-    public TokenInfo login(HttpServletRequest httpServletRequest, MemberLoginRequestDto memberLoginRequestDto) throws LoginFaliedException, MemberLockedException {
-        String id = memberLoginRequestDto.getId();
-        String password = memberLoginRequestDto.getPassword();
+    public TokenInfo login(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFaliedException, MemberLockedException {
+        String id = loginRequestDto.getId();
+        String password = loginRequestDto.getPassword();
         Member member = memberService.getMemberByIdOrThrow(id);
         boolean loginSuccess = barunLogin(id, password);
         TokenInfo tokenInfo = null;
@@ -94,19 +89,5 @@ public class LoginService {
         }
         return null;
     }
-
-    public boolean checkTokenRole(TokenDto tokenDto) throws TokenValidateException {
-        String token = tokenDto.getToken();
-        if (tokenDto != null && jwtTokenProvider.validateToken(token)) {
-            Claims claims = jwtTokenProvider.parseClaims(token);
-            if (claims.get("role").toString().equals(Role.ADMIN.getKey())) {
-                return true;
-            }
-        }
-        else {
-            throw new TokenValidateException();
-        }
-        return false;
-    }
-
+    
 }

@@ -2,8 +2,12 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,28 +22,30 @@ import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.SharedAccountRequestDto;
 import page.clab.api.type.dto.SharedAccountResponseDto;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/shared-accounts")
 @RequiredArgsConstructor
-@Tag(name = "SharedAccount")
+@Tag(name = "SharedAccount", description = "공동계정 관련 API")
 @Slf4j
 public class SharedAccountController {
 
     private final SharedAccountService sharedAccountService;
 
-    @Operation(summary = "공동계정 추가", description = "공동계정 추가")
+    @Operation(summary = "[A] 공동계정 추가", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createSharedAccount(
-            @RequestBody SharedAccountRequestDto sharedAccountRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody SharedAccountRequestDto sharedAccountRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         sharedAccountService.createSharedAccount(sharedAccountRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
-    @Operation(summary = "공동계정 조회", description = "공동계정 조회")
+    @Operation(summary = "[U] 공동계정 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getSharedAccounts() {
         List<SharedAccountResponseDto> sharedAccounts = sharedAccountService.getSharedAccounts();
@@ -48,18 +54,22 @@ public class SharedAccountController {
         return responseModel;
     }
 
-    @Operation(summary = "공동계정 수정", description = "공동계정 수정")
+    @Operation(summary = "[A] 공동계정 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PatchMapping("/{accountId}")
     public ResponseModel updateSharedAccount(
             @PathVariable("accountId") Long accountId,
-            @RequestBody SharedAccountRequestDto sharedAccountRequestDto
-    ) throws PermissionDeniedException {
+            @Valid @RequestBody SharedAccountRequestDto sharedAccountRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
         sharedAccountService.updateSharedAccount(accountId, sharedAccountRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
-    @Operation(summary = "공동계정 삭제", description = "공동계정 삭제")
+    @Operation(summary = "[A] 공동계정 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @DeleteMapping("/{accountId}")
     public ResponseModel deleteSharedAccount(
             @PathVariable("accountId") Long accountId

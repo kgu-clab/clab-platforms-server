@@ -1,5 +1,7 @@
 package page.clab.api.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
@@ -9,9 +11,6 @@ import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.NotificationResponseDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.Notification;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,12 +34,12 @@ public class NotificationService {
     }
 
     public void deleteNotification(Long notificationId) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
         Notification notification = getNotificationByIdOrThrow(notificationId);
-        if (isNotificationOwner(notification)) {
-            notificationRepository.delete(notification);
-        } else {
+        if (!member.equals(notification.getMember())) {
             throw new PermissionDeniedException();
         }
+        notificationRepository.delete(notification);
     }
 
     private Notification getNotificationByIdOrThrow(Long notificationId) {
