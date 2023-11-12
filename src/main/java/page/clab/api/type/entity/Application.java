@@ -43,6 +43,7 @@ public class Application {
 
     @Column(nullable = false)
     @Size(min = 11, max = 11, message = "{size.application.contact}")
+    @Pattern(regexp = "^[0-9]+$", message = "{pattern.application.contact}")
     private String contact;
 
     @Column(nullable = false)

@@ -1,5 +1,6 @@
 package page.clab.api.type.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -18,10 +19,12 @@ public class DonationRequestDto {
 
     @NotNull(message = "{notNull.donation.amount}")
     @Min(value = 1, message = "{min.donation.amount}")
+    @Schema(description = "금액", example = "100000", required = true)
     private Double amount;
 
     @NotNull(message = "{notNull.donation.message}")
     @Size(min = 1, max = 1000, message = "{size.donation.message}")
+    @Schema(description = "후원 메시지", example = "대회 상금 일부 후원", required = true)
     private String message;
 
 }

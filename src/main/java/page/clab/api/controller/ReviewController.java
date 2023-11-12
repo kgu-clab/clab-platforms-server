@@ -27,13 +27,13 @@ import page.clab.api.type.dto.ReviewUpdateRequestDto;
 @RestController
 @RequestMapping("/reviews")
 @RequiredArgsConstructor
-@Tag(name = "Review")
+@Tag(name = "Review", description = "리뷰 관련 API")
 @Slf4j
 public class ReviewController {
 
     private final ReviewService reviewService;
 
-    @Operation(summary = "리뷰 등록", description = "리뷰 등록")
+    @Operation(summary = "[U] 리뷰 등록", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createReview(
             @Valid @RequestBody ReviewRequestDto reviewRequestDto,
@@ -47,7 +47,7 @@ public class ReviewController {
         return responseModel;
     }
 
-    @Operation(summary = "리뷰 목록", description = "리뷰 목록")
+    @Operation(summary = "[U] 리뷰 목록", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getReviews() {
         List<ReviewResponseDto> reviewResponseDtos = reviewService.getReviews();
@@ -56,7 +56,7 @@ public class ReviewController {
         return responseModel;
     }
 
-    @Operation(summary = "내 리뷰 목록", description = "내 리뷰 목록")
+    @Operation(summary = "[U] 나의 리뷰 목록", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/my-reviews")
     public ResponseModel getMyReviews() {
         List<ReviewResponseDto> reviewResponseDtos = reviewService.getMyReviews();
@@ -65,7 +65,7 @@ public class ReviewController {
         return responseModel;
     }
 
-    @Operation(summary = "공개 리뷰 목록", description = "공개 리뷰 목록")
+    @Operation(summary = "[U] 공개 리뷰 목록", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/public-reviews")
     public ResponseModel getPublicReview() {
         List<ReviewResponseDto> reviewResponseDtos = reviewService.getPublicReview();
@@ -74,7 +74,8 @@ public class ReviewController {
         return responseModel;
     }
 
-    @Operation(summary = "리뷰 검색", description = "멤버 ID, 이름을 기준으로 검색")
+    @Operation(summary = "[U] 리뷰 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "멤버 ID, 이름을 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel searchReview(
             @RequestParam(required = false) String memberId,
@@ -86,7 +87,7 @@ public class ReviewController {
         return responseModel;
     }
 
-    @Operation(summary = "리뷰 수정", description = "리뷰 수정")
+    @Operation(summary = "[U] 리뷰 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @PatchMapping("/{reviewId}")
     public ResponseModel updateReview(
             @PathVariable Long reviewId,
@@ -101,7 +102,7 @@ public class ReviewController {
         return responseModel;
     }
 
-    @Operation(summary = "리뷰 삭제", description = "리뷰 삭제")
+    @Operation(summary = "[U] 리뷰 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @DeleteMapping("/{reviewId}")
     public ResponseModel deleteReview(
             @PathVariable Long reviewId
@@ -111,7 +112,8 @@ public class ReviewController {
         return responseModel;
     }
 
-    @Operation(summary = "리뷰 고정/해제", description = "리뷰 고정/해제")
+    @Operation(summary = "[A] 리뷰 고정/해제", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
+            "고정/해제가 반전됨")
     @PatchMapping("/pin/{reviewId}")
     public ResponseModel pinReview(
             @PathVariable Long reviewId

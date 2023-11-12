@@ -20,14 +20,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/blacklists")
 @RequiredArgsConstructor
-@Tag(name = "Blacklist")
+@Tag(name = "Blacklist", description = "블랙리스트 관련 API")
 @Slf4j
 public class BlacklistController {
 
     private final BlacklistService blacklistService;
 
-    @Operation(summary = "블랙리스트 IP 추가", description = "블랙리스트 IP 추가")
-    @PostMapping()
+    @Operation(summary = "[A] 블랙리스트 IP 추가", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @PostMapping("")
     public ResponseModel addBlacklistedIp(
             @RequestParam String ipAddress
     ) throws PermissionDeniedException {
@@ -36,8 +36,8 @@ public class BlacklistController {
         return responseModel;
     }
 
-    @Operation(summary = "블랙리스트 IP 목록 조회", description = "블랙리스트 IP 목록 조회")
-    @GetMapping()
+    @Operation(summary = "[A] 블랙리스트 IP 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @GetMapping("")
     public ResponseModel getBlacklistedIps() throws PermissionDeniedException {
         List<BlacklistIp> blacklistedIps = blacklistService.getBlacklistedIps();
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -45,8 +45,8 @@ public class BlacklistController {
         return responseModel;
     }
 
-    @Operation(summary = "블랙리스트 IP 제거", description = "블랙리스트 IP 제거")
-    @DeleteMapping()
+    @Operation(summary = "[A] 블랙리스트 IP 제거", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @DeleteMapping("")
     public ResponseModel removeBlacklistedIp(
             @RequestParam String ipAddress
     ) throws PermissionDeniedException {
@@ -55,7 +55,7 @@ public class BlacklistController {
         return responseModel;
     }
 
-    @Operation(summary = "블랙리스트 IP 초기화", description = "블랙리스트 IP 초기화")
+    @Operation(summary = "[A] 블랙리스트 IP 초기화", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @DeleteMapping("/clear")
     public ResponseModel clearBlacklist() throws PermissionDeniedException {
         blacklistService.clearBlacklist();

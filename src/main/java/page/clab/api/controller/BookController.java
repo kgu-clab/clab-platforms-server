@@ -26,13 +26,13 @@ import page.clab.api.type.dto.ResponseModel;
 @RestController
 @RequestMapping("/books")
 @RequiredArgsConstructor
-@Tag(name = "Book")
+@Tag(name = "Book", description = "도서 관련 API")
 @Slf4j
 public class BookController {
 
     private final BookService bookService;
 
-    @Operation(summary = "도서 등록", description = "도서 등록")
+    @Operation(summary = "[A] 도서 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createBook(
             @Valid @RequestBody BookRequestDto bookRequestDto,
@@ -46,7 +46,7 @@ public class BookController {
         return responseModel;
     }
 
-    @Operation(summary = "도서 목록", description = "도서 목록")
+    @Operation(summary = "[U] 도서 목록", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getBooks() {
         List<BookResponseDto> books = bookService.getBooks();
@@ -55,7 +55,8 @@ public class BookController {
         return responseModel;
     }
 
-    @Operation(summary = "도서 검색", description = "책 정보를 기반으로 검색")
+    @Operation(summary = "[U] 도서 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "카테고리, 제목, 저자, 출판사, 대여자를 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel searchBook(
             @RequestParam(required = false) String category,
@@ -70,7 +71,7 @@ public class BookController {
         return responseModel;
     }
 
-    @Operation(summary = "도서 정보 수정", description = "도서 정보 수정")
+    @Operation(summary = "[A] 도서 정보 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PatchMapping("")
     public ResponseModel updateBookInfo(
             @RequestParam Long bookId,
@@ -85,7 +86,7 @@ public class BookController {
         return responseModel;
     }
 
-    @Operation(summary = "도서 삭제", description = "도서 삭제")
+    @Operation(summary = "[A] 도서 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @DeleteMapping("/{bookId}")
     public ResponseModel deleteBook(
             @PathVariable("bookId") Long bookId

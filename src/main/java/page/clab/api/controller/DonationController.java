@@ -18,13 +18,13 @@ import page.clab.api.type.dto.ResponseModel;
 @RestController
 @RequestMapping("/donations")
 @RequiredArgsConstructor
-@Tag(name = "Donation")
+@Tag(name = "Donation", description = "후원 관련 API")
 @Slf4j
 public class DonationController {
 
     private final DonationService donationService;
 
-    @Operation(summary = "후원 생성", description = "후원 생성")
+    @Operation(summary = "[U] 후원 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createDonation(
             @Valid @RequestBody DonationRequestDto donationRequestDto,
@@ -38,7 +38,7 @@ public class DonationController {
         return responseModel;
     }
 
-    @Operation(summary = "후원 정보", description = "후원 정보")
+    @Operation(summary = "[U] 후원 정보", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getDonations() {
         List<DonationResponseDto> donations = donationService.getDonations();
@@ -47,7 +47,7 @@ public class DonationController {
         return responseModel;
     }
 
-    @Operation(summary = "나의 후원 정보", description = "나의 후원 정보")
+    @Operation(summary = "[U] 나의 후원 정보", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/my-donations")
     public ResponseModel getMyDonations() {
         List<DonationResponseDto> donations = donationService.getMyDonations();
@@ -56,7 +56,8 @@ public class DonationController {
         return responseModel;
     }
 
-    @Operation(summary = "후원 검색", description = "유저의 ID 또는 이름을 기반으로 검색")
+    @Operation(summary = "[U] 후원 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "멤버 ID, 이름을 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel getDonation(
             @RequestParam(required = false) String memberId,
@@ -68,7 +69,7 @@ public class DonationController {
         return responseModel;
     }
 
-    @Operation(summary = "후원 정보 수정", description = "후원 정보 수정")
+    @Operation(summary = "[U] 후원 정보 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @PatchMapping("/{donationId}")
     public ResponseModel updateDonation(
             @PathVariable Long donationId,
@@ -83,11 +84,11 @@ public class DonationController {
         return responseModel;
     }
 
-    @Operation(summary = "후원 삭제", description = "후원 삭제")
+    @Operation(summary = "[U] 후원 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @DeleteMapping("/{donationId}")
     public ResponseModel deleteDonation(
             @PathVariable Long donationId
-    ) {
+    ) throws PermissionDeniedException {
         donationService.deleteDonation(donationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
