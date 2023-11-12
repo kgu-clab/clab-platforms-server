@@ -1,5 +1,6 @@
 package page.clab.api.type.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -19,13 +20,16 @@ public class BoardRequestDto {
 
     @NotNull(message = "{notNull.board.category}")
     @Size(min = 1, max = 50, message = "{size.board.category}")
+    @Schema(description = "카테고리", example = "공지사항", required = true)
     private String category;
 
     @NotNull(message = "{notNull.board.title}")
     @Size(min = 1, max = 100, message = "{size.board.title}")
+    @Schema(description = "제목", example = "2023년 2학기 모집 안내", required = true)
     private String title;
 
     @NotNull(message = "{notNull.board.content}")
+    @Schema(description = "내용", example = "2023년 2학기 모집 안내", required = true)
     private String content;
 
     public static BoardRequestDto of(Board board) {
