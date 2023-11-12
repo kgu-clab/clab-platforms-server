@@ -63,6 +63,7 @@ public class ControllerExceptionHandler {
             UnAuthorizeException.class,
             AccessDeniedException.class,
             PermissionDeniedException.class,
+            MessagingException.class,
             TokenValidateException.class,
             LoginFaliedException.class,
             MemberLockedException.class,
@@ -78,7 +79,6 @@ public class ControllerExceptionHandler {
             LoanSuspensionException.class,
             OverdueException.class,
             Exception.class,
-            MessagingException.class
     })
     public ResponseModel errorException(HttpServletRequest request, HttpServletResponse response, Exception e) {
         ResponseModel responseModel = ResponseModel.builder()
