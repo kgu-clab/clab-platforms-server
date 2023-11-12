@@ -7,6 +7,7 @@ gradle/
 !**/src/test/**/build/
 /src/main/resources/*.yml
 !/src/main/resources/application.yml
+src/main/java/page/clab/api/auth/service/DataLoader.java
 
 
 ### STS ###

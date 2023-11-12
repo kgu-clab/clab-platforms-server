@@ -81,7 +81,7 @@ public class ApplicationRequestDto {
     private String githubUrl;
 
     @NotNull(message = "{notNull.application.applicationType}")
-    @Schema(description = "구분", example = "MEMBER", required = true)
+    @Schema(description = "구분", example = "NORMAL", required = true)
     private ApplicationType applicationType;
 
     public static ApplicationRequestDto of(Application application) {
