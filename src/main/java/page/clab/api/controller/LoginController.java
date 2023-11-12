@@ -12,16 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.auth.exception.TokenValidateException;
 import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.MemberLockedException;
 import page.clab.api.service.LoginService;
 import page.clab.api.type.dto.LoginRequestDto;
 import page.clab.api.type.dto.RefreshTokenDto;
 import page.clab.api.type.dto.ResponseModel;
-import page.clab.api.type.dto.TokenDto;
 import page.clab.api.type.dto.TokenInfo;
-import page.clab.api.type.etc.Role;
 
 @RestController
 @RequestMapping("/login")
@@ -57,21 +54,6 @@ public class LoginController {
         TokenInfo tokenInfo = loginService.reissue(refreshTokenDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(tokenInfo);
-        return responseModel;
-    }
-
-    @Operation(summary = "유저 토큰 권한 검사", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @PostMapping("/role")
-    public ResponseModel checkTokenRole(
-            @Valid @RequestBody TokenDto tokenDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException, TokenValidateException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
-        boolean isAdminRole = loginService.checkTokenRole(tokenDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData((isAdminRole ? Role.ADMIN.getKey() : Role.USER.getKey()));
         return responseModel;
     }
 
