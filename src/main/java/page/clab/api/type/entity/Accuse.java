@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,10 +24,16 @@ public class Accuse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ColumnDefault("0")
-    private Long count;
+    @Column(nullable = false)
+    @Builder.Default
+    private Long count = 0L;
 
     @Column(nullable = false)
     private Long targetId;
 
+    public static Accuse of(Long targetId) {
+        return Accuse.builder()
+                .targetId(targetId)
+                .build();
+    }
 }
