@@ -57,6 +57,7 @@ public class ActivityGroupAdminService {
         activityGroup.setCreatedAt(LocalDateTime.now());
         activityGroupRepository.save(activityGroup);
         GroupMember groupLeader = GroupMember.of(member, activityGroup);
+        groupLeader.setRole(ActivityGroupRole.LEADER);
         groupMemberRepository.save(groupLeader);
     }
 

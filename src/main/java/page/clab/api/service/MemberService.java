@@ -1,11 +1,5 @@
 package page.clab.api.service;
 
-import java.io.File;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +21,13 @@ import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.Role;
 import page.clab.api.util.FileSystemUtil;
+
+import java.io.File;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -155,7 +156,9 @@ public class MemberService {
     public void checkMemberGroupLeaderRole() throws PermissionDeniedException {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
         Member member = memberRepository.findById(memberId).get();
-        if (!member.getRole().equals(ActivityGroupRole.LEADER)) {
+        GroupMember groupMember = groupMemberRepository.findByMemberId(memberId).orElseThrow();
+        if (groupMember.getRole() != ActivityGroupRole.LEADER ||
+                (member.getRole() != Role.ADMIN && member.getRole() != Role.SUPER)) {
             throw new PermissionDeniedException("권한이 부족합니다.");
         }
     }

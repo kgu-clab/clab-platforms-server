@@ -1,7 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
@@ -15,6 +13,10 @@ import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.GroupSchedule;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.ActivityGroupRole;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,6 +63,7 @@ public class ActivityGroupMemberService {
             throw new IllegalArgumentException("인증 코드가 일치하지 않습니다.");
         }
         GroupMember groupMember = GroupMember.of(member, activityGroup);
+        groupMember.setRole(ActivityGroupRole.MEMBER);
         groupMemberRepository.save(groupMember);
     }
 
