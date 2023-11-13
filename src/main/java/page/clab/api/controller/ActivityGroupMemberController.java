@@ -63,7 +63,7 @@ public class ActivityGroupMemberController {
         return responseModel;
     }
 
-    @Operation(summary = "활동 일정 조회")
+    @Operation(summary = "활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/schedule")
     public ResponseModel getGroupScheduleList(
             @RequestParam Long id
@@ -73,7 +73,7 @@ public class ActivityGroupMemberController {
         return responseModel;
     }
 
-    @Operation(summary = "활동 멤버 조회")
+    @Operation(summary = "활동 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/members")
     public ResponseModel getActivityGroupMemberList(
             @RequestParam Long id
@@ -83,7 +83,7 @@ public class ActivityGroupMemberController {
         return responseModel;
     }
 
-    @Operation(summary = "활동 멤버 인증")
+    @Operation(summary = "활동 멤버 인증", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/auth")
     public ResponseModel authenticateActivityMember(
             @RequestParam Long id,
