@@ -85,7 +85,7 @@ public class BlogService {
         blogRepository.delete(blog);
     }
 
-    private Blog getBlogByIdOrThrow(Long blogId) {
+    public Blog getBlogByIdOrThrow(Long blogId) {
         return blogRepository.findById(blogId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 게시글입니다."));
     }

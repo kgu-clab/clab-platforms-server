@@ -1,9 +1,5 @@
 package page.clab.api.service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
@@ -14,6 +10,11 @@ import page.clab.api.type.dto.NewsRequestDto;
 import page.clab.api.type.dto.NewsResponseDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.News;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -80,7 +81,7 @@ public class NewsService {
         newsRepository.delete(news);
     }
 
-    private News getNewsByIdOrThrow(Long newsId) {
+    public News getNewsByIdOrThrow(Long newsId) {
         return newsRepository.findById(newsId)
                 .orElseThrow(() -> new NotFoundException("해당 뉴스가 존재하지 않습니다."));
     }
