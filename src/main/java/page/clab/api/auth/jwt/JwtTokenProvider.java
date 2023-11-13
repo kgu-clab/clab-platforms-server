@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import page.clab.api.auth.exception.TokenValidateException;
+import page.clab.api.service.RedisTokenService;
 import page.clab.api.type.dto.TokenInfo;
 import page.clab.api.type.etc.Role;
 
@@ -31,8 +32,11 @@ public class JwtTokenProvider {
 
     private static final long REFRESH_TOKEN_DURATION = 40L * 60L * 1000L; // 40분
 
-    public JwtTokenProvider(@Value("${jwt.secret-key}") String secretKey) {
+    private final RedisTokenService redisTokenService;
+
+    public JwtTokenProvider(@Value("${jwt.secret-key}") String secretKey, RedisTokenService redisTokenService) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        this.redisTokenService = redisTokenService;
     }
 
     public TokenInfo generateToken(Authentication authentication) {
@@ -57,6 +61,8 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
+        redisTokenService.saveTokenInfo(authentication.getName(), accessToken, refreshToken);
+
         return TokenInfo.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -80,6 +86,8 @@ public class JwtTokenProvider {
                 .setExpiration(refreshTokenExpiry)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+
+        redisTokenService.saveTokenInfo(id, accessToken, refreshToken);
 
         return TokenInfo.builder()
                 .accessToken(accessToken)
