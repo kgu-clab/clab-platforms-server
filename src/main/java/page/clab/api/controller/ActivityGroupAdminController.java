@@ -2,8 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
@@ -23,6 +21,9 @@ import page.clab.api.type.dto.ActivityGroupDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.etc.ActivityGroupStatus;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/activity-group/admin")
@@ -52,9 +53,9 @@ public class ActivityGroupAdminController {
     public ResponseModel getActivityGroupsByStatus (
             @RequestParam ActivityGroupStatus activityGroupStatus
     ) throws PermissionDeniedException {
-        List<ActivityGroupDto> waitingGroups = activityGroupAdminService.getActivityGroupsByStatus(activityGroupStatus);
+        List<ActivityGroupDto> activityGroupList = activityGroupAdminService.getActivityGroupsByStatus(activityGroupStatus);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(waitingGroups);
+        responseModel.addData(activityGroupList);
         return responseModel;
     }
 

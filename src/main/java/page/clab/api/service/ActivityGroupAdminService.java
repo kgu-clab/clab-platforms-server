@@ -1,9 +1,5 @@
 package page.clab.api.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
@@ -19,6 +15,11 @@ import page.clab.api.type.entity.GroupSchedule;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
+
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +61,7 @@ public class ActivityGroupAdminService {
     }
 
     public void updateActivityGroup(Long activityGroupId, ActivityGroupDto activityGroupDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+        memberService.checkMemberGroupLeaderRole();
         ActivityGroup activityGroup = findGroupByIdOrThrow(activityGroupId);
         activityGroup.setCategory(activityGroupDto.getCategory());
         activityGroup.setName(activityGroupDto.getName());
@@ -80,7 +81,7 @@ public class ActivityGroupAdminService {
     }
 
     public void updateProjectProgress(Long activityGroupId, Long progress) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+        memberService.checkMemberGroupLeaderRole();
         ActivityGroup activityGroup = findGroupByIdOrThrow(activityGroupId);
         activityGroup.setProgress(progress);
         activityGroupRepository.save(activityGroup);
