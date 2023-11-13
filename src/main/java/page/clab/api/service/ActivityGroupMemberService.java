@@ -1,7 +1,10 @@
 package page.clab.api.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import page.clab.api.exception.NotFoundException;
 import page.clab.api.repository.ActivityGroupRepository;
 import page.clab.api.repository.GroupMemberRepository;
 import page.clab.api.repository.GroupScheduleRepository;
@@ -12,9 +15,6 @@ import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.GroupSchedule;
 import page.clab.api.type.entity.Member;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,55 +28,35 @@ public class ActivityGroupMemberService {
 
     private final MemberService memberService;
 
-    public List<ActivityGroupDto> getProjectList() {
-        List<ActivityGroup> activityGroupList = activityGroupRepository.findAllByCategory("project");
-        List<ActivityGroupDto> activityGroupDtoList = new ArrayList<>();
-        for (ActivityGroup activityGroup : activityGroupList) {
-            activityGroupDtoList.add(ActivityGroupDto.of(activityGroup));
-        }
-        return activityGroupDtoList;
+    public List<ActivityGroupDto> getActivityGroups(String category) {
+        List<ActivityGroup> activityGroupList = getActivityGroupByCategory(category);
+        return activityGroupList.stream()
+                .map(ActivityGroupDto::of)
+                .collect(Collectors.toList());
     }
 
-    public List<ActivityGroupDto> getStudyList() {
-        List<ActivityGroup> activityGroupList = activityGroupRepository.findAllByCategory("study");
-        List<ActivityGroupDto> activityGroupDtoList = new ArrayList<>();
-        for (ActivityGroup activityGroup : activityGroupList) {
-            activityGroupDtoList.add(ActivityGroupDto.of(activityGroup));
-        }
-        return activityGroupDtoList;
-    }
-
-    public ActivityGroupDto getProjectGroup(Long id) {
-        ActivityGroup activityGroup = activityGroupRepository.findByIdAndCategory(id, "project").orElseThrow();
+    public ActivityGroupDto getActivityGroup(Long activityGroupId) {
+    ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         return ActivityGroupDto.of(activityGroup);
     }
 
-    public ActivityGroupDto getStudyGroup(Long id) {
-        ActivityGroup activityGroup = activityGroupRepository.findByIdAndCategory(id, "study").orElseThrow();
-        return ActivityGroupDto.of(activityGroup);
+    public List<GroupScheduleDto> getGroupSchedules(Long activityGroupId) {
+        List<GroupSchedule> groupSchedules = getGroupScheduleByActivityGroupId(activityGroupId);
+        return groupSchedules.stream()
+                .map(GroupScheduleDto::of)
+                .collect(Collectors.toList());
     }
 
-    public List<GroupScheduleDto> getGroupScheduleList(Long id) {
-        List<GroupSchedule> groupScheduleList = groupScheduleRepository.findAllByActivityGroupId(id);
-        List<GroupScheduleDto> groupScheduleDtoList = new ArrayList<>();
-        for (GroupSchedule groupSchedule : groupScheduleList) {
-            groupScheduleDtoList.add(GroupScheduleDto.of(groupSchedule));
-        }
-        return groupScheduleDtoList;
+    public List<GroupMemberDto> getActivityGroupMembers(Long activityGroupId) {
+        List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
+        return groupMembers.stream()
+                .map(GroupMemberDto::of)
+                .collect(Collectors.toList());
     }
-
-    public List<GroupMemberDto> getActivityGroupMemberList(Long id) {
-        List<GroupMember> groupMemberList = groupMemberRepository.findAllByActivityGroupId(id);
-        List<GroupMemberDto> groupMemberDtoList = new ArrayList<>();
-        for (GroupMember groupMember : groupMemberList) {
-            groupMemberDtoList.add(GroupMemberDto.of(groupMember));
-        }
-        return groupMemberDtoList;
-    }
-
-    public void authenticateActivityMember(Long id, String code) {
-        ActivityGroup activityGroup = findById(id);
+    
+    public void authenticateActivityMember(Long activityGroupId, String code) {
         Member member = memberService.getCurrentMember();
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if(!activityGroup.getCode().equals(code)) {
             throw new IllegalArgumentException("인증 코드가 일치하지 않습니다.");
         }
@@ -84,8 +64,21 @@ public class ActivityGroupMemberService {
         groupMemberRepository.save(groupMember);
     }
 
-    public ActivityGroup findById(Long id) {
-        return activityGroupRepository.findById(id).orElseThrow();
+    private ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
+        return activityGroupRepository.findById(activityGroupId)
+                .orElseThrow(() -> new NotFoundException("해당 활동이 존재하지 않습니다."));
+    }
+
+    private List<ActivityGroup> getActivityGroupByCategory(String category) {
+        return activityGroupRepository.findAllByCategory(category);
+    }
+
+    private List<GroupSchedule> getGroupScheduleByActivityGroupId(Long activityGroupId) {
+        return groupScheduleRepository.findAllByActivityGroupId(activityGroupId);
+    }
+
+    private List<GroupMember> getGroupMemberByActivityGroupId(Long activityGroupId) {
+        return groupMemberRepository.findAllByActivityGroupId(activityGroupId);
     }
 
 }
