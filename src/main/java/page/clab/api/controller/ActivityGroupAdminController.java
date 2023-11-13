@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,8 +33,7 @@ public class ActivityGroupAdminController {
 
     private final MemberService memberService;
 
-    // 완료
-    @Operation(summary = "승인 대기 활동 조회", description = "승인 대기 활동 조회")
+    @Operation(summary = "[A]승인 대기 활동 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getWaitingActivityGroup (
     ) throws PermissionDeniedException {
@@ -43,8 +43,7 @@ public class ActivityGroupAdminController {
         return responseModel;
     }
 
-    // 완료
-    @Operation(summary = "활동 승인", description = "활동 승인<br>")
+    @Operation(summary = "[A]활동 승인", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PostMapping("/{ActivityGroupId}/approve")
     public ResponseModel approveActivityGroup(
             @PathVariable Long ActivityGroupId
@@ -54,8 +53,7 @@ public class ActivityGroupAdminController {
         return responseModel;
     }
 
-    // 완료
-    @Operation(summary = "활동 완료 상태 변경", description = "활동 완료 상태 변경")
+    @Operation(summary = "[A]활동 완료 상태 변경", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PatchMapping("/{ActivityGroupId}/complete")
     public ResponseModel completeActivityGroup(
             @PathVariable Long ActivityGroupId
@@ -64,12 +62,7 @@ public class ActivityGroupAdminController {
         return ResponseModel.builder().build();
     }
 
-    // 완료
-    @Operation(summary = "활동 생성", description = "활동 생성<br>" +
-            "String category; <br>" +
-            "String name; <br>" +
-            "String content; <br>" +
-            "String imageUrl;")
+    @Operation(summary = "[U]활동 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createActivityGroup(
             @RequestBody ActivityGroupDto activityGroupDto
@@ -79,8 +72,7 @@ public class ActivityGroupAdminController {
         return responseModel;
     }
 
-    // 완료
-    @Operation(summary = "활동 수정")
+    @Operation(summary = "[U]활동 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @PatchMapping("")
     public ResponseModel updateActivityGroup(
             @RequestParam Long id,
@@ -91,18 +83,17 @@ public class ActivityGroupAdminController {
         return responseModel;
     }
 
-//    @Operation(summary = "활동 삭제")
-//    @DeleteMapping("")
-//    public ResponseModel deleteActivityGroup(
-//            @RequestParam Long id
-//    ) throws PermissionDeniedException {
-//        ResponseModel responseModel = ResponseModel.builder().build();
-//        activityGroupAdminService.deleteActivityGroup(id);
-//        return responseModel;
-//    }
+    @Operation(summary = "[A]활동 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @DeleteMapping("")
+    public ResponseModel deleteActivityGroup(
+            @RequestParam Long id
+    ) throws PermissionDeniedException {
+        ResponseModel responseModel = ResponseModel.builder().build();
+        activityGroupAdminService.deleteActivityGroup(id);
+        return responseModel;
+    }
 
-    // 완료
-    @Operation(summary = "프로젝트 진행도 수정")
+    @Operation(summary = "[U]프로젝트 진행도 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @PatchMapping("/{id}/progress")
     public ResponseModel updateProjectProgress(
             @PathVariable Long id,
@@ -113,8 +104,7 @@ public class ActivityGroupAdminController {
         return responseModel;
     }
 
-    // 완료
-    @Operation(summary = "커리큘럼 및 일정 생성")
+    @Operation(summary = "[U]커리큘럼 및 일정 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @PatchMapping("/schedule")
     public ResponseModel addSchedule(
             @RequestParam Long id,
@@ -125,7 +115,7 @@ public class ActivityGroupAdminController {
         return responseModel;
     }
 
-    @Operation(summary = "멤버 인증 코드 생성")
+    @Operation(summary = "[U]멤버 인증 코드 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/auth")
     public ResponseModel createMemberAuthCode(
             @RequestParam Long id,
