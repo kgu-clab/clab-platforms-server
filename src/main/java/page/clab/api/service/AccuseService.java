@@ -1,13 +1,14 @@
 package page.clab.api.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.repository.AccuseRepository;
 import page.clab.api.type.dto.AccuseDto;
 import page.clab.api.type.entity.Accuse;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,11 +28,11 @@ public class AccuseService {
 
     private final AccuseRepository accuseRepository;
 
-    public List<AccuseDto> getAccuseList() {
+    public List<AccuseDto> getAccuses() {
         List<Accuse> accuses = accuseRepository.findAll();
         return accuses.stream()
                 .map(AccuseDto::of)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public void deleteAccuse(Long targetId) {
@@ -40,27 +41,21 @@ public class AccuseService {
     }
 
     public void memberAccuse(String memberId) {
-        if(memberService.getMemberByIdOrThrow(memberId) == null) {
-            throw new NotFoundException("해당 멤버가 존재하지 않습니다.");
-        }
+        memberService.getMemberByIdOrThrow(memberId);
         Accuse accuse = checkIsAccused(Long.parseLong(memberId));
         accuse.setCount(accuse.getCount() + 1);
         accuseRepository.save(accuse);
     }
 
     public void boardAccuse(Long boardId) {
-        if(boardService.getBoardByIdOrThrow(boardId) == null) {
-            throw new NotFoundException("해당 게시글이 존재하지 않습니다.");
-        }
+        boardService.getBoardByIdOrThrow(boardId);
         Accuse accuse = checkIsAccused(boardId);
         accuse.setCount(accuse.getCount() + 1);
         accuseRepository.save(accuse);
     }
 
     public void commentAccuse(Long commentId){
-        if (commentService.getCommentByIdOrThrow(commentId) == null) {
-            throw new NotFoundException("해당 댓글이 존재하지 않습니다.");
-        }
+        commentService.getCommentByIdOrThrow(commentId);
         Accuse accuse = checkIsAccused(commentId);
         accuse.setCount(accuse.getCount() + 1);
         accuseRepository.save(accuse);
@@ -68,27 +63,21 @@ public class AccuseService {
     }
 
     public void blogAccuse(Long blogId){
-        if (blogService.getBlogByIdOrThrow(blogId) == null) {
-            throw new NotFoundException("해당 블로그가 존재하지 않습니다.");
-        }
+        blogService.getBlogByIdOrThrow(blogId);
         Accuse accuse = checkIsAccused(blogId);
         accuse.setCount(accuse.getCount() + 1);
         accuseRepository.save(accuse);
     }
 
     public void newsAccuse(Long newsId){
-        if (newsService.getNewsByIdOrThrow(newsId) == null) {
-            throw new NotFoundException("해당 뉴스가 존재하지 않습니다.");
-        }
+        newsService.getNewsByIdOrThrow(newsId);
         Accuse accuse = checkIsAccused(newsId);
         accuse.setCount(accuse.getCount() + 1);
         accuseRepository.save(accuse);
     }
 
     public void reviewAccuse(Long reviewId){
-        if (reviewService.getReviewByIdOrThrow(reviewId) == null) {
-            throw new NotFoundException("해당 리뷰가 존재하지 않습니다.");
-        }
+        reviewService.getReviewByIdOrThrow(reviewId);
         Accuse accuse = checkIsAccused(reviewId);
         accuse.setCount(accuse.getCount() + 1);
         accuseRepository.save(accuse);

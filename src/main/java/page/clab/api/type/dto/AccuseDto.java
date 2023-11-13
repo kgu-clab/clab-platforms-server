@@ -22,4 +22,5 @@ public class AccuseDto {
     public static AccuseDto of(Accuse accuse){
         return ModelMapperUtil.getModelMapper().map(accuse, AccuseDto.class);
     }
+
 }
