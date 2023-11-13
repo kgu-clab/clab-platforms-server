@@ -15,6 +15,7 @@ import page.clab.api.exception.AssociatedAccountExistsException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
+import page.clab.api.repository.GroupMemberRepository;
 import page.clab.api.repository.MemberRepository;
 import page.clab.api.type.dto.CloudUsageInfo;
 import page.clab.api.type.dto.FileInfo;
@@ -32,6 +33,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final GroupMemberRepository groupMemberRepository;
 
     @Value("${resource.file.path}")
     private String filePath;

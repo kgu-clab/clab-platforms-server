@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class GroupMemberId implements Serializable {
 
     @EqualsAndHashCode.Include
-    private Long member;
+    private String member;
 
     @EqualsAndHashCode.Include
     private Long activityGroup;
