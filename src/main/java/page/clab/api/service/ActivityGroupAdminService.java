@@ -79,11 +79,14 @@ public class ActivityGroupAdminService {
 
     public void deleteActivityGroup(Long id) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
-        ActivityGroup activityGroup = findGroupById(id);
-        activityGroupRepository.delete(activityGroup);
 
         List<GroupMember> groupMemberList = groupMemberRepository.findAllByActivityGroupId(id);
-        groupMemberRepository.deleteAll(groupMemberList);
+        for (GroupMember groupMember : groupMemberList) {
+            groupMemberRepository.delete(groupMember);
+        }
+
+        ActivityGroup activityGroup = findGroupById(id);
+        activityGroupRepository.delete(activityGroup);
     }
 
     public void updateProjectProgress(Long id, Long progress) throws PermissionDeniedException {
