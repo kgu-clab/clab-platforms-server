@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,26 @@ public class AccuseController {
         ResponseModel responseModel = ResponseModel.builder().build();
         List<AccuseDto> accuseList = accuseService.getAccuseList();
         responseModel.setData(accuseList);
+        return responseModel;
+    }
+
+    @Operation(summary = "[A] 신고 내역 초기화", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @DeleteMapping("")
+    public ResponseModel deleteAccuse(
+            @RequestParam Long id
+    ) {
+        ResponseModel responseModel = ResponseModel.builder().build();
+        accuseService.deleteAccuse(id);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 멤버 신고하기", description = "ROLE_USER 이상의 권한이 필요함")
+    @PostMapping("/member")
+    public ResponseModel memberAccuse(
+            @RequestParam String memberId
+    ) {
+        ResponseModel responseModel = ResponseModel.builder().build();
+        accuseService.memberAccuse(memberId);
         return responseModel;
     }
 
@@ -83,7 +104,5 @@ public class AccuseController {
         accuseService.reviewAccuse(reviewId);
         return responseModel;
     }
-
-
 
 }
