@@ -2,6 +2,7 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,8 +15,6 @@ import page.clab.api.service.AccuseService;
 import page.clab.api.type.dto.AccuseDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/accuses")
 @RequiredArgsConstructor
@@ -27,11 +26,10 @@ public class AccuseController {
 
     @Operation(summary = "[A] 신고 내역 리스팅", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @GetMapping("")
-    public ResponseModel getAccuseList(
-    ) {
+    public ResponseModel getAccuses() {
+        List<AccuseDto> accuses = accuseService.getAccuses();
         ResponseModel responseModel = ResponseModel.builder().build();
-        List<AccuseDto> accuseList = accuseService.getAccuseList();
-        responseModel.setData(accuseList);
+        responseModel.addData(accuses);
         return responseModel;
     }
 
@@ -40,8 +38,8 @@ public class AccuseController {
     public ResponseModel deleteAccuse(
             @RequestParam Long id
     ) {
-        ResponseModel responseModel = ResponseModel.builder().build();
         accuseService.deleteAccuse(id);
+        ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
@@ -50,8 +48,8 @@ public class AccuseController {
     public ResponseModel memberAccuse(
             @RequestParam String memberId
     ) {
-        ResponseModel responseModel = ResponseModel.builder().build();
         accuseService.memberAccuse(memberId);
+        ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
@@ -60,8 +58,8 @@ public class AccuseController {
     public ResponseModel boardAccuse(
             @RequestParam Long boardId
     ) {
-        ResponseModel responseModel = ResponseModel.builder().build();
         accuseService.boardAccuse(boardId);
+        ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
@@ -70,8 +68,8 @@ public class AccuseController {
     public ResponseModel commentAccuse(
             @RequestParam Long commentId
     ) {
-        ResponseModel responseModel = ResponseModel.builder().build();
         accuseService.commentAccuse(commentId);
+        ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
@@ -80,8 +78,8 @@ public class AccuseController {
     public ResponseModel blogAccuse(
             @RequestParam Long blogId
     ) {
-        ResponseModel responseModel = ResponseModel.builder().build();
         accuseService.blogAccuse(blogId);
+        ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
@@ -90,8 +88,8 @@ public class AccuseController {
     public ResponseModel newsAccuse(
             @RequestParam Long newsId
     ) {
-        ResponseModel responseModel = ResponseModel.builder().build();
         accuseService.newsAccuse(newsId);
+        ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
@@ -100,8 +98,8 @@ public class AccuseController {
     public ResponseModel reviewAccuse(
             @RequestParam Long reviewId
     ) {
-        ResponseModel responseModel = ResponseModel.builder().build();
         accuseService.reviewAccuse(reviewId);
+        ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
