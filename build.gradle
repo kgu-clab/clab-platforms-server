@@ -41,6 +41,7 @@ dependencies {
 	implementation 'commons-io:commons-io:2.13.0' // Apache Commons IO
 	implementation 'com.google.guava:guava:32.1.2-jre' // Google Core Libraries For Java
 	implementation 'com.github.napstr:logback-discord-appender:1.0.0' // Discord Appender
+	implementation 'org.springframework.boot:spring-boot-starter-mail' // Spring Mail
 
 	// DB
 	implementation 'org.postgresql:postgresql:42.6.0' // PostgreSQL JDBC Driver
