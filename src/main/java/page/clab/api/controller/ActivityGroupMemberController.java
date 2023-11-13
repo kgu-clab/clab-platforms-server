@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.service.ActivityGroupMemberService;
-import page.clab.api.service.MemberService;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -22,8 +21,6 @@ import page.clab.api.type.dto.ResponseModel;
 public class ActivityGroupMemberController {
 
     private final ActivityGroupMemberService activityGroupMemberService;
-
-    private final MemberService memberService;
 
     @Operation(summary = "프로젝트 리스팅")
     @GetMapping("/products")
