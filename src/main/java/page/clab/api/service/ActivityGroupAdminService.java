@@ -1,5 +1,9 @@
 package page.clab.api.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
@@ -15,11 +19,6 @@ import page.clab.api.type.entity.GroupSchedule;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
-
-import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +42,7 @@ public class ActivityGroupAdminService {
 
     public void manageActivityGroup(Long activityGroupId, ActivityGroupStatus activityGroupStatus) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
-        ActivityGroup activityGroup = findGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroup.setStatus(activityGroupStatus);
         activityGroupRepository.save(activityGroup);
     }
@@ -62,8 +61,8 @@ public class ActivityGroupAdminService {
     }
 
     public void updateActivityGroup(Long activityGroupId, ActivityGroupDto activityGroupDto) throws PermissionDeniedException {
-        memberService.checkMemberGroupLeaderRole();
-        ActivityGroup activityGroup = findGroupByIdOrThrow(activityGroupId);
+        checkMemberGroupLeaderRole();
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroup.setCategory(activityGroupDto.getCategory());
         activityGroup.setName(activityGroupDto.getName());
         activityGroup.setContent(activityGroupDto.getContent());
@@ -77,13 +76,13 @@ public class ActivityGroupAdminService {
         List<GroupMember> groupMemberList = groupMemberRepository.findAllByActivityGroupId(activityGroupId);
         groupMemberList.stream()
                 .forEach(groupMember -> groupMemberRepository.delete(groupMember));
-        ActivityGroup activityGroup = findGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroupRepository.delete(activityGroup);
     }
 
     public void updateProjectProgress(Long activityGroupId, Long progress) throws PermissionDeniedException {
-        memberService.checkMemberGroupLeaderRole();
-        ActivityGroup activityGroup = findGroupByIdOrThrow(activityGroupId);
+        checkMemberGroupLeaderRole();
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroup.setProgress(progress);
         activityGroupRepository.save(activityGroup);
     }
@@ -91,7 +90,7 @@ public class ActivityGroupAdminService {
     @Transactional
     public void addSchedule(Long activityGroupId, List<GroupScheduleDto> groupScheduleDto) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
-        ActivityGroup activityGroup = findGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         groupScheduleDto.stream()
                 .map(scheduleDto -> GroupSchedule.of(activityGroup, scheduleDto))
                 .forEach(groupSchedule -> groupScheduleRepository.save(groupSchedule));
@@ -99,8 +98,8 @@ public class ActivityGroupAdminService {
 
     public void createMemberAuthCode(Long activityGroupId, String code) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
-        ActivityGroup activityGroup = findGroupByIdOrThrow(activityGroupId);
-        GroupMember member = getMemberByGroupIdAndRoleOrThrow(activityGroupId, ActivityGroupRole.LEADER);
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        GroupMember member = getGroupMemberByGroupIdAndRoleOrThrow(activityGroupId, ActivityGroupRole.LEADER);
         if (!member.getMember().getId().equals(currentMember.getId())) {
             throw new PermissionDeniedException("권한이 없습니다.");
         }
@@ -112,14 +111,27 @@ public class ActivityGroupAdminService {
         return activityGroupRepository.findAllByStatus(status);
     }
 
-    public ActivityGroup findGroupByIdOrThrow(Long id) {
+    public ActivityGroup getActivityGroupByIdOrThrow(Long id) {
         return activityGroupRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 활동입니다."));
     }
 
-    private GroupMember getMemberByGroupIdAndRoleOrThrow(Long activityGroupId, ActivityGroupRole activityGroupRole) {
+    private GroupMember getGroupMemberByGroupIdAndRoleOrThrow(Long activityGroupId, ActivityGroupRole activityGroupRole) {
         return groupMemberRepository.findByActivityGroupIdAndRole(activityGroupId, activityGroupRole)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버입니다."));
+    }
+
+    private GroupMember getGroupMemberByMemberOrThrow(Member member) {
+        return groupMemberRepository.findByMember(member)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버입니다."));
+    }
+
+    public void checkMemberGroupLeaderRole() throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
+        GroupMember groupMember = getGroupMemberByMemberOrThrow(member);
+        if (groupMember.getRole() != ActivityGroupRole.LEADER || !memberService.isMemberAdminRole(member)) {
+            throw new PermissionDeniedException("권한이 부족합니다.");
+        }
     }
 
 }

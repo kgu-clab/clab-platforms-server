@@ -31,9 +31,9 @@ public class ActivityGroupMemberController {
     public ResponseModel getActivityGroups(
             @PathVariable String category
     ) {
-        List<ActivityGroupDto> projectList = activityGroupMemberService.getActivityGroups(category);
+        List<ActivityGroupDto> activityGroups = activityGroupMemberService.getActivityGroups(category);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(projectList);
+        responseModel.addData(activityGroups);
         return responseModel;
     }
 
@@ -42,9 +42,9 @@ public class ActivityGroupMemberController {
     public ResponseModel getActivityGroup(
             @PathVariable Long activityGroupId
     ) {
-        ActivityGroupDto projectGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
+        ActivityGroupDto activityGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(projectGroup);
+        responseModel.addData(activityGroup);
         return responseModel;
     }
 

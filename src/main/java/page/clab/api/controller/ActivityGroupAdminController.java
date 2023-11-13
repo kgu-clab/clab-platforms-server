@@ -2,6 +2,8 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
@@ -22,9 +24,6 @@ import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.etc.ActivityGroupStatus;
 
-import javax.validation.Valid;
-import java.util.List;
-
 @RestController
 @RequestMapping("/activity-group/admin")
 @RequiredArgsConstructor
@@ -43,8 +42,8 @@ public class ActivityGroupAdminController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        ResponseModel responseModel = ResponseModel.builder().build();
         activityGroupAdminService.createActivityGroup(activityGroupDto);
+        ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
