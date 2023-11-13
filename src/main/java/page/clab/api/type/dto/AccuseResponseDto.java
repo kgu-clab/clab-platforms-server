@@ -13,14 +13,17 @@ import page.clab.api.util.ModelMapperUtil;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AccuseDto {
-
-    private Long count;
+public class AccuseResponseDto {
 
     private Long targetId;
 
-    public static AccuseDto of(Accuse accuse){
-        return ModelMapperUtil.getModelMapper().map(accuse, AccuseDto.class);
-    }
+    private String category;
 
+    private String description;
+
+    private String content;
+
+    public static AccuseResponseDto of(Accuse accuse){
+        return ModelMapperUtil.getModelMapper().map(accuse, AccuseResponseDto.class);
+    }
 }
