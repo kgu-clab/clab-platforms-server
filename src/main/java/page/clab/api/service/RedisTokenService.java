@@ -1,12 +1,13 @@
 package page.clab.api.service;
 
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.repository.RedisTokenRepository;
+import page.clab.api.type.dto.TokenInfo;
 import page.clab.api.type.entity.RedisToken;
-
-import javax.transaction.Transactional;
+import page.clab.api.type.etc.Role;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +22,15 @@ public class RedisTokenService {
     }
 
     @Transactional
-    public void saveRedisToken(String memberId, String accessToken, String refreshToken) {
-        RedisToken tokenInfo = new RedisToken(memberId, accessToken, refreshToken);
-        redisTokenRepository.save(tokenInfo);
+    public void saveRedisToken(String memberId, Role role, TokenInfo tokenInfo, String ip) {
+        RedisToken redisToken = RedisToken.builder()
+                .id(memberId)
+                .role(role)
+                .ip(ip)
+                .accessToken(tokenInfo.getAccessToken())
+                .refreshToken(tokenInfo.getRefreshToken())
+                .build();
+        redisTokenRepository.save(redisToken);
     }
 
     @Transactional

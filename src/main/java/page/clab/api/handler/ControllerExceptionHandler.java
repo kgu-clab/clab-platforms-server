@@ -33,6 +33,7 @@ import page.clab.api.auth.exception.TokenValidateException;
 import page.clab.api.auth.exception.UnAuthorizeException;
 import page.clab.api.exception.AssociatedAccountExistsException;
 import page.clab.api.exception.BookAlreadyBorrowedException;
+import page.clab.api.exception.DuplicateLoginException;
 import page.clab.api.exception.FileUploadFailException;
 import page.clab.api.exception.InvalidBorrowerException;
 import page.clab.api.exception.LoanSuspensionException;
@@ -91,6 +92,7 @@ public class ControllerExceptionHandler {
             OverdueException.class,
             TransactionSystemException.class,
             StringIndexOutOfBoundsException.class,
+            DuplicateLoginException.class,
             Exception.class
     })
     public ResponseModel errorException(HttpServletRequest request, HttpServletResponse response, Exception e) {

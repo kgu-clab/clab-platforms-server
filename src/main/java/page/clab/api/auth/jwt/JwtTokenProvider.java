@@ -2,6 +2,12 @@ package page.clab.api.auth.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import java.security.Key;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,16 +17,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import page.clab.api.auth.exception.TokenValidateException;
-import page.clab.api.service.RedisTokenService;
 import page.clab.api.type.dto.TokenInfo;
 import page.clab.api.type.etc.Role;
-
-import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -32,41 +32,8 @@ public class JwtTokenProvider {
 
     private static final long REFRESH_TOKEN_DURATION = 40L * 60L * 1000L; // 40분
 
-    private final RedisTokenService redisTokenService;
-
-    public JwtTokenProvider(@Value("${jwt.secret-key}") String secretKey, RedisTokenService redisTokenService) {
+    public JwtTokenProvider(@Value("${jwt.secret-key}") String secretKey) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
-        this.redisTokenService = redisTokenService;
-    }
-
-    public TokenInfo generateToken(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
-        Date expiry = new Date();
-        Date accessTokenExpiry = new Date(expiry.getTime() + (ACCESS_TOKEN_DURATION));
-        String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim("role", authorities)
-                .setExpiration(accessTokenExpiry)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
-
-        Date refreshTokenExpiry = new Date(expiry.getTime() + (REFRESH_TOKEN_DURATION));
-        String refreshToken = Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim("role", authorities)
-                .setExpiration(refreshTokenExpiry)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
-
-        redisTokenService.saveRedisToken(authentication.getName(), accessToken, refreshToken);
-
-        return TokenInfo.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
     }
 
     public TokenInfo generateToken(String id, Role role) {
@@ -81,13 +48,9 @@ public class JwtTokenProvider {
 
         Date refreshTokenExpiry = new Date(expiry.getTime() + (REFRESH_TOKEN_DURATION));
         String refreshToken = Jwts.builder()
-                .setSubject(id)
-                .claim("role", role)
                 .setExpiration(refreshTokenExpiry)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-
-        redisTokenService.saveRedisToken(id, accessToken, refreshToken);
 
         return TokenInfo.builder()
                 .accessToken(accessToken)
@@ -111,6 +74,14 @@ public class JwtTokenProvider {
 
         UserDetails principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
+
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 
     public boolean validateToken(String token) {
