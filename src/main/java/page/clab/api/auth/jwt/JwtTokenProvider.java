@@ -61,7 +61,7 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        redisTokenService.saveTokenInfo(authentication.getName(), accessToken, refreshToken);
+        redisTokenService.saveRedisToken(authentication.getName(), accessToken, refreshToken);
 
         return TokenInfo.builder()
                 .accessToken(accessToken)
@@ -87,7 +87,7 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        redisTokenService.saveTokenInfo(id, accessToken, refreshToken);
+        redisTokenService.saveRedisToken(id, accessToken, refreshToken);
 
         return TokenInfo.builder()
                 .accessToken(accessToken)
