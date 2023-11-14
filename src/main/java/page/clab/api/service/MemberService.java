@@ -154,6 +154,11 @@ public class MemberService {
         return true;
     }
 
+    public Member getMemberById(String memberId) {
+        return memberRepository.findById(memberId)
+                .orElse(null);
+    }
+
     public Member getMemberByIdOrThrow(String memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));

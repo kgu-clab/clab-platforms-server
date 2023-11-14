@@ -49,9 +49,10 @@ public class LoginController {
     @Operation(summary = "유저 토큰 재발급", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/reissue")
     public ResponseModel reissue(
+            HttpServletRequest httpServletRequest,
             @RequestBody RefreshTokenDto refreshTokenDto
     ) {
-        TokenInfo tokenInfo = loginService.reissue(refreshTokenDto);
+        TokenInfo tokenInfo = loginService.reissue(httpServletRequest, refreshTokenDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(tokenInfo);
         return responseModel;
