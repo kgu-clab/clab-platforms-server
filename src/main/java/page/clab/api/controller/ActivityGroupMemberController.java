@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +15,9 @@ import page.clab.api.type.dto.ActivityGroupDto;
 import page.clab.api.type.dto.GroupMemberDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.ResponseModel;
+import page.clab.api.type.etc.ActivityGroupCategory;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/activity-group/member")
@@ -29,7 +31,7 @@ public class ActivityGroupMemberController {
     @Operation(summary = "활동 목록 조회(카테고리별)", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/{category}")
     public ResponseModel getActivityGroups(
-            @PathVariable String category
+            @PathVariable ActivityGroupCategory category
     ) {
         List<ActivityGroupDto> activityGroups = activityGroupMemberService.getActivityGroups(category);
         ResponseModel responseModel = ResponseModel.builder().build();

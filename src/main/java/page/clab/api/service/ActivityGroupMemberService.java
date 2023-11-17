@@ -1,7 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
@@ -15,7 +13,11 @@ import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.GroupSchedule;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupRole;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ public class ActivityGroupMemberService {
 
     private final MemberService memberService;
 
-    public List<ActivityGroupDto> getActivityGroups(String category) {
+    public List<ActivityGroupDto> getActivityGroups(ActivityGroupCategory category) {
         List<ActivityGroup> activityGroupList = getActivityGroupByCategory(category);
         return activityGroupList.stream()
                 .map(ActivityGroupDto::of)
@@ -71,7 +73,7 @@ public class ActivityGroupMemberService {
                 .orElseThrow(() -> new NotFoundException("해당 활동이 존재하지 않습니다."));
     }
 
-    private List<ActivityGroup> getActivityGroupByCategory(String category) {
+    private List<ActivityGroup> getActivityGroupByCategory(ActivityGroupCategory category) {
         return activityGroupRepository.findAllByCategory(category);
     }
 
