@@ -8,6 +8,8 @@ import lombok.Setter;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.ActivityGroupRole;
+import page.clab.api.type.etc.GroupMemberStatus;
 import page.clab.api.util.ModelMapperUtil;
 
 @Getter
@@ -21,7 +23,9 @@ public class GroupMemberDto {
 
     ActivityGroup activityGroup;
 
-    String role;
+    ActivityGroupRole role;
+
+    GroupMemberStatus status;
 
     public static GroupMemberDto of(GroupMember groupMember) {
         return ModelMapperUtil.getModelMapper().map(groupMember, GroupMemberDto.class);
