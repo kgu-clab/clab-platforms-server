@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.dto.GroupMemberDto;
 import page.clab.api.type.etc.ActivityGroupRole;
+import page.clab.api.type.etc.GroupMemberStatus;
 import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Column;
@@ -43,7 +44,7 @@ public class GroupMember {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Boolean isAccepted;
+    private GroupMemberStatus status;
 
     public static GroupMember of(GroupMemberDto groupMemberDto) {
         return ModelMapperUtil.getModelMapper().map(groupMemberDto, GroupMember.class);

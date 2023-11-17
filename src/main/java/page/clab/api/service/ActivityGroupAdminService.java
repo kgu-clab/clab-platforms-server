@@ -15,6 +15,7 @@ import page.clab.api.type.entity.GroupSchedule;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
+import page.clab.api.type.etc.GroupMemberStatus;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -58,6 +59,7 @@ public class ActivityGroupAdminService {
         activityGroupRepository.save(activityGroup);
         GroupMember groupLeader = GroupMember.of(member, activityGroup);
         groupLeader.setRole(ActivityGroupRole.LEADER);
+        groupLeader.setStatus(GroupMemberStatus.수락);
         groupMemberRepository.save(groupLeader);
     }
 
@@ -95,17 +97,6 @@ public class ActivityGroupAdminService {
         groupScheduleDto.stream()
                 .map(scheduleDto -> GroupSchedule.of(activityGroup, scheduleDto))
                 .forEach(groupSchedule -> groupScheduleRepository.save(groupSchedule));
-    }
-
-    public void createMemberAuthCode(Long activityGroupId, String code) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        GroupMember member = getGroupMemberByGroupIdAndRoleOrThrow(activityGroupId, ActivityGroupRole.LEADER);
-        if (!member.getMember().getId().equals(currentMember.getId())) {
-            throw new PermissionDeniedException("권한이 없습니다.");
-        }
-        activityGroup.setCode(code);
-        activityGroupRepository.save(activityGroup);
     }
 
     public List<ActivityGroup> getActivityGroupByStatus(ActivityGroupStatus status) {

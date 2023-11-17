@@ -54,8 +54,6 @@ public class ActivityGroup {
     @Range(min = 0, max = 100, message = "{range.activityGroup.progress}")
     private Long progress;
 
-    private String code;
-
     @URL(message = "{url.activityGroup.imageUrl}")
     private String imageUrl;
 
