@@ -69,6 +69,9 @@ dependencies {
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot Test
 	testImplementation 'org.springframework.security:spring-security-test' // Spring Security Test
+
+	// MacOs Spring Gateway DNS Resolver 에러 해결
+	implementation 'io.netty:netty-resolver-dns-native-macos:4.1.68.Final:osx-aarch_64'
 }
 
 tasks.named('test') {
