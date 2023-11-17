@@ -1,8 +1,6 @@
 package page.clab.api.type.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +8,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.type.entity.ActivityGroup;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.util.ModelMapperUtil;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Getter
 @Setter
@@ -20,9 +22,8 @@ import page.clab.api.util.ModelMapperUtil;
 public class ActivityGroupDto {
 
     @NotNull(message = "{notnull.activityGroup.category}")
-    @Size(min = 1, message = "{size.activityGroup.category}")
     @Schema(description = "카테고리", example = "스터디")
-    private String category;
+    private ActivityGroupCategory category;
 
     @NotNull(message = "{notnull.activityGroup.name}")
     @Size(min = 1, max = 30, message = "{size.activityGroup.name}")
