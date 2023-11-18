@@ -9,6 +9,7 @@ import page.clab.api.repository.GroupMemberRepository;
 import page.clab.api.repository.GroupScheduleRepository;
 import page.clab.api.type.dto.ActivityGroupDto;
 import page.clab.api.type.dto.GroupScheduleDto;
+import page.clab.api.type.dto.MemberResponseDto;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.GroupSchedule;
@@ -115,15 +116,31 @@ public class ActivityGroupAdminService {
 
     private GroupMember getGroupMemberByMemberOrThrow(Member member) {
         return groupMemberRepository.findByMember(member)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버입니다."));
+                .orElseThrow(() -> new NotFoundException("해당 그룹에 존재하지 않는 멤버입니다."));
     }
 
     public void checkMemberGroupLeaderRole() throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         GroupMember groupMember = getGroupMemberByMemberOrThrow(member);
-        if (groupMember.getRole() != ActivityGroupRole.LEADER || !memberService.isMemberAdminRole(member)) {
+        if (groupMember.getRole() != ActivityGroupRole.LEADER && !memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("권한이 부족합니다.");
         }
+    }
+
+    public List<MemberResponseDto> getApplyGroupMemberList (Long activityGroupId) throws PermissionDeniedException {
+        checkMemberGroupLeaderRole();
+        List<GroupMember> groupMemberList = groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.진행중);
+        return groupMemberList.stream()
+                .map(groupMember -> MemberResponseDto.of(groupMember.getMember()))
+                .collect(Collectors.toList());
+    }
+
+    public void manageGroupMemberStatus(String MemberId, GroupMemberStatus status) throws PermissionDeniedException {
+        checkMemberGroupLeaderRole();
+        Member member = memberService.getMemberByIdOrThrow(MemberId);
+        GroupMember groupMember = getGroupMemberByMemberOrThrow(member);
+        groupMember.setStatus(status);
+        groupMemberRepository.save(groupMember);
     }
 
 }

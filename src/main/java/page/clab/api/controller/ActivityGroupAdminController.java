@@ -2,8 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
@@ -21,8 +19,13 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.ActivityGroupAdminService;
 import page.clab.api.type.dto.ActivityGroupDto;
 import page.clab.api.type.dto.GroupScheduleDto;
+import page.clab.api.type.dto.MemberResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.etc.ActivityGroupStatus;
+import page.clab.api.type.etc.GroupMemberStatus;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/activity-group/admin")
@@ -121,13 +124,24 @@ public class ActivityGroupAdminController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 멤버 인증 코드 생성", description = "ROLE_USER 이상의 권한이 필요함")
-    @PostMapping("/auth")
-    public ResponseModel createMemberAuthCode(
-            @RequestParam Long activityGroupId,
-            @RequestParam String code
+    @Operation(summary = "[U] 신청 멤버 리스팅", description = "ROLE_USER 이상의 권한이 필요함")
+    @GetMapping("/apply-members")
+    public ResponseModel getApplyGroupMemberList(
+            @RequestParam Long activityGroupId
     ) throws PermissionDeniedException {
-        activityGroupAdminService.createMemberAuthCode(activityGroupId, code);
+        List<MemberResponseDto> applyMemberList = activityGroupAdminService.getApplyGroupMemberList(activityGroupId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(applyMemberList);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 신청 멤버 상태 변경", description = "ROLE_USER 이상의 권한이 필요함")
+    @PatchMapping("/accept")
+    public ResponseModel acceptGroupMember(
+            @RequestParam String MemberId,
+            @RequestParam GroupMemberStatus status
+    ) throws PermissionDeniedException {
+        activityGroupAdminService.manageGroupMemberStatus(MemberId, status);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }

@@ -38,7 +38,7 @@ public class GroupMember {
     @JoinColumn(name = "activity_group_id")
     private ActivityGroup activityGroup;
 
-    @Column(nullable = false)
+    @Column
     @Enumerated(EnumType.STRING)
     private ActivityGroupRole role;
 

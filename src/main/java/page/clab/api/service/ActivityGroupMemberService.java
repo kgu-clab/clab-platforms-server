@@ -12,7 +12,10 @@ import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.GroupSchedule;
+import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.ActivityGroupCategory;
+import page.clab.api.type.etc.ActivityGroupStatus;
+import page.clab.api.type.etc.GroupMemberStatus;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,6 +56,17 @@ public class ActivityGroupMemberService {
         return groupMembers.stream()
                 .map(GroupMemberDto::of)
                 .collect(Collectors.toList());
+    }
+
+    public void applyActivityGroup(Long activityGroupId){
+        Member member = memberService.getCurrentMember();
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        if (!activityGroup.getStatus().equals(ActivityGroupStatus.활동중)){
+            throw new NotFoundException("해당 활동은 진행중인 활동이 아닙니다.");
+        }
+        GroupMember groupMember = GroupMember.of(member, activityGroup);
+        groupMember.setStatus(GroupMemberStatus.진행중);
+        groupMemberRepository.save(groupMember);
     }
 
     private ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {

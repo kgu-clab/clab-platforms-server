@@ -72,13 +72,12 @@ public class ActivityGroupMemberController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 활동 멤버 인증", description = "ROLE_USER 이상의 권한이 필요함")
-    @PostMapping("/auth")
-    public ResponseModel authenticateActivityMember(
-            @RequestParam Long activityGroupId,
-            @RequestParam String code
+    @Operation(summary = "[U] 활동 신청", description = "ROLE_USER 이상의 권한이 필요함")
+    @PostMapping("/apply")
+    public ResponseModel applyActivityGroup(
+            @RequestParam Long activityGroupId
     ) {
-        activityGroupMemberService.authenticateActivityMember(activityGroupId, code);
+        activityGroupMemberService.applyActivityGroup(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
