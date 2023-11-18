@@ -140,6 +140,9 @@ public class ActivityGroupAdminService {
         Member member = memberService.getMemberByIdOrThrow(MemberId);
         GroupMember groupMember = getGroupMemberByMemberOrThrow(member);
         groupMember.setStatus(status);
+        if (status == GroupMemberStatus.수락) {
+            groupMember.setRole(ActivityGroupRole.MEMBER);
+        }
         groupMemberRepository.save(groupMember);
     }
 

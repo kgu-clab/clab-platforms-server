@@ -17,6 +17,7 @@ import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.etc.ActivityGroupCategory;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 @RestController
@@ -76,7 +77,7 @@ public class ActivityGroupMemberController {
     @PostMapping("/apply")
     public ResponseModel applyActivityGroup(
             @RequestParam Long activityGroupId
-    ) {
+    ) throws MessagingException {
         activityGroupMemberService.applyActivityGroup(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
