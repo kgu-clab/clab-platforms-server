@@ -1,113 +1,118 @@
 package page.clab.api.service;
 
+import java.util.List;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import page.clab.api.exception.NotFoundException;
+import page.clab.api.exception.PermissionDeniedException;
+import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.AccuseRepository;
 import page.clab.api.type.dto.AccuseRequestDto;
 import page.clab.api.type.dto.AccuseResponseDto;
 import page.clab.api.type.entity.Accuse;
-import page.clab.api.type.entity.Blog;
-import page.clab.api.type.entity.Board;
-import page.clab.api.type.entity.Comment;
-import page.clab.api.type.entity.News;
-import page.clab.api.type.entity.Review;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.AccuseStatus;
+import page.clab.api.type.etc.TargetType;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AccuseService {
+
+    private final MemberService memberService;
 
     private final BoardService boardService;
 
     private final CommentService commentService;
 
-    private final BlogService blogService;
-
-    private final NewsService newsService;
-
     private final ReviewService reviewService;
-
-    private final MemberService memberService;
 
     private final AccuseRepository accuseRepository;
 
-    public List<AccuseResponseDto> getAccuses() {
-        List<Accuse> accuses = accuseRepository.findAll();
-        return accuses.stream()
-                .map(AccuseResponseDto::of)
-                .collect(Collectors.toList());
+    @Transactional
+    public void createAccuse(AccuseRequestDto accuseRequestDto) {
+        if (accuseRequestDto.getTargetType() == TargetType.BOARD) {
+            boardService.getBoardByIdOrThrow(accuseRequestDto.getTargetId());
+        } else if (accuseRequestDto.getTargetType() == TargetType.COMMENT) {
+            commentService.getCommentByIdOrThrow(accuseRequestDto.getTargetId());
+        } else if (accuseRequestDto.getTargetType() == TargetType.REVIEW) {
+            reviewService.getReviewByIdOrThrow(accuseRequestDto.getTargetId());
+        } else {
+            throw new IllegalArgumentException("신고 대상 유형이 올바르지 않습니다.");
+        }
+        Member member = memberService.getCurrentMember();
+        Accuse existingAccuse = getAccuseByMemberAndTargetTypeAndTargetId(member, accuseRequestDto);
+        if (existingAccuse != null) {
+            existingAccuse.setReason(accuseRequestDto.getReason());
+            log.info("existingAccuse : {}", existingAccuse);
+            accuseRepository.save(existingAccuse);
+        } else {
+            Accuse accuse = Accuse.of(accuseRequestDto);
+            accuse.setMember(member);
+            accuse.setAccuseStatus(AccuseStatus.PENDING);
+            log.info("Accuse : {}", accuse);
+            accuseRepository.save(accuse);
+        }
     }
 
-    public List<AccuseResponseDto> getAccuseByTargetId(Long targetId, String category) {
-        List<Accuse> accuses = findAllByTargetIdAndCategory(targetId, category);
-        return accuses.stream()
-                .map(AccuseResponseDto::of)
-                .collect(Collectors.toList());
+    public List<AccuseResponseDto> getAccuses(Pageable pageable) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
+        if (!memberService.isMemberAdminRole(member)) {
+            throw new PermissionDeniedException("해당 신고 내역을 수정할 권한이 없습니다.");
+        }
+        Page<Accuse> accuses = accuseRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return accuses.map(AccuseResponseDto::of).getContent();
     }
 
-    public void deleteAccuse(Long targetId, String category) {
-        List<Accuse> accuse = findAllByTargetIdAndCategory(targetId, category);
-        accuseRepository.deleteAll(accuse);
+    public List<AccuseResponseDto> searchAccuse(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
+        if (!memberService.isMemberAdminRole(member)) {
+            throw new PermissionDeniedException("해당 신고 내역을 수정할 권한이 없습니다.");
+        }
+        Page<Accuse> accuses;
+        if (targetType != null) {
+            accuses = getAccuseByTargetType(targetType, pageable);
+        } else if (accuseStatus != null) {
+            accuses = getAccuseByAccuseStatus(accuseStatus, pageable);
+        } else {
+            throw new IllegalArgumentException("적어도 accuseType, accuseStatus 중 하나를 제공해야 합니다.");
+        }
+        if (accuses.isEmpty()) {
+            throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
+        }
+        return accuses.map(AccuseResponseDto::of).getContent();
     }
 
-    public void memberAccuse(String memberId, AccuseRequestDto accuseRequestDto) {
-        memberService.getMemberByIdOrThrow(memberId);
-        Accuse accuse = Accuse.of(Long.parseLong(memberId));
-        accuse.setCategory("member");
-        accuse.setDescription(accuseRequestDto.getDescription());
+    public void updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
+        if (!memberService.isMemberAdminRole(member)) {
+            throw new PermissionDeniedException("해당 신고 내역을 수정할 권한이 없습니다.");
+        }
+        Accuse accuse = getAccuseByIdOrThrow(accuseId);
+        accuse.setAccuseStatus(accuseStatus);
         accuseRepository.save(accuse);
     }
 
-    public void boardAccuse(Long boardId, AccuseRequestDto accuseRequestDto) {
-        Board board = boardService.getBoardByIdOrThrow(boardId);
-        Accuse accuse = Accuse.of(boardId);
-        accuse.setCategory("board");
-        accuse.setDescription(accuseRequestDto.getDescription());
-        accuse.setContent(board.getContent());
-        accuseRepository.save(accuse);
+    private Accuse getAccuseByIdOrThrow(Long accuseId) {
+        return accuseRepository.findById(accuseId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 신고입니다."));
     }
 
-    public void commentAccuse(Long commentId, AccuseRequestDto accuseRequestDto){
-        Comment comment = commentService.getCommentByIdOrThrow(commentId);
-        Accuse accuse = Accuse.of(commentId);
-        accuse.setCategory("comment");
-        accuse.setDescription(accuseRequestDto.getDescription());
-        accuse.setContent(comment.getContent());
-        accuseRepository.save(accuse);
-
+    private Page<Accuse> getAccuseByTargetType(TargetType targetType, Pageable pageable) {
+        return accuseRepository.findAllByTargetTypeOrderByCreatedAtDesc(targetType, pageable);
     }
 
-    public void blogAccuse(Long blogId, AccuseRequestDto accuseRequestDto){
-        Blog blog = blogService.getBlogByIdOrThrow(blogId);
-        Accuse accuse = Accuse.of(blogId);
-        accuse.setCategory("blog");
-        accuse.setDescription(accuseRequestDto.getDescription());
-        accuse.setContent(blog.getContent());
-        accuseRepository.save(accuse);
+    private Page<Accuse> getAccuseByAccuseStatus(AccuseStatus accuseStatus, Pageable pageable) {
+        return accuseRepository.findAllByAccuseStatusOrderByCreatedAtDesc(accuseStatus, pageable);
     }
 
-    public void newsAccuse(Long newsId, AccuseRequestDto accuseRequestDto){
-        News news = newsService.getNewsByIdOrThrow(newsId);
-        Accuse accuse = Accuse.of(newsId);
-        accuse.setCategory("news");
-        accuse.setDescription(accuseRequestDto.getDescription());
-        accuse.setContent(news.getContent());
-        accuseRepository.save(accuse);
-    }
-
-    public void reviewAccuse(Long reviewId, AccuseRequestDto accuseRequestDto){
-        Review review = reviewService.getReviewByIdOrThrow(reviewId);
-        Accuse accuse = Accuse.of(reviewId);
-        accuse.setCategory("review");
-        accuse.setDescription(accuseRequestDto.getDescription());
-        accuse.setContent(review.getContent());
-        accuseRepository.save(accuse);
-    }
-
-    private List<Accuse> findAllByTargetIdAndCategory(Long targetId, String category) {
-        return accuseRepository.findAllByTargetIdAndCategory(targetId, category);
+    private Accuse getAccuseByMemberAndTargetTypeAndTargetId(Member member, AccuseRequestDto accuseRequestDto) {
+        return accuseRepository.findByMemberAndTargetTypeAndTargetId(member, accuseRequestDto.getTargetType(), accuseRequestDto.getTargetId())
+                .orElse(null);
     }
 
 }

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum AccuseType {
+public enum TargetType {
 
     BOARD("BOARD", "게시글"),
     COMMENT("COMMENT", "댓글"),

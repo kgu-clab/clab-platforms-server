@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.entity.Accuse;
 import page.clab.api.type.etc.AccuseStatus;
-import page.clab.api.type.etc.AccuseType;
+import page.clab.api.type.etc.TargetType;
 import page.clab.api.util.ModelMapperUtil;
 
 @Getter
@@ -22,7 +22,7 @@ public class AccuseResponseDto {
 
     private String name;
 
-    private AccuseType accuseType;
+    private TargetType targetType;
 
     private Long targetId;
 
@@ -30,7 +30,7 @@ public class AccuseResponseDto {
 
     private AccuseStatus accuseStatus;
 
-    private LocalDateTime accusedAt;
+    private LocalDateTime createdAt;
 
     public static AccuseResponseDto of(Accuse accuse) {
         AccuseResponseDto accuseResponseDto = ModelMapperUtil.getModelMapper().map(accuse, AccuseResponseDto.class);

@@ -1,19 +1,24 @@
 package page.clab.api.repository;
 
+import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import page.clab.api.type.entity.Accuse;
-
-import java.util.List;
-import java.util.Optional;
+import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.AccuseStatus;
+import page.clab.api.type.etc.TargetType;
 
 @Repository
 public interface AccuseRepository extends JpaRepository<Accuse, Long> {
 
-    Optional<Accuse> findByTargetId(Long targetId);
+    Page<Accuse> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    List<Accuse> findAllByTargetId(Long targetId);
+    Page<Accuse> findAllByTargetTypeOrderByCreatedAtDesc(TargetType targetType, Pageable pageable);
 
-    List<Accuse> findAllByTargetIdAndCategory(Long targetId, String category);
-    
+    Page<Accuse> findAllByAccuseStatusOrderByCreatedAtDesc(AccuseStatus accuseStatus, Pageable pageable);
+
+    Optional<Accuse> findByMemberAndTargetTypeAndTargetId(Member member, TargetType targetType, Long targetId);
+
 }
