@@ -3,7 +3,6 @@ package page.clab.api.service;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -57,9 +56,7 @@ public class BoardService {
         if (boards.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return boards.stream()
-                .map(BoardResonseDto::of)
-                .collect(Collectors.toList());
+        return boards.map(BoardResonseDto::of).getContent();
     }
 
     public void updateBoard(Long boardId, BoardRequestDto boardRequestDto) throws PermissionDeniedException {
