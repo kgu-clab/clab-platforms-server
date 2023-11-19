@@ -1,10 +1,12 @@
 package page.clab.api.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
@@ -32,30 +34,27 @@ public class NewsService {
         newsRepository.save(news);
     }
 
-    public List<NewsResponseDto> getNews() {
-        List<News> news = newsRepository.findAll();
-        return news.stream()
-                .map(NewsResponseDto::of)
-                .collect(Collectors.toList());
+    public List<NewsResponseDto> getNews(Pageable pageable) {
+        Page<News> news = newsRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return news.map(NewsResponseDto::of).getContent();
     }
 
-    public List<NewsResponseDto> searchNews(Long newsId, String category, String title) {
-        List<News> news = new ArrayList<>();
+    public List<NewsResponseDto> searchNews(Long newsId, String category, String title, Pageable pageable) {
+        Page<News> news;
         if (newsId != null) {
-            news.add(getNewsByIdOrThrow(newsId));
+            News singleNews = getNewsByIdOrThrow(newsId);
+            news = new PageImpl<>(Arrays.asList(singleNews), pageable, 1);
         } else if (category != null) {
-            news.addAll(getNewsByCategory(category));
+            news = getNewsByCategoryContaining(category, pageable);
         } else if (title != null) {
-            news.addAll(getNewsByTitle(title));
+            news = getNewsByTitleContaining(title, pageable);
         } else {
             throw new IllegalArgumentException("적어도 newsId, category, title 중 하나를 제공해야 합니다.");
         }
         if (news.isEmpty()) {
-            throw new SearchResultNotExistException();
+            throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return news.stream()
-                .map(NewsResponseDto::of)
-                .collect(Collectors.toList());
+        return news.map(NewsResponseDto::of).getContent();
     }
 
     public void updateNews(Long newsId, NewsRequestDto newsRequestDto) throws PermissionDeniedException {
@@ -85,12 +84,12 @@ public class NewsService {
                 .orElseThrow(() -> new NotFoundException("해당 뉴스가 존재하지 않습니다."));
     }
 
-    private List<News> getNewsByCategory(String category) {
-        return newsRepository.findByCategoryContaining(category);
+    private Page<News> getNewsByCategoryContaining(String category, Pageable pageable) {
+        return newsRepository.findByCategoryContainingOrderByCreatedAtDesc(category, pageable);
     }
 
-    private List<News> getNewsByTitle(String title) {
-        return newsRepository.findByTitleContaining(title);
+    private Page<News> getNewsByTitleContaining(String title, Pageable pageable) {
+        return newsRepository.findByTitleContainingOrderByCreatedAtDesc(title, pageable);
     }
 
 }

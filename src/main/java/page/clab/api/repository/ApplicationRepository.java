@@ -1,17 +1,17 @@
 package page.clab.api.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import page.clab.api.type.entity.Application;
-
 import java.time.LocalDateTime;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import page.clab.api.type.entity.Application;
 
 public interface ApplicationRepository extends JpaRepository<Application, String> {
 
-    @Query("SELECT a FROM Application a WHERE a.updateTime >= :startDate AND a.updateTime <= :endDate")
-    List<Application> findApplicationsBetweenDates(LocalDateTime startDate, LocalDateTime endDate);
+    Page<Application> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    List<Application> findAllByIsPass(boolean isPass);
+    Page<Application> findAllByUpdateTimeBetweenOrderByCreatedAtDesc(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+
+    Page<Application> findAllByIsPassOrderByCreatedAtDesc(boolean isPass, Pageable pageable);
 
 }
