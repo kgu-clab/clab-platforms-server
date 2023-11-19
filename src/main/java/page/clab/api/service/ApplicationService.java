@@ -35,7 +35,7 @@ public class ApplicationService {
 
     public List<ApplicationResponseDto> getApplications(Pageable pageable) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
-        Page<Application> applications = applicationRepository.findAll(pageable);
+        Page<Application> applications = applicationRepository.findAllByOrderByCreatedAtDesc(pageable);
         return applications.map(ApplicationResponseDto::of).getContent();
     }
 
@@ -109,11 +109,11 @@ public class ApplicationService {
     }
 
     private Page<Application> getApplicationByUpdateTimeBetween(Pageable pageable, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return applicationRepository.findAllByUpdateTimeBetween(startDateTime, endDateTime, pageable);
+        return applicationRepository.findAllByUpdateTimeBetweenOrderByCreatedAtDesc(startDateTime, endDateTime, pageable);
     }
 
     private Page<Application> getApplicationByIsPass(Pageable pageable) {
-        return applicationRepository.findAllByIsPass(true, pageable);
+        return applicationRepository.findAllByIsPassOrderByCreatedAtDesc(true, pageable);
     }
 
 }

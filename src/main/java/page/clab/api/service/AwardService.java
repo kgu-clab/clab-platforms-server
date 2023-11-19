@@ -23,8 +23,8 @@ public class AwardService {
     private final AwardRepository awardRepository;
 
     public void createAward(AwardRequestDto awardRequestDto) {
-        Award award = Award.of(awardRequestDto);
         Member member = memberService.getCurrentMember();
+        Award award = Award.of(awardRequestDto);
         award.setMember(member);
         awardRepository.save(award);
     }
@@ -68,7 +68,7 @@ public class AwardService {
     }
 
     private Page<Award> getAwardByMember(Pageable pageable, Member member) {
-        return awardRepository.findAllByMember(member, pageable);
+        return awardRepository.findAllByMemberOrderByAwardDateDesc(member, pageable);
     }
 
 }

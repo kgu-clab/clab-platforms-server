@@ -7,6 +7,8 @@ import page.clab.api.type.entity.MembershipFee;
 
 public interface MembershipFeeRepository extends JpaRepository<MembershipFee, Long> {
 
-    Page<MembershipFee> findByCategory(String category, Pageable pageable);
+    Page<MembershipFee> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    Page<MembershipFee> findByCategoryOrderByCreatedAtDesc(String category, Pageable pageable);
 
 }

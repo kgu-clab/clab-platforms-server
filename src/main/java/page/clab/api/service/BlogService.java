@@ -42,7 +42,7 @@ public class BlogService {
     }
 
     public List<BlogResponseDto> getBlogs(Pageable pageable) {
-        Page<Blog> blogs = blogRepository.findAll(pageable);
+        Page<Blog> blogs = blogRepository.findAllByOrderByCreatedAtDesc(pageable);
         return blogs.map(BlogResponseDto::of).getContent();
     }
 
@@ -62,6 +62,7 @@ public class BlogService {
             ));
         }
         criteriaQuery.select(root).where(predicates.toArray(new Predicate[0]));
+        criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createdAt")));
         TypedQuery<Blog> query = entityManager.createQuery(criteriaQuery);
         List<Blog> blogs = query.getResultList();
         Set<Blog> uniqueBlogs = new LinkedHashSet<>(blogs);

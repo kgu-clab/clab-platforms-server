@@ -61,7 +61,7 @@ public class MemberService {
 
     public List<MemberResponseDto> getMembers(Pageable pageable) throws PermissionDeniedException {
         checkMemberAdminRole();
-        Page<Member> members = memberRepository.findAll(pageable);
+        Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
         return members.map(MemberResponseDto::of).getContent();
     }
 
@@ -108,7 +108,7 @@ public class MemberService {
 
     public List<CloudUsageInfo> getAllCloudUsages(Pageable pageable) throws PermissionDeniedException {
         checkMemberAdminRole();
-        Page<Member> members = memberRepository.findAll(pageable);
+        Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
         return members.map(member -> getCloudUsageByMemberId(member.getId())).getContent();
     }
 
@@ -164,10 +164,10 @@ public class MemberService {
     }
 
     public boolean isMemberAdminRole(Member member) {
-        if (member.getRole().equals(Role.USER)) {
-            return false;
+        if (!member.getRole().equals(Role.USER)) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     public Member getMemberById(String memberId) {
@@ -181,11 +181,11 @@ public class MemberService {
     }
 
     public Page<Member> getMemberByName(String name, Pageable pageable) {
-        return memberRepository.findAllByName(name, pageable);
+        return memberRepository.findAllByNameOrderByCreatedAtDesc(name, pageable);
     }
 
     public Page<Member> getMemberByMemberStatus(MemberStatus memberStatus, Pageable pageable) {
-        return memberRepository.findByMemberStatus(memberStatus, pageable);
+        return memberRepository.findByMemberStatusOrderByCreatedAtDesc(memberStatus, pageable);
     }
 
     public Member saveMember(Member updatedMember) {

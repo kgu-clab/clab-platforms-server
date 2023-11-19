@@ -10,8 +10,10 @@ import page.clab.api.type.entity.Member;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    Page<Board> findAllByMember(Member member, Pageable pageable);
+    Page<Board> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    Page<Board> findAllByCategory(String category, Pageable pageable);
+    Page<Board> findAllByMemberOrderByCreatedAtDesc(Member member, Pageable pageable);
+
+    Page<Board> findAllByCategoryOrderByCreatedAtDesc(String category, Pageable pageable);
 
 }

@@ -33,27 +33,27 @@ public class ReviewService {
     }
 
     public List<ReviewResponseDto> getReviews(Pageable pageable) {
-        Page<Review> reviews = reviewRepository.findAll(pageable);
+        Page<Review> reviews = reviewRepository.findAllByOrderByCreatedAtDesc(pageable);
         return reviews.map(ReviewResponseDto::of).getContent();
     }
 
     public List<ReviewResponseDto> getMyReviews(Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        Page<Review> reviews = reviewRepository.findAllByMember(member, pageable);
+        Page<Review> reviews = getReviewByMember(pageable, member);
         return reviews.map(ReviewResponseDto::of).getContent();
     }
 
     public List<ReviewResponseDto> getPublicReview(Pageable pageable) {
-        Page<Review> reviews = reviewRepository.findAllByIsPublic(true, pageable);
+        Page<Review> reviews = getReviewByIsPublic(pageable);
         return reviews.map(ReviewResponseDto::of).getContent();
     }
 
     public List<ReviewResponseDto> searchReview(String memberId, String name, Pageable pageable) {
         Page<Review> reviews;
         if (memberId != null) {
-            reviews = reviewRepository.findAllByMember_Id(memberId, pageable);
+            reviews = getReviewByMemberId(memberId, pageable);
         } else if (name != null) {
-            reviews = reviewRepository.findAllByMember_Name(name, pageable);
+            reviews = getReviewByMemberName(name, pageable);
         } else {
             throw new IllegalArgumentException("적어도 memberId, name 중 하나를 제공해야 합니다.");
         }
@@ -65,8 +65,6 @@ public class ReviewService {
 
     public void updateReview(Long reviewId, ReviewUpdateRequestDto reviewUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        log.info("member.getId(): {}", member.getId());
-        log.info("reviewUpdateRequestDto.getMemberId(): {}", reviewUpdateRequestDto.getMemberId());
         if (!member.getId().equals(reviewUpdateRequestDto.getMemberId())) {
             throw new PermissionDeniedException("해당 리뷰를 수정할 권한이 없습니다.");
         }
@@ -100,6 +98,22 @@ public class ReviewService {
     private Review getReviewByIdOrThrow(Long reviewId) {
         return reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException("해당 리뷰가 없습니다."));
+    }
+
+    private Page<Review> getReviewByMember(Pageable pageable, Member member) {
+        return reviewRepository.findAllByMemberOrderByCreatedAtDesc(member, pageable);
+    }
+
+    private Page<Review> getReviewByIsPublic(Pageable pageable) {
+        return reviewRepository.findAllByIsPublicOrderByCreatedAtDesc(true, pageable);
+    }
+
+    private Page<Review> getReviewByMemberId(String memberId, Pageable pageable) {
+        return reviewRepository.findAllByMember_IdOrderByCreatedAtDesc(memberId, pageable);
+    }
+
+    private Page<Review> getReviewByMemberName(String name, Pageable pageable) {
+        return reviewRepository.findAllByMember_NameOrderByCreatedAtDesc(name, pageable);
     }
 
 }

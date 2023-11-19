@@ -9,10 +9,12 @@ import page.clab.api.type.entity.Member;
 
 public interface DonationRepository extends JpaRepository<Donation, Long> {
 
-    Page<Donation> findByDonor_Id(String memberId, Pageable pageable);
+    Page<Donation> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    Page<Donation> findByDonor_Name(String name, Pageable pageable);
+    Page<Donation> findByDonor_IdOrderByCreatedAtDesc(String memberId, Pageable pageable);
 
-    Page<Donation> findByDonor(Member member, Pageable pageable);
+    Page<Donation> findByDonor_NameOrderByCreatedAtDesc(String name, Pageable pageable);
+
+    Page<Donation> findByDonorOrderByCreatedAtDesc(Member member, Pageable pageable);
 
 }

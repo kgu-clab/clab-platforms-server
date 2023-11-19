@@ -35,7 +35,7 @@ public class NewsService {
     }
 
     public List<NewsResponseDto> getNews(Pageable pageable) {
-        Page<News> news = newsRepository.findAll(pageable);
+        Page<News> news = newsRepository.findAllByOrderByCreatedAtDesc(pageable);
         return news.map(NewsResponseDto::of).getContent();
     }
 
@@ -85,11 +85,11 @@ public class NewsService {
     }
 
     private Page<News> getNewsByCategoryContaining(String category, Pageable pageable) {
-        return newsRepository.findByCategoryContaining(category, pageable);
+        return newsRepository.findByCategoryContainingOrderByCreatedAtDesc(category, pageable);
     }
 
     private Page<News> getNewsByTitleContaining(String title, Pageable pageable) {
-        return newsRepository.findByTitleContaining(title, pageable);
+        return newsRepository.findByTitleContainingOrderByCreatedAtDesc(title, pageable);
     }
 
 }

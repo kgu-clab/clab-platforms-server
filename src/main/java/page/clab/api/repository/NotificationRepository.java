@@ -8,6 +8,6 @@ import page.clab.api.type.entity.Notification;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    Page<Notification> findByMember(Member member, Pageable pageable);
+    Page<Notification> findByMemberOrderByCreatedAtDesc(Member member, Pageable pageable);
 
 }

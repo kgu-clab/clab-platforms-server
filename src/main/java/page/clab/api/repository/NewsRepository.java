@@ -10,8 +10,10 @@ import page.clab.api.type.entity.News;
 @Repository
 public interface NewsRepository  extends JpaRepository<News, Long> {
 
-    Page<News> findByCategoryContaining(String category, Pageable pageable);
+    Page<News> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    Page<News> findByTitleContaining(String title, Pageable pageable);
-    
+    Page<News> findByCategoryContainingOrderByCreatedAtDesc(String category, Pageable pageable);
+
+    Page<News> findByTitleContainingOrderByCreatedAtDesc(String title, Pageable pageable);
+
 }

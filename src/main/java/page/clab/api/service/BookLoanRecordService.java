@@ -127,7 +127,7 @@ public class BookLoanRecordService {
     }
 
     public List<BookLoanRecordResponseDto> getBookLoanRecords(Pageable pageable) {
-        Page<BookLoanRecord> bookLoanRecords = bookLoanRecordRepository.findAll(pageable);
+        Page<BookLoanRecord> bookLoanRecords = bookLoanRecordRepository.findAllByOrderByBorrowedAtDesc(pageable);
         return bookLoanRecords.map(BookLoanRecordResponseDto::of).getContent();
     }
 
@@ -159,19 +159,19 @@ public class BookLoanRecordService {
     }
 
     private Page<BookLoanRecord> getBookLoanRecordByBookId(Long bookId, Pageable pageable) {
-        return bookLoanRecordRepository.findByBook_Id(bookId, pageable);
+        return bookLoanRecordRepository.findByBook_IdOrderByBorrowedAtDesc(bookId, pageable);
     }
 
     private Page<BookLoanRecord> getBookLoanRecordByBorrowerId(String borrowerId, Pageable pageable) {
-        return bookLoanRecordRepository.findByBorrower_Id(borrowerId, pageable);
+        return bookLoanRecordRepository.findByBorrower_IdOrderByBorrowedAtDesc(borrowerId, pageable);
     }
 
     private Page<BookLoanRecord> getBookLoanRecordByBookIdAndBorrowerId(Long bookId, String borrowerId, Pageable pageable) {
-        return bookLoanRecordRepository.findByBook_IdAndBorrower_Id(bookId, borrowerId, pageable);
+        return bookLoanRecordRepository.findByBook_IdAndBorrower_IdOrderByBorrowedAtDesc(bookId, borrowerId, pageable);
     }
 
     private Page<BookLoanRecord> getBookLoanRecordByReturnedAtIsNull(Pageable pageable) {
-        return bookLoanRecordRepository.findByReturnedAtIsNull(pageable);
+        return bookLoanRecordRepository.findByReturnedAtIsNullOrderByBorrowedAtDesc(pageable);
     }
 
 }
