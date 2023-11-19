@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.entity.Accuse;
+import page.clab.api.type.etc.AccuseType;
 import page.clab.api.util.ModelMapperUtil;
 
 @Getter
@@ -15,9 +16,11 @@ import page.clab.api.util.ModelMapperUtil;
 @Builder
 public class AccuseRequestDto {
 
-    private String content;
+    private AccuseType accuseType;
 
-    private String description;
+    private Long targetId;
+
+    private String reason;
 
     public static AccuseRequestDto of(Accuse accuse){
         return ModelMapperUtil.getModelMapper().map(accuse, AccuseRequestDto.class);
