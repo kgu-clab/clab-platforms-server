@@ -6,6 +6,8 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -49,8 +51,12 @@ public class WorkExperienceController {
     @Operation(summary = "[U] 나의 경력사항 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌")
     @GetMapping("")
-    public ResponseModel getMyWorkExperience() {
-        List<WorkExperienceResponseDto> workExperienceResponseDtos = workExperienceService.getMyWorkExperience();
+    public ResponseModel getMyWorkExperience(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<WorkExperienceResponseDto> workExperienceResponseDtos = workExperienceService.getMyWorkExperience(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(workExperienceResponseDtos);
         return responseModel;
@@ -60,9 +66,12 @@ public class WorkExperienceController {
             "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌")
     @GetMapping("/search")
     public ResponseModel searchWorkExperience(
-            @RequestParam String memberId
+            @RequestParam String memberId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<WorkExperienceResponseDto> workExperienceResponseDtos = workExperienceService.searchWorkExperience(memberId);
+        Pageable pageable = PageRequest.of(page, size);
+        List<WorkExperienceResponseDto> workExperienceResponseDtos = workExperienceService.searchWorkExperience(memberId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(workExperienceResponseDtos);
         return responseModel;

@@ -1,6 +1,11 @@
 package page.clab.api.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.LoginAttemptLogRepository;
@@ -10,11 +15,6 @@ import page.clab.api.type.entity.LoginAttemptLog;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.LoginAttemptResult;
 import page.clab.api.util.GeoIpUtil;
-
-import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,16 +37,18 @@ public class LoginAttemptLogService {
         loginAttemptLogRepository.save(loginAttemptLog);
     }
 
-    public List<LoginAttemptLogResponseDto> getLoginAttemptLogs(String memberId) throws PermissionDeniedException {
+    public List<LoginAttemptLogResponseDto> getLoginAttemptLogs(String memberId, Pageable pageable) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(currentMember)) {
             throw new PermissionDeniedException("관리자만 조회할 수 있습니다.");
         }
         Member member = memberService.getMemberByIdOrThrow(memberId);
-        List<LoginAttemptLog> loginAttemptLogs = loginAttemptLogRepository.findAllByMember(member);
-        return loginAttemptLogs.stream()
-                .map(LoginAttemptLogResponseDto::of)
-                .collect(Collectors.toList());
+        Page<LoginAttemptLog> loginAttemptLogs = getLoginAttemptByMember(pageable, member);
+        return loginAttemptLogs.map(LoginAttemptLogResponseDto::of).getContent();
+    }
+
+    private Page<LoginAttemptLog> getLoginAttemptByMember(Pageable pageable, Member member) {
+        return loginAttemptLogRepository.findAllByMemberOrderByLoginAttemptTimeDesc(member, pageable);
     }
 
 }

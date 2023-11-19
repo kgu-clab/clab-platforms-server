@@ -1,14 +1,15 @@
 package page.clab.api.service;
 
+import java.util.List;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.BlacklistIpRepository;
 import page.clab.api.type.entity.BlacklistIp;
-
-import javax.transaction.Transactional;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +31,10 @@ public class BlacklistService {
         }
     }
 
-    public List<BlacklistIp> getBlacklistedIps() throws PermissionDeniedException {
+    public List<BlacklistIp> getBlacklistedIps(Pageable pageable) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
-        List<BlacklistIp> blacklistedIps = blacklistIpRepository.findAll();
-        return blacklistedIps;
+        Page<BlacklistIp> blacklistedIps = blacklistIpRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return blacklistedIps.getContent();
     }
 
     @Transactional

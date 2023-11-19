@@ -6,6 +6,8 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,8 +50,12 @@ public class BoardController {
 
     @GetMapping("")
     @Operation(summary = "[U] 커뮤니티 게시판 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    public ResponseModel getBoards() {
-        List<BoardResonseDto> boards = boardService.getBoards();
+    public ResponseModel getBoards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<BoardResonseDto> boards = boardService.getBoards(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boards);
         return responseModel;
@@ -57,8 +63,12 @@ public class BoardController {
 
     @GetMapping("/my-boards")
     @Operation(summary = "[U] 내가 쓴 커뮤니티 게시글 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    public ResponseModel getMyBoards() {
-        List<BoardResonseDto> board = boardService.getMyBoards();
+    public ResponseModel getMyBoards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<BoardResonseDto> board = boardService.getMyBoards(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(board);
         return responseModel;
@@ -69,9 +79,12 @@ public class BoardController {
             "게시판 ID, 카테고리를 기준으로 검색")
     public ResponseModel searchBoards(
             @RequestParam(required = false) Long boardId,
-            @RequestParam(required = false) String category
+            @RequestParam(required = false) String category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<BoardResonseDto> boards = boardService.searchBoards(boardId, category);
+        Pageable pageable = PageRequest.of(page, size);
+        List<BoardResonseDto> boards = boardService.searchBoards(boardId, category, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boards);
         return responseModel;

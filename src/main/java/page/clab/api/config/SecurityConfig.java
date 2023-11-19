@@ -68,7 +68,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers(PERMIT_ALL).permitAll()
                 .antMatchers(HttpMethod.POST, "/applications").permitAll()
-                .antMatchers("/applications/filter", "/applications/pass", "/applications/search").hasAnyRole("ADMIN", "SUPER")
+                .antMatchers("/applications/filter", "/applications/pass", "/applications/search").hasAnyAuthority("ADMIN", "SUPER")
                 .antMatchers(HttpMethod.GET, "/applications/{applicationId}").permitAll()
                 .antMatchers(HttpMethod.GET, "/recruitments").permitAll()
                 .antMatchers(SWAGGER_PATTERNS).hasRole("SWAGGER")
