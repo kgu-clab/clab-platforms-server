@@ -1,7 +1,10 @@
 package page.clab.api.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
@@ -12,10 +15,6 @@ import page.clab.api.type.dto.ReviewResponseDto;
 import page.clab.api.type.dto.ReviewUpdateRequestDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.Review;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,43 +32,35 @@ public class ReviewService {
         reviewRepository.save(review);
     }
 
-    public List<ReviewResponseDto> getReviews() {
-        List<Review> reviews = reviewRepository.findAll();
-        return reviews.stream()
-                .map(ReviewResponseDto::of)
-                .collect(Collectors.toList());
+    public List<ReviewResponseDto> getReviews(Pageable pageable) {
+        Page<Review> reviews = reviewRepository.findAll(pageable);
+        return reviews.map(ReviewResponseDto::of).getContent();
     }
 
-    public List<ReviewResponseDto> getMyReviews() {
+    public List<ReviewResponseDto> getMyReviews(Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        List<Review> reviews = reviewRepository.findAllByMember(member);
-        return reviews.stream()
-                .map(ReviewResponseDto::of)
-                .collect(Collectors.toList());
+        Page<Review> reviews = reviewRepository.findAllByMember(member, pageable);
+        return reviews.map(ReviewResponseDto::of).getContent();
     }
 
-    public List<ReviewResponseDto> getPublicReview() {
-        List<Review> reviews = reviewRepository.findAllByIsPublic(true);
-        return reviews.stream()
-                .map(ReviewResponseDto::of)
-                .collect(Collectors.toList());
+    public List<ReviewResponseDto> getPublicReview(Pageable pageable) {
+        Page<Review> reviews = reviewRepository.findAllByIsPublic(true, pageable);
+        return reviews.map(ReviewResponseDto::of).getContent();
     }
 
-    public List<ReviewResponseDto> searchReview(String memberId, String name) {
-        List<Review> reviews = new ArrayList<>();
+    public List<ReviewResponseDto> searchReview(String memberId, String name, Pageable pageable) {
+        Page<Review> reviews;
         if (memberId != null) {
-            reviews.addAll(reviewRepository.findAllByMember_Id(memberId));
+            reviews = reviewRepository.findAllByMember_Id(memberId, pageable);
         } else if (name != null) {
-            reviews.addAll(reviewRepository.findAllByMember_Name(name));
+            reviews = reviewRepository.findAllByMember_Name(name, pageable);
         } else {
             throw new IllegalArgumentException("적어도 memberId, name 중 하나를 제공해야 합니다.");
         }
         if (reviews.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return reviews.stream()
-                .map(ReviewResponseDto::of)
-                .collect(Collectors.toList());
+        return reviews.map(ReviewResponseDto::of).getContent();
     }
 
     public void updateReview(Long reviewId, ReviewUpdateRequestDto reviewUpdateRequestDto) throws PermissionDeniedException {

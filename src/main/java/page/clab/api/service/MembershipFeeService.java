@@ -1,9 +1,9 @@
 package page.clab.api.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
@@ -29,22 +29,18 @@ public class MembershipFeeService {
         membershipFeeRepository.save(membershipFee);
     }
 
-    public List<MembershipFeeResponseDto> getMembershipFees() {
-        List<MembershipFee> membershipFees = membershipFeeRepository.findAll();
-        return membershipFees.stream()
-                .map(MembershipFeeResponseDto::of)
-                .collect(Collectors.toList());
+    public List<MembershipFeeResponseDto> getMembershipFees(Pageable pageable) {
+        Page<MembershipFee> membershipFees = membershipFeeRepository.findAll(pageable);
+        return membershipFees.map(MembershipFeeResponseDto::of).getContent();
     }
 
-    public List<MembershipFeeResponseDto> searchMembershipFee(String category) {
-        List<MembershipFee> membershipFees = new ArrayList<>();
-        membershipFees = getMembershipFeeByCateroty(category);
+    public List<MembershipFeeResponseDto> searchMembershipFee(String category, Pageable pageable) {
+        Page<MembershipFee> membershipFees;
+        membershipFees = getMembershipFeeByCateroty(category, pageable);
         if (membershipFees.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return membershipFees.stream()
-                .map(MembershipFeeResponseDto::of)
-                .collect(Collectors.toList());
+        return membershipFees.map(MembershipFeeResponseDto::of).getContent();
     }
 
     public void updateMembershipFee(Long membershipFeeId, MembershipFeeRequestDto membershipFeeRequestDto) throws PermissionDeniedException {
@@ -69,8 +65,8 @@ public class MembershipFeeService {
         membershipFeeRepository.delete(membershipFee);
     }
 
-    private List<MembershipFee> getMembershipFeeByCateroty(String category) {
-        return membershipFeeRepository.findByCategory(category);
+    private Page<MembershipFee> getMembershipFeeByCateroty(String category, Pageable pageable) {
+        return membershipFeeRepository.findByCategory(category, pageable);
     }
 
     private MembershipFee getMembershipFeeByIdOrThrow(Long membershipFeeId) {

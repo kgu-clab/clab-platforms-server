@@ -1,16 +1,18 @@
 package page.clab.api.repository;
 
-import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import page.clab.api.type.entity.Donation;
 import page.clab.api.type.entity.Member;
 
 public interface DonationRepository extends JpaRepository<Donation, Long> {
 
-    List<Donation> findByDonor_Id(String memberId);
+    Page<Donation> findByDonor_Id(String memberId, Pageable pageable);
 
-    List<Donation> findByDonor_Name(String name);
+    Page<Donation> findByDonor_Name(String name, Pageable pageable);
 
-    List<Donation> findByDonor(Member member);
+    Page<Donation> findByDonor(Member member, Pageable pageable);
 
 }

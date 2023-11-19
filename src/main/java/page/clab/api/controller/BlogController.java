@@ -6,6 +6,8 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,8 +50,12 @@ public class BlogController {
 
     @Operation(summary = "[U] 블로그 포스트 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
-    public ResponseModel getBlogs() {
-        List<BlogResponseDto> blogs = blogService.getBlogs();
+    public ResponseModel getBlogs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<BlogResponseDto> blogs = blogService.getBlogs(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(blogs);
         return responseModel;
@@ -59,9 +65,12 @@ public class BlogController {
             "검색어에는 제목, 부제목, 내용, 태그, 작성자명가 포함됨")
     @GetMapping("/search")
     public ResponseModel searchBlog(
-            @RequestParam String keyword
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<BlogResponseDto> blogs = blogService.searchBlog(keyword);
+        Pageable pageable = PageRequest.of(page, size);
+        List<BlogResponseDto> blogs = blogService.searchBlog(keyword, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(blogs);
         return responseModel;

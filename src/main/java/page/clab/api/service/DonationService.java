@@ -1,10 +1,10 @@
 package page.clab.api.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
@@ -31,35 +31,29 @@ public class DonationService {
         donationRepository.save(donation);
     }
 
-    public List<DonationResponseDto> getDonations() {
-        List<Donation> donations = donationRepository.findAll();
-        return donations.stream()
-                .map(DonationResponseDto::of)
-                .collect(Collectors.toList());
+    public List<DonationResponseDto> getDonations(Pageable pageable) {
+        Page<Donation> donations = donationRepository.findAll(pageable);
+        return donations.map(DonationResponseDto::of).getContent();
     }
 
-    public List<DonationResponseDto> getMyDonations() {
+    public List<DonationResponseDto> getMyDonations(Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        List<Donation> donations = getDonationsByDonor(member);
-        return donations.stream()
-                .map(DonationResponseDto::of)
-                .collect(Collectors.toList());
+        Page<Donation> donations = getDonationsByDonor(member, pageable);
+        return donations.map(DonationResponseDto::of).getContent();
     }
 
-    public List<DonationResponseDto> searchDonation(String memberId, String name) {
-        List<Donation> donations = new ArrayList<>();
+    public List<DonationResponseDto> searchDonation(String memberId, String name, Pageable pageable) {
+        Page<Donation> donations;
         if (memberId != null) {
-            donations = getDonationByDonorIdOrThrow(memberId);
+            donations = getDonationByDonorIdOrThrow(memberId, pageable);
         } else if (name != null) {
-            donations = getDonationByDonorNameOrThrow(name);
+            donations = getDonationByDonorNameOrThrow(name, pageable);
         } else {
             throw new IllegalArgumentException("적어도 memberId 또는 name 중 하나를 제공해야 합니다.");
         }
         if (donations.isEmpty())
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
-        return donations.stream()
-                .map(DonationResponseDto::of)
-                .collect(Collectors.toList());
+        return donations.map(DonationResponseDto::of).getContent();
     }
 
     public void updateDonation(Long donationId, DonationRequestDto donationRequestDto) throws PermissionDeniedException {
@@ -89,16 +83,16 @@ public class DonationService {
                 .orElseThrow(() -> new NotFoundException("해당 후원 정보가 존재하지 않습니다."));
     }
 
-    private List<Donation> getDonationsByDonor(Member member) {
-        return donationRepository.findByDonor(member);
+    private Page<Donation> getDonationsByDonor(Member member, Pageable pageable) {
+        return donationRepository.findByDonor(member, pageable);
     }
 
-    private List<Donation> getDonationByDonorIdOrThrow(String memberId) {
-        return donationRepository.findByDonor_Id(memberId);
+    private Page<Donation> getDonationByDonorIdOrThrow(String memberId, Pageable pageable) {
+        return donationRepository.findByDonor_Id(memberId, pageable);
     }
 
-    private List<Donation> getDonationByDonorNameOrThrow(String name) {
-        return donationRepository.findByDonor_Name(name);
+    private Page<Donation> getDonationByDonorNameOrThrow(String name, Pageable pageable) {
+        return donationRepository.findByDonor_Name(name, pageable);
     }
 
 }
