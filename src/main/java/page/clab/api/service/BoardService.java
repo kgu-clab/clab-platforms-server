@@ -1,10 +1,13 @@
 package page.clab.api.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
@@ -30,27 +33,24 @@ public class BoardService {
         boardRepository.save(board);
     }
 
-    public List<BoardResonseDto> getBoards() {
-        List<Board> boards = boardRepository.findAll();
-        return boards.stream()
-                .map(BoardResonseDto::of)
-                .collect(Collectors.toList());
+    public List<BoardResonseDto> getBoards(Pageable pageable) {
+        Page<Board> boards = boardRepository.findAll(pageable);
+        return boards.map(BoardResonseDto::of).getContent();
     }
 
-    public List<BoardResonseDto> getMyBoards() {
+    public List<BoardResonseDto> getMyBoards(Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        List<Board> boards = boardRepository.findAllByMember(member);
-        return boards.stream()
-                .map(BoardResonseDto::of)
-                .collect(Collectors.toList());
+        Page<Board> boards = getBoardByMember(pageable, member);
+        return boards.map(BoardResonseDto::of).getContent();
     }
 
-    public List<BoardResonseDto> searchBoards(Long boardId, String category) {
-        List<Board> boards = new ArrayList<>();
+    public List<BoardResonseDto> searchBoards(Long boardId, String category, Pageable pageable) {
+        Page<Board> boards;
         if (boardId != null) {
-            boards.add(getBoardByIdOrThrow(boardId));
+            Board board = getBoardByIdOrThrow(boardId);
+            boards = new PageImpl<>(Arrays.asList(board), pageable, 1);
         } else if (category != null) {
-            boards.addAll(boardRepository.findAllByCategory(category));
+            boards = getBoardByCategory(category, pageable);
         } else {
             throw new IllegalArgumentException("적어도 boardId, category 중 하나를 제공해야 합니다.");
         }
@@ -61,7 +61,6 @@ public class BoardService {
                 .map(BoardResonseDto::of)
                 .collect(Collectors.toList());
     }
-
 
     public void updateBoard(Long boardId, BoardRequestDto boardRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
@@ -89,6 +88,14 @@ public class BoardService {
     public Board getBoardByIdOrThrow(Long boardId) {
         return boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundException("해당 게시글이 존재하지 않습니다."));
+    }
+
+    private Page<Board> getBoardByMember(Pageable pageable, Member member) {
+        return boardRepository.findAllByMember(member, pageable);
+    }
+
+    private Page<Board> getBoardByCategory(String category, Pageable pageable) {
+        return boardRepository.findAllByCategory(category, pageable);
     }
 
 }

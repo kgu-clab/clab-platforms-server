@@ -6,6 +6,8 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,24 +50,27 @@ public class BookController {
 
     @Operation(summary = "[U] 도서 목록", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
-    public ResponseModel getBooks() {
-        List<BookResponseDto> books = bookService.getBooks();
+    public ResponseModel getBooks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<BookResponseDto> books = bookService.getBooks(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(books);
         return responseModel;
     }
 
     @Operation(summary = "[U] 도서 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "카테고리, 제목, 저자, 출판사, 대여자를 기준으로 검색")
+            "카테고리, 제목, 저자, 출판사, 대여자 ID를 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel searchBook(
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String author,
-            @RequestParam(required = false) String publisher,
-            @RequestParam(required = false) String borrowerId
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<BookResponseDto> books = bookService.searchBook(category, title, author, publisher, borrowerId);
+        Pageable pageable = PageRequest.of(page, size);
+        List<BookResponseDto> books = bookService.searchBook(keyword, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(books);
         return responseModel;

@@ -1,6 +1,9 @@
 package page.clab.api.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
@@ -9,10 +12,6 @@ import page.clab.api.type.dto.ProductRequestDto;
 import page.clab.api.type.dto.ProductResponseDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.Product;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,26 +31,22 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public List<ProductResponseDto> getProducts() {
-        List<Product> products = productRepository.findAll();
-        return products.stream()
-                .map(ProductResponseDto::of)
-                .collect(Collectors.toList());
+    public List<ProductResponseDto> getProducts(Pageable pageable) {
+        Page<Product> products = productRepository.findAll(pageable);
+        return products.map(ProductResponseDto::of).getContent();
     }
 
-    public List<ProductResponseDto> searchProduct(String productName) {
-        List<Product> products = new ArrayList<>();
+    public List<ProductResponseDto> searchProduct(String productName, Pageable pageable) {
+        Page<Product> products;
         if (productName != null) {
-            products.addAll(productRepository.findAllByNameContaining(productName));
+            products = getProductByNameContaining(productName, pageable);
         } else {
             throw new IllegalArgumentException("검색어를 입력해주세요.");
         }
         if (products.isEmpty()) {
             throw new NotFoundException("검색 결과가 없습니다.");
         }
-        return products.stream()
-                .map(ProductResponseDto::of)
-                .collect(Collectors.toList());
+        return products.map(ProductResponseDto::of).getContent();
     }
 
     public void updateProduct(Long productId, ProductRequestDto productRequestDto) throws PermissionDeniedException {
@@ -78,6 +73,10 @@ public class ProductService {
     private Product getProductByIdOrThrow(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("해당 서비스가 존재하지 않습니다."));
+    }
+
+    private Page<Product> getProductByNameContaining(String productName, Pageable pageable) {
+        return productRepository.findAllByNameContaining(productName, pageable);
     }
 
 }

@@ -2,8 +2,9 @@ package page.clab.api.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
@@ -34,19 +35,15 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
-    public List<CommentResponseDto> getComments(Long boardId) {
-        List<Comment> comments = commentRepository.findAllByBoardId(boardId);
-        return comments.stream()
-                .map(CommentResponseDto::of)
-                .collect(Collectors.toList());
+    public List<CommentResponseDto> getComments(Long boardId, Pageable pageable) {
+        Page<Comment> comments = getCommentByBoardId(boardId, pageable);
+        return comments.map(CommentResponseDto::of).getContent();
     }
 
-    public List<CommentResponseDto> getMyComments() {
+    public List<CommentResponseDto> getMyComments(Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        List<Comment> comments = getCommentsByWriter(member);
-        return comments.stream()
-                .map(CommentResponseDto::of)
-                .collect(Collectors.toList());
+        Page<Comment> comments = getCommentByWriter(member, pageable);
+        return comments.map(CommentResponseDto::of).getContent();
     }
 
     public void updateComment(Long commentId, CommentRequestDto commentRequestDto) throws PermissionDeniedException {
@@ -74,8 +71,12 @@ public class CommentService {
                 .orElseThrow(() -> new NotFoundException("댓글을 찾을 수 없습니다."));
     }
 
-    private List<Comment> getCommentsByWriter(Member member) {
-        return commentRepository.findAllByWriter(member);
+    private Page<Comment> getCommentByBoardId(Long boardId, Pageable pageable) {
+        return commentRepository.findAllByBoardId(boardId, pageable);
+    }
+
+    private Page<Comment> getCommentByWriter(Member member, Pageable pageable) {
+        return commentRepository.findAllByWriter(member, pageable);
     }
 
 }

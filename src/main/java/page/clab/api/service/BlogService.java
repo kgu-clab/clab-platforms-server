@@ -1,6 +1,20 @@
 package page.clab.api.service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
@@ -9,16 +23,6 @@ import page.clab.api.type.dto.BlogRequestDto;
 import page.clab.api.type.dto.BlogResponseDto;
 import page.clab.api.type.entity.Blog;
 import page.clab.api.type.entity.Member;
-
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
 
 @Service
 @RequiredArgsConstructor
@@ -37,29 +41,37 @@ public class BlogService {
         blogRepository.save(blog);
     }
 
-    public List<BlogResponseDto> getBlogs() {
-        List<Blog> blogs = blogRepository.findAll();
-        return blogs.stream()
-                .map(BlogResponseDto::of)
-                .collect(Collectors.toList());
+    public List<BlogResponseDto> getBlogs(Pageable pageable) {
+        Page<Blog> blogs = blogRepository.findAll(pageable);
+        return blogs.map(BlogResponseDto::of).getContent();
     }
 
-    public List<BlogResponseDto> searchBlog(String keyword) {
+    public List<BlogResponseDto> searchBlog(String keyword, Pageable pageable) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Blog> criteriaQuery = criteriaBuilder.createQuery(Blog.class);
         Root<Blog> root = criteriaQuery.from(Blog.class);
-        Predicate predicate = criteriaBuilder.or(
-                criteriaBuilder.like(root.get("title"), "%" + keyword + "%"),
-                criteriaBuilder.like(root.get("subTitle"), "%" + keyword + "%"),
-                criteriaBuilder.like(root.get("content"), "%" + keyword + "%"),
-                criteriaBuilder.like(root.get("tag"), "%" + keyword + "%"),
-                criteriaBuilder.like(root.get("member").get("name"), "%" + keyword + "%")
-        );
-        criteriaQuery.select(root).where(predicate);
-        List<Blog> blogs = entityManager.createQuery(criteriaQuery).getResultList();
-        return blogs.stream()
+        List<Predicate> predicates = new ArrayList<>();
+        if (keyword != null && !keyword.isEmpty()) {
+            String keywordLowerCase = "%" + keyword.toLowerCase() + "%";
+            predicates.add(criteriaBuilder.or(
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), keywordLowerCase),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("subTitle")), keywordLowerCase),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("content")), keywordLowerCase),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("tag")), keywordLowerCase),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("member").get("name")), keywordLowerCase)
+            ));
+        }
+        criteriaQuery.select(root).where(predicates.toArray(new Predicate[0]));
+        TypedQuery<Blog> query = entityManager.createQuery(criteriaQuery);
+        List<Blog> blogs = query.getResultList();
+        Set<Blog> uniqueBlogs = new LinkedHashSet<>(blogs);
+        List<Blog> distinctBlogs = new ArrayList<>(uniqueBlogs);
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), uniqueBlogs.size());
+        List<Blog> paginatedBlogs = new ArrayList<>(distinctBlogs.subList(start, end));
+        return new PageImpl<>(paginatedBlogs, pageable, uniqueBlogs.size())
                 .map(BlogResponseDto::of)
-                .collect(Collectors.toList());
+                .getContent();
     }
 
     public void updateBlog(Long blogId, BlogRequestDto blogRequestDto) throws PermissionDeniedException {

@@ -35,7 +35,6 @@ public class Notification {
 
     @ManyToOne()
     @JoinColumn(name = "member_id")
-    @Size(min = 1, message = "{size.notification.memberId}")
     private Member member;
 
     @CreationTimestamp
