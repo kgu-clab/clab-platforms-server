@@ -5,7 +5,6 @@ import com.maxmind.geoip2.exception.AddressNotFoundException;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.BindingResult;
@@ -34,6 +34,7 @@ import page.clab.api.auth.exception.TokenValidateException;
 import page.clab.api.auth.exception.UnAuthorizeException;
 import page.clab.api.exception.AssociatedAccountExistsException;
 import page.clab.api.exception.BookAlreadyBorrowedException;
+import page.clab.api.exception.DuplicateLoginException;
 import page.clab.api.exception.FileUploadFailException;
 import page.clab.api.exception.InvalidBorrowerException;
 import page.clab.api.exception.LoanSuspensionException;
@@ -53,7 +54,6 @@ public class ControllerExceptionHandler {
     private final MessageSource messageSource;
 
     @ExceptionHandler({
-            NoSuchElementException.class,
             NullPointerException.class,
             SearchResultNotExistException.class,
             NotFoundException.class
@@ -67,6 +67,7 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler({
+            NoSuchElementException.class,
             MissingServletRequestParameterException.class,
             MalformedJsonException.class,
             HttpMessageNotReadableException.class,
@@ -91,7 +92,9 @@ public class ControllerExceptionHandler {
             LoanSuspensionException.class,
             OverdueException.class,
             TransactionSystemException.class,
+            StringIndexOutOfBoundsException.class,
             MessagingException.class,
+            DuplicateLoginException.class,
             Exception.class
     })
     public ResponseModel errorException(HttpServletRequest request, HttpServletResponse response, Exception e) {

@@ -1,6 +1,6 @@
 package page.clab.api.type.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +24,7 @@ public class AwardResponseDto {
 
     private String awardName;
 
-    private LocalDateTime awardDate;
+    private LocalDate awardDate;
 
     public static AwardResponseDto of(Award award) {
         return ModelMapperUtil.getModelMapper().map(award, AwardResponseDto.class);
