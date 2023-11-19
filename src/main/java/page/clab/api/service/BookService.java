@@ -39,26 +39,27 @@ public class BookService {
     }
 
     public List<BookResponseDto> getBooks(Pageable pageable) {
-        Page<Book> books = bookRepository.findAll(pageable);
+        Page<Book> books = bookRepository.findAllByOrderByCreatedAtDesc(pageable);
         return books.map(BookResponseDto::of).getContent();
     }
 
     public List<BookResponseDto> searchBook(String keyword, Pageable pageable) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Book> criteriaQuery = criteriaBuilder.createQuery(Book.class);
-        Root<Book> bookRoot = criteriaQuery.from(Book.class);
+        Root<Book> root = criteriaQuery.from(Book.class);
         List<Predicate> predicates = new ArrayList<>();
         if (keyword != null && !keyword.isEmpty()) {
             String keywordLowerCase = "%" + keyword.toLowerCase() + "%";
             predicates.add(criteriaBuilder.or(
-                    criteriaBuilder.like(criteriaBuilder.lower(bookRoot.get("category")), keywordLowerCase),
-                    criteriaBuilder.like(criteriaBuilder.lower(bookRoot.get("title")), keywordLowerCase),
-                    criteriaBuilder.like(criteriaBuilder.lower(bookRoot.get("author")), keywordLowerCase),
-                    criteriaBuilder.like(criteriaBuilder.lower(bookRoot.get("publisher")), keywordLowerCase),
-                    criteriaBuilder.equal(criteriaBuilder.lower(bookRoot.get("borrower").get("id")), keyword.toLowerCase())
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("category")), keywordLowerCase),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), keywordLowerCase),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("author")), keywordLowerCase),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("publisher")), keywordLowerCase),
+                    criteriaBuilder.equal(criteriaBuilder.lower(root.get("borrower").get("id")), keyword.toLowerCase())
             ));
         }
-        criteriaQuery.select(bookRoot).where(predicates.toArray(new Predicate[0]));
+        criteriaQuery.select(root).where(predicates.toArray(new Predicate[0]));
+        criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createdAt")));
         TypedQuery<Book> query = entityManager.createQuery(criteriaQuery);
         List<Book> books = query.getResultList();
         Set<Book> uniqueBooks = new LinkedHashSet<>(books);

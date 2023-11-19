@@ -30,13 +30,13 @@ public class MembershipFeeService {
     }
 
     public List<MembershipFeeResponseDto> getMembershipFees(Pageable pageable) {
-        Page<MembershipFee> membershipFees = membershipFeeRepository.findAll(pageable);
+        Page<MembershipFee> membershipFees = membershipFeeRepository.findAllByOrderByCreatedAtDesc(pageable);
         return membershipFees.map(MembershipFeeResponseDto::of).getContent();
     }
 
     public List<MembershipFeeResponseDto> searchMembershipFee(String category, Pageable pageable) {
         Page<MembershipFee> membershipFees;
-        membershipFees = getMembershipFeeByCateroty(category, pageable);
+        membershipFees = getMembershipFeeByCategory(category, pageable);
         if (membershipFees.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
@@ -65,13 +65,13 @@ public class MembershipFeeService {
         membershipFeeRepository.delete(membershipFee);
     }
 
-    private Page<MembershipFee> getMembershipFeeByCateroty(String category, Pageable pageable) {
-        return membershipFeeRepository.findByCategory(category, pageable);
-    }
-
     private MembershipFee getMembershipFeeByIdOrThrow(Long membershipFeeId) {
         return membershipFeeRepository.findById(membershipFeeId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회비 내역입니다."));
+    }
+
+    private Page<MembershipFee> getMembershipFeeByCategory(String category, Pageable pageable) {
+        return membershipFeeRepository.findByCategoryOrderByCreatedAtDesc(category, pageable);
     }
 
 }

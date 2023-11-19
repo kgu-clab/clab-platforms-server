@@ -28,7 +28,7 @@ public class NotificationService {
 
     public List<NotificationResponseDto> getNotifications(Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        Page<Notification> notifications = notificationRepository.findByMember(member, pageable);
+        Page<Notification> notifications = getNotificationByMember(pageable, member);
         return notifications.map(NotificationResponseDto::of).getContent();
     }
 
@@ -46,13 +46,8 @@ public class NotificationService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 알림입니다."));
     }
 
-    private boolean isNotificationOwner(Notification notification) {
-        Member member = memberService.getCurrentMember();
-        if (member.equals(notification.getMember())) {
-            return true;
-        } else {
-            return false;
-        }
+    private Page<Notification> getNotificationByMember(Pageable pageable, Member member) {
+        return notificationRepository.findByMemberOrderByCreatedAtDesc(member, pageable);
     }
 
 }

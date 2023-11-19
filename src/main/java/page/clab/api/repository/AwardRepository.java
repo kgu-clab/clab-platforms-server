@@ -10,6 +10,6 @@ import page.clab.api.type.entity.Member;
 @Repository
 public interface AwardRepository extends JpaRepository<Award, Long> {
 
-    Page<Award> findAllByMember(Member member, Pageable pageable);
+    Page<Award> findAllByMemberOrderByAwardDateDesc(Member member, Pageable pageable);
 
 }

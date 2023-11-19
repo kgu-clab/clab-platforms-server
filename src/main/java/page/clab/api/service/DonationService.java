@@ -32,7 +32,7 @@ public class DonationService {
     }
 
     public List<DonationResponseDto> getDonations(Pageable pageable) {
-        Page<Donation> donations = donationRepository.findAll(pageable);
+        Page<Donation> donations = donationRepository.findAllByOrderByCreatedAtDesc(pageable);
         return donations.map(DonationResponseDto::of).getContent();
     }
 
@@ -84,15 +84,15 @@ public class DonationService {
     }
 
     private Page<Donation> getDonationsByDonor(Member member, Pageable pageable) {
-        return donationRepository.findByDonor(member, pageable);
+        return donationRepository.findByDonorOrderByCreatedAtDesc(member, pageable);
     }
 
     private Page<Donation> getDonationByDonorIdOrThrow(String memberId, Pageable pageable) {
-        return donationRepository.findByDonor_Id(memberId, pageable);
+        return donationRepository.findByDonor_IdOrderByCreatedAtDesc(memberId, pageable);
     }
 
     private Page<Donation> getDonationByDonorNameOrThrow(String name, Pageable pageable) {
-        return donationRepository.findByDonor_Name(name, pageable);
+        return donationRepository.findByDonor_NameOrderByCreatedAtDesc(name, pageable);
     }
 
 }

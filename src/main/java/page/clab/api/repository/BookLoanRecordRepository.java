@@ -10,14 +10,16 @@ import page.clab.api.type.entity.Member;
 
 public interface BookLoanRecordRepository extends JpaRepository<BookLoanRecord, Long> {
 
+    Page<BookLoanRecord> findAllByOrderByBorrowedAtDesc(Pageable pageable);
+
     Optional<BookLoanRecord> findByBookAndBorrowerAndReturnedAtIsNull(Book book, Member borrower);
 
-    Page<BookLoanRecord> findByBook_Id(Long bookId, Pageable pageable);
+    Page<BookLoanRecord> findByBook_IdOrderByBorrowedAtDesc(Long bookId, Pageable pageable);
 
-    Page<BookLoanRecord> findByBorrower_Id(String borrowerId, Pageable pageable);
+    Page<BookLoanRecord> findByBorrower_IdOrderByBorrowedAtDesc(String borrowerId, Pageable pageable);
 
-    Page<BookLoanRecord> findByBook_IdAndBorrower_Id(Long bookId, String borrowerId, Pageable pageable);
+    Page<BookLoanRecord> findByBook_IdAndBorrower_IdOrderByBorrowedAtDesc(Long bookId, String borrowerId, Pageable pageable);
 
-    Page<BookLoanRecord> findByReturnedAtIsNull(Pageable pageable);
+    Page<BookLoanRecord> findByReturnedAtIsNullOrderByBorrowedAtDesc(Pageable pageable);
 
 }

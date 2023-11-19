@@ -9,9 +9,11 @@ import page.clab.api.type.etc.MemberStatus;
 
 public interface MemberRepository extends JpaRepository<Member, String> {
 
-    Page<Member> findAllByName(String name, Pageable pageable);
+    Page<Member> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    Page<Member> findByMemberStatus(MemberStatus memberStatus, Pageable pageable);
+    Page<Member> findAllByNameOrderByCreatedAtDesc(String name, Pageable pageable);
+
+    Page<Member> findByMemberStatusOrderByCreatedAtDesc(MemberStatus memberStatus, Pageable pageable);
 
     Optional<Member> findByContact(String contact);
 

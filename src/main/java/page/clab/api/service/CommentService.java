@@ -72,11 +72,11 @@ public class CommentService {
     }
 
     private Page<Comment> getCommentByBoardId(Long boardId, Pageable pageable) {
-        return commentRepository.findAllByBoardId(boardId, pageable);
+        return commentRepository.findAllByBoardIdOrderByCreatedAtDesc(boardId, pageable);
     }
 
     private Page<Comment> getCommentByWriter(Member member, Pageable pageable) {
-        return commentRepository.findAllByWriter(member, pageable);
+        return commentRepository.findAllByWriterOrderByCreatedAtDesc(member, pageable);
     }
 
 }

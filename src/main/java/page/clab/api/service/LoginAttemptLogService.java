@@ -43,12 +43,12 @@ public class LoginAttemptLogService {
             throw new PermissionDeniedException("관리자만 조회할 수 있습니다.");
         }
         Member member = memberService.getMemberByIdOrThrow(memberId);
-        Page<LoginAttemptLog> loginAttemptLogs = getLoginAttempByMember(pageable, member);
+        Page<LoginAttemptLog> loginAttemptLogs = getLoginAttemptByMember(pageable, member);
         return loginAttemptLogs.map(LoginAttemptLogResponseDto::of).getContent();
     }
 
-    private Page<LoginAttemptLog> getLoginAttempByMember(Pageable pageable, Member member) {
-        return loginAttemptLogRepository.findAllByMember(member, pageable);
+    private Page<LoginAttemptLog> getLoginAttemptByMember(Pageable pageable, Member member) {
+        return loginAttemptLogRepository.findAllByMemberOrderByLoginAttemptTimeDesc(member, pageable);
     }
 
 }

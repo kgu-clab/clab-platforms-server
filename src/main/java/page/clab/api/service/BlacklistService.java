@@ -33,7 +33,7 @@ public class BlacklistService {
 
     public List<BlacklistIp> getBlacklistedIps(Pageable pageable) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
-        Page<BlacklistIp> blacklistedIps = blacklistIpRepository.findAll(pageable);
+        Page<BlacklistIp> blacklistedIps = blacklistIpRepository.findAllByOrderByCreatedAtDesc(pageable);
         return blacklistedIps.getContent();
     }
 

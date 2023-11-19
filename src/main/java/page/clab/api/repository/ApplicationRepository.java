@@ -8,8 +8,10 @@ import page.clab.api.type.entity.Application;
 
 public interface ApplicationRepository extends JpaRepository<Application, String> {
 
-    Page<Application> findAllByUpdateTimeBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+    Page<Application> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    Page<Application> findAllByIsPass(boolean isPass, Pageable pageable);
+    Page<Application> findAllByUpdateTimeBetweenOrderByCreatedAtDesc(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+
+    Page<Application> findAllByIsPassOrderByCreatedAtDesc(boolean isPass, Pageable pageable);
 
 }

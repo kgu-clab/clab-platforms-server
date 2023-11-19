@@ -27,7 +27,7 @@ public class SharedAccountService {
     }
 
     public List<SharedAccountResponseDto> getSharedAccounts(Pageable pageable) {
-        Page<SharedAccount> sharedAccounts = sharedAccountRepository.findAll(pageable);
+        Page<SharedAccount> sharedAccounts = sharedAccountRepository.findAllByOrderByIdAsc(pageable);
         return sharedAccounts.map(SharedAccountResponseDto::of).getContent();
     }
 

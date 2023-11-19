@@ -34,7 +34,7 @@ public class BoardService {
     }
 
     public List<BoardResonseDto> getBoards(Pageable pageable) {
-        Page<Board> boards = boardRepository.findAll(pageable);
+        Page<Board> boards = boardRepository.findAllByOrderByCreatedAtDesc(pageable);
         return boards.map(BoardResonseDto::of).getContent();
     }
 
@@ -91,11 +91,11 @@ public class BoardService {
     }
 
     private Page<Board> getBoardByMember(Pageable pageable, Member member) {
-        return boardRepository.findAllByMember(member, pageable);
+        return boardRepository.findAllByMemberOrderByCreatedAtDesc(member, pageable);
     }
 
     private Page<Board> getBoardByCategory(String category, Pageable pageable) {
-        return boardRepository.findAllByCategory(category, pageable);
+        return boardRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
     }
 
 }

@@ -9,6 +9,8 @@ import page.clab.api.type.entity.Product;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    Page<Product> findAllByNameContaining(String productName, Pageable pageable);
+    Page<Product> findAllByNameContainingOrderByCreatedAtDesc(String productName, Pageable pageable);
+
+    Page<Product> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
 }

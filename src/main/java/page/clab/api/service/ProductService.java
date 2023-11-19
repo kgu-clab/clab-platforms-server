@@ -32,7 +32,7 @@ public class ProductService {
     }
 
     public List<ProductResponseDto> getProducts(Pageable pageable) {
-        Page<Product> products = productRepository.findAll(pageable);
+        Page<Product> products = productRepository.findAllByOrderByCreatedAtDesc(pageable);
         return products.map(ProductResponseDto::of).getContent();
     }
 
@@ -76,7 +76,7 @@ public class ProductService {
     }
 
     private Page<Product> getProductByNameContaining(String productName, Pageable pageable) {
-        return productRepository.findAllByNameContaining(productName, pageable);
+        return productRepository.findAllByNameContainingOrderByCreatedAtDesc(productName, pageable);
     }
 
 }
