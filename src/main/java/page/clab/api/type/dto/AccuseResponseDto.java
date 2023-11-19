@@ -1,11 +1,14 @@
 package page.clab.api.type.dto;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.entity.Accuse;
+import page.clab.api.type.etc.AccuseStatus;
+import page.clab.api.type.etc.AccuseType;
 import page.clab.api.util.ModelMapperUtil;
 
 @Getter
@@ -15,15 +18,24 @@ import page.clab.api.util.ModelMapperUtil;
 @Builder
 public class AccuseResponseDto {
 
+    private String memberId;
+
+    private String name;
+
+    private AccuseType accuseType;
+
     private Long targetId;
 
-    private String category;
+    private String reason;
 
-    private String description;
+    private AccuseStatus accuseStatus;
 
-    private String content;
+    private LocalDateTime accusedAt;
 
-    public static AccuseResponseDto of(Accuse accuse){
-        return ModelMapperUtil.getModelMapper().map(accuse, AccuseResponseDto.class);
+    public static AccuseResponseDto of(Accuse accuse) {
+        AccuseResponseDto accuseResponseDto = ModelMapperUtil.getModelMapper().map(accuse, AccuseResponseDto.class);
+        accuseResponseDto.setMemberId(accuse.getMember().getId());
+        accuseResponseDto.setName(accuse.getMember().getName());
+        return accuseResponseDto;
     }
 }
