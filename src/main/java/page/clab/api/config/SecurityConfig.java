@@ -1,14 +1,20 @@
 package page.clab.api.config;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -17,8 +23,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import page.clab.api.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.auth.jwt.JwtTokenProvider;
 import page.clab.api.repository.BlacklistIpRepository;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -29,25 +33,33 @@ public class SecurityConfig {
 
     private final BlacklistIpRepository blacklistIpRepository;
 
+    @Value("${springdoc.account.id}")
+    private String username;
+
+    @Value("${springdoc.account.password}")
+    private String password;
+
     private static final String[] PERMIT_ALL = {
             "/login/**",
             "/static/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/webjars/**",
+            "/"
+    };
+
+    private static final String[] SWAGGER_PATTERNS = {
             "/v2/api-docs",
             "/swagger-resources",
             "/swagger-resources/**",
-            "/configuration/ui",
-            "/configuration/security",
             "/swagger-ui.html",
-            "/webjars/**",
             "/v3/api-docs/**",
-            "/swagger-ui/**",
-            "/"
+            "/swagger-ui/**"
     };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .httpBasic().disable()
                 .csrf().disable()
                 .cors().configurationSource(corsConfigurationSource())
                 .and()
@@ -56,13 +68,35 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers(PERMIT_ALL).permitAll()
                 .antMatchers(HttpMethod.POST, "/applications").permitAll()
-                .antMatchers("/applications/filter", "/applications/pass", "/applications/search").hasAnyRole("ADMIN", "SUPER")
+                .antMatchers("/applications/filter", "/applications/pass", "/applications/search").hasAnyAuthority("ADMIN", "SUPER")
                 .antMatchers(HttpMethod.GET, "/applications/{applicationId}").permitAll()
                 .antMatchers(HttpMethod.GET, "/recruitments").permitAll()
+                .antMatchers(SWAGGER_PATTERNS).hasRole("SWAGGER")
                 .anyRequest().authenticated()
                 .and()
+                .httpBasic()
+                .and()
+                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService() {
+    UserDetails user =
+        User.withUsername(username)
+            .password(passwordEncoder().encode(password))
+            .roles("SWAGGER")
+            .build();
+        return new InMemoryUserDetailsManager(user);
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService()); // userDetailsService()로 변경
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
     }
 
     @Bean

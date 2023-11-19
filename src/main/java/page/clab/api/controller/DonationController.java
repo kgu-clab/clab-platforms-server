@@ -6,6 +6,8 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +42,12 @@ public class DonationController {
 
     @Operation(summary = "[U] 후원 정보", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
-    public ResponseModel getDonations() {
-        List<DonationResponseDto> donations = donationService.getDonations();
+    public ResponseModel getDonations(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<DonationResponseDto> donations = donationService.getDonations(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(donations);
         return responseModel;
@@ -49,8 +55,12 @@ public class DonationController {
 
     @Operation(summary = "[U] 나의 후원 정보", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/my-donations")
-    public ResponseModel getMyDonations() {
-        List<DonationResponseDto> donations = donationService.getMyDonations();
+    public ResponseModel getMyDonations(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<DonationResponseDto> donations = donationService.getMyDonations(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(donations);
         return responseModel;
@@ -61,9 +71,12 @@ public class DonationController {
     @GetMapping("/search")
     public ResponseModel getDonation(
             @RequestParam(required = false) String memberId,
-            @RequestParam(required = false) String name
+            @RequestParam(required = false) String name,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<DonationResponseDto> donations = donationService.searchDonation(memberId, name);
+        Pageable pageable = PageRequest.of(page, size);
+        List<DonationResponseDto> donations = donationService.searchDonation(memberId, name, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(donations);
         return responseModel;

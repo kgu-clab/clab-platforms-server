@@ -7,18 +7,19 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import page.clab.api.auth.jwt.JwtTokenProvider;
+import page.clab.api.exception.DuplicateLoginException;
 import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.MemberLockedException;
 import page.clab.api.type.dto.LoginRequestDto;
 import page.clab.api.type.dto.RefreshTokenDto;
 import page.clab.api.type.dto.TokenInfo;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.entity.RedisToken;
 import page.clab.api.type.etc.LoginAttemptResult;
 
 @Service
@@ -34,11 +35,16 @@ public class LoginService {
 
     private final LoginAttemptLogService loginAttemptLogService;
 
+    private final RedisTokenService redisTokenService;
+
     @Transactional
     public TokenInfo login(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFaliedException, MemberLockedException {
         String id = loginRequestDto.getId();
         String password = loginRequestDto.getPassword();
-        Member member = memberService.getMemberByIdOrThrow(id);
+        Member member = memberService.getMemberById(id);
+        if (member == null) {
+            throw new LoginFaliedException("존재하지 않는 아이디입니다.");
+        }
         boolean loginSuccess = barunLogin(id, password);
         TokenInfo tokenInfo = null;
         if (loginSuccess) {
@@ -46,6 +52,7 @@ public class LoginService {
             tokenInfo = jwtTokenProvider.generateToken(id, member.getRole());
             memberService.setLastLoginTime(id);
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.SUCCESS);
+            redisTokenService.saveRedisToken(member.getId(), member.getRole(), tokenInfo, httpServletRequest.getRemoteAddr());
         } else {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
             loginFailInfoService.updateLoginFailInfo(id);
@@ -80,12 +87,22 @@ public class LoginService {
         }
     }
 
-    public TokenInfo reissue(RefreshTokenDto refreshTokenDto) {
-        String refreshToken = refreshTokenDto.getRefreshToken();
-        if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
-            TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
-            return tokenInfo;
+    @Transactional
+    public TokenInfo reissue(HttpServletRequest request, RefreshTokenDto refreshTokenDto) {
+        String token = jwtTokenProvider.resolveToken(request);
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            String currentIpAddress = request.getRemoteAddr();
+            RedisToken redisToken = redisTokenService.getRedisToken(token);
+            if (redisToken != null && redisToken.getIp().equals(currentIpAddress)
+                    && redisToken.getRefreshToken().equals(refreshTokenDto.getRefreshToken())) {
+                TokenInfo tokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
+                redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), tokenInfo, currentIpAddress);
+                return tokenInfo;
+            } else {
+                redisTokenService.deleteRedisTokenByAccessToken(token);
+                log.info("[{}/{}] : 중복 로그인이 감지되어 로그아웃 처리되었습니다.", redisToken.getId(), redisToken.getIp());
+                throw new DuplicateLoginException("중복 로그인이 감지되어 로그아웃 처리되었습니다.");
+            }
         }
         return null;
     }
