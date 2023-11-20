@@ -79,7 +79,7 @@ public class NewsService {
         newsRepository.delete(news);
     }
 
-    private News getNewsByIdOrThrow(Long newsId) {
+    public News getNewsByIdOrThrow(Long newsId) {
         return newsRepository.findById(newsId)
                 .orElseThrow(() -> new NotFoundException("해당 뉴스가 존재하지 않습니다."));
     }
