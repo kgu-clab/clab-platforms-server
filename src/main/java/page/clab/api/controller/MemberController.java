@@ -63,6 +63,20 @@ public class MemberController {
         return responseModel;
     }
 
+    @Operation(summary = "이달의 생일자 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @GetMapping("/birthday")
+    public ResponseModel getBirthdaysThisMonth(
+            @RequestParam String month,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<MemberResponseDto> birthdayMembers = memberService.getBirthdaysThisMonth(month, pageable);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(birthdayMembers);
+        return responseModel;
+    }
+
     @Operation(summary = "[A] 멤버 검색", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "멤버 ID, 이름, 상태를 기준으로 검색")
     @GetMapping("/search")
