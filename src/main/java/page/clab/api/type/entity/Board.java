@@ -42,7 +42,8 @@ public class Board {
     @Size(min = 1, max = 100, message = "{size.board.title}")
     private String title;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(nullable = false, length = 10000)
+    @Size(min = 1, max = 10000, message = "{size.board.content}")
     private String content;
 
     @Column(name = "update_time")

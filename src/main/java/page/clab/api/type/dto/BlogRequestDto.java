@@ -28,7 +28,7 @@ public class BlogRequestDto {
     private String subTitle;
 
     @NotNull(message = "{notNull.blog.content}")
-    @Size(min = 1, message = "{size.blog.content}")
+    @Size(min = 1, max = 10000, message = "{size.blog.content}")
     @Schema(description = "내용", example = "NestJs는 스웨거 설정에 있던데 스프링은........", required = true)
     private String content;
 
