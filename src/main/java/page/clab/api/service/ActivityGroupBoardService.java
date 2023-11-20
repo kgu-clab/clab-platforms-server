@@ -60,7 +60,6 @@ public class ActivityGroupBoardService {
 
     public void updateActivityGroupBoard (Long activityGroupBoardId, ActivityGroupBoardDto activityGroupBoardDto) {
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-//        board.setParent(activityGroupBoardDto.getParentId() != null ? getActivityGroupBoardByIdOrThrow(activityGroupBoardDto.getParentId()) : null);
         board.setCategory(activityGroupBoardDto.getCategory());
         board.setTitle(activityGroupBoardDto.getTitle());
         board.setContent(activityGroupBoardDto.getContent());
