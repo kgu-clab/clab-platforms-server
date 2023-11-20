@@ -114,7 +114,7 @@ public class ActivityGroupAdminService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버입니다."));
     }
 
-    private GroupMember getGroupMemberByMemberOrThrow(Member member) {
+    public GroupMember getGroupMemberByMemberOrThrow(Member member) {
         return groupMemberRepository.findByMember(member)
                 .orElseThrow(() -> new NotFoundException("해당 그룹에 존재하지 않는 멤버입니다."));
     }

@@ -1,7 +1,13 @@
 package page.clab.api.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import page.clab.api.type.entity.ActivityGroupBoard;
+
+import java.util.List;
 
 @Repository
-public interface ActivityGroupBoardRepository {
+public interface ActivityGroupBoardRepository extends JpaRepository<ActivityGroupBoard, Long> {
+
+    List<ActivityGroupBoard> findAllByParentId(Long parentId);
 }

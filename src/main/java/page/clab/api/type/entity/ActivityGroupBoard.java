@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import page.clab.api.type.dto.ActivityGroupBoardDto;
+import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,6 +35,9 @@ public class ActivityGroupBoard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private Long ActivityGroupId;
+
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
@@ -50,11 +55,11 @@ public class ActivityGroupBoard {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    private Comment parent;
+    private ActivityGroupBoard parent;
 
     @Builder.Default
     @OneToMany(mappedBy = "parent", orphanRemoval = true)
-    private List<Comment> children = new ArrayList<>();
+    private List<ActivityGroupBoard> children = new ArrayList<>();
 
     @Column
     private String filePath;
@@ -68,6 +73,10 @@ public class ActivityGroupBoard {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    public static ActivityGroupBoard of(ActivityGroupBoardDto activityGroupBoardDto) {
+        return ModelMapperUtil.getModelMapper().map(activityGroupBoardDto, ActivityGroupBoard.class);
+    }
 
 
 }
