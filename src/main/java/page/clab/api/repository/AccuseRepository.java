@@ -15,6 +15,8 @@ public interface AccuseRepository extends JpaRepository<Accuse, Long> {
 
     Page<Accuse> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
+    Page<Accuse> findAllByTargetTypeAndAccuseStatusOrderByCreatedAtDesc(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable);
+
     Page<Accuse> findAllByTargetTypeOrderByCreatedAtDesc(TargetType targetType, Pageable pageable);
 
     Page<Accuse> findAllByAccuseStatusOrderByCreatedAtDesc(AccuseStatus accuseStatus, Pageable pageable);
