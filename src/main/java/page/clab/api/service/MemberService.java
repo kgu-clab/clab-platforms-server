@@ -1,9 +1,11 @@
 package page.clab.api.service;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +65,19 @@ public class MemberService {
         checkMemberAdminRole();
         Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
         return members.map(MemberResponseDto::of).getContent();
+    }
+
+    public List<MemberResponseDto> getBirthdaysThisMonth(String month, Pageable pageable) {
+        LocalDate currentMonth = LocalDate.now().withMonth(Integer.parseInt(month));
+        List<Member> members = memberRepository.findAll();
+        List<Member> birthdayMembers = members.stream()
+                .filter(member -> member.getBirth().getMonth() == currentMonth.getMonth())
+                .collect(Collectors.toList());
+        birthdayMembers.sort(Comparator.comparing(member -> member.getBirth().getDayOfMonth()));
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), birthdayMembers.size());
+        Page<Member> birthdayMembersPage = new PageImpl<>(birthdayMembers.subList(start, end), pageable, birthdayMembers.size());
+        return birthdayMembersPage.map(MemberResponseDto::of).getContent();
     }
 
     public List<MemberResponseDto> searchMember(String memberId, String name, MemberStatus memberStatus, Pageable pageable) throws PermissionDeniedException {
