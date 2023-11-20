@@ -48,13 +48,12 @@ public class AccuseService {
         Accuse existingAccuse = getAccuseByMemberAndTargetTypeAndTargetId(member, accuseRequestDto);
         if (existingAccuse != null) {
             existingAccuse.setReason(accuseRequestDto.getReason());
-            log.info("existingAccuse : {}", existingAccuse);
             accuseRepository.save(existingAccuse);
         } else {
             Accuse accuse = Accuse.of(accuseRequestDto);
+            accuse.setId(null);
             accuse.setMember(member);
             accuse.setAccuseStatus(AccuseStatus.PENDING);
-            log.info("Accuse : {}", accuse);
             accuseRepository.save(accuse);
         }
     }
@@ -74,7 +73,9 @@ public class AccuseService {
             throw new PermissionDeniedException("해당 신고 내역을 수정할 권한이 없습니다.");
         }
         Page<Accuse> accuses;
-        if (targetType != null) {
+        if (targetType != null && accuseStatus != null) {
+            accuses = getAccuseByTargetTypeAndAccuseStatus(targetType, accuseStatus, pageable);
+        } else if (targetType != null) {
             accuses = getAccuseByTargetType(targetType, pageable);
         } else if (accuseStatus != null) {
             accuses = getAccuseByAccuseStatus(accuseStatus, pageable);
@@ -104,6 +105,10 @@ public class AccuseService {
 
     private Page<Accuse> getAccuseByTargetType(TargetType targetType, Pageable pageable) {
         return accuseRepository.findAllByTargetTypeOrderByCreatedAtDesc(targetType, pageable);
+    }
+
+    private Page<Accuse> getAccuseByTargetTypeAndAccuseStatus(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable) {
+        return accuseRepository.findAllByTargetTypeAndAccuseStatusOrderByCreatedAtDesc(targetType, accuseStatus, pageable);
     }
 
     private Page<Accuse> getAccuseByAccuseStatus(AccuseStatus accuseStatus, Pageable pageable) {
