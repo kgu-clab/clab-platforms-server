@@ -24,7 +24,6 @@ import page.clab.api.service.ReviewService;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.ReviewRequestDto;
 import page.clab.api.type.dto.ReviewResponseDto;
-import page.clab.api.type.dto.ReviewUpdateRequestDto;
 
 @RestController
 @RequestMapping("/reviews")
@@ -110,13 +109,13 @@ public class ReviewController {
     @PatchMapping("/{reviewId}")
     public ResponseModel updateReview(
             @PathVariable Long reviewId,
-            @Valid @RequestBody ReviewUpdateRequestDto reviewUpdateRequestDto,
+            @Valid @RequestBody ReviewRequestDto reviewRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        reviewService.updateReview(reviewId, reviewUpdateRequestDto);
+        reviewService.updateReview(reviewId, reviewRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
