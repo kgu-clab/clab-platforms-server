@@ -48,6 +48,7 @@ public class Review {
     private Boolean isPublic;
 
     @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     public static Review of(ReviewRequestDto reviewRequestDto) {
