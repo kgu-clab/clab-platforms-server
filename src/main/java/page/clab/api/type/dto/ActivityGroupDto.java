@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.type.entity.ActivityGroup;
-import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.util.ModelMapperUtil;
 
 import javax.validation.constraints.NotNull;
@@ -20,10 +19,6 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Builder
 public class ActivityGroupDto {
-
-    @NotNull(message = "{notnull.activityGroup.category}")
-    @Schema(description = "카테고리", example = "스터디")
-    private ActivityGroupCategory category;
 
     @NotNull(message = "{notnull.activityGroup.name}")
     @Size(min = 1, max = 30, message = "{size.activityGroup.name}")

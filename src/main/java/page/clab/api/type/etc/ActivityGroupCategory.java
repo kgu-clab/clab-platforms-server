@@ -7,9 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ActivityGroupCategory {
 
-    스터디("STUDY", "스터디"),
-    프로젝트("PROJECT", "프로젝트"),
-    서비스("SERVICE", "서비스");
+    STUDY("STUDY", "스터디"),
+    PROJECT("PROJECT", "프로젝트"),
+    SERVICE("SERVICE", "서비스");
 
     private String key;
     private String description;

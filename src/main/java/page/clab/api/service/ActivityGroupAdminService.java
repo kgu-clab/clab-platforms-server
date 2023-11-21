@@ -14,6 +14,7 @@ import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.GroupSchedule;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
 import page.clab.api.type.etc.GroupMemberStatus;
@@ -51,23 +52,23 @@ public class ActivityGroupAdminService {
     }
 
     @Transactional
-    public void createActivityGroup(ActivityGroupDto activityGroupDto) {
+    public void createActivityGroup(ActivityGroupCategory category, ActivityGroupDto activityGroupDto) {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = ActivityGroup.of(activityGroupDto);
-        activityGroup.setStatus(ActivityGroupStatus.승인대기);
+        activityGroup.setCategory(category);
+        activityGroup.setStatus(ActivityGroupStatus.WAITING);
         activityGroup.setProgress(0L);
         activityGroup.setCreatedAt(LocalDateTime.now());
         activityGroupRepository.save(activityGroup);
         GroupMember groupLeader = GroupMember.of(member, activityGroup);
         groupLeader.setRole(ActivityGroupRole.LEADER);
-        groupLeader.setStatus(GroupMemberStatus.수락);
+        groupLeader.setStatus(GroupMemberStatus.ACCEPTED);
         groupMemberRepository.save(groupLeader);
     }
 
     public void updateActivityGroup(Long activityGroupId, ActivityGroupDto activityGroupDto) throws PermissionDeniedException {
         checkMemberGroupLeaderRole();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        activityGroup.setCategory(activityGroupDto.getCategory());
         activityGroup.setName(activityGroupDto.getName());
         activityGroup.setContent(activityGroupDto.getContent());
         activityGroup.setImageUrl(activityGroupDto.getImageUrl());
@@ -104,14 +105,9 @@ public class ActivityGroupAdminService {
         return activityGroupRepository.findAllByStatus(status);
     }
 
-    public ActivityGroup getActivityGroupByIdOrThrow(Long id) {
-        return activityGroupRepository.findById(id)
+    public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupBoardId) {
+        return activityGroupRepository.findById(activityGroupBoardId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 활동입니다."));
-    }
-
-    private GroupMember getGroupMemberByGroupIdAndRoleOrThrow(Long activityGroupId, ActivityGroupRole activityGroupRole) {
-        return groupMemberRepository.findByActivityGroupIdAndRole(activityGroupId, activityGroupRole)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버입니다."));
     }
 
     public GroupMember getGroupMemberByMemberOrThrow(Member member) {
@@ -129,18 +125,18 @@ public class ActivityGroupAdminService {
 
     public List<MemberResponseDto> getApplyGroupMemberList (Long activityGroupId) throws PermissionDeniedException {
         checkMemberGroupLeaderRole();
-        List<GroupMember> groupMemberList = groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.진행중);
+        List<GroupMember> groupMemberList = groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.IN_PROGRESS);
         return groupMemberList.stream()
                 .map(groupMember -> MemberResponseDto.of(groupMember.getMember()))
                 .collect(Collectors.toList());
     }
 
-    public void manageGroupMemberStatus(String MemberId, GroupMemberStatus status) throws PermissionDeniedException {
+    public void manageGroupMemberStatus(String memberId, GroupMemberStatus status) throws PermissionDeniedException {
         checkMemberGroupLeaderRole();
-        Member member = memberService.getMemberByIdOrThrow(MemberId);
+        Member member = memberService.getMemberByIdOrThrow(memberId);
         GroupMember groupMember = getGroupMemberByMemberOrThrow(member);
         groupMember.setStatus(status);
-        if (status == GroupMemberStatus.수락) {
+        if (status == GroupMemberStatus.ACCEPTED) {
             groupMember.setRole(ActivityGroupRole.MEMBER);
         }
         groupMemberRepository.save(groupMember);

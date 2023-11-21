@@ -21,6 +21,7 @@ import page.clab.api.type.dto.ActivityGroupDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.MemberResponseDto;
 import page.clab.api.type.dto.ResponseModel;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupStatus;
 import page.clab.api.type.etc.GroupMemberStatus;
 
@@ -39,13 +40,14 @@ public class ActivityGroupAdminController {
     @Operation(summary = "[U] 활동 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createActivityGroup(
+            @RequestParam ActivityGroupCategory category,
             @Valid @RequestBody ActivityGroupDto activityGroupDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        activityGroupAdminService.createActivityGroup(activityGroupDto);
+        activityGroupAdminService.createActivityGroup(category, activityGroupDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
@@ -138,10 +140,10 @@ public class ActivityGroupAdminController {
     @Operation(summary = "[U] 신청 멤버 상태 변경", description = "ROLE_USER 이상의 권한이 필요함")
     @PatchMapping("/accept")
     public ResponseModel acceptGroupMember(
-            @RequestParam String MemberId,
+            @RequestParam String memberId,
             @RequestParam GroupMemberStatus status
     ) throws PermissionDeniedException {
-        activityGroupAdminService.manageGroupMemberStatus(MemberId, status);
+        activityGroupAdminService.manageGroupMemberStatus(memberId, status);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }

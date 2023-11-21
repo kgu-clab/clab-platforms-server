@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.repository.ActivityGroupBoardRepository;
 import page.clab.api.type.dto.ActivityGroupBoardDto;
+import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.ActivityGroupBoard;
 import page.clab.api.type.entity.Member;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,12 +24,13 @@ public class ActivityGroupBoardService {
 
     private final ActivityGroupAdminService activityGroupAdminService;
 
+    @Transactional
     public void createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardDto activityGroupBoardDto) {
         Member member = memberService.getCurrentMember();
-        activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
         ActivityGroupBoard board = ActivityGroupBoard.of(activityGroupBoardDto);
         board.setMember(member);
-        board.setActivityGroupId(activityGroupId);
+        board.setActivityGroup(activityGroup);
         if (parentId != null) {
             ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
             board.setParent(parentBoard);
@@ -51,8 +54,8 @@ public class ActivityGroupBoardService {
         return ActivityGroupBoardDto.of(board);
     }
 
-    public List<ActivityGroupBoardDto> getActivityGroupBoardByParent(Long id) {
-        List<ActivityGroupBoard> boardList = findChildBoards(id);
+    public List<ActivityGroupBoardDto> getActivityGroupBoardByParent(Long parentId) {
+        List<ActivityGroupBoard> boardList = findChildBoards(parentId);
         return boardList.stream()
                 .map(ActivityGroupBoardDto::of)
                 .collect(Collectors.toList());
@@ -78,9 +81,9 @@ public class ActivityGroupBoardService {
                 .orElseThrow(() -> new NotFoundException("해당 게시글을 찾을 수 없습니다."));
     }
 
-    private List<ActivityGroupBoard> findChildBoards (Long id){
+    private List<ActivityGroupBoard> findChildBoards (Long activityGroupBoardId){
         List<ActivityGroupBoard> boardList = new ArrayList<>();
-        ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(id);
+        ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
         if (board.getParent() == null || board.getChildren()!= null) {
             boardList.add(board);
             for (ActivityGroupBoard child : board.getChildren()) {

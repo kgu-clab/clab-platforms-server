@@ -33,7 +33,7 @@ public class ActivityGroupBoardController {
             @RequestParam(required = false) Long parentId,
             @RequestParam Long activityGroupId,
             @RequestBody ActivityGroupBoardDto activityGroupBoardDto
-            ) {
+    ) {
         activityGroupBoardService.createActivityGroupBoard(parentId, activityGroupId, activityGroupBoardDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -41,8 +41,7 @@ public class ActivityGroupBoardController {
 
     @Operation(summary = "[U] 활동 그룹 게시판 리스팅", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/list")
-    public ResponseModel getActivityGroupBoardList(
-    ) {
+    public ResponseModel getActivityGroupBoardList() {
         List<ActivityGroupBoardDto> allBoards = activityGroupBoardService.getAllActivityGroupBoard();
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(allBoards);
@@ -52,20 +51,20 @@ public class ActivityGroupBoardController {
     @Operation(summary = "[U] 활동 그룹 게시판 단일 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getActivityGroupBoardById(
-            @RequestParam Long id
+            @RequestParam Long activityGroupBoardId
     ) {
-        ActivityGroupBoardDto board = activityGroupBoardService.getActivityGroupBoardById(id);
+        ActivityGroupBoardDto board = activityGroupBoardService.getActivityGroupBoardById(activityGroupBoardId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(board);
         return responseModel;
     }
 
-    @Operation(summary = "[U] 활동 그룹 게시판 부모 자식 기반 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 활동 그룹 게시판 계층 구조적 조회, 부모 및 자식 게시판 함께 반환", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/by-parent")
     public ResponseModel getActivityGroupBoardByParent(
-            @RequestParam Long id
-            ) {
-        List<ActivityGroupBoardDto> boards = activityGroupBoardService.getActivityGroupBoardByParent(id);
+            @RequestParam Long parentId
+    ) {
+        List<ActivityGroupBoardDto> boards = activityGroupBoardService.getActivityGroupBoardByParent(parentId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boards);
         return responseModel;
@@ -76,7 +75,7 @@ public class ActivityGroupBoardController {
     public ResponseModel updateActivityGroupBoard(
             @RequestParam Long activityGroupBoardId,
             @RequestBody ActivityGroupBoardDto activityGroupBoardDto
-            ) {
+    ) {
         activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, activityGroupBoardDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -86,7 +85,7 @@ public class ActivityGroupBoardController {
     @DeleteMapping("")
     public ResponseModel deleteActivityGroupBoard(
             @RequestParam Long activityGroupBoardId
-            ) {
+    ) {
         activityGroupBoardService.deleteActivityGroupBoard(activityGroupBoardId);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;

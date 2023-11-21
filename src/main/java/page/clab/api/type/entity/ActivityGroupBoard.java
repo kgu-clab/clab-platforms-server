@@ -35,8 +35,9 @@ public class ActivityGroupBoard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long ActivityGroupId;
+    @ManyToOne
+    @JoinColumn(name = "activity_group_id", nullable = false)
+    private ActivityGroup activityGroup;
 
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)

@@ -19,6 +19,7 @@ import page.clab.api.type.etc.ActivityGroupStatus;
 import page.clab.api.type.etc.GroupMemberStatus;
 
 import javax.mail.MessagingException;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,14 +63,15 @@ public class ActivityGroupMemberService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void applyActivityGroup(Long activityGroupId) throws MessagingException {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroup.getStatus().equals(ActivityGroupStatus.활동중)){
-            throw new NotFoundException("해당 활동은 진행중인 활동이 아닙니다.");
+        if (!activityGroup.getStatus().equals(ActivityGroupStatus.ACTIVE)){
+            throw new IllegalStateException("해당 활동은 진행중인 활동이 아닙니다.");
         }
         GroupMember groupMember = GroupMember.of(member, activityGroup);
-        groupMember.setStatus(GroupMemberStatus.진행중);
+        groupMember.setStatus(GroupMemberStatus.IN_PROGRESS);
         groupMemberRepository.save(groupMember);
 
         GroupMember groupLeader = groupMemberRepository.findByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER)

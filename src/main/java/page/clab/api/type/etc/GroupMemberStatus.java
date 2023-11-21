@@ -7,9 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum GroupMemberStatus {
 
-    거절("REJECTED", "거절"),
-    수락("ACCEPTED", "수락"),
-    진행중("IN_PROGRESS", "진행중");
+    REJECTED("REJECTED", "거절"),
+    ACCEPTED("ACCEPTED", "수락"),
+    IN_PROGRESS("IN_PROGRESS", "진행중");
 
     private String key;
     private String description;
