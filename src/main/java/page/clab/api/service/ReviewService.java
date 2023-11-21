@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.ActivityGroupNotFinishedException;
+import page.clab.api.exception.AlreadyReviewedException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
@@ -36,12 +37,16 @@ public class ReviewService {
         if (!(activityGroup.getStatus() == ActivityGroupStatus.활동종료)) {
             throw new ActivityGroupNotFinishedException("활동이 종료된 활동 그룹만 리뷰를 작성할 수 있습니다.");
         }
+        if (isExistsByMemberAndActivityGroup(member, activityGroup)) {
+            throw new AlreadyReviewedException("이미 리뷰를 작성한 활동 그룹입니다.");
+        }
         Review review = Review.of(reviewRequestDto);
+        review.setId(null);
         review.setActivityGroup(activityGroup);
         review.setIsPublic(false);
         review.setMember(member);
         reviewRepository.save(review);
-    }
+  }
 
     public List<ReviewResponseDto> getReviews(Pageable pageable) {
         Page<Review> reviews = reviewRepository.findAllByOrderByCreatedAtDesc(pageable);
@@ -108,6 +113,10 @@ public class ReviewService {
         Review review = getReviewByIdOrThrow(reviewId);
         review.setIsPublic(!review.getIsPublic());
         reviewRepository.save(review);
+    }
+
+    private boolean isExistsByMemberAndActivityGroup(Member member, ActivityGroup activityGroup) {
+        return reviewRepository.existsByMemberAndActivityGroup(member, activityGroup);
     }
 
     public Review getReviewByIdOrThrow(Long reviewId) {

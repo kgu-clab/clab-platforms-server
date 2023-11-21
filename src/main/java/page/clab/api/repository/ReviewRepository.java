@@ -3,10 +3,13 @@ package page.clab.api.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.Review;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
+
+    boolean existsByMemberAndActivityGroup(Member member, ActivityGroup activityGroup);
 
     Page<Review> findAllByMemberOrderByCreatedAtDesc(Member member, Pageable pageable);
 
