@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.type.dto.ReviewRequestDto;
-import page.clab.api.type.dto.ReviewUpdateRequestDto;
 import page.clab.api.util.ModelMapperUtil;
 
 @Entity
@@ -53,13 +52,6 @@ public class Review {
 
     public static Review of(ReviewRequestDto reviewRequestDto) {
         return ModelMapperUtil.getModelMapper().map(reviewRequestDto, Review.class);
-    }
-
-    public static Review of(ReviewUpdateRequestDto reviewUpdateRequestDto) {
-        return Review.builder()
-                .member(Member.builder().id(reviewUpdateRequestDto.getMemberId()).build())
-                .content(reviewUpdateRequestDto.getContent())
-                .build();
     }
 
 }

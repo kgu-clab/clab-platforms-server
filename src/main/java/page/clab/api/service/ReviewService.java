@@ -14,7 +14,6 @@ import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.ReviewRepository;
 import page.clab.api.type.dto.ReviewRequestDto;
 import page.clab.api.type.dto.ReviewResponseDto;
-import page.clab.api.type.dto.ReviewUpdateRequestDto;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.Review;
@@ -83,17 +82,14 @@ public class ReviewService {
         return reviews.map(ReviewResponseDto::of).getContent();
     }
 
-    public void updateReview(Long reviewId, ReviewUpdateRequestDto reviewUpdateRequestDto) throws PermissionDeniedException {
+    public void updateReview(Long reviewId, ReviewRequestDto reviewRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        if (!member.getId().equals(reviewUpdateRequestDto.getMemberId())) {
+        Review review = getReviewByIdOrThrow(reviewId);
+        if (!member.getId().equals(review.getMember().getId())) {
             throw new PermissionDeniedException("해당 리뷰를 수정할 권한이 없습니다.");
         }
-        Review review = getReviewByIdOrThrow(reviewId);
-        Review updatedReview = Review.of(reviewUpdateRequestDto);
-        updatedReview.setId(review.getId());
-        updatedReview.setIsPublic(review.getIsPublic());
-        updatedReview.setCreatedAt(review.getCreatedAt());
-        reviewRepository.save(updatedReview);
+        review.setContent(reviewRequestDto.getContent());
+        reviewRepository.save(review);
     }
 
     public void deleteReview(Long reviewId) throws PermissionDeniedException {
