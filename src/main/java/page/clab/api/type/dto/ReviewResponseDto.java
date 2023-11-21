@@ -18,6 +18,12 @@ public class ReviewResponseDto {
 
     private Long id;
 
+    private Long activityGroupId;
+
+    private String activityGroupName;
+
+    private String activityGroupCategory;
+
     private String memberId;
 
     private String name;
@@ -32,6 +38,9 @@ public class ReviewResponseDto {
 
     public static ReviewResponseDto of(Review review) {
         ReviewResponseDto reviewResponseDto = ModelMapperUtil.getModelMapper().map(review, ReviewResponseDto.class);
+        reviewResponseDto.setActivityGroupId(review.getActivityGroup().getId());
+        reviewResponseDto.setActivityGroupName(review.getActivityGroup().getName());
+        reviewResponseDto.setActivityGroupCategory(review.getActivityGroup().getCategory());
         reviewResponseDto.setMemberId(review.getMember().getId());
         reviewResponseDto.setName(review.getMember().getName());
         reviewResponseDto.setDepartment(review.getMember().getDepartment());

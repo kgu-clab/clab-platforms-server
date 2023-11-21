@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import page.clab.api.exception.ActivityGroupNotFinishedException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
@@ -13,8 +14,10 @@ import page.clab.api.repository.ReviewRepository;
 import page.clab.api.type.dto.ReviewRequestDto;
 import page.clab.api.type.dto.ReviewResponseDto;
 import page.clab.api.type.dto.ReviewUpdateRequestDto;
+import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.Review;
+import page.clab.api.type.etc.ActivityGroupStatus;
 
 @Service
 @RequiredArgsConstructor
@@ -23,11 +26,19 @@ public class ReviewService {
 
     private final MemberService memberService;
 
+    private final ActivityGroupMemberService activityGroupMemberService;
+
     private final ReviewRepository reviewRepository;
 
     public void createReview(ReviewRequestDto reviewRequestDto) {
         Member member = memberService.getCurrentMember();
+        ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(reviewRequestDto.getActivityGroupId());
+        if (!(activityGroup.getStatus() == ActivityGroupStatus.활동종료)) {
+            throw new ActivityGroupNotFinishedException("활동이 종료된 활동 그룹만 리뷰를 작성할 수 있습니다.");
+        }
         Review review = Review.of(reviewRequestDto);
+        review.setActivityGroup(activityGroup);
+        review.setIsPublic(false);
         review.setMember(member);
         reviewRepository.save(review);
     }

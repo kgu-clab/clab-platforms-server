@@ -33,6 +33,10 @@ public class Review {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "activity_group_id")
+    private ActivityGroup activityGroup;
+
+    @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -47,9 +51,7 @@ public class Review {
     private LocalDateTime createdAt;
 
     public static Review of(ReviewRequestDto reviewRequestDto) {
-        Review review = ModelMapperUtil.getModelMapper().map(reviewRequestDto, Review.class);
-        review.setIsPublic(false);
-        return review;
+        return ModelMapperUtil.getModelMapper().map(reviewRequestDto, Review.class);
     }
 
     public static Review of(ReviewUpdateRequestDto reviewUpdateRequestDto) {
