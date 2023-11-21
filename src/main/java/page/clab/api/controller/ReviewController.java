@@ -24,7 +24,6 @@ import page.clab.api.service.ReviewService;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.ReviewRequestDto;
 import page.clab.api.type.dto.ReviewResponseDto;
-import page.clab.api.type.dto.ReviewUpdateRequestDto;
 
 @RestController
 @RequestMapping("/reviews")
@@ -94,11 +93,13 @@ public class ReviewController {
     public ResponseModel searchReview(
             @RequestParam(required = false) String memberId,
             @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long activityGroupId,
+            @RequestParam(required = false) String activityGroupCategory,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<ReviewResponseDto> reviewResponseDtos = reviewService.searchReview(memberId, name, pageable);
+        List<ReviewResponseDto> reviewResponseDtos = reviewService.searchReview(memberId, name, activityGroupId, activityGroupCategory, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(reviewResponseDtos);
         return responseModel;
@@ -108,13 +109,13 @@ public class ReviewController {
     @PatchMapping("/{reviewId}")
     public ResponseModel updateReview(
             @PathVariable Long reviewId,
-            @Valid @RequestBody ReviewUpdateRequestDto reviewUpdateRequestDto,
+            @Valid @RequestBody ReviewRequestDto reviewRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        reviewService.updateReview(reviewId, reviewUpdateRequestDto);
+        reviewService.updateReview(reviewId, reviewRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
