@@ -33,6 +33,7 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
 import page.clab.api.auth.exception.TokenValidateException;
 import page.clab.api.auth.exception.UnAuthorizeException;
 import page.clab.api.exception.ActivityGroupNotFinishedException;
+import page.clab.api.exception.AlreadyReviewedException;
 import page.clab.api.exception.AssociatedAccountExistsException;
 import page.clab.api.exception.BookAlreadyBorrowedException;
 import page.clab.api.exception.DuplicateLoginException;
@@ -97,6 +98,7 @@ public class ControllerExceptionHandler {
             MessagingException.class,
             DuplicateLoginException.class,
             ActivityGroupNotFinishedException.class,
+            AlreadyReviewedException.class,
             Exception.class
     })
     public ResponseModel errorException(HttpServletRequest request, HttpServletResponse response, Exception e) {
