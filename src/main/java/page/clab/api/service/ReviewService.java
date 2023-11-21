@@ -59,12 +59,16 @@ public class ReviewService {
         return reviews.map(ReviewResponseDto::of).getContent();
     }
 
-    public List<ReviewResponseDto> searchReview(String memberId, String name, Pageable pageable) {
+    public List<ReviewResponseDto> searchReview(String memberId, String name, Long activityGroupId, String activityGroupCategory, Pageable pageable) {
         Page<Review> reviews;
         if (memberId != null) {
             reviews = getReviewByMemberId(memberId, pageable);
         } else if (name != null) {
             reviews = getReviewByMemberName(name, pageable);
+        } else if (activityGroupId != null) {
+            reviews = getReviewByActivityGroupId(activityGroupId, pageable);
+        } else if (activityGroupCategory != null) {
+            reviews = getReviewByActivityGroupCategory(activityGroupCategory, pageable);
         } else {
             throw new IllegalArgumentException("적어도 memberId, name 중 하나를 제공해야 합니다.");
         }
@@ -125,6 +129,14 @@ public class ReviewService {
 
     private Page<Review> getReviewByMemberName(String name, Pageable pageable) {
         return reviewRepository.findAllByMember_NameOrderByCreatedAtDesc(name, pageable);
+    }
+
+    private Page<Review> getReviewByActivityGroupId(Long activityGroupId, Pageable pageable) {
+        return reviewRepository.findAllByActivityGroup_IdOrderByCreatedAtDesc(activityGroupId, pageable);
+    }
+
+    private Page<Review> getReviewByActivityGroupCategory(String activityGroupCategory, Pageable pageable) {
+        return reviewRepository.findAllByActivityGroup_CategoryOrderByCreatedAtDesc(activityGroupCategory, pageable);
     }
 
 }
