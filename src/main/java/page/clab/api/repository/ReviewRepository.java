@@ -18,4 +18,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     Page<Review> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
+    Page<Review> findAllByActivityGroup_IdOrderByCreatedAtDesc(Long activityGroupId, Pageable pageable);
+
+    Page<Review> findAllByActivityGroup_CategoryOrderByCreatedAtDesc(String activityGroupCategory, Pageable pageable);
+
 }
