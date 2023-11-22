@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -50,8 +52,12 @@ public class ApplicationController {
 
     @Operation(summary = "[A] 신청자 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @GetMapping("")
-    public ResponseModel getApplications() throws PermissionDeniedException {
-        List<ApplicationResponseDto> applications = applicationService.getApplications();
+    public ResponseModel getApplications(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) throws PermissionDeniedException {
+        Pageable pageable = PageRequest.of(page, size);
+        List<ApplicationResponseDto> applications = applicationService.getApplications(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applications);
         return responseModel;
@@ -62,9 +68,12 @@ public class ApplicationController {
     @GetMapping("/filter")
     public ResponseModel getApplicationsBetweenDates(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) throws PermissionDeniedException {
-        List<ApplicationResponseDto> applications = applicationService.getApplicationsBetweenDates(startDate, endDate);
+        Pageable pageable = PageRequest.of(page, size);
+        List<ApplicationResponseDto> applications = applicationService.getApplicationsBetweenDates(startDate, endDate, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applications);
         return responseModel;
@@ -95,8 +104,12 @@ public class ApplicationController {
 
     @Operation(summary = "[A] 합격자 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @GetMapping("/pass")
-    public ResponseModel getApprovedApplications() throws PermissionDeniedException {
-        List<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications();
+    public ResponseModel getApprovedApplications(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) throws PermissionDeniedException {
+        Pageable pageable = PageRequest.of(page, size);
+        List<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(approvedApplications);
         return responseModel;

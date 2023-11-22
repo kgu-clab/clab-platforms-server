@@ -6,6 +6,8 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,8 +50,12 @@ public class ProductController {
 
     @Operation(summary = "[U] 서비스 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
-    public ResponseModel getProducts() {
-        List<ProductResponseDto> productResponseDtos = productService.getProducts();
+    public ResponseModel getProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<ProductResponseDto> productResponseDtos = productService.getProducts(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(productResponseDtos);
         return responseModel;
@@ -59,9 +65,12 @@ public class ProductController {
             "서비스명을 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel searchProduct(
-            @RequestParam String productName
+            @RequestParam String productName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<ProductResponseDto> productResponseDtos = productService.searchProduct(productName);
+        Pageable pageable = PageRequest.of(page, size);
+        List<ProductResponseDto> productResponseDtos = productService.searchProduct(productName, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(productResponseDtos);
         return responseModel;

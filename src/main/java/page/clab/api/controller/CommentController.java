@@ -6,6 +6,8 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.CommentService;
@@ -49,9 +52,12 @@ public class CommentController {
     @Operation(summary = "[U] 댓글 리스트 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/{boardId}")
     public ResponseModel getComments(
-            @PathVariable Long boardId
+            @PathVariable Long boardId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<CommentResponseDto> comments = commentService.getComments(boardId);
+        Pageable pageable = PageRequest.of(page, size);
+        List<CommentResponseDto> comments = commentService.getComments(boardId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(comments);
         return responseModel;
@@ -59,8 +65,12 @@ public class CommentController {
 
     @Operation(summary = "[U] 나의 댓글 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/my-comments")
-    public ResponseModel getMyComments() {
-        List<CommentResponseDto> comments = commentService.getMyComments();
+    public ResponseModel getMyComments(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<CommentResponseDto> comments = commentService.getMyComments(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(comments);
         return responseModel;

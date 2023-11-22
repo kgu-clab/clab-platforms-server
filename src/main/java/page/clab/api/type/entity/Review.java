@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.type.dto.ReviewRequestDto;
-import page.clab.api.type.dto.ReviewUpdateRequestDto;
 import page.clab.api.util.ModelMapperUtil;
 
 @Entity
@@ -33,6 +32,10 @@ public class Review {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "activity_group_id")
+    private ActivityGroup activityGroup;
+
+    @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -44,19 +47,11 @@ public class Review {
     private Boolean isPublic;
 
     @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     public static Review of(ReviewRequestDto reviewRequestDto) {
-        Review review = ModelMapperUtil.getModelMapper().map(reviewRequestDto, Review.class);
-        review.setIsPublic(false);
-        return review;
-    }
-
-    public static Review of(ReviewUpdateRequestDto reviewUpdateRequestDto) {
-        return Review.builder()
-                .member(Member.builder().id(reviewUpdateRequestDto.getMemberId()).build())
-                .content(reviewUpdateRequestDto.getContent())
-                .build();
+        return ModelMapperUtil.getModelMapper().map(reviewRequestDto, Review.class);
     }
 
 }

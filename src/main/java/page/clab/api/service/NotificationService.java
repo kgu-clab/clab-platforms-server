@@ -1,8 +1,9 @@
 package page.clab.api.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
@@ -25,12 +26,10 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    public List<NotificationResponseDto> getNotifications() {
+    public List<NotificationResponseDto> getNotifications(Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        List<Notification> notifications = notificationRepository.findByMember(member);
-        return notifications.stream()
-                .map(NotificationResponseDto::of)
-                .collect(Collectors.toList());
+        Page<Notification> notifications = getNotificationByMember(pageable, member);
+        return notifications.map(NotificationResponseDto::of).getContent();
     }
 
     public void deleteNotification(Long notificationId) throws PermissionDeniedException {
@@ -47,13 +46,8 @@ public class NotificationService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 알림입니다."));
     }
 
-    private boolean isNotificationOwner(Notification notification) {
-        Member member = memberService.getCurrentMember();
-        if (member.equals(notification.getMember())) {
-            return true;
-        } else {
-            return false;
-        }
+    private Page<Notification> getNotificationByMember(Pageable pageable, Member member) {
+        return notificationRepository.findByMemberOrderByCreatedAtDesc(member, pageable);
     }
 
 }

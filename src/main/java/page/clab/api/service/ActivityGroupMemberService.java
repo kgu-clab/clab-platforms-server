@@ -77,7 +77,7 @@ public class ActivityGroupMemberService {
 
     }
 
-    private ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
+    public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
         return activityGroupRepository.findById(activityGroupId)
                 .orElseThrow(() -> new NotFoundException("해당 활동이 존재하지 않습니다."));
     }

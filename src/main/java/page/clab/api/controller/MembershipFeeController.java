@@ -6,6 +6,8 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +42,12 @@ public class MembershipFeeController {
 
     @Operation(summary = "[U] 회비 정보 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
-    public ResponseModel getMembershipFees() {
-        List<MembershipFeeResponseDto> MembershipFees = membershipFeeService.getMembershipFees();
+    public ResponseModel getMembershipFees(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<MembershipFeeResponseDto> MembershipFees = membershipFeeService.getMembershipFees(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(MembershipFees);
         return responseModel;
@@ -51,9 +57,12 @@ public class MembershipFeeController {
             "카테고리를 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel getMembershipFee(
-            @RequestParam String category
+            @RequestParam String category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<MembershipFeeResponseDto> MembershipFees = membershipFeeService.searchMembershipFee(category);
+        Pageable pageable = PageRequest.of(page, size);
+        List<MembershipFeeResponseDto> MembershipFees = membershipFeeService.searchMembershipFee(category, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(MembershipFees);
         return responseModel;
