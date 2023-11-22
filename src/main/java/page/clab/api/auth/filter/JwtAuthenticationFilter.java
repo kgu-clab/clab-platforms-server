@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 import page.clab.api.auth.jwt.JwtTokenProvider;
-import page.clab.api.service.BlacklistService;
+import page.clab.api.repository.BlacklistIpRepository;
 import page.clab.api.service.RedisTokenService;
 import page.clab.api.type.entity.RedisToken;
 
@@ -24,13 +24,13 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final RedisTokenService redisTokenService;
     
-    private final BlacklistService blacklistService;
+    private final BlacklistIpRepository blacklistIpRepository;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String clientIpAddress = request.getRemoteAddr();
         log.debug("clientIpAddress : {}", clientIpAddress);
-        if (blacklistService.isExistsByIpAddress(clientIpAddress)) {
+        if (blacklistIpRepository.existsByIpAddress(clientIpAddress)) {
             throw new SecurityException("[" + clientIpAddress + "] 서비스 이용 불가 IP입니다.");
         }
         String accessToken = jwtTokenProvider.resolveToken((HttpServletRequest) request);
