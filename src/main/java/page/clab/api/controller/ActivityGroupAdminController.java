@@ -2,6 +2,8 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
@@ -25,13 +27,10 @@ import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupStatus;
 import page.clab.api.type.etc.GroupMemberStatus;
 
-import javax.validation.Valid;
-import java.util.List;
-
 @RestController
 @RequestMapping("/activity-group/admin")
 @RequiredArgsConstructor
-@Tag(name = "ActivityGroupAdmin", description = "활동 그룹 관리 API")
+@Tag(name = "ActivityGroupAdmin", description = "활동 그룹 관리 관련 API")
 @Slf4j
 public class ActivityGroupAdminController {
 
@@ -126,7 +125,7 @@ public class ActivityGroupAdminController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 신청 멤버 리스팅", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 신청 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/apply-members")
     public ResponseModel getApplyGroupMemberList(
             @RequestParam Long activityGroupId

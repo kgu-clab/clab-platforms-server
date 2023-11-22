@@ -2,6 +2,8 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import javax.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,13 +19,10 @@ import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.etc.ActivityGroupCategory;
 
-import javax.mail.MessagingException;
-import java.util.List;
-
 @RestController
 @RequestMapping("/activity-group/member")
 @RequiredArgsConstructor
-@Tag(name = "ActivityGroup", description = "활동 그룹 API")
+@Tag(name = "ActivityGroup", description = "활동 그룹 관련 API")
 @Slf4j
 public class ActivityGroupMemberController {
 

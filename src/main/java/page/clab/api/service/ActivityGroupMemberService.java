@@ -1,5 +1,9 @@
 package page.clab.api.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.mail.MessagingException;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
@@ -17,11 +21,6 @@ import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
 import page.clab.api.type.etc.GroupMemberStatus;
-
-import javax.mail.MessagingException;
-import javax.transaction.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +66,7 @@ public class ActivityGroupMemberService {
     public void applyActivityGroup(Long activityGroupId) throws MessagingException {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroup.getStatus().equals(ActivityGroupStatus.ACTIVE)){
+        if (!activityGroup.getStatus().equals(ActivityGroupStatus.ACTIVE)) {
             throw new IllegalStateException("해당 활동은 진행중인 활동이 아닙니다.");
         }
         GroupMember groupMember = GroupMember.of(member, activityGroup);

@@ -2,6 +2,7 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,12 +17,10 @@ import page.clab.api.service.ActivityGroupBoardService;
 import page.clab.api.type.dto.ActivityGroupBoardDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/activity-group/boards")
 @RequiredArgsConstructor
-@Tag(name = "ActivityGroupBoard", description = "활동 그룹 게시판 관리 API")
+@Tag(name = "ActivityGroupBoard", description = "활동 그룹 게시판 관리 관련 API")
 @Slf4j
 public class ActivityGroupBoardController {
 
@@ -39,7 +38,7 @@ public class ActivityGroupBoardController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 활동 그룹 게시판 리스팅", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 활동 그룹 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/list")
     public ResponseModel getActivityGroupBoardList() {
         List<ActivityGroupBoardDto> allBoards = activityGroupBoardService.getAllActivityGroupBoard();
