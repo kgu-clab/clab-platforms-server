@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.repository.ActivityGroupRepository;
@@ -36,11 +38,9 @@ public class ActivityGroupMemberService {
 
     private final EmailService emailService;
 
-    public List<ActivityGroupDto> getActivityGroups(ActivityGroupCategory category) {
-        List<ActivityGroup> activityGroupList = getActivityGroupByCategory(category);
-        return activityGroupList.stream()
-                .map(ActivityGroupDto::of)
-                .collect(Collectors.toList());
+    public List<ActivityGroupDto> getActivityGroups(ActivityGroupCategory category, Pageable pageable) {
+        Page<ActivityGroup> activityGroupList = getActivityGroupByCategory(category, pageable);
+        return activityGroupList.map(ActivityGroupDto::of).getContent();
     }
 
     public ActivityGroupDto getActivityGroup(Long activityGroupId) {
@@ -48,15 +48,13 @@ public class ActivityGroupMemberService {
         return ActivityGroupDto.of(activityGroup);
     }
 
-    public List<GroupScheduleDto> getGroupSchedules(Long activityGroupId) {
-        List<GroupSchedule> groupSchedules = getGroupScheduleByActivityGroupId(activityGroupId);
-        return groupSchedules.stream()
-                .map(GroupScheduleDto::of)
-                .collect(Collectors.toList());
+    public List<GroupScheduleDto> getGroupSchedules(Long activityGroupId, Pageable pageable) {
+        Page<GroupSchedule> groupSchedules = getGroupScheduleByActivityGroupId(activityGroupId, pageable);
+        return groupSchedules.map(GroupScheduleDto::of).getContent();
     }
 
-    public List<GroupMemberDto> getActivityGroupMembers(Long activityGroupId) {
-        List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
+    public List<GroupMemberDto> getActivityGroupMembers(Long activityGroupId, Pageable pageable) {
+        Page<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId, pageable);
         return groupMembers.stream()
                 .map(GroupMemberDto::of)
                 .collect(Collectors.toList());
@@ -84,16 +82,16 @@ public class ActivityGroupMemberService {
                 .orElseThrow(() -> new NotFoundException("해당 활동이 존재하지 않습니다."));
     }
 
-    private List<ActivityGroup> getActivityGroupByCategory(ActivityGroupCategory category) {
-        return activityGroupRepository.findAllByCategory(category);
+    private Page<ActivityGroup> getActivityGroupByCategory(ActivityGroupCategory category, Pageable pageable) {
+        return activityGroupRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
     }
 
-    private List<GroupSchedule> getGroupScheduleByActivityGroupId(Long activityGroupId) {
-        return groupScheduleRepository.findAllByActivityGroupId(activityGroupId);
+    private Page<GroupSchedule> getGroupScheduleByActivityGroupId(Long activityGroupId, Pageable pageable) {
+        return groupScheduleRepository.findAllByActivityGroupIdOrderByIdDesc(activityGroupId, pageable);
     }
 
-    private List<GroupMember> getGroupMemberByActivityGroupId(Long activityGroupId) {
-        return groupMemberRepository.findAllByActivityGroupId(activityGroupId);
+    private Page<GroupMember> getGroupMemberByActivityGroupId(Long activityGroupId, Pageable pageable) {
+        return groupMemberRepository.findAllByActivityGroupIdOrderByMemberAsc(activityGroupId, pageable);
     }
 
 }

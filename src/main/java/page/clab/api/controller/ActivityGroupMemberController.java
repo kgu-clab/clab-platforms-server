@@ -6,6 +6,7 @@ import java.util.List;
 import javax.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,9 +32,12 @@ public class ActivityGroupMemberController {
     @Operation(summary = "활동 목록 조회(카테고리별)", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/{category}")
     public ResponseModel getActivityGroups(
-            @PathVariable ActivityGroupCategory category
+            @PathVariable ActivityGroupCategory category,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
     ) {
-        List<ActivityGroupDto> activityGroups = activityGroupMemberService.getActivityGroups(category);
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        List<ActivityGroupDto> activityGroups = activityGroupMemberService.getActivityGroups(category, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroups);
         return responseModel;
@@ -53,9 +57,12 @@ public class ActivityGroupMemberController {
     @Operation(summary = "[U] 활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/schedule")
     public ResponseModel getGroupScheduleList(
-            @RequestParam Long activityGroupId
+            @RequestParam Long activityGroupId,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
     ) {
-        List<GroupScheduleDto> groupSchedules = activityGroupMemberService.getGroupSchedules(activityGroupId);
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        List<GroupScheduleDto> groupSchedules = activityGroupMemberService.getGroupSchedules(activityGroupId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(groupSchedules);
         return responseModel;
@@ -64,9 +71,12 @@ public class ActivityGroupMemberController {
     @Operation(summary = "[U] 활동 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/members")
     public ResponseModel getActivityGroupMemberList(
-            @RequestParam Long activityGroupId
+            @RequestParam Long activityGroupId,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
     ) {
-        List<GroupMemberDto> activityGroupMembers = activityGroupMemberService.getActivityGroupMembers(activityGroupId);
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        List<GroupMemberDto> activityGroupMembers = activityGroupMemberService.getActivityGroupMembers(activityGroupId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroupMembers);
         return responseModel;

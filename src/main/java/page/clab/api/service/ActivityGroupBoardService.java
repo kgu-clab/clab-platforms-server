@@ -2,9 +2,11 @@ package page.clab.api.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.repository.ActivityGroupBoardRepository;
@@ -41,11 +43,9 @@ public class ActivityGroupBoardService {
         }
     }
 
-    public List<ActivityGroupBoardDto> getAllActivityGroupBoard() {
-        List<ActivityGroupBoard> boards = activityGroupBoardRepository.findAll();
-        return boards.stream()
-                .map(ActivityGroupBoardDto::of)
-                .collect(Collectors.toList());
+    public List<ActivityGroupBoardDto> getAllActivityGroupBoard(Pageable pageable) {
+        Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return boards.map(ActivityGroupBoardDto::of).getContent();
     }
 
     public ActivityGroupBoardDto getActivityGroupBoardById(Long activityGroupBoardId) {
@@ -53,11 +53,10 @@ public class ActivityGroupBoardService {
         return ActivityGroupBoardDto.of(board);
     }
 
-    public List<ActivityGroupBoardDto> getActivityGroupBoardByParent(Long parentId) {
-        List<ActivityGroupBoard> boardList = findChildBoards(parentId);
-        return boardList.stream()
-                .map(ActivityGroupBoardDto::of)
-                .collect(Collectors.toList());
+    public List<ActivityGroupBoardDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) {
+        List<ActivityGroupBoard> boardList = getChildBoards(parentId);
+        Page<ActivityGroupBoard> boardPage = new PageImpl<>(boardList, pageable, boardList.size());
+        return boardPage.map(ActivityGroupBoardDto::of).getContent();
     }
 
     public void updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardDto activityGroupBoardDto) {
@@ -80,17 +79,18 @@ public class ActivityGroupBoardService {
                 .orElseThrow(() -> new NotFoundException("해당 게시글을 찾을 수 없습니다."));
     }
 
-    private List<ActivityGroupBoard> findChildBoards(Long activityGroupBoardId) {
+    private List<ActivityGroupBoard> getChildBoards(Long activityGroupBoardId) {
         List<ActivityGroupBoard> boardList = new ArrayList<>();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
         if (board.getParent() == null || board.getChildren()!= null) {
             boardList.add(board);
             for (ActivityGroupBoard child : board.getChildren()) {
-                boardList.addAll(findChildBoards(child.getId()));
+                boardList.addAll(getChildBoards(child.getId()));
             }
         } else {
             boardList.add(board);
         }
+        boardList.sort((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()));
         return boardList;
     }
 

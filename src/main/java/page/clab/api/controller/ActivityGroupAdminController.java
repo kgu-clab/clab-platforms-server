@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -54,9 +55,12 @@ public class ActivityGroupAdminController {
     @Operation(summary = "[A] 활동 상태별 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getActivityGroupsByStatus (
-            @RequestParam ActivityGroupStatus activityGroupStatus
+            @RequestParam ActivityGroupStatus activityGroupStatus,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
     ) throws PermissionDeniedException {
-        List<ActivityGroupDto> activityGroupList = activityGroupAdminService.getActivityGroupsByStatus(activityGroupStatus);
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        List<ActivityGroupDto> activityGroupList = activityGroupAdminService.getActivityGroupsByStatus(activityGroupStatus, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroupList);
         return responseModel;
@@ -128,9 +132,12 @@ public class ActivityGroupAdminController {
     @Operation(summary = "[U] 신청 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/apply-members")
     public ResponseModel getApplyGroupMemberList(
-            @RequestParam Long activityGroupId
+            @RequestParam Long activityGroupId,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
     ) throws PermissionDeniedException {
-        List<MemberResponseDto> applyMemberList = activityGroupAdminService.getApplyGroupMemberList(activityGroupId);
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        List<MemberResponseDto> applyMemberList = activityGroupAdminService.getApplyGroupMemberList(activityGroupId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applyMemberList);
         return responseModel;

@@ -2,9 +2,10 @@ package page.clab.api.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
@@ -35,12 +36,10 @@ public class ActivityGroupAdminService {
 
     private final GroupScheduleRepository groupScheduleRepository;
 
-    public List<ActivityGroupDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus) throws PermissionDeniedException {
+    public List<ActivityGroupDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus, Pageable pageable) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
-        List<ActivityGroup> activityGroupList = getActivityGroupByStatus(activityGroupStatus);
-        return activityGroupList.stream()
-                .map(ActivityGroupDto::of)
-                .collect(Collectors.toList());
+        Page<ActivityGroup> activityGroupList = getActivityGroupByStatus(activityGroupStatus, pageable);
+        return activityGroupList.map(ActivityGroupDto::of).getContent();
     }
 
     public void manageActivityGroup(Long activityGroupId, ActivityGroupStatus activityGroupStatus) throws PermissionDeniedException {
@@ -77,7 +76,7 @@ public class ActivityGroupAdminService {
     @Transactional
     public void deleteActivityGroup(Long activityGroupId) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
-        List<GroupMember> groupMemberList = groupMemberRepository.findAllByActivityGroupId(activityGroupId);
+        List<GroupMember> groupMemberList = getGroupMemberByActivityGroupId(activityGroupId);
         groupMemberList.stream()
                 .forEach(groupMember -> groupMemberRepository.delete(groupMember));
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
@@ -100,8 +99,8 @@ public class ActivityGroupAdminService {
                 .forEach(groupSchedule -> groupScheduleRepository.save(groupSchedule));
     }
 
-    public List<ActivityGroup> getActivityGroupByStatus(ActivityGroupStatus status) {
-        return activityGroupRepository.findAllByStatus(status);
+    public Page<ActivityGroup> getActivityGroupByStatus(ActivityGroupStatus status, Pageable pageable) {
+        return activityGroupRepository.findAllByStatusOrderByCreatedAtDesc(status, pageable);
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupBoardId) {
@@ -122,12 +121,10 @@ public class ActivityGroupAdminService {
         }
     }
 
-    public List<MemberResponseDto> getApplyGroupMemberList (Long activityGroupId) throws PermissionDeniedException {
+    public List<MemberResponseDto> getApplyGroupMemberList(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
         checkMemberGroupLeaderRole();
-        List<GroupMember> groupMemberList = groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.IN_PROGRESS);
-        return groupMemberList.stream()
-                .map(groupMember -> MemberResponseDto.of(groupMember.getMember()))
-                .collect(Collectors.toList());
+        Page<GroupMember> groupMemberList = getGroupMemberByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.IN_PROGRESS, pageable);
+        return groupMemberList.map(groupMember -> MemberResponseDto.of(groupMember.getMember())).getContent();
     }
 
     public void manageGroupMemberStatus(String memberId, GroupMemberStatus status) throws PermissionDeniedException {
@@ -139,6 +136,14 @@ public class ActivityGroupAdminService {
             groupMember.setRole(ActivityGroupRole.MEMBER);
         }
         groupMemberRepository.save(groupMember);
+    }
+
+    private List<GroupMember> getGroupMemberByActivityGroupId(Long activityGroupId) {
+        return groupMemberRepository.findAllByActivityGroupIdOrderByMemberAsc(activityGroupId);
+    }
+
+    private Page<GroupMember> getGroupMemberByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus groupMemberStatus, Pageable pageable) {
+        return groupMemberRepository.findAllByActivityGroupIdAndStatusOrderByMemberAsc(activityGroupId, groupMemberStatus, pageable);
     }
 
 }
