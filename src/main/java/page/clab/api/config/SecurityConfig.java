@@ -22,7 +22,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import page.clab.api.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.auth.jwt.JwtTokenProvider;
-import page.clab.api.repository.BlacklistIpRepository;
+import page.clab.api.service.BlacklistService;
+import page.clab.api.service.RedisTokenService;
 
 @Configuration
 @EnableWebSecurity
@@ -31,7 +32,9 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    private final BlacklistIpRepository blacklistIpRepository;
+    private final RedisTokenService redisTokenService;
+
+    private final BlacklistService blacklistService;
 
     @Value("${springdoc.account.id}")
     private String username;
@@ -77,7 +80,7 @@ public class SecurityConfig {
                 .httpBasic()
                 .and()
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, blacklistService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

@@ -58,6 +58,10 @@ public class BlacklistService {
         return blacklistIpRepository.existsByIpAddress(ipAddress);
     }
 
+    public boolean isExistsByIpAddress(String ipAddress) {
+        return blacklistIpRepository.existsByIpAddress(ipAddress);
+    }
+
 }
 
 

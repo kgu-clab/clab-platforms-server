@@ -30,7 +30,7 @@ public class JwtTokenProvider {
 
     private static final long ACCESS_TOKEN_DURATION = 30L * 60L * 1000L; // 30분
 
-    private static final long REFRESH_TOKEN_DURATION = 40L * 60L * 1000L; // 40분
+    private static final long REFRESH_TOKEN_DURATION = 60L * 60L * 1000L * 14L; // 14일
 
     public JwtTokenProvider(@Value("${jwt.secret-key}") String secretKey) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
