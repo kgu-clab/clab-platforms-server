@@ -12,7 +12,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import page.clab.api.auth.jwt.JwtTokenProvider;
-import page.clab.api.exception.DuplicateLoginException;
 import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.MemberLockedException;
 import page.clab.api.type.dto.LoginRequestDto;
@@ -90,21 +89,14 @@ public class LoginService {
     @Transactional
     public TokenInfo reissue(HttpServletRequest request, RefreshTokenDto refreshTokenDto) {
         String token = jwtTokenProvider.resolveToken(request);
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            String currentIpAddress = request.getRemoteAddr();
-            RedisToken redisToken = redisTokenService.getRedisToken(token);
-            if (redisToken != null && redisToken.getIp().equals(currentIpAddress)
-                    && redisToken.getRefreshToken().equals(refreshTokenDto.getRefreshToken())) {
-                TokenInfo tokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
-                redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), tokenInfo, currentIpAddress);
-                return tokenInfo;
-            } else {
-                redisTokenService.deleteRedisTokenByAccessToken(token);
-                log.info("[{}/{}] : 중복 로그인이 감지되어 로그아웃 처리되었습니다.", redisToken.getId(), redisToken.getIp());
-                throw new DuplicateLoginException("중복 로그인이 감지되어 로그아웃 처리되었습니다.");
-            }
+        RedisToken redisToken = redisTokenService.getRedisToken(token);
+        if (!redisToken.getRefreshToken().equals(refreshTokenDto.getRefreshToken())) {
+            redisTokenService.deleteRedisTokenByAccessToken(token);
+            throw new SecurityException("올바르지 않은 토큰 재발급 시도가 감지되어 토큰을 삭제하였습니다.");
         }
-        return null;
+        TokenInfo tokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
+        redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), tokenInfo, redisToken.getIp());
+        return tokenInfo;
     }
     
 }
