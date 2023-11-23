@@ -40,8 +40,8 @@ public class News {
     @Size(max = 100)
     private String subtitle;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    @Size(min = 1)
+    @Column(nullable = false, length = 10000)
+    @Size(min = 1, max = 10000, message = "{size.news.content}")
     private String content;
 
     @URL

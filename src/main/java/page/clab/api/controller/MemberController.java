@@ -6,6 +6,8 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,10 +52,28 @@ public class MemberController {
 
     @Operation(summary = "[A] 모든 멤버 정보 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @GetMapping("")
-    public ResponseModel getMembers() throws PermissionDeniedException {
-        List<MemberResponseDto> members = memberService.getMembers();
+    public ResponseModel getMembers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) throws PermissionDeniedException {
+        Pageable pageable = PageRequest.of(page, size);
+        List<MemberResponseDto> members = memberService.getMembers(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(members);
+        return responseModel;
+    }
+
+    @Operation(summary = "이달의 생일자 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @GetMapping("/birthday")
+    public ResponseModel getBirthdaysThisMonth(
+            @RequestParam String month,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<MemberResponseDto> birthdayMembers = memberService.getBirthdaysThisMonth(month, pageable);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(birthdayMembers);
         return responseModel;
     }
 
@@ -63,9 +83,12 @@ public class MemberController {
     public ResponseModel searchMember(
             @RequestParam(required = false) String memberId,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) MemberStatus memberStatus
+            @RequestParam(required = false) MemberStatus memberStatus,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) throws PermissionDeniedException {
-        List<MemberResponseDto> members = memberService.searchMember(memberId, name, memberStatus);
+        Pageable pageable = PageRequest.of(page, size);
+        List<MemberResponseDto> members = memberService.searchMember(memberId, name, memberStatus, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(members);
         return responseModel;
@@ -100,8 +123,12 @@ public class MemberController {
     @Operation(summary = "[A] 모든 멤버의 클라우드 사용량 조회", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "usage 단위: byte")
     @GetMapping("/cloud")
-    public ResponseModel getAllCloudUsages() throws PermissionDeniedException {
-        List<CloudUsageInfo> cloudUsageInfos = memberService.getAllCloudUsages();
+    public ResponseModel getAllCloudUsages(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) throws PermissionDeniedException {
+        Pageable pageable = PageRequest.of(page, size);
+        List<CloudUsageInfo> cloudUsageInfos = memberService.getAllCloudUsages(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(cloudUsageInfos);
         return responseModel;
@@ -122,9 +149,12 @@ public class MemberController {
     @Operation(summary = "[U] 멤버 업로드 파일 리스트 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/files/{memberId}")
     public ResponseModel getMemberUploadedFiles(
-            @PathVariable String memberId
+            @PathVariable String memberId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<FileInfo> files = memberService.getFilesInMemberDirectory(memberId);
+        Pageable pageable = PageRequest.of(page, size);
+        List<FileInfo> files = memberService.getFilesInMemberDirectory(memberId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(files);
         return responseModel;

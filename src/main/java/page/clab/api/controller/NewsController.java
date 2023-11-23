@@ -6,6 +6,8 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,8 +50,12 @@ public class NewsController {
 
     @Operation(summary = "[U] 뉴스 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
-    public ResponseModel getNews() {
-        List<NewsResponseDto> news = newsService.getNews();
+    public ResponseModel getNews(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        List<NewsResponseDto> news = newsService.getNews(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(news);
         return responseModel;
@@ -61,9 +67,12 @@ public class NewsController {
     public ResponseModel searchNews(
             @RequestParam(required = false) Long newsId,
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) String title
+            @RequestParam(required = false) String title,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<NewsResponseDto> news = newsService.searchNews(newsId, category, title);
+        Pageable pageable = PageRequest.of(page, size);
+        List<NewsResponseDto> news = newsService.searchNews(newsId, category, title, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(news);
         return responseModel;

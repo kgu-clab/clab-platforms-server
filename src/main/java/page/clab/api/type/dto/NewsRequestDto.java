@@ -30,7 +30,7 @@ public class NewsRequestDto {
     private String subtitle;
 
     @NotNull(message = "{notNull.news.content}")
-    @Size(min = 1, message = "{size.news.content}")
+    @Size(min = 1, max = 10000, message = "{size.news.content}")
     @Schema(description = "내용", example = "컴퓨터공학과, SW 개발보안 경진대회 최우수상, 우수상 수상", required = true)
     private String content;
 

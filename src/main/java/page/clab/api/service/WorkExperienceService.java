@@ -1,6 +1,9 @@
 package page.clab.api.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
@@ -9,9 +12,6 @@ import page.clab.api.type.dto.WorkExperienceRequestDto;
 import page.clab.api.type.dto.WorkExperienceResponseDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.WorkExperience;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,20 +28,16 @@ public class WorkExperienceService {
         workExperienceRepository.save(workExperience);
     }
 
-    public List<WorkExperienceResponseDto> getMyWorkExperience() {
+    public List<WorkExperienceResponseDto> getMyWorkExperience(Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        List<WorkExperience> workExperiences = workExperienceRepository.findAllByMember_IdOrderByStartDateDesc(member.getId());
-        return workExperiences.stream()
-                .map(WorkExperienceResponseDto::of)
-                .collect(Collectors.toList());
+        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMember_IdOrderByStartDateDesc(member.getId(), pageable);
+        return workExperiences.map(WorkExperienceResponseDto::of).getContent();
     }
 
-    public List<WorkExperienceResponseDto> searchWorkExperience(String memberId) {
+    public List<WorkExperienceResponseDto> searchWorkExperience(String memberId, Pageable pageable) {
         Member member = memberService.getMemberByIdOrThrow(memberId);
-        List<WorkExperience> workExperiences = workExperienceRepository.findAllByMember_IdOrderByStartDateDesc(member.getId());
-        return workExperiences.stream()
-                .map(WorkExperienceResponseDto::of)
-                .collect(Collectors.toList());
+        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMember_IdOrderByStartDateDesc(member.getId(), pageable);
+        return workExperiences.map(WorkExperienceResponseDto::of).getContent();
     }
 
     public void updateWorkExperience(Long workExperienceId, WorkExperienceRequestDto workExperienceRequestDto) throws PermissionDeniedException {

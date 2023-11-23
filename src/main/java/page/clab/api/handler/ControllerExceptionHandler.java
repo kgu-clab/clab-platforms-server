@@ -32,6 +32,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import page.clab.api.auth.exception.TokenValidateException;
 import page.clab.api.auth.exception.UnAuthorizeException;
+import page.clab.api.exception.ActivityGroupNotFinishedException;
+import page.clab.api.exception.AlreadyReviewedException;
 import page.clab.api.exception.AssociatedAccountExistsException;
 import page.clab.api.exception.BookAlreadyBorrowedException;
 import page.clab.api.exception.DuplicateLoginException;
@@ -95,6 +97,8 @@ public class ControllerExceptionHandler {
             StringIndexOutOfBoundsException.class,
             MessagingException.class,
             DuplicateLoginException.class,
+            ActivityGroupNotFinishedException.class,
+            AlreadyReviewedException.class,
             Exception.class
     })
     public ResponseModel errorException(HttpServletRequest request, HttpServletResponse response, Exception e) {

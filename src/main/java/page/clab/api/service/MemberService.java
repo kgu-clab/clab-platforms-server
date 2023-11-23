@@ -1,13 +1,18 @@
 package page.clab.api.service;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import page.clab.api.auth.util.AuthUtil;
@@ -39,9 +44,9 @@ public class MemberService {
     public void createMember(MemberRequestDto memberRequestDto) throws PermissionDeniedException {
         checkMemberAdminRole();
         if (memberRepository.findById(memberRequestDto.getId()).isPresent())
-            throw new AssociatedAccountExistsException();
+            throw new AssociatedAccountExistsException("이미 사용 중인 아이디입니다.");
         if (memberRepository.findByContact(memberRequestDto.getContact()).isPresent())
-            throw new AssociatedAccountExistsException();
+            throw new AssociatedAccountExistsException("이미 사용 중인 연락처입니다.");
         Member member = Member.of(memberRequestDto);
         member.setContact(removeHyphensFromContact(member.getContact()));
         member.setPassword(passwordEncoder.encode(member.getPassword()));
@@ -56,24 +61,42 @@ public class MemberService {
                 .collect(Collectors.toList());
     }
 
-    public List<MemberResponseDto> searchMember(String memberId, String name, MemberStatus memberStatus) throws PermissionDeniedException {
+    public List<MemberResponseDto> getMembers(Pageable pageable) throws PermissionDeniedException {
         checkMemberAdminRole();
-        List<Member> members = new ArrayList<>();
+        Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return members.map(MemberResponseDto::of).getContent();
+    }
+
+    public List<MemberResponseDto> getBirthdaysThisMonth(String month, Pageable pageable) {
+        LocalDate currentMonth = LocalDate.now().withMonth(Integer.parseInt(month));
+        List<Member> members = memberRepository.findAll();
+        List<Member> birthdayMembers = members.stream()
+                .filter(member -> member.getBirth().getMonth() == currentMonth.getMonth())
+                .collect(Collectors.toList());
+        birthdayMembers.sort(Comparator.comparing(member -> member.getBirth().getDayOfMonth()));
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), birthdayMembers.size());
+        Page<Member> birthdayMembersPage = new PageImpl<>(birthdayMembers.subList(start, end), pageable, birthdayMembers.size());
+        return birthdayMembersPage.map(MemberResponseDto::of).getContent();
+    }
+
+    public List<MemberResponseDto> searchMember(String memberId, String name, MemberStatus memberStatus, Pageable pageable) throws PermissionDeniedException {
+        checkMemberAdminRole();
+        Page<Member> members;
         if (memberId != null) {
-            members.add(getMemberByIdOrThrow(memberId));
+            Member member = getMemberByIdOrThrow(memberId);
+            members = new PageImpl<>(Arrays.asList(member), pageable, 1);
         } else if (name != null) {
-            members.addAll(getMemberByName(name));
+            members = getMemberByName(name, pageable);
         } else if (memberStatus != null) {
-            members.addAll(getMemberByMemberStatus(memberStatus));
+            members = getMemberByMemberStatus(memberStatus, pageable);
         } else {
             throw new IllegalArgumentException("적어도 memberId, name, memberStatus 중 하나를 제공해야 합니다.");
         }
         if (members.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return members.stream()
-                .map(MemberResponseDto::of)
-                .collect(Collectors.toList());
+        return members.map(MemberResponseDto::of).getContent();
     }
 
     public void updateMemberInfo(String memberId, MemberRequestDto memberRequestDto) throws PermissionDeniedException {
@@ -98,12 +121,10 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public List<CloudUsageInfo> getAllCloudUsages() throws PermissionDeniedException {
+    public List<CloudUsageInfo> getAllCloudUsages(Pageable pageable) throws PermissionDeniedException {
         checkMemberAdminRole();
-        List<Member> members = memberRepository.findAll();
-        return members.stream()
-                .map(member -> getCloudUsageByMemberId(member.getId()))
-                .collect(Collectors.toList());
+        Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return members.map(member -> getCloudUsageByMemberId(member.getId())).getContent();
     }
 
     public CloudUsageInfo getCloudUsageByMemberId(String memberId) {
@@ -120,7 +141,7 @@ public class MemberService {
         return cloudUsageInfo;
     }
 
-    public List<FileInfo> getFilesInMemberDirectory(String memberId) {
+    public List<FileInfo> getFilesInMemberDirectory(String memberId, Pageable pageable) {
         Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
         if (!(isMemberAdminRole(member) || currentMember.getId().equals(memberId))) {
@@ -128,9 +149,19 @@ public class MemberService {
         }
         File directory = new File(filePath + "/members/" + memberId);
         File[] files = FileSystemUtil.getFilesInDirectory(directory).toArray(new File[0]);
-        return Arrays.stream(files)
+        if (files.length == 0) {
+            return new ArrayList<>();
+        }
+        int totalFiles = files.length;
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), totalFiles);
+        if (start >= totalFiles) {
+            return new ArrayList<>();
+        }
+        Page<FileInfo> fileInfoPage = new PageImpl<>(Arrays.stream(files)
                 .map(FileInfo::of)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()).subList(start, end), pageable, totalFiles);
+        return fileInfoPage.getContent();
     }
 
     public void setLastLoginTime(String memberId) {
@@ -148,10 +179,10 @@ public class MemberService {
     }
 
     public boolean isMemberAdminRole(Member member) {
-        if (member.getRole().equals(Role.USER)) {
-            return false;
+        if (!member.getRole().equals(Role.USER)) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     public Member getMemberById(String memberId) {
@@ -164,12 +195,12 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
     }
 
-    public List<Member> getMemberByName(String name) {
-        return memberRepository.findAllByName(name);
+    public Page<Member> getMemberByName(String name, Pageable pageable) {
+        return memberRepository.findAllByNameOrderByCreatedAtDesc(name, pageable);
     }
 
-    public List<Member> getMemberByMemberStatus(MemberStatus memberStatus) {
-        return memberRepository.findByMemberStatus(memberStatus);
+    public Page<Member> getMemberByMemberStatus(MemberStatus memberStatus, Pageable pageable) {
+        return memberRepository.findByMemberStatusOrderByCreatedAtDesc(memberStatus, pageable);
     }
 
     public Member saveMember(Member updatedMember) {
