@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,6 +11,7 @@ import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.DonationRepository;
 import page.clab.api.type.dto.DonationRequestDto;
 import page.clab.api.type.dto.DonationResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Donation;
 import page.clab.api.type.entity.Member;
 
@@ -31,18 +31,18 @@ public class DonationService {
         donationRepository.save(donation);
     }
 
-    public List<DonationResponseDto> getDonations(Pageable pageable) {
+    public PagedResponseDto<DonationResponseDto> getDonations(Pageable pageable) {
         Page<Donation> donations = donationRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return donations.map(DonationResponseDto::of).getContent();
+        return new PagedResponseDto<>(donations.map(DonationResponseDto::of));
     }
 
-    public List<DonationResponseDto> getMyDonations(Pageable pageable) {
+    public PagedResponseDto<DonationResponseDto> getMyDonations(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Donation> donations = getDonationsByDonor(member, pageable);
-        return donations.map(DonationResponseDto::of).getContent();
+        return new PagedResponseDto<>(donations.map(DonationResponseDto::of));
     }
 
-    public List<DonationResponseDto> searchDonation(String memberId, String name, Pageable pageable) {
+    public PagedResponseDto<DonationResponseDto> searchDonation(String memberId, String name, Pageable pageable) {
         Page<Donation> donations;
         if (memberId != null) {
             donations = getDonationByDonorIdOrThrow(memberId, pageable);
@@ -53,7 +53,7 @@ public class DonationService {
         }
         if (donations.isEmpty())
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
-        return donations.map(DonationResponseDto::of).getContent();
+        return new PagedResponseDto<>(donations.map(DonationResponseDto::of));
     }
 
     public void updateDonation(Long donationId, DonationRequestDto donationRequestDto) throws PermissionDeniedException {

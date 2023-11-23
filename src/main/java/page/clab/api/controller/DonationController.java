@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +14,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.DonationService;
 import page.clab.api.type.dto.DonationRequestDto;
 import page.clab.api.type.dto.DonationResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -47,7 +47,7 @@ public class DonationController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<DonationResponseDto> donations = donationService.getDonations(pageable);
+        PagedResponseDto<DonationResponseDto> donations = donationService.getDonations(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(donations);
         return responseModel;
@@ -60,7 +60,7 @@ public class DonationController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<DonationResponseDto> donations = donationService.getMyDonations(pageable);
+        PagedResponseDto<DonationResponseDto> donations = donationService.getMyDonations(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(donations);
         return responseModel;
@@ -76,7 +76,7 @@ public class DonationController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<DonationResponseDto> donations = donationService.searchDonation(memberId, name, pageable);
+        PagedResponseDto<DonationResponseDto> donations = donationService.searchDonation(memberId, name, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(donations);
         return responseModel;

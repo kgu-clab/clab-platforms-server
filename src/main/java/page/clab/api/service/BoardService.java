@@ -2,7 +2,6 @@ package page.clab.api.service;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -14,6 +13,7 @@ import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.BoardRepository;
 import page.clab.api.type.dto.BoardRequestDto;
 import page.clab.api.type.dto.BoardResonseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Board;
 import page.clab.api.type.entity.Member;
 
@@ -32,18 +32,18 @@ public class BoardService {
         boardRepository.save(board);
     }
 
-    public List<BoardResonseDto> getBoards(Pageable pageable) {
+    public PagedResponseDto<BoardResonseDto> getBoards(Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return boards.map(BoardResonseDto::of).getContent();
+        return new PagedResponseDto<>(boards.map(BoardResonseDto::of));
     }
 
-    public List<BoardResonseDto> getMyBoards(Pageable pageable) {
+    public PagedResponseDto<BoardResonseDto> getMyBoards(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Board> boards = getBoardByMember(pageable, member);
-        return boards.map(BoardResonseDto::of).getContent();
+        return new PagedResponseDto<>(boards.map(BoardResonseDto::of));
     }
 
-    public List<BoardResonseDto> searchBoards(Long boardId, String category, Pageable pageable) {
+    public PagedResponseDto<BoardResonseDto> searchBoards(Long boardId, String category, Pageable pageable) {
         Page<Board> boards;
         if (boardId != null) {
             Board board = getBoardByIdOrThrow(boardId);
@@ -56,7 +56,7 @@ public class BoardService {
         if (boards.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return boards.map(BoardResonseDto::of).getContent();
+        return new PagedResponseDto<>(boards.map(BoardResonseDto::of));
     }
 
     public void updateBoard(Long boardId, BoardRequestDto boardRequestDto) throws PermissionDeniedException {

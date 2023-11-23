@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +9,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.ExecutivesRepository;
 import page.clab.api.type.dto.ExecutivesRequestDto;
 import page.clab.api.type.dto.ExecutivesResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Executives;
 import page.clab.api.type.entity.Member;
 
@@ -31,14 +31,14 @@ public class ExecutivesService {
         executivesRepository.save(executives);
     }
 
-    public List<ExecutivesResponseDto> getExecutives(Pageable pageable) {
+    public PagedResponseDto<ExecutivesResponseDto> getExecutives(Pageable pageable) {
         Page<Executives> executives = executivesRepository.findAllByOrderByYearDescPositionAsc(pageable);
-        return executives.map(ExecutivesResponseDto::of).getContent();
+        return new PagedResponseDto<>(executives.map(ExecutivesResponseDto::of));
     }
 
-    public List<ExecutivesResponseDto> getExecutivesByYear(Pageable pageable, String year) {
+    public PagedResponseDto<ExecutivesResponseDto> getExecutivesByYear(Pageable pageable, String year) {
         Page<Executives> executives = getExecutivesByYear(year, pageable);
-        return executives.map(ExecutivesResponseDto::of).getContent();
+        return new PagedResponseDto<>(executives.map(ExecutivesResponseDto::of));
     }
 
     public void deleteExecutives(Long executivesId) throws PermissionDeniedException {

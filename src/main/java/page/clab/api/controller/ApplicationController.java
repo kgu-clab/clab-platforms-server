@@ -3,7 +3,6 @@ package page.clab.api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +24,7 @@ import page.clab.api.service.ApplicationService;
 import page.clab.api.type.dto.ApplicationPassResponseDto;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -57,7 +57,7 @@ public class ApplicationController {
             @RequestParam(defaultValue = "10") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        List<ApplicationResponseDto> applications = applicationService.getApplications(pageable);
+        PagedResponseDto<ApplicationResponseDto> applications = applicationService.getApplications(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applications);
         return responseModel;
@@ -73,7 +73,7 @@ public class ApplicationController {
             @RequestParam(defaultValue = "10") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        List<ApplicationResponseDto> applications = applicationService.getApplicationsBetweenDates(startDate, endDate, pageable);
+        PagedResponseDto<ApplicationResponseDto> applications = applicationService.getApplicationsBetweenDates(startDate, endDate, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applications);
         return responseModel;
@@ -109,7 +109,7 @@ public class ApplicationController {
             @RequestParam(defaultValue = "10") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        List<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications(pageable);
+        PagedResponseDto<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(approvedApplications);
         return responseModel;

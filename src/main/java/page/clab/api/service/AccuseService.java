@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +12,7 @@ import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.AccuseRepository;
 import page.clab.api.type.dto.AccuseRequestDto;
 import page.clab.api.type.dto.AccuseResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Accuse;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.AccuseStatus;
@@ -58,16 +58,16 @@ public class AccuseService {
         }
     }
 
-    public List<AccuseResponseDto> getAccuses(Pageable pageable) throws PermissionDeniedException {
+    public PagedResponseDto<AccuseResponseDto> getAccuses(Pageable pageable) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("해당 신고 내역을 수정할 권한이 없습니다.");
         }
         Page<Accuse> accuses = accuseRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return accuses.map(AccuseResponseDto::of).getContent();
+        return new PagedResponseDto<>(accuses.map(AccuseResponseDto::of));
     }
 
-    public List<AccuseResponseDto> searchAccuse(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable) throws PermissionDeniedException {
+    public PagedResponseDto<AccuseResponseDto> searchAccuse(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("해당 신고 내역을 수정할 권한이 없습니다.");
@@ -85,7 +85,7 @@ public class AccuseService {
         if (accuses.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return accuses.map(AccuseResponseDto::of).getContent();
+        return new PagedResponseDto<>(accuses.map(AccuseResponseDto::of));
     }
 
     public void updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) throws PermissionDeniedException {

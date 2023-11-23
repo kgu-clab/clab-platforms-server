@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +11,7 @@ import page.clab.api.repository.NewsRepository;
 import page.clab.api.type.dto.NewsDetailsResponseDto;
 import page.clab.api.type.dto.NewsRequestDto;
 import page.clab.api.type.dto.NewsResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.News;
 
@@ -32,9 +32,9 @@ public class NewsService {
         newsRepository.save(news);
     }
 
-    public List<NewsResponseDto> getNews(Pageable pageable) {
+    public PagedResponseDto<NewsResponseDto> getNews(Pageable pageable) {
         Page<News> news = newsRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return news.map(NewsResponseDto::of).getContent();
+        return new PagedResponseDto<>(news.map(NewsResponseDto::of));
     }
 
     public NewsDetailsResponseDto getNewsDetails(Long newsId) {
@@ -42,7 +42,7 @@ public class NewsService {
         return NewsDetailsResponseDto.of(news);
     }
 
-    public List<NewsResponseDto> searchNews(String category, String title, Pageable pageable) {
+    public PagedResponseDto<NewsResponseDto> searchNews(String category, String title, Pageable pageable) {
         Page<News> news;
         if (category != null) {
             news = getNewsByCategoryContaining(category, pageable);
@@ -54,7 +54,7 @@ public class NewsService {
         if (news.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return news.map(NewsResponseDto::of).getContent();
+        return new PagedResponseDto<>(news.map(NewsResponseDto::of));
     }
 
     public void updateNews(Long newsId, NewsRequestDto newsRequestDto) throws PermissionDeniedException {

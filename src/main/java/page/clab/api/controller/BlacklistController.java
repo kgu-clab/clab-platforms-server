@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.BlacklistService;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.entity.BlacklistIp;
 
@@ -44,7 +44,7 @@ public class BlacklistController {
             @RequestParam(defaultValue = "10") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        List<BlacklistIp> blacklistedIps = blacklistService.getBlacklistedIps(pageable);
+        PagedResponseDto<BlacklistIp> blacklistedIps = blacklistService.getBlacklistedIps(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(blacklistedIps);
         return responseModel;

@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +23,7 @@ import page.clab.api.service.NewsService;
 import page.clab.api.type.dto.NewsDetailsResponseDto;
 import page.clab.api.type.dto.NewsRequestDto;
 import page.clab.api.type.dto.NewsResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -56,7 +56,7 @@ public class NewsController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<NewsResponseDto> news = newsService.getNews(pageable);
+        PagedResponseDto<NewsResponseDto> news = newsService.getNews(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(news);
         return responseModel;
@@ -83,7 +83,7 @@ public class NewsController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<NewsResponseDto> news = newsService.searchNews(category, title, pageable);
+        PagedResponseDto<NewsResponseDto> news = newsService.searchNews(category, title, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(news);
         return responseModel;

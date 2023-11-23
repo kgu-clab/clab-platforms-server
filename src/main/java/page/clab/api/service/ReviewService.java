@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -12,6 +11,7 @@ import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.ReviewRepository;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ReviewRequestDto;
 import page.clab.api.type.dto.ReviewResponseDto;
 import page.clab.api.type.entity.ActivityGroup;
@@ -47,23 +47,23 @@ public class ReviewService {
         reviewRepository.save(review);
   }
 
-    public List<ReviewResponseDto> getReviews(Pageable pageable) {
+    public PagedResponseDto<ReviewResponseDto> getReviews(Pageable pageable) {
         Page<Review> reviews = reviewRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return reviews.map(ReviewResponseDto::of).getContent();
+        return new PagedResponseDto<>(reviews.map(ReviewResponseDto::of));
     }
 
-    public List<ReviewResponseDto> getMyReviews(Pageable pageable) {
+    public PagedResponseDto<ReviewResponseDto> getMyReviews(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Review> reviews = getReviewByMember(pageable, member);
-        return reviews.map(ReviewResponseDto::of).getContent();
+        return new PagedResponseDto<>(reviews.map(ReviewResponseDto::of));
     }
 
-    public List<ReviewResponseDto> getPublicReview(Pageable pageable) {
+    public PagedResponseDto<ReviewResponseDto> getPublicReview(Pageable pageable) {
         Page<Review> reviews = getReviewByIsPublic(pageable);
-        return reviews.map(ReviewResponseDto::of).getContent();
+        return new PagedResponseDto<>(reviews.map(ReviewResponseDto::of));
     }
 
-    public List<ReviewResponseDto> searchReview(String memberId, String name, Long activityGroupId, String activityGroupCategory, Pageable pageable) {
+    public PagedResponseDto<ReviewResponseDto> searchReview(String memberId, String name, Long activityGroupId, String activityGroupCategory, Pageable pageable) {
         Page<Review> reviews;
         if (memberId != null) {
             reviews = getReviewByMemberId(memberId, pageable);
@@ -79,7 +79,7 @@ public class ReviewService {
         if (reviews.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return reviews.map(ReviewResponseDto::of).getContent();
+        return new PagedResponseDto<>(reviews.map(ReviewResponseDto::of));
     }
 
     public void updateReview(Long reviewId, ReviewRequestDto reviewRequestDto) throws PermissionDeniedException {
