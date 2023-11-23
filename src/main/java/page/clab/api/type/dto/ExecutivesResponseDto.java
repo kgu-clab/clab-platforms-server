@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.entity.Executives;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.ExecutivesPosition;
 import page.clab.api.util.ModelMapperUtil;
 
 @Getter
@@ -28,7 +29,7 @@ public class ExecutivesResponseDto {
 
     private String githubUrl;
 
-    private String position;
+    private ExecutivesPosition position;
 
     private String year;
 
