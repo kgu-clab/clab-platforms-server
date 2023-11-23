@@ -8,7 +8,7 @@ import page.clab.api.exception.NotFoundException;
 import page.clab.api.repository.ActivityGroupRepository;
 import page.clab.api.repository.GroupMemberRepository;
 import page.clab.api.repository.GroupScheduleRepository;
-import page.clab.api.type.dto.ActivityGroupDto;
+import page.clab.api.type.dto.ActivityGroupRequestDto;
 import page.clab.api.type.dto.GroupMemberDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.entity.ActivityGroup;
@@ -29,16 +29,16 @@ public class ActivityGroupMemberService {
 
     private final MemberService memberService;
 
-    public List<ActivityGroupDto> getActivityGroups(String category) {
+    public List<ActivityGroupRequestDto> getActivityGroups(String category) {
         List<ActivityGroup> activityGroupList = getActivityGroupByCategory(category);
         return activityGroupList.stream()
-                .map(ActivityGroupDto::of)
+                .map(ActivityGroupRequestDto::of)
                 .collect(Collectors.toList());
     }
 
-    public ActivityGroupDto getActivityGroup(Long activityGroupId) {
+    public ActivityGroupRequestDto getActivityGroup(Long activityGroupId) {
     ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        return ActivityGroupDto.of(activityGroup);
+        return ActivityGroupRequestDto.of(activityGroup);
     }
 
     public List<GroupScheduleDto> getGroupSchedules(Long activityGroupId) {

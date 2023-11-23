@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.service.ActivityGroupMemberService;
-import page.clab.api.type.dto.ActivityGroupDto;
+import page.clab.api.type.dto.ActivityGroupRequestDto;
 import page.clab.api.type.dto.GroupMemberDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.ResponseModel;
@@ -31,7 +31,7 @@ public class ActivityGroupMemberController {
     public ResponseModel getActivityGroups(
             @PathVariable String category
     ) {
-        List<ActivityGroupDto> activityGroups = activityGroupMemberService.getActivityGroups(category);
+        List<ActivityGroupRequestDto> activityGroups = activityGroupMemberService.getActivityGroups(category);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroups);
         return responseModel;
@@ -42,7 +42,7 @@ public class ActivityGroupMemberController {
     public ResponseModel getActivityGroup(
             @PathVariable Long activityGroupId
     ) {
-        ActivityGroupDto activityGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
+        ActivityGroupRequestDto activityGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroup);
         return responseModel;

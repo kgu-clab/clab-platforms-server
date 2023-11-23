@@ -11,7 +11,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.ActivityGroupRepository;
 import page.clab.api.repository.GroupMemberRepository;
 import page.clab.api.repository.GroupScheduleRepository;
-import page.clab.api.type.dto.ActivityGroupDto;
+import page.clab.api.type.dto.ActivityGroupRequestDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
@@ -32,11 +32,11 @@ public class ActivityGroupAdminService {
 
     private final GroupScheduleRepository groupScheduleRepository;
 
-    public List<ActivityGroupDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus) throws PermissionDeniedException {
+    public List<ActivityGroupRequestDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         List<ActivityGroup> activityGroupList = getActivityGroupByStatus(activityGroupStatus);
         return activityGroupList.stream()
-                .map(ActivityGroupDto::of)
+                .map(ActivityGroupRequestDto::of)
                 .collect(Collectors.toList());
     }
 
@@ -48,9 +48,9 @@ public class ActivityGroupAdminService {
     }
 
     @Transactional
-    public void createActivityGroup(ActivityGroupDto activityGroupDto) {
+    public void createActivityGroup(ActivityGroupRequestDto activityGroupRequestDto) {
         Member member = memberService.getCurrentMember();
-        ActivityGroup activityGroup = ActivityGroup.of(activityGroupDto);
+        ActivityGroup activityGroup = ActivityGroup.of(activityGroupRequestDto);
         activityGroup.setStatus(ActivityGroupStatus.승인대기);
         activityGroup.setProgress(0L);
         activityGroup.setCreatedAt(LocalDateTime.now());
@@ -60,13 +60,13 @@ public class ActivityGroupAdminService {
         groupMemberRepository.save(groupLeader);
     }
 
-    public void updateActivityGroup(Long activityGroupId, ActivityGroupDto activityGroupDto) throws PermissionDeniedException {
+    public void updateActivityGroup(Long activityGroupId, ActivityGroupRequestDto activityGroupRequestDto) throws PermissionDeniedException {
         checkMemberGroupLeaderRole();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        activityGroup.setCategory(activityGroupDto.getCategory());
-        activityGroup.setName(activityGroupDto.getName());
-        activityGroup.setContent(activityGroupDto.getContent());
-        activityGroup.setImageUrl(activityGroupDto.getImageUrl());
+        activityGroup.setCategory(activityGroupRequestDto.getCategory());
+        activityGroup.setName(activityGroupRequestDto.getName());
+        activityGroup.setContent(activityGroupRequestDto.getContent());
+        activityGroup.setImageUrl(activityGroupRequestDto.getImageUrl());
         activityGroupRepository.save(activityGroup);
     }
 

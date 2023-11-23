@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.ActivityGroupAdminService;
-import page.clab.api.type.dto.ActivityGroupDto;
+import page.clab.api.type.dto.ActivityGroupRequestDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.etc.ActivityGroupStatus;
@@ -36,13 +36,13 @@ public class ActivityGroupAdminController {
     @Operation(summary = "[U] 활동 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createActivityGroup(
-            @Valid @RequestBody ActivityGroupDto activityGroupDto,
+            @Valid @RequestBody ActivityGroupRequestDto activityGroupRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        activityGroupAdminService.createActivityGroup(activityGroupDto);
+        activityGroupAdminService.createActivityGroup(activityGroupRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
@@ -52,7 +52,7 @@ public class ActivityGroupAdminController {
     public ResponseModel getActivityGroupsByStatus (
             @RequestParam ActivityGroupStatus activityGroupStatus
     ) throws PermissionDeniedException {
-        List<ActivityGroupDto> activityGroupList = activityGroupAdminService.getActivityGroupsByStatus(activityGroupStatus);
+        List<ActivityGroupRequestDto> activityGroupList = activityGroupAdminService.getActivityGroupsByStatus(activityGroupStatus);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroupList);
         return responseModel;
@@ -62,13 +62,13 @@ public class ActivityGroupAdminController {
     @PatchMapping("/{activityGroupId}")
     public ResponseModel updateActivityGroup(
             @PathVariable Long activityGroupId,
-            @Valid @RequestBody ActivityGroupDto activityGroupDto,
+            @Valid @RequestBody ActivityGroupRequestDto activityGroupRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        activityGroupAdminService.updateActivityGroup(activityGroupId, activityGroupDto);
+        activityGroupAdminService.updateActivityGroup(activityGroupId, activityGroupRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
