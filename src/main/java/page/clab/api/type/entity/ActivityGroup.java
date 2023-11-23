@@ -8,7 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.URL;
-import page.clab.api.type.dto.ActivityGroupDto;
+import page.clab.api.type.dto.ActivityGroupRequestDto;
 import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupStatus;
 import page.clab.api.util.ModelMapperUtil;
@@ -61,8 +61,8 @@ public class ActivityGroup {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static ActivityGroup of(ActivityGroupDto activityGroupDto) {
-        return ModelMapperUtil.getModelMapper().map(activityGroupDto, ActivityGroup.class);
+    public static ActivityGroup of(ActivityGroupRequestDto activityGroupRequestDto) {
+        return ModelMapperUtil.getModelMapper().map(activityGroupRequestDto, ActivityGroup.class);
     }
 
 }
