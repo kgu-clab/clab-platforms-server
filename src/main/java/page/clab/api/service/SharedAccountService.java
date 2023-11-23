@@ -1,16 +1,16 @@
 package page.clab.api.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.SharedAccountRepository;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.SharedAccountRequestDto;
 import page.clab.api.type.dto.SharedAccountResponseDto;
 import page.clab.api.type.entity.SharedAccount;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,11 +26,9 @@ public class SharedAccountService {
         sharedAccountRepository.save(sharedAccount);
     }
 
-    public List<SharedAccountResponseDto> getSharedAccounts() {
-        List<SharedAccount> sharedAccounts = sharedAccountRepository.findAll();
-        return sharedAccounts.stream()
-                .map(SharedAccountResponseDto::of)
-                .collect(Collectors.toList());
+    public PagedResponseDto<SharedAccountResponseDto> getSharedAccounts(Pageable pageable) {
+        Page<SharedAccount> sharedAccounts = sharedAccountRepository.findAllByOrderByIdAsc(pageable);
+        return new PagedResponseDto<>(sharedAccounts.map(SharedAccountResponseDto::of));
     }
 
     public void updateSharedAccount(Long accountId, SharedAccountRequestDto sharedAccountRequestDto) throws PermissionDeniedException {

@@ -1,25 +1,27 @@
 package page.clab.api.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import page.clab.api.exception.NotFoundException;
-import page.clab.api.exception.PermissionDeniedException;
-import page.clab.api.repository.BookRepository;
-import page.clab.api.type.dto.BookRequestDto;
-import page.clab.api.type.dto.BookResponseDto;
-import page.clab.api.type.entity.Book;
-
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import page.clab.api.exception.NotFoundException;
+import page.clab.api.exception.PermissionDeniedException;
+import page.clab.api.repository.BookRepository;
+import page.clab.api.type.dto.BookRequestDto;
+import page.clab.api.type.dto.BookResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
+import page.clab.api.type.entity.Book;
 
 @Service
 @RequiredArgsConstructor
@@ -37,43 +39,36 @@ public class BookService {
         bookRepository.save(book);
     }
 
-    public List<BookResponseDto> getBooks() {
-        List<Book> books = bookRepository.findAll();
-        return books.stream()
-                .map(BookResponseDto::of)
-                .collect(Collectors.toList());
+    public PagedResponseDto<BookResponseDto> getBooks(Pageable pageable) {
+        Page<Book> books = bookRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return new PagedResponseDto<>(books.map(BookResponseDto::of));
     }
 
-    public List<BookResponseDto> searchBook(String category, String title, String author, String publisher, String borrowerId) {
+    public PagedResponseDto<BookResponseDto> searchBook(String keyword, Pageable pageable) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Book> criteriaQuery = criteriaBuilder.createQuery(Book.class);
-        Root<Book> bookRoot = criteriaQuery.from(Book.class);
-
+        Root<Book> root = criteriaQuery.from(Book.class);
         List<Predicate> predicates = new ArrayList<>();
-        if (category != null) {
-            predicates.add(criteriaBuilder.equal(bookRoot.get("category"), category));
+        if (keyword != null && !keyword.isEmpty()) {
+            String keywordLowerCase = "%" + keyword.toLowerCase() + "%";
+            predicates.add(criteriaBuilder.or(
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("category")), keywordLowerCase),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), keywordLowerCase),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("author")), keywordLowerCase),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("publisher")), keywordLowerCase),
+                    criteriaBuilder.equal(criteriaBuilder.lower(root.get("borrower").get("id")), keyword.toLowerCase())
+            ));
         }
-        if (title != null) {
-            predicates.add(criteriaBuilder.like(bookRoot.get("title"), "%" + title + "%"));
-        }
-        if (author != null) {
-            predicates.add(criteriaBuilder.like(bookRoot.get("author"), "%" + author + "%"));
-        }
-        if (publisher != null) {
-            predicates.add(criteriaBuilder.equal(bookRoot.get("publisher"), publisher));
-        }
-        if (borrowerId != null) {
-            predicates.add(criteriaBuilder.equal(bookRoot.get("borrowerId"), borrowerId));
-        }
-
-        criteriaQuery.select(bookRoot).where(predicates.toArray(new Predicate[0]));
+        criteriaQuery.select(root).where(predicates.toArray(new Predicate[0]));
+        criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createdAt")));
         TypedQuery<Book> query = entityManager.createQuery(criteriaQuery);
         List<Book> books = query.getResultList();
-        Set<Book> uniqueBooks = new HashSet<>(books);
-
-        return uniqueBooks.stream()
-                .map(BookResponseDto::of)
-                .collect(Collectors.toList());
+        Set<Book> uniqueBooks = new LinkedHashSet<>(books);
+        List<Book> distinctBooks = new ArrayList<>(uniqueBooks);
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), distinctBooks.size());
+        Page<Book> bookPage = new PageImpl<>(distinctBooks.subList(start, end), pageable, distinctBooks.size());
+        return new PagedResponseDto<>(bookPage.map(BookResponseDto::of));
     }
 
     public void updateBookInfo(Long bookId, BookRequestDto bookRequestDto) throws PermissionDeniedException {

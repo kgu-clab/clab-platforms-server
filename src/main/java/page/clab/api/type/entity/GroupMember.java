@@ -1,16 +1,20 @@
 package page.clab.api.type.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import page.clab.api.type.dto.GroupMemberDto;
+import page.clab.api.type.etc.ActivityGroupRole;
+import page.clab.api.util.ModelMapperUtil;
 
 @Entity
 @Getter
@@ -31,6 +35,18 @@ public class GroupMember {
     @JoinColumn(name = "activity_group_id")
     private ActivityGroup activityGroup;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private ActivityGroupRole role;
+
+    public static GroupMember of(GroupMemberDto groupMemberDto) {
+        return ModelMapperUtil.getModelMapper().map(groupMemberDto, GroupMember.class);
+    }
+
+    public static GroupMember of(Member member, ActivityGroup activityGroup) {
+        return GroupMember.builder()
+                .member(member)
+                .activityGroup(activityGroup)
+                .build();
+    }
 
 }
