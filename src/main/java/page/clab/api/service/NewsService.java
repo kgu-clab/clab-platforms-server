@@ -1,78 +1,94 @@
 package page.clab.api.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
+import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.NewsRepository;
-import page.clab.api.type.dto.NewsDto;
+import page.clab.api.type.dto.NewsDetailsResponseDto;
+import page.clab.api.type.dto.NewsRequestDto;
+import page.clab.api.type.dto.NewsResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
+import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.News;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class NewsService {
 
-    private final NewsRepository newsRepository;
-
     private final MemberService memberService;
 
-    public void createNews(NewsDto newsDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
-        News news = News.of(newsDto);
+    private final NewsRepository newsRepository;
+
+    public void createNews(NewsRequestDto newsRequestDto) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
+        if (!memberService.isMemberAdminRole(member)) {
+            throw new PermissionDeniedException("관리자만 뉴스를 등록할 수 있습니다.");
+        }
+        News news = News.of(newsRequestDto);
         newsRepository.save(news);
     }
 
-    public List<NewsDto> readNewsList(){
-        List<News> newsList = newsRepository.findAll();
-        List<NewsDto> newsDtoList = new ArrayList<>();
-        for (News news : newsList) {
-            NewsDto newsDto = NewsDto.of(news);
-            newsDtoList.add(newsDto);
+    public PagedResponseDto<NewsResponseDto> getNews(Pageable pageable) {
+        Page<News> news = newsRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return new PagedResponseDto<>(news.map(NewsResponseDto::of));
+    }
+
+    public NewsDetailsResponseDto getNewsDetails(Long newsId) {
+        News news = getNewsByIdOrThrow(newsId);
+        return NewsDetailsResponseDto.of(news);
+    }
+
+    public PagedResponseDto<NewsResponseDto> searchNews(String category, String title, Pageable pageable) {
+        Page<News> news;
+        if (category != null) {
+            news = getNewsByCategory(category, pageable);
+        } else if (title != null) {
+            news = getNewsByTitleContaining(title, pageable);
+        } else {
+            throw new IllegalArgumentException("적어도 newsId, category, title 중 하나를 제공해야 합니다.");
         }
-        return newsDtoList;
-    }
-
-    public NewsDto readNewsById(Long newsId){
-        News news = getNewsById(newsId);
-        return NewsDto.of(news);
-    }
-
-    public List<NewsDto> searchNewsByTitleAndCategory(String title, String category){
-        List<News> newsList = newsRepository.findAllByTitleContains(title);
-        newsList.addAll(newsRepository.findAllByCategory(category));
-        List<NewsDto> newsDtoList = new ArrayList<>();
-        for (News news : newsList) {
-            NewsDto newsDto = NewsDto.of(news);
-            newsDtoList.add(newsDto);
+        if (news.isEmpty()) {
+            throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return newsDtoList;
+        return new PagedResponseDto<>(news.map(NewsResponseDto::of));
     }
 
-    public void updateNews(Long newsId, NewsDto newsDto) throws PermissionDeniedException{
-        memberService.checkMemberAdminRole();
-        News news = getNewsById(newsId);
-        News updateNews = News.of(newsDto);
-        updateNews.setId(news.getId());
-        updateNews.setTitle(newsDto.getTitle());
-        updateNews.setContent(newsDto.getContent());
-        updateNews.setCategory(newsDto.getCategory());
-        updateNews.setSubtitle(newsDto.getSubtitle());
-        updateNews.setUrl(newsDto.getUrl());
-        updateNews.setUpdateTime(LocalDateTime.now());
-        newsRepository.save(updateNews);
+    public void updateNews(Long newsId, NewsRequestDto newsRequestDto) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
+        if (!memberService.isMemberAdminRole(member)) {
+            throw new PermissionDeniedException("관리자만 뉴스를 수정할 수 있습니다.");
+        }
+        News news = getNewsByIdOrThrow(newsId);
+        News updatedNews = News.of(newsRequestDto);
+        updatedNews.setId(news.getId());
+        updatedNews.setCreatedAt(news.getCreatedAt());
+        newsRepository.save(updatedNews);
     }
 
-    public void deleteNews(Long newsId) throws PermissionDeniedException{
-        memberService.checkMemberAdminRole();
-        News news = getNewsById(newsId);
+    public void deleteNews(Long newsId) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
+        if (!memberService.isMemberAdminRole(member)) {
+            throw new PermissionDeniedException("관리자만 뉴스를 삭제할 수 있습니다.");
+        }
+        News news = getNewsByIdOrThrow(newsId);
         newsRepository.delete(news);
     }
 
-    public News getNewsById(Long newsId){
-        return newsRepository.findById(newsId).orElseThrow();
+    public News getNewsByIdOrThrow(Long newsId) {
+        return newsRepository.findById(newsId)
+                .orElseThrow(() -> new NotFoundException("해당 뉴스가 존재하지 않습니다."));
+    }
+
+    private Page<News> getNewsByCategory(String category, Pageable pageable) {
+        return newsRepository.findByCategoryOrderByCreatedAtDesc(category, pageable);
+    }
+
+    private Page<News> getNewsByTitleContaining(String title, Pageable pageable) {
+        return newsRepository.findByTitleContainingIgnoreCaseOrderByCreatedAtDesc(title, pageable);
     }
 
 }

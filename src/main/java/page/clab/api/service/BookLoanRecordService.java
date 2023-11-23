@@ -1,23 +1,26 @@
 package page.clab.api.service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import page.clab.api.exception.BookAlreadyBorrowedException;
+import page.clab.api.exception.InvalidBorrowerException;
+import page.clab.api.exception.LoanSuspensionException;
 import page.clab.api.exception.NotFoundException;
-import page.clab.api.exception.PermissionDeniedException;
+import page.clab.api.exception.OverdueException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.BookLoanRecordRepository;
 import page.clab.api.repository.BookRepository;
 import page.clab.api.type.dto.BookLoanRecordRequestDto;
 import page.clab.api.type.dto.BookLoanRecordResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Book;
 import page.clab.api.type.entity.BookLoanRecord;
 import page.clab.api.type.entity.Member;
-
-import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,14 +35,17 @@ public class BookLoanRecordService {
     private final BookLoanRecordRepository bookLoanRecordRepository;
 
     @Transactional
-    public void borrowBook(BookLoanRecordRequestDto bookLoanRecordRequestDto) throws PermissionDeniedException {
+    public void borrowBook(BookLoanRecordRequestDto bookLoanRecordRequestDto) {
         Long bookId = bookLoanRecordRequestDto.getBookId();
         String borrowerId = bookLoanRecordRequestDto.getBorrowerId();
         Book book = bookService.getBookByIdOrThrow(bookId);
         if (book.getBorrower() != null) {
-            throw new PermissionDeniedException("이미 대출 중인 도서입니다.");
+            throw new BookAlreadyBorrowedException("이미 대출 중인 도서입니다.");
         }
         Member borrower = memberService.getMemberByIdOrThrow(borrowerId);
+        if (borrower.getLoanSuspensionDate() != null && LocalDateTime.now().isBefore(borrower.getLoanSuspensionDate())) {
+            throw new LoanSuspensionException("대출 정지 중입니다. 대출 정지일까지는 책을 대출할 수 없습니다.");
+        }
         book.setBorrower(borrower);
         bookRepository.save(book);
         BookLoanRecord bookLoanRecord = BookLoanRecord.builder()
@@ -51,69 +57,121 @@ public class BookLoanRecordService {
     }
 
     @Transactional
-    public void returnBook(BookLoanRecordRequestDto bookLoanRecordRequestDto) throws PermissionDeniedException {
+    public void returnBook(BookLoanRecordRequestDto bookLoanRecordRequestDto) {
         Long bookId = bookLoanRecordRequestDto.getBookId();
         String borrowerId = bookLoanRecordRequestDto.getBorrowerId();
         Book book = bookService.getBookByIdOrThrow(bookId);
         Member borrower = memberService.getMemberByIdOrThrow(borrowerId);
         if (book.getBorrower() == null || !book.getBorrower().getId().equals(borrowerId)) {
-            throw new PermissionDeniedException("대출한 도서와 회원 정보가 일치하지 않습니다.");
+            throw new InvalidBorrowerException("대출한 도서와 회원 정보가 일치하지 않습니다.");
+        }
+        BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndBorrowerAndReturnedAtIsNull(book, borrower);
+        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDateTime borrowedDate = bookLoanRecord.getBorrowedAt();
+        LocalDateTime extensionDate = bookLoanRecord.getLoanExtensionDate();
+        if (bookLoanRecord.getLoanExtensionDate() == null) {
+            long overdueDays = ChronoUnit.DAYS.between(borrowedDate, currentDate);
+            if (overdueDays > 21) {
+                handleOverdueAndSuspension(borrower, overdueDays);
+            }
+        } else {
+            long overdueDays = ChronoUnit.DAYS.between(extensionDate, currentDate);
+            if (overdueDays > 14) {
+                handleOverdueAndSuspension(borrower, overdueDays);
+            }
         }
         book.setBorrower(null);
         bookRepository.save(book);
-        BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndBorrowerAndReturnedAtIsNull(book, borrower);
-        bookLoanRecord.setReturnedAt(LocalDateTime.now());
+        bookLoanRecord.setReturnedAt(currentDate);
         bookLoanRecordRepository.save(bookLoanRecord);
     }
 
-    public List<BookLoanRecordResponseDto> getBookLoanRecords() {
-        List<BookLoanRecord> bookLoanRecords = bookLoanRecordRepository.findAll();
-        return bookLoanRecords.stream()
-                .map(BookLoanRecordResponseDto::of)
-                .collect(Collectors.toList());
+    @Transactional
+    public void extendBookLoan(BookLoanRecordRequestDto bookLoanRecordRequestDto) {
+        Long bookId = bookLoanRecordRequestDto.getBookId();
+        String borrowerId = bookLoanRecordRequestDto.getBorrowerId();
+        Book book = bookService.getBookByIdOrThrow(bookId);
+        if (book.getBorrower() == null || !book.getBorrower().getId().equals(borrowerId)) {
+            throw new InvalidBorrowerException("대출한 도서와 회원 정보가 일치하지 않습니다.");
+        }
+        Member borrower = memberService.getMemberByIdOrThrow(borrowerId);
+        if (borrower.getLoanSuspensionDate() != null && LocalDateTime.now().isBefore(borrower.getLoanSuspensionDate())) {
+            throw new LoanSuspensionException("대출 정지 중입니다. 연장할 수 없습니다.");
+        }
+        BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndBorrowerAndReturnedAtIsNull(book, borrower);
+        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDateTime borrowedDate = bookLoanRecord.getBorrowedAt();
+        long overdueDays = ChronoUnit.DAYS.between(borrowedDate, currentDate);
+        if (bookLoanRecord.getLoanExtensionDate() == null) {
+            if (overdueDays <= 21) {
+                LocalDateTime extensionDate = borrowedDate.plusWeeks(3);
+                bookLoanRecord.setLoanExtensionDate(extensionDate);
+            } else {
+                throw new OverdueException("대출 연장이 불가능합니다.");
+            }
+        } else {
+            if (overdueDays <= 35) {
+                LocalDateTime extensionDate = borrowedDate.plusWeeks(5);
+                bookLoanRecord.setLoanExtensionDate(extensionDate);
+            } else {
+                throw new OverdueException("대출 연장이 불가능합니다.");
+            }
+        }
+        bookLoanRecordRepository.save(bookLoanRecord);
     }
 
-    public List<BookLoanRecordResponseDto> searchBookLoanRecord(Long bookId, String borrowerId) {
-        List<BookLoanRecord> bookLoanRecords = new ArrayList<>();
+    private void handleOverdueAndSuspension(Member member, long overdueDays) {
+        LocalDateTime suspensionEndDate = LocalDateTime.now().plusDays(overdueDays * 7);
+        member.setLoanSuspensionDate(suspensionEndDate);
+        memberService.saveMember(member);
+    }
+
+    public PagedResponseDto<BookLoanRecordResponseDto> getBookLoanRecords(Pageable pageable) {
+        Page<BookLoanRecord> bookLoanRecords = bookLoanRecordRepository.findAllByOrderByBorrowedAtDesc(pageable);
+        return new PagedResponseDto<>(bookLoanRecords.map(BookLoanRecordResponseDto::of));
+    }
+
+    public PagedResponseDto<BookLoanRecordResponseDto> searchBookLoanRecord(Long bookId, String borrowerId, Pageable pageable) {
+        Page<BookLoanRecord> bookLoanRecords;
         if (bookId != null && borrowerId != null) {
-            bookLoanRecords = getBookLoanRecordByBookIdAndBorrowerId(bookId, borrowerId);
+            bookLoanRecords = getBookLoanRecordByBookIdAndBorrowerId(bookId, borrowerId, pageable);
         } else if (bookId != null) {
-            bookLoanRecords = getBookLoanRecordByBookId(bookId);
+            bookLoanRecords = getBookLoanRecordByBookId(bookId, pageable);
         } else if (borrowerId != null) {
-            bookLoanRecords = getBookLoanRecordByBorrowerId(borrowerId);
+            bookLoanRecords = getBookLoanRecordByBorrowerId(borrowerId, pageable);
         } else {
             throw new IllegalArgumentException("적어도 bookId 또는 borrowerId 중 하나를 제공해야 합니다.");
         }
         if (bookLoanRecords.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return bookLoanRecords.stream()
-                .map(BookLoanRecordResponseDto::of)
-                .collect(Collectors.toList());
+        return new PagedResponseDto<>(bookLoanRecords.map(BookLoanRecordResponseDto::of));
     }
 
-    public List<BookLoanRecordResponseDto> getUnreturnedBooks() {
-        List<BookLoanRecord> unreturnedBookLoanRecords = bookLoanRecordRepository.findByReturnedAtIsNull();
-        return unreturnedBookLoanRecords.stream()
-                .map(BookLoanRecordResponseDto::of)
-                .collect(Collectors.toList());
-    }
-
-    private List<BookLoanRecord> getBookLoanRecordByBookId(Long bookId) {
-        return bookLoanRecordRepository.findByBook_Id(bookId);
-    }
-
-    private List<BookLoanRecord> getBookLoanRecordByBorrowerId(String borrowerId) {
-        return bookLoanRecordRepository.findByBorrower_Id(borrowerId);
-    }
-
-    private List<BookLoanRecord> getBookLoanRecordByBookIdAndBorrowerId(Long bookId, String borrowerId) {
-        return bookLoanRecordRepository.findByBook_IdAndBorrower_Id(bookId, borrowerId);
+    public PagedResponseDto<BookLoanRecordResponseDto> getUnreturnedBooks(Pageable pageable) {
+        Page<BookLoanRecord> unreturnedBookLoanRecords = getBookLoanRecordByReturnedAtIsNull(pageable);
+        return new PagedResponseDto<>(unreturnedBookLoanRecords.map(BookLoanRecordResponseDto::of));
     }
 
     public BookLoanRecord getBookLoanRecordByBookAndBorrowerAndReturnedAtIsNull(Book book, Member borrower) {
         return bookLoanRecordRepository.findByBookAndBorrowerAndReturnedAtIsNull(book, borrower)
                 .orElseThrow(() -> new NotFoundException("해당 도서 대출 기록이 없습니다."));
+    }
+
+    private Page<BookLoanRecord> getBookLoanRecordByBookId(Long bookId, Pageable pageable) {
+        return bookLoanRecordRepository.findByBook_IdOrderByBorrowedAtDesc(bookId, pageable);
+    }
+
+    private Page<BookLoanRecord> getBookLoanRecordByBorrowerId(String borrowerId, Pageable pageable) {
+        return bookLoanRecordRepository.findByBorrower_IdOrderByBorrowedAtDesc(borrowerId, pageable);
+    }
+
+    private Page<BookLoanRecord> getBookLoanRecordByBookIdAndBorrowerId(Long bookId, String borrowerId, Pageable pageable) {
+        return bookLoanRecordRepository.findByBook_IdAndBorrower_IdOrderByBorrowedAtDesc(bookId, borrowerId, pageable);
+    }
+
+    private Page<BookLoanRecord> getBookLoanRecordByReturnedAtIsNull(Pageable pageable) {
+        return bookLoanRecordRepository.findByReturnedAtIsNullOrderByBorrowedAtDesc(pageable);
     }
 
 }

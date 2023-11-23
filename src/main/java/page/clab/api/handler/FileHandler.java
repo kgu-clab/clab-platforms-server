@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.exception.FileUploadFailException;
+import page.clab.api.util.ImageCompressionUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -23,10 +25,14 @@ public class FileHandler {
 
     private final Set<String> disallowExtensions = new HashSet<>();
 
-    public FileHandler(@Value("${resource.file.disallow-extension}") String[] disallowExtensions) {
-        for (String extension : disallowExtensions) {
-            this.disallowExtensions.add(extension.toLowerCase());
-        }
+    private final Set<String> imageExtensions = new HashSet<>();
+
+    public FileHandler(
+            @Value("${resource.file.disallow-extension}") String[] disallowExtensions,
+            @Value("${resource.file.image-extension}") String[] imageExtensions
+    ) {
+        Arrays.stream(disallowExtensions).forEach(this.disallowExtensions::add);
+        Arrays.stream(imageExtensions).forEach(this.imageExtensions::add);
     }
 
     public String saveFile(MultipartFile multipartFile, String category) throws FileUploadFailException {
@@ -48,6 +54,9 @@ public class FileHandler {
         try {
             String os = System.getProperty("os.name").toLowerCase();
             multipartFile.transferTo(file);
+            if (imageExtensions.contains(extension.toLowerCase())) {
+                ImageCompressionUtil.compressImage(destPath, 0.5f);
+            }
             if (os.contains("win")) {
                 file.setReadable(true);
                 file.setWritable(false);
