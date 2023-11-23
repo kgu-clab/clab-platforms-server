@@ -68,6 +68,15 @@ public class MemberRequestDto {
     @Schema(description = "주소", example = "경기도 수원시 영통구 광교산로 154-42", required = true)
     private String address;
 
+    @NotNull(message = "{notNull.member.interests}")
+    @Size(min = 1, message = "{size.member.interests}")
+    @Schema(description = "관심 분야", example = "백엔드", required = true)
+    private String interests;
+
+    @URL(message = "{url.member.githubUrl}")
+    @Schema(description = "GitHub 주소", example = "https://github.com/kgu-c-lab", required = true)
+    private String githubUrl;
+
     @NotNull(message = "{notNull.member.studentStatus}")
     @Schema(description = "학적", example = "CURRENT", required = true)
     private StudentStatus studentStatus;

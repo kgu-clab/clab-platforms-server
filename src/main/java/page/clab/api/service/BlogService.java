@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -19,8 +18,10 @@ import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.BlogRepository;
+import page.clab.api.type.dto.BlogDetailsResponseDto;
 import page.clab.api.type.dto.BlogRequestDto;
 import page.clab.api.type.dto.BlogResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Blog;
 import page.clab.api.type.entity.Member;
 
@@ -41,12 +42,17 @@ public class BlogService {
         blogRepository.save(blog);
     }
 
-    public List<BlogResponseDto> getBlogs(Pageable pageable) {
+    public PagedResponseDto<BlogResponseDto> getBlogs(Pageable pageable) {
         Page<Blog> blogs = blogRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return blogs.map(BlogResponseDto::of).getContent();
+        return new PagedResponseDto<>(blogs.map(BlogResponseDto::of));
     }
 
-    public List<BlogResponseDto> searchBlog(String keyword, Pageable pageable) {
+    public BlogDetailsResponseDto getBlogDetails(Long blogId) {
+        Blog blog = getBlogByIdOrThrow(blogId);
+        return BlogDetailsResponseDto.of(blog);
+    }
+
+    public PagedResponseDto<BlogResponseDto> searchBlog(String keyword, Pageable pageable) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Blog> criteriaQuery = criteriaBuilder.createQuery(Blog.class);
         Root<Blog> root = criteriaQuery.from(Blog.class);
@@ -57,7 +63,6 @@ public class BlogService {
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), keywordLowerCase),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("subTitle")), keywordLowerCase),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("content")), keywordLowerCase),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("tag")), keywordLowerCase),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("member").get("name")), keywordLowerCase)
             ));
         }
@@ -69,10 +74,8 @@ public class BlogService {
         List<Blog> distinctBlogs = new ArrayList<>(uniqueBlogs);
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), uniqueBlogs.size());
-        List<Blog> paginatedBlogs = new ArrayList<>(distinctBlogs.subList(start, end));
-        return new PageImpl<>(paginatedBlogs, pageable, uniqueBlogs.size())
-                .map(BlogResponseDto::of)
-                .getContent();
+        Page<Blog> blogPage = new PageImpl<>(distinctBlogs.subList(start, end), pageable, distinctBlogs.size());
+        return new PagedResponseDto<>(blogPage.map(BlogResponseDto::of));
     }
 
     public void updateBlog(Long blogId, BlogRequestDto blogRequestDto) throws PermissionDeniedException {
@@ -84,7 +87,6 @@ public class BlogService {
         Blog updatedBlog = Blog.of(blogRequestDto);
         updatedBlog.setId(blog.getId());
         updatedBlog.setMember(blog.getMember());
-        updatedBlog.setUpdateTime(LocalDateTime.now());
         updatedBlog.setCreatedAt(blog.getCreatedAt());
         blogRepository.save(updatedBlog);
     }

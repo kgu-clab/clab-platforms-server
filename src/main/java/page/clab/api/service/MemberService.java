@@ -3,7 +3,6 @@ package page.clab.api.service;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -25,6 +24,7 @@ import page.clab.api.type.dto.CloudUsageInfo;
 import page.clab.api.type.dto.FileInfo;
 import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.Role;
@@ -47,6 +47,8 @@ public class MemberService {
             throw new AssociatedAccountExistsException("이미 사용 중인 아이디입니다.");
         if (memberRepository.findByContact(memberRequestDto.getContact()).isPresent())
             throw new AssociatedAccountExistsException("이미 사용 중인 연락처입니다.");
+        if (memberRepository.findByEmail(memberRequestDto.getEmail()).isPresent())
+            throw new AssociatedAccountExistsException("이미 사용 중인 이메일입니다.");
         Member member = Member.of(memberRequestDto);
         member.setContact(removeHyphensFromContact(member.getContact()));
         member.setPassword(passwordEncoder.encode(member.getPassword()));
@@ -61,13 +63,13 @@ public class MemberService {
                 .collect(Collectors.toList());
     }
 
-    public List<MemberResponseDto> getMembers(Pageable pageable) throws PermissionDeniedException {
+    public PagedResponseDto<MemberResponseDto> getMembers(Pageable pageable) throws PermissionDeniedException {
         checkMemberAdminRole();
         Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return members.map(MemberResponseDto::of).getContent();
+        return new PagedResponseDto<>(members.map(MemberResponseDto::of));
     }
 
-    public List<MemberResponseDto> getBirthdaysThisMonth(String month, Pageable pageable) {
+    public PagedResponseDto<MemberResponseDto> getBirthdaysThisMonth(String month, Pageable pageable) {
         LocalDate currentMonth = LocalDate.now().withMonth(Integer.parseInt(month));
         List<Member> members = memberRepository.findAll();
         List<Member> birthdayMembers = members.stream()
@@ -77,10 +79,10 @@ public class MemberService {
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), birthdayMembers.size());
         Page<Member> birthdayMembersPage = new PageImpl<>(birthdayMembers.subList(start, end), pageable, birthdayMembers.size());
-        return birthdayMembersPage.map(MemberResponseDto::of).getContent();
+        return new PagedResponseDto<>(birthdayMembersPage.map(MemberResponseDto::of));
     }
 
-    public List<MemberResponseDto> searchMember(String memberId, String name, MemberStatus memberStatus, Pageable pageable) throws PermissionDeniedException {
+    public PagedResponseDto<MemberResponseDto> searchMember(String memberId, String name, MemberStatus memberStatus, Pageable pageable) throws PermissionDeniedException {
         checkMemberAdminRole();
         Page<Member> members;
         if (memberId != null) {
@@ -96,7 +98,7 @@ public class MemberService {
         if (members.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return members.map(MemberResponseDto::of).getContent();
+        return new PagedResponseDto<>(members.map(MemberResponseDto::of));
     }
 
     public void updateMemberInfo(String memberId, MemberRequestDto memberRequestDto) throws PermissionDeniedException {
@@ -121,10 +123,10 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public List<CloudUsageInfo> getAllCloudUsages(Pageable pageable) throws PermissionDeniedException {
+    public PagedResponseDto<CloudUsageInfo> getAllCloudUsages(Pageable pageable) throws PermissionDeniedException {
         checkMemberAdminRole();
         Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return members.map(member -> getCloudUsageByMemberId(member.getId())).getContent();
+        return new PagedResponseDto<>(members.map(member -> getCloudUsageByMemberId(member.getId())));
     }
 
     public CloudUsageInfo getCloudUsageByMemberId(String memberId) {
@@ -141,27 +143,27 @@ public class MemberService {
         return cloudUsageInfo;
     }
 
-    public List<FileInfo> getFilesInMemberDirectory(String memberId, Pageable pageable) {
+    public PagedResponseDto<FileInfo> getFilesInMemberDirectory(String memberId, Pageable pageable) {
         Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
         if (!(isMemberAdminRole(member) || currentMember.getId().equals(memberId))) {
-            return new ArrayList<>();
+            return null;
         }
         File directory = new File(filePath + "/members/" + memberId);
         File[] files = FileSystemUtil.getFilesInDirectory(directory).toArray(new File[0]);
         if (files.length == 0) {
-            return new ArrayList<>();
+            return null;
         }
         int totalFiles = files.length;
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), totalFiles);
         if (start >= totalFiles) {
-            return new ArrayList<>();
+            return null;
         }
         Page<FileInfo> fileInfoPage = new PageImpl<>(Arrays.stream(files)
                 .map(FileInfo::of)
                 .collect(Collectors.toList()).subList(start, end), pageable, totalFiles);
-        return fileInfoPage.getContent();
+        return new PagedResponseDto<>(fileInfoPage);
     }
 
     public void setLastLoginTime(String memberId) {

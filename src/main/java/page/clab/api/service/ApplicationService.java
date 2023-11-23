@@ -2,7 +2,6 @@ package page.clab.api.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +14,7 @@ import page.clab.api.repository.ApplicationRepository;
 import page.clab.api.type.dto.ApplicationPassResponseDto;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Application;
 
 @Service
@@ -30,21 +30,22 @@ public class ApplicationService {
         Application application = Application.of(appRequestDto);
         application.setContact(memberService.removeHyphensFromContact(application.getContact()));
         application.setIsPass(false);
+        application.setUpdateTime(LocalDateTime.now());
         applicationRepository.save(application);
     }
 
-    public List<ApplicationResponseDto> getApplications(Pageable pageable) throws PermissionDeniedException {
+    public PagedResponseDto<ApplicationResponseDto> getApplications(Pageable pageable) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         Page<Application> applications = applicationRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return applications.map(ApplicationResponseDto::of).getContent();
+        return new PagedResponseDto<>(applications.map(ApplicationResponseDto::of));
     }
 
-    public List<ApplicationResponseDto> getApplicationsBetweenDates(LocalDate startDate, LocalDate endDate, Pageable pageable) throws PermissionDeniedException {
+    public PagedResponseDto<ApplicationResponseDto> getApplicationsBetweenDates(LocalDate startDate, LocalDate endDate, Pageable pageable) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
         Page<Application> applicationsBetweenDates = getApplicationByUpdateTimeBetween(pageable, startDateTime, endDateTime);
-        return applicationsBetweenDates.map(ApplicationResponseDto::of).getContent();
+        return new PagedResponseDto<>(applicationsBetweenDates.map(ApplicationResponseDto::of));
     }
 
     public ApplicationResponseDto searchApplication(String applicationId) throws PermissionDeniedException {
@@ -72,13 +73,13 @@ public class ApplicationService {
     }
 
     @Transactional
-    public List<ApplicationResponseDto> getApprovedApplications(Pageable pageable) throws PermissionDeniedException {
+    public PagedResponseDto<ApplicationResponseDto> getApprovedApplications(Pageable pageable) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         Page<Application> applications = getApplicationByIsPass(pageable);
         if (applications.isEmpty()) {
             throw new NotFoundException("승인된 신청자가 없습니다.");
         } else {
-            return applications.map(ApplicationResponseDto::of).getContent();
+            return new PagedResponseDto<>(applications.map(ApplicationResponseDto::of));
         }
     }
 

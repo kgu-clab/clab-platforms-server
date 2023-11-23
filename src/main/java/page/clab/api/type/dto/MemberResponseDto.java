@@ -37,6 +37,10 @@ public class MemberResponseDto {
 
     private String address;
 
+    private String interests;
+
+    private String githubUrl;
+
     private StudentStatus studentStatus;
 
     private String imageUrl;

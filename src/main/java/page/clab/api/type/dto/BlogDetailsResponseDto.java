@@ -14,20 +14,29 @@ import page.clab.api.util.ModelMapperUtil;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BlogResponseDto {
+public class BlogDetailsResponseDto {
 
     private Long id;
+
+    private String memberId;
+
+    private String name;
 
     private String title;
 
     private String subTitle;
 
+    private String content;
+
     private String imageUrl;
 
     private LocalDateTime createdAt;
 
-    public static BlogResponseDto of(Blog blog) {
-        return ModelMapperUtil.getModelMapper().map(blog, BlogResponseDto.class);
+    public static BlogDetailsResponseDto of(Blog blog) {
+        BlogDetailsResponseDto blogResponseDto = ModelMapperUtil.getModelMapper().map(blog, BlogDetailsResponseDto.class);
+        blogResponseDto.setMemberId(blog.getMember().getId());
+        blogResponseDto.setName(blog.getMember().getName());
+        return blogResponseDto;
     }
 
 }

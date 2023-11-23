@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.BlacklistIpRepository;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.BlacklistIp;
 
 @Service
@@ -31,10 +31,10 @@ public class BlacklistService {
         }
     }
 
-    public List<BlacklistIp> getBlacklistedIps(Pageable pageable) throws PermissionDeniedException {
+    public PagedResponseDto<BlacklistIp> getBlacklistedIps(Pageable pageable) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         Page<BlacklistIp> blacklistedIps = blacklistIpRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return blacklistedIps.getContent();
+        return new PagedResponseDto<>(blacklistedIps);
     }
 
     @Transactional

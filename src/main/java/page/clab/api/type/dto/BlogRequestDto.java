@@ -36,7 +36,4 @@ public class BlogRequestDto {
     @Schema(description = "이미지 URL", example = "https://www.clab.page/assets/logoWhite-fc1ef9a0.webp")
     private String imageUrl;
 
-    @Schema(description = "태그", example = "Spring, Spring Security, Swagger, JWT")
-    private String tag;
-
 }

@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.BlogService;
+import page.clab.api.type.dto.BlogDetailsResponseDto;
 import page.clab.api.type.dto.BlogRequestDto;
 import page.clab.api.type.dto.BlogResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -52,25 +53,36 @@ public class BlogController {
     @GetMapping("")
     public ResponseModel getBlogs(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<BlogResponseDto> blogs = blogService.getBlogs(pageable);
+        PagedResponseDto<BlogResponseDto> blogs = blogService.getBlogs(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(blogs);
         return responseModel;
     }
 
+    @Operation(summary = "[U] 블로그 포스트 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @GetMapping("/{blogId}")
+    public ResponseModel getBlogDetails(
+            @PathVariable Long blogId
+    ) {
+        BlogDetailsResponseDto blog = blogService.getBlogDetails(blogId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(blog);
+        return responseModel;
+    }
+
     @Operation(summary = "[U] 블로그 포스트 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "검색어에는 제목, 부제목, 내용, 태그, 작성자명가 포함됨")
+            "검색어에는 제목, 부제목, 내용, 작성자명가 포함됨")
     @GetMapping("/search")
     public ResponseModel searchBlog(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<BlogResponseDto> blogs = blogService.searchBlog(keyword, pageable);
+        PagedResponseDto<BlogResponseDto> blogs = blogService.searchBlog(keyword, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(blogs);
         return responseModel;
