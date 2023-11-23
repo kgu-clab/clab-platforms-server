@@ -22,6 +22,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     public void createNotification(NotificationRequestDto notificationRequestDto) {
+        Member member = memberService.getMemberByIdOrThrow(notificationRequestDto.getMemberId());
         Notification notification = Notification.of(notificationRequestDto);
         notificationRepository.save(notification);
     }
