@@ -47,6 +47,8 @@ public class MemberService {
             throw new AssociatedAccountExistsException("이미 사용 중인 아이디입니다.");
         if (memberRepository.findByContact(memberRequestDto.getContact()).isPresent())
             throw new AssociatedAccountExistsException("이미 사용 중인 연락처입니다.");
+        if (memberRepository.findByEmail(memberRequestDto.getEmail()).isPresent())
+            throw new AssociatedAccountExistsException("이미 사용 중인 이메일입니다.");
         Member member = Member.of(memberRequestDto);
         member.setContact(removeHyphensFromContact(member.getContact()));
         member.setPassword(passwordEncoder.encode(member.getPassword()));
