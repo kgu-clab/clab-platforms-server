@@ -77,6 +77,12 @@ public class Member implements UserDetails {
     private String address;
 
     @Column(nullable = false)
+    private String interests;
+
+    @URL(message = "{url.member.githubUrl}")
+    private String githubUrl;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private StudentStatus studentStatus;
 
