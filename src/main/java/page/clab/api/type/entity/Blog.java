@@ -48,10 +48,6 @@ public class Blog {
     @URL
     private String imageUrl;
 
-    private String tag;
-
-    private LocalDateTime updateTime;
-
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;

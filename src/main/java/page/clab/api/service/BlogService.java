@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.BlogRepository;
+import page.clab.api.type.dto.BlogDetailResponseDto;
 import page.clab.api.type.dto.BlogRequestDto;
 import page.clab.api.type.dto.BlogResponseDto;
 import page.clab.api.type.entity.Blog;
@@ -46,6 +46,11 @@ public class BlogService {
         return blogs.map(BlogResponseDto::of).getContent();
     }
 
+    public BlogDetailResponseDto getBlog(Long blogId) {
+        Blog blog = getBlogByIdOrThrow(blogId);
+        return BlogDetailResponseDto.of(blog);
+    }
+
     public List<BlogResponseDto> searchBlog(String keyword, Pageable pageable) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Blog> criteriaQuery = criteriaBuilder.createQuery(Blog.class);
@@ -57,7 +62,6 @@ public class BlogService {
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), keywordLowerCase),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("subTitle")), keywordLowerCase),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("content")), keywordLowerCase),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("tag")), keywordLowerCase),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("member").get("name")), keywordLowerCase)
             ));
         }
@@ -84,7 +88,6 @@ public class BlogService {
         Blog updatedBlog = Blog.of(blogRequestDto);
         updatedBlog.setId(blog.getId());
         updatedBlog.setMember(blog.getMember());
-        updatedBlog.setUpdateTime(LocalDateTime.now());
         updatedBlog.setCreatedAt(blog.getCreatedAt());
         blogRepository.save(updatedBlog);
     }
