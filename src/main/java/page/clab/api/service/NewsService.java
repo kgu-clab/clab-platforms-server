@@ -45,7 +45,7 @@ public class NewsService {
     public PagedResponseDto<NewsResponseDto> searchNews(String category, String title, Pageable pageable) {
         Page<News> news;
         if (category != null) {
-            news = getNewsByCategoryContaining(category, pageable);
+            news = getNewsByCategory(category, pageable);
         } else if (title != null) {
             news = getNewsByTitleContaining(title, pageable);
         } else {
@@ -83,12 +83,12 @@ public class NewsService {
                 .orElseThrow(() -> new NotFoundException("해당 뉴스가 존재하지 않습니다."));
     }
 
-    private Page<News> getNewsByCategoryContaining(String category, Pageable pageable) {
-        return newsRepository.findByCategoryContainingOrderByCreatedAtDesc(category, pageable);
+    private Page<News> getNewsByCategory(String category, Pageable pageable) {
+        return newsRepository.findByCategoryOrderByCreatedAtDesc(category, pageable);
     }
 
     private Page<News> getNewsByTitleContaining(String title, Pageable pageable) {
-        return newsRepository.findByTitleContainingOrderByCreatedAtDesc(title, pageable);
+        return newsRepository.findByTitleContainingIgnoreCaseOrderByCreatedAtDesc(title, pageable);
     }
 
 }
