@@ -30,6 +30,7 @@ public class ApplicationService {
         Application application = Application.of(appRequestDto);
         application.setContact(memberService.removeHyphensFromContact(application.getContact()));
         application.setIsPass(false);
+        application.setUpdateTime(LocalDateTime.now());
         applicationRepository.save(application);
     }
 
