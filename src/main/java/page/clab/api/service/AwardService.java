@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,6 +10,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.AwardRepository;
 import page.clab.api.type.dto.AwardRequestDto;
 import page.clab.api.type.dto.AwardResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Award;
 import page.clab.api.type.entity.Member;
 
@@ -29,17 +29,17 @@ public class AwardService {
         awardRepository.save(award);
     }
 
-    public List<AwardResponseDto> getMyAwards(Pageable pageable) {
+    public PagedResponseDto<AwardResponseDto> getMyAwards(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Award> awards = getAwardByMember(pageable, member);
-        return awards.map(AwardResponseDto::of).getContent();
+        return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
     }
 
     @Transactional
-    public List<AwardResponseDto> searchAwards(String memberId, Pageable pageable) {
+    public PagedResponseDto<AwardResponseDto> searchAwards(String memberId, Pageable pageable) {
         Member member = memberService.getMemberByIdOrThrow(memberId);
         Page<Award> awards = getAwardByMember(pageable, member);
-        return awards.map(AwardResponseDto::of).getContent();
+        return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
     }
 
     public void updateAward(Long awardId, AwardRequestDto awardRequestDto) throws PermissionDeniedException {

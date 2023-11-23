@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.WorkExperienceService;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.WorkExperienceRequestDto;
 import page.clab.api.type.dto.WorkExperienceResponseDto;
@@ -56,7 +56,7 @@ public class WorkExperienceController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<WorkExperienceResponseDto> workExperienceResponseDtos = workExperienceService.getMyWorkExperience(pageable);
+        PagedResponseDto<WorkExperienceResponseDto> workExperienceResponseDtos = workExperienceService.getMyWorkExperience(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(workExperienceResponseDtos);
         return responseModel;
@@ -71,7 +71,7 @@ public class WorkExperienceController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<WorkExperienceResponseDto> workExperienceResponseDtos = workExperienceService.searchWorkExperience(memberId, pageable);
+        PagedResponseDto<WorkExperienceResponseDto> workExperienceResponseDtos = workExperienceService.searchWorkExperience(memberId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(workExperienceResponseDtos);
         return responseModel;

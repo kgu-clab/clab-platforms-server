@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +21,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.ExecutivesService;
 import page.clab.api.type.dto.ExecutivesRequestDto;
 import page.clab.api.type.dto.ExecutivesResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -54,7 +54,7 @@ public class ExecutivesController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<ExecutivesResponseDto> executives = executivesService.getExecutives(pageable);
+        PagedResponseDto<ExecutivesResponseDto> executives = executivesService.getExecutives(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(executives);
         return responseModel;
@@ -68,7 +68,7 @@ public class ExecutivesController {
             @PathVariable String year
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<ExecutivesResponseDto> executives = executivesService.getExecutivesByYear(pageable, year);
+        PagedResponseDto<ExecutivesResponseDto> executives = executivesService.getExecutivesByYear(pageable, year);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(executives);
         return responseModel;

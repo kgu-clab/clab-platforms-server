@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +21,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.AccuseService;
 import page.clab.api.type.dto.AccuseRequestDto;
 import page.clab.api.type.dto.AccuseResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.etc.AccuseStatus;
 import page.clab.api.type.etc.TargetType;
@@ -56,7 +56,7 @@ public class AccuseController {
             @RequestParam(defaultValue = "10") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        List<AccuseResponseDto> accuses = accuseService.getAccuses(pageable);
+        PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccuses(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(accuses);
         return responseModel;
@@ -71,7 +71,7 @@ public class AccuseController {
             @RequestParam(defaultValue = "10") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        List<AccuseResponseDto> accuses = accuseService.searchAccuse(targetType, accuseStatus, pageable);
+        PagedResponseDto<AccuseResponseDto> accuses = accuseService.searchAccuse(targetType, accuseStatus, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(accuses);
         return responseModel;

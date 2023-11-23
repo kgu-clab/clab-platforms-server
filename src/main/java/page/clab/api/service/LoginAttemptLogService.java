@@ -1,7 +1,6 @@
 package page.clab.api.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,6 +10,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.LoginAttemptLogRepository;
 import page.clab.api.type.dto.GeoIpInfo;
 import page.clab.api.type.dto.LoginAttemptLogResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.LoginAttemptLog;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.LoginAttemptResult;
@@ -37,14 +37,14 @@ public class LoginAttemptLogService {
         loginAttemptLogRepository.save(loginAttemptLog);
     }
 
-    public List<LoginAttemptLogResponseDto> getLoginAttemptLogs(String memberId, Pageable pageable) throws PermissionDeniedException {
+    public PagedResponseDto<LoginAttemptLogResponseDto> getLoginAttemptLogs(String memberId, Pageable pageable) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(currentMember)) {
             throw new PermissionDeniedException("관리자만 조회할 수 있습니다.");
         }
         Member member = memberService.getMemberByIdOrThrow(memberId);
         Page<LoginAttemptLog> loginAttemptLogs = getLoginAttemptByMember(pageable, member);
-        return loginAttemptLogs.map(LoginAttemptLogResponseDto::of).getContent();
+        return new PagedResponseDto<>(loginAttemptLogs.map(LoginAttemptLogResponseDto::of));
     }
 
     private Page<LoginAttemptLog> getLoginAttemptByMember(Pageable pageable, Member member) {

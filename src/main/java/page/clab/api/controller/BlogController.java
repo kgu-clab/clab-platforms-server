@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +23,7 @@ import page.clab.api.service.BlogService;
 import page.clab.api.type.dto.BlogDetailsResponseDto;
 import page.clab.api.type.dto.BlogRequestDto;
 import page.clab.api.type.dto.BlogResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -56,7 +56,7 @@ public class BlogController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<BlogResponseDto> blogs = blogService.getBlogs(pageable);
+        PagedResponseDto<BlogResponseDto> blogs = blogService.getBlogs(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(blogs);
         return responseModel;
@@ -82,7 +82,7 @@ public class BlogController {
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<BlogResponseDto> blogs = blogService.searchBlog(keyword, pageable);
+        PagedResponseDto<BlogResponseDto> blogs = blogService.searchBlog(keyword, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(blogs);
         return responseModel;

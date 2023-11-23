@@ -1,7 +1,6 @@
 package page.clab.api.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +10,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.CommentRepository;
 import page.clab.api.type.dto.CommentRequestDto;
 import page.clab.api.type.dto.CommentResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Board;
 import page.clab.api.type.entity.Comment;
 import page.clab.api.type.entity.Member;
@@ -35,15 +35,15 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
-    public List<CommentResponseDto> getComments(Long boardId, Pageable pageable) {
+    public PagedResponseDto<CommentResponseDto> getComments(Long boardId, Pageable pageable) {
         Page<Comment> comments = getCommentByBoardId(boardId, pageable);
-        return comments.map(CommentResponseDto::of).getContent();
+        return new PagedResponseDto<>(comments.map(CommentResponseDto::of));
     }
 
-    public List<CommentResponseDto> getMyComments(Pageable pageable) {
+    public PagedResponseDto<CommentResponseDto> getMyComments(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByWriter(member, pageable);
-        return comments.map(CommentResponseDto::of).getContent();
+        return new PagedResponseDto<>(comments.map(CommentResponseDto::of));
     }
 
     public void updateComment(Long commentId, CommentRequestDto commentRequestDto) throws PermissionDeniedException {

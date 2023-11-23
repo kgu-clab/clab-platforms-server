@@ -21,6 +21,7 @@ import page.clab.api.repository.BlogRepository;
 import page.clab.api.type.dto.BlogDetailsResponseDto;
 import page.clab.api.type.dto.BlogRequestDto;
 import page.clab.api.type.dto.BlogResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Blog;
 import page.clab.api.type.entity.Member;
 
@@ -41,9 +42,9 @@ public class BlogService {
         blogRepository.save(blog);
     }
 
-    public List<BlogResponseDto> getBlogs(Pageable pageable) {
+    public PagedResponseDto<BlogResponseDto> getBlogs(Pageable pageable) {
         Page<Blog> blogs = blogRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return blogs.map(BlogResponseDto::of).getContent();
+        return new PagedResponseDto<>(blogs.map(BlogResponseDto::of));
     }
 
     public BlogDetailsResponseDto getBlogDetails(Long blogId) {
@@ -51,7 +52,7 @@ public class BlogService {
         return BlogDetailsResponseDto.of(blog);
     }
 
-    public List<BlogResponseDto> searchBlog(String keyword, Pageable pageable) {
+    public PagedResponseDto<BlogResponseDto> searchBlog(String keyword, Pageable pageable) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Blog> criteriaQuery = criteriaBuilder.createQuery(Blog.class);
         Root<Blog> root = criteriaQuery.from(Blog.class);
@@ -73,10 +74,8 @@ public class BlogService {
         List<Blog> distinctBlogs = new ArrayList<>(uniqueBlogs);
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), uniqueBlogs.size());
-        List<Blog> paginatedBlogs = new ArrayList<>(distinctBlogs.subList(start, end));
-        return new PageImpl<>(paginatedBlogs, pageable, uniqueBlogs.size())
-                .map(BlogResponseDto::of)
-                .getContent();
+        Page<Blog> blogPage = new PageImpl<>(distinctBlogs.subList(start, end), pageable, distinctBlogs.size());
+        return new PagedResponseDto<>(blogPage.map(BlogResponseDto::of));
     }
 
     public void updateBlog(Long blogId, BlogRequestDto blogRequestDto) throws PermissionDeniedException {
