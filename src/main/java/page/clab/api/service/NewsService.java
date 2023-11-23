@@ -1,17 +1,15 @@
 package page.clab.api.service;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.NewsRepository;
+import page.clab.api.type.dto.NewsDetailsResponseDto;
 import page.clab.api.type.dto.NewsRequestDto;
 import page.clab.api.type.dto.NewsResponseDto;
 import page.clab.api.type.entity.Member;
@@ -39,12 +37,14 @@ public class NewsService {
         return news.map(NewsResponseDto::of).getContent();
     }
 
-    public List<NewsResponseDto> searchNews(Long newsId, String category, String title, Pageable pageable) {
+    public NewsDetailsResponseDto getNewsDetails(Long newsId) {
+        News news = getNewsByIdOrThrow(newsId);
+        return NewsDetailsResponseDto.of(news);
+    }
+
+    public List<NewsResponseDto> searchNews(String category, String title, Pageable pageable) {
         Page<News> news;
-        if (newsId != null) {
-            News singleNews = getNewsByIdOrThrow(newsId);
-            news = new PageImpl<>(Arrays.asList(singleNews), pageable, 1);
-        } else if (category != null) {
+        if (category != null) {
             news = getNewsByCategoryContaining(category, pageable);
         } else if (title != null) {
             news = getNewsByTitleContaining(title, pageable);
@@ -66,7 +66,6 @@ public class NewsService {
         News updatedNews = News.of(newsRequestDto);
         updatedNews.setId(news.getId());
         updatedNews.setCreatedAt(news.getCreatedAt());
-        updatedNews.setUpdateTime(LocalDateTime.now());
         newsRepository.save(updatedNews);
     }
 
