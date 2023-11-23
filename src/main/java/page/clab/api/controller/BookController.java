@@ -52,7 +52,7 @@ public class BookController {
     @GetMapping("")
     public ResponseModel getBooks(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BookResponseDto> books = bookService.getBooks(pageable);
@@ -67,7 +67,7 @@ public class BookController {
     public ResponseModel searchBook(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BookResponseDto> books = bookService.searchBook(keyword, pageable);

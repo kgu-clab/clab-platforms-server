@@ -53,7 +53,7 @@ public class AccuseController {
     @GetMapping("")
     public ResponseModel getAccuses(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccuses(pageable);
@@ -68,7 +68,7 @@ public class AccuseController {
             @RequestParam(required = false) TargetType targetType,
             @RequestParam(required = false) AccuseStatus accuseStatus,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AccuseResponseDto> accuses = accuseService.searchAccuse(targetType, accuseStatus, pageable);

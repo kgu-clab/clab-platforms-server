@@ -54,7 +54,7 @@ public class CommentController {
     public ResponseModel getComments(
             @PathVariable Long boardId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<CommentResponseDto> comments = commentService.getComments(boardId, pageable);
@@ -67,7 +67,7 @@ public class CommentController {
     @GetMapping("/my-comments")
     public ResponseModel getMyComments(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<CommentResponseDto> comments = commentService.getMyComments(pageable);

@@ -76,7 +76,7 @@ public class BookLoanRecordController {
     @GetMapping("")
     public ResponseModel getBookLoanRecords(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.getBookLoanRecords(pageable);
@@ -92,7 +92,7 @@ public class BookLoanRecordController {
             @RequestParam(required = false) Long bookId,
             @RequestParam(required = false) String borrowerId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.searchBookLoanRecord(bookId, borrowerId, pageable);
@@ -105,7 +105,7 @@ public class BookLoanRecordController {
     @GetMapping("/unreturned")
     public ResponseModel getUnreturnedBooks(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BookLoanRecordResponseDto> unreturnedBooks = bookLoanRecordService.getUnreturnedBooks(pageable);

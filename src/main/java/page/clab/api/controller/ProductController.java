@@ -52,7 +52,7 @@ public class ProductController {
     @GetMapping("")
     public ResponseModel getProducts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ProductResponseDto> productResponseDtos = productService.getProducts(pageable);
@@ -67,7 +67,7 @@ public class ProductController {
     public ResponseModel searchProduct(
             @RequestParam String productName,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ProductResponseDto> productResponseDtos = productService.searchProduct(productName, pageable);

@@ -52,7 +52,7 @@ public class AwardController {
     @GetMapping("")
     public ResponseModel getMyAwards(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.getMyAwards(pageable);
@@ -67,7 +67,7 @@ public class AwardController {
     public ResponseModel searchAwards(
             @RequestParam String memberId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.searchAwards(memberId, pageable);

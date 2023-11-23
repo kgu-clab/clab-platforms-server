@@ -54,7 +54,7 @@ public class MemberController {
     @GetMapping("")
     public ResponseModel getMembers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<MemberResponseDto> members = memberService.getMembers(pageable);
@@ -68,7 +68,7 @@ public class MemberController {
     public ResponseModel getBirthdaysThisMonth(
             @RequestParam String month,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<MemberResponseDto> birthdayMembers = memberService.getBirthdaysThisMonth(month, pageable);
@@ -85,7 +85,7 @@ public class MemberController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) MemberStatus memberStatus,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<MemberResponseDto> members = memberService.searchMember(memberId, name, memberStatus, pageable);
@@ -125,7 +125,7 @@ public class MemberController {
     @GetMapping("/cloud")
     public ResponseModel getAllCloudUsages(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<CloudUsageInfo> cloudUsageInfos = memberService.getAllCloudUsages(pageable);
@@ -151,7 +151,7 @@ public class MemberController {
     public ResponseModel getMemberUploadedFiles(
             @PathVariable String memberId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<FileInfo> files = memberService.getFilesInMemberDirectory(memberId, pageable);
