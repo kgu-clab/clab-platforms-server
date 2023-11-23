@@ -52,7 +52,7 @@ public class BoardController {
     @Operation(summary = "[U] 커뮤니티 게시판 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     public ResponseModel getBoards(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BoardResonseDto> boards = boardService.getBoards(pageable);
@@ -65,7 +65,7 @@ public class BoardController {
     @Operation(summary = "[U] 내가 쓴 커뮤니티 게시글 조회", description = "ROLE_USER 이상의 권한이 필요함")
     public ResponseModel getMyBoards(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BoardResonseDto> board = boardService.getMyBoards(pageable);
@@ -81,7 +81,7 @@ public class BoardController {
             @RequestParam(required = false) Long boardId,
             @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BoardResonseDto> boards = boardService.searchBoards(boardId, category, pageable);

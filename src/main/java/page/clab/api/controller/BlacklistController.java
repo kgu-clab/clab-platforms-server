@@ -41,7 +41,7 @@ public class BlacklistController {
     @GetMapping("")
     public ResponseModel getBlacklistedIps(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BlacklistIp> blacklistedIps = blacklistService.getBlacklistedIps(pageable);

@@ -44,7 +44,7 @@ public class DonationController {
     @GetMapping("")
     public ResponseModel getDonations(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<DonationResponseDto> donations = donationService.getDonations(pageable);
@@ -57,7 +57,7 @@ public class DonationController {
     @GetMapping("/my-donations")
     public ResponseModel getMyDonations(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<DonationResponseDto> donations = donationService.getMyDonations(pageable);
@@ -73,7 +73,7 @@ public class DonationController {
             @RequestParam(required = false) String memberId,
             @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<DonationResponseDto> donations = donationService.searchDonation(memberId, name, pageable);

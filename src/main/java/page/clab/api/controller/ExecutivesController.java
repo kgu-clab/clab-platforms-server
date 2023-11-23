@@ -51,7 +51,7 @@ public class ExecutivesController {
     @GetMapping("")
     public ResponseModel getExecutives(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ExecutivesResponseDto> executives = executivesService.getExecutives(pageable);
@@ -63,9 +63,9 @@ public class ExecutivesController {
     @Operation(summary = "연도별 운영진 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/{year}")
     public ResponseModel getExecutivesByYear(
+            @PathVariable String year,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @PathVariable String year
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ExecutivesResponseDto> executives = executivesService.getExecutivesByYear(pageable, year);

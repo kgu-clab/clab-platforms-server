@@ -53,7 +53,7 @@ public class BlogController {
     @GetMapping("")
     public ResponseModel getBlogs(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BlogResponseDto> blogs = blogService.getBlogs(pageable);
@@ -79,7 +79,7 @@ public class BlogController {
     public ResponseModel searchBlog(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BlogResponseDto> blogs = blogService.searchBlog(keyword, pageable);

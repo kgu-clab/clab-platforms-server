@@ -52,7 +52,7 @@ public class ReviewController {
     @GetMapping("")
     public ResponseModel getReviews(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.getReviews(pageable);
@@ -65,7 +65,7 @@ public class ReviewController {
     @GetMapping("/my-reviews")
     public ResponseModel getMyReviews(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.getMyReviews(pageable);
@@ -78,7 +78,7 @@ public class ReviewController {
     @GetMapping("/public-reviews")
     public ResponseModel getPublicReview(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.getPublicReview(pageable);
@@ -96,7 +96,7 @@ public class ReviewController {
             @RequestParam(required = false) Long activityGroupId,
             @RequestParam(required = false) String activityGroupCategory,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.searchReview(memberId, name, activityGroupId, activityGroupCategory, pageable);
