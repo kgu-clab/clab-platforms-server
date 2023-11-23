@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.entity.Review;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.util.ModelMapperUtil;
 
 @Getter
@@ -22,7 +23,7 @@ public class ReviewResponseDto {
 
     private String activityGroupName;
 
-    private String activityGroupCategory;
+    private ActivityGroupCategory activityGroupCategory;
 
     private String memberId;
 

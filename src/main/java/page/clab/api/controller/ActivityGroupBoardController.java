@@ -2,8 +2,10 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,12 +18,10 @@ import page.clab.api.service.ActivityGroupBoardService;
 import page.clab.api.type.dto.ActivityGroupBoardDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/activity-group/boards")
 @RequiredArgsConstructor
-@Tag(name = "ActivityGroupBoard", description = "활동 그룹 게시판 관리 API")
+@Tag(name = "ActivityGroupBoard", description = "활동 그룹 게시판 관리 관련 API")
 @Slf4j
 public class ActivityGroupBoardController {
 
@@ -39,10 +39,14 @@ public class ActivityGroupBoardController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 활동 그룹 게시판 리스팅", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 활동 그룹 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/list")
-    public ResponseModel getActivityGroupBoardList() {
-        List<ActivityGroupBoardDto> allBoards = activityGroupBoardService.getAllActivityGroupBoard();
+    public ResponseModel getActivityGroupBoardList(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
+    ) {
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        List<ActivityGroupBoardDto> allBoards = activityGroupBoardService.getAllActivityGroupBoard(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(allBoards);
         return responseModel;
@@ -62,9 +66,12 @@ public class ActivityGroupBoardController {
     @Operation(summary = "[U] 활동 그룹 게시판 계층 구조적 조회, 부모 및 자식 게시판 함께 반환", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/by-parent")
     public ResponseModel getActivityGroupBoardByParent(
-            @RequestParam Long parentId
+            @RequestParam Long parentId,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size
     ) {
-        List<ActivityGroupBoardDto> boards = activityGroupBoardService.getActivityGroupBoardByParent(parentId);
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        List<ActivityGroupBoardDto> boards = activityGroupBoardService.getActivityGroupBoardByParent(parentId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boards);
         return responseModel;
