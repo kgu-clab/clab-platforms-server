@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.BlogRepository;
-import page.clab.api.type.dto.BlogDetailResponseDto;
+import page.clab.api.type.dto.BlogDetailsResponseDto;
 import page.clab.api.type.dto.BlogRequestDto;
 import page.clab.api.type.dto.BlogResponseDto;
 import page.clab.api.type.entity.Blog;
@@ -46,9 +46,9 @@ public class BlogService {
         return blogs.map(BlogResponseDto::of).getContent();
     }
 
-    public BlogDetailResponseDto getBlog(Long blogId) {
+    public BlogDetailsResponseDto getBlogDetails(Long blogId) {
         Blog blog = getBlogByIdOrThrow(blogId);
-        return BlogDetailResponseDto.of(blog);
+        return BlogDetailsResponseDto.of(blog);
     }
 
     public List<BlogResponseDto> searchBlog(String keyword, Pageable pageable) {

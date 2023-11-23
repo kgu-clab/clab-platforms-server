@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.BlogService;
-import page.clab.api.type.dto.BlogDetailResponseDto;
+import page.clab.api.type.dto.BlogDetailsResponseDto;
 import page.clab.api.type.dto.BlogRequestDto;
 import page.clab.api.type.dto.BlogResponseDto;
 import page.clab.api.type.dto.ResponseModel;
@@ -64,10 +64,10 @@ public class BlogController {
 
     @Operation(summary = "[U] 블로그 포스트 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/{blogId}")
-    public ResponseModel getBlog(
+    public ResponseModel getBlogDetails(
             @PathVariable Long blogId
     ) {
-        BlogDetailResponseDto blog = blogService.getBlog(blogId);
+        BlogDetailsResponseDto blog = blogService.getBlogDetails(blogId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(blog);
         return responseModel;

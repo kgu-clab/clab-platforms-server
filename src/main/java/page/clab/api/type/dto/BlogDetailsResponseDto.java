@@ -14,7 +14,7 @@ import page.clab.api.util.ModelMapperUtil;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BlogDetailResponseDto {
+public class BlogDetailsResponseDto {
 
     private Long id;
 
@@ -32,8 +32,8 @@ public class BlogDetailResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static BlogDetailResponseDto of(Blog blog) {
-        BlogDetailResponseDto blogResponseDto = ModelMapperUtil.getModelMapper().map(blog, BlogDetailResponseDto.class);
+    public static BlogDetailsResponseDto of(Blog blog) {
+        BlogDetailsResponseDto blogResponseDto = ModelMapperUtil.getModelMapper().map(blog, BlogDetailsResponseDto.class);
         blogResponseDto.setMemberId(blog.getMember().getId());
         blogResponseDto.setName(blog.getMember().getName());
         return blogResponseDto;
