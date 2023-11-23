@@ -9,8 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,74 +18,70 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
-import page.clab.api.service.AccuseService;
-import page.clab.api.type.dto.AccuseRequestDto;
-import page.clab.api.type.dto.AccuseResponseDto;
+import page.clab.api.service.ExecutivesService;
+import page.clab.api.type.dto.ExecutivesRequestDto;
+import page.clab.api.type.dto.ExecutivesResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
-import page.clab.api.type.etc.AccuseStatus;
-import page.clab.api.type.etc.TargetType;
 
 @RestController
-@RequestMapping("/accuses")
+@RequestMapping("/executives")
 @RequiredArgsConstructor
-@Tag(name = "Accuse", description = "신고 관련 API")
+@Tag(name = "Executives", description = "역대 운영진 관련 API")
 @Slf4j
-public class AccuseController {
+public class ExecutivesController {
 
-    private final AccuseService accuseService;
+    private final ExecutivesService executivesService;
 
-    @Operation(summary = "[U] 신고하기", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "운영진 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PostMapping("")
-    public ResponseModel createAccuse(
-            @Valid @RequestBody AccuseRequestDto accuseRequestDto,
+    public ResponseModel createExecutives(
+            @Valid @RequestBody ExecutivesRequestDto executivesRequestDto,
             BindingResult result
-    ) throws MethodArgumentNotValidException {
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        accuseService.createAccuse(accuseRequestDto);
+        executivesService.createExecutives(executivesRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
-    
-    @Operation(summary = "[A] 신고 내역 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+
+    @Operation(summary = "역대 운영진 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
-    public ResponseModel getAccuses(
+    public ResponseModel getExecutives(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
-    ) throws PermissionDeniedException {
+    ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccuses(pageable);
+        PagedResponseDto<ExecutivesResponseDto> executives = executivesService.getExecutives(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(accuses);
+        responseModel.addData(executives);
         return responseModel;
     }
-    
-    @Operation(summary = "[A] 유형/상태별 신고 내역 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @GetMapping("/search")
-    public ResponseModel searchAccuse(
-            @RequestParam(required = false) TargetType targetType,
-            @RequestParam(required = false) AccuseStatus accuseStatus,
+
+    @Operation(summary = "연도별 운영진 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @GetMapping("/{year}")
+    public ResponseModel getExecutivesByYear(
+            @PathVariable String year,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
-    ) throws PermissionDeniedException {
+    ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AccuseResponseDto> accuses = accuseService.searchAccuse(targetType, accuseStatus, pageable);
+        PagedResponseDto<ExecutivesResponseDto> executives = executivesService.getExecutivesByYear(pageable, year);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(accuses);
+        responseModel.addData(executives);
         return responseModel;
     }
-    
-    @Operation(summary = "[A] 신고 상태 변경", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @PatchMapping("/{accuseId}")
-    public ResponseModel updateAccuseStatus(
-            @PathVariable Long accuseId,
-            @RequestParam AccuseStatus accuseStatus
+
+    @Operation(summary = "역대 운영진 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @DeleteMapping("/{executivesId}")
+    public ResponseModel deleteExecutives(
+            @PathVariable Long executivesId
     ) throws PermissionDeniedException {
-        accuseService.updateAccuseStatus(accuseId, accuseStatus);
+        executivesService.deleteExecutives(executivesId);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
-    
+
 }

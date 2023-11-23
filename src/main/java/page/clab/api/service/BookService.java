@@ -20,6 +20,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.BookRepository;
 import page.clab.api.type.dto.BookRequestDto;
 import page.clab.api.type.dto.BookResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Book;
 
 @Service
@@ -38,12 +39,12 @@ public class BookService {
         bookRepository.save(book);
     }
 
-    public List<BookResponseDto> getBooks(Pageable pageable) {
+    public PagedResponseDto<BookResponseDto> getBooks(Pageable pageable) {
         Page<Book> books = bookRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return books.map(BookResponseDto::of).getContent();
+        return new PagedResponseDto<>(books.map(BookResponseDto::of));
     }
 
-    public List<BookResponseDto> searchBook(String keyword, Pageable pageable) {
+    public PagedResponseDto<BookResponseDto> searchBook(String keyword, Pageable pageable) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Book> criteriaQuery = criteriaBuilder.createQuery(Book.class);
         Root<Book> root = criteriaQuery.from(Book.class);
@@ -67,7 +68,7 @@ public class BookService {
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), distinctBooks.size());
         Page<Book> bookPage = new PageImpl<>(distinctBooks.subList(start, end), pageable, distinctBooks.size());
-        return bookPage.map(BookResponseDto::of).getContent();
+        return new PagedResponseDto<>(bookPage.map(BookResponseDto::of));
     }
 
     public void updateBookInfo(Long bookId, BookRequestDto bookRequestDto) throws PermissionDeniedException {

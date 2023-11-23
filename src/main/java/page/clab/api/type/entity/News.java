@@ -30,29 +30,23 @@ public class News {
     private Long id;
 
     @Column(nullable = false)
-    @Size(min = 1)
-    private String category;
-
-    @Column(nullable = false)
-    @Size(min = 1, max = 100)
+    @Size(min = 1, max = 100, message = "{size.news.title}")
     private String title;
 
-    @Size(max = 100)
-    private String subtitle;
+    @Column(nullable = false)
+    @Size(min = 1, message = "{size.news.category}")
+    private String category;
 
     @Column(nullable = false, length = 10000)
     @Size(min = 1, max = 10000, message = "{size.news.content}")
     private String content;
 
-    @URL
-    private String url;
+    @URL(message = "{url.news.imageUrl}")
+    private String imageUrl;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-
-    @Column(name = "update_time")
-    private LocalDateTime updateTime;
 
     public static News of(NewsRequestDto newsRequestDto) {
         return ModelMapperUtil.getModelMapper().map(newsRequestDto, News.class);

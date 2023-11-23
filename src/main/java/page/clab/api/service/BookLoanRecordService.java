@@ -2,7 +2,6 @@ package page.clab.api.service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +17,7 @@ import page.clab.api.repository.BookLoanRecordRepository;
 import page.clab.api.repository.BookRepository;
 import page.clab.api.type.dto.BookLoanRecordRequestDto;
 import page.clab.api.type.dto.BookLoanRecordResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Book;
 import page.clab.api.type.entity.BookLoanRecord;
 import page.clab.api.type.entity.Member;
@@ -126,12 +126,12 @@ public class BookLoanRecordService {
         memberService.saveMember(member);
     }
 
-    public List<BookLoanRecordResponseDto> getBookLoanRecords(Pageable pageable) {
+    public PagedResponseDto<BookLoanRecordResponseDto> getBookLoanRecords(Pageable pageable) {
         Page<BookLoanRecord> bookLoanRecords = bookLoanRecordRepository.findAllByOrderByBorrowedAtDesc(pageable);
-        return bookLoanRecords.map(BookLoanRecordResponseDto::of).getContent();
+        return new PagedResponseDto<>(bookLoanRecords.map(BookLoanRecordResponseDto::of));
     }
 
-    public List<BookLoanRecordResponseDto> searchBookLoanRecord(Long bookId, String borrowerId, Pageable pageable) {
+    public PagedResponseDto<BookLoanRecordResponseDto> searchBookLoanRecord(Long bookId, String borrowerId, Pageable pageable) {
         Page<BookLoanRecord> bookLoanRecords;
         if (bookId != null && borrowerId != null) {
             bookLoanRecords = getBookLoanRecordByBookIdAndBorrowerId(bookId, borrowerId, pageable);
@@ -145,12 +145,12 @@ public class BookLoanRecordService {
         if (bookLoanRecords.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return bookLoanRecords.map(BookLoanRecordResponseDto::of).getContent();
+        return new PagedResponseDto<>(bookLoanRecords.map(BookLoanRecordResponseDto::of));
     }
 
-    public List<BookLoanRecordResponseDto> getUnreturnedBooks(Pageable pageable) {
+    public PagedResponseDto<BookLoanRecordResponseDto> getUnreturnedBooks(Pageable pageable) {
         Page<BookLoanRecord> unreturnedBookLoanRecords = getBookLoanRecordByReturnedAtIsNull(pageable);
-        return unreturnedBookLoanRecords.map(BookLoanRecordResponseDto::of).getContent();
+        return new PagedResponseDto<>(unreturnedBookLoanRecords.map(BookLoanRecordResponseDto::of));
     }
 
     public BookLoanRecord getBookLoanRecordByBookAndBorrowerAndReturnedAtIsNull(Book book, Member borrower) {

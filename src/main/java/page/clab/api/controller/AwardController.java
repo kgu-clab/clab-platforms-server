@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +22,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.AwardService;
 import page.clab.api.type.dto.AwardRequestDto;
 import page.clab.api.type.dto.AwardResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -52,10 +52,10 @@ public class AwardController {
     @GetMapping("")
     public ResponseModel getMyAwards(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<AwardResponseDto> awardResponseDtos = awardService.getMyAwards(pageable);
+        PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.getMyAwards(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(awardResponseDtos);
         return responseModel;
@@ -67,10 +67,10 @@ public class AwardController {
     public ResponseModel searchAwards(
             @RequestParam String memberId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<AwardResponseDto> awardResponseDtos = awardService.searchAwards(memberId, pageable);
+        PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.searchAwards(memberId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(awardResponseDtos);
         return responseModel;

@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +7,7 @@ import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.WorkExperienceRepository;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.WorkExperienceRequestDto;
 import page.clab.api.type.dto.WorkExperienceResponseDto;
 import page.clab.api.type.entity.Member;
@@ -28,16 +28,16 @@ public class WorkExperienceService {
         workExperienceRepository.save(workExperience);
     }
 
-    public List<WorkExperienceResponseDto> getMyWorkExperience(Pageable pageable) {
+    public PagedResponseDto<WorkExperienceResponseDto> getMyWorkExperience(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMember_IdOrderByStartDateDesc(member.getId(), pageable);
-        return workExperiences.map(WorkExperienceResponseDto::of).getContent();
+        return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::of));
     }
 
-    public List<WorkExperienceResponseDto> searchWorkExperience(String memberId, Pageable pageable) {
+    public PagedResponseDto<WorkExperienceResponseDto> searchWorkExperience(String memberId, Pageable pageable) {
         Member member = memberService.getMemberByIdOrThrow(memberId);
         Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMember_IdOrderByStartDateDesc(member.getId(), pageable);
-        return workExperiences.map(WorkExperienceResponseDto::of).getContent();
+        return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::of));
     }
 
     public void updateWorkExperience(Long workExperienceId, WorkExperienceRequestDto workExperienceRequestDto) throws PermissionDeniedException {

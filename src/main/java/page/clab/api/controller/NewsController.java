@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.NewsService;
+import page.clab.api.type.dto.NewsDetailsResponseDto;
 import page.clab.api.type.dto.NewsRequestDto;
 import page.clab.api.type.dto.NewsResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -52,27 +53,37 @@ public class NewsController {
     @GetMapping("")
     public ResponseModel getNews(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<NewsResponseDto> news = newsService.getNews(pageable);
+        PagedResponseDto<NewsResponseDto> news = newsService.getNews(pageable);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(news);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 뉴스 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @GetMapping("/{newsId}")
+    public ResponseModel getNewsDetails(
+            @PathVariable Long newsId
+    ) {
+        NewsDetailsResponseDto news = newsService.getNewsDetails(newsId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(news);
         return responseModel;
     }
 
     @Operation(summary = "[U] 뉴스 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "뉴스 ID, 카테고리, 제목을 기준으로 검색")
+            "카테고리, 제목을 기준으로 검색")
     @GetMapping("/search")
     public ResponseModel searchNews(
-            @RequestParam(required = false) Long newsId,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String title,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<NewsResponseDto> news = newsService.searchNews(newsId, category, title, pageable);
+        PagedResponseDto<NewsResponseDto> news = newsService.searchNews(category, title, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(news);
         return responseModel;

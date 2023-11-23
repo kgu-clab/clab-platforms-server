@@ -24,55 +24,60 @@ public class FileController {
     private final FileUploadService fileUploadService;
 
     @Operation(summary = "[U] 게시글 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @PostMapping("/boards")
+    @PostMapping("/boards/{boardId}")
     public ResponseModel boardUpload(
-            @RequestParam(value = "file", required = true) MultipartFile multipartFile
+            @PathVariable("boardId") String boardId,
+            @RequestParam(value = "file") MultipartFile multipartFile
     ) throws FileUploadFailException {
-        String url = fileUploadService.saveFile(multipartFile, "boards");
+        String url = fileUploadService.saveFile(multipartFile, "boards/" + boardId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
         return responseModel;
     }
 
     @Operation(summary = "[U] 뉴스 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @PostMapping("/news")
+    @PostMapping("/news/{newsId}")
     public ResponseModel newsUpload(
-            @RequestParam(value = "file", required = true) MultipartFile multipartFile
+            @PathVariable("newsId") String newsId,
+            @RequestParam(value = "file") MultipartFile multipartFile
     ) throws FileUploadFailException {
-        String url = fileUploadService.saveFile(multipartFile, "news");
+        String url = fileUploadService.saveFile(multipartFile, "news/" + newsId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
         return responseModel;
     }
 
     @Operation(summary = "[U] 도서 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @PostMapping("/books")
+    @PostMapping("/books/{bookId}")
     public ResponseModel bookUpload(
-            @RequestParam(value = "file", required = true) MultipartFile multipartFile
+            @PathVariable("bookId") String bookId,
+            @RequestParam(value = "file") MultipartFile multipartFile
     ) throws FileUploadFailException {
-        String url = fileUploadService.saveFile(multipartFile, "books");
+        String url = fileUploadService.saveFile(multipartFile, "books/" + bookId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
         return responseModel;
     }
 
     @Operation(summary = "[U] 멤버 프로필 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @PostMapping("/profiles")
+    @PostMapping("/profiles/{memberId}")
     public ResponseModel profileUpload(
-            @RequestParam(value = "file", required = true) MultipartFile multipartFile
+            @PathVariable("memberId") String memberId,
+            @RequestParam(value = "file") MultipartFile multipartFile
     ) throws FileUploadFailException {
-        String url = fileUploadService.saveFile(multipartFile, "profiles");
+        String url = fileUploadService.saveFile(multipartFile, "profiles/" + memberId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
         return responseModel;
     }
 
     @Operation(summary = "[U] 함께하는 활동 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @PostMapping("/activities")
+    @PostMapping("/activities/{activityId}")
     public ResponseModel activityUpload(
-            @RequestParam(value = "file", required = true) MultipartFile multipartFile
+            @PathVariable("activityId") String activityId,
+            @RequestParam(value = "file") MultipartFile multipartFile
     ) throws FileUploadFailException {
-        String url = fileUploadService.saveFile(multipartFile, "activities");
+        String url = fileUploadService.saveFile(multipartFile, "activities/" + activityId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
         return responseModel;
@@ -82,7 +87,7 @@ public class FileController {
     @PostMapping("/members/{memberId}")
     public ResponseModel memberCloudUpload(
             @PathVariable("memberId") String memberId,
-            @RequestParam(value = "file", required = true) MultipartFile multipartFile
+            @RequestParam(value = "file") MultipartFile multipartFile
     ) throws FileUploadFailException {
         String url = fileUploadService.saveFile(multipartFile, "members/" + memberId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -93,7 +98,7 @@ public class FileController {
     @Operation(summary = "[U] 양식 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/forms")
     public ResponseModel formUpload(
-            @RequestParam(value = "file", required = true) MultipartFile multipartFile
+            @RequestParam(value = "file") MultipartFile multipartFile
     ) throws FileUploadFailException {
         String url = fileUploadService.saveFile(multipartFile, "forms");
         ResponseModel responseModel = ResponseModel.builder().build();

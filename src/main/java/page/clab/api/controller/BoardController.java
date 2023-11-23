@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +22,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.BoardService;
 import page.clab.api.type.dto.BoardRequestDto;
 import page.clab.api.type.dto.BoardResonseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -52,10 +52,10 @@ public class BoardController {
     @Operation(summary = "[U] 커뮤니티 게시판 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     public ResponseModel getBoards(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<BoardResonseDto> boards = boardService.getBoards(pageable);
+        PagedResponseDto<BoardResonseDto> boards = boardService.getBoards(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boards);
         return responseModel;
@@ -65,10 +65,10 @@ public class BoardController {
     @Operation(summary = "[U] 내가 쓴 커뮤니티 게시글 조회", description = "ROLE_USER 이상의 권한이 필요함")
     public ResponseModel getMyBoards(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<BoardResonseDto> board = boardService.getMyBoards(pageable);
+        PagedResponseDto<BoardResonseDto> board = boardService.getMyBoards(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(board);
         return responseModel;
@@ -81,10 +81,10 @@ public class BoardController {
             @RequestParam(required = false) Long boardId,
             @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<BoardResonseDto> boards = boardService.searchBoards(boardId, category, pageable);
+        PagedResponseDto<BoardResonseDto> boards = boardService.searchBoards(boardId, category, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boards);
         return responseModel;

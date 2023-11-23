@@ -1,6 +1,5 @@
 package page.clab.api.type.entity;
 
-import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,9 +13,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.validator.constraints.URL;
-import page.clab.api.type.dto.BlogRequestDto;
+import page.clab.api.type.dto.ExecutivesRequestDto;
+import page.clab.api.type.etc.ExecutivesPosition;
 import page.clab.api.util.ModelMapperUtil;
 
 @Entity
@@ -25,7 +23,7 @@ import page.clab.api.util.ModelMapperUtil;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Blog {
+public class Executives {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,24 +34,16 @@ public class Blog {
     private Member member;
 
     @Column(nullable = false)
-    private String title;
+    private ExecutivesPosition position;
 
     @Column(nullable = false)
-    private String subTitle;
-
-    @Column(nullable = false, length = 10000)
-    @Size(min = 1, max = 10000, message = "{size.blog.content}")
-    private String content;
-
-    @URL
-    private String imageUrl;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    public static Blog of(BlogRequestDto blogRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(blogRequestDto, Blog.class);
+    @Size(min = 1, message = "{size.executives.year}")
+    private String year;
+    
+    public static Executives of(ExecutivesRequestDto executivesRequestDto) {
+        Executives executives = ModelMapperUtil.getModelMapper().map(executivesRequestDto, Executives.class);
+        executives.setMember(Member.builder().id(executivesRequestDto.getMemberId()).build());
+        return executives;
     }
 
 }

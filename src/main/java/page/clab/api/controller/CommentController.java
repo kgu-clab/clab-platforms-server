@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +22,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.CommentService;
 import page.clab.api.type.dto.CommentRequestDto;
 import page.clab.api.type.dto.CommentResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -54,10 +54,10 @@ public class CommentController {
     public ResponseModel getComments(
             @PathVariable Long boardId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<CommentResponseDto> comments = commentService.getComments(boardId, pageable);
+        PagedResponseDto<CommentResponseDto> comments = commentService.getComments(boardId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(comments);
         return responseModel;
@@ -67,10 +67,10 @@ public class CommentController {
     @GetMapping("/my-comments")
     public ResponseModel getMyComments(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<CommentResponseDto> comments = commentService.getMyComments(pageable);
+        PagedResponseDto<CommentResponseDto> comments = commentService.getMyComments(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(comments);
         return responseModel;

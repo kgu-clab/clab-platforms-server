@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.ReviewService;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.ReviewRequestDto;
 import page.clab.api.type.dto.ReviewResponseDto;
@@ -52,10 +52,10 @@ public class ReviewController {
     @GetMapping("")
     public ResponseModel getReviews(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<ReviewResponseDto> reviewResponseDtos = reviewService.getReviews(pageable);
+        PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.getReviews(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(reviewResponseDtos);
         return responseModel;
@@ -65,10 +65,10 @@ public class ReviewController {
     @GetMapping("/my-reviews")
     public ResponseModel getMyReviews(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<ReviewResponseDto> reviewResponseDtos = reviewService.getMyReviews(pageable);
+        PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.getMyReviews(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(reviewResponseDtos);
         return responseModel;
@@ -78,10 +78,10 @@ public class ReviewController {
     @GetMapping("/public-reviews")
     public ResponseModel getPublicReview(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<ReviewResponseDto> reviewResponseDtos = reviewService.getPublicReview(pageable);
+        PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.getPublicReview(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(reviewResponseDtos);
         return responseModel;
@@ -96,10 +96,10 @@ public class ReviewController {
             @RequestParam(required = false) Long activityGroupId,
             @RequestParam(required = false) String activityGroupCategory,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<ReviewResponseDto> reviewResponseDtos = reviewService.searchReview(memberId, name, activityGroupId, activityGroupCategory, pageable);
+        PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.searchReview(memberId, name, activityGroupId, activityGroupCategory, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(reviewResponseDtos);
         return responseModel;

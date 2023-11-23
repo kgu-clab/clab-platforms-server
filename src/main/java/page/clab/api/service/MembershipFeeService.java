@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +10,7 @@ import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.MembershipFeeRepository;
 import page.clab.api.type.dto.MembershipFeeRequestDto;
 import page.clab.api.type.dto.MembershipFeeResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.MembershipFee;
 
@@ -29,18 +29,18 @@ public class MembershipFeeService {
         membershipFeeRepository.save(membershipFee);
     }
 
-    public List<MembershipFeeResponseDto> getMembershipFees(Pageable pageable) {
+    public PagedResponseDto<MembershipFeeResponseDto> getMembershipFees(Pageable pageable) {
         Page<MembershipFee> membershipFees = membershipFeeRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return membershipFees.map(MembershipFeeResponseDto::of).getContent();
+        return new PagedResponseDto<>(membershipFees.map(MembershipFeeResponseDto::of));
     }
 
-    public List<MembershipFeeResponseDto> searchMembershipFee(String category, Pageable pageable) {
+    public PagedResponseDto<MembershipFeeResponseDto> searchMembershipFee(String category, Pageable pageable) {
         Page<MembershipFee> membershipFees;
         membershipFees = getMembershipFeeByCategory(category, pageable);
         if (membershipFees.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return membershipFees.map(MembershipFeeResponseDto::of).getContent();
+        return new PagedResponseDto<>(membershipFees.map(MembershipFeeResponseDto::of));
     }
 
     public void updateMembershipFee(Long membershipFeeId, MembershipFeeRequestDto membershipFeeRequestDto) throws PermissionDeniedException {

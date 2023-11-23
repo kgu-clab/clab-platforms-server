@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.SharedAccountService;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.SharedAccountRequestDto;
 import page.clab.api.type.dto.SharedAccountResponseDto;
@@ -52,10 +52,10 @@ public class SharedAccountController {
     @GetMapping("")
     public ResponseModel getSharedAccounts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<SharedAccountResponseDto> sharedAccounts = sharedAccountService.getSharedAccounts(pageable);
+        PagedResponseDto<SharedAccountResponseDto> sharedAccounts = sharedAccountService.getSharedAccounts(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(sharedAccounts);
         return responseModel;

@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +14,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.MembershipFeeService;
 import page.clab.api.type.dto.MembershipFeeRequestDto;
 import page.clab.api.type.dto.MembershipFeeResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -44,10 +44,10 @@ public class MembershipFeeController {
     @GetMapping("")
     public ResponseModel getMembershipFees(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<MembershipFeeResponseDto> MembershipFees = membershipFeeService.getMembershipFees(pageable);
+        PagedResponseDto<MembershipFeeResponseDto> MembershipFees = membershipFeeService.getMembershipFees(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(MembershipFees);
         return responseModel;
@@ -59,10 +59,10 @@ public class MembershipFeeController {
     public ResponseModel getMembershipFee(
             @RequestParam String category,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<MembershipFeeResponseDto> MembershipFees = membershipFeeService.searchMembershipFee(category, pageable);
+        PagedResponseDto<MembershipFeeResponseDto> MembershipFees = membershipFeeService.searchMembershipFee(category, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(MembershipFees);
         return responseModel;
