@@ -24,6 +24,7 @@ import page.clab.api.service.ReviewService;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.ReviewRequestDto;
 import page.clab.api.type.dto.ReviewResponseDto;
+import page.clab.api.type.etc.ActivityGroupCategory;
 
 @RestController
 @RequestMapping("/reviews")
@@ -94,7 +95,7 @@ public class ReviewController {
             @RequestParam(required = false) String memberId,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long activityGroupId,
-            @RequestParam(required = false) String activityGroupCategory,
+            @RequestParam(required = false) ActivityGroupCategory activityGroupCategory,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {

@@ -2,8 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
@@ -20,9 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.ActivityGroupAdminService;
 import page.clab.api.type.dto.ActivityGroupRequestDto;
+import page.clab.api.type.dto.ActivityGroupResponseDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.ResponseModel;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupStatus;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/activity-group/admin")
@@ -36,13 +39,14 @@ public class ActivityGroupAdminController {
     @Operation(summary = "[U] 활동 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createActivityGroup(
+            @RequestParam ActivityGroupCategory category,
             @Valid @RequestBody ActivityGroupRequestDto activityGroupRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        activityGroupAdminService.createActivityGroup(activityGroupRequestDto);
+        activityGroupAdminService.createActivityGroup(category, activityGroupRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
@@ -52,7 +56,7 @@ public class ActivityGroupAdminController {
     public ResponseModel getActivityGroupsByStatus (
             @RequestParam ActivityGroupStatus activityGroupStatus
     ) throws PermissionDeniedException {
-        List<ActivityGroupRequestDto> activityGroupList = activityGroupAdminService.getActivityGroupsByStatus(activityGroupStatus);
+        List<ActivityGroupResponseDto> activityGroupList = activityGroupAdminService.getActivityGroupsByStatus(activityGroupStatus);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroupList);
         return responseModel;

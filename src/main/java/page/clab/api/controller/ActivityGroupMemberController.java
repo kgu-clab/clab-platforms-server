@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,10 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.service.ActivityGroupMemberService;
-import page.clab.api.type.dto.ActivityGroupRequestDto;
+import page.clab.api.type.dto.ActivityGroupDetailsResponseDto;
+import page.clab.api.type.dto.ActivityGroupResponseDto;
 import page.clab.api.type.dto.GroupMemberDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.ResponseModel;
+import page.clab.api.type.etc.ActivityGroupCategory;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/activity-group/member")
@@ -29,9 +32,9 @@ public class ActivityGroupMemberController {
     @Operation(summary = "활동 목록 조회(카테고리별)", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/{category}")
     public ResponseModel getActivityGroups(
-            @PathVariable String category
+            @PathVariable ActivityGroupCategory category
     ) {
-        List<ActivityGroupRequestDto> activityGroups = activityGroupMemberService.getActivityGroups(category);
+        List<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroups(category);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroups);
         return responseModel;
@@ -42,7 +45,7 @@ public class ActivityGroupMemberController {
     public ResponseModel getActivityGroup(
             @PathVariable Long activityGroupId
     ) {
-        ActivityGroupRequestDto activityGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
+        ActivityGroupDetailsResponseDto activityGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroup);
         return responseModel;

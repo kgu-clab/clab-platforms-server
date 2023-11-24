@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.entity.ActivityGroup;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;

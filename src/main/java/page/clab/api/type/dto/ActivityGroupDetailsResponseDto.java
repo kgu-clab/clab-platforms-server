@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.entity.ActivityGroup;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupStatus;
 import page.clab.api.util.ModelMapperUtil;
 
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ActivityGroupDetailResponseDto {
+public class ActivityGroupDetailsResponseDto {
 
     private ActivityGroupCategory category;
 
@@ -32,7 +33,7 @@ public class ActivityGroupDetailResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static ActivityGroupDetailResponseDto of(ActivityGroup activityGroup) {
-        return ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupDetailResponseDto.class);
+    public static ActivityGroupDetailsResponseDto of(ActivityGroup activityGroup) {
+        return ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupDetailsResponseDto.class);
     }
 }

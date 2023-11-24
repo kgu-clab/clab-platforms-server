@@ -1,9 +1,5 @@
 package page.clab.api.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
@@ -12,13 +8,20 @@ import page.clab.api.repository.ActivityGroupRepository;
 import page.clab.api.repository.GroupMemberRepository;
 import page.clab.api.repository.GroupScheduleRepository;
 import page.clab.api.type.dto.ActivityGroupRequestDto;
+import page.clab.api.type.dto.ActivityGroupResponseDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.GroupSchedule;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
+
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,11 +35,11 @@ public class ActivityGroupAdminService {
 
     private final GroupScheduleRepository groupScheduleRepository;
 
-    public List<ActivityGroupRequestDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus) throws PermissionDeniedException {
+    public List<ActivityGroupResponseDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         List<ActivityGroup> activityGroupList = getActivityGroupByStatus(activityGroupStatus);
         return activityGroupList.stream()
-                .map(ActivityGroupRequestDto::of)
+                .map(ActivityGroupResponseDto::of)
                 .collect(Collectors.toList());
     }
 
@@ -48,9 +51,10 @@ public class ActivityGroupAdminService {
     }
 
     @Transactional
-    public void createActivityGroup(ActivityGroupRequestDto activityGroupRequestDto) {
+    public void createActivityGroup(ActivityGroupCategory category, ActivityGroupRequestDto activityGroupRequestDto) {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = ActivityGroup.of(activityGroupRequestDto);
+        activityGroup.setCategory(category);
         activityGroup.setStatus(ActivityGroupStatus.승인대기);
         activityGroup.setProgress(0L);
         activityGroup.setCreatedAt(LocalDateTime.now());
@@ -63,7 +67,7 @@ public class ActivityGroupAdminService {
     public void updateActivityGroup(Long activityGroupId, ActivityGroupRequestDto activityGroupRequestDto) throws PermissionDeniedException {
         checkMemberGroupLeaderRole();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        activityGroup.setCategory(activityGroupRequestDto.getCategory());
+//        activityGroup.setCategory(activityGroupRequestDto.getCategory());
         activityGroup.setName(activityGroupRequestDto.getName());
         activityGroup.setContent(activityGroupRequestDto.getContent());
         activityGroup.setImageUrl(activityGroupRequestDto.getImageUrl());

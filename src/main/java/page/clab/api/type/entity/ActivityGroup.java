@@ -1,14 +1,5 @@
 package page.clab.api.type.entity;
 
-import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,8 +9,19 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.type.dto.ActivityGroupRequestDto;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupStatus;
 import page.clab.api.util.ModelMapperUtil;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 
 @Entity(name = "activity_group")
 @Getter
@@ -34,8 +36,8 @@ public class ActivityGroup {
     private Long id;
 
     @Column(nullable = false)
-    @Size(min = 1, message = "{size.activityGroup.category}")
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private ActivityGroupCategory category;
 
     @Column(nullable = false)
     @Size(min = 1, max = 30, message = "{size.activityGroup.name}")

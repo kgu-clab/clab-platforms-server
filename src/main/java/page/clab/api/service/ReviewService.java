@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,7 +16,10 @@ import page.clab.api.type.dto.ReviewResponseDto;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.Review;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupStatus;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +65,7 @@ public class ReviewService {
         return reviews.map(ReviewResponseDto::of).getContent();
     }
 
-    public List<ReviewResponseDto> searchReview(String memberId, String name, Long activityGroupId, String activityGroupCategory, Pageable pageable) {
+    public List<ReviewResponseDto> searchReview(String memberId, String name, Long activityGroupId, ActivityGroupCategory activityGroupCategory, Pageable pageable) {
         Page<Review> reviews;
         if (memberId != null) {
             reviews = getReviewByMemberId(memberId, pageable);
@@ -140,7 +142,7 @@ public class ReviewService {
         return reviewRepository.findAllByActivityGroup_IdOrderByCreatedAtDesc(activityGroupId, pageable);
     }
 
-    private Page<Review> getReviewByActivityGroupCategory(String activityGroupCategory, Pageable pageable) {
+    private Page<Review> getReviewByActivityGroupCategory(ActivityGroupCategory activityGroupCategory, Pageable pageable) {
         return reviewRepository.findAllByActivityGroup_CategoryOrderByCreatedAtDesc(activityGroupCategory, pageable);
     }
 

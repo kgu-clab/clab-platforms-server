@@ -1,13 +1,15 @@
 package page.clab.api.type.dto;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.entity.Review;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -22,7 +24,7 @@ public class ReviewResponseDto {
 
     private String activityGroupName;
 
-    private String activityGroupCategory;
+    private ActivityGroupCategory activityGroupCategory;
 
     private String memberId;
 

@@ -1,21 +1,24 @@
 package page.clab.api.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.repository.ActivityGroupRepository;
 import page.clab.api.repository.GroupMemberRepository;
 import page.clab.api.repository.GroupScheduleRepository;
-import page.clab.api.type.dto.ActivityGroupRequestDto;
+import page.clab.api.type.dto.ActivityGroupDetailsResponseDto;
+import page.clab.api.type.dto.ActivityGroupResponseDto;
 import page.clab.api.type.dto.GroupMemberDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.GroupSchedule;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupRole;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,16 +32,16 @@ public class ActivityGroupMemberService {
 
     private final MemberService memberService;
 
-    public List<ActivityGroupRequestDto> getActivityGroups(String category) {
+    public List<ActivityGroupResponseDto> getActivityGroups(ActivityGroupCategory category) {
         List<ActivityGroup> activityGroupList = getActivityGroupByCategory(category);
         return activityGroupList.stream()
-                .map(ActivityGroupRequestDto::of)
+                .map(ActivityGroupResponseDto::of)
                 .collect(Collectors.toList());
     }
 
-    public ActivityGroupRequestDto getActivityGroup(Long activityGroupId) {
+    public ActivityGroupDetailsResponseDto getActivityGroup(Long activityGroupId) {
     ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        return ActivityGroupRequestDto.of(activityGroup);
+        return ActivityGroupDetailsResponseDto.of(activityGroup);
     }
 
     public List<GroupScheduleDto> getGroupSchedules(Long activityGroupId) {
@@ -71,7 +74,7 @@ public class ActivityGroupMemberService {
                 .orElseThrow(() -> new NotFoundException("해당 활동이 존재하지 않습니다."));
     }
 
-    private List<ActivityGroup> getActivityGroupByCategory(String category) {
+    private List<ActivityGroup> getActivityGroupByCategory(ActivityGroupCategory category) {
         return activityGroupRepository.findAllByCategory(category);
     }
 

@@ -20,10 +20,9 @@ import javax.validation.constraints.Size;
 @Builder
 public class ActivityGroupRequestDto {
 
-    @NotNull(message = "{notnull.activityGroup.category}")
-    @Size(min = 1, message = "{size.activityGroup.category}")
-    @Schema(description = "카테고리", example = "스터디")
-    private String category;
+//    @NotNull(message = "{notnull.activityGroup.category}")
+//    @Schema(description = "카테고리", example = "스터디")
+//    private ActivityGroupCategory category;
 
     @NotNull(message = "{notnull.activityGroup.name}")
     @Size(min = 1, max = 30, message = "{size.activityGroup.name}")
