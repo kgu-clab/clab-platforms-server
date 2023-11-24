@@ -11,6 +11,9 @@ bootJar {
 	archivesBaseName = "clab"
 	archiveFileName = "clab.jar"
 	archiveVersion = "0.0.1"
+	from("/src/main/resources") {
+		into 'BOOT-INF/classes'
+	}
 }
 
 java {
