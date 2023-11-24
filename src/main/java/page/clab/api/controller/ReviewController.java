@@ -2,8 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +23,9 @@ import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.ReviewRequestDto;
 import page.clab.api.type.dto.ReviewResponseDto;
 import page.clab.api.type.etc.ActivityGroupCategory;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/reviews")
