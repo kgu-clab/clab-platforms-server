@@ -6,22 +6,25 @@ import com.maxmind.geoip2.model.CityResponse;
 import com.maxmind.geoip2.record.City;
 import com.maxmind.geoip2.record.Country;
 import com.maxmind.geoip2.record.Location;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import page.clab.api.type.dto.GeoIpInfo;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.InetAddress;
 
 @Component
 public class GeoIpUtil {
 
     private static DatabaseReader databaseReader;
 
-    public GeoIpUtil(@Value("${geoip2.database.path}") String databasePath) throws IOException {
-        File database = new File(databasePath);
-        databaseReader = new DatabaseReader.Builder(database).build();
+    public GeoIpUtil(ResourceLoader resourceLoader, @Value("${geoip2.database.path}") String databasePath) throws IOException {
+        try (InputStream inputStream = resourceLoader.getResource(databasePath).getInputStream()) {
+            databaseReader = new DatabaseReader.Builder(inputStream).build();
+        } catch (IOException e) {
+            throw new RuntimeException("Error initializing GeoIpUtil", e);
+        }
     }
 
     public static GeoIpInfo getInfoByIp(String ipAddress) {
