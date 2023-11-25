@@ -1,9 +1,5 @@
 package page.clab.api.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
@@ -19,6 +15,11 @@ import page.clab.api.type.entity.GroupSchedule;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
+
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +52,7 @@ public class ActivityGroupAdminService {
     public void createActivityGroup(ActivityGroupDto activityGroupDto) {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = ActivityGroup.of(activityGroupDto);
-        activityGroup.setStatus(ActivityGroupStatus.승인대기);
+        activityGroup.setStatus(ActivityGroupStatus.WAITING);
         activityGroup.setProgress(0L);
         activityGroup.setCreatedAt(LocalDateTime.now());
         activityGroupRepository.save(activityGroup);
