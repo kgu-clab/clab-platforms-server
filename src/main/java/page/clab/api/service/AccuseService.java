@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -12,11 +11,14 @@ import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.AccuseRepository;
 import page.clab.api.type.dto.AccuseRequestDto;
 import page.clab.api.type.dto.AccuseResponseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Accuse;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.AccuseStatus;
 import page.clab.api.type.etc.TargetType;
+
+import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +32,8 @@ public class AccuseService {
     private final CommentService commentService;
 
     private final ReviewService reviewService;
+
+    private final NotificationService notificationService;
 
     private final AccuseRepository accuseRepository;
 
@@ -96,6 +100,12 @@ public class AccuseService {
         Accuse accuse = getAccuseByIdOrThrow(accuseId);
         accuse.setAccuseStatus(accuseStatus);
         accuseRepository.save(accuse);
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .content("신고하신 내용에 대한 처리 결과가 도착했습니다.")
+                .memberId(accuse.getMember().getId())
+                .build();
+        notificationService.createNotification(notificationRequestDto);
     }
 
     private Accuse getAccuseByIdOrThrow(Long accuseId) {
