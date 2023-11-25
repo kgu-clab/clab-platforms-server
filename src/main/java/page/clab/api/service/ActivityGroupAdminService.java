@@ -1,25 +1,30 @@
 package page.clab.api.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.ActivityGroupRepository;
 import page.clab.api.repository.GroupMemberRepository;
 import page.clab.api.repository.GroupScheduleRepository;
-import page.clab.api.type.dto.ActivityGroupDto;
+import page.clab.api.type.dto.ActivityGroupRequestDto;
+import page.clab.api.type.dto.ActivityGroupResponseDto;
 import page.clab.api.type.dto.GroupScheduleDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.GroupSchedule;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
+import page.clab.api.type.etc.GroupMemberStatus;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,12 +38,10 @@ public class ActivityGroupAdminService {
 
     private final GroupScheduleRepository groupScheduleRepository;
 
-    public List<ActivityGroupDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus) throws PermissionDeniedException {
+    public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus, Pageable pageable) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
-        List<ActivityGroup> activityGroupList = getActivityGroupByStatus(activityGroupStatus);
-        return activityGroupList.stream()
-                .map(ActivityGroupDto::of)
-                .collect(Collectors.toList());
+        Page<ActivityGroup> activityGroupList = getActivityGroupByStatus(activityGroupStatus, pageable);
+        return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
     }
 
     public void manageActivityGroup(Long activityGroupId, ActivityGroupStatus activityGroupStatus) throws PermissionDeniedException {
@@ -49,25 +52,26 @@ public class ActivityGroupAdminService {
     }
 
     @Transactional
-    public void createActivityGroup(ActivityGroupDto activityGroupDto) {
+    public void createActivityGroup(ActivityGroupCategory category, ActivityGroupRequestDto activityGroupRequestDto) {
         Member member = memberService.getCurrentMember();
-        ActivityGroup activityGroup = ActivityGroup.of(activityGroupDto);
+        ActivityGroup activityGroup = ActivityGroup.of(activityGroupRequestDto);
+        activityGroup.setCategory(category);
         activityGroup.setStatus(ActivityGroupStatus.WAITING);
         activityGroup.setProgress(0L);
         activityGroup.setCreatedAt(LocalDateTime.now());
         activityGroupRepository.save(activityGroup);
         GroupMember groupLeader = GroupMember.of(member, activityGroup);
         groupLeader.setRole(ActivityGroupRole.LEADER);
+        groupLeader.setStatus(GroupMemberStatus.ACCEPTED);
         groupMemberRepository.save(groupLeader);
     }
 
-    public void updateActivityGroup(Long activityGroupId, ActivityGroupDto activityGroupDto) throws PermissionDeniedException {
+    public void updateActivityGroup(Long activityGroupId, ActivityGroupRequestDto activityGroupRequestDto) throws PermissionDeniedException {
         checkMemberGroupLeaderRole();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        activityGroup.setCategory(activityGroupDto.getCategory());
-        activityGroup.setName(activityGroupDto.getName());
-        activityGroup.setContent(activityGroupDto.getContent());
-        activityGroup.setImageUrl(activityGroupDto.getImageUrl());
+        activityGroup.setName(activityGroupRequestDto.getName());
+        activityGroup.setContent(activityGroupRequestDto.getContent());
+        activityGroup.setImageUrl(activityGroupRequestDto.getImageUrl());
         activityGroupRepository.save(activityGroup);
     }
 
@@ -97,19 +101,27 @@ public class ActivityGroupAdminService {
                 .forEach(groupSchedule -> groupScheduleRepository.save(groupSchedule));
     }
 
-    public void createMemberAuthCode(Long activityGroupId, String code) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        GroupMember member = getGroupMemberByGroupIdAndRoleOrThrow(activityGroupId, ActivityGroupRole.LEADER);
-        if (!member.getMember().getId().equals(currentMember.getId())) {
-            throw new PermissionDeniedException("권한이 없습니다.");
-        }
-        activityGroup.setCode(code);
-        activityGroupRepository.save(activityGroup);
-    }
+//    public List<MemberResponseDto> getApplyGroupMemberList (Long activityGroupId) throws PermissionDeniedException {
+//        checkMemberGroupLeaderRole();
+//        List<GroupMember> groupMemberList = groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.IN_PROGRESS);
+//        return groupMemberList.stream()
+//                .map(groupMember -> MemberResponseDto.of(groupMember.getMember()))
+//                .collect(Collectors.toList());
+//    }
+//
+//    public void manageGroupMemberStatus(String memberId, GroupMemberStatus status) throws PermissionDeniedException {
+//        checkMemberGroupLeaderRole();
+//        Member member = memberService.getMemberByIdOrThrow(memberId);
+//        GroupMember groupMember = getGroupMemberByMemberOrThrow(member);
+//        groupMember.setStatus(status);
+//        if (status == GroupMemberStatus.ACCEPTED) {
+//            groupMember.setRole(ActivityGroupRole.MEMBER);
+//        }
+//        groupMemberRepository.save(groupMember);
+//    }
 
-    public List<ActivityGroup> getActivityGroupByStatus(ActivityGroupStatus status) {
-        return activityGroupRepository.findAllByStatus(status);
+    public Page<ActivityGroup> getActivityGroupByStatus(ActivityGroupStatus status, Pageable pageable) {
+        return activityGroupRepository.findAllByStatusOrderByCreatedAtDesc(status, pageable);
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long id) {

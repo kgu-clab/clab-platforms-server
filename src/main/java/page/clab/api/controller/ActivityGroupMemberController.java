@@ -2,12 +2,10 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +14,8 @@ import page.clab.api.type.dto.ActivityGroupDto;
 import page.clab.api.type.dto.GroupMemberDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.ResponseModel;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/activity-group/member")
@@ -67,17 +67,6 @@ public class ActivityGroupMemberController {
         List<GroupMemberDto> activityGroupMembers = activityGroupMemberService.getActivityGroupMembers(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroupMembers);
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 활동 멤버 인증", description = "ROLE_USER 이상의 권한이 필요함")
-    @PostMapping("/auth")
-    public ResponseModel authenticateActivityMember(
-            @RequestParam Long activityGroupId,
-            @RequestParam String code
-    ) {
-        activityGroupMemberService.authenticateActivityMember(activityGroupId, code);
-        ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
