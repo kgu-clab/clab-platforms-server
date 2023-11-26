@@ -26,7 +26,7 @@ import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
-@RequestMapping("/award")
+@RequestMapping("/awards")
 @RequiredArgsConstructor
 @Tag(name = "Award", description = "수상 이력 관련 API")
 @Slf4j
