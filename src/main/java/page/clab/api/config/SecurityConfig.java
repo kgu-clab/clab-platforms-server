@@ -57,6 +57,27 @@ public class SecurityConfig {
             "/swagger-ui/**"
     };
 
+    private static final String[] PERMIT_ALL_API_ENDPOINTS = {
+            "/applications/{applicationId}",
+            "/recruitments",
+            "/news",
+            "/news/**",
+            "/blogs",
+            "/blogs/**",
+            "/executives",
+            "/executives/**",
+            "/awards",
+            "/awards/**",
+            "/activity-group",
+            "/activity-group/**",
+            "/work-experiences",
+            "/work-experiences/**",
+            "/products",
+            "/products/**",
+            "/reviews",
+            "/reviews/**"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -66,20 +87,20 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
+                .antMatchers(SWAGGER_PATTERNS).hasRole("SWAGGER")
                 .antMatchers(PERMIT_ALL).permitAll()
                 .antMatchers(HttpMethod.POST, "/applications").permitAll()
                 .antMatchers("/applications/filter", "/applications/pass", "/applications/search").hasAnyAuthority("ADMIN", "SUPER")
-                .antMatchers(HttpMethod.GET, "/applications/{applicationId}").permitAll()
-                .antMatchers(HttpMethod.GET, "/recruitments").permitAll()
-                .antMatchers(SWAGGER_PATTERNS).hasRole("SWAGGER")
-                .anyRequest().authenticated()
+                .antMatchers(HttpMethod.GET, PERMIT_ALL_API_ENDPOINTS).permitAll()
+                .antMatchers("/**").hasAnyAuthority("USER", "ADMIN", "SUPER")
                 .and()
-                .httpBasic()
+                .httpBasic().realmName("Swagger") // Set realm name for Basic Auth
                 .and()
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
@@ -94,7 +115,7 @@ public class SecurityConfig {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService()); // userDetailsService()로 변경
+        authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -112,7 +133,7 @@ public class SecurityConfig {
                 List.of(
                         "http://clab.page", "https://clab.page",
                         "http://*.clab.page", "https://*.clab.page",
-                        "http://localhost:5173"
+                        "https://localhost:6001"
                 )
         );
         corsConfiguration.setAllowedMethods(List.of("*"));
