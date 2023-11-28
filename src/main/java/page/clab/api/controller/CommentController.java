@@ -44,8 +44,9 @@ public class CommentController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        commentService.createComment(boardId, commentRequestDto);
+        Long id = commentService.createComment(boardId, commentRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -86,8 +87,9 @@ public class CommentController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        commentService.updateComment(commentId, commentRequestDto);
+        Long id = commentService.updateComment(commentId, commentRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -96,8 +98,9 @@ public class CommentController {
     public ResponseModel deleteComment(
             @PathVariable Long commentId
     ) throws PermissionDeniedException {
-        commentService.deleteComment(commentId);
+        Long id = commentService.deleteComment(commentId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

@@ -23,13 +23,13 @@ public class NewsService {
 
     private final NewsRepository newsRepository;
 
-    public void createNews(NewsRequestDto newsRequestDto) throws PermissionDeniedException {
+    public Long createNews(NewsRequestDto newsRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("관리자만 뉴스를 등록할 수 있습니다.");
         }
         News news = News.of(newsRequestDto);
-        newsRepository.save(news);
+        return newsRepository.save(news).getId();
     }
 
     public PagedResponseDto<NewsResponseDto> getNews(Pageable pageable) {
@@ -57,7 +57,7 @@ public class NewsService {
         return new PagedResponseDto<>(news.map(NewsResponseDto::of));
     }
 
-    public void updateNews(Long newsId, NewsRequestDto newsRequestDto) throws PermissionDeniedException {
+    public Long updateNews(Long newsId, NewsRequestDto newsRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("관리자만 뉴스를 수정할 수 있습니다.");
@@ -66,16 +66,17 @@ public class NewsService {
         News updatedNews = News.of(newsRequestDto);
         updatedNews.setId(news.getId());
         updatedNews.setCreatedAt(news.getCreatedAt());
-        newsRepository.save(updatedNews);
+        return newsRepository.save(updatedNews).getId();
     }
 
-    public void deleteNews(Long newsId) throws PermissionDeniedException {
+    public Long deleteNews(Long newsId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("관리자만 뉴스를 삭제할 수 있습니다.");
         }
         News news = getNewsByIdOrThrow(newsId);
         newsRepository.delete(news);
+        return news.getId();
     }
 
     public News getNewsByIdOrThrow(Long newsId) {

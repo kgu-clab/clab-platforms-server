@@ -43,8 +43,9 @@ public class BoardController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        boardService.createBoard(boardRequestDto);
+        Long id = boardService.createBoard(boardRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -100,8 +101,9 @@ public class BoardController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        boardService.updateBoard(boardId, boardDto);
+        Long id = boardService.updateBoard(boardId, boardDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -110,8 +112,9 @@ public class BoardController {
     public ResponseModel deleteBoard(
             @PathVariable Long boardId
     ) throws PermissionDeniedException {
-        boardService.deleteBoard(boardId);
+        Long id = boardService.deleteBoard(boardId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

@@ -25,11 +25,11 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
 
-    public void createBoard(BoardRequestDto boardRequestDto) {
+    public Long createBoard(BoardRequestDto boardRequestDto) {
         Member member = memberService.getCurrentMember();
         Board board = Board.of(boardRequestDto);
         board.setMember(member);
-        boardRepository.save(board);
+        return boardRepository.save(board).getId();
     }
 
     public PagedResponseDto<BoardResonseDto> getBoards(Pageable pageable) {
@@ -59,7 +59,7 @@ public class BoardService {
         return new PagedResponseDto<>(boards.map(BoardResonseDto::of));
     }
 
-    public void updateBoard(Long boardId, BoardRequestDto boardRequestDto) throws PermissionDeniedException {
+    public Long updateBoard(Long boardId, BoardRequestDto boardRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
         if (!board.getMember().getId().equals(member.getId())) {
@@ -70,16 +70,17 @@ public class BoardService {
         updatedBoard.setMember(board.getMember());
         updatedBoard.setUpdateTime(LocalDateTime.now());
         updatedBoard.setCreatedAt(board.getCreatedAt());
-        boardRepository.save(updatedBoard);
+        return boardRepository.save(updatedBoard).getId();
     }
 
-    public void deleteBoard(Long boardId) throws PermissionDeniedException {
+    public Long deleteBoard(Long boardId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
         if (!(board.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
         }
         boardRepository.delete(board);
+        return board.getId();
     }
 
     public Board getBoardByIdOrThrow(Long boardId) {

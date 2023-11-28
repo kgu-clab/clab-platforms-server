@@ -26,12 +26,12 @@ public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
 
-    public void createApplication(ApplicationRequestDto appRequestDto) {
+    public String createApplication(ApplicationRequestDto appRequestDto) {
         Application application = Application.of(appRequestDto);
         application.setContact(memberService.removeHyphensFromContact(application.getContact()));
         application.setIsPass(false);
         application.setUpdateTime(LocalDateTime.now());
-        applicationRepository.save(application);
+        return applicationRepository.save(application).getStudentId();
     }
 
     public PagedResponseDto<ApplicationResponseDto> getApplications(Pageable pageable) throws PermissionDeniedException {
@@ -58,17 +58,17 @@ public class ApplicationService {
     }
 
     @Transactional
-    public void approveApplication(String applicationId) throws PermissionDeniedException {
+    public String approveApplication(String applicationId) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         Application application = getApplicationByIdOrThrow(applicationId);
         if (application.getIsPass()) {
             application.setIsPass(false);
             application.setUpdateTime(LocalDateTime.now());
-            applicationRepository.save(application);
+            return applicationRepository.save(application).getStudentId();
         } else {
             application.setIsPass(true);
             application.setUpdateTime(LocalDateTime.now());
-            applicationRepository.save(application);
+            return applicationRepository.save(application).getStudentId();
         }
     }
 
@@ -93,10 +93,11 @@ public class ApplicationService {
         return ApplicationPassResponseDto.of(application);
     }
 
-    public void deleteApplication(String applicationId) throws PermissionDeniedException {
+    public String deleteApplication(String applicationId) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         Application application = getApplicationByIdOrThrow(applicationId);
         applicationRepository.delete(application);
+        return application.getStudentId();
     }
 
     private Application getApplicationByIdOrThrow(String applicationId) {

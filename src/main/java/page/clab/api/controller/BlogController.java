@@ -44,8 +44,9 @@ public class BlogController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        blogService.createBlog(blogRequestDto);
+        Long id = blogService.createBlog(blogRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -98,8 +99,9 @@ public class BlogController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        blogService.updateBlog(blogId, blogRequestDto);
+        Long id = blogService.updateBlog(blogId, blogRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -108,8 +110,9 @@ public class BlogController {
     public ResponseModel deleteBlog(
             @PathVariable Long blogId
     ) throws PermissionDeniedException {
-        blogService.deleteBlog(blogId);
+        Long id = blogService.deleteBlog(blogId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

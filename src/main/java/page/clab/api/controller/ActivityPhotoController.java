@@ -43,8 +43,9 @@ public class ActivityPhotoController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        activityPhotoService.createActivityPhoto(activityPhotoRequestDto);
+        Long id = activityPhotoService.createActivityPhoto(activityPhotoRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -79,8 +80,9 @@ public class ActivityPhotoController {
     public ResponseModel updateActivityPhoto(
             @PathVariable Long activityPhotoId
     ) throws PermissionDeniedException {
-        activityPhotoService.updateActivityPhoto(activityPhotoId);
+        Long id = activityPhotoService.updateActivityPhoto(activityPhotoId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -89,8 +91,9 @@ public class ActivityPhotoController {
     public ResponseModel deleteActivityPhoto(
             @PathVariable Long activityPhotoId
     ) throws PermissionDeniedException {
-        activityPhotoService.deleteActivityPhoto(activityPhotoId);
+        Long id = activityPhotoService.deleteActivityPhoto(activityPhotoId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

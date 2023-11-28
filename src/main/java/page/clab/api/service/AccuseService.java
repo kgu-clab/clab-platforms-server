@@ -34,7 +34,7 @@ public class AccuseService {
     private final AccuseRepository accuseRepository;
 
     @Transactional
-    public void createAccuse(AccuseRequestDto accuseRequestDto) {
+    public Long createAccuse(AccuseRequestDto accuseRequestDto) {
         if (accuseRequestDto.getTargetType() == TargetType.BOARD) {
             boardService.getBoardByIdOrThrow(accuseRequestDto.getTargetId());
         } else if (accuseRequestDto.getTargetType() == TargetType.COMMENT) {
@@ -48,13 +48,13 @@ public class AccuseService {
         Accuse existingAccuse = getAccuseByMemberAndTargetTypeAndTargetId(member, accuseRequestDto);
         if (existingAccuse != null) {
             existingAccuse.setReason(accuseRequestDto.getReason());
-            accuseRepository.save(existingAccuse);
+            return accuseRepository.save(existingAccuse).getId();
         } else {
             Accuse accuse = Accuse.of(accuseRequestDto);
             accuse.setId(null);
             accuse.setMember(member);
             accuse.setAccuseStatus(AccuseStatus.PENDING);
-            accuseRepository.save(accuse);
+            return accuseRepository.save(accuse).getId();
         }
     }
 
@@ -88,14 +88,14 @@ public class AccuseService {
         return new PagedResponseDto<>(accuses.map(AccuseResponseDto::of));
     }
 
-    public void updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) throws PermissionDeniedException {
+    public Long updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("해당 신고 내역을 수정할 권한이 없습니다.");
         }
         Accuse accuse = getAccuseByIdOrThrow(accuseId);
         accuse.setAccuseStatus(accuseStatus);
-        accuseRepository.save(accuse);
+        return accuseRepository.save(accuse).getId();
     }
 
     private Accuse getAccuseByIdOrThrow(Long accuseId) {

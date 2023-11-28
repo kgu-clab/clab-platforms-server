@@ -30,7 +30,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
 
-    public void createReview(ReviewRequestDto reviewRequestDto) {
+    public Long createReview(ReviewRequestDto reviewRequestDto) {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(reviewRequestDto.getActivityGroupId());
         if (!(activityGroup.getStatus() == ActivityGroupStatus.활동종료)) {
@@ -44,7 +44,7 @@ public class ReviewService {
         review.setActivityGroup(activityGroup);
         review.setIsPublic(false);
         review.setMember(member);
-        reviewRepository.save(review);
+        return reviewRepository.save(review).getId();
   }
 
     public PagedResponseDto<ReviewResponseDto> getReviews(Pageable pageable) {
@@ -82,33 +82,34 @@ public class ReviewService {
         return new PagedResponseDto<>(reviews.map(ReviewResponseDto::of));
     }
 
-    public void updateReview(Long reviewId, ReviewRequestDto reviewRequestDto) throws PermissionDeniedException {
+    public Long updateReview(Long reviewId, ReviewRequestDto reviewRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Review review = getReviewByIdOrThrow(reviewId);
         if (!member.getId().equals(review.getMember().getId())) {
             throw new PermissionDeniedException("해당 리뷰를 수정할 권한이 없습니다.");
         }
         review.setContent(reviewRequestDto.getContent());
-        reviewRepository.save(review);
+        return reviewRepository.save(review).getId();
     }
 
-    public void deleteReview(Long reviewId) throws PermissionDeniedException {
+    public Long deleteReview(Long reviewId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!(member.getId().equals(reviewId) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("해당 리뷰를 삭제할 권한이 없습니다.");
         }
         Review review = getReviewByIdOrThrow(reviewId);
         reviewRepository.delete(review);
+        return review.getId();
     }
 
-    public void publicReview(Long reviewId) throws PermissionDeniedException {
+    public Long publicReview(Long reviewId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("해당 리뷰를 고정할 권한이 없습니다.");
         }
         Review review = getReviewByIdOrThrow(reviewId);
         review.setIsPublic(!review.getIsPublic());
-        reviewRepository.save(review);
+        return reviewRepository.save(review).getId();
     }
 
     private boolean isExistsByMemberAndActivityGroup(Member member, ActivityGroup activityGroup) {
