@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/activity-group/member")
 @RequiredArgsConstructor
-@Tag(name = "ActivityGroup", description = "활동 그룹 API")
+@Tag(name = "ActivityGroupMember", description = "활동 그룹 멤버 API")
 @Slf4j
 public class ActivityGroupMemberController {
 
