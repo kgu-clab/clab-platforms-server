@@ -21,8 +21,6 @@ public class ActivityPhotoResponseDto {
 
     private Boolean isPublic;
 
-    private String createdAt;
-
     public static ActivityPhotoResponseDto of(ActivityPhoto activityPhoto) {
         return ModelMapperUtil.getModelMapper().map(activityPhoto, ActivityPhotoResponseDto.class);
     }
