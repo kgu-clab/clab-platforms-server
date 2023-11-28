@@ -4,17 +4,24 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.service.ActivityGroupMemberService;
-import page.clab.api.type.dto.ActivityGroupDto;
+import page.clab.api.type.dto.ActivityGroupDetailsResponseDto;
+import page.clab.api.type.dto.ActivityGroupResponseDto;
 import page.clab.api.type.dto.GroupMemberDto;
 import page.clab.api.type.dto.GroupScheduleDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
+import page.clab.api.type.etc.ActivityGroupCategory;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 @RestController
@@ -29,9 +36,12 @@ public class ActivityGroupMemberController {
     @Operation(summary = "활동 목록 조회(카테고리별)", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/{category}")
     public ResponseModel getActivityGroups(
-            @PathVariable String category
+            @PathVariable ActivityGroupCategory category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<ActivityGroupDto> activityGroups = activityGroupMemberService.getActivityGroups(category);
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroups(category, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroups);
         return responseModel;
@@ -42,7 +52,7 @@ public class ActivityGroupMemberController {
     public ResponseModel getActivityGroup(
             @PathVariable Long activityGroupId
     ) {
-        ActivityGroupDto activityGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
+        ActivityGroupDetailsResponseDto activityGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroup);
         return responseModel;
@@ -67,6 +77,16 @@ public class ActivityGroupMemberController {
         List<GroupMemberDto> activityGroupMembers = activityGroupMemberService.getActivityGroupMembers(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroupMembers);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 활동 신청", description = "ROLE_USER 이상의 권한이 필요함")
+    @PostMapping("/apply")
+    public ResponseModel applyActivityGroup(
+            @RequestParam Long activityGroupId
+    ) throws MessagingException {
+        activityGroupMemberService.applyActivityGroup(activityGroupId);
+        ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 
