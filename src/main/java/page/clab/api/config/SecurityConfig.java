@@ -75,7 +75,9 @@ public class SecurityConfig {
             "/products",
             "/products/**",
             "/reviews",
-            "/reviews/**"
+            "/reviews/**",
+            "/activity-photos",
+            "/activity-photos/**"
     };
 
     @Bean
