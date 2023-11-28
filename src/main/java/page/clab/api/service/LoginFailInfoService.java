@@ -35,22 +35,23 @@ public class LoginFailInfoService {
         return loginFailInfo;
     }
 
-    public void banMemberById(String memberId) throws PermissionDeniedException {
+    public Long banMemberById(String memberId) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         LoginFailInfo loginFailInfo = getLoginFailInfoByMemberIdOrThrow(memberId);
-        if (loginFailInfo != null) {
-            loginFailInfo.setIsLock(true);
-            loginFailInfo.setLatestTryLoginDate(LocalDateTime.now().plusYears(100));
-            loginFailInfoRepository.save(loginFailInfo);
+        if (loginFailInfo == null) {
+            return null;
         }
+        loginFailInfo.setIsLock(true);
+        loginFailInfo.setLatestTryLoginDate(LocalDateTime.now().plusYears(100));
+        return loginFailInfoRepository.save(loginFailInfo).getId();
     }
 
-    public void unbanMemberById(String memberId) throws PermissionDeniedException {
+    public Long unbanMemberById(String memberId) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         LoginFailInfo loginFailInfo = getLoginFailInfoByMemberIdOrThrow(memberId);
         if (loginFailInfo != null) {
             loginFailInfo.setIsLock(false);
-            loginFailInfoRepository.save(loginFailInfo);
+            return loginFailInfoRepository.save(loginFailInfo).getId();
         }
     }
 

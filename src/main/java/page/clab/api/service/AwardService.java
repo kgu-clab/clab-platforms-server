@@ -22,11 +22,11 @@ public class AwardService {
 
     private final AwardRepository awardRepository;
 
-    public void createAward(AwardRequestDto awardRequestDto) {
+    public Long createAward(AwardRequestDto awardRequestDto) {
         Member member = memberService.getCurrentMember();
         Award award = Award.of(awardRequestDto);
         award.setMember(member);
-        awardRepository.save(award);
+        return awardRepository.save(award).getId();
     }
 
     public PagedResponseDto<AwardResponseDto> getMyAwards(Pageable pageable) {
@@ -42,7 +42,7 @@ public class AwardService {
         return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
     }
 
-    public void updateAward(Long awardId, AwardRequestDto awardRequestDto) throws PermissionDeniedException {
+    public Long updateAward(Long awardId, AwardRequestDto awardRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
         if (!(award.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
@@ -50,16 +50,17 @@ public class AwardService {
         }
         Award updatedAward = Award.of(awardRequestDto);
         updatedAward.setId(award.getId());
-        awardRepository.save(updatedAward);
+        return awardRepository.save(updatedAward).getId();
     }
 
-    public void deleteAward(Long awardId) throws PermissionDeniedException {
+    public Long deleteAward(Long awardId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
         if (!(award.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("해당 수상 이력을 수정할 권한이 없습니다.");
         }
         awardRepository.delete(award);
+        return award.getId();
     }
 
     private Award getAwardByIdOrThrow(Long awardId) {

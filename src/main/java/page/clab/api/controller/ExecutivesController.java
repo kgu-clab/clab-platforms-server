@@ -42,8 +42,9 @@ public class ExecutivesController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        executivesService.createExecutives(executivesRequestDto);
+        Long id = executivesService.createExecutives(executivesRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -79,8 +80,9 @@ public class ExecutivesController {
     public ResponseModel deleteExecutives(
             @PathVariable Long executivesId
     ) throws PermissionDeniedException {
-        executivesService.deleteExecutives(executivesId);
+        Long id = executivesService.deleteExecutives(executivesId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

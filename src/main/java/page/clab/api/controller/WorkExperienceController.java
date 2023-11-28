@@ -43,8 +43,9 @@ public class WorkExperienceController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        workExperienceService.createWorkExperience(workExperienceRequestDto);
+        Long id = workExperienceService.createWorkExperience(workExperienceRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -87,8 +88,9 @@ public class WorkExperienceController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        workExperienceService.updateWorkExperience(workExperienceId, workExperienceRequestDto);
+        Long id = workExperienceService.updateWorkExperience(workExperienceId, workExperienceRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -97,8 +99,9 @@ public class WorkExperienceController {
     public ResponseModel deleteWorkExperience(
             @PathVariable Long workExperienceId
     ) throws PermissionDeniedException {
-        workExperienceService.deleteWorkExperience(workExperienceId);
+        Long id = workExperienceService.deleteWorkExperience(workExperienceId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

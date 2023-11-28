@@ -35,7 +35,7 @@ public class BookLoanRecordService {
     private final BookLoanRecordRepository bookLoanRecordRepository;
 
     @Transactional
-    public void borrowBook(BookLoanRecordRequestDto bookLoanRecordRequestDto) {
+    public Long borrowBook(BookLoanRecordRequestDto bookLoanRecordRequestDto) {
         Long bookId = bookLoanRecordRequestDto.getBookId();
         String borrowerId = bookLoanRecordRequestDto.getBorrowerId();
         Book book = bookService.getBookByIdOrThrow(bookId);
@@ -53,11 +53,11 @@ public class BookLoanRecordService {
                 .borrower(borrower)
                 .borrowedAt(LocalDateTime.now())
                 .build();
-        bookLoanRecordRepository.save(bookLoanRecord);
+        return bookLoanRecordRepository.save(bookLoanRecord).getId();
     }
 
     @Transactional
-    public void returnBook(BookLoanRecordRequestDto bookLoanRecordRequestDto) {
+    public Long returnBook(BookLoanRecordRequestDto bookLoanRecordRequestDto) {
         Long bookId = bookLoanRecordRequestDto.getBookId();
         String borrowerId = bookLoanRecordRequestDto.getBorrowerId();
         Book book = bookService.getBookByIdOrThrow(bookId);
@@ -83,11 +83,11 @@ public class BookLoanRecordService {
         book.setBorrower(null);
         bookRepository.save(book);
         bookLoanRecord.setReturnedAt(currentDate);
-        bookLoanRecordRepository.save(bookLoanRecord);
+        return bookLoanRecordRepository.save(bookLoanRecord).getId();
     }
 
     @Transactional
-    public void extendBookLoan(BookLoanRecordRequestDto bookLoanRecordRequestDto) {
+    public Long extendBookLoan(BookLoanRecordRequestDto bookLoanRecordRequestDto) {
         Long bookId = bookLoanRecordRequestDto.getBookId();
         String borrowerId = bookLoanRecordRequestDto.getBorrowerId();
         Book book = bookService.getBookByIdOrThrow(bookId);
@@ -117,7 +117,7 @@ public class BookLoanRecordService {
                 throw new OverdueException("대출 연장이 불가능합니다.");
             }
         }
-        bookLoanRecordRepository.save(bookLoanRecord);
+        return bookLoanRecordRepository.save(bookLoanRecord).getId();
     }
 
     private void handleOverdueAndSuspension(Member member, long overdueDays) {
