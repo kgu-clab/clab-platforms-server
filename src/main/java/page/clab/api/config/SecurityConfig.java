@@ -1,6 +1,5 @@
 package page.clab.api.config;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +22,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import page.clab.api.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.auth.jwt.JwtTokenProvider;
 import page.clab.api.repository.BlacklistIpRepository;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -70,9 +71,8 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST, "/applications").permitAll()
                 .antMatchers("/applications/filter", "/applications/pass", "/applications/search").hasAnyAuthority("ADMIN", "SUPER")
                 .antMatchers(HttpMethod.GET, "/applications/{applicationId}").permitAll()
-                .antMatchers(HttpMethod.GET, "/recruitments").permitAll()
                 .antMatchers(SWAGGER_PATTERNS).hasRole("SWAGGER")
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
                 .and()
                 .httpBasic()
                 .and()
@@ -83,11 +83,11 @@ public class SecurityConfig {
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
-    UserDetails user =
-        User.withUsername(username)
-            .password(passwordEncoder().encode(password))
-            .roles("SWAGGER")
-            .build();
+        UserDetails user =
+                User.withUsername(username)
+                        .password(passwordEncoder().encode(password))
+                        .roles("SWAGGER")
+                        .build();
         return new InMemoryUserDetailsManager(user);
     }
 
