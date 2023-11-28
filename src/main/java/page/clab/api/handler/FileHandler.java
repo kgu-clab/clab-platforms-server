@@ -4,6 +4,9 @@ import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.exception.FileUploadFailException;
@@ -18,9 +21,12 @@ import java.util.UUID;
 
 @Component
 @Slf4j
+@Configuration
+@ConfigurationProperties(prefix = "resource.file")
+@PropertySource("classpath:application-dev.yml")
 public class FileHandler {
 
-    @Value("${resource.file.path}")
+//    @Value("${resource.file.path}")
     private String filePath;
 
     private final Set<String> disallowExtensions = new HashSet<>();
