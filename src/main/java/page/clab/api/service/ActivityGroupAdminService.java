@@ -11,6 +11,7 @@ import page.clab.api.repository.GroupMemberRepository;
 import page.clab.api.repository.GroupScheduleRepository;
 import page.clab.api.type.dto.ActivityGroupRequestDto;
 import page.clab.api.type.dto.ActivityGroupResponseDto;
+import page.clab.api.type.dto.GroupMemberDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.ActivityGroup;
@@ -38,19 +39,6 @@ public class ActivityGroupAdminService {
 
     private final GroupScheduleRepository groupScheduleRepository;
 
-    public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus, Pageable pageable) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
-        Page<ActivityGroup> activityGroupList = getActivityGroupByStatus(activityGroupStatus, pageable);
-        return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
-    }
-
-    public void manageActivityGroup(Long activityGroupId, ActivityGroupStatus activityGroupStatus) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        activityGroup.setStatus(activityGroupStatus);
-        activityGroupRepository.save(activityGroup);
-    }
-
     @Transactional
     public void createActivityGroup(ActivityGroupCategory category, ActivityGroupRequestDto activityGroupRequestDto) {
         Member member = memberService.getCurrentMember();
@@ -66,6 +54,21 @@ public class ActivityGroupAdminService {
         groupMemberRepository.save(groupLeader);
     }
 
+    public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus, Pageable pageable) throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        Page<ActivityGroup> activityGroupList = getActivityGroupByStatus(activityGroupStatus, pageable);
+        return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
+    }
+
+    public void manageActivityGroup(Long activityGroupId, ActivityGroupStatus activityGroupStatus) throws PermissionDeniedException {
+        memberService.checkMemberAdminRole();
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        activityGroup.setStatus(activityGroupStatus);
+        activityGroupRepository.save(activityGroup);
+    }
+
+
+
     public void updateActivityGroup(Long activityGroupId, ActivityGroupRequestDto activityGroupRequestDto) throws PermissionDeniedException {
         checkMemberGroupLeaderRole();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
@@ -79,9 +82,10 @@ public class ActivityGroupAdminService {
     public void deleteActivityGroup(Long activityGroupId) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         List<GroupMember> groupMemberList = groupMemberRepository.findAllByActivityGroupId(activityGroupId);
-        groupMemberList.stream()
-                .forEach(groupMember -> groupMemberRepository.delete(groupMember));
+        List<GroupSchedule> groupScheduleList = groupScheduleRepository.findAllByActivityGroupId(activityGroupId);
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        groupMemberRepository.deleteAll(groupMemberList);
+        groupScheduleRepository.deleteAll(groupScheduleList);
         activityGroupRepository.delete(activityGroup);
     }
 
@@ -101,24 +105,24 @@ public class ActivityGroupAdminService {
                 .forEach(groupSchedule -> groupScheduleRepository.save(groupSchedule));
     }
 
-//    public List<MemberResponseDto> getApplyGroupMemberList (Long activityGroupId) throws PermissionDeniedException {
-//        checkMemberGroupLeaderRole();
-//        List<GroupMember> groupMemberList = groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.IN_PROGRESS);
-//        return groupMemberList.stream()
-//                .map(groupMember -> MemberResponseDto.of(groupMember.getMember()))
-//                .collect(Collectors.toList());
-//    }
-//
-//    public void manageGroupMemberStatus(String memberId, GroupMemberStatus status) throws PermissionDeniedException {
-//        checkMemberGroupLeaderRole();
-//        Member member = memberService.getMemberByIdOrThrow(memberId);
-//        GroupMember groupMember = getGroupMemberByMemberOrThrow(member);
-//        groupMember.setStatus(status);
-//        if (status == GroupMemberStatus.ACCEPTED) {
-//            groupMember.setRole(ActivityGroupRole.MEMBER);
-//        }
-//        groupMemberRepository.save(groupMember);
-//    }
+    public PagedResponseDto<GroupMemberDto> getApplyGroupMemberList (Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
+        checkMemberGroupLeaderRole();
+        Page<GroupMember> groupMemberList = groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.IN_PROGRESS, pageable);
+        return new PagedResponseDto<>(groupMemberList.map(GroupMemberDto::of));
+    }
+
+    public void manageGroupMemberStatus(String memberId, GroupMemberStatus status) throws PermissionDeniedException {
+        checkMemberGroupLeaderRole();
+        Member member = memberService.getMemberByIdOrThrow(memberId);
+        GroupMember groupMember = getGroupMemberByMemberOrThrow(member);
+        groupMember.setStatus(status);
+        if (status == GroupMemberStatus.ACCEPTED) {
+            groupMember.setRole(ActivityGroupRole.MEMBER);
+        }else {
+            groupMember.setRole(null);
+        }
+        groupMemberRepository.save(groupMember);
+    }
 
     public Page<ActivityGroup> getActivityGroupByStatus(ActivityGroupStatus status, Pageable pageable) {
         return activityGroupRepository.findAllByStatusOrderByCreatedAtDesc(status, pageable);
