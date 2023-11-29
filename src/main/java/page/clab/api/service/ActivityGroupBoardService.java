@@ -1,5 +1,8 @@
 package page.clab.api.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -7,14 +10,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.repository.ActivityGroupBoardRepository;
-import page.clab.api.type.dto.ActivityGroupBoardDto;
+import page.clab.api.type.dto.ActivityGroupBoardRequestDto;
+import page.clab.api.type.dto.ActivityGroupBoardResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.ActivityGroupBoard;
 import page.clab.api.type.entity.Member;
-
-import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,52 +28,51 @@ public class ActivityGroupBoardService {
     private final ActivityGroupAdminService activityGroupAdminService;
 
     @Transactional
-    public void createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardDto activityGroupBoardDto) {
+    public Long createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
-        ActivityGroupBoard board = ActivityGroupBoard.of(activityGroupBoardDto);
+        ActivityGroupBoard board = ActivityGroupBoard.of(activityGroupBoardRequestDto);
         board.setMember(member);
         board.setActivityGroup(activityGroup);
         if (parentId != null) {
             ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
             board.setParent(parentBoard);
-            activityGroupBoardRepository.save(board);
             parentBoard.getChildren().add(board);
             activityGroupBoardRepository.save(parentBoard);
-        } else {
-            activityGroupBoardRepository.save(board);
         }
+        return activityGroupBoardRepository.save(board).getId();
     }
 
-    public List<ActivityGroupBoardDto> getAllActivityGroupBoard(Pageable pageable) {
+    public PagedResponseDto<ActivityGroupBoardResponseDto> getAllActivityGroupBoard(Pageable pageable) {
         Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return boards.map(ActivityGroupBoardDto::of).getContent();
+        return new PagedResponseDto<>(boards.map(ActivityGroupBoardResponseDto::of));
     }
 
-    public ActivityGroupBoardDto getActivityGroupBoardById(Long activityGroupBoardId) {
+    public ActivityGroupBoardResponseDto getActivityGroupBoardById(Long activityGroupBoardId) {
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        return ActivityGroupBoardDto.of(board);
+        return ActivityGroupBoardResponseDto.of(board);
     }
 
-    public List<ActivityGroupBoardDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) {
+    public PagedResponseDto<ActivityGroupBoardResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) {
         List<ActivityGroupBoard> boardList = getChildBoards(parentId);
         Page<ActivityGroupBoard> boardPage = new PageImpl<>(boardList, pageable, boardList.size());
-        return boardPage.map(ActivityGroupBoardDto::of).getContent();
+        return new PagedResponseDto<>(boardPage.map(ActivityGroupBoardResponseDto::of));
     }
 
-    public void updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardDto activityGroupBoardDto) {
+    public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        board.setCategory(activityGroupBoardDto.getCategory());
-        board.setTitle(activityGroupBoardDto.getTitle());
-        board.setContent(activityGroupBoardDto.getContent());
-        board.setFilePath(activityGroupBoardDto.getFilePath());
-        board.setFileName(activityGroupBoardDto.getFileName());
-        activityGroupBoardRepository.save(board);
+        board.setCategory(activityGroupBoardRequestDto.getCategory());
+        board.setTitle(activityGroupBoardRequestDto.getTitle());
+        board.setContent(activityGroupBoardRequestDto.getContent());
+        board.setFilePath(activityGroupBoardRequestDto.getFilePath());
+        board.setFileName(activityGroupBoardRequestDto.getFileName());
+        return activityGroupBoardRepository.save(board).getId();
     }
 
-    public void deleteActivityGroupBoard(Long activityGroupBoardId) {
+    public Long deleteActivityGroupBoard(Long activityGroupBoardId) {
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
         activityGroupBoardRepository.delete(board);
+        return board.getId();
     }
 
     private ActivityGroupBoard getActivityGroupBoardByIdOrThrow(Long activityGroupBoardId) {

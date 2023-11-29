@@ -1,14 +1,8 @@
 package page.clab.api.type.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import page.clab.api.type.dto.ActivityGroupBoardDto;
-import page.clab.api.util.ModelMapperUtil;
-
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -19,9 +13,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import page.clab.api.type.dto.ActivityGroupBoardRequestDto;
+import page.clab.api.util.ModelMapperUtil;
 
 @Entity
 @Getter
@@ -75,8 +74,8 @@ public class ActivityGroupBoard {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static ActivityGroupBoard of(ActivityGroupBoardDto activityGroupBoardDto) {
-        return ModelMapperUtil.getModelMapper().map(activityGroupBoardDto, ActivityGroupBoard.class);
+    public static ActivityGroupBoard of(ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
+        return ModelMapperUtil.getModelMapper().map(activityGroupBoardRequestDto, ActivityGroupBoard.class);
     }
 
 }

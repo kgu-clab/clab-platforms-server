@@ -2,6 +2,7 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -14,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.service.ActivityGroupBoardService;
-import page.clab.api.type.dto.ActivityGroupBoardDto;
+import page.clab.api.type.dto.ActivityGroupBoardRequestDto;
+import page.clab.api.type.dto.ActivityGroupBoardResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/activity-group/boards")
@@ -33,10 +34,11 @@ public class ActivityGroupBoardController {
     public ResponseModel createActivityGroupBoard(
             @RequestParam(required = false) Long parentId,
             @RequestParam Long activityGroupId,
-            @RequestBody ActivityGroupBoardDto activityGroupBoardDto
+            @Valid @RequestBody ActivityGroupBoardRequestDto activityGroupBoardRequestDto
     ) {
-        activityGroupBoardService.createActivityGroupBoard(parentId, activityGroupId, activityGroupBoardDto);
+        Long id = activityGroupBoardService.createActivityGroupBoard(parentId, activityGroupId, activityGroupBoardRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -44,10 +46,10 @@ public class ActivityGroupBoardController {
     @GetMapping("/list")
     public ResponseModel getActivityGroupBoardList(
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size
+            @RequestParam(defaultValue = "20") Integer size
     ) {
         Pageable pageable = Pageable.ofSize(size).withPage(page);
-        List<ActivityGroupBoardDto> allBoards = activityGroupBoardService.getAllActivityGroupBoard(pageable);
+        PagedResponseDto<ActivityGroupBoardResponseDto> allBoards = activityGroupBoardService.getAllActivityGroupBoard(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(allBoards);
         return responseModel;
@@ -58,7 +60,7 @@ public class ActivityGroupBoardController {
     public ResponseModel getActivityGroupBoardById(
             @RequestParam Long activityGroupBoardId
     ) {
-        ActivityGroupBoardDto board = activityGroupBoardService.getActivityGroupBoardById(activityGroupBoardId);
+        ActivityGroupBoardResponseDto board = activityGroupBoardService.getActivityGroupBoardById(activityGroupBoardId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(board);
         return responseModel;
@@ -69,10 +71,10 @@ public class ActivityGroupBoardController {
     public ResponseModel getActivityGroupBoardByParent(
             @RequestParam Long parentId,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "10") Integer size
+            @RequestParam(defaultValue = "20") Integer size
     ) {
         Pageable pageable = Pageable.ofSize(size).withPage(page);
-        List<ActivityGroupBoardDto> boards = activityGroupBoardService.getActivityGroupBoardByParent(parentId, pageable);
+        PagedResponseDto<ActivityGroupBoardResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByParent(parentId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boards);
         return responseModel;
@@ -82,10 +84,11 @@ public class ActivityGroupBoardController {
     @PatchMapping("")
     public ResponseModel updateActivityGroupBoard(
             @RequestParam Long activityGroupBoardId,
-            @RequestBody ActivityGroupBoardDto activityGroupBoardDto
+            @Valid @RequestBody ActivityGroupBoardRequestDto activityGroupBoardRequestDto
     ) {
-        activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, activityGroupBoardDto);
+        Long id = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, activityGroupBoardRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -94,8 +97,9 @@ public class ActivityGroupBoardController {
     public ResponseModel deleteActivityGroupBoard(
             @RequestParam Long activityGroupBoardId
     ) {
-        activityGroupBoardService.deleteActivityGroupBoard(activityGroupBoardId);
+        Long id = activityGroupBoardService.deleteActivityGroupBoard(activityGroupBoardId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
