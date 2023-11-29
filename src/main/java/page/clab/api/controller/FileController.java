@@ -72,12 +72,12 @@ public class FileController {
     }
 
     @Operation(summary = "[U] 함께하는 활동 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @PostMapping("/activities/{activityId}")
+    @PostMapping("/activity-photos/{activityPhotoId}")
     public ResponseModel activityUpload(
-            @PathVariable("activityId") String activityId,
+            @PathVariable("activityPhotoId") String activityPhotoId,
             @RequestParam(value = "file") MultipartFile multipartFile
     ) throws FileUploadFailException {
-        String url = fileUploadService.saveFile(multipartFile, "activities/" + activityId);
+        String url = fileUploadService.saveFile(multipartFile, "activity-photos/" + activityPhotoId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
         return responseModel;
