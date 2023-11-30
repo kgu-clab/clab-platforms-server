@@ -96,7 +96,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, PERMIT_ALL_API_ENDPOINTS).permitAll()
                 .antMatchers("/**").hasAnyAuthority("USER", "ADMIN", "SUPER")
                 .and()
-                .httpBasic().realmName("Swagger") // Set realm name for Basic Auth
+                .httpBasic().realmName("Swagger")
                 .and()
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class);
@@ -135,7 +135,7 @@ public class SecurityConfig {
                 List.of(
                         "http://clab.page", "https://clab.page",
                         "http://*.clab.page", "https://*.clab.page",
-                        "https://localhost:6001"
+                        "http://localhost:6001"
                 )
         );
         corsConfiguration.setAllowedMethods(List.of("*"));
