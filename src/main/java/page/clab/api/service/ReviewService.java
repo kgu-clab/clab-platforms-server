@@ -33,7 +33,7 @@ public class ReviewService {
     public void createReview(ReviewRequestDto reviewRequestDto) {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(reviewRequestDto.getActivityGroupId());
-        if (!(activityGroup.getStatus() == ActivityGroupStatus.활동종료)) {
+        if (!(activityGroup.getStatus() == ActivityGroupStatus.END)) {
             throw new ActivityGroupNotFinishedException("활동이 종료된 활동 그룹만 리뷰를 작성할 수 있습니다.");
         }
         if (isExistsByMemberAndActivityGroup(member, activityGroup)) {
