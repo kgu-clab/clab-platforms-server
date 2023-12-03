@@ -1,8 +1,6 @@
 package page.clab.api.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +20,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 import page.clab.api.handler.ApiLoggingInterceptor;
 import page.clab.api.util.HtmlCharacterEscapes;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 @Configuration
 @RequiredArgsConstructor

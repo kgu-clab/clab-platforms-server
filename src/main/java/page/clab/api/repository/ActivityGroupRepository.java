@@ -1,10 +1,12 @@
 package page.clab.api.repository;
 
-import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import page.clab.api.type.entity.ActivityGroup;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupStatus;
 
 @Repository
@@ -12,9 +14,9 @@ public interface ActivityGroupRepository extends JpaRepository<ActivityGroup, Lo
 
     Optional<ActivityGroup> findById(Long id);
 
-    List<ActivityGroup> findAllByCategory(String category);
+    Page<ActivityGroup> findAllByCategoryOrderByCreatedAtDesc(ActivityGroupCategory category, Pageable pageable);
 
-    List<ActivityGroup> findAllByStatus(ActivityGroupStatus status);
+    Page<ActivityGroup> findAllByStatusOrderByCreatedAtDesc(ActivityGroupStatus status, Pageable pageable);
 
     Optional<ActivityGroup> findByIdAndCategory(Long id, String category);
     

@@ -5,11 +5,11 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum ActivityGroupStatus {
+public enum GroupMemberStatus {
 
-    WAITING("WAITING", "승인대기"),
-    ACTIVE("ACTIVE", "활동중"),
-    END("END", "활동종료");
+    REJECTED("REJECTED", "거절"),
+    ACCEPTED("ACCEPTED", "수락"),
+    IN_PROGRESS("IN_PROGRESS", "진행중");
 
     private String key;
     private String description;
