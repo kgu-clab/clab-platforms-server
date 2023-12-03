@@ -109,7 +109,6 @@ public class ActivityGroupMemberService {
     }
 
     private GroupMember getGroupMemberByActivityGroupIdAndRole(Long activityGroupId, ActivityGroupRole role) {
-        log.info("activityGroupId: {}, role: {}, result: {}", activityGroupId, role, groupMemberRepository.findByActivityGroupIdAndRole(activityGroupId, role).get());
         return groupMemberRepository.findByActivityGroupIdAndRole(activityGroupId, role)
                 .orElseThrow(() -> new NotFoundException("해당 활동의 리더가 존재하지 않습니다."));
     }

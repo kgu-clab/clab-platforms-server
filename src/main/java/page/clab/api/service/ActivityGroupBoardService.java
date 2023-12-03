@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.repository.ActivityGroupBoardRepository;
+import page.clab.api.type.dto.ActivityGroupBoardChildResponseDto;
 import page.clab.api.type.dto.ActivityGroupBoardRequestDto;
 import page.clab.api.type.dto.ActivityGroupBoardResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
@@ -53,10 +54,10 @@ public class ActivityGroupBoardService {
         return ActivityGroupBoardResponseDto.of(board);
     }
 
-    public PagedResponseDto<ActivityGroupBoardResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) {
+    public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) {
         List<ActivityGroupBoard> boardList = getChildBoards(parentId);
         Page<ActivityGroupBoard> boardPage = new PageImpl<>(boardList, pageable, boardList.size());
-        return new PagedResponseDto<>(boardPage.map(ActivityGroupBoardResponseDto::of));
+        return new PagedResponseDto<>(boardPage.map(ActivityGroupBoardChildResponseDto::of));
     }
 
     public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
