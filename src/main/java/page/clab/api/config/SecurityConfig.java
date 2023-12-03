@@ -60,24 +60,15 @@ public class SecurityConfig {
     private static final String[] PERMIT_ALL_API_ENDPOINTS = {
             "/applications/{applicationId}",
             "/recruitments",
-            "/news",
-            "/news/**",
-            "/blogs",
-            "/blogs/**",
-            "/executives",
-            "/executives/**",
-            "/awards",
-            "/awards/**",
-            "/activity-group",
-            "/activity-group/**",
-            "/work-experiences",
-            "/work-experiences/**",
-            "/products",
-            "/products/**",
-            "/reviews",
-            "/reviews/**",
-            "/activity-photos",
-            "/activity-photos/**"
+            "/news", "/news/**",
+            "/blogs", "/blogs/**",
+            "/executives", "/executives/**",
+            "/awards", "/awards/**",
+            "/activity-group", "/activity-group/**",
+            "/work-experiences", "/work-experiences/**",
+            "/products", "/products/**",
+            "/reviews", "/reviews/**",
+            "/activity-photos", "/activity-photos/**"
     };
 
     @Bean
@@ -96,7 +87,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, PERMIT_ALL_API_ENDPOINTS).permitAll()
                 .antMatchers("/**").hasAnyAuthority("USER", "ADMIN", "SUPER")
                 .and()
-                .httpBasic().realmName("Swagger")
+                .httpBasic()
                 .and()
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class);
@@ -106,11 +97,11 @@ public class SecurityConfig {
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
-    UserDetails user =
-        User.withUsername(username)
-            .password(passwordEncoder().encode(password))
-            .roles("SWAGGER")
-            .build();
+        UserDetails user =
+                User.withUsername(username)
+                        .password(passwordEncoder().encode(password))
+                        .roles("SWAGGER")
+                        .build();
         return new InMemoryUserDetailsManager(user);
     }
 
