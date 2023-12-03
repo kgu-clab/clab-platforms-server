@@ -18,6 +18,4 @@ public interface ActivityGroupRepository extends JpaRepository<ActivityGroup, Lo
 
     Page<ActivityGroup> findAllByStatusOrderByCreatedAtDesc(ActivityGroupStatus status, Pageable pageable);
 
-    Optional<ActivityGroup> findByIdAndCategory(Long id, String category);
-    
 }
