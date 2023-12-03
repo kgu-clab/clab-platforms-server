@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.service.ActivityGroupBoardService;
+import page.clab.api.type.dto.ActivityGroupBoardChildResponseDto;
 import page.clab.api.type.dto.ActivityGroupBoardRequestDto;
 import page.clab.api.type.dto.ActivityGroupBoardResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
@@ -74,7 +75,7 @@ public class ActivityGroupBoardController {
             @RequestParam(defaultValue = "20") Integer size
     ) {
         Pageable pageable = Pageable.ofSize(size).withPage(page);
-        PagedResponseDto<ActivityGroupBoardResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByParent(parentId, pageable);
+        PagedResponseDto<ActivityGroupBoardChildResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByParent(parentId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boards);
         return responseModel;
