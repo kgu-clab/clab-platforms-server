@@ -5,12 +5,13 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum ActivityGroupStatus {
+public enum ActivityGroupCategory {
 
-    WAITING("WAITING", "승인대기"),
-    ACTIVE("ACTIVE", "활동중"),
-    END("END", "활동종료");
+    STUDY("STUDY", "스터디"),
+    PROJECT("PROJECT", "프로젝트"),
+    SERVICE("SERVICE", "서비스");
 
     private String key;
     private String description;
+
 }
