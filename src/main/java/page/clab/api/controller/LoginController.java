@@ -18,6 +18,7 @@ import page.clab.api.service.LoginService;
 import page.clab.api.type.dto.LoginRequestDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.TokenInfo;
+import page.clab.api.type.dto.TwoFactorAuthenticationRequestDto;
 
 @RestController
 @RequestMapping("/login")
@@ -40,7 +41,23 @@ public class LoginController {
             throw new MethodArgumentNotValidException(null, result);
         }
         ResponseModel responseModel = ResponseModel.builder().build();
-        TokenInfo tokenInfo = loginService.login(httpServletRequest, loginRequestDto);
+        String secretKey = loginService.login(httpServletRequest, loginRequestDto);
+        responseModel.addData(secretKey);
+        return responseModel;
+    }
+
+      @Operation(summary = "2FA 인증", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+      @PostMapping("/authenticator")
+      public ResponseModel authenticator(
+          HttpServletRequest httpServletRequest,
+          @Valid @RequestBody TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto,
+          BindingResult result
+      ) throws MethodArgumentNotValidException, LoginFaliedException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
+        ResponseModel responseModel = ResponseModel.builder().build();
+        TokenInfo tokenInfo = loginService.authenticator(httpServletRequest, twoFactorAuthenticationRequestDto);
         responseModel.addData(tokenInfo);
         return responseModel;
     }

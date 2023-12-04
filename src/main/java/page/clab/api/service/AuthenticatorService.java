@@ -47,4 +47,23 @@ public class AuthenticatorService {
         return GoogleAuthenticatorQRGenerator.getOtpAuthURL(issuer, accountName, googleAuthenticatorKey);
     }
 
+    public boolean isAuthenticatorValid(String memberId, String totp) {
+        return isAuthenticatorExist(memberId) && validateTotp(memberId, totp);
+    }
+
+    public boolean validateTotp(String memberId, String totp) {
+        GoogleAuthenticator gAuth = new GoogleAuthenticator();
+        Authenticator authenticator = authenticatorRepository.getById(memberId);
+        String secretKey = authenticator.getSecretKey();
+        return gAuth.authorize(secretKey, Integer.parseInt(totp));
+    }
+
+    public boolean isAuthenticatorExist(String memberId) {
+        return authenticatorRepository.existsById(memberId);
+    }
+
+    public void deleteAuthenticator(String memberId) {
+        authenticatorRepository.deleteById(memberId);
+    }
+
 }
