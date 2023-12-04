@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum LoginAttemptResult {
 
+    TOTP("TOTP", "2FA 인증 성공"),
     SUCCESS("SUCCESS", "로그인 성공"),
     FAILURE("FAILURE", "로그인 실패");
 
