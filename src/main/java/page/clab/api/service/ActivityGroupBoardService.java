@@ -1,8 +1,5 @@
 package page.clab.api.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -13,10 +10,18 @@ import page.clab.api.repository.ActivityGroupBoardRepository;
 import page.clab.api.type.dto.ActivityGroupBoardChildResponseDto;
 import page.clab.api.type.dto.ActivityGroupBoardRequestDto;
 import page.clab.api.type.dto.ActivityGroupBoardResponseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.ActivityGroupBoard;
+import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.ActivityGroupRole;
+
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +32,10 @@ public class ActivityGroupBoardService {
     private final MemberService memberService;
 
     private final ActivityGroupAdminService activityGroupAdminService;
+
+    private final ActivityGroupMemberService activityGroupMemberService;
+
+    private final NotificationService notificationService;
 
     @Transactional
     public Long createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
@@ -41,7 +50,29 @@ public class ActivityGroupBoardService {
             parentBoard.getChildren().add(board);
             activityGroupBoardRepository.save(parentBoard);
         }
-        return activityGroupBoardRepository.save(board).getId();
+        Long id = activityGroupBoardRepository.save(board).getId();
+
+        GroupMember groupMember = activityGroupMemberService.getGroupMemberByMemberOrThrow(member);
+        if (groupMember.getRole() == ActivityGroupRole.LEADER) {
+            List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
+            for (GroupMember gMember : groupMembers) {
+                if (!Objects.equals(gMember.getMember().getId(), member.getId())) {
+                    NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                            .memberId(gMember.getMember().getId())
+                            .content("활동 그룹 팀장이 게시글을 등록하였습니다.")
+                            .build();
+                    notificationService.createNotification(notificationRequestDto);
+                }
+            }
+        }else {
+            GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
+            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                    .memberId(groupLeader.getMember().getId())
+                    .content("활동 그룹 팀원이 게시글을 등록하였습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDto);
+        }
+        return id;
     }
 
     public PagedResponseDto<ActivityGroupBoardResponseDto> getAllActivityGroupBoard(Pageable pageable) {
