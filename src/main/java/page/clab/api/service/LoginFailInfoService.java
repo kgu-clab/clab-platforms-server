@@ -53,6 +53,7 @@ public class LoginFailInfoService {
             loginFailInfo.setIsLock(false);
             return loginFailInfoRepository.save(loginFailInfo).getId();
         }
+        return loginFailInfo.getId();
     }
 
     public void handleLoginFailInfo(String memberId) throws MemberLockedException {
