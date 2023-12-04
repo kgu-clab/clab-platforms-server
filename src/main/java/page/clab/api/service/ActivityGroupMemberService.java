@@ -13,6 +13,7 @@ import page.clab.api.type.dto.ActivityGroupDetailsResponseDto;
 import page.clab.api.type.dto.ActivityGroupResponseDto;
 import page.clab.api.type.dto.GroupMemberDto;
 import page.clab.api.type.dto.GroupScheduleDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
@@ -35,6 +36,8 @@ public class ActivityGroupMemberService {
     private final MemberService memberService;
 
     private final EmailService emailService;
+
+    private final NotificationService notificationService;
 
     private final ActivityGroupRepository activityGroupRepository;
 
@@ -76,6 +79,12 @@ public class ActivityGroupMemberService {
         String subject = "[" + activityGroup.getName() + "] 활동 참가 신청이 들어왔습니다.";
         String content = member.getName() + "에게서 활동 참가 신청이 들어왔습니다.";
         emailService.sendEmail(groupLeader.getMember().getEmail(), subject, content, null);
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(groupLeader.getMember().getId())
+                .content(member.getName() + "에게서 활동 참가 신청이 들어왔습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
         return activityGroup.getId();
     }
 
