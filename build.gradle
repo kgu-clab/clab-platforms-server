@@ -7,10 +7,19 @@ plugins {
 group = 'page.clab'
 version = '0.0.1-SNAPSHOT'
 
+jar {
+	enabled = false
+}
+
 bootJar {
 	archivesBaseName = "clab"
 	archiveFileName = "clab.jar"
 	archiveVersion = "0.0.1"
+	from("/src/main/resources") {
+		into 'BOOT-INF/classes'
+		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	}
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 java {

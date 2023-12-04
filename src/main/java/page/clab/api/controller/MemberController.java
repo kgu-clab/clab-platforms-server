@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +23,7 @@ import page.clab.api.type.dto.CloudUsageInfo;
 import page.clab.api.type.dto.FileInfo;
 import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.etc.MemberStatus;
 
@@ -45,8 +45,9 @@ public class MemberController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        memberService.createMember(memberRequestDto);
+        String id = memberService.createMember(memberRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -54,10 +55,10 @@ public class MemberController {
     @GetMapping("")
     public ResponseModel getMembers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        List<MemberResponseDto> members = memberService.getMembers(pageable);
+        PagedResponseDto<MemberResponseDto> members = memberService.getMembers(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(members);
         return responseModel;
@@ -68,10 +69,10 @@ public class MemberController {
     public ResponseModel getBirthdaysThisMonth(
             @RequestParam String month,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<MemberResponseDto> birthdayMembers = memberService.getBirthdaysThisMonth(month, pageable);
+        PagedResponseDto<MemberResponseDto> birthdayMembers = memberService.getBirthdaysThisMonth(month, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(birthdayMembers);
         return responseModel;
@@ -85,10 +86,10 @@ public class MemberController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) MemberStatus memberStatus,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        List<MemberResponseDto> members = memberService.searchMember(memberId, name, memberStatus, pageable);
+        PagedResponseDto<MemberResponseDto> members = memberService.searchMember(memberId, name, memberStatus, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(members);
         return responseModel;
@@ -104,8 +105,9 @@ public class MemberController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        memberService.updateMemberInfo(memberId, memberRequestDto);
+        String id = memberService.updateMemberInfo(memberId, memberRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -115,8 +117,9 @@ public class MemberController {
             @PathVariable String memberId,
             @RequestParam MemberStatus memberStatus
     ) throws PermissionDeniedException {
-        memberService.updateMemberStatusByAdmin(memberId, memberStatus);
+        String id = memberService.updateMemberStatusByAdmin(memberId, memberStatus);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -125,10 +128,10 @@ public class MemberController {
     @GetMapping("/cloud")
     public ResponseModel getAllCloudUsages(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        List<CloudUsageInfo> cloudUsageInfos = memberService.getAllCloudUsages(pageable);
+        PagedResponseDto<CloudUsageInfo> cloudUsageInfos = memberService.getAllCloudUsages(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(cloudUsageInfos);
         return responseModel;
@@ -151,10 +154,10 @@ public class MemberController {
     public ResponseModel getMemberUploadedFiles(
             @PathVariable String memberId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<FileInfo> files = memberService.getFilesInMemberDirectory(memberId, pageable);
+        PagedResponseDto<FileInfo> files = memberService.getFilesInMemberDirectory(memberId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(files);
         return responseModel;

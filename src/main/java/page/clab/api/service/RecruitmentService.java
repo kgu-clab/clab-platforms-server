@@ -21,10 +21,10 @@ public class RecruitmentService {
 
     private final RecruitmentRepository recruitmentRepository;
 
-    public void createRecruitment(RecruitmentRequestDto recruitmentRequestDto) throws PermissionDeniedException {
+    public Long createRecruitment(RecruitmentRequestDto recruitmentRequestDto) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         Recruitment recruitment = Recruitment.of(recruitmentRequestDto);
-        recruitmentRepository.save(recruitment);
+        return recruitmentRepository.save(recruitment).getId();
     }
 
     public List<RecruitmentResponseDto> getRecentRecruitments() {
@@ -34,20 +34,21 @@ public class RecruitmentService {
                 .collect(Collectors.toList());
     }
 
-    public void updateRecruitment(Long recruitmentId, RecruitmentRequestDto recruitmentRequestDto) throws PermissionDeniedException {
+    public Long updateRecruitment(Long recruitmentId, RecruitmentRequestDto recruitmentRequestDto) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         Recruitment recruitment = getRecruitmentByIdOrThrow(recruitmentId);
         Recruitment updatedRecruitment = Recruitment.of(recruitmentRequestDto);
         updatedRecruitment.setId(recruitment.getId());
         updatedRecruitment.setCreatedAt(recruitment.getCreatedAt());
         updatedRecruitment.setUpdateTime(LocalDateTime.now());
-        recruitmentRepository.save(updatedRecruitment);
+        return recruitmentRepository.save(updatedRecruitment).getId();
     }
 
-    public void deleteRecruitment(Long recruitmentId) throws PermissionDeniedException {
+    public Long deleteRecruitment(Long recruitmentId) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         Recruitment recruitment = getRecruitmentByIdOrThrow(recruitmentId);
         recruitmentRepository.delete(recruitment);
+        return recruitment.getId();
     }
 
     private Recruitment getRecruitmentByIdOrThrow(Long recruitmentId) {

@@ -14,20 +14,14 @@ public class NewsResponseDto {
 
     private Long id;
     
-    private String category;
-
     private String title;
 
-    private String subtitle;
+    private String category;
 
-    private String content;
-
-    private String url;
+    private String imageUrl;
 
     private LocalDateTime createdAt;
     
-    private LocalDateTime updateTime;
-
     public static NewsResponseDto of(News news) {
         return ModelMapperUtil.getModelMapper().map(news, NewsResponseDto.class);
     }

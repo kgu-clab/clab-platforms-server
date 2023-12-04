@@ -3,17 +3,17 @@ package page.clab.api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
-import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +25,7 @@ import page.clab.api.service.ApplicationService;
 import page.clab.api.type.dto.ApplicationPassResponseDto;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -39,14 +40,15 @@ public class ApplicationController {
     @Operation(summary = "가입 신청", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createApplication (
-            @Validated @RequestBody ApplicationRequestDto applicationRequestDto,
+            @Valid @RequestBody ApplicationRequestDto applicationRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        applicationService.createApplication(applicationRequestDto);
+        String id = applicationService.createApplication(applicationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -54,10 +56,10 @@ public class ApplicationController {
     @GetMapping("")
     public ResponseModel getApplications(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        List<ApplicationResponseDto> applications = applicationService.getApplications(pageable);
+        PagedResponseDto<ApplicationResponseDto> applications = applicationService.getApplications(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applications);
         return responseModel;
@@ -70,10 +72,10 @@ public class ApplicationController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        List<ApplicationResponseDto> applications = applicationService.getApplicationsBetweenDates(startDate, endDate, pageable);
+        PagedResponseDto<ApplicationResponseDto> applications = applicationService.getApplicationsBetweenDates(startDate, endDate, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applications);
         return responseModel;
@@ -93,12 +95,13 @@ public class ApplicationController {
 
     @Operation(summary = "[A] 가입 신청 승인/취소", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "승인/취소 상태가 반전됨")
-    @PostMapping("/{applicationId}")
+    @PatchMapping("/{applicationId}")
     public ResponseModel approveApplication(
             @PathVariable String applicationId
     ) throws PermissionDeniedException {
-        applicationService.approveApplication(applicationId);
+        String id = applicationService.approveApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -106,10 +109,10 @@ public class ApplicationController {
     @GetMapping("/pass")
     public ResponseModel getApprovedApplications(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        List<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications(pageable);
+        PagedResponseDto<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(approvedApplications);
         return responseModel;
@@ -131,8 +134,9 @@ public class ApplicationController {
     public ResponseModel deleteApplication(
             @PathVariable String applicationId
     ) throws PermissionDeniedException {
-        applicationService.deleteApplication(applicationId);
+        String id = applicationService.deleteApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

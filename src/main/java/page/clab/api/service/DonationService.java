@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,6 +11,7 @@ import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.DonationRepository;
 import page.clab.api.type.dto.DonationRequestDto;
 import page.clab.api.type.dto.DonationResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Donation;
 import page.clab.api.type.entity.Member;
 
@@ -24,25 +24,25 @@ public class DonationService {
     private final DonationRepository donationRepository;
 
     @Transactional
-    public void createDonation(DonationRequestDto donationRequestDto) {
+    public Long createDonation(DonationRequestDto donationRequestDto) {
         Member member = memberService.getCurrentMember();
         Donation donation = Donation.of(donationRequestDto);
         donation.setDonor(member);
-        donationRepository.save(donation);
+        return donationRepository.save(donation).getId();
     }
 
-    public List<DonationResponseDto> getDonations(Pageable pageable) {
+    public PagedResponseDto<DonationResponseDto> getDonations(Pageable pageable) {
         Page<Donation> donations = donationRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return donations.map(DonationResponseDto::of).getContent();
+        return new PagedResponseDto<>(donations.map(DonationResponseDto::of));
     }
 
-    public List<DonationResponseDto> getMyDonations(Pageable pageable) {
+    public PagedResponseDto<DonationResponseDto> getMyDonations(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Donation> donations = getDonationsByDonor(member, pageable);
-        return donations.map(DonationResponseDto::of).getContent();
+        return new PagedResponseDto<>(donations.map(DonationResponseDto::of));
     }
 
-    public List<DonationResponseDto> searchDonation(String memberId, String name, Pageable pageable) {
+    public PagedResponseDto<DonationResponseDto> searchDonation(String memberId, String name, Pageable pageable) {
         Page<Donation> donations;
         if (memberId != null) {
             donations = getDonationByDonorIdOrThrow(memberId, pageable);
@@ -53,10 +53,10 @@ public class DonationService {
         }
         if (donations.isEmpty())
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
-        return donations.map(DonationResponseDto::of).getContent();
+        return new PagedResponseDto<>(donations.map(DonationResponseDto::of));
     }
 
-    public void updateDonation(Long donationId, DonationRequestDto donationRequestDto) throws PermissionDeniedException {
+    public Long updateDonation(Long donationId, DonationRequestDto donationRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Donation donation = getDonationByIdOrThrow(donationId);
         if (!(donation.getDonor().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
@@ -66,16 +66,17 @@ public class DonationService {
         updatedDonation.setDonor(donation.getDonor());
         updatedDonation.setId(donation.getId());
         updatedDonation.setCreatedAt(donation.getCreatedAt());
-        donationRepository.save(updatedDonation);
+        return donationRepository.save(updatedDonation).getId();
     }
 
-    public void deleteDonation(Long donationId) throws PermissionDeniedException {
+    public Long deleteDonation(Long donationId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Donation donation = getDonationByIdOrThrow(donationId);
         if (!(donation.getDonor().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("해당 후원 정보를 삭제할 권한이 없습니다.");
         }
         donationRepository.deleteById(donationId);
+        return donation.getId();
     }
 
     private Donation getDonationByIdOrThrow(Long donationId) {

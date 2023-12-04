@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +10,7 @@ import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.MembershipFeeRepository;
 import page.clab.api.type.dto.MembershipFeeRequestDto;
 import page.clab.api.type.dto.MembershipFeeResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.MembershipFee;
 
@@ -22,28 +22,28 @@ public class MembershipFeeService {
 
     private final MembershipFeeRepository membershipFeeRepository;
 
-    public void createMembershipFee(MembershipFeeRequestDto membershipFeeRequestDto) {
+    public Long createMembershipFee(MembershipFeeRequestDto membershipFeeRequestDto) {
         Member member = memberService.getCurrentMember();
         MembershipFee membershipFee = MembershipFee.of(membershipFeeRequestDto);
         membershipFee.setApplicant(member);
-        membershipFeeRepository.save(membershipFee);
+        return membershipFeeRepository.save(membershipFee).getId();
     }
 
-    public List<MembershipFeeResponseDto> getMembershipFees(Pageable pageable) {
+    public PagedResponseDto<MembershipFeeResponseDto> getMembershipFees(Pageable pageable) {
         Page<MembershipFee> membershipFees = membershipFeeRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return membershipFees.map(MembershipFeeResponseDto::of).getContent();
+        return new PagedResponseDto<>(membershipFees.map(MembershipFeeResponseDto::of));
     }
 
-    public List<MembershipFeeResponseDto> searchMembershipFee(String category, Pageable pageable) {
+    public PagedResponseDto<MembershipFeeResponseDto> searchMembershipFee(String category, Pageable pageable) {
         Page<MembershipFee> membershipFees;
         membershipFees = getMembershipFeeByCategory(category, pageable);
         if (membershipFees.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return membershipFees.map(MembershipFeeResponseDto::of).getContent();
+        return new PagedResponseDto<>(membershipFees.map(MembershipFeeResponseDto::of));
     }
 
-    public void updateMembershipFee(Long membershipFeeId, MembershipFeeRequestDto membershipFeeRequestDto) throws PermissionDeniedException {
+    public Long updateMembershipFee(Long membershipFeeId, MembershipFeeRequestDto membershipFeeRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         MembershipFee membershipFee = getMembershipFeeByIdOrThrow(membershipFeeId);
         if (!(membershipFee.getApplicant().equals(member) || memberService.isMemberAdminRole(member))) {
@@ -53,16 +53,17 @@ public class MembershipFeeService {
         updatedMembershipFee.setId(membershipFee.getId());
         updatedMembershipFee.setApplicant(membershipFee.getApplicant());
         updatedMembershipFee.setCreatedAt(membershipFee.getCreatedAt());
-        membershipFeeRepository.save(updatedMembershipFee);
+        return membershipFeeRepository.save(updatedMembershipFee).getId();
     }
 
-    public void deleteMembershipFee(Long membershipFeeId) throws PermissionDeniedException {
+    public Long deleteMembershipFee(Long membershipFeeId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         MembershipFee membershipFee = getMembershipFeeByIdOrThrow(membershipFeeId);
         if (!(membershipFee.getApplicant().equals(member) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException();
         }
         membershipFeeRepository.delete(membershipFee);
+        return membershipFee.getId();
     }
 
     private MembershipFee getMembershipFeeByIdOrThrow(Long membershipFeeId) {
