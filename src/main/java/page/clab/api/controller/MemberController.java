@@ -45,8 +45,9 @@ public class MemberController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        memberService.createMember(memberRequestDto);
+        String id = memberService.createMember(memberRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -104,8 +105,9 @@ public class MemberController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        memberService.updateMemberInfo(memberId, memberRequestDto);
+        String id = memberService.updateMemberInfo(memberId, memberRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -115,8 +117,9 @@ public class MemberController {
             @PathVariable String memberId,
             @RequestParam MemberStatus memberStatus
     ) throws PermissionDeniedException {
-        memberService.updateMemberStatusByAdmin(memberId, memberStatus);
+        String id = memberService.updateMemberStatusByAdmin(memberId, memberStatus);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

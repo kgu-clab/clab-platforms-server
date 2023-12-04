@@ -12,7 +12,7 @@ import page.clab.api.repository.ActivityGroupRepository;
 import page.clab.api.repository.GroupScheduleRepository;
 import page.clab.api.type.dto.ActivityGroupRequestDto;
 import page.clab.api.type.dto.ActivityGroupResponseDto;
-import page.clab.api.type.dto.GroupMemberDto;
+import page.clab.api.type.dto.GroupMemberResponseDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.ActivityGroup;
@@ -101,10 +101,10 @@ public class ActivityGroupAdminService {
         return activityGroup.getId();
     }
 
-    public PagedResponseDto<GroupMemberDto> getApplyGroupMemberList(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
+    public PagedResponseDto<GroupMemberResponseDto> getApplyGroupMemberList(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
         checkMemberGroupLeaderRole();
         Page<GroupMember> groupMemberList = activityGroupMemberService.getGroupMemberByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.IN_PROGRESS, pageable);
-        return new PagedResponseDto<>(groupMemberList.map(GroupMemberDto::of));
+        return new PagedResponseDto<>(groupMemberList.map(GroupMemberResponseDto::of));
     }
 
     public String manageGroupMemberStatus(String memberId, GroupMemberStatus status) throws PermissionDeniedException {

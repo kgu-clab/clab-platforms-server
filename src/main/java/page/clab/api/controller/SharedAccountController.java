@@ -43,8 +43,9 @@ public class SharedAccountController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        sharedAccountService.createSharedAccount(sharedAccountRequestDto);
+        Long id = sharedAccountService.createSharedAccount(sharedAccountRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -71,8 +72,9 @@ public class SharedAccountController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        sharedAccountService.updateSharedAccount(accountId, sharedAccountRequestDto);
+        Long id = sharedAccountService.updateSharedAccount(accountId, sharedAccountRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -81,8 +83,9 @@ public class SharedAccountController {
     public ResponseModel deleteSharedAccount(
             @PathVariable("accountId") Long accountId
     ) throws PermissionDeniedException {
-        sharedAccountService.deleteSharedAccount(accountId);
+        Long id = sharedAccountService.deleteSharedAccount(accountId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

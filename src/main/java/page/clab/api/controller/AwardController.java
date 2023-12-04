@@ -43,8 +43,9 @@ public class AwardController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        awardService.createAward(awardRequestDto);
+        Long id = awardService.createAward(awardRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -86,8 +87,9 @@ public class AwardController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        awardService.updateAward(awardId, awardRequestDto);
+        Long id = awardService.updateAward(awardId, awardRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -96,8 +98,9 @@ public class AwardController {
     public ResponseModel deleteAward(
             @PathVariable Long awardId
     ) throws PermissionDeniedException {
-        awardService.deleteAward(awardId);
+        Long id = awardService.deleteAward(awardId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

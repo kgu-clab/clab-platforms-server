@@ -23,7 +23,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.ActivityGroupAdminService;
 import page.clab.api.type.dto.ActivityGroupRequestDto;
 import page.clab.api.type.dto.ActivityGroupResponseDto;
-import page.clab.api.type.dto.GroupMemberDto;
+import page.clab.api.type.dto.GroupMemberResponseDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
@@ -144,7 +144,7 @@ public class ActivityGroupAdminController {
             @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<GroupMemberDto> applyMemberList = activityGroupAdminService.getApplyGroupMemberList(activityGroupId, pageable);
+        PagedResponseDto<GroupMemberResponseDto> applyMemberList = activityGroupAdminService.getApplyGroupMemberList(activityGroupId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applyMemberList);
         return responseModel;

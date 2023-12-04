@@ -41,7 +41,7 @@ public class MemberService {
     @Value("${resource.file.path}")
     private String filePath;
 
-    public void createMember(MemberRequestDto memberRequestDto) throws PermissionDeniedException {
+    public String createMember(MemberRequestDto memberRequestDto) throws PermissionDeniedException {
         checkMemberAdminRole();
         if (memberRepository.findById(memberRequestDto.getId()).isPresent())
             throw new AssociatedAccountExistsException("이미 사용 중인 아이디입니다.");
@@ -52,7 +52,7 @@ public class MemberService {
         Member member = Member.of(memberRequestDto);
         member.setContact(removeHyphensFromContact(member.getContact()));
         member.setPassword(passwordEncoder.encode(member.getPassword()));
-        memberRepository.save(member);
+        return memberRepository.save(member).getId();
     }
 
     public List<MemberResponseDto> getMembers() throws PermissionDeniedException {
@@ -101,7 +101,7 @@ public class MemberService {
         return new PagedResponseDto<>(members.map(MemberResponseDto::of));
     }
 
-    public void updateMemberInfo(String memberId, MemberRequestDto memberRequestDto) throws PermissionDeniedException {
+    public String updateMemberInfo(String memberId, MemberRequestDto memberRequestDto) throws PermissionDeniedException {
         Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
         if (!(member.getId().equals(currentMember.getId()) || isMemberAdminRole(currentMember))) {
@@ -113,14 +113,14 @@ public class MemberService {
         updatedMember.setProvider(member.getProvider());
         updatedMember.setLastLoginTime(member.getLastLoginTime());
         updatedMember.setLoanSuspensionDate(member.getLoanSuspensionDate());
-        memberRepository.save(updatedMember);
+        return memberRepository.save(updatedMember).getId();
     }
 
-    public void updateMemberStatusByAdmin(String memberId, MemberStatus memberStatus) throws PermissionDeniedException {
+    public String updateMemberStatusByAdmin(String memberId, MemberStatus memberStatus) throws PermissionDeniedException {
         checkMemberAdminRole();
         Member member = getMemberByIdOrThrow(memberId);
         member.setMemberStatus(memberStatus);
-        memberRepository.save(member);
+        return memberRepository.save(member).getId();
     }
 
     public PagedResponseDto<CloudUsageInfo> getAllCloudUsages(Pageable pageable) throws PermissionDeniedException {
