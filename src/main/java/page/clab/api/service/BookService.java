@@ -33,10 +33,10 @@ public class BookService {
 
     private final EntityManager entityManager;
 
-    public void createBook(BookRequestDto bookRequestDto) throws PermissionDeniedException {
+    public Long createBook(BookRequestDto bookRequestDto) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         Book book = Book.of(bookRequestDto);
-        bookRepository.save(book);
+        return bookRepository.save(book).getId();
     }
 
     public PagedResponseDto<BookResponseDto> getBooks(Pageable pageable) {
@@ -71,20 +71,21 @@ public class BookService {
         return new PagedResponseDto<>(bookPage.map(BookResponseDto::of));
     }
 
-    public void updateBookInfo(Long bookId, BookRequestDto bookRequestDto) throws PermissionDeniedException {
+    public Long updateBookInfo(Long bookId, BookRequestDto bookRequestDto) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         Book book = getBookByIdOrThrow(bookId);
         Book updatedBook = Book.of(bookRequestDto);
         updatedBook.setId(book.getId());
         updatedBook.setCreatedAt(book.getCreatedAt());
         updatedBook.setBorrower(book.getBorrower());
-        bookRepository.save(updatedBook);
+        return bookRepository.save(updatedBook).getId();
     }
 
-    public void deleteBook(Long bookId) throws PermissionDeniedException {
+    public Long deleteBook(Long bookId) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         Book book = getBookByIdOrThrow(bookId);
         bookRepository.delete(book);
+        return book.getId();
     }
 
     public Book getBookByIdOrThrow(Long bookId) {

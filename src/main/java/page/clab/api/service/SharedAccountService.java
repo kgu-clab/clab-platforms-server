@@ -20,10 +20,10 @@ public class SharedAccountService {
 
     private final SharedAccountRepository sharedAccountRepository;
 
-    public void createSharedAccount(SharedAccountRequestDto sharedAccountRequestDto) throws PermissionDeniedException {
+    public Long createSharedAccount(SharedAccountRequestDto sharedAccountRequestDto) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         SharedAccount sharedAccount = SharedAccount.of(sharedAccountRequestDto);
-        sharedAccountRepository.save(sharedAccount);
+        return sharedAccountRepository.save(sharedAccount).getId();
     }
 
     public PagedResponseDto<SharedAccountResponseDto> getSharedAccounts(Pageable pageable) {
@@ -31,18 +31,19 @@ public class SharedAccountService {
         return new PagedResponseDto<>(sharedAccounts.map(SharedAccountResponseDto::of));
     }
 
-    public void updateSharedAccount(Long accountId, SharedAccountRequestDto sharedAccountRequestDto) throws PermissionDeniedException {
+    public Long updateSharedAccount(Long accountId, SharedAccountRequestDto sharedAccountRequestDto) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         SharedAccount sharedAccount = getSharedAccountByIdOrThrow(accountId);
         SharedAccount updatedAccount = SharedAccount.of(sharedAccountRequestDto);
         updatedAccount.setId(sharedAccount.getId());
-        sharedAccountRepository.save(updatedAccount);
+        return sharedAccountRepository.save(updatedAccount).getId();
     }
 
-    public void deleteSharedAccount(Long accountId) throws PermissionDeniedException {
+    public Long deleteSharedAccount(Long accountId) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         SharedAccount sharedAccount = getSharedAccountByIdOrThrow(accountId);
         sharedAccountRepository.delete(sharedAccount);
+        return sharedAccount.getId();
     }
 
     private SharedAccount getSharedAccountByIdOrThrow(Long accountId) {

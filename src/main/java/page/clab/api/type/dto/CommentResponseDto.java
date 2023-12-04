@@ -18,21 +18,16 @@ public class CommentResponseDto {
 
     private Long id;
 
-    private String writerId;
-
     private String writerName;
 
     private String writerImageUrl;
 
     private String content;
 
-    private LocalDateTime updateTime;
-
     private LocalDateTime createdAt;
 
     public static CommentResponseDto of(Comment comment) {
         CommentResponseDto commentResponseDto = ModelMapperUtil.getModelMapper().map(comment, CommentResponseDto.class);
-        commentResponseDto.setWriterId(comment.getWriter().getId());
         commentResponseDto.setWriterName(comment.getWriter().getName());
         commentResponseDto.setWriterImageUrl(comment.getWriter().getImageUrl());
         return commentResponseDto;

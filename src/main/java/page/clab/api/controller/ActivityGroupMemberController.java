@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.service.ActivityGroupMemberService;
-import page.clab.api.type.dto.ActivityGroupDetailsResponseDto;
+import page.clab.api.type.dto.ActivityGroupProjectResponseDto;
 import page.clab.api.type.dto.ActivityGroupResponseDto;
-import page.clab.api.type.dto.GroupMemberDto;
+import page.clab.api.type.dto.ActivityGroupStudyResponseDto;
+import page.clab.api.type.dto.GroupMemberResponseDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
@@ -31,26 +32,50 @@ public class ActivityGroupMemberController {
 
     private final ActivityGroupMemberService activityGroupMemberService;
 
-    @Operation(summary = "카테고리별 활동 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Operation(summary = "[U] 활동 전체 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getActivityGroups(
-            @RequestParam ActivityGroupCategory category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroups(category, pageable);
+        PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroups(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroups);
         return responseModel;
     }
 
-    @Operation(summary = "활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @GetMapping("/{activityGroupId}")
-    public ResponseModel getActivityGroup(
+    @Operation(summary = "카테고리별 활동 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @GetMapping("/list")
+    public ResponseModel getActivityGroupsByCategory(
+            @RequestParam ActivityGroupCategory category,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroupsByCategory(category, pageable);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(activityGroups);
+        return responseModel;
+    }
+
+    @Operation(summary = "스터디 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @GetMapping("/study/{activityGroupId}")
+    public ResponseModel getActivityGroupStudy(
             @PathVariable Long activityGroupId
     ) {
-        ActivityGroupDetailsResponseDto activityGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
+        ActivityGroupStudyResponseDto activityGroup = activityGroupMemberService.getActivityGroupStudy(activityGroupId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(activityGroup);
+        return responseModel;
+    }
+
+    @Operation(summary = "프로젝트 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @GetMapping("/project/{activityGroupId}")
+    public ResponseModel getActivityGroupProject(
+            @PathVariable Long activityGroupId
+    ) {
+        ActivityGroupProjectResponseDto activityGroup = activityGroupMemberService.getActivityGroupProject(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroup);
         return responseModel;
@@ -78,7 +103,7 @@ public class ActivityGroupMemberController {
             @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<GroupMemberDto> activityGroupMembers = activityGroupMemberService.getActivityGroupMembers(activityGroupId, pageable);
+        PagedResponseDto<GroupMemberResponseDto> activityGroupMembers = activityGroupMemberService.getActivityGroupMembers(activityGroupId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroupMembers);
         return responseModel;

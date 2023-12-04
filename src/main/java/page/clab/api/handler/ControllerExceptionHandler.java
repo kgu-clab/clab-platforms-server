@@ -99,6 +99,7 @@ public class ControllerExceptionHandler {
             DuplicateLoginException.class,
             ActivityGroupNotFinishedException.class,
             AlreadyReviewedException.class,
+            IllegalStateException.class,
             Exception.class
     })
     public ResponseModel errorException(HttpServletRequest request, HttpServletResponse response, Exception e) {

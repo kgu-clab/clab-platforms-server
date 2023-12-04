@@ -40,8 +40,9 @@ public class RecruitmentController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        recruitmentService.createRecruitment(recruitmentRequestDto);
+        Long id = recruitmentService.createRecruitment(recruitmentRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -65,8 +66,9 @@ public class RecruitmentController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        recruitmentService.updateRecruitment(recruitmentId, recruitmentRequestDto);
+        Long id = recruitmentService.updateRecruitment(recruitmentId, recruitmentRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -75,8 +77,9 @@ public class RecruitmentController {
     public ResponseModel deleteRecruitment(
             @PathVariable Long recruitmentId
     ) throws PermissionDeniedException {
-        recruitmentService.deleteRecruitment(recruitmentId);
+        Long id = recruitmentService.deleteRecruitment(recruitmentId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

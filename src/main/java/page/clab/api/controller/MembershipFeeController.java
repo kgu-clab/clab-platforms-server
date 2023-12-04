@@ -35,8 +35,9 @@ public class MembershipFeeController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        membershipFeeService.createMembershipFee(MembershipFeeRequestDto);
+        Long id = membershipFeeService.createMembershipFee(MembershipFeeRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -78,8 +79,9 @@ public class MembershipFeeController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        membershipFeeService.updateMembershipFee(membershipFeeId, membershipFeeRequestDto);
+        Long id = membershipFeeService.updateMembershipFee(membershipFeeId, membershipFeeRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -88,8 +90,9 @@ public class MembershipFeeController {
     public ResponseModel deleteMembershipFee(
             @PathVariable Long membershipFeeId
     ) throws PermissionDeniedException {
-        membershipFeeService.deleteMembershipFee(membershipFeeId);
+        Long id = membershipFeeService.deleteMembershipFee(membershipFeeId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
     

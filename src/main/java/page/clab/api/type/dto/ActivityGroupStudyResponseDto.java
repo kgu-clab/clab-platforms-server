@@ -1,6 +1,7 @@
 package page.clab.api.type.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import page.clab.api.util.ModelMapperUtil;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ActivityGroupDetailsResponseDto {
+public class ActivityGroupStudyResponseDto {
 
     private ActivityGroupCategory category;
 
@@ -26,13 +27,15 @@ public class ActivityGroupDetailsResponseDto {
 
     private ActivityGroupStatus status;
 
-    private Long progress;
-
     private String imageUrl;
+
+    private List<GroupMemberResponseDto> groupMembers;
+
+    private String curriculum;
 
     private LocalDateTime createdAt;
 
-    public static ActivityGroupDetailsResponseDto of(ActivityGroup activityGroup) {
-        return ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupDetailsResponseDto.class);
+    public static ActivityGroupStudyResponseDto of(ActivityGroup activityGroup) {
+        return ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupStudyResponseDto.class);
     }
 }

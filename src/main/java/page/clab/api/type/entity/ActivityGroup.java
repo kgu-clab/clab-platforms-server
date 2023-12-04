@@ -1,5 +1,6 @@
 package page.clab.api.type.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -55,6 +56,17 @@ public class ActivityGroup {
 
     @URL(message = "{url.activityGroup.imageUrl}")
     private String imageUrl;
+
+    private String curriculum;
+
+    private LocalDate startDate;
+
+    private LocalDate endDate;
+
+    private String techStack;
+
+    @URL(message = "{url.activityGroup.githubUrl}")
+    private String githubUrl;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
