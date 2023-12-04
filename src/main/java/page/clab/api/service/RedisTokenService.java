@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
@@ -15,13 +14,16 @@ public class RedisTokenService {
 
     private final RedisTokenRepository redisTokenRepository;
 
-    @Transactional
-    public RedisToken getRedisToken(String accessToken) {
+    public RedisToken getRedisTokenByAccessToken(String accessToken) {
         return redisTokenRepository.findByAccessToken(accessToken)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 토큰입니다."));
     }
 
-    @Transactional
+    public RedisToken getRedisTokenByRefreshToken(String refreshToken) {
+        return redisTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 토큰입니다."));
+    }
+
     public void saveRedisToken(String memberId, Role role, TokenInfo tokenInfo, String ip) {
         RedisToken redisToken = RedisToken.builder()
                 .id(memberId)
@@ -33,7 +35,6 @@ public class RedisTokenService {
         redisTokenRepository.save(redisToken);
     }
 
-    @Transactional
     public void deleteRedisTokenByAccessToken(String accessToken) {
         redisTokenRepository.findByAccessToken(accessToken)
                 .ifPresent(redisToken -> redisTokenRepository.delete(redisToken));
