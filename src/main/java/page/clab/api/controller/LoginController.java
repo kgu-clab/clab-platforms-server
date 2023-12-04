@@ -46,13 +46,13 @@ public class LoginController {
         return responseModel;
     }
 
-      @Operation(summary = "2FA 인증", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-      @PostMapping("/authenticator")
-      public ResponseModel authenticator(
+    @Operation(summary = "2FA 인증", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @PostMapping("/authenticator")
+    public ResponseModel authenticator(
           HttpServletRequest httpServletRequest,
           @Valid @RequestBody TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto,
           BindingResult result
-      ) throws MethodArgumentNotValidException, LoginFaliedException {
+    ) throws MethodArgumentNotValidException, LoginFaliedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
