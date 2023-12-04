@@ -14,7 +14,7 @@ import page.clab.api.type.etc.Role;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash(value = "refresh", timeToLive = 60*40)
+@RedisHash(value = "refresh", timeToLive = 60*60*24*14)
 public class RedisToken {
 
     @Id
@@ -28,6 +28,7 @@ public class RedisToken {
     @Indexed
     private String accessToken;
 
+    @Indexed
     private String refreshToken;
 
 }
