@@ -54,7 +54,7 @@ public class LoginService {
             if (!authenticatorService.isAuthenticatorExist(id)) {
                 authenticatorService.generateSecretKey(id);
             }
-            return authenticatorService.generateSecretKeyQRCodeUrl(id);
+            return authenticatorService.getAuthenticatorById(id).getSecretKey();
         } else {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
             loginFailInfoService.updateLoginFailInfo(id);
