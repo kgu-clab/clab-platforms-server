@@ -37,6 +37,7 @@ public class AccuseService {
 
     private final AccuseRepository accuseRepository;
 
+
     @Transactional
     public void createAccuse(AccuseRequestDto accuseRequestDto) {
         if (accuseRequestDto.getTargetType() == TargetType.BOARD) {
@@ -60,6 +61,12 @@ public class AccuseService {
             accuse.setAccuseStatus(AccuseStatus.PENDING);
             accuseRepository.save(accuse);
         }
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .content("신고하신 내용이 접수되었습니다.")
+                .memberId(member.getId())
+                .build();
+        notificationService.createNotification(notificationRequestDto);
     }
 
     public PagedResponseDto<AccuseResponseDto> getAccuses(Pageable pageable) throws PermissionDeniedException {
