@@ -1,8 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
-import javax.mail.MessagingException;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,6 +22,10 @@ import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
 import page.clab.api.type.etc.GroupMemberStatus;
+
+import javax.mail.MessagingException;
+import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -108,7 +109,7 @@ public class ActivityGroupMemberService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버입니다."));
     }
 
-    private GroupMember getGroupMemberByActivityGroupIdAndRole(Long activityGroupId, ActivityGroupRole role) {
+    public GroupMember getGroupMemberByActivityGroupIdAndRole(Long activityGroupId, ActivityGroupRole role) {
         return groupMemberRepository.findByActivityGroupIdAndRole(activityGroupId, role)
                 .orElseThrow(() -> new NotFoundException("해당 활동의 리더가 존재하지 않습니다."));
     }
