@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import page.clab.api.type.entity.BlacklistIp;
 
+import java.util.Optional;
+
 @Repository
 public interface BlacklistIpRepository extends JpaRepository<BlacklistIp, Long> {
 
@@ -13,6 +15,6 @@ public interface BlacklistIpRepository extends JpaRepository<BlacklistIp, Long> 
 
     boolean existsByIpAddress(String ipAddress);
 
-    void deleteByIpAddress(String ipAddress);
+    Optional<BlacklistIp> findByIpAddress(String ipAddress);
 
 }

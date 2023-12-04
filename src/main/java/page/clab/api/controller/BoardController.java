@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.BoardService;
+import page.clab.api.type.dto.BoardCategoryResponseDto;
+import page.clab.api.type.dto.BoardDetailsResponseDto;
+import page.clab.api.type.dto.BoardListResponseDto;
 import page.clab.api.type.dto.BoardRequestDto;
-import page.clab.api.type.dto.BoardResonseDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
@@ -34,7 +36,7 @@ public class BoardController {
 
     private final BoardService boardService;
     
-    @Operation(summary = "[U] 커뮤니티 게시판 생성", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 커뮤니티 게시글 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createBoard(
             @Valid @RequestBody BoardRequestDto boardRequestDto,
@@ -43,21 +45,33 @@ public class BoardController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        boardService.createBoard(boardRequestDto);
+        Long id = boardService.createBoard(boardRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @GetMapping("")
-    @Operation(summary = "[U] 커뮤니티 게시판 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 커뮤니티 게시글 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     public ResponseModel getBoards(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BoardResonseDto> boards = boardService.getBoards(pageable);
+        PagedResponseDto<BoardListResponseDto> boards = boardService.getBoards(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boards);
+        return responseModel;
+    }
+
+    @GetMapping("/{boardId}")
+    @Operation(summary = "[U] 커뮤니티 게시글 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    public ResponseModel getBoardDetails(
+            @PathVariable Long boardId
+    ) {
+        BoardDetailsResponseDto board = boardService.getBoardDetails(boardId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(board);
         return responseModel;
     }
 
@@ -68,30 +82,28 @@ public class BoardController {
             @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BoardResonseDto> board = boardService.getMyBoards(pageable);
+        PagedResponseDto<BoardCategoryResponseDto> board = boardService.getMyBoards(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(board);
         return responseModel;
     }
 
-    @GetMapping("/search")
-    @Operation(summary = "[U] 커뮤니티 게시판 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "게시판 ID, 카테고리를 기준으로 검색")
-    public ResponseModel searchBoards(
-            @RequestParam(required = false) Long boardId,
-            @RequestParam(required = false) String category,
+    @GetMapping("/list")
+    @Operation(summary = "[U] 커뮤니티 게시글 카테고리별 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    public ResponseModel getBoardsByCategory(
+            @RequestParam String category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BoardResonseDto> boards = boardService.searchBoards(boardId, category, pageable);
+        PagedResponseDto<BoardCategoryResponseDto> boards = boardService.getBoardsByCategory(category, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boards);
         return responseModel;
     }
 
     @PatchMapping("/{boardId}")
-    @Operation(summary = "[U] 커뮤니티 게시판 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 커뮤니티 게시글 수정", description = "ROLE_USER 이상의 권한이 필요함")
     public ResponseModel updateBoard(
             @PathVariable Long boardId,
             @Valid @RequestBody BoardRequestDto boardDto,
@@ -100,18 +112,20 @@ public class BoardController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        boardService.updateBoard(boardId, boardDto);
+        Long id = boardService.updateBoard(boardId, boardDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @DeleteMapping("/{boardId}")
-    @Operation(summary = "[U] 커뮤니티 게시판 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 커뮤니티 게시글 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     public ResponseModel deleteBoard(
             @PathVariable Long boardId
     ) throws PermissionDeniedException {
-        boardService.deleteBoard(boardId);
+        Long id = boardService.deleteBoard(boardId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

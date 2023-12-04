@@ -21,13 +21,13 @@ public class ActivityPhotoService {
 
     private final ActivityPhotoRepository activityPhotoRepository;
 
-    public void createActivityPhoto(ActivityPhotoRequestDto activityPhotoRequestDto) throws PermissionDeniedException {
+    public Long createActivityPhoto(ActivityPhotoRequestDto activityPhotoRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("활동 사진을 등록할 권한이 없습니다.");
         }
         ActivityPhoto activityPhoto = ActivityPhoto.of(activityPhotoRequestDto);
-        activityPhotoRepository.save(activityPhoto);
+        return activityPhotoRepository.save(activityPhoto).getId();
     }
 
     public PagedResponseDto<ActivityPhotoResponseDto> getActivityPhotos(Pageable pageable) {
@@ -40,23 +40,24 @@ public class ActivityPhotoService {
         return new PagedResponseDto<>(activityPhotos.map(ActivityPhotoResponseDto::of));
     }
 
-    public void updateActivityPhoto(Long activityPhotoId) throws PermissionDeniedException {
+    public Long updateActivityPhoto(Long activityPhotoId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("활동 사진을 수정할 권한이 없습니다.");
         }
         ActivityPhoto activityPhoto = getActivityPhotoByIdOrThrow(activityPhotoId);
         activityPhoto.setIsPublic(!activityPhoto.getIsPublic());
-        activityPhotoRepository.save(activityPhoto);
+        return activityPhotoRepository.save(activityPhoto).getId();
     }
 
-    public void deleteActivityPhoto(Long activityPhotoId) throws PermissionDeniedException {
+    public Long deleteActivityPhoto(Long activityPhotoId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("활동 사진을 삭제할 권한이 없습니다.");
         }
         ActivityPhoto activityPhoto = getActivityPhotoByIdOrThrow(activityPhotoId);
         activityPhotoRepository.delete(activityPhoto);
+        return activityPhoto.getId();
     }
 
     private ActivityPhoto getActivityPhotoByIdOrThrow(Long activityPhotoId) {

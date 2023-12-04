@@ -43,8 +43,9 @@ public class ReviewController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        reviewService.createReview(reviewRequestDto);
+        Long id = reviewService.createReview(reviewRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -115,8 +116,9 @@ public class ReviewController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        reviewService.updateReview(reviewId, reviewRequestDto);
+        Long id = reviewService.updateReview(reviewId, reviewRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -125,8 +127,9 @@ public class ReviewController {
     public ResponseModel deleteReview(
             @PathVariable Long reviewId
     ) throws PermissionDeniedException {
-        reviewService.deleteReview(reviewId);
+        Long id = reviewService.deleteReview(reviewId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -136,8 +139,9 @@ public class ReviewController {
     public ResponseModel publicReview(
             @PathVariable Long reviewId
     ) throws PermissionDeniedException {
-        reviewService.publicReview(reviewId);
+        Long id = reviewService.publicReview(reviewId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

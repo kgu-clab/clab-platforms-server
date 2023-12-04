@@ -39,8 +39,9 @@ public class BookLoanRecordController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        bookLoanRecordService.borrowBook(bookLoanRecordRequestDto);
+        Long id = bookLoanRecordService.borrowBook(bookLoanRecordRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -53,8 +54,9 @@ public class BookLoanRecordController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        bookLoanRecordService.returnBook(bookLoanRecordRequestDto);
+        Long id = bookLoanRecordService.returnBook(bookLoanRecordRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -67,8 +69,9 @@ public class BookLoanRecordController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        bookLoanRecordService.extendBookLoan(bookLoanRecordRequestDto);
+        Long id = bookLoanRecordService.extendBookLoan(bookLoanRecordRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

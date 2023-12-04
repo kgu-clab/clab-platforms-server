@@ -22,13 +22,13 @@ public class ProductService {
     private final ProductRepository productRepository;
 
 
-    public void createProduct(ProductRequestDto productRequestDto) throws PermissionDeniedException {
+    public Long createProduct(ProductRequestDto productRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("서비스를 등록 권한이 없습니다.");
         }
         Product product = Product.of(productRequestDto);
-        productRepository.save(product);
+        return productRepository.save(product).getId();
     }
 
     public PagedResponseDto<ProductResponseDto> getProducts(Pageable pageable) {
@@ -49,7 +49,7 @@ public class ProductService {
         return new PagedResponseDto<>(products.map(ProductResponseDto::of));
     }
 
-    public void updateProduct(Long productId, ProductRequestDto productRequestDto) throws PermissionDeniedException {
+    public Long updateProduct(Long productId, ProductRequestDto productRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("서비스를 수정할 권한이 없습니다.");
@@ -58,16 +58,17 @@ public class ProductService {
         Product updatedProduct = Product.of(productRequestDto);
         updatedProduct.setId(product.getId());
         updatedProduct.setCreatedAt(product.getCreatedAt());
-        productRepository.save(updatedProduct);
+        return productRepository.save(updatedProduct).getId();
     }
 
-    public void deleteProduct(Long productId) throws PermissionDeniedException {
+    public Long deleteProduct(Long productId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("서비스를 삭제할 권한이 없습니다.");
         }
         Product product = getProductByIdOrThrow(productId);
         productRepository.delete(product);
+        return product.getId();
     }
 
     private Product getProductByIdOrThrow(Long productId) {
