@@ -70,7 +70,7 @@ public class AccuseService {
 
         NotificationRequestDto notificationRequestDtoForAdmin = NotificationRequestDto.builder()
                 .content("신고가 접수되었습니다. 확인해주세요.")
-                .memberId(memberService.getMemberById("super").getId())
+                .memberId(memberService.getMemberById("superuser").getId())
                 .build();
         notificationService.createNotification(notificationRequestDtoForAdmin);
     }

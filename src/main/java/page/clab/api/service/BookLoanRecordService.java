@@ -1,8 +1,5 @@
 package page.clab.api.service;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,10 +14,15 @@ import page.clab.api.repository.BookLoanRecordRepository;
 import page.clab.api.repository.BookRepository;
 import page.clab.api.type.dto.BookLoanRecordRequestDto;
 import page.clab.api.type.dto.BookLoanRecordResponseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Book;
 import page.clab.api.type.entity.BookLoanRecord;
 import page.clab.api.type.entity.Member;
+
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +31,8 @@ public class BookLoanRecordService {
     private final BookService bookService;
 
     private final MemberService memberService;
+
+    private final NotificationService notificationService;
 
     private final BookRepository bookRepository;
 
@@ -54,6 +58,18 @@ public class BookLoanRecordService {
                 .borrowedAt(LocalDateTime.now())
                 .build();
         bookLoanRecordRepository.save(bookLoanRecord);
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(borrowerId)
+                .content("도서 대출이 완료되었습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+
+        NotificationRequestDto notificationRequestDtoForAdmin = NotificationRequestDto.builder()
+                .memberId(memberService.getMemberById("superuser").getId())
+                .content(borrower.getName() + "님이 " + book.getTitle() +  " 도서를 대출하였습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDtoForAdmin);
     }
 
     @Transactional
@@ -84,6 +100,18 @@ public class BookLoanRecordService {
         bookRepository.save(book);
         bookLoanRecord.setReturnedAt(currentDate);
         bookLoanRecordRepository.save(bookLoanRecord);
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(borrowerId)
+                .content("도서 반납이 완료되었습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+
+        NotificationRequestDto notificationRequestDtoForAdmin = NotificationRequestDto.builder()
+                .memberId(memberService.getMemberById("superuser").getId())
+                .content(borrower.getName() + "님이 " + book.getTitle() +  " 도서를 반납하였습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDtoForAdmin);
     }
 
     @Transactional
@@ -118,6 +146,18 @@ public class BookLoanRecordService {
             }
         }
         bookLoanRecordRepository.save(bookLoanRecord);
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(borrowerId)
+                .content("도서 대출 연장이 완료되었습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+
+        NotificationRequestDto notificationRequestDtoForAdmin = NotificationRequestDto.builder()
+                .memberId(memberService.getMemberById("superuser").getId())
+                .content(borrower.getName() + "님이 " + book.getTitle() +  " 도서를 연장하였습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDtoForAdmin);
     }
 
     private void handleOverdueAndSuspension(Member member, long overdueDays) {
