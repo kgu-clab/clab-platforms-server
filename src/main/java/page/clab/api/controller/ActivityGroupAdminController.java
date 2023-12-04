@@ -6,6 +6,8 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,15 +21,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.ActivityGroupAdminService;
-import page.clab.api.type.dto.ActivityGroupDto;
+import page.clab.api.type.dto.ActivityGroupRequestDto;
+import page.clab.api.type.dto.ActivityGroupResponseDto;
+import page.clab.api.type.dto.GroupMemberResponseDto;
 import page.clab.api.type.dto.GroupScheduleDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.etc.ActivityGroupStatus;
+import page.clab.api.type.etc.GroupMemberStatus;
 
 @RestController
 @RequestMapping("/activity-group/admin")
 @RequiredArgsConstructor
-@Tag(name = "ActivityGroupAdmin", description = "활동 그룹 관리 API")
+@Tag(name = "ActivityGroupAdmin", description = "활동 그룹 관리 관련 API")
 @Slf4j
 public class ActivityGroupAdminController {
 
@@ -36,23 +42,27 @@ public class ActivityGroupAdminController {
     @Operation(summary = "[U] 활동 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createActivityGroup(
-            @Valid @RequestBody ActivityGroupDto activityGroupDto,
+            @Valid @RequestBody ActivityGroupRequestDto activityGroupRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        activityGroupAdminService.createActivityGroup(activityGroupDto);
+        Long id = activityGroupAdminService.createActivityGroup(activityGroupRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "[A] 활동 상태별 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getActivityGroupsByStatus (
-            @RequestParam ActivityGroupStatus activityGroupStatus
+            @RequestParam ActivityGroupStatus activityGroupStatus,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
-        List<ActivityGroupDto> activityGroupList = activityGroupAdminService.getActivityGroupsByStatus(activityGroupStatus);
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<ActivityGroupResponseDto> activityGroupList = activityGroupAdminService.getActivityGroupsByStatus(activityGroupStatus, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroupList);
         return responseModel;
@@ -62,14 +72,15 @@ public class ActivityGroupAdminController {
     @PatchMapping("/{activityGroupId}")
     public ResponseModel updateActivityGroup(
             @PathVariable Long activityGroupId,
-            @Valid @RequestBody ActivityGroupDto activityGroupDto,
+            @Valid @RequestBody ActivityGroupRequestDto activityGroupRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        activityGroupAdminService.updateActivityGroup(activityGroupId, activityGroupDto);
+        Long id = activityGroupAdminService.updateActivityGroup(activityGroupId, activityGroupRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -79,8 +90,9 @@ public class ActivityGroupAdminController {
             @PathVariable Long activityGroupId,
             @RequestParam ActivityGroupStatus activityGroupStatus
     ) throws PermissionDeniedException {
-        activityGroupAdminService.manageActivityGroup(activityGroupId, activityGroupStatus);
+        Long id = activityGroupAdminService.manageActivityGroup(activityGroupId, activityGroupStatus);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -89,8 +101,9 @@ public class ActivityGroupAdminController {
     public ResponseModel deleteActivityGroup(
             @PathVariable Long activityGroupId
     ) throws PermissionDeniedException {
-        activityGroupAdminService.deleteActivityGroup(activityGroupId);
+        Long id = activityGroupAdminService.deleteActivityGroup(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -101,13 +114,14 @@ public class ActivityGroupAdminController {
             @PathVariable Long activityGroupId,
             @RequestParam Long progress
     ) throws PermissionDeniedException {
-        activityGroupAdminService.updateProjectProgress(activityGroupId, progress);
+        Long id = activityGroupAdminService.updateProjectProgress(activityGroupId, progress);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "[U] 커리큘럼 및 일정 생성", description = "ROLE_USER 이상의 권한이 필요함")
-    @PatchMapping("/schedule")
+    @PostMapping("/schedule")
     public ResponseModel addSchedule(
             @RequestParam Long activityGroupId,
             @Valid @RequestBody List<GroupScheduleDto> groupScheduleDto,
@@ -116,19 +130,35 @@ public class ActivityGroupAdminController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        activityGroupAdminService.addSchedule(activityGroupId, groupScheduleDto);
+        Long id = activityGroupAdminService.addSchedule(activityGroupId, groupScheduleDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
-    @Operation(summary = "[U] 멤버 인증 코드 생성", description = "ROLE_USER 이상의 권한이 필요함")
-    @PostMapping("/auth")
-    public ResponseModel createMemberAuthCode(
+    @Operation(summary = "[U] 신청 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @GetMapping("/apply-members")
+    public ResponseModel getApplyGroupMemberList(
             @RequestParam Long activityGroupId,
-            @RequestParam String code
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
-        activityGroupAdminService.createMemberAuthCode(activityGroupId, code);
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<GroupMemberResponseDto> applyMemberList = activityGroupAdminService.getApplyGroupMemberList(activityGroupId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(applyMemberList);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 신청 멤버 상태 변경", description = "ROLE_USER 이상의 권한이 필요함")
+    @PatchMapping("/accept")
+    public ResponseModel acceptGroupMember(
+            @RequestParam String memberId,
+            @RequestParam GroupMemberStatus status
+    ) throws PermissionDeniedException {
+        String id = activityGroupAdminService.manageGroupMemberStatus(memberId, status);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

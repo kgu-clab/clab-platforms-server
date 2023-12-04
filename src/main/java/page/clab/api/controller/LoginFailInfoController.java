@@ -26,8 +26,9 @@ public class LoginFailInfoController {
     public ResponseModel banMember(
             @PathVariable String memberId
     ) throws PermissionDeniedException {
-        loginFailInfoService.banMemberById(memberId);
+        Long id = loginFailInfoService.banMemberById(memberId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -36,8 +37,9 @@ public class LoginFailInfoController {
     public ResponseModel unbanMember(
             @PathVariable String memberId
     ) throws PermissionDeniedException {
-        loginFailInfoService.unbanMemberById(memberId);
+        Long id = loginFailInfoService.unbanMemberById(memberId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

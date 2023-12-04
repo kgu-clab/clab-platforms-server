@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,6 +10,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.AwardRepository;
 import page.clab.api.type.dto.AwardRequestDto;
 import page.clab.api.type.dto.AwardResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Award;
 import page.clab.api.type.entity.Member;
 
@@ -22,27 +22,27 @@ public class AwardService {
 
     private final AwardRepository awardRepository;
 
-    public void createAward(AwardRequestDto awardRequestDto) {
+    public Long createAward(AwardRequestDto awardRequestDto) {
         Member member = memberService.getCurrentMember();
         Award award = Award.of(awardRequestDto);
         award.setMember(member);
-        awardRepository.save(award);
+        return awardRepository.save(award).getId();
     }
 
-    public List<AwardResponseDto> getMyAwards(Pageable pageable) {
+    public PagedResponseDto<AwardResponseDto> getMyAwards(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Award> awards = getAwardByMember(pageable, member);
-        return awards.map(AwardResponseDto::of).getContent();
+        return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
     }
 
     @Transactional
-    public List<AwardResponseDto> searchAwards(String memberId, Pageable pageable) {
+    public PagedResponseDto<AwardResponseDto> searchAwards(String memberId, Pageable pageable) {
         Member member = memberService.getMemberByIdOrThrow(memberId);
         Page<Award> awards = getAwardByMember(pageable, member);
-        return awards.map(AwardResponseDto::of).getContent();
+        return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
     }
 
-    public void updateAward(Long awardId, AwardRequestDto awardRequestDto) throws PermissionDeniedException {
+    public Long updateAward(Long awardId, AwardRequestDto awardRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
         if (!(award.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
@@ -50,16 +50,17 @@ public class AwardService {
         }
         Award updatedAward = Award.of(awardRequestDto);
         updatedAward.setId(award.getId());
-        awardRepository.save(updatedAward);
+        return awardRepository.save(updatedAward).getId();
     }
 
-    public void deleteAward(Long awardId) throws PermissionDeniedException {
+    public Long deleteAward(Long awardId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
         if (!(award.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("해당 수상 이력을 수정할 권한이 없습니다.");
         }
         awardRepository.delete(award);
+        return award.getId();
     }
 
     private Award getAwardByIdOrThrow(Long awardId) {

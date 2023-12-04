@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +14,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.DonationService;
 import page.clab.api.type.dto.DonationRequestDto;
 import page.clab.api.type.dto.DonationResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -35,8 +35,9 @@ public class DonationController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        donationService.createDonation(donationRequestDto);
+        Long id = donationService.createDonation(donationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -44,10 +45,10 @@ public class DonationController {
     @GetMapping("")
     public ResponseModel getDonations(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<DonationResponseDto> donations = donationService.getDonations(pageable);
+        PagedResponseDto<DonationResponseDto> donations = donationService.getDonations(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(donations);
         return responseModel;
@@ -57,10 +58,10 @@ public class DonationController {
     @GetMapping("/my-donations")
     public ResponseModel getMyDonations(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<DonationResponseDto> donations = donationService.getMyDonations(pageable);
+        PagedResponseDto<DonationResponseDto> donations = donationService.getMyDonations(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(donations);
         return responseModel;
@@ -73,10 +74,10 @@ public class DonationController {
             @RequestParam(required = false) String memberId,
             @RequestParam(required = false) String name,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<DonationResponseDto> donations = donationService.searchDonation(memberId, name, pageable);
+        PagedResponseDto<DonationResponseDto> donations = donationService.searchDonation(memberId, name, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(donations);
         return responseModel;
@@ -92,8 +93,9 @@ public class DonationController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        donationService.updateDonation(donationId, donationRequestDto);
+        Long id = donationService.updateDonation(donationId, donationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -102,8 +104,9 @@ public class DonationController {
     public ResponseModel deleteDonation(
             @PathVariable Long donationId
     ) throws PermissionDeniedException {
-        donationService.deleteDonation(donationId);
+        Long id = donationService.deleteDonation(donationId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

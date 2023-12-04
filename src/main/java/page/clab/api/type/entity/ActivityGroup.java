@@ -1,5 +1,6 @@
 package page.clab.api.type.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +18,8 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.URL;
-import page.clab.api.type.dto.ActivityGroupDto;
+import page.clab.api.type.dto.ActivityGroupRequestDto;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupStatus;
 import page.clab.api.util.ModelMapperUtil;
 
@@ -34,8 +36,8 @@ public class ActivityGroup {
     private Long id;
 
     @Column(nullable = false)
-    @Size(min = 1, message = "{size.activityGroup.category}")
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private ActivityGroupCategory category;
 
     @Column(nullable = false)
     @Size(min = 1, max = 30, message = "{size.activityGroup.name}")
@@ -52,17 +54,26 @@ public class ActivityGroup {
     @Range(min = 0, max = 100, message = "{range.activityGroup.progress}")
     private Long progress;
 
-    private String code;
-
     @URL(message = "{url.activityGroup.imageUrl}")
     private String imageUrl;
+
+    private String curriculum;
+
+    private LocalDate startDate;
+
+    private LocalDate endDate;
+
+    private String techStack;
+
+    @URL(message = "{url.activityGroup.githubUrl}")
+    private String githubUrl;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static ActivityGroup of(ActivityGroupDto activityGroupDto) {
-        return ModelMapperUtil.getModelMapper().map(activityGroupDto, ActivityGroup.class);
+    public static ActivityGroup of(ActivityGroupRequestDto activityGroupRequestDto) {
+        return ModelMapperUtil.getModelMapper().map(activityGroupRequestDto, ActivityGroup.class);
     }
 
 }

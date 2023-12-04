@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.service.BookLoanRecordService;
 import page.clab.api.type.dto.BookLoanRecordRequestDto;
 import page.clab.api.type.dto.BookLoanRecordResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -39,8 +39,9 @@ public class BookLoanRecordController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        bookLoanRecordService.borrowBook(bookLoanRecordRequestDto);
+        Long id = bookLoanRecordService.borrowBook(bookLoanRecordRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -53,8 +54,9 @@ public class BookLoanRecordController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        bookLoanRecordService.returnBook(bookLoanRecordRequestDto);
+        Long id = bookLoanRecordService.returnBook(bookLoanRecordRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -67,8 +69,9 @@ public class BookLoanRecordController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        bookLoanRecordService.extendBookLoan(bookLoanRecordRequestDto);
+        Long id = bookLoanRecordService.extendBookLoan(bookLoanRecordRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -76,10 +79,10 @@ public class BookLoanRecordController {
     @GetMapping("")
     public ResponseModel getBookLoanRecords(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.getBookLoanRecords(pageable);
+        PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.getBookLoanRecords(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(bookLoanRecords);
         return responseModel;
@@ -92,10 +95,10 @@ public class BookLoanRecordController {
             @RequestParam(required = false) Long bookId,
             @RequestParam(required = false) String borrowerId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.searchBookLoanRecord(bookId, borrowerId, pageable);
+        PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.searchBookLoanRecord(bookId, borrowerId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(bookLoanRecords);
         return responseModel;
@@ -105,10 +108,10 @@ public class BookLoanRecordController {
     @GetMapping("/unreturned")
     public ResponseModel getUnreturnedBooks(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<BookLoanRecordResponseDto> unreturnedBooks = bookLoanRecordService.getUnreturnedBooks(pageable);
+        PagedResponseDto<BookLoanRecordResponseDto> unreturnedBooks = bookLoanRecordService.getUnreturnedBooks(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(unreturnedBooks);
         return responseModel;

@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +21,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.NotificationService;
 import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.NotificationResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -42,8 +42,9 @@ public class NotificationController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        notificationService.createNotification(notificationRequestDto);
+        Long id = notificationService.createNotification(notificationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -51,10 +52,10 @@ public class NotificationController {
     @GetMapping("")
     public ResponseModel getNotifications(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<NotificationResponseDto> notifications = notificationService.getNotifications(pageable);
+        PagedResponseDto<NotificationResponseDto> notifications = notificationService.getNotifications(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(notifications);
         return responseModel;
@@ -65,8 +66,9 @@ public class NotificationController {
     public ResponseModel deleteNotification(
             @PathVariable("notificationId") Long notificationId
     ) throws PermissionDeniedException {
-        notificationService.deleteNotification(notificationId);
+        Long id = notificationService.deleteNotification(notificationId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

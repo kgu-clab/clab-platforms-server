@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.ProductService;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ProductRequestDto;
 import page.clab.api.type.dto.ProductResponseDto;
 import page.clab.api.type.dto.ResponseModel;
@@ -43,8 +43,9 @@ public class ProductController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        productService.createProduct(productRequestDto);
+        Long id = productService.createProduct(productRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -52,10 +53,10 @@ public class ProductController {
     @GetMapping("")
     public ResponseModel getProducts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<ProductResponseDto> productResponseDtos = productService.getProducts(pageable);
+        PagedResponseDto<ProductResponseDto> productResponseDtos = productService.getProducts(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(productResponseDtos);
         return responseModel;
@@ -67,10 +68,10 @@ public class ProductController {
     public ResponseModel searchProduct(
             @RequestParam String productName,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<ProductResponseDto> productResponseDtos = productService.searchProduct(productName, pageable);
+        PagedResponseDto<ProductResponseDto> productResponseDtos = productService.searchProduct(productName, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(productResponseDtos);
         return responseModel;
@@ -86,8 +87,9 @@ public class ProductController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        productService.updateProduct(productId, productRequestDto);
+        Long id = productService.updateProduct(productId, productRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -96,8 +98,9 @@ public class ProductController {
     public ResponseModel deleteProduct(
             @RequestParam Long productId
     ) throws PermissionDeniedException {
-        productService.deleteProduct(productId);
+        Long id = productService.deleteProduct(productId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

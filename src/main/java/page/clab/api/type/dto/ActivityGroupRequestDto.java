@@ -1,6 +1,7 @@
 package page.clab.api.type.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.type.entity.ActivityGroup;
+import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.util.ModelMapperUtil;
 
 @Getter
@@ -17,12 +19,10 @@ import page.clab.api.util.ModelMapperUtil;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ActivityGroupDto {
+public class ActivityGroupRequestDto {
 
     @NotNull(message = "{notnull.activityGroup.category}")
-    @Size(min = 1, message = "{size.activityGroup.category}")
-    @Schema(description = "카테고리", example = "스터디")
-    private String category;
+    private ActivityGroupCategory category;
 
     @NotNull(message = "{notnull.activityGroup.name}")
     @Size(min = 1, max = 30, message = "{size.activityGroup.name}")
@@ -38,8 +38,24 @@ public class ActivityGroupDto {
     @Schema(description = "활동 이미지 URL", example = "https://i.namu.wiki/i/KcqDuQYTxNpUcLIMZTg28QXse0XiWx1G7K68kYYCo1GuhoHmhB_V8Qe9odGGt0BH9-0nQZTN53WXTNpDmwVfWQ.svg")
     private String imageUrl;
 
-    public static ActivityGroupDto of(ActivityGroup activityGroup) {
-        return ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupDto.class);
+    @Schema(description = "커리큘럼", example = "큐, 스택, 리스트, 연결리스트, 트리, 그래프")
+    private String curriculum;
+
+    @Schema(description = "활동 시작일", example = "2023-03-02")
+    private LocalDate startDate;
+
+    @Schema(description = "활동 종료일", example = "2023-06-18")
+    private LocalDate endDate;
+
+    @Schema(description = "기술 스택", example = "Unreal Engine, C#")
+    private String techStack;
+
+    @URL(message = "{url.activityGroup.githubUrl}")
+    @Schema(description = "Github URL", example = "https://github.com/KGU-C-Lab")
+    private String githubUrl;
+
+    public static ActivityGroupRequestDto of(ActivityGroup activityGroup) {
+        return ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupRequestDto.class);
     }
 
 }

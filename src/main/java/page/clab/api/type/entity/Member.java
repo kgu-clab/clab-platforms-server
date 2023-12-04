@@ -55,7 +55,7 @@ public class Member implements UserDetails {
     @Size(min = 11, max = 11, message = "{size.member.contact}")
     private String contact;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     @Email(message = "{email.member.email}")
     @Size(min = 1, message = "{size.member.email}")
     private String email;
@@ -75,6 +75,12 @@ public class Member implements UserDetails {
     @Column(nullable = false)
     @Size(min = 1, message = "{size.member.address}")
     private String address;
+
+    @Column(nullable = false)
+    private String interests;
+
+    @URL(message = "{url.member.githubUrl}")
+    private String githubUrl;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

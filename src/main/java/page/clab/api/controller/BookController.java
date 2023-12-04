@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +22,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.BookService;
 import page.clab.api.type.dto.BookRequestDto;
 import page.clab.api.type.dto.BookResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestController
@@ -43,8 +43,9 @@ public class BookController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        bookService.createBook(bookRequestDto);
+        Long id = bookService.createBook(bookRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -52,10 +53,10 @@ public class BookController {
     @GetMapping("")
     public ResponseModel getBooks(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<BookResponseDto> books = bookService.getBooks(pageable);
+        PagedResponseDto<BookResponseDto> books = bookService.getBooks(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(books);
         return responseModel;
@@ -67,10 +68,10 @@ public class BookController {
     public ResponseModel searchBook(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<BookResponseDto> books = bookService.searchBook(keyword, pageable);
+        PagedResponseDto<BookResponseDto> books = bookService.searchBook(keyword, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(books);
         return responseModel;
@@ -86,8 +87,9 @@ public class BookController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        bookService.updateBookInfo(bookId, bookRequestDto);
+        Long id = bookService.updateBookInfo(bookId, bookRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -96,8 +98,9 @@ public class BookController {
     public ResponseModel deleteBook(
             @PathVariable("bookId") Long bookId
     ) throws PermissionDeniedException {
-        bookService.deleteBook(bookId);
+        Long id = bookService.deleteBook(bookId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
