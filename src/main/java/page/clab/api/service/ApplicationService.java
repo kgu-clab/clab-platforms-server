@@ -1,8 +1,5 @@
 package page.clab.api.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -14,8 +11,13 @@ import page.clab.api.repository.ApplicationRepository;
 import page.clab.api.type.dto.ApplicationPassResponseDto;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Application;
+
+import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +25,8 @@ import page.clab.api.type.entity.Application;
 public class ApplicationService {
 
     private final MemberService memberService;
+
+    private final NotificationService notificationService;
 
     private final ApplicationRepository applicationRepository;
 
@@ -32,6 +36,18 @@ public class ApplicationService {
         application.setIsPass(false);
         application.setUpdateTime(LocalDateTime.now());
         applicationRepository.save(application);
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(appRequestDto.getStudentId())
+                .content("동아리 가입 신청이 접수되었습니다. 관리자가 승인하면 가입이 완료됩니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+
+        NotificationRequestDto notificationRequestDtoForAdmin = NotificationRequestDto.builder()
+                .memberId(memberService.getMemberById("super").getId())
+                .content("동아리 가입 신청이 접수되었습니다. 승인해주세요.")
+                .build();
+        notificationService.createNotification(notificationRequestDtoForAdmin);
     }
 
     public PagedResponseDto<ApplicationResponseDto> getApplications(Pageable pageable) throws PermissionDeniedException {
@@ -70,6 +86,12 @@ public class ApplicationService {
             application.setUpdateTime(LocalDateTime.now());
             applicationRepository.save(application);
         }
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(application.getStudentId())
+                .content("동아리 가입 신청이 승인되었습니다. 가입을 축하드립니다!")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
     }
 
     @Transactional

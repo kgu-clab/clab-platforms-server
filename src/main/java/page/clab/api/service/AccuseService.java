@@ -67,6 +67,12 @@ public class AccuseService {
                 .memberId(member.getId())
                 .build();
         notificationService.createNotification(notificationRequestDto);
+
+        NotificationRequestDto notificationRequestDtoForAdmin = NotificationRequestDto.builder()
+                .content("신고가 접수되었습니다. 확인해주세요.")
+                .memberId(memberService.getMemberById("super").getId())
+                .build();
+        notificationService.createNotification(notificationRequestDtoForAdmin);
     }
 
     public PagedResponseDto<AccuseResponseDto> getAccuses(Pageable pageable) throws PermissionDeniedException {
