@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,15 +10,20 @@ import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.DonationRepository;
 import page.clab.api.type.dto.DonationRequestDto;
 import page.clab.api.type.dto.DonationResponseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Donation;
 import page.clab.api.type.entity.Member;
+
+import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class DonationService {
 
     private final MemberService memberService;
+
+    private final NotificationService notificationService;
 
     private final DonationRepository donationRepository;
 
@@ -29,6 +33,12 @@ public class DonationService {
         Donation donation = Donation.of(donationRequestDto);
         donation.setDonor(member);
         donationRepository.save(donation);
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(memberService.getMemberById("superuser").getId())
+                .content("새로운 후원이 등록되었습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
     }
 
     public PagedResponseDto<DonationResponseDto> getDonations(Pageable pageable) {

@@ -10,6 +10,7 @@ import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.MembershipFeeRepository;
 import page.clab.api.type.dto.MembershipFeeRequestDto;
 import page.clab.api.type.dto.MembershipFeeResponseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.MembershipFee;
@@ -20,6 +21,8 @@ public class MembershipFeeService {
 
     private final MemberService memberService;
 
+    private final NotificationService notificationService;
+
     private final MembershipFeeRepository membershipFeeRepository;
 
     public void createMembershipFee(MembershipFeeRequestDto membershipFeeRequestDto) {
@@ -27,6 +30,18 @@ public class MembershipFeeService {
         MembershipFee membershipFee = MembershipFee.of(membershipFeeRequestDto);
         membershipFee.setApplicant(member);
         membershipFeeRepository.save(membershipFee);
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(memberService.getMemberById("superuser").getId())
+                .content("새로운 회비 사용 요청이 접수되었습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+
+        NotificationRequestDto notificationRequestDto4Member = NotificationRequestDto.builder()
+                .memberId(member.getId())
+                .content("회비 사용을 요청하였습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto4Member);
     }
 
     public PagedResponseDto<MembershipFeeResponseDto> getMembershipFees(Pageable pageable) {
