@@ -13,7 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.type.dto.GroupMemberDto;
+import page.clab.api.type.dto.GroupMemberResponseDto;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.GroupMemberStatus;
 import page.clab.api.util.ModelMapperUtil;
@@ -44,8 +44,8 @@ public class GroupMember {
     @Enumerated(EnumType.STRING)
     private GroupMemberStatus status;
 
-    public static GroupMember of(GroupMemberDto groupMemberDto) {
-        return ModelMapperUtil.getModelMapper().map(groupMemberDto, GroupMember.class);
+    public static GroupMember of(GroupMemberResponseDto groupMemberResponseDto) {
+        return ModelMapperUtil.getModelMapper().map(groupMemberResponseDto, GroupMember.class);
     }
 
     public static GroupMember of(Member member, ActivityGroup activityGroup) {
