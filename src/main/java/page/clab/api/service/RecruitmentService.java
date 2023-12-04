@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.RecruitmentRepository;
+import page.clab.api.type.dto.MemberResponseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.RecruitmentRequestDto;
 import page.clab.api.type.dto.RecruitmentResponseDto;
 import page.clab.api.type.entity.Recruitment;
@@ -19,12 +21,23 @@ public class RecruitmentService {
 
     private final MemberService memberService;
 
+    private final NotificationService notificationService;
+
     private final RecruitmentRepository recruitmentRepository;
 
     public void createRecruitment(RecruitmentRequestDto recruitmentRequestDto) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         Recruitment recruitment = Recruitment.of(recruitmentRequestDto);
         recruitmentRepository.save(recruitment);
+
+        List<MemberResponseDto> members = memberService.getMembers();
+        for (MemberResponseDto memberResponseDto : members) {
+            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                    .memberId(memberResponseDto.getId())
+                    .content("새로운 모집 공고가 등록되었습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDto);
+        }
     }
 
     public List<RecruitmentResponseDto> getRecentRecruitments() {
