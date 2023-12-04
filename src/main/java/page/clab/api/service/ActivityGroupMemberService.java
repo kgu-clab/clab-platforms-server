@@ -9,9 +9,10 @@ import page.clab.api.exception.NotFoundException;
 import page.clab.api.repository.ActivityGroupRepository;
 import page.clab.api.repository.GroupMemberRepository;
 import page.clab.api.repository.GroupScheduleRepository;
-import page.clab.api.type.dto.ActivityGroupDetailsResponseDto;
+import page.clab.api.type.dto.ActivityGroupProjectResponseDto;
 import page.clab.api.type.dto.ActivityGroupResponseDto;
-import page.clab.api.type.dto.GroupMemberDto;
+import page.clab.api.type.dto.ActivityGroupStudyResponseDto;
+import page.clab.api.type.dto.GroupMemberResponseDto;
 import page.clab.api.type.dto.GroupScheduleDto;
 import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
@@ -45,14 +46,36 @@ public class ActivityGroupMemberService {
 
     private final GroupMemberRepository groupMemberRepository;
 
-    public PagedResponseDto<ActivityGroupResponseDto> getActivityGroups(ActivityGroupCategory category, Pageable pageable) {
+    public PagedResponseDto<ActivityGroupResponseDto> getActivityGroups(Pageable pageable) {
+        Page<ActivityGroup> activityGroupList = activityGroupRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
+    }
+
+    public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByCategory(ActivityGroupCategory category, Pageable pageable) {
         Page<ActivityGroup> activityGroupList = getActivityGroupByCategory(category, pageable);
         return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
     }
 
-    public ActivityGroupDetailsResponseDto getActivityGroup(Long activityGroupId) {
-    ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        return ActivityGroupDetailsResponseDto.of(activityGroup);
+    public ActivityGroupStudyResponseDto getActivityGroupStudy(Long activityGroupId) {
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        if (!activityGroup.getCategory().equals(ActivityGroupCategory.STUDY)){
+            throw new IllegalStateException("해당 활동은 스터디 활동이 아닙니다.");
+        }
+        List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
+        ActivityGroupStudyResponseDto activityGroupStudyResponseDto = ActivityGroupStudyResponseDto.of(activityGroup);
+        activityGroupStudyResponseDto.setGroupMembers(GroupMemberResponseDto.of(groupMembers));
+        return activityGroupStudyResponseDto;
+    }
+
+    public ActivityGroupProjectResponseDto getActivityGroupProject(Long activityGroupId) {
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        if (!activityGroup.getCategory().equals(ActivityGroupCategory.PROJECT)){
+            throw new IllegalStateException("해당 활동은 프로젝트 활동이 아닙니다.");
+        }
+        List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
+        ActivityGroupProjectResponseDto activityGroupProjectResponseDto = ActivityGroupProjectResponseDto.of(activityGroup);
+        activityGroupProjectResponseDto.setGroupMembers(GroupMemberResponseDto.of(groupMembers));
+        return activityGroupProjectResponseDto;
     }
 
     public PagedResponseDto<GroupScheduleDto> getGroupSchedules(Long activityGroupId, Pageable pageable) {
@@ -60,19 +83,20 @@ public class ActivityGroupMemberService {
         return new PagedResponseDto<>(groupSchedules.map(GroupScheduleDto::of));
     }
 
-    public PagedResponseDto<GroupMemberDto> getActivityGroupMembers(Long activityGroupId, Pageable pageable) {
+    public PagedResponseDto<GroupMemberResponseDto> getActivityGroupMembers(Long activityGroupId, Pageable pageable) {
         Page<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId, pageable);
-        return new PagedResponseDto<>(groupMembers.map(GroupMemberDto::of));
+        return new PagedResponseDto<>(groupMembers.map(GroupMemberResponseDto::of));
     }
 
     @Transactional
     public Long applyActivityGroup(Long activityGroupId) throws MessagingException {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroup.getStatus().equals(ActivityGroupStatus.ACTIVE)){
+        if (!activityGroup.getStatus().equals(ActivityGroupStatus.PROGRESSING)){
             throw new IllegalStateException("해당 활동은 진행중인 활동이 아닙니다.");
         }
         GroupMember groupMember = GroupMember.of(member, activityGroup);
+        groupMember.setRole(ActivityGroupRole.MEMBER);
         groupMember.setStatus(GroupMemberStatus.IN_PROGRESS);
         groupMemberRepository.save(groupMember);
         GroupMember groupLeader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);

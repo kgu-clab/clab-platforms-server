@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,8 +46,9 @@ public class ApplicationController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        applicationService.createApplication(applicationRequestDto);
+        String id = applicationService.createApplication(applicationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -93,12 +95,13 @@ public class ApplicationController {
 
     @Operation(summary = "[A] 가입 신청 승인/취소", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "승인/취소 상태가 반전됨")
-    @PostMapping("/{applicationId}")
+    @PatchMapping("/{applicationId}")
     public ResponseModel approveApplication(
             @PathVariable String applicationId
     ) throws PermissionDeniedException {
-        applicationService.approveApplication(applicationId);
+        String id = applicationService.approveApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -131,8 +134,9 @@ public class ApplicationController {
     public ResponseModel deleteApplication(
             @PathVariable String applicationId
     ) throws PermissionDeniedException {
-        applicationService.deleteApplication(applicationId);
+        String id = applicationService.deleteApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

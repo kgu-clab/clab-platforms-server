@@ -28,17 +28,18 @@ public class DonationService {
     private final DonationRepository donationRepository;
 
     @Transactional
-    public void createDonation(DonationRequestDto donationRequestDto) {
+    public Long createDonation(DonationRequestDto donationRequestDto) {
         Member member = memberService.getCurrentMember();
         Donation donation = Donation.of(donationRequestDto);
         donation.setDonor(member);
-        donationRepository.save(donation);
+        Long id = donationRepository.save(donation).getId();
 
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(memberService.getMemberById("superuser").getId())
                 .content("새로운 후원이 등록되었습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
+        return id;
     }
 
     public PagedResponseDto<DonationResponseDto> getDonations(Pageable pageable) {
@@ -66,7 +67,7 @@ public class DonationService {
         return new PagedResponseDto<>(donations.map(DonationResponseDto::of));
     }
 
-    public void updateDonation(Long donationId, DonationRequestDto donationRequestDto) throws PermissionDeniedException {
+    public Long updateDonation(Long donationId, DonationRequestDto donationRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Donation donation = getDonationByIdOrThrow(donationId);
         if (!(donation.getDonor().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
@@ -76,16 +77,17 @@ public class DonationService {
         updatedDonation.setDonor(donation.getDonor());
         updatedDonation.setId(donation.getId());
         updatedDonation.setCreatedAt(donation.getCreatedAt());
-        donationRepository.save(updatedDonation);
+        return donationRepository.save(updatedDonation).getId();
     }
 
-    public void deleteDonation(Long donationId) throws PermissionDeniedException {
+    public Long deleteDonation(Long donationId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Donation donation = getDonationByIdOrThrow(donationId);
         if (!(donation.getDonor().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("해당 후원 정보를 삭제할 권한이 없습니다.");
         }
         donationRepository.deleteById(donationId);
+        return donation.getId();
     }
 
     private Donation getDonationByIdOrThrow(Long donationId) {

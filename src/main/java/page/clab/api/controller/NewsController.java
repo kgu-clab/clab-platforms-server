@@ -44,8 +44,9 @@ public class NewsController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        newsService.createNews(newsRequestDto);
+        Long id = newsService.createNews(newsRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -99,8 +100,9 @@ public class NewsController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        newsService.updateNews(newsId, newsRequestDto);
+        Long id = newsService.updateNews(newsId, newsRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -109,8 +111,9 @@ public class NewsController {
     public ResponseModel deleteNews(
             @PathVariable Long newsId
     ) throws PermissionDeniedException {
-        newsService.deleteNews(newsId);
+        Long id = newsService.deleteNews(newsId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

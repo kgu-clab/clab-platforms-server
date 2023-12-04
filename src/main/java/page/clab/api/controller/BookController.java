@@ -43,8 +43,9 @@ public class BookController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        bookService.createBook(bookRequestDto);
+        Long id = bookService.createBook(bookRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -86,8 +87,9 @@ public class BookController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        bookService.updateBookInfo(bookId, bookRequestDto);
+        Long id = bookService.updateBookInfo(bookId, bookRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -96,8 +98,9 @@ public class BookController {
     public ResponseModel deleteBook(
             @PathVariable("bookId") Long bookId
     ) throws PermissionDeniedException {
-        bookService.deleteBook(bookId);
+        Long id = bookService.deleteBook(bookId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

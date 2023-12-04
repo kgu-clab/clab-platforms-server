@@ -24,20 +24,21 @@ public class ExecutivesService {
 
     private final ExecutivesRepository executivesRepository;
 
-    public void createExecutives(ExecutivesRequestDto executivesRequestDto) throws PermissionDeniedException {
+    public Long createExecutives(ExecutivesRequestDto executivesRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("운영진을 등록할 권한이 없습니다.");
         }
         Member executivesMember = memberService.getMemberByIdOrThrow(executivesRequestDto.getMemberId());
         Executives executives = Executives.of(executivesRequestDto);
-        executivesRepository.save(executives);
+        Long id = executivesRepository.save(executives).getId();
 
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(executivesMember.getId())
                 .content("새로운 운영진으로 등록되었습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
+        return id;
     }
 
     public PagedResponseDto<ExecutivesResponseDto> getExecutives(Pageable pageable) {
@@ -50,13 +51,14 @@ public class ExecutivesService {
         return new PagedResponseDto<>(executives.map(ExecutivesResponseDto::of));
     }
 
-    public void deleteExecutives(Long executivesId) throws PermissionDeniedException {
+    public Long deleteExecutives(Long executivesId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("운영진을 목록에서 삭제할 권한이 없습니다.");
         }
         Executives executives = getExecutivesByIdOrThrow(executivesId);
         executivesRepository.delete(executives);
+        return executives.getId();
     }
 
     private Executives getExecutivesByIdOrThrow(Long executivesId) {
