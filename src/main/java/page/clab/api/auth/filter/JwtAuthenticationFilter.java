@@ -33,17 +33,17 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         if (blacklistIpRepository.existsByIpAddress(clientIpAddress)) {
             throw new SecurityException("[" + clientIpAddress + "] 서비스 이용 불가 IP입니다.");
         }
-        String accessToken = jwtTokenProvider.resolveToken((HttpServletRequest) request);
-        if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
-            RedisToken redisToken = redisTokenService.getRedisToken(accessToken);
+        String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            RedisToken redisToken = (jwtTokenProvider.isRefreshToken(token)) ? redisTokenService.getRedisTokenByRefreshToken(token) : redisTokenService.getRedisTokenByAccessToken(token);
             if (redisToken == null) {
                 throw new SecurityException("존재하지 않는 토큰입니다.");
             }
             if (!redisToken.getIp().equals(clientIpAddress)) {
-                redisTokenService.deleteRedisTokenByAccessToken(accessToken);
+                redisTokenService.deleteRedisTokenByAccessToken(token);
                 throw new SecurityException("[" + clientIpAddress + "] 토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
             }
-            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+            Authentication authentication = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         chain.doFilter(request, response);
