@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,10 +9,13 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.CommentRepository;
 import page.clab.api.type.dto.CommentRequestDto;
 import page.clab.api.type.dto.CommentResponseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Board;
 import page.clab.api.type.entity.Comment;
 import page.clab.api.type.entity.Member;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,8 @@ public class CommentService {
 
     private final MemberService memberService;
 
+    private final NotificationService notificationService;
+
     public void createComment(Long boardId, CommentRequestDto commentRequestDto) {
         Member member = memberService.getCurrentMember();
         Board board = boardService.getBoardByIdOrThrow(boardId);
@@ -33,6 +37,12 @@ public class CommentService {
         comment.setWriter(member);
         comment.setCreatedAt(LocalDateTime.now());
         commentRepository.save(comment);
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(board.getMember().getId())
+                .content("댓글이 등록되었습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
     }
 
     public PagedResponseDto<CommentResponseDto> getComments(Long boardId, Pageable pageable) {
