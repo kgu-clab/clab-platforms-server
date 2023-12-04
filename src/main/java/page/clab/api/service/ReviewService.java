@@ -11,12 +11,15 @@ import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.ReviewRepository;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ReviewRequestDto;
 import page.clab.api.type.dto.ReviewResponseDto;
 import page.clab.api.type.entity.ActivityGroup;
+import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.Review;
+import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
 
 @Service
@@ -27,6 +30,8 @@ public class ReviewService {
     private final MemberService memberService;
 
     private final ActivityGroupMemberService activityGroupMemberService;
+
+    private final NotificationService notificationService;
 
     private final ReviewRepository reviewRepository;
 
@@ -45,6 +50,13 @@ public class ReviewService {
         review.setIsPublic(false);
         review.setMember(member);
         reviewRepository.save(review);
+
+        GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(groupLeader.getMember().getId())
+                .content("새로운 리뷰가 등록되었습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
   }
 
     public PagedResponseDto<ReviewResponseDto> getReviews(Pageable pageable) {
