@@ -28,6 +28,7 @@ public class RedisToken {
     @Indexed
     private String accessToken;
 
+    @Indexed
     private String refreshToken;
 
 }

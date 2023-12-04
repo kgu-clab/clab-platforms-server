@@ -15,7 +15,6 @@ import page.clab.api.auth.jwt.JwtTokenProvider;
 import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.MemberLockedException;
 import page.clab.api.type.dto.LoginRequestDto;
-import page.clab.api.type.dto.RefreshTokenDto;
 import page.clab.api.type.dto.TokenInfo;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.RedisToken;
@@ -87,11 +86,11 @@ public class LoginService {
     }
 
     @Transactional
-    public TokenInfo reissue(HttpServletRequest request, RefreshTokenDto refreshTokenDto) {
+    public TokenInfo reissue(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
-        RedisToken redisToken = redisTokenService.getRedisToken(token);
-        if (!redisToken.getRefreshToken().equals(refreshTokenDto.getRefreshToken())) {
-            redisTokenService.deleteRedisTokenByAccessToken(token);
+        RedisToken redisToken = redisTokenService.getRedisTokenByRefreshToken(token);
+        if (!redisToken.getIp().equals(request.getRemoteAddr())) {
+            redisTokenService.deleteRedisTokenByAccessToken(redisToken.getAccessToken());
             throw new SecurityException("올바르지 않은 토큰 재발급 시도가 감지되어 토큰을 삭제하였습니다.");
         }
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());

@@ -16,7 +16,6 @@ import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.MemberLockedException;
 import page.clab.api.service.LoginService;
 import page.clab.api.type.dto.LoginRequestDto;
-import page.clab.api.type.dto.RefreshTokenDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.TokenInfo;
 
@@ -49,10 +48,9 @@ public class LoginController {
     @Operation(summary = "유저 토큰 재발급", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/reissue")
     public ResponseModel reissue(
-            HttpServletRequest httpServletRequest,
-            @RequestBody RefreshTokenDto refreshTokenDto
+            HttpServletRequest httpServletRequest
     ) {
-        TokenInfo tokenInfo = loginService.reissue(httpServletRequest, refreshTokenDto);
+        TokenInfo tokenInfo = loginService.reissue(httpServletRequest);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(tokenInfo);
         return responseModel;
