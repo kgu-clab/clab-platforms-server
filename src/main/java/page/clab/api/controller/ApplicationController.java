@@ -38,7 +38,6 @@ public class ApplicationController {
     private final ApplicationService applicationService;
 
     @Operation(summary = "가입 신청", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @Secured({"ROLE_ANONYMOUS", "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createApplication (
             @Valid @RequestBody ApplicationRequestDto applicationRequestDto,
@@ -125,7 +124,6 @@ public class ApplicationController {
     }
 
     @Operation(summary = "합격 여부 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @Secured({"ROLE_ANONYMOUS", "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{applicationId}")
     public ResponseModel getApplicationPass(
             @PathVariable String applicationId

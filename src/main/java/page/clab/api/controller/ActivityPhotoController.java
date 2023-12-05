@@ -51,7 +51,6 @@ public class ActivityPhotoController {
     }
 
     @Operation(summary = "활동 사진 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @Secured({"ROLE_ANONYMOUS", "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getActivityPhotos(
             @RequestParam(defaultValue = "0") int page,
@@ -65,7 +64,6 @@ public class ActivityPhotoController {
     }
 
     @Operation(summary = "공개된 활동 사진 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @Secured({"ROLE_ANONYMOUS", "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/public")
     public ResponseModel getPublicActivityPhotos(
             @RequestParam(defaultValue = "0") int page,
