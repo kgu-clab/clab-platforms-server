@@ -34,22 +34,19 @@ public class ApplicationService {
         return applicationRepository.save(application).getStudentId();
     }
 
-    public PagedResponseDto<ApplicationResponseDto> getApplications(Pageable pageable) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public PagedResponseDto<ApplicationResponseDto> getApplications(Pageable pageable) {
         Page<Application> applications = applicationRepository.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(applications.map(ApplicationResponseDto::of));
     }
 
-    public PagedResponseDto<ApplicationResponseDto> getApplicationsBetweenDates(LocalDate startDate, LocalDate endDate, Pageable pageable) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public PagedResponseDto<ApplicationResponseDto> getApplicationsBetweenDates(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
         Page<Application> applicationsBetweenDates = getApplicationByUpdateTimeBetween(pageable, startDateTime, endDateTime);
         return new PagedResponseDto<>(applicationsBetweenDates.map(ApplicationResponseDto::of));
     }
 
-    public ApplicationResponseDto searchApplication(String applicationId) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public ApplicationResponseDto searchApplication(String applicationId) {
         Application application = null;
         if (applicationId != null) {
             application = getApplicationByIdOrThrow(applicationId);
@@ -58,8 +55,7 @@ public class ApplicationService {
     }
 
     @Transactional
-    public String approveApplication(String applicationId) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public String approveApplication(String applicationId) {
         Application application = getApplicationByIdOrThrow(applicationId);
         if (application.getIsPass()) {
             application.setIsPass(false);
@@ -73,8 +69,7 @@ public class ApplicationService {
     }
 
     @Transactional
-    public PagedResponseDto<ApplicationResponseDto> getApprovedApplications(Pageable pageable) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public PagedResponseDto<ApplicationResponseDto> getApprovedApplications(Pageable pageable) {
         Page<Application> applications = getApplicationByIsPass(pageable);
         if (applications.isEmpty()) {
             throw new NotFoundException("승인된 신청자가 없습니다.");
@@ -93,8 +88,7 @@ public class ApplicationService {
         return ApplicationPassResponseDto.of(application);
     }
 
-    public String deleteApplication(String applicationId) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public String deleteApplication(String applicationId) {
         Application application = getApplicationByIdOrThrow(applicationId);
         applicationRepository.delete(application);
         return application.getStudentId();

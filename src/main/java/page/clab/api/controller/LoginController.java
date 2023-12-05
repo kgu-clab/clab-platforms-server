@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,8 +30,9 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    @Operation(summary = "유저 로그인", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
+    @Operation(summary = "유저 로그인", description = "ROLE_ANONYMOUS 권한이 필요함<br>" +
             "경기대학교 ID, PW로 로그인")
+    @Secured({"ROLE_ANONYMOUS"})
     @PostMapping("")
     public ResponseModel login(
             HttpServletRequest httpServletRequest,
@@ -46,8 +48,9 @@ public class LoginController {
         return responseModel;
     }
 
-    @Operation(summary = "2FA 인증", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Operation(summary = "2FA 인증", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("/authenticator")
+    @Secured({"ROLE_ANONYMOUS"})
     public ResponseModel authenticator(
           HttpServletRequest httpServletRequest,
           @Valid @RequestBody TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto,
@@ -62,8 +65,9 @@ public class LoginController {
         return responseModel;
     }
 
-    @Operation(summary = "유저 토큰 재발급", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Operation(summary = "[U] 유저 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/reissue")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel reissue(
             HttpServletRequest httpServletRequest
     ) {

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.MemberLockedException;
 import page.clab.api.exception.NotFoundException;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.LoginFailInfoRepository;
 import page.clab.api.type.entity.LoginFailInfo;
 import page.clab.api.type.entity.Member;
@@ -35,8 +34,7 @@ public class LoginFailInfoService {
         return loginFailInfo;
     }
 
-    public Long banMemberById(String memberId) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long banMemberById(String memberId) {
         LoginFailInfo loginFailInfo = getLoginFailInfoByMemberIdOrThrow(memberId);
         if (loginFailInfo == null) {
             return null;
@@ -46,8 +44,7 @@ public class LoginFailInfoService {
         return loginFailInfoRepository.save(loginFailInfo).getId();
     }
 
-    public Long unbanMemberById(String memberId) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long unbanMemberById(String memberId) {
         LoginFailInfo loginFailInfo = getLoginFailInfoByMemberIdOrThrow(memberId);
         if (loginFailInfo != null) {
             loginFailInfo.setIsLock(false);

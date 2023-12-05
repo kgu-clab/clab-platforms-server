@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.ActivityPhotoService;
 import page.clab.api.type.dto.ActivityPhotoRequestDto;
 import page.clab.api.type.dto.ActivityPhotoResponseDto;
@@ -35,11 +35,12 @@ public class ActivityPhotoController {
     private final ActivityPhotoService activityPhotoService;
 
     @Operation(summary = "[A] 활동 사진 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createActivityPhoto(
             @Valid @RequestBody ActivityPhotoRequestDto activityPhotoRequestDto,
             BindingResult result
-    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+    ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
@@ -50,6 +51,7 @@ public class ActivityPhotoController {
     }
 
     @Operation(summary = "활동 사진 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Secured({"ROLE_ANONYMOUS", "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getActivityPhotos(
             @RequestParam(defaultValue = "0") int page,
@@ -63,6 +65,7 @@ public class ActivityPhotoController {
     }
 
     @Operation(summary = "공개된 활동 사진 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Secured({"ROLE_ANONYMOUS", "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/public")
     public ResponseModel getPublicActivityPhotos(
             @RequestParam(defaultValue = "0") int page,
@@ -76,10 +79,11 @@ public class ActivityPhotoController {
     }
 
     @Operation(summary = "활동 사진 고정/해제", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{activityPhotoId}")
     public ResponseModel updateActivityPhoto(
             @PathVariable Long activityPhotoId
-    ) throws PermissionDeniedException {
+    ) {
         Long id = activityPhotoService.updateActivityPhoto(activityPhotoId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -87,10 +91,11 @@ public class ActivityPhotoController {
     }
 
     @Operation(summary = "[A] 활동 사진 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{activityPhotoId}")
     public ResponseModel deleteActivityPhoto(
             @PathVariable Long activityPhotoId
-    ) throws PermissionDeniedException {
+    ) {
         Long id = activityPhotoService.deleteActivityPhoto(activityPhotoId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);

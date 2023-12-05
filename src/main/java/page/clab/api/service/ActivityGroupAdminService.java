@@ -50,7 +50,6 @@ public class ActivityGroupAdminService {
     }
 
     public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus, Pageable pageable) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
         Page<ActivityGroup> activityGroupList = getActivityGroupByStatus(activityGroupStatus, pageable);
         return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
     }
@@ -65,16 +64,14 @@ public class ActivityGroupAdminService {
         return activityGroupRepository.save(activityGroup).getId();
     }
 
-    public Long manageActivityGroup(Long activityGroupId, ActivityGroupStatus activityGroupStatus) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long manageActivityGroup(Long activityGroupId, ActivityGroupStatus activityGroupStatus) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroup.setStatus(activityGroupStatus);
         return activityGroupRepository.save(activityGroup).getId();
     }
 
     @Transactional
-    public Long deleteActivityGroup(Long activityGroupId) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long deleteActivityGroup(Long activityGroupId) {
         List<GroupMember> groupMemberList = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
         List<GroupSchedule> groupScheduleList = groupScheduleRepository.findAllByActivityGroupIdOrderByIdDesc(activityGroupId);
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
@@ -93,7 +90,7 @@ public class ActivityGroupAdminService {
 
     @Transactional
     public Long addSchedule(Long activityGroupId, List<GroupScheduleDto> groupScheduleDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+        checkMemberGroupLeaderRole();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         groupScheduleDto.stream()
                 .map(scheduleDto -> GroupSchedule.of(activityGroup, scheduleDto))

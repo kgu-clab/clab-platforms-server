@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.LoginAttemptLogRepository;
 import page.clab.api.type.dto.GeoIpInfo;
 import page.clab.api.type.dto.LoginAttemptLogResponseDto;
@@ -37,11 +36,7 @@ public class LoginAttemptLogService {
         loginAttemptLogRepository.save(loginAttemptLog);
     }
 
-    public PagedResponseDto<LoginAttemptLogResponseDto> getLoginAttemptLogs(String memberId, Pageable pageable) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(currentMember)) {
-            throw new PermissionDeniedException("관리자만 조회할 수 있습니다.");
-        }
+    public PagedResponseDto<LoginAttemptLogResponseDto> getLoginAttemptLogs(String memberId, Pageable pageable) {
         Member member = memberService.getMemberByIdOrThrow(memberId);
         Page<LoginAttemptLog> loginAttemptLogs = getLoginAttemptByMember(pageable, member);
         return new PagedResponseDto<>(loginAttemptLogs.map(LoginAttemptLogResponseDto::of));

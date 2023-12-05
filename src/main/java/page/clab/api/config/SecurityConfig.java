@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -27,6 +28,7 @@ import page.clab.api.service.RedisTokenService;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -88,7 +90,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST, "/applications").permitAll()
                 .antMatchers("/applications/filter", "/applications/pass", "/applications/search").hasAnyAuthority("ADMIN", "SUPER")
                 .antMatchers(HttpMethod.GET, PERMIT_ALL_API_ENDPOINTS).permitAll()
-                .antMatchers("/**").hasAnyAuthority("USER", "ADMIN", "SUPER")
+                .anyRequest().authenticated()
                 .and()
                 .httpBasic()
                 .and()
