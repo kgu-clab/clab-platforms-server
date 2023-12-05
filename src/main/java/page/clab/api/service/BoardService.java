@@ -1,7 +1,5 @@
 package page.clab.api.service;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -13,15 +11,21 @@ import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.BoardRepository;
 import page.clab.api.type.dto.BoardRequestDto;
 import page.clab.api.type.dto.BoardResonseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Board;
 import page.clab.api.type.entity.Member;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
 
     private final MemberService memberService;
+
+    private final NotificationService notificationService;
 
     private final BoardRepository boardRepository;
 
@@ -30,6 +34,14 @@ public class BoardService {
         Board board = Board.of(boardRequestDto);
         board.setMember(member);
         boardRepository.save(board);
+
+        if (memberService.isMemberAdminRole(member)){
+            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                    .memberId(member.getId())
+                    .content("관리자로부터 " + boardRequestDto.getTitle() + " 게시글이 등록되었습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDto);
+        }
     }
 
     public PagedResponseDto<BoardResonseDto> getBoards(Pageable pageable) {

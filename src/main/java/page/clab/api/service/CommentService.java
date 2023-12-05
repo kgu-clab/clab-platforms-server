@@ -40,7 +40,7 @@ public class CommentService {
 
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(board.getMember().getId())
-                .content("댓글이 등록되었습니다.")
+                .content(member.getName() + "님이 " + board.getTitle() + " 게시글에 댓글을 남겼습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
     }
@@ -74,6 +74,14 @@ public class CommentService {
             throw new PermissionDeniedException("댓글 작성자만 삭제할 수 있습니다.");
         }
         commentRepository.delete(comment);
+
+        if (memberService.isMemberAdminRole(member)) {
+            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                    .memberId(comment.getWriter().getId())
+                    .content("관리자가 댓글을 삭제하였습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDto);
+        }
     }
 
     public Comment getCommentByIdOrThrow(Long id){

@@ -14,8 +14,10 @@ import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Donation;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.Role;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,11 +36,14 @@ public class DonationService {
         donation.setDonor(member);
         donationRepository.save(donation);
 
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(memberService.getMemberById("superuser").getId())
-                .content("새로운 후원이 등록되었습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
+        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
+        for (Member superMember : superMembers) {
+            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                    .memberId(superMember.getId())
+                    .content(member.getName() + "님이 후원을 신청하였습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDto);
+        }
     }
 
     public PagedResponseDto<DonationResponseDto> getDonations(Pageable pageable) {

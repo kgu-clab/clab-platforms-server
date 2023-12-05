@@ -41,7 +41,7 @@ public class NewsService {
         for (MemberResponseDto memberResponseDto : members) {
             NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                     .memberId(memberResponseDto.getId())
-                    .content("새로운 뉴스가 등록되었습니다.")
+                    .content(newsRequestDto.getTitle() + " 뉴스가 등록되었습니다.")
                     .build();
             notificationService.createNotification(notificationRequestDto);
         }

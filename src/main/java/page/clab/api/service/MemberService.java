@@ -1,12 +1,5 @@
 package page.clab.api.service;
 
-import java.io.File;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -24,15 +17,26 @@ import page.clab.api.type.dto.CloudUsageInfo;
 import page.clab.api.type.dto.FileInfo;
 import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.Role;
 import page.clab.api.util.FileSystemUtil;
 
+import java.io.File;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class MemberService {
+
+    private final NotificationService notificationService;
 
     private final MemberRepository memberRepository;
 
@@ -114,6 +118,12 @@ public class MemberService {
         updatedMember.setLastLoginTime(member.getLastLoginTime());
         updatedMember.setLoanSuspensionDate(member.getLoanSuspensionDate());
         memberRepository.save(updatedMember);
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(member.getId())
+                .content("최근에 회원 정보가 수정되었습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
     }
 
     public void updateMemberStatusByAdmin(String memberId, MemberStatus memberStatus) throws PermissionDeniedException {
@@ -121,6 +131,12 @@ public class MemberService {
         Member member = getMemberByIdOrThrow(memberId);
         member.setMemberStatus(memberStatus);
         memberRepository.save(member);
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(member.getId())
+                .content("관리자가 " + member.getName() + "님의 회원 상태를 " + memberStatus + "로 변경하였습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
     }
 
     public PagedResponseDto<CloudUsageInfo> getAllCloudUsages(Pageable pageable) throws PermissionDeniedException {
@@ -217,6 +233,10 @@ public class MemberService {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
+    }
+
+    public List<Member> getMembersByRole(Role role) {
+        return memberRepository.findAllByRole(role);
     }
 
 }

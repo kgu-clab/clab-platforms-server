@@ -14,10 +14,13 @@ import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Application;
+import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.Role;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,11 +46,14 @@ public class ApplicationService {
                 .build();
         notificationService.createNotification(notificationRequestDto);
 
-        NotificationRequestDto notificationRequestDtoForAdmin = NotificationRequestDto.builder()
-                .memberId(memberService.getMemberById("superuser").getId())
-                .content("동아리 가입 신청이 접수되었습니다. 승인해주세요.")
-                .build();
-        notificationService.createNotification(notificationRequestDtoForAdmin);
+        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
+        for (Member superMember : superMembers) {
+            NotificationRequestDto notificationRequestDtoForSuper = NotificationRequestDto.builder()
+                    .memberId(superMember.getId())
+                    .content(appRequestDto.getName() + "님dl 동아리 가입을 신청하였습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDtoForSuper);
+        }
     }
 
     public PagedResponseDto<ApplicationResponseDto> getApplications(Pageable pageable) throws PermissionDeniedException {

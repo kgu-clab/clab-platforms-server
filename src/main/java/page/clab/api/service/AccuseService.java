@@ -16,9 +16,11 @@ import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Accuse;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.AccuseStatus;
+import page.clab.api.type.etc.Role;
 import page.clab.api.type.etc.TargetType;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -68,11 +70,14 @@ public class AccuseService {
                 .build();
         notificationService.createNotification(notificationRequestDto);
 
-        NotificationRequestDto notificationRequestDtoForAdmin = NotificationRequestDto.builder()
-                .content("신고가 접수되었습니다. 확인해주세요.")
-                .memberId(memberService.getMemberById("superuser").getId())
-                .build();
-        notificationService.createNotification(notificationRequestDtoForAdmin);
+        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
+        for (Member superMember : superMembers) {
+            NotificationRequestDto notificationRequestDtoForSuper = NotificationRequestDto.builder()
+                    .content(member.getName() + "님이 신고를 접수하였습니다. 확인해주세요.")
+                    .memberId(superMember.getId())
+                    .build();
+            notificationService.createNotification(notificationRequestDtoForSuper);
+        }
     }
 
     public PagedResponseDto<AccuseResponseDto> getAccuses(Pageable pageable) throws PermissionDeniedException {
@@ -115,7 +120,7 @@ public class AccuseService {
         accuseRepository.save(accuse);
 
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .content("신고하신 내용에 대한 처리 결과가 도착했습니다.")
+                .content("신고 상태가 " + accuseStatus + "로 변경되었습니다.")
                 .memberId(accuse.getMember().getId())
                 .build();
         notificationService.createNotification(notificationRequestDto);

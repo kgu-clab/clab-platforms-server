@@ -59,7 +59,7 @@ public class ActivityGroupBoardService {
                 if (!Objects.equals(gMember.getMember().getId(), member.getId())) {
                     NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                             .memberId(gMember.getMember().getId())
-                            .content("활동 그룹 팀장이 게시글을 등록하였습니다.")
+                            .content("활동 그룹 팀장이 " + activityGroupBoardRequestDto.getTitle() +" 게시글을 등록하였습니다.")
                             .build();
                     notificationService.createNotification(notificationRequestDto);
                 }
@@ -68,7 +68,7 @@ public class ActivityGroupBoardService {
             GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
             NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                     .memberId(groupLeader.getMember().getId())
-                    .content("활동 그룹 팀원이 게시글을 등록하였습니다.")
+                    .content("활동 그룹 팀원이 " + activityGroupBoardRequestDto.getTitle() + " 게시글을 등록하였습니다.")
                     .build();
             notificationService.createNotification(notificationRequestDto);
         }
