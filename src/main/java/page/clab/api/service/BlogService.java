@@ -35,11 +35,11 @@ public class BlogService {
 
     private final EntityManager entityManager;
 
-    public void createBlog(BlogRequestDto blogRequestDto) {
+    public Long createBlog(BlogRequestDto blogRequestDto) {
         Member member = memberService.getCurrentMember();
         Blog blog = Blog.of(blogRequestDto);
         blog.setMember(member);
-        blogRepository.save(blog);
+        return blogRepository.save(blog).getId();
     }
 
     public PagedResponseDto<BlogResponseDto> getBlogs(Pageable pageable) {
@@ -78,7 +78,7 @@ public class BlogService {
         return new PagedResponseDto<>(blogPage.map(BlogResponseDto::of));
     }
 
-    public void updateBlog(Long blogId, BlogRequestDto blogRequestDto) throws PermissionDeniedException {
+    public Long updateBlog(Long blogId, BlogRequestDto blogRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
         if (!blog.getMember().equals(member)) {
@@ -88,16 +88,17 @@ public class BlogService {
         updatedBlog.setId(blog.getId());
         updatedBlog.setMember(blog.getMember());
         updatedBlog.setCreatedAt(blog.getCreatedAt());
-        blogRepository.save(updatedBlog);
+        return blogRepository.save(updatedBlog).getId();
     }
 
-    public void deleteBlog(Long blogId) throws PermissionDeniedException {
+    public Long deleteBlog(Long blogId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
         if (!(blog.getMember().equals(member) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("해당 게시글을 삭제할 권한이 없습니다.");
         }
         blogRepository.delete(blog);
+        return blog.getId();
     }
 
     private Blog getBlogByIdOrThrow(Long blogId) {

@@ -35,8 +35,9 @@ public class DonationController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        donationService.createDonation(donationRequestDto);
+        Long id = donationService.createDonation(donationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -92,8 +93,9 @@ public class DonationController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        donationService.updateDonation(donationId, donationRequestDto);
+        Long id = donationService.updateDonation(donationId, donationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -102,8 +104,9 @@ public class DonationController {
     public ResponseModel deleteDonation(
             @PathVariable Long donationId
     ) throws PermissionDeniedException {
-        donationService.deleteDonation(donationId);
+        Long id = donationService.deleteDonation(donationId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

@@ -43,8 +43,9 @@ public class ProductController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        productService.createProduct(productRequestDto);
+        Long id = productService.createProduct(productRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -86,8 +87,9 @@ public class ProductController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        productService.updateProduct(productId, productRequestDto);
+        Long id = productService.updateProduct(productId, productRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -96,8 +98,9 @@ public class ProductController {
     public ResponseModel deleteProduct(
             @RequestParam Long productId
     ) throws PermissionDeniedException {
-        productService.deleteProduct(productId);
+        Long id = productService.deleteProduct(productId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.BlacklistIpRepository;
 import page.clab.api.type.dto.PagedResponseDto;
@@ -14,21 +15,20 @@ import page.clab.api.type.entity.BlacklistIp;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class BlacklistService {
+public class BlacklistIpService {
 
     private final BlacklistIpRepository blacklistIpRepository;
 
     private final MemberService memberService;
 
-    public void addBlacklistedIp(String ipAddress) throws PermissionDeniedException {
+    public Long addBlacklistedIp(String ipAddress) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
-        if (!isBlacklistedIp(ipAddress)) {
-            BlacklistIp blacklistIp = BlacklistIp.builder().ipAddress(ipAddress).build();
-            blacklistIpRepository.save(blacklistIp);
-            log.info("IP address {} added to the blacklist", ipAddress);
-        } else {
-            log.info("IP address {} is already blacklisted", ipAddress);
+        BlacklistIp blacklistIp = getBlacklistIpByIpAddress(ipAddress);
+        if (blacklistIp != null) {
+            return blacklistIp.getId();
         }
+        blacklistIp = BlacklistIp.builder().ipAddress(ipAddress).build();
+        return blacklistIpRepository.save(blacklistIp).getId();
     }
 
     public PagedResponseDto<BlacklistIp> getBlacklistedIps(Pageable pageable) throws PermissionDeniedException {
@@ -38,14 +38,11 @@ public class BlacklistService {
     }
 
     @Transactional
-    public void deleteBlacklistedIp(String ipAddress) throws PermissionDeniedException {
+    public Long deleteBlacklistedIp(String ipAddress) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
-        if (isBlacklistedIp(ipAddress)) {
-            blacklistIpRepository.deleteByIpAddress(ipAddress);
-            log.info("IP address {} removed from the blacklist", ipAddress);
-        } else {
-            log.info("IP address {} is not blacklisted", ipAddress);
-        }
+        BlacklistIp blacklistIp = getBlacklistIpByIpAddressOrThrow(ipAddress);
+        blacklistIpRepository.delete(blacklistIp);
+        return blacklistIp.getId();
     }
 
     public void clearBlacklist() throws PermissionDeniedException {
@@ -54,8 +51,14 @@ public class BlacklistService {
         log.info("Blacklist cleared");
     }
 
-    public boolean isBlacklistedIp(String ipAddress) {
-        return blacklistIpRepository.existsByIpAddress(ipAddress);
+    private BlacklistIp getBlacklistIpByIpAddressOrThrow(String ipAddress) {
+        return blacklistIpRepository.findByIpAddress(ipAddress).
+                orElseThrow(() -> new NotFoundException("해당 IP 주소를 찾을 수 없습니다."));
+    }
+
+    private BlacklistIp getBlacklistIpByIpAddress(String ipAddress) {
+        return blacklistIpRepository.findByIpAddress(ipAddress)
+                .orElse(null);
     }
 
 }
