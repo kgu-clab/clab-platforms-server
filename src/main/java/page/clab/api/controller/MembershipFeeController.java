@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,7 @@ public class MembershipFeeController {
     private final MembershipFeeService membershipFeeService;
 
     @Operation(summary = "[U] 회비 신청", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createMembershipFee(
             @Valid @RequestBody MembershipFeeRequestDto MembershipFeeRequestDto,
@@ -42,6 +44,7 @@ public class MembershipFeeController {
     }
 
     @Operation(summary = "[U] 회비 정보 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getMembershipFees(
             @RequestParam(defaultValue = "0") int page,
@@ -56,6 +59,7 @@ public class MembershipFeeController {
 
     @Operation(summary = "[U] 회비 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "카테고리를 기준으로 검색")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel getMembershipFee(
             @RequestParam String category,
@@ -70,6 +74,7 @@ public class MembershipFeeController {
     }
 
     @Operation(summary = "[A] 회비 정보 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{membershipFeeId}")
     public ResponseModel updateMembershipFee(
             @PathVariable Long membershipFeeId,
@@ -86,6 +91,7 @@ public class MembershipFeeController {
     }
 
     @Operation(summary = "[A] 회비 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{membershipFeeId}")
     public ResponseModel deleteMembershipFee(
             @PathVariable Long membershipFeeId

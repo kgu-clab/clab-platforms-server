@@ -5,27 +5,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.ActivityPhotoRepository;
 import page.clab.api.type.dto.ActivityPhotoRequestDto;
 import page.clab.api.type.dto.ActivityPhotoResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.ActivityPhoto;
-import page.clab.api.type.entity.Member;
 
 @Service
 @RequiredArgsConstructor
 public class ActivityPhotoService {
 
-    private final MemberService memberService;
-
     private final ActivityPhotoRepository activityPhotoRepository;
 
-    public Long createActivityPhoto(ActivityPhotoRequestDto activityPhotoRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("활동 사진을 등록할 권한이 없습니다.");
-        }
+    public Long createActivityPhoto(ActivityPhotoRequestDto activityPhotoRequestDto) {
         ActivityPhoto activityPhoto = ActivityPhoto.of(activityPhotoRequestDto);
         return activityPhotoRepository.save(activityPhoto).getId();
     }
@@ -40,21 +32,13 @@ public class ActivityPhotoService {
         return new PagedResponseDto<>(activityPhotos.map(ActivityPhotoResponseDto::of));
     }
 
-    public Long updateActivityPhoto(Long activityPhotoId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("활동 사진을 수정할 권한이 없습니다.");
-        }
+    public Long updateActivityPhoto(Long activityPhotoId) {
         ActivityPhoto activityPhoto = getActivityPhotoByIdOrThrow(activityPhotoId);
         activityPhoto.setIsPublic(!activityPhoto.getIsPublic());
         return activityPhotoRepository.save(activityPhoto).getId();
     }
 
-    public Long deleteActivityPhoto(Long activityPhotoId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("활동 사진을 삭제할 권한이 없습니다.");
-        }
+    public Long deleteActivityPhoto(Long activityPhotoId) {
         ActivityPhoto activityPhoto = getActivityPhotoByIdOrThrow(activityPhotoId);
         activityPhotoRepository.delete(activityPhoto);
         return activityPhoto.getId();

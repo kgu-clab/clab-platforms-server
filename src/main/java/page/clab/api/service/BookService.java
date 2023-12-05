@@ -16,7 +16,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.BookRepository;
 import page.clab.api.type.dto.BookRequestDto;
 import page.clab.api.type.dto.BookResponseDto;
@@ -27,14 +26,11 @@ import page.clab.api.type.entity.Book;
 @RequiredArgsConstructor
 public class BookService {
 
-    private final MemberService memberService;
-
     private final BookRepository bookRepository;
 
     private final EntityManager entityManager;
 
-    public Long createBook(BookRequestDto bookRequestDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long createBook(BookRequestDto bookRequestDto) {
         Book book = Book.of(bookRequestDto);
         return bookRepository.save(book).getId();
     }
@@ -71,8 +67,7 @@ public class BookService {
         return new PagedResponseDto<>(bookPage.map(BookResponseDto::of));
     }
 
-    public Long updateBookInfo(Long bookId, BookRequestDto bookRequestDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long updateBookInfo(Long bookId, BookRequestDto bookRequestDto) {
         Book book = getBookByIdOrThrow(bookId);
         Book updatedBook = Book.of(bookRequestDto);
         updatedBook.setId(book.getId());
@@ -81,8 +76,7 @@ public class BookService {
         return bookRepository.save(updatedBook).getId();
     }
 
-    public Long deleteBook(Long bookId) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long deleteBook(Long bookId) {
         Book book = getBookByIdOrThrow(bookId);
         bookRepository.delete(book);
         return book.getId();

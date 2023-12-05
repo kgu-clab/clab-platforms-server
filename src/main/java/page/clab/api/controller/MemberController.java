@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,11 +38,12 @@ public class MemberController {
     private final MemberService memberService;
 
     @Operation(summary = "[A] 신규 멤버 생성", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createMember(
             @Valid @RequestBody MemberRequestDto memberRequestDto,
             BindingResult result
-    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+    ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
@@ -52,11 +54,12 @@ public class MemberController {
     }
 
     @Operation(summary = "[A] 모든 멤버 정보 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getMembers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
-    ) throws PermissionDeniedException {
+    ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<MemberResponseDto> members = memberService.getMembers(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -65,6 +68,7 @@ public class MemberController {
     }
 
     @Operation(summary = "이달의 생일자 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/birthday")
     public ResponseModel getBirthdaysThisMonth(
             @RequestParam String month,
@@ -80,6 +84,7 @@ public class MemberController {
 
     @Operation(summary = "[A] 멤버 검색", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "멤버 ID, 이름, 상태를 기준으로 검색")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel searchMember(
             @RequestParam(required = false) String memberId,
@@ -87,7 +92,7 @@ public class MemberController {
             @RequestParam(required = false) MemberStatus memberStatus,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
-    ) throws PermissionDeniedException {
+    ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<MemberResponseDto> members = memberService.searchMember(memberId, name, memberStatus, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -95,13 +100,14 @@ public class MemberController {
         return responseModel;
     }
 
-  @Operation(summary = "[U] 멤버 정보 수정", description = "ROLE_USER 이상의 권한이 필요함")
-  @PatchMapping("/{memberId}")
-  public ResponseModel updateMemberInfoByMember(
-      @PathVariable String memberId,
-      @Valid @RequestBody MemberRequestDto memberRequestDto,
-      BindingResult result)
-      throws MethodArgumentNotValidException, PermissionDeniedException {
+    @Operation(summary = "[U] 멤버 정보 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @PatchMapping("/{memberId}")
+    public ResponseModel updateMemberInfoByMember(
+            @PathVariable String memberId,
+            @Valid @RequestBody MemberRequestDto memberRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
@@ -112,11 +118,12 @@ public class MemberController {
     }
 
     @Operation(summary = "[A] 계정 상태 변경", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/status/{memberId}")
     public ResponseModel updateMemberStatusByAdmin(
             @PathVariable String memberId,
             @RequestParam MemberStatus memberStatus
-    ) throws PermissionDeniedException {
+    ) {
         String id = memberService.updateMemberStatusByAdmin(memberId, memberStatus);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -125,11 +132,12 @@ public class MemberController {
 
     @Operation(summary = "[A] 모든 멤버의 클라우드 사용량 조회", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "usage 단위: byte")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/cloud")
     public ResponseModel getAllCloudUsages(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
-    ) throws PermissionDeniedException {
+    ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<CloudUsageInfo> cloudUsageInfos = memberService.getAllCloudUsages(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -139,6 +147,7 @@ public class MemberController {
 
     @Operation(summary = "[U] 멤버의 클라우드 사용량 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "usage 단위: byte")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/cloud/{memberId}")
     public ResponseModel getCloudUsageByMemberId(
             @PathVariable String memberId
@@ -150,6 +159,7 @@ public class MemberController {
     }
 
     @Operation(summary = "[U] 멤버 업로드 파일 리스트 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/files/{memberId}")
     public ResponseModel getMemberUploadedFiles(
             @PathVariable String memberId,
