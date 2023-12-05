@@ -34,7 +34,6 @@ public class ActivityGroupMemberController {
     private final ActivityGroupMemberService activityGroupMemberService;
 
     @Operation(summary = "[U] 활동 전체 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @Secured({"ROLE_ANONYMOUS", "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getActivityGroups(
             @RequestParam(defaultValue = "0") int page,
@@ -48,7 +47,6 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "카테고리별 활동 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @Secured({"ROLE_ANONYMOUS", "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/list")
     public ResponseModel getActivityGroupsByCategory(
             @RequestParam ActivityGroupCategory category,
@@ -63,7 +61,6 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "스터디 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @Secured({"ROLE_ANONYMOUS", "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/study/{activityGroupId}")
     public ResponseModel getActivityGroupStudy(
             @PathVariable Long activityGroupId
@@ -75,7 +72,6 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "프로젝트 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @Secured({"ROLE_ANONYMOUS", "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/project/{activityGroupId}")
     public ResponseModel getActivityGroupProject(
             @PathVariable Long activityGroupId

@@ -49,7 +49,6 @@ public class RecruitmentController {
 
     @Operation(summary = "모집 공고 목록(최근 5건)", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
             "최근 5건의 모집 공고를 조회")
-    @Secured({"ROLE_ANONYMOUS", "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getRecentRecruitments() {
         List<RecruitmentResponseDto> recruitments = recruitmentService.getRecentRecruitments();
