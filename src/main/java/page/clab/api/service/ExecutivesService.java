@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.ExecutivesRepository;
 import page.clab.api.type.dto.ExecutivesRequestDto;
 import page.clab.api.type.dto.ExecutivesResponseDto;
@@ -21,11 +20,7 @@ public class ExecutivesService {
 
     private final ExecutivesRepository executivesRepository;
 
-    public Long createExecutives(ExecutivesRequestDto executivesRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("운영진을 등록할 권한이 없습니다.");
-        }
+    public Long createExecutives(ExecutivesRequestDto executivesRequestDto) {
         Member executivesMember = memberService.getMemberByIdOrThrow(executivesRequestDto.getMemberId());
         Executives executives = Executives.of(executivesRequestDto);
         return executivesRepository.save(executives).getId();
@@ -41,11 +36,7 @@ public class ExecutivesService {
         return new PagedResponseDto<>(executives.map(ExecutivesResponseDto::of));
     }
 
-    public Long deleteExecutives(Long executivesId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("운영진을 목록에서 삭제할 권한이 없습니다.");
-        }
+    public Long deleteExecutives(Long executivesId) {
         Executives executives = getExecutivesByIdOrThrow(executivesId);
         executivesRepository.delete(executives);
         return executives.getId();

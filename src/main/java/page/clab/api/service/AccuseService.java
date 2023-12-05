@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.AccuseRepository;
 import page.clab.api.type.dto.AccuseRequestDto;
@@ -58,20 +57,12 @@ public class AccuseService {
         }
     }
 
-    public PagedResponseDto<AccuseResponseDto> getAccuses(Pageable pageable) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("해당 신고 내역을 수정할 권한이 없습니다.");
-        }
+    public PagedResponseDto<AccuseResponseDto> getAccuses(Pageable pageable) {
         Page<Accuse> accuses = accuseRepository.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(accuses.map(AccuseResponseDto::of));
     }
 
-    public PagedResponseDto<AccuseResponseDto> searchAccuse(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("해당 신고 내역을 수정할 권한이 없습니다.");
-        }
+    public PagedResponseDto<AccuseResponseDto> searchAccuse(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable) {
         Page<Accuse> accuses;
         if (targetType != null && accuseStatus != null) {
             accuses = getAccuseByTargetTypeAndAccuseStatus(targetType, accuseStatus, pageable);
@@ -88,11 +79,7 @@ public class AccuseService {
         return new PagedResponseDto<>(accuses.map(AccuseResponseDto::of));
     }
 
-    public Long updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("해당 신고 내역을 수정할 권한이 없습니다.");
-        }
+    public Long updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) {
         Accuse accuse = getAccuseByIdOrThrow(accuseId);
         accuse.setAccuseStatus(accuseStatus);
         return accuseRepository.save(accuse).getId();

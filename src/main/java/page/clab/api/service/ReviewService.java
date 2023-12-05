@@ -102,11 +102,7 @@ public class ReviewService {
         return review.getId();
     }
 
-    public Long publicReview(Long reviewId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("해당 리뷰를 고정할 권한이 없습니다.");
-        }
+    public Long publicReview(Long reviewId) {
         Review review = getReviewByIdOrThrow(reviewId);
         review.setIsPublic(!review.getIsPublic());
         return reviewRepository.save(review).getId();

@@ -9,7 +9,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.type.dto.EmailDto;
 import page.clab.api.type.dto.MemberResponseDto;
 
@@ -37,8 +36,7 @@ public class EmailService {
         javaMailSender.send(message);
     }
 
-    public void broadcastEmail(EmailDto emailDto, List<MultipartFile> files) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public void broadcastEmail(EmailDto emailDto, List<MultipartFile> files) {
         emailDto.getTo().parallelStream().forEach(member -> {
             try {
                 sendEmail(member, emailDto.getSubject(), emailDto.getContent(), files);
@@ -48,8 +46,7 @@ public class EmailService {
         });
     }
 
-    public void broadcastEmailToAllMember(EmailDto emailDto, List<MultipartFile> files) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public void broadcastEmailToAllMember(EmailDto emailDto, List<MultipartFile> files) {
         List<MemberResponseDto> memberList = memberService.getMembers();
          memberList.parallelStream().forEach(member -> {
              try {

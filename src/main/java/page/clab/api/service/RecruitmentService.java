@@ -1,28 +1,23 @@
 package page.clab.api.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.RecruitmentRepository;
 import page.clab.api.type.dto.RecruitmentRequestDto;
 import page.clab.api.type.dto.RecruitmentResponseDto;
 import page.clab.api.type.entity.Recruitment;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 public class RecruitmentService {
 
-    private final MemberService memberService;
-
     private final RecruitmentRepository recruitmentRepository;
 
-    public Long createRecruitment(RecruitmentRequestDto recruitmentRequestDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long createRecruitment(RecruitmentRequestDto recruitmentRequestDto) {
         Recruitment recruitment = Recruitment.of(recruitmentRequestDto);
         return recruitmentRepository.save(recruitment).getId();
     }
@@ -34,8 +29,7 @@ public class RecruitmentService {
                 .collect(Collectors.toList());
     }
 
-    public Long updateRecruitment(Long recruitmentId, RecruitmentRequestDto recruitmentRequestDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long updateRecruitment(Long recruitmentId, RecruitmentRequestDto recruitmentRequestDto) {
         Recruitment recruitment = getRecruitmentByIdOrThrow(recruitmentId);
         Recruitment updatedRecruitment = Recruitment.of(recruitmentRequestDto);
         updatedRecruitment.setId(recruitment.getId());
@@ -44,8 +38,7 @@ public class RecruitmentService {
         return recruitmentRepository.save(updatedRecruitment).getId();
     }
 
-    public Long deleteRecruitment(Long recruitmentId) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long deleteRecruitment(Long recruitmentId) {
         Recruitment recruitment = getRecruitmentByIdOrThrow(recruitmentId);
         recruitmentRepository.delete(recruitment);
         return recruitment.getId();

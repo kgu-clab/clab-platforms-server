@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.BlacklistIpRepository;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.BlacklistIp;
@@ -19,10 +18,7 @@ public class BlacklistIpService {
 
     private final BlacklistIpRepository blacklistIpRepository;
 
-    private final MemberService memberService;
-
-    public Long addBlacklistedIp(String ipAddress) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long addBlacklistedIp(String ipAddress) {
         BlacklistIp blacklistIp = getBlacklistIpByIpAddress(ipAddress);
         if (blacklistIp != null) {
             return blacklistIp.getId();
@@ -31,22 +27,19 @@ public class BlacklistIpService {
         return blacklistIpRepository.save(blacklistIp).getId();
     }
 
-    public PagedResponseDto<BlacklistIp> getBlacklistedIps(Pageable pageable) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public PagedResponseDto<BlacklistIp> getBlacklistedIps(Pageable pageable) {
         Page<BlacklistIp> blacklistedIps = blacklistIpRepository.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(blacklistedIps);
     }
 
     @Transactional
-    public Long deleteBlacklistedIp(String ipAddress) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long deleteBlacklistedIp(String ipAddress) {
         BlacklistIp blacklistIp = getBlacklistIpByIpAddressOrThrow(ipAddress);
         blacklistIpRepository.delete(blacklistIp);
         return blacklistIp.getId();
     }
 
-    public void clearBlacklist() throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public void clearBlacklist() {
         blacklistIpRepository.deleteAll();
         log.info("Blacklist cleared");
     }

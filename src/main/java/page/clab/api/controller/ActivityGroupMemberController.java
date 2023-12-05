@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +34,7 @@ public class ActivityGroupMemberController {
     private final ActivityGroupMemberService activityGroupMemberService;
 
     @Operation(summary = "[U] 활동 전체 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Secured({"ROLE_ANONYMOUS", "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getActivityGroups(
             @RequestParam(defaultValue = "0") int page,
@@ -46,6 +48,7 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "카테고리별 활동 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Secured({"ROLE_ANONYMOUS", "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/list")
     public ResponseModel getActivityGroupsByCategory(
             @RequestParam ActivityGroupCategory category,
@@ -60,6 +63,7 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "스터디 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Secured({"ROLE_ANONYMOUS", "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/study/{activityGroupId}")
     public ResponseModel getActivityGroupStudy(
             @PathVariable Long activityGroupId
@@ -71,6 +75,7 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "프로젝트 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Secured({"ROLE_ANONYMOUS", "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/project/{activityGroupId}")
     public ResponseModel getActivityGroupProject(
             @PathVariable Long activityGroupId
@@ -82,6 +87,7 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "[U] 활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/schedule")
     public ResponseModel getGroupScheduleList(
             @RequestParam Long activityGroupId,
@@ -96,6 +102,7 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "[U] 활동 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/members")
     public ResponseModel getActivityGroupMemberList(
             @RequestParam Long activityGroupId,
@@ -110,6 +117,7 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "[U] 활동 신청", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/apply")
     public ResponseModel applyActivityGroup(
             @RequestParam Long activityGroupId
