@@ -14,10 +14,10 @@ public interface ActivityGroupRepository extends JpaRepository<ActivityGroup, Lo
 
     Optional<ActivityGroup> findById(Long id);
 
+    Page<ActivityGroup> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
     Page<ActivityGroup> findAllByCategoryOrderByCreatedAtDesc(ActivityGroupCategory category, Pageable pageable);
 
     Page<ActivityGroup> findAllByStatusOrderByCreatedAtDesc(ActivityGroupStatus status, Pageable pageable);
 
-    Optional<ActivityGroup> findByIdAndCategory(Long id, String category);
-    
 }

@@ -44,8 +44,9 @@ public class AccuseController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        accuseService.createAccuse(accuseRequestDto);
+        Long id = accuseService.createAccuse(accuseRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
     
@@ -83,8 +84,9 @@ public class AccuseController {
             @PathVariable Long accuseId,
             @RequestParam AccuseStatus accuseStatus
     ) throws PermissionDeniedException {
-        accuseService.updateAccuseStatus(accuseId, accuseStatus);
+        Long id = accuseService.updateAccuseStatus(accuseId, accuseStatus);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
     

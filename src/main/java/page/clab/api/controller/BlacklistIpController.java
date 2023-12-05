@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
-import page.clab.api.service.BlacklistService;
+import page.clab.api.service.BlacklistIpService;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.entity.BlacklistIp;
@@ -23,17 +23,18 @@ import page.clab.api.type.entity.BlacklistIp;
 @RequiredArgsConstructor
 @Tag(name = "Blacklist", description = "블랙리스트 관련 API")
 @Slf4j
-public class BlacklistController {
+public class BlacklistIpController {
 
-    private final BlacklistService blacklistService;
+    private final BlacklistIpService blacklistIpService;
 
     @Operation(summary = "[A] 블랙리스트 IP 추가", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel addBlacklistedIp(
             @RequestParam String ipAddress
     ) throws PermissionDeniedException {
-        blacklistService.addBlacklistedIp(ipAddress);
+        Long id = blacklistIpService.addBlacklistedIp(ipAddress);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -44,7 +45,7 @@ public class BlacklistController {
             @RequestParam(defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BlacklistIp> blacklistedIps = blacklistService.getBlacklistedIps(pageable);
+        PagedResponseDto<BlacklistIp> blacklistedIps = blacklistIpService.getBlacklistedIps(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(blacklistedIps);
         return responseModel;
@@ -55,15 +56,16 @@ public class BlacklistController {
     public ResponseModel removeBlacklistedIp(
             @RequestParam String ipAddress
     ) throws PermissionDeniedException {
-        blacklistService.deleteBlacklistedIp(ipAddress);
+        Long id = blacklistIpService.deleteBlacklistedIp(ipAddress);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "[A] 블랙리스트 IP 초기화", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @DeleteMapping("/clear")
     public ResponseModel clearBlacklist() throws PermissionDeniedException {
-        blacklistService.clearBlacklist();
+        blacklistIpService.clearBlacklist();
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }

@@ -1,6 +1,7 @@
 package page.clab.api.type.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -36,6 +37,22 @@ public class ActivityGroupRequestDto {
     @URL(message = "{url.activityGroup.imageUrl}")
     @Schema(description = "활동 이미지 URL", example = "https://i.namu.wiki/i/KcqDuQYTxNpUcLIMZTg28QXse0XiWx1G7K68kYYCo1GuhoHmhB_V8Qe9odGGt0BH9-0nQZTN53WXTNpDmwVfWQ.svg")
     private String imageUrl;
+
+    @Schema(description = "커리큘럼", example = "큐, 스택, 리스트, 연결리스트, 트리, 그래프")
+    private String curriculum;
+
+    @Schema(description = "활동 시작일", example = "2023-03-02")
+    private LocalDate startDate;
+
+    @Schema(description = "활동 종료일", example = "2023-06-18")
+    private LocalDate endDate;
+
+    @Schema(description = "기술 스택", example = "Unreal Engine, C#")
+    private String techStack;
+
+    @URL(message = "{url.activityGroup.githubUrl}")
+    @Schema(description = "Github URL", example = "https://github.com/KGU-C-Lab")
+    private String githubUrl;
 
     public static ActivityGroupRequestDto of(ActivityGroup activityGroup) {
         return ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupRequestDto.class);

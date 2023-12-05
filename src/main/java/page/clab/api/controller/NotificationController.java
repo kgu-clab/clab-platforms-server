@@ -42,8 +42,9 @@ public class NotificationController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        notificationService.createNotification(notificationRequestDto);
+        Long id = notificationService.createNotification(notificationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
@@ -65,8 +66,9 @@ public class NotificationController {
     public ResponseModel deleteNotification(
             @PathVariable("notificationId") Long notificationId
     ) throws PermissionDeniedException {
-        notificationService.deleteNotification(notificationId);
+        Long id = notificationService.deleteNotification(notificationId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
