@@ -88,6 +88,7 @@ public class JwtTokenProvider {
 
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("role").toString().split(","))
+                        .map(this::formatRoleString)
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
@@ -125,6 +126,13 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
+    }
+
+    private String formatRoleString(String role) {
+        if (!role.startsWith("ROLE_")) {
+            return "ROLE_" + role;
+        }
+        return role;
     }
 
 }

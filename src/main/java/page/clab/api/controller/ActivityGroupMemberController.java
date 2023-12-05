@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -82,6 +83,7 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "[U] 활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/schedule")
     public ResponseModel getGroupScheduleList(
             @RequestParam Long activityGroupId,
@@ -96,6 +98,7 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "[U] 활동 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/members")
     public ResponseModel getActivityGroupMemberList(
             @RequestParam Long activityGroupId,
@@ -110,6 +113,7 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "[U] 활동 신청", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/apply")
     public ResponseModel applyActivityGroup(
             @RequestParam Long activityGroupId
