@@ -54,7 +54,7 @@ public class ReviewService {
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(groupLeader.getMember().getId())
-                .content("새로운 리뷰가 등록되었습니다.")
+                .content(member.getName() + "님이 " + activityGroup.getName() + "에 대한 리뷰를 작성하였습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
   }

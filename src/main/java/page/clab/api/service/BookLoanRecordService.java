@@ -19,10 +19,12 @@ import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Book;
 import page.clab.api.type.entity.BookLoanRecord;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.Role;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -65,11 +67,14 @@ public class BookLoanRecordService {
                 .build();
         notificationService.createNotification(notificationRequestDto);
 
-        NotificationRequestDto notificationRequestDtoForAdmin = NotificationRequestDto.builder()
-                .memberId(memberService.getMemberById("superuser").getId())
-                .content(borrower.getName() + "님이 " + book.getTitle() +  " 도서를 대출하였습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDtoForAdmin);
+        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
+        for (Member superMember : superMembers) {
+            NotificationRequestDto notificationRequestDtoForSuper = NotificationRequestDto.builder()
+                    .memberId(superMember.getId())
+                    .content(borrower.getName() + "님이 " + book.getTitle() +  " 도서를 대출하였습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDtoForSuper);
+        }
     }
 
     @Transactional
@@ -107,11 +112,14 @@ public class BookLoanRecordService {
                 .build();
         notificationService.createNotification(notificationRequestDto);
 
-        NotificationRequestDto notificationRequestDtoForAdmin = NotificationRequestDto.builder()
-                .memberId(memberService.getMemberById("superuser").getId())
-                .content(borrower.getName() + "님이 " + book.getTitle() +  " 도서를 반납하였습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDtoForAdmin);
+        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
+        for (Member superMember : superMembers) {
+            NotificationRequestDto notificationRequestDtoForSuper = NotificationRequestDto.builder()
+                    .memberId(superMember.getId())
+                    .content(borrower.getName() + "님이 " + book.getTitle() +  " 도서를 반납하였습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDtoForSuper);
+        }
     }
 
     @Transactional
@@ -153,11 +161,14 @@ public class BookLoanRecordService {
                 .build();
         notificationService.createNotification(notificationRequestDto);
 
-        NotificationRequestDto notificationRequestDtoForAdmin = NotificationRequestDto.builder()
-                .memberId(memberService.getMemberById("superuser").getId())
-                .content(borrower.getName() + "님이 " + book.getTitle() +  " 도서를 연장하였습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDtoForAdmin);
+        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
+        for (Member superMember : superMembers) {
+            NotificationRequestDto notificationRequestDtoForSuper = NotificationRequestDto.builder()
+                    .memberId(superMember.getId())
+                    .content(borrower.getName() + "님이 " + book.getTitle() +  " 도서를 연장하였습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDtoForSuper);
+        }
     }
 
     private void handleOverdueAndSuspension(Member member, long overdueDays) {

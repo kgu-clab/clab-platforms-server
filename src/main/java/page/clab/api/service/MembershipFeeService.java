@@ -14,6 +14,9 @@ import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.MembershipFee;
+import page.clab.api.type.etc.Role;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,11 +34,14 @@ public class MembershipFeeService {
         membershipFee.setApplicant(member);
         membershipFeeRepository.save(membershipFee);
 
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(memberService.getMemberById("superuser").getId())
-                .content("새로운 회비 사용 요청이 접수되었습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
+        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
+        for (Member superMember : superMembers) {
+            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                    .memberId(superMember.getId())
+                    .content(member.getName() + "님이 회비 사용을 요청하였습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDto);
+        }
 
         NotificationRequestDto notificationRequestDto4Member = NotificationRequestDto.builder()
                 .memberId(member.getId())
