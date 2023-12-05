@@ -59,14 +59,18 @@ public class LoginFailInfoService {
             Member member = memberService.getMemberByIdOrThrow(memberId);
             loginFailInfo = createLoginFailInfo(member);
         }
-        checkMemberLocked(loginFailInfo);
-        resetLoginFailInfo(loginFailInfo);
-    }
-
-    public void checkMemberLocked(LoginFailInfo loginFailInfo) throws MemberLockedException {
-        if (loginFailInfo != null && loginFailInfo.getIsLock() && isLockedForDuration(loginFailInfo)) {
+        if (isMemberLocked(loginFailInfo)) {
             throw new MemberLockedException();
         }
+        resetLoginFailInfo(loginFailInfo);
+        loginFailInfoRepository.save(loginFailInfo);
+    }
+
+    public boolean isMemberLocked(LoginFailInfo loginFailInfo) {
+        if (loginFailInfo != null && loginFailInfo.getIsLock() && isLockedForDuration(loginFailInfo)) {
+            return true;
+        }
+        return false;
     }
 
     public boolean isLockedForDuration(LoginFailInfo loginFailInfo) {
@@ -78,7 +82,6 @@ public class LoginFailInfoService {
         if (loginFailInfo != null) {
             loginFailInfo.setLoginFailCount(0L);
             loginFailInfo.setIsLock(false);
-            loginFailInfoRepository.save(loginFailInfo);
         }
     }
 
