@@ -17,6 +17,7 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
     private static final String[] SWAGGER_PATTERNS = {
             "/v2/api-docs",
+            "/v3/api-docs",
             "/swagger-resources",
             "/swagger-resources/.*",
             "/swagger-ui.html",
