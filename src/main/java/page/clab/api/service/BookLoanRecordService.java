@@ -1,5 +1,8 @@
 package page.clab.api.service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,12 +22,6 @@ import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Book;
 import page.clab.api.type.entity.BookLoanRecord;
 import page.clab.api.type.entity.Member;
-import page.clab.api.type.etc.Role;
-
-import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -60,21 +57,11 @@ public class BookLoanRecordService {
                 .borrowedAt(LocalDateTime.now())
                 .build();
         Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
-
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(borrowerId)
-                .content("도서 대출이 완료되었습니다.")
+                .content("[" + book.getTitle() + "] 도서 대출이 완료되었습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
-
-        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
-        for (Member superMember : superMembers) {
-            NotificationRequestDto notificationRequestDtoForSuper = NotificationRequestDto.builder()
-                    .memberId(superMember.getId())
-                    .content(borrower.getName() + "님이 " + book.getTitle() +  " 도서를 대출하였습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDtoForSuper);
-        }
         return id;
     }
 
@@ -106,21 +93,11 @@ public class BookLoanRecordService {
         bookRepository.save(book);
         bookLoanRecord.setReturnedAt(currentDate);
         Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
-
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(borrowerId)
-                .content("도서 반납이 완료되었습니다.")
+                .content("[" + book.getTitle() + "] 도서 반납이 완료되었습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
-
-        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
-        for (Member superMember : superMembers) {
-            NotificationRequestDto notificationRequestDtoForSuper = NotificationRequestDto.builder()
-                    .memberId(superMember.getId())
-                    .content(borrower.getName() + "님이 " + book.getTitle() +  " 도서를 반납하였습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDtoForSuper);
-        }
         return id;
     }
 
@@ -159,18 +136,9 @@ public class BookLoanRecordService {
 
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(borrowerId)
-                .content("도서 대출 연장이 완료되었습니다.")
+                .content("[" + book.getTitle() + "] 도서 대출 연장이 완료되었습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
-
-        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
-        for (Member superMember : superMembers) {
-            NotificationRequestDto notificationRequestDtoForSuper = NotificationRequestDto.builder()
-                    .memberId(superMember.getId())
-                    .content(borrower.getName() + "님이 " + book.getTitle() +  " 도서를 연장하였습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDtoForSuper);
-        }
         return id;
     }
 

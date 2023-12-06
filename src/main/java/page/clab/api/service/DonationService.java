@@ -10,14 +10,9 @@ import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.DonationRepository;
 import page.clab.api.type.dto.DonationRequestDto;
 import page.clab.api.type.dto.DonationResponseDto;
-import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Donation;
 import page.clab.api.type.entity.Member;
-import page.clab.api.type.etc.Role;
-
-import javax.transaction.Transactional;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,25 +20,13 @@ public class DonationService {
 
     private final MemberService memberService;
 
-    private final NotificationService notificationService;
-
     private final DonationRepository donationRepository;
 
-    @Transactional
     public Long createDonation(DonationRequestDto donationRequestDto) {
         Member member = memberService.getCurrentMember();
         Donation donation = Donation.of(donationRequestDto);
         donation.setDonor(member);
         Long id =  donationRepository.save(donation).getId();
-
-        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
-        for (Member superMember : superMembers) {
-            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                    .memberId(superMember.getId())
-                    .content(member.getName() + "님이 후원을 신청하였습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDto);
-        }
         return id;
     }
 

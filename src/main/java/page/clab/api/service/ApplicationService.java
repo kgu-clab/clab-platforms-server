@@ -1,5 +1,9 @@
 package page.clab.api.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,11 +20,6 @@ import page.clab.api.type.entity.Application;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.Role;
 
-import javax.transaction.Transactional;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -32,27 +31,23 @@ public class ApplicationService {
 
     private final ApplicationRepository applicationRepository;
 
-    public String createApplication(ApplicationRequestDto appRequestDto) {
-        Application application = Application.of(appRequestDto);
+    @Transactional
+    public String createApplication(ApplicationRequestDto applicationRequestDto) {
+        Application application = Application.of(applicationRequestDto);
         application.setContact(memberService.removeHyphensFromContact(application.getContact()));
         application.setIsPass(false);
         application.setUpdateTime(LocalDateTime.now());
         String id = applicationRepository.save(application).getStudentId();
-
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(appRequestDto.getStudentId())
-                .content("동아리 가입 신청이 접수되었습니다. 관리자가 승인하면 가입이 완료됩니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
-
-        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
-        for (Member superMember : superMembers) {
-            NotificationRequestDto notificationRequestDtoForSuper = NotificationRequestDto.builder()
-                    .memberId(superMember.getId())
-                    .content(appRequestDto.getName() + "님dl 동아리 가입을 신청하였습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDtoForSuper);
-        }
+        List<Member> admins = memberService.getMembersByRole(Role.SUPER);
+        admins.addAll(memberService.getMembersByRole(Role.ADMIN));
+        admins.stream()
+                .forEach(admin -> {
+                    NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                            .memberId(admin.getId())
+                            .content(applicationRequestDto.getStudentId() + " " + applicationRequestDto.getName() + "님이 동아리 가입을 신청하였습니다.")
+                            .build();
+                    notificationService.createNotification(notificationRequestDto);
+                });
         return id;
     }
 
@@ -76,29 +71,13 @@ public class ApplicationService {
         return ApplicationResponseDto.of(application);
     }
 
-    @Transactional
     public String approveApplication(String applicationId) {
         Application application = getApplicationByIdOrThrow(applicationId);
-        String id;
-        if (application.getIsPass()) {
-            application.setIsPass(false);
-            application.setUpdateTime(LocalDateTime.now());
-            id = applicationRepository.save(application).getStudentId();
-        } else {
-            application.setIsPass(true);
-            application.setUpdateTime(LocalDateTime.now());
-            id = applicationRepository.save(application).getStudentId();
-        }
-
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(application.getStudentId())
-                .content("동아리 가입 신청이 승인되었습니다. 가입을 축하드립니다!")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
-        return id;
+        application.setIsPass(!application.getIsPass());
+        application.setUpdateTime(LocalDateTime.now());
+        return applicationRepository.save(application).getStudentId();
     }
 
-    @Transactional
     public PagedResponseDto<ApplicationResponseDto> getApprovedApplications(Pageable pageable) {
         Page<Application> applications = getApplicationByIsPass(pageable);
         if (applications.isEmpty()) {

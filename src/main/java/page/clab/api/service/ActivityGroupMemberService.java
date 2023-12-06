@@ -1,5 +1,8 @@
 package page.clab.api.service;
 
+import java.util.List;
+import javax.mail.MessagingException;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,10 +27,6 @@ import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
 import page.clab.api.type.etc.GroupMemberStatus;
-
-import javax.mail.MessagingException;
-import javax.transaction.Transactional;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -103,10 +102,9 @@ public class ActivityGroupMemberService {
         String subject = "[" + activityGroup.getName() + "] 활동 참가 신청이 들어왔습니다.";
         String content = member.getName() + "에게서 활동 참가 신청이 들어왔습니다.";
         emailService.sendEmail(groupLeader.getMember().getEmail(), subject, content, null);
-
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(groupLeader.getMember().getId())
-                .content(member.getName() + "에게서 활동 참가 신청이 들어왔습니다.")
+                .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 활동 참가 신청을 하였습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
         return activityGroup.getId();

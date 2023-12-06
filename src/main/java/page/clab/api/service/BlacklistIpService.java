@@ -49,7 +49,7 @@ public class BlacklistIpService {
     public void clearBlacklist() throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         blacklistIpRepository.deleteAll();
-        log.info("Blacklist cleared");
+        log.info("서비스 접근 제한 IP 목록을 초기화하였습니다.");
     }
 
     private BlacklistIp getBlacklistIpByIpAddressOrThrow(String ipAddress) {

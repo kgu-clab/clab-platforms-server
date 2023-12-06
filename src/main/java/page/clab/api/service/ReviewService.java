@@ -1,5 +1,6 @@
 package page.clab.api.service;
 
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
 
+    @Transactional
     public Long createReview(ReviewRequestDto reviewRequestDto) {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(reviewRequestDto.getActivityGroupId());
@@ -50,11 +52,10 @@ public class ReviewService {
         review.setIsPublic(false);
         review.setMember(member);
         Long id = reviewRepository.save(review).getId();
-
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(groupLeader.getMember().getId())
-                .content(member.getName() + "님이 " + activityGroup.getName() + "에 대한 리뷰를 작성하였습니다.")
+                .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 리뷰를 등록하였습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
         return id;

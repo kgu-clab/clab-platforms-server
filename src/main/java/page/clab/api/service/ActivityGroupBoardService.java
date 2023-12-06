@@ -1,5 +1,9 @@
 package page.clab.api.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,11 +21,6 @@ import page.clab.api.type.entity.ActivityGroupBoard;
 import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.ActivityGroupRole;
-
-import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -55,20 +54,21 @@ public class ActivityGroupBoardService {
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByMemberOrThrow(member);
         if (groupMember.getRole() == ActivityGroupRole.LEADER) {
             List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
-            for (GroupMember gMember : groupMembers) {
-                if (!Objects.equals(gMember.getMember().getId(), member.getId())) {
-                    NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                            .memberId(gMember.getMember().getId())
-                            .content("활동 그룹 팀장이 " + activityGroupBoardRequestDto.getTitle() +" 게시글을 등록하였습니다.")
-                            .build();
-                    notificationService.createNotification(notificationRequestDto);
-                }
-            }
-        }else {
+            groupMembers.stream()
+                    .forEach(gMember -> {
+                        if (!Objects.equals(gMember.getMember().getId(), member.getId())) {
+                            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                                    .memberId(gMember.getMember().getId())
+                                    .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.")
+                                    .build();
+                            notificationService.createNotification(notificationRequestDto);
+                        }
+                    });
+        } else {
             GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
             NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                     .memberId(groupLeader.getMember().getId())
-                    .content("활동 그룹 팀원이 " + activityGroupBoardRequestDto.getTitle() + " 게시글을 등록하였습니다.")
+                    .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.")
                     .build();
             notificationService.createNotification(notificationRequestDto);
         }

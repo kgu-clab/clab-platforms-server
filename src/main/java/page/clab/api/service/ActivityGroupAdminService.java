@@ -1,5 +1,7 @@
 package page.clab.api.service;
 
+import java.util.List;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,9 +23,6 @@ import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
 import page.clab.api.type.etc.GroupMemberStatus;
-
-import javax.transaction.Transactional;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +52,7 @@ public class ActivityGroupAdminService {
 
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(member.getId())
-                .content("활동 그룹 생성이 완료되었고 승인 대기 중 입니다.")
+                .content("활동 그룹 생성이 완료되었습니다. 활동 승인이 완료되면 활동 그룹을 이용할 수 있습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
         return id;
@@ -72,17 +71,10 @@ public class ActivityGroupAdminService {
         activityGroup.setName(activityGroupRequestDto.getName());
         activityGroup.setContent(activityGroupRequestDto.getContent());
         activityGroup.setImageUrl(activityGroupRequestDto.getImageUrl());
-        Long id = activityGroupRepository.save(activityGroup).getId();
-
-        GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(groupLeader.getMember().getId())
-                .content("활동 그룹 정보가 정상적으로 수정되었습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
-        return id;
+        return activityGroupRepository.save(activityGroup).getId();
     }
 
+    @Transactional
     public Long manageActivityGroup(Long activityGroupId, ActivityGroupStatus activityGroupStatus) throws PermissionDeniedException {
         memberService.checkMemberAdminRole();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
@@ -92,7 +84,7 @@ public class ActivityGroupAdminService {
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(groupLeader.getMember().getId())
-                .content("활동 그룹이 " + activityGroupStatus + " 상태로 변경되었습니다.")
+                .content("활동 그룹이 [" + activityGroupStatus.getDescription() + "] 상태로 변경되었습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
         return id;
@@ -111,7 +103,7 @@ public class ActivityGroupAdminService {
 
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(groupLeader.getMember().getId())
-                .content("활동 그룹이 삭제되었습니다.")
+                .content("활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
         return activityGroup.getId();
@@ -121,15 +113,7 @@ public class ActivityGroupAdminService {
         checkMemberGroupLeaderRole();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroup.setProgress(progress);
-        Long id = activityGroupRepository.save(activityGroup).getId();
-
-        GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(groupLeader.getMember().getId())
-                .content("프로젝트 진행도가 " + progress + "%로 변경되었습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
-        return id;
+        return activityGroupRepository.save(activityGroup).getId();
     }
 
     @Transactional
@@ -148,6 +132,7 @@ public class ActivityGroupAdminService {
         return new PagedResponseDto<>(groupMemberList.map(GroupMemberResponseDto::of));
     }
 
+    @Transactional
     public String manageGroupMemberStatus(String memberId, GroupMemberStatus status) throws PermissionDeniedException {
         checkMemberGroupLeaderRole();
         Member member = memberService.getMemberByIdOrThrow(memberId);
@@ -155,14 +140,14 @@ public class ActivityGroupAdminService {
         groupMember.setStatus(status);
         if (status == GroupMemberStatus.ACCEPTED) {
             groupMember.setRole(ActivityGroupRole.MEMBER);
-        }else {
+        } else {
             groupMember.setRole(null);
         }
         String id = activityGroupMemberService.save(groupMember).getMember().getId();
 
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(memberId)
-                .content("활동 그룹 신청이 " + status + " 상태로 변경되었습니다.")
+                .content("활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
         return id;
