@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,6 +36,7 @@ public class AwardController {
     private final AwardService awardService;
 
     @Operation(summary = "[U] 수상 이력 등록", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createAward(
             @Valid @RequestBody AwardRequestDto awardRequestDto,
@@ -50,6 +52,7 @@ public class AwardController {
     }
 
     @Operation(summary = "[U] 나의 수상 이력 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getMyAwards(
             @RequestParam(defaultValue = "0") int page,
@@ -64,6 +67,7 @@ public class AwardController {
 
     @Operation(summary = "[U] 수상 이력 검색", description = "ROLE_USER 이상의 권한이 필요함" +
             "학번을 기준으로 검색")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel searchAwards(
             @RequestParam String memberId,
@@ -78,6 +82,7 @@ public class AwardController {
     }
 
   @Operation(summary = "[U] 수상 이력 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
   @PatchMapping("/{awardId}")
   public ResponseModel updateAward(
       @PathVariable Long awardId,
@@ -94,6 +99,7 @@ public class AwardController {
     }
 
     @Operation(summary = "[U] 수상 이력 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{awardId}")
     public ResponseModel deleteAward(
             @PathVariable Long awardId

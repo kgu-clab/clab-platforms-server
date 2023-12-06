@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.RecruitmentService;
 import page.clab.api.type.dto.RecruitmentRequestDto;
 import page.clab.api.type.dto.RecruitmentResponseDto;
@@ -32,11 +32,12 @@ public class RecruitmentController {
     private final RecruitmentService recruitmentService;
 
     @Operation(summary = "[A] 모집 공고 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createRecruitment(
             @Valid @RequestBody RecruitmentRequestDto recruitmentRequestDto,
             BindingResult result
-    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+    ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
@@ -57,12 +58,13 @@ public class RecruitmentController {
     }
 
     @Operation(summary = "[A] 모집 공고 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{recruitmentId}")
     public ResponseModel updateRecruitment(
             @PathVariable Long recruitmentId,
             @Valid @RequestBody RecruitmentRequestDto recruitmentRequestDto,
             BindingResult result
-    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+    ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
@@ -73,10 +75,11 @@ public class RecruitmentController {
     }
 
     @Operation(summary = "[A] 모집 공고 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{recruitmentId}")
     public ResponseModel deleteRecruitment(
             @PathVariable Long recruitmentId
-    ) throws PermissionDeniedException {
+    ) {
         Long id = recruitmentService.deleteRecruitment(recruitmentId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);

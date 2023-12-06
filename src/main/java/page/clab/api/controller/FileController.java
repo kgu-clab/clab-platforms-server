@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ public class FileController {
     private final FileUploadService fileUploadService;
 
     @Operation(summary = "[U] 게시글 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/boards/{boardId}")
     public ResponseModel boardUpload(
             @PathVariable("boardId") String boardId,
@@ -35,7 +37,8 @@ public class FileController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 뉴스 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 뉴스 사진 업로드", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/news/{newsId}")
     public ResponseModel newsUpload(
             @PathVariable("newsId") String newsId,
@@ -47,7 +50,8 @@ public class FileController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 도서 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 도서 사진 업로드", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/books/{bookId}")
     public ResponseModel bookUpload(
             @PathVariable("bookId") String bookId,
@@ -60,6 +64,7 @@ public class FileController {
     }
 
     @Operation(summary = "[U] 멤버 프로필 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/profiles/{memberId}")
     public ResponseModel profileUpload(
             @PathVariable("memberId") String memberId,
@@ -72,6 +77,7 @@ public class FileController {
     }
 
     @Operation(summary = "[U] 함께하는 활동 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/activity-photos/{activityPhotoId}")
     public ResponseModel activityUpload(
             @PathVariable("activityPhotoId") String activityPhotoId,
@@ -84,6 +90,7 @@ public class FileController {
     }
 
     @Operation(summary = "[U] 멤버 클라우드 파일 업로드", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/members/{memberId}")
     public ResponseModel memberCloudUpload(
             @PathVariable("memberId") String memberId,
@@ -96,6 +103,7 @@ public class FileController {
     }
 
     @Operation(summary = "[U] 양식 업로드", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/forms")
     public ResponseModel formUpload(
             @RequestParam(value = "file") MultipartFile multipartFile

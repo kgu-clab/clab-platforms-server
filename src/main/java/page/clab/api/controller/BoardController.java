@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,6 +38,7 @@ public class BoardController {
     private final BoardService boardService;
     
     @Operation(summary = "[U] 커뮤니티 게시글 생성", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createBoard(
             @Valid @RequestBody BoardRequestDto boardRequestDto,
@@ -53,6 +55,7 @@ public class BoardController {
 
     @GetMapping("")
     @Operation(summary = "[U] 커뮤니티 게시글 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel getBoards(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
@@ -66,6 +69,7 @@ public class BoardController {
 
     @GetMapping("/{boardId}")
     @Operation(summary = "[U] 커뮤니티 게시글 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel getBoardDetails(
             @PathVariable Long boardId
     ) {
@@ -77,6 +81,7 @@ public class BoardController {
 
     @GetMapping("/my-boards")
     @Operation(summary = "[U] 내가 쓴 커뮤니티 게시글 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel getMyBoards(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
@@ -90,6 +95,7 @@ public class BoardController {
 
     @GetMapping("/list")
     @Operation(summary = "[U] 커뮤니티 게시글 카테고리별 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel getBoardsByCategory(
             @RequestParam String category,
             @RequestParam(defaultValue = "0") int page,
@@ -104,6 +110,7 @@ public class BoardController {
 
     @PatchMapping("/{boardId}")
     @Operation(summary = "[U] 커뮤니티 게시글 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel updateBoard(
             @PathVariable Long boardId,
             @Valid @RequestBody BoardRequestDto boardDto,
@@ -120,6 +127,7 @@ public class BoardController {
 
     @DeleteMapping("/{boardId}")
     @Operation(summary = "[U] 커뮤니티 게시글 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel deleteBoard(
             @PathVariable Long boardId
     ) throws PermissionDeniedException {
