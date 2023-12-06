@@ -8,24 +8,18 @@ import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.NewsRepository;
-import page.clab.api.type.dto.MemberResponseDto;
 import page.clab.api.type.dto.NewsDetailsResponseDto;
 import page.clab.api.type.dto.NewsRequestDto;
 import page.clab.api.type.dto.NewsResponseDto;
-import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.News;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class NewsService {
 
     private final MemberService memberService;
-
-    private final NotificationService notificationService;
 
     private final NewsRepository newsRepository;
 
@@ -35,17 +29,7 @@ public class NewsService {
             throw new PermissionDeniedException("관리자만 뉴스를 등록할 수 있습니다.");
         }
         News news = News.of(newsRequestDto);
-        Long id = newsRepository.save(news).getId();
-
-        List<MemberResponseDto> members = memberService.getMembers();
-        for (MemberResponseDto memberResponseDto : members) {
-            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                    .memberId(memberResponseDto.getId())
-                    .content(newsRequestDto.getTitle() + " 뉴스가 등록되었습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDto);
-        }
-        return id;
+        return newsRepository.save(news).getId();
     }
 
     public PagedResponseDto<NewsResponseDto> getNews(Pageable pageable) {

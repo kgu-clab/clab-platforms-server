@@ -1,5 +1,13 @@
 package page.clab.api.service;
 
+import java.io.File;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,14 +33,6 @@ import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.Role;
 import page.clab.api.util.FileSystemUtil;
-
-import java.io.File;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -124,16 +124,10 @@ public class MemberService {
         updatedMember.setProvider(member.getProvider());
         updatedMember.setLastLoginTime(member.getLastLoginTime());
         updatedMember.setLoanSuspensionDate(member.getLoanSuspensionDate());
-        String id = memberRepository.save(updatedMember).getId();
-
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(member.getId())
-                .content("최근에 회원 정보가 수정되었습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
-        return id;
+        return memberRepository.save(updatedMember).getId();
     }
 
+    @Transactional
     public String updateMemberStatusByAdmin(String memberId, MemberStatus memberStatus) throws PermissionDeniedException {
         checkMemberAdminRole();
         Member member = getMemberByIdOrThrow(memberId);
@@ -142,7 +136,7 @@ public class MemberService {
 
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(member.getId())
-                .content("관리자가 " + member.getName() + "님의 회원 상태를 " + memberStatus + "로 변경하였습니다.")
+                .content("관리자가 " + member.getName() + "님의 회원 상태를 [" + memberStatus.getDescription() + "]으로 변경하였습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
         return id;
@@ -247,4 +241,9 @@ public class MemberService {
     public List<Member> getMembersByRole(Role role) {
         return memberRepository.findAllByRole(role);
     }
+
+    public List<Member> findAll() {
+        return memberRepository.findAll();
+    }
+
 }

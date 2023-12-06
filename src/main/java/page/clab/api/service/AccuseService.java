@@ -1,5 +1,7 @@
 package page.clab.api.service;
 
+import java.util.List;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,9 +20,6 @@ import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.AccuseStatus;
 import page.clab.api.type.etc.Role;
 import page.clab.api.type.etc.TargetType;
-
-import javax.transaction.Transactional;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -111,6 +110,7 @@ public class AccuseService {
         return new PagedResponseDto<>(accuses.map(AccuseResponseDto::of));
     }
 
+    @Transactional
     public Long updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {

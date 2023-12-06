@@ -1,5 +1,7 @@
 package page.clab.api.service;
 
+import java.time.LocalDateTime;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,8 +18,6 @@ import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Board;
 import page.clab.api.type.entity.Member;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -28,16 +28,16 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
 
+    @Transactional
     public Long createBoard(BoardRequestDto boardRequestDto) {
         Member member = memberService.getCurrentMember();
         Board board = Board.of(boardRequestDto);
         board.setMember(member);
         Long id = boardRepository.save(board).getId();
-
-        if (memberService.isMemberAdminRole(member)){
+        if (memberService.isMemberAdminRole(member) && boardRequestDto.getCategory().equals("공지사항")) {
             NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                     .memberId(member.getId())
-                    .content("관리자로부터 " + boardRequestDto.getTitle() + " 게시글이 등록되었습니다.")
+                    .content("[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.")
                     .build();
             notificationService.createNotification(notificationRequestDto);
         }

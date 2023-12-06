@@ -9,7 +9,6 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.ExecutivesRepository;
 import page.clab.api.type.dto.ExecutivesRequestDto;
 import page.clab.api.type.dto.ExecutivesResponseDto;
-import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Executives;
 import page.clab.api.type.entity.Member;
@@ -20,8 +19,6 @@ public class ExecutivesService {
 
     private final MemberService memberService;
 
-    private final NotificationService notificationService;
-
     private final ExecutivesRepository executivesRepository;
 
     public Long createExecutives(ExecutivesRequestDto executivesRequestDto) throws PermissionDeniedException {
@@ -29,16 +26,8 @@ public class ExecutivesService {
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("운영진을 등록할 권한이 없습니다.");
         }
-        Member executivesMember = memberService.getMemberByIdOrThrow(executivesRequestDto.getMemberId());
         Executives executives = Executives.of(executivesRequestDto);
-        Long id = executivesRepository.save(executives).getId();
-
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(executivesMember.getId())
-                .content("새로운 운영진으로 등록되었습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
-        return id;
+        return executivesRepository.save(executives).getId();
     }
 
     public PagedResponseDto<ExecutivesResponseDto> getExecutives(Pageable pageable) {

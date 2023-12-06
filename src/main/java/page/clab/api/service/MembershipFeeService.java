@@ -10,13 +10,9 @@ import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.MembershipFeeRepository;
 import page.clab.api.type.dto.MembershipFeeRequestDto;
 import page.clab.api.type.dto.MembershipFeeResponseDto;
-import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.MembershipFee;
-import page.clab.api.type.etc.Role;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,31 +20,13 @@ public class MembershipFeeService {
 
     private final MemberService memberService;
 
-    private final NotificationService notificationService;
-
     private final MembershipFeeRepository membershipFeeRepository;
 
     public Long createMembershipFee(MembershipFeeRequestDto membershipFeeRequestDto) {
         Member member = memberService.getCurrentMember();
         MembershipFee membershipFee = MembershipFee.of(membershipFeeRequestDto);
         membershipFee.setApplicant(member);
-        Long id = membershipFeeRepository.save(membershipFee).getId();
-
-        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
-        for (Member superMember : superMembers) {
-            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                    .memberId(superMember.getId())
-                    .content(member.getName() + "님이 회비 사용을 요청하였습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDto);
-        }
-
-        NotificationRequestDto notificationRequestDto4Member = NotificationRequestDto.builder()
-                .memberId(member.getId())
-                .content("회비 사용을 요청하였습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto4Member);
-        return id;
+        return membershipFeeRepository.save(membershipFee).getId();
     }
 
     public PagedResponseDto<MembershipFeeResponseDto> getMembershipFees(Pageable pageable) {
