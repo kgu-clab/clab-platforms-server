@@ -3,6 +3,7 @@ package page.clab.api.config;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +37,7 @@ import page.clab.api.type.dto.ResponseModel;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -111,6 +113,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAttemptService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint((request, response, authException) -> {
+                    log.info("[{}] : 비정상적인 접근이 감지되었습니다.", request.getRemoteAddr());
                     redisIpAttemptService.registerLoginAttempt(request.getRemoteAddr());
                     ResponseModel responseModel = ResponseModel.builder()
                             .success(false)
