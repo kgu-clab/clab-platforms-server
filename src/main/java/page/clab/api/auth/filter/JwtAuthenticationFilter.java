@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 import page.clab.api.auth.jwt.JwtTokenProvider;
 import page.clab.api.repository.BlacklistIpRepository;
+import page.clab.api.service.RedisIpAttemptService;
 import page.clab.api.service.RedisTokenService;
 import page.clab.api.type.entity.RedisToken;
 
@@ -24,6 +25,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     private final JwtTokenProvider jwtTokenProvider;
 
     private final RedisTokenService redisTokenService;
+
+    private final RedisIpAttemptService redisIpAttemptService;
     
     private final BlacklistIpRepository blacklistIpRepository;
 

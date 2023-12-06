@@ -28,6 +28,7 @@ import page.clab.api.auth.filter.CustomBasicAuthenticationFilter;
 import page.clab.api.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.auth.jwt.JwtTokenProvider;
 import page.clab.api.repository.BlacklistIpRepository;
+import page.clab.api.service.RedisIpAttemptService;
 import page.clab.api.service.RedisTokenService;
 import page.clab.api.type.dto.ResponseModel;
 
@@ -40,6 +41,8 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
 
     private final RedisTokenService redisTokenService;
+
+    private final RedisIpAttemptService redisIpAttemptService;
 
     private final BlacklistIpRepository blacklistIpRepository;
 
@@ -104,10 +107,11 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
                 .and()
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager, redisIpAttemptService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAttemptService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint((request, response, authException) -> {
+                    redisIpAttemptService.registerLoginAttempt(request.getRemoteAddr());
                     ResponseModel responseModel = ResponseModel.builder()
                             .success(false)
                             .build();
