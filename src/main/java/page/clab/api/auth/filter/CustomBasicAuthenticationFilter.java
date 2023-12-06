@@ -7,13 +7,21 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import page.clab.api.repository.BlacklistIpRepository;
+import page.clab.api.service.RedisIpAttemptService;
 
+@Slf4j
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
+
+    private final RedisIpAttemptService redisIpAttemptService;
+    
+    private final BlacklistIpRepository blacklistIpRepository;
 
     private static final String[] SWAGGER_PATTERNS = {
             "/v2/api-docs",
@@ -25,8 +33,10 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
             "/swagger-ui/.*"
     };
 
-    public CustomBasicAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public CustomBasicAuthenticationFilter(AuthenticationManager authenticationManager, RedisIpAttemptService redisIpAttemptService, BlacklistIpRepository blacklistIpRepository) {
         super(authenticationManager);
+        this.redisIpAttemptService = redisIpAttemptService;
+        this.blacklistIpRepository = blacklistIpRepository;
     }
 
     @Override
@@ -44,36 +54,33 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
             chain.doFilter(request, response);
             return;
         }
+        String clientIpAddress = request.getRemoteAddr();
+        log.debug("clientIpAddress : {}", clientIpAddress);
+        if (blacklistIpRepository.existsByIpAddress(clientIpAddress)) {
+            throw new SecurityException("[" + clientIpAddress + "] 서비스 이용 불가 IP입니다.");
+        }
         String authorizationHeader = request.getHeader("Authorization");
-
         if (authorizationHeader == null || !authorizationHeader.startsWith("Basic ")) {
             response.setHeader("WWW-Authenticate", "Basic realm=\"Please enter your username and password\"");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
             return;
         }
-
         String base64Credentials = authorizationHeader.substring("Basic ".length());
         String credentials = new String(Base64.getDecoder().decode(base64Credentials));
         String[] values = credentials.split(":", 2);
-
         if (values.length < 2) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid basic authentication token");
             return;
         }
-
         String username = values[0];
         String password = values[1];
-
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
         Authentication authentication = getAuthenticationManager().authenticate(authRequest);
-
         if (authentication == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid username or password");
             return;
         }
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         super.doFilterInternal(request, response, chain);
     }
 
