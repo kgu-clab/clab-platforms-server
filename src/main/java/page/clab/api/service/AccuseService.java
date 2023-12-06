@@ -39,9 +39,8 @@ public class AccuseService {
 
     private final AccuseRepository accuseRepository;
 
-
     @Transactional
-    public void createAccuse(AccuseRequestDto accuseRequestDto) {
+    public Long createAccuse(AccuseRequestDto accuseRequestDto) {
         if (accuseRequestDto.getTargetType() == TargetType.BOARD) {
             boardService.getBoardByIdOrThrow(accuseRequestDto.getTargetId());
         } else if (accuseRequestDto.getTargetType() == TargetType.COMMENT) {
@@ -51,17 +50,18 @@ public class AccuseService {
         } else {
             throw new IllegalArgumentException("신고 대상 유형이 올바르지 않습니다.");
         }
+        Long id;
         Member member = memberService.getCurrentMember();
         Accuse existingAccuse = getAccuseByMemberAndTargetTypeAndTargetId(member, accuseRequestDto);
         if (existingAccuse != null) {
             existingAccuse.setReason(accuseRequestDto.getReason());
-            accuseRepository.save(existingAccuse);
+            id = accuseRepository.save(existingAccuse).getId();
         } else {
             Accuse accuse = Accuse.of(accuseRequestDto);
             accuse.setId(null);
             accuse.setMember(member);
             accuse.setAccuseStatus(AccuseStatus.PENDING);
-            accuseRepository.save(accuse);
+            id = accuseRepository.save(accuse).getId();
         }
 
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
@@ -78,6 +78,7 @@ public class AccuseService {
                     .build();
             notificationService.createNotification(notificationRequestDtoForSuper);
         }
+        return id;
     }
 
     public PagedResponseDto<AccuseResponseDto> getAccuses(Pageable pageable) throws PermissionDeniedException {
@@ -110,20 +111,21 @@ public class AccuseService {
         return new PagedResponseDto<>(accuses.map(AccuseResponseDto::of));
     }
 
-    public void updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) throws PermissionDeniedException {
+    public Long updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("해당 신고 내역을 수정할 권한이 없습니다.");
         }
         Accuse accuse = getAccuseByIdOrThrow(accuseId);
         accuse.setAccuseStatus(accuseStatus);
-        accuseRepository.save(accuse);
+        Long id = accuseRepository.save(accuse).getId();
 
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .content("신고 상태가 " + accuseStatus + "로 변경되었습니다.")
                 .memberId(accuse.getMember().getId())
                 .build();
         notificationService.createNotification(notificationRequestDto);
+        return id;
     }
 
     private Accuse getAccuseByIdOrThrow(Long accuseId) {
