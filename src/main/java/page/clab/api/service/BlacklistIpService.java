@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -11,6 +10,8 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.BlacklistIpRepository;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.BlacklistIp;
+
+import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor

@@ -1,9 +1,5 @@
 package page.clab.api.service;
 
-import java.util.List;
-import java.util.Objects;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -12,6 +8,11 @@ import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.type.dto.EmailDto;
 import page.clab.api.type.dto.MemberResponseDto;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
