@@ -3,6 +3,8 @@ package page.clab.api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
@@ -31,7 +33,10 @@ public class EmailController {
             EmailDto emailDto,
             @RequestPart(required = false) List<MultipartFile> files
     ) {
-        emailService.broadcastEmail(emailDto, files);
+        CompletableFuture<Void> emailTask = CompletableFuture.runAsync(() -> {
+            emailService.broadcastEmail(emailDto, files);
+        });
+        emailTask.join();
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
@@ -43,7 +48,10 @@ public class EmailController {
             EmailDto emailDto,
             @RequestPart(required = false) List<MultipartFile> files
     ) {
-        emailService.broadcastEmailToAllMember(emailDto, files);
+        CompletableFuture<Void> emailTask = CompletableFuture.runAsync(() -> {
+            emailService.broadcastEmailToAllMember(emailDto, files);
+        });
+        emailTask.join();
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
