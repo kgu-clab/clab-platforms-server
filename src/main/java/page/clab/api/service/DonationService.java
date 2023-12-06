@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,12 +22,12 @@ public class DonationService {
 
     private final DonationRepository donationRepository;
 
-    @Transactional
     public Long createDonation(DonationRequestDto donationRequestDto) {
         Member member = memberService.getCurrentMember();
         Donation donation = Donation.of(donationRequestDto);
         donation.setDonor(member);
-        return donationRepository.save(donation).getId();
+        Long id =  donationRepository.save(donation).getId();
+        return id;
     }
 
     public PagedResponseDto<DonationResponseDto> getDonations(Pageable pageable) {

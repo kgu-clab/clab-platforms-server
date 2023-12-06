@@ -1,6 +1,7 @@
 package page.clab.api.service;
 
 import java.time.LocalDateTime;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.CommentRepository;
 import page.clab.api.type.dto.CommentRequestDto;
 import page.clab.api.type.dto.CommentResponseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Board;
 import page.clab.api.type.entity.Comment;
@@ -25,6 +27,9 @@ public class CommentService {
 
     private final MemberService memberService;
 
+    private final NotificationService notificationService;
+
+    @Transactional
     public Long createComment(Long boardId, CommentRequestDto commentRequestDto) {
         Member member = memberService.getCurrentMember();
         Board board = boardService.getBoardByIdOrThrow(boardId);
@@ -32,7 +37,14 @@ public class CommentService {
         comment.setBoard(board);
         comment.setWriter(member);
         comment.setCreatedAt(LocalDateTime.now());
-        return commentRepository.save(comment).getId();
+        Long id = commentRepository.save(comment).getId();
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(board.getMember().getId())
+                .content("[" + board.getTitle() + "] " + member.getName() + "님이 게시글에 댓글을 남겼습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+        return id;
     }
 
     public PagedResponseDto<CommentResponseDto> getComments(Long boardId, Pageable pageable) {

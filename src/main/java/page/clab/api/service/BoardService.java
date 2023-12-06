@@ -1,6 +1,7 @@
 package page.clab.api.service;
 
 import java.time.LocalDateTime;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import page.clab.api.type.dto.BoardCategoryResponseDto;
 import page.clab.api.type.dto.BoardDetailsResponseDto;
 import page.clab.api.type.dto.BoardListResponseDto;
 import page.clab.api.type.dto.BoardRequestDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Board;
 import page.clab.api.type.entity.Member;
@@ -22,13 +24,24 @@ public class BoardService {
 
     private final MemberService memberService;
 
+    private final NotificationService notificationService;
+
     private final BoardRepository boardRepository;
 
+    @Transactional
     public Long createBoard(BoardRequestDto boardRequestDto) {
         Member member = memberService.getCurrentMember();
         Board board = Board.of(boardRequestDto);
         board.setMember(member);
-        return boardRepository.save(board).getId();
+        Long id = boardRepository.save(board).getId();
+        if (memberService.isMemberAdminRole(member) && boardRequestDto.getCategory().equals("공지사항")) {
+            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                    .memberId(member.getId())
+                    .content("[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDto);
+        }
+        return id;
     }
 
     public PagedResponseDto<BoardListResponseDto> getBoards(Pageable pageable) {

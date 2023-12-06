@@ -8,7 +8,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +26,7 @@ import page.clab.api.type.dto.CloudUsageInfo;
 import page.clab.api.type.dto.FileInfo;
 import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.MemberStatus;
@@ -34,12 +37,19 @@ import page.clab.api.util.FileSystemUtil;
 @RequiredArgsConstructor
 public class MemberService {
 
+    private NotificationService notificationService;
+
     private final MemberRepository memberRepository;
 
     private final PasswordEncoder passwordEncoder;
 
     @Value("${resource.file.path}")
     private String filePath;
+
+    @Autowired
+    public void setNotificationService(@Lazy NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
 
     public String createMember(MemberRequestDto memberRequestDto) {
         if (memberRepository.findById(memberRequestDto.getId()).isPresent())
@@ -115,7 +125,13 @@ public class MemberService {
     public String updateMemberStatusByAdmin(String memberId, MemberStatus memberStatus) {
         Member member = getMemberByIdOrThrow(memberId);
         member.setMemberStatus(memberStatus);
-        return memberRepository.save(member).getId();
+        String id = memberRepository.save(member).getId();
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(member.getId())
+                .content("관리자가 " + member.getName() + "님의 회원 상태를 [" + memberStatus.getDescription() + "]으로 변경하였습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+        return id;
     }
 
     public PagedResponseDto<CloudUsageInfo> getAllCloudUsages(Pageable pageable) {
@@ -203,6 +219,14 @@ public class MemberService {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
+    }
+
+    public List<Member> getMembersByRole(Role role) {
+        return memberRepository.findAllByRole(role);
+    }
+
+    public List<Member> findAll() {
+        return memberRepository.findAll();
     }
 
 }

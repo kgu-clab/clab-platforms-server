@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -10,6 +9,8 @@ import page.clab.api.exception.NotFoundException;
 import page.clab.api.repository.BlacklistIpRepository;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.BlacklistIp;
+
+import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +42,7 @@ public class BlacklistIpService {
 
     public void clearBlacklist() {
         blacklistIpRepository.deleteAll();
-        log.info("Blacklist cleared");
+        log.info("서비스 접근 제한 IP 목록을 초기화하였습니다.");
     }
 
     private BlacklistIp getBlacklistIpByIpAddressOrThrow(String ipAddress) {
