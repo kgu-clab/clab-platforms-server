@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
@@ -8,6 +7,8 @@ import page.clab.api.repository.RedisTokenRepository;
 import page.clab.api.type.dto.TokenInfo;
 import page.clab.api.type.entity.RedisToken;
 import page.clab.api.type.etc.Role;
+
+import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
