@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import page.clab.api.repository.BlacklistIpRepository;
 import page.clab.api.service.RedisIpAttemptService;
+import page.clab.api.type.dto.ResponseModel;
 
 @Slf4j
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
@@ -42,22 +43,21 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        String path = ((HttpServletRequest) request).getRequestURI();
-        boolean isSwagger = false;
-        for (String pattern : SWAGGER_PATTERNS) {
-            if (Pattern.compile(pattern).matcher(path).find()) {
-                isSwagger = true;
-                break;
-            }
-        }
-        if (!isSwagger) {
+        String path = request.getRequestURI();
+        if (!isSwaggerRequest(path)) {
             chain.doFilter(request, response);
             return;
         }
         String clientIpAddress = request.getRemoteAddr();
-        log.debug("clientIpAddress : {}", clientIpAddress);
-        if (blacklistIpRepository.existsByIpAddress(clientIpAddress)) {
-            throw new SecurityException("[" + clientIpAddress + "] 서비스 이용 불가 IP입니다.");
+        if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAttemptService.isBlocked(clientIpAddress)) {
+            log.info("[{}] : 서비스 이용이 제한된 IP입니다.", clientIpAddress);
+            ResponseModel responseModel = ResponseModel.builder()
+                    .success(false)
+                    .build();
+            response.getWriter().write(responseModel.toJson());
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader == null || !authorizationHeader.startsWith("Basic ")) {
@@ -82,6 +82,15 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         super.doFilterInternal(request, response, chain);
+    }
+
+    private boolean isSwaggerRequest(String path) {
+        for (String pattern : SWAGGER_PATTERNS) {
+            if (Pattern.compile(pattern).matcher(path).find()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
