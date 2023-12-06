@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,7 @@ public class DonationController {
     private final DonationService donationService;
 
     @Operation(summary = "[U] 후원 생성", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createDonation(
             @Valid @RequestBody DonationRequestDto donationRequestDto,
@@ -42,6 +44,7 @@ public class DonationController {
     }
 
     @Operation(summary = "[U] 후원 정보", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getDonations(
             @RequestParam(defaultValue = "0") int page,
@@ -55,6 +58,7 @@ public class DonationController {
     }
 
     @Operation(summary = "[U] 나의 후원 정보", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my-donations")
     public ResponseModel getMyDonations(
             @RequestParam(defaultValue = "0") int page,
@@ -69,6 +73,7 @@ public class DonationController {
 
     @Operation(summary = "[U] 후원 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "멤버 ID, 이름을 기준으로 검색")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel getDonation(
             @RequestParam(required = false) String memberId,
@@ -84,6 +89,7 @@ public class DonationController {
     }
 
     @Operation(summary = "[U] 후원 정보 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{donationId}")
     public ResponseModel updateDonation(
             @PathVariable Long donationId,
@@ -100,6 +106,7 @@ public class DonationController {
     }
 
     @Operation(summary = "[U] 후원 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{donationId}")
     public ResponseModel deleteDonation(
             @PathVariable Long donationId

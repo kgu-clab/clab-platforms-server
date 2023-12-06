@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,6 +41,7 @@ public class ActivityGroupAdminController {
     private final ActivityGroupAdminService activityGroupAdminService;
 
     @Operation(summary = "[U] 활동 생성", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createActivityGroup(
             @Valid @RequestBody ActivityGroupRequestDto activityGroupRequestDto,
@@ -55,12 +57,13 @@ public class ActivityGroupAdminController {
     }
 
     @Operation(summary = "[A] 활동 상태별 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getActivityGroupsByStatus (
             @RequestParam ActivityGroupStatus activityGroupStatus,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
-    ) throws PermissionDeniedException {
+    ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ActivityGroupResponseDto> activityGroupList = activityGroupAdminService.getActivityGroupsByStatus(activityGroupStatus, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -69,6 +72,7 @@ public class ActivityGroupAdminController {
     }
 
     @Operation(summary = "[U] 활동 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{activityGroupId}")
     public ResponseModel updateActivityGroup(
             @PathVariable Long activityGroupId,
@@ -85,11 +89,12 @@ public class ActivityGroupAdminController {
     }
 
     @Operation(summary = "[A] 활동 상태 변경", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("manage/{activityGroupId}")
     public ResponseModel manageActivityGroupStatus(
             @PathVariable Long activityGroupId,
             @RequestParam ActivityGroupStatus activityGroupStatus
-    ) throws PermissionDeniedException {
+    ) {
         Long id = activityGroupAdminService.manageActivityGroup(activityGroupId, activityGroupStatus);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -97,10 +102,11 @@ public class ActivityGroupAdminController {
     }
 
     @Operation(summary = "[A] 활동 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{activityGroupId}")
     public ResponseModel deleteActivityGroup(
             @PathVariable Long activityGroupId
-    ) throws PermissionDeniedException {
+    ) {
         Long id = activityGroupAdminService.deleteActivityGroup(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -109,6 +115,7 @@ public class ActivityGroupAdminController {
 
     @Operation(summary = "[U] 프로젝트 진행도 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "진행도는 0~100 사이의 값으로 입력해야 함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/progress/{activityGroupId}")
     public ResponseModel updateProjectProgress(
             @PathVariable Long activityGroupId,
@@ -121,6 +128,7 @@ public class ActivityGroupAdminController {
     }
 
     @Operation(summary = "[U] 커리큘럼 및 일정 생성", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/schedule")
     public ResponseModel addSchedule(
             @RequestParam Long activityGroupId,
@@ -137,6 +145,7 @@ public class ActivityGroupAdminController {
     }
 
     @Operation(summary = "[U] 신청 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/apply-members")
     public ResponseModel getApplyGroupMemberList(
             @RequestParam Long activityGroupId,
@@ -151,6 +160,7 @@ public class ActivityGroupAdminController {
     }
 
     @Operation(summary = "[U] 신청 멤버 상태 변경", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/accept")
     public ResponseModel acceptGroupMember(
             @RequestParam String memberId,

@@ -6,12 +6,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.LoginAttemptLogService;
 import page.clab.api.type.dto.LoginAttemptLogResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
@@ -27,12 +27,13 @@ public class LoginAttemptLogController {
     private final LoginAttemptLogService loginAttemptLogService;
 
     @Operation(summary = "[A] 계정별 로그인 시도 로그 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{memberId}")
     public ResponseModel getLoginAttemptLogs(
             @PathVariable String memberId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
-    ) throws PermissionDeniedException {
+    ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<LoginAttemptLogResponseDto> loginAttemptLogs = loginAttemptLogService.getLoginAttemptLogs(memberId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();

@@ -28,7 +28,7 @@ public class ApplicationService {
     private final MemberService memberService;
 
     private final NotificationService notificationService;
-
+    
     private final ApplicationRepository applicationRepository;
 
     @Transactional

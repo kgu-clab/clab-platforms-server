@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,8 +51,7 @@ public class MemberService {
         this.notificationService = notificationService;
     }
 
-    public String createMember(MemberRequestDto memberRequestDto) throws PermissionDeniedException {
-        checkMemberAdminRole();
+    public String createMember(MemberRequestDto memberRequestDto) {
         if (memberRepository.findById(memberRequestDto.getId()).isPresent())
             throw new AssociatedAccountExistsException("이미 사용 중인 아이디입니다.");
         if (memberRepository.findByContact(memberRequestDto.getContact()).isPresent())
@@ -66,16 +64,14 @@ public class MemberService {
         return memberRepository.save(member).getId();
     }
 
-    public List<MemberResponseDto> getMembers() throws PermissionDeniedException {
-        checkMemberAdminRole();
+    public List<MemberResponseDto> getMembers() {
         List<Member> members = memberRepository.findAll();
         return members.stream()
                 .map(MemberResponseDto::of)
                 .collect(Collectors.toList());
     }
 
-    public PagedResponseDto<MemberResponseDto> getMembers(Pageable pageable) throws PermissionDeniedException {
-        checkMemberAdminRole();
+    public PagedResponseDto<MemberResponseDto> getMembers(Pageable pageable) {
         Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(members.map(MemberResponseDto::of));
     }
@@ -93,8 +89,7 @@ public class MemberService {
         return new PagedResponseDto<>(birthdayMembersPage.map(MemberResponseDto::of));
     }
 
-    public PagedResponseDto<MemberResponseDto> searchMember(String memberId, String name, MemberStatus memberStatus, Pageable pageable) throws PermissionDeniedException {
-        checkMemberAdminRole();
+    public PagedResponseDto<MemberResponseDto> searchMember(String memberId, String name, MemberStatus memberStatus, Pageable pageable) {
         Page<Member> members;
         if (memberId != null) {
             Member member = getMemberByIdOrThrow(memberId);
@@ -127,13 +122,10 @@ public class MemberService {
         return memberRepository.save(updatedMember).getId();
     }
 
-    @Transactional
-    public String updateMemberStatusByAdmin(String memberId, MemberStatus memberStatus) throws PermissionDeniedException {
-        checkMemberAdminRole();
+    public String updateMemberStatusByAdmin(String memberId, MemberStatus memberStatus) {
         Member member = getMemberByIdOrThrow(memberId);
         member.setMemberStatus(memberStatus);
         String id = memberRepository.save(member).getId();
-
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(member.getId())
                 .content("관리자가 " + member.getName() + "님의 회원 상태를 [" + memberStatus.getDescription() + "]으로 변경하였습니다.")
@@ -142,8 +134,7 @@ public class MemberService {
         return id;
     }
 
-    public PagedResponseDto<CloudUsageInfo> getAllCloudUsages(Pageable pageable) throws PermissionDeniedException {
-        checkMemberAdminRole();
+    public PagedResponseDto<CloudUsageInfo> getAllCloudUsages(Pageable pageable) {
         Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(members.map(member -> getCloudUsageByMemberId(member.getId())));
     }
@@ -189,14 +180,6 @@ public class MemberService {
         Member member = getMemberByIdOrThrow(memberId);
         member.setLastLoginTime(LocalDateTime.now());
         memberRepository.save(member);
-    }
-
-    public void checkMemberAdminRole() throws PermissionDeniedException {
-        String memberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = memberRepository.findById(memberId).get();
-        if (member.getRole().equals(Role.USER)) {
-            throw new PermissionDeniedException("권한이 부족합니다.");
-        }
     }
 
     public boolean isMemberAdminRole(Member member) {

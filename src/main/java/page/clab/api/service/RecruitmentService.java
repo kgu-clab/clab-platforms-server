@@ -7,7 +7,6 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.RecruitmentRepository;
 import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.RecruitmentRequestDto;
@@ -22,12 +21,11 @@ public class RecruitmentService {
     private final MemberService memberService;
 
     private final NotificationService notificationService;
-
+    
     private final RecruitmentRepository recruitmentRepository;
 
     @Transactional
-    public Long createRecruitment(RecruitmentRequestDto recruitmentRequestDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long createRecruitment(RecruitmentRequestDto recruitmentRequestDto) {
         Recruitment recruitment = Recruitment.of(recruitmentRequestDto);
         Long id = recruitmentRepository.save(recruitment).getId();
         List<Member> members = memberService.findAll();
@@ -49,8 +47,7 @@ public class RecruitmentService {
                 .collect(Collectors.toList());
     }
 
-    public Long updateRecruitment(Long recruitmentId, RecruitmentRequestDto recruitmentRequestDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long updateRecruitment(Long recruitmentId, RecruitmentRequestDto recruitmentRequestDto) {
         Recruitment recruitment = getRecruitmentByIdOrThrow(recruitmentId);
         Recruitment updatedRecruitment = Recruitment.of(recruitmentRequestDto);
         updatedRecruitment.setId(recruitment.getId());
@@ -59,8 +56,7 @@ public class RecruitmentService {
         return recruitmentRepository.save(updatedRecruitment).getId();
     }
 
-    public Long deleteRecruitment(Long recruitmentId) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long deleteRecruitment(Long recruitmentId) {
         Recruitment recruitment = getRecruitmentByIdOrThrow(recruitmentId);
         recruitmentRepository.delete(recruitment);
         return recruitment.getId();

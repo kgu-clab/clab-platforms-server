@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.ApplicationService;
 import page.clab.api.type.dto.ApplicationPassResponseDto;
 import page.clab.api.type.dto.ApplicationRequestDto;
@@ -53,11 +53,12 @@ public class ApplicationController {
     }
 
     @Operation(summary = "[A] 신청자 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getApplications(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
-    ) throws PermissionDeniedException {
+    ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ApplicationResponseDto> applications = applicationService.getApplications(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -67,13 +68,14 @@ public class ApplicationController {
 
     @Operation(summary = "[A] 신청자 목록 필터링(업데이트 날짜 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "전달된 날짜 사이의 신청자를 필터링하여 반환")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/filter")
     public ResponseModel getApplicationsBetweenDates(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
-    ) throws PermissionDeniedException {
+    ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ApplicationResponseDto> applications = applicationService.getApplicationsBetweenDates(startDate, endDate, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -83,10 +85,11 @@ public class ApplicationController {
 
     @Operation(summary = "[A] 신청자 검색", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "신청자의 학번을 기반으로 검색")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel searchApplication(
             @RequestParam String applicationId
-    ) throws PermissionDeniedException {
+    ) {
         ApplicationResponseDto application = applicationService.searchApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(application);
@@ -95,10 +98,11 @@ public class ApplicationController {
 
     @Operation(summary = "[A] 가입 신청 승인/취소", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "승인/취소 상태가 반전됨")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{applicationId}")
     public ResponseModel approveApplication(
             @PathVariable String applicationId
-    ) throws PermissionDeniedException {
+    ) {
         String id = applicationService.approveApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -106,11 +110,12 @@ public class ApplicationController {
     }
 
     @Operation(summary = "[A] 합격자 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/pass")
     public ResponseModel getApprovedApplications(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
-    ) throws PermissionDeniedException {
+    ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -130,10 +135,11 @@ public class ApplicationController {
     }
 
     @Operation(summary = "[A] 가입 신청서 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{applicationId}")
     public ResponseModel deleteApplication(
             @PathVariable String applicationId
-    ) throws PermissionDeniedException {
+    ) {
         String id = applicationService.deleteApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);

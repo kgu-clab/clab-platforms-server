@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,6 +35,7 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @Operation(summary = "[U] 알림 생성", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createNotification(
             @Valid @RequestBody NotificationRequestDto notificationRequestDto,
@@ -49,6 +51,7 @@ public class NotificationController {
     }
 
     @Operation(summary = "[U] 나의 알림 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getNotifications(
             @RequestParam(defaultValue = "0") int page,
@@ -62,6 +65,7 @@ public class NotificationController {
     }
 
     @Operation(summary = "[U] 알림 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{notificationId}")
     public ResponseModel deleteNotification(
             @PathVariable("notificationId") Long notificationId
