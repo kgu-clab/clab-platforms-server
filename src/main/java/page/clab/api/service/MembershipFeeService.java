@@ -28,11 +28,11 @@ public class MembershipFeeService {
 
     private final MembershipFeeRepository membershipFeeRepository;
 
-    public void createMembershipFee(MembershipFeeRequestDto membershipFeeRequestDto) {
+    public Long createMembershipFee(MembershipFeeRequestDto membershipFeeRequestDto) {
         Member member = memberService.getCurrentMember();
         MembershipFee membershipFee = MembershipFee.of(membershipFeeRequestDto);
         membershipFee.setApplicant(member);
-        membershipFeeRepository.save(membershipFee);
+        Long id = membershipFeeRepository.save(membershipFee).getId();
 
         List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
         for (Member superMember : superMembers) {
@@ -48,6 +48,7 @@ public class MembershipFeeService {
                 .content("회비 사용을 요청하였습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto4Member);
+        return id;
     }
 
     public PagedResponseDto<MembershipFeeResponseDto> getMembershipFees(Pageable pageable) {
@@ -64,7 +65,7 @@ public class MembershipFeeService {
         return new PagedResponseDto<>(membershipFees.map(MembershipFeeResponseDto::of));
     }
 
-    public void updateMembershipFee(Long membershipFeeId, MembershipFeeRequestDto membershipFeeRequestDto) throws PermissionDeniedException {
+    public Long updateMembershipFee(Long membershipFeeId, MembershipFeeRequestDto membershipFeeRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         MembershipFee membershipFee = getMembershipFeeByIdOrThrow(membershipFeeId);
         if (!(membershipFee.getApplicant().equals(member) || memberService.isMemberAdminRole(member))) {
@@ -74,16 +75,17 @@ public class MembershipFeeService {
         updatedMembershipFee.setId(membershipFee.getId());
         updatedMembershipFee.setApplicant(membershipFee.getApplicant());
         updatedMembershipFee.setCreatedAt(membershipFee.getCreatedAt());
-        membershipFeeRepository.save(updatedMembershipFee);
+        return membershipFeeRepository.save(updatedMembershipFee).getId();
     }
 
-    public void deleteMembershipFee(Long membershipFeeId) throws PermissionDeniedException {
+    public Long deleteMembershipFee(Long membershipFeeId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         MembershipFee membershipFee = getMembershipFeeByIdOrThrow(membershipFeeId);
         if (!(membershipFee.getApplicant().equals(member) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException();
         }
         membershipFeeRepository.delete(membershipFee);
+        return membershipFee.getId();
     }
 
     private MembershipFee getMembershipFeeByIdOrThrow(Long membershipFeeId) {

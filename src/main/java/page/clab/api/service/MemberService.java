@@ -17,7 +17,6 @@ import page.clab.api.type.dto.CloudUsageInfo;
 import page.clab.api.type.dto.FileInfo;
 import page.clab.api.type.dto.MemberRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
-import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.MemberStatus;
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MemberService {
 
-    private final NotificationService notificationService;
+//    private final NotificationService notificationService;
 
     private final MemberRepository memberRepository;
 
@@ -45,7 +44,7 @@ public class MemberService {
     @Value("${resource.file.path}")
     private String filePath;
 
-    public void createMember(MemberRequestDto memberRequestDto) throws PermissionDeniedException {
+    public String createMember(MemberRequestDto memberRequestDto) throws PermissionDeniedException {
         checkMemberAdminRole();
         if (memberRepository.findById(memberRequestDto.getId()).isPresent())
             throw new AssociatedAccountExistsException("이미 사용 중인 아이디입니다.");
@@ -56,7 +55,7 @@ public class MemberService {
         Member member = Member.of(memberRequestDto);
         member.setContact(removeHyphensFromContact(member.getContact()));
         member.setPassword(passwordEncoder.encode(member.getPassword()));
-        memberRepository.save(member);
+        return memberRepository.save(member).getId();
     }
 
     public List<MemberResponseDto> getMembers() throws PermissionDeniedException {
@@ -105,7 +104,7 @@ public class MemberService {
         return new PagedResponseDto<>(members.map(MemberResponseDto::of));
     }
 
-    public void updateMemberInfo(String memberId, MemberRequestDto memberRequestDto) throws PermissionDeniedException {
+    public String updateMemberInfo(String memberId, MemberRequestDto memberRequestDto) throws PermissionDeniedException {
         Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
         if (!(member.getId().equals(currentMember.getId()) || isMemberAdminRole(currentMember))) {
@@ -117,26 +116,28 @@ public class MemberService {
         updatedMember.setProvider(member.getProvider());
         updatedMember.setLastLoginTime(member.getLastLoginTime());
         updatedMember.setLoanSuspensionDate(member.getLoanSuspensionDate());
-        memberRepository.save(updatedMember);
+        String id = memberRepository.save(updatedMember).getId();
 
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(member.getId())
-                .content("최근에 회원 정보가 수정되었습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
+//        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+//                .memberId(member.getId())
+//                .content("최근에 회원 정보가 수정되었습니다.")
+//                .build();
+//        notificationService.createNotification(notificationRequestDto);
+        return id;
     }
 
-    public void updateMemberStatusByAdmin(String memberId, MemberStatus memberStatus) throws PermissionDeniedException {
+    public String updateMemberStatusByAdmin(String memberId, MemberStatus memberStatus) throws PermissionDeniedException {
         checkMemberAdminRole();
         Member member = getMemberByIdOrThrow(memberId);
         member.setMemberStatus(memberStatus);
-        memberRepository.save(member);
+        String id = memberRepository.save(member).getId();
 
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(member.getId())
-                .content("관리자가 " + member.getName() + "님의 회원 상태를 " + memberStatus + "로 변경하였습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
+//        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+//                .memberId(member.getId())
+//                .content("관리자가 " + member.getName() + "님의 회원 상태를 " + memberStatus + "로 변경하였습니다.")
+//                .build();
+//        notificationService.createNotification(notificationRequestDto);
+        return id;
     }
 
     public PagedResponseDto<CloudUsageInfo> getAllCloudUsages(Pageable pageable) throws PermissionDeniedException {
@@ -238,5 +239,4 @@ public class MemberService {
     public List<Member> getMembersByRole(Role role) {
         return memberRepository.findAllByRole(role);
     }
-
 }
