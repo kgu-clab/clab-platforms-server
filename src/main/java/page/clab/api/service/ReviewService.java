@@ -1,5 +1,6 @@
 package page.clab.api.service;
 
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -11,12 +12,15 @@ import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.ReviewRepository;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ReviewRequestDto;
 import page.clab.api.type.dto.ReviewResponseDto;
 import page.clab.api.type.entity.ActivityGroup;
+import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.Review;
+import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
 
 @Service
@@ -28,8 +32,11 @@ public class ReviewService {
 
     private final ActivityGroupMemberService activityGroupMemberService;
 
+    private final NotificationService notificationService;
+
     private final ReviewRepository reviewRepository;
 
+    @Transactional
     public Long createReview(ReviewRequestDto reviewRequestDto) {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(reviewRequestDto.getActivityGroupId());
@@ -44,8 +51,15 @@ public class ReviewService {
         review.setActivityGroup(activityGroup);
         review.setIsPublic(false);
         review.setMember(member);
-        return reviewRepository.save(review).getId();
-  }
+        Long id = reviewRepository.save(review).getId();
+        GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(groupLeader.getMember().getId())
+                .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 리뷰를 등록하였습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+        return id;
+    }
 
     public PagedResponseDto<ReviewResponseDto> getReviews(Pageable pageable) {
         Page<Review> reviews = reviewRepository.findAllByOrderByCreatedAtDesc(pageable);

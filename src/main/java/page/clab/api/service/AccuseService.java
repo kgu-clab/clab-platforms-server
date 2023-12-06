@@ -1,5 +1,6 @@
 package page.clab.api.service;
 
+import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +12,12 @@ import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.AccuseRepository;
 import page.clab.api.type.dto.AccuseRequestDto;
 import page.clab.api.type.dto.AccuseResponseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Accuse;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.AccuseStatus;
+import page.clab.api.type.etc.Role;
 import page.clab.api.type.etc.TargetType;
 
 @Service
@@ -30,6 +33,8 @@ public class AccuseService {
 
     private final ReviewService reviewService;
 
+    private final NotificationService notificationService;
+
     private final AccuseRepository accuseRepository;
 
     @Transactional
@@ -43,18 +48,35 @@ public class AccuseService {
         } else {
             throw new IllegalArgumentException("신고 대상 유형이 올바르지 않습니다.");
         }
+        Long id;
         Member member = memberService.getCurrentMember();
         Accuse existingAccuse = getAccuseByMemberAndTargetTypeAndTargetId(member, accuseRequestDto);
         if (existingAccuse != null) {
             existingAccuse.setReason(accuseRequestDto.getReason());
-            return accuseRepository.save(existingAccuse).getId();
+            id = accuseRepository.save(existingAccuse).getId();
         } else {
             Accuse accuse = Accuse.of(accuseRequestDto);
             accuse.setId(null);
             accuse.setMember(member);
             accuse.setAccuseStatus(AccuseStatus.PENDING);
-            return accuseRepository.save(accuse).getId();
+            id = accuseRepository.save(accuse).getId();
         }
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .content("신고하신 내용이 접수되었습니다.")
+                .memberId(member.getId())
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+
+        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
+        for (Member superMember : superMembers) {
+            NotificationRequestDto notificationRequestDtoForSuper = NotificationRequestDto.builder()
+                    .content(member.getName() + "님이 신고를 접수하였습니다. 확인해주세요.")
+                    .memberId(superMember.getId())
+                    .build();
+            notificationService.createNotification(notificationRequestDtoForSuper);
+        }
+        return id;
     }
 
     public PagedResponseDto<AccuseResponseDto> getAccuses(Pageable pageable) {
@@ -82,7 +104,13 @@ public class AccuseService {
     public Long updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) {
         Accuse accuse = getAccuseByIdOrThrow(accuseId);
         accuse.setAccuseStatus(accuseStatus);
-        return accuseRepository.save(accuse).getId();
+        Long id = accuseRepository.save(accuse).getId();
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .content("신고 상태가 " + accuseStatus + "로 변경되었습니다.")
+                .memberId(accuse.getMember().getId())
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+        return id;
     }
 
     private Accuse getAccuseByIdOrThrow(Long accuseId) {

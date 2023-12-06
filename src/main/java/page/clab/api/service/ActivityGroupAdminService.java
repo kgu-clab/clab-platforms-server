@@ -14,6 +14,7 @@ import page.clab.api.type.dto.ActivityGroupRequestDto;
 import page.clab.api.type.dto.ActivityGroupResponseDto;
 import page.clab.api.type.dto.GroupMemberResponseDto;
 import page.clab.api.type.dto.GroupScheduleDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
@@ -35,6 +36,8 @@ public class ActivityGroupAdminService {
 
     private final GroupScheduleRepository groupScheduleRepository;
 
+    private final NotificationService notificationService;
+
     @Transactional
     public Long createActivityGroup(ActivityGroupRequestDto activityGroupRequestDto) {
         Member member = memberService.getCurrentMember();
@@ -46,6 +49,11 @@ public class ActivityGroupAdminService {
         groupLeader.setRole(ActivityGroupRole.LEADER);
         groupLeader.setStatus(GroupMemberStatus.ACCEPTED);
         activityGroupMemberService.save(groupLeader);
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(member.getId())
+                .content("활동 그룹 생성이 완료되었습니다. 활동 승인이 완료되면 활동 그룹을 이용할 수 있습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
         return id;
     }
 
@@ -70,7 +78,14 @@ public class ActivityGroupAdminService {
     public Long manageActivityGroup(Long activityGroupId, ActivityGroupStatus activityGroupStatus) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroup.setStatus(activityGroupStatus);
-        return activityGroupRepository.save(activityGroup).getId();
+        Long id = activityGroupRepository.save(activityGroup).getId();
+        GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(groupLeader.getMember().getId())
+                .content("활동 그룹이 [" + activityGroupStatus.getDescription() + "] 상태로 변경되었습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+        return id;
     }
 
     @Transactional
@@ -78,9 +93,15 @@ public class ActivityGroupAdminService {
         List<GroupMember> groupMemberList = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
         List<GroupSchedule> groupScheduleList = groupScheduleRepository.findAllByActivityGroupIdOrderByIdDesc(activityGroupId);
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
         activityGroupMemberService.deleteAll(groupMemberList);
         groupScheduleRepository.deleteAll(groupScheduleList);
         activityGroupRepository.delete(activityGroup);
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(groupLeader.getMember().getId())
+                .content("활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
         return activityGroup.getId();
     }
 
@@ -119,17 +140,24 @@ public class ActivityGroupAdminService {
     public String manageGroupMemberStatus(String memberId, GroupMemberStatus status) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         if (!isMemberGroupLeaderRole(currentMember)) {
-            throw new PermissionDeniedException("해당 활동의 신청 멤버 상태를 변경할 권한이 없습니다.");
+            throw new PermissionDeniedException("해당 활동의 신청 멤버를 조회할 권한이 없습니다.");
         }
         Member member = memberService.getMemberByIdOrThrow(memberId);
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByMemberOrThrow(member);
         groupMember.setStatus(status);
         if (status == GroupMemberStatus.ACCEPTED) {
             groupMember.setRole(ActivityGroupRole.MEMBER);
-        }else {
+        } else {
             groupMember.setRole(null);
         }
-        return activityGroupMemberService.save(groupMember).getMember().getId();
+        String id = activityGroupMemberService.save(groupMember).getMember().getId();
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(memberId)
+                .content("활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+        return id;
     }
 
     public Page<ActivityGroup> getActivityGroupByStatus(ActivityGroupStatus status, Pageable pageable) {

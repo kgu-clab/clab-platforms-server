@@ -1,6 +1,8 @@
 package page.clab.api.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,9 +19,14 @@ import page.clab.api.type.entity.Notification;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private final MemberService memberService;
+    private MemberService memberService;
 
     private final NotificationRepository notificationRepository;
+
+    @Autowired
+    public void setMemberService(@Lazy MemberService memberService) {
+        this.memberService = memberService;
+    }
 
     public Long createNotification(NotificationRequestDto notificationRequestDto) {
         Member member = memberService.getMemberByIdOrThrow(notificationRequestDto.getMemberId());

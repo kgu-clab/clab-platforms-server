@@ -3,23 +3,41 @@ package page.clab.api.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.repository.RecruitmentRepository;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.RecruitmentRequestDto;
 import page.clab.api.type.dto.RecruitmentResponseDto;
+import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.Recruitment;
 
 @Service
 @RequiredArgsConstructor
 public class RecruitmentService {
 
+    private final MemberService memberService;
+
+    private final NotificationService notificationService;
+    
     private final RecruitmentRepository recruitmentRepository;
 
+    @Transactional
     public Long createRecruitment(RecruitmentRequestDto recruitmentRequestDto) {
         Recruitment recruitment = Recruitment.of(recruitmentRequestDto);
-        return recruitmentRepository.save(recruitment).getId();
+        Long id = recruitmentRepository.save(recruitment).getId();
+        List<Member> members = memberService.findAll();
+        members.stream()
+                .forEach(member -> {
+                    NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                            .memberId(member.getId())
+                            .content("새로운 모집 공고가 등록되었습니다.")
+                            .build();
+                    notificationService.createNotification(notificationRequestDto);
+                });
+        return id;
     }
 
     public List<RecruitmentResponseDto> getRecentRecruitments() {

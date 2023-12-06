@@ -17,6 +17,7 @@ import page.clab.api.type.dto.ActivityGroupResponseDto;
 import page.clab.api.type.dto.ActivityGroupStudyResponseDto;
 import page.clab.api.type.dto.GroupMemberResponseDto;
 import page.clab.api.type.dto.GroupScheduleDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.GroupMember;
@@ -35,6 +36,8 @@ public class ActivityGroupMemberService {
     private final MemberService memberService;
 
     private final EmailService emailService;
+
+    private final NotificationService notificationService;
 
     private final ActivityGroupRepository activityGroupRepository;
 
@@ -99,6 +102,11 @@ public class ActivityGroupMemberService {
         String subject = "[" + activityGroup.getName() + "] 활동 참가 신청이 들어왔습니다.";
         String content = member.getName() + "에게서 활동 참가 신청이 들어왔습니다.";
         emailService.sendEmail(groupLeader.getMember().getEmail(), subject, content, null);
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(groupLeader.getMember().getId())
+                .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 활동 참가 신청을 하였습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
         return activityGroup.getId();
     }
 
@@ -132,7 +140,7 @@ public class ActivityGroupMemberService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버입니다."));
     }
 
-    private GroupMember getGroupMemberByActivityGroupIdAndRole(Long activityGroupId, ActivityGroupRole role) {
+    public GroupMember getGroupMemberByActivityGroupIdAndRole(Long activityGroupId, ActivityGroupRole role) {
         return groupMemberRepository.findByActivityGroupIdAndRole(activityGroupId, role)
                 .orElseThrow(() -> new NotFoundException("해당 활동의 리더가 존재하지 않습니다."));
     }

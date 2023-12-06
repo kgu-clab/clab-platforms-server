@@ -2,6 +2,7 @@ package page.clab.api.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,13 +10,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.ApplicationRepository;
 import page.clab.api.type.dto.ApplicationPassResponseDto;
 import page.clab.api.type.dto.ApplicationRequestDto;
 import page.clab.api.type.dto.ApplicationResponseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Application;
+import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.Role;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +27,28 @@ public class ApplicationService {
 
     private final MemberService memberService;
 
+    private final NotificationService notificationService;
+    
     private final ApplicationRepository applicationRepository;
 
-    public String createApplication(ApplicationRequestDto appRequestDto) {
-        Application application = Application.of(appRequestDto);
+    @Transactional
+    public String createApplication(ApplicationRequestDto applicationRequestDto) {
+        Application application = Application.of(applicationRequestDto);
         application.setContact(memberService.removeHyphensFromContact(application.getContact()));
         application.setIsPass(false);
         application.setUpdateTime(LocalDateTime.now());
-        return applicationRepository.save(application).getStudentId();
+        String id = applicationRepository.save(application).getStudentId();
+        List<Member> admins = memberService.getMembersByRole(Role.SUPER);
+        admins.addAll(memberService.getMembersByRole(Role.ADMIN));
+        admins.stream()
+                .forEach(admin -> {
+                    NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                            .memberId(admin.getId())
+                            .content(applicationRequestDto.getStudentId() + " " + applicationRequestDto.getName() + "님이 동아리 가입을 신청하였습니다.")
+                            .build();
+                    notificationService.createNotification(notificationRequestDto);
+                });
+        return id;
     }
 
     public PagedResponseDto<ApplicationResponseDto> getApplications(Pageable pageable) {
@@ -54,21 +71,13 @@ public class ApplicationService {
         return ApplicationResponseDto.of(application);
     }
 
-    @Transactional
     public String approveApplication(String applicationId) {
         Application application = getApplicationByIdOrThrow(applicationId);
-        if (application.getIsPass()) {
-            application.setIsPass(false);
-            application.setUpdateTime(LocalDateTime.now());
-            return applicationRepository.save(application).getStudentId();
-        } else {
-            application.setIsPass(true);
-            application.setUpdateTime(LocalDateTime.now());
-            return applicationRepository.save(application).getStudentId();
-        }
+        application.setIsPass(!application.getIsPass());
+        application.setUpdateTime(LocalDateTime.now());
+        return applicationRepository.save(application).getStudentId();
     }
 
-    @Transactional
     public PagedResponseDto<ApplicationResponseDto> getApprovedApplications(Pageable pageable) {
         Page<Application> applications = getApplicationByIsPass(pageable);
         if (applications.isEmpty()) {

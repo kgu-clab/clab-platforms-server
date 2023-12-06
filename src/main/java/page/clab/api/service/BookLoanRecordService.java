@@ -17,6 +17,7 @@ import page.clab.api.repository.BookLoanRecordRepository;
 import page.clab.api.repository.BookRepository;
 import page.clab.api.type.dto.BookLoanRecordRequestDto;
 import page.clab.api.type.dto.BookLoanRecordResponseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Book;
 import page.clab.api.type.entity.BookLoanRecord;
@@ -31,6 +32,8 @@ public class BookLoanRecordService {
     private final MemberService memberService;
 
     private final BookRepository bookRepository;
+
+    private final NotificationService notificationService;
 
     private final BookLoanRecordRepository bookLoanRecordRepository;
 
@@ -53,7 +56,13 @@ public class BookLoanRecordService {
                 .borrower(borrower)
                 .borrowedAt(LocalDateTime.now())
                 .build();
-        return bookLoanRecordRepository.save(bookLoanRecord).getId();
+        Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(borrowerId)
+                .content("[" + book.getTitle() + "] 도서 대출이 완료되었습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+        return id;
     }
 
     @Transactional
@@ -83,7 +92,13 @@ public class BookLoanRecordService {
         book.setBorrower(null);
         bookRepository.save(book);
         bookLoanRecord.setReturnedAt(currentDate);
-        return bookLoanRecordRepository.save(bookLoanRecord).getId();
+        Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(borrowerId)
+                .content("[" + book.getTitle() + "] 도서 반납이 완료되었습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+        return id;
     }
 
     @Transactional
@@ -117,7 +132,14 @@ public class BookLoanRecordService {
                 throw new OverdueException("대출 연장이 불가능합니다.");
             }
         }
-        return bookLoanRecordRepository.save(bookLoanRecord).getId();
+        Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .memberId(borrowerId)
+                .content("[" + book.getTitle() + "] 도서 대출 연장이 완료되었습니다.")
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+        return id;
     }
 
     private void handleOverdueAndSuspension(Member member, long overdueDays) {
