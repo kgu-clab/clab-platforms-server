@@ -1,6 +1,7 @@
 package page.clab.api.config;
 
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +29,7 @@ import page.clab.api.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.auth.jwt.JwtTokenProvider;
 import page.clab.api.repository.BlacklistIpRepository;
 import page.clab.api.service.RedisTokenService;
+import page.clab.api.type.dto.ResponseModel;
 
 @Configuration
 @EnableWebSecurity
@@ -103,7 +105,16 @@ public class SecurityConfig {
                 .and()
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling()
+                .authenticationEntryPoint((request, response, authException) -> {
+                    ResponseModel responseModel = ResponseModel.builder()
+                            .success(false)
+                            .build();
+                    response.getWriter().write(responseModel.toJson());
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                });
         return http.build();
     }
 
