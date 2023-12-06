@@ -1,6 +1,7 @@
 package page.clab.api.type.dto;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +23,7 @@ public class ResponseModel {
     }
 
     public String toJson() {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().serializeNulls().create();
         return gson.toJson(this);
     }
 
