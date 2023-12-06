@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import page.clab.api.auth.filter.CustomBasicAuthenticationFilter;
 import page.clab.api.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.auth.jwt.JwtTokenProvider;
 import page.clab.api.repository.BlacklistIpRepository;
@@ -38,11 +41,16 @@ public class SecurityConfig {
 
     private final BlacklistIpRepository blacklistIpRepository;
 
+    private final AuthenticationConfiguration authenticationConfiguration;
+
     @Value("${springdoc.account.id}")
     private String username;
 
     @Value("${springdoc.account.password}")
     private String password;
+
+    @Value("${springdoc.account.role}")
+    private String role;
 
     private static final String[] PERMIT_ALL = {
             "/login/**",
@@ -50,6 +58,7 @@ public class SecurityConfig {
             "/configuration/ui",
             "/configuration/security",
             "/webjars/**",
+            "/error",
             "/"
     };
 
@@ -78,6 +87,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
         http
                 .csrf().disable()
                 .cors().configurationSource(corsConfigurationSource())
@@ -85,26 +95,24 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers(SWAGGER_PATTERNS).hasRole("SWAGGER")
+                .antMatchers(SWAGGER_PATTERNS).hasRole(role)
                 .antMatchers(PERMIT_ALL).permitAll()
                 .antMatchers(HttpMethod.POST, "/applications").permitAll()
                 .antMatchers(HttpMethod.GET, PERMIT_ALL_API_ENDPOINTS).permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .httpBasic()
-                .and()
                 .authenticationProvider(authenticationProvider())
+                .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
         UserDetails user =
                 User.withUsername(username)
                         .password(passwordEncoder().encode(password))
-                        .roles("SWAGGER")
+                        .roles(role)
                         .build();
         return new InMemoryUserDetailsManager(user);
     }

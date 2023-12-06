@@ -1,6 +1,7 @@
 package page.clab.api.auth.filter;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -26,8 +27,30 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     
     private final BlacklistIpRepository blacklistIpRepository;
 
+    private static final String[] SWAGGER_PATTERNS = {
+            "/v2/api-docs",
+            "/v3/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/.*",
+            "/swagger-ui.html",
+            "/v3/api-docs/.*",
+            "/swagger-ui/.*"
+    };
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        String path = ((HttpServletRequest) request).getRequestURI();
+        boolean isSwagger = false;
+        for (String pattern : SWAGGER_PATTERNS) {
+            if (Pattern.compile(pattern).matcher(path).find()) {
+                isSwagger = true;
+                break;
+            }
+        }
+        if (isSwagger) {
+            chain.doFilter(request, response);
+            return;
+        }
         String clientIpAddress = request.getRemoteAddr();
         log.debug("clientIpAddress : {}", clientIpAddress);
         if (blacklistIpRepository.existsByIpAddress(clientIpAddress)) {
