@@ -26,8 +26,8 @@ import java.util.UUID;
 @PropertySource("classpath:application-dev.yml")
 public class FileHandler {
 
-//    @Value("${resource.file.path}")
-    private String filePath;
+    @Value("${resource.file.path}")
+    private String filePath; //실제 저장 위치
 
     private final Set<String> disallowExtensions = new HashSet<>();
 
@@ -42,38 +42,42 @@ public class FileHandler {
     }
 
     public String saveFile(MultipartFile multipartFile, String category) throws FileUploadFailException {
+
         String originalFilename = multipartFile.getOriginalFilename();
         if (!validateFilename(originalFilename)) {
             throw new FileUploadFailException("허용되지 않은 파일명 : " + originalFilename);
         }
+
         String extension = FilenameUtils.getExtension(originalFilename);
         if (!validateExtension(extension)) {
             throw new FileUploadFailException("허용되지 않은 확장자 : " + originalFilename);
         }
-        String newFilename = category.startsWith("members/") ? originalFilename :
+
+        //originalFilename은 유저가 올린 파일이름. saveFilename은 서버에 저장될 파일 이름.
+        String saveFilename = category.startsWith("members/") ? originalFilename :
                 System.nanoTime() + "_" + UUID.randomUUID() + "." + extension;
-        String destPath = filePath + File.separator + category + File.separator + newFilename;
-        File file = new File(destPath);
+        String savePath = filePath + File.separator + category + File.separator + saveFilename; //user.dir/cloud/카테고리/서버에 저장될 파일이름
+        File file = new File(savePath);
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
         try {
             String os = System.getProperty("os.name").toLowerCase();
-            multipartFile.transferTo(file);
+            multipartFile.transferTo(file); // savePath 경로에 실질적으로 File이 저장됨.
             if (imageExtensions.contains(extension.toLowerCase())) {
-                ImageCompressionUtil.compressImage(destPath, 0.5f);
+                ImageCompressionUtil.compressImage(savePath, 0.5f);
             }
             if (os.contains("win")) {
                 file.setReadable(true);
                 file.setWritable(false);
                 file.setExecutable(false);
             } else {
-                Runtime.getRuntime().exec("chmod 400 " + destPath);
+                Runtime.getRuntime().exec("chmod 400 " + savePath);
             }
         } catch (IOException e) {
             throw new FileUploadFailException("파일 저장 실패", e);
         }
-        return category + "/" + newFilename;
+        return category + "/" + saveFilename;
     }
 
     private boolean validateExtension(String extension) {

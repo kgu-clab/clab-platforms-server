@@ -47,7 +47,7 @@ public class MemberController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        String id = memberService.createMember(memberRequestDto);
+        String id = memberService.createMember(memberRequestDto); //memberRepository에서 id 받아옴
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
