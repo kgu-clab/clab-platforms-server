@@ -54,10 +54,11 @@ public class FileHandler {
         }
 
         //originalFilename은 유저가 올린 파일이름. saveFilename은 서버에 저장될 파일 이름.
-        String saveFilename = category.startsWith("members/") ? originalFilename :
+        String saveFilename = category.startsWith("members\\") ? originalFilename :
                 System.nanoTime() + "_" + UUID.randomUUID() + "." + extension;
         String savePath = filePath + File.separator + category + File.separator + saveFilename; //user.dir/cloud/카테고리/서버에 저장될 파일이름
         File file = new File(savePath);
+
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
@@ -77,7 +78,7 @@ public class FileHandler {
         } catch (IOException e) {
             throw new FileUploadFailException("파일 저장 실패", e);
         }
-        return category + "/" + saveFilename;
+        return category + "\\" + saveFilename;
     }
 
     private boolean validateExtension(String extension) {

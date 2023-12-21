@@ -1,5 +1,6 @@
 package page.clab.api.type.entity;
 
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
