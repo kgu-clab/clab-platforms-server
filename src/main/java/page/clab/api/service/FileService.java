@@ -1,14 +1,15 @@
 package page.clab.api.service;
 
-import java.awt.image.RescaleOp;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+
+import java.io.File;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -19,7 +20,7 @@ import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.handler.FileHandler;
 import page.clab.api.repository.FileRepository;
-import page.clab.api.type.entity.File;
+import page.clab.api.type.entity.FileEntity;
 import page.clab.api.type.entity.Member;
 
 @Service
@@ -35,18 +36,22 @@ public class FileService {
     @Value("${resource.file.url}")
     private String fileURL; // 네트워크 상에서 파일 위치 식별
 
-    public List<String> saveFiles(MultipartFile[] multipartFiles, String path) throws FileUploadFailException {
-        List<String> urls = new ArrayList<>();
+    @Value("${resource.file.path}")
+    private String filePath; //실제 저장 위치
+
+    public List<String> saveFiles(List<MultipartFile> multipartFiles, String path, int storagePeriod) throws FileUploadFailException {
+        List<String> paths = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
-            String url = saveFile(multipartFile, path);
-            urls.add(url);
+            String savePath = saveFile(multipartFile, path, storagePeriod);
+            paths.add(savePath);
         }
-        return urls;
+        return paths;
     }
 
-    public String saveFile(MultipartFile multipartFile, String path) throws FileUploadFailException {
+    public String saveFile(MultipartFile multipartFile, String path, int storagePeriod) throws FileUploadFailException {
+        Logger logger = LoggerFactory.getLogger(this.getClass());
         Member member = memberService.getCurrentMember();
-        if (path.startsWith("members/")) {
+        if (path.startsWith("members\\")) {
             String memberId = path.split("/")[1]; // members/{memberId}
             double usage = memberService.getCloudUsageByMemberId(memberId).getUsage();
             if (multipartFile.getSize() + usage > (10 * 1024 * 1024)) { // 10MB 제한
@@ -54,53 +59,55 @@ public class FileService {
             }
         }
 
-        String savedURL = fileHandler.saveFile(multipartFile, path);
-        // File의 경우 RequestDto를 사용하지 않고 multipartFile을 파라미터로 받음.
-        File file = new File();
-        file.setOriginalFileName(multipartFile.getOriginalFilename());
-        file.setSavedPath(savedURL);
-        file.setFileSize(multipartFile.getSize());
-        file.setContentType(multipartFile.getContentType());
-        file.setUploader(member);
+        String savedPath = fileHandler.saveFile(multipartFile, path);
+        // FileEntity의 경우 RequestDto를 사용하지 않고 multipartFile을 파라미터로 받음.
+        FileEntity fileEntity = new FileEntity();
+        fileEntity.setOriginalFileName(multipartFile.getOriginalFilename());
+        fileEntity.setSavedPath(filePath + "\\" + savedPath);
+        fileEntity.setStoragePeriod(storagePeriod);
+        logger.info(fileEntity.getSavedPath());
 
-        int saveFileNameIndex = savedURL.lastIndexOf("/");
-        file.setSaveFileName(savedURL.substring(saveFileNameIndex + 1));
+        fileEntity.setFileSize(multipartFile.getSize());
+        fileEntity.setContentType(multipartFile.getContentType());
+        fileEntity.setUploader(member);
 
-        int categoryIndex = path.indexOf("/");
+        int saveFileNameIndex = savedPath.lastIndexOf("\\");
+        fileEntity.setSaveFileName(savedPath.substring(saveFileNameIndex + 1));
+
+        int categoryIndex = path.indexOf("\\");
         String category = categoryIndex != -1 ? path.substring(0, categoryIndex) : path;
-        file.setCategory(category);
+        fileEntity.setCategory(category);
 
-        fileRepository.save(file);
+        fileRepository.save(fileEntity);
 
-        return fileURL + "/" + savedURL; //(카테고리/saveFileName)
+        return filePath + "\\" + savedPath; // 파일이 실제로 저장된 위치 반환
     }
 
-    public Long deleteFile(Long fileId) throws PermissionDeniedException{
+    public String deleteFile(Long fileId) throws PermissionDeniedException{
+        Logger logger = LoggerFactory.getLogger(this.getClass());
         Member member = memberService.getCurrentMember();
-        File file = getFileByIdOrThrow(fileId);
-        if(!(file.getUploader().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))){
+        FileEntity fileEntity = getFileByIdOrThrow(fileId);
+        if(!(fileEntity.getUploader().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))){
             throw new PermissionDeniedException("해당 파일을 삭제할 권한이 없습니다.");
         }
 
-        //"/resources/files/activity-photos/1/216883240048200_8ad8eb2e-42c2-47cb-b31f-2b4204472c63.png"
-
-        String filePath = fileURL + "/" + file.getSavedPath();
-        java.io.File storedFile = new java.io.File(filePath);
+        String filePath = fileEntity.getSavedPath();
+        File storedFile = new File(filePath);
         if(storedFile.exists()){
             if(storedFile.delete()){
-                System.out.println("삭제 성공" + filePath);
+                logger.info("삭제 성공" + filePath);
             }
         }
 
         fileRepository.deleteById(fileId);
 
-        return fileId;
+        return filePath;
     }
 
-    public Resource downloadFile(Long fileId){
-        File file = fileRepository.findById(fileId)
-                .orElseThrow(() -> new NotFoundException("File not found with id: " + fileId));
-        Path filePath = Paths.get(fileURL + "/" + file.getSavedPath());
+/*    public Resource downloadFile(Long fileId){
+        FileEntity fileEntity = fileRepository.findById(fileId)
+                .orElseThrow(() -> new NotFoundException("FileEntity not found with id: " + fileId));
+        Path filePath = Paths.get(fileURL + "/" + fileEntity.getSavedPath());
         try {
             // 파일 리소스 생성
             Resource resource = new UrlResource(filePath.toUri());
@@ -109,14 +116,14 @@ public class FileService {
             if (resource.exists() && resource.isReadable()) {
                 return resource;
             } else {
-                throw new NotFoundException("File not found: ");
+                throw new NotFoundException("FileEntity not found: ");
             }
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
-    private File getFileByIdOrThrow(Long fileId){
+    private FileEntity getFileByIdOrThrow(Long fileId){
         return fileRepository.findById(fileId)
                 .orElseThrow(() -> new NotFoundException("해당 파일이 존재하지 않습니다."));
     }

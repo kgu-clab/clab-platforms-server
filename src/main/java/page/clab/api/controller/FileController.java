@@ -4,10 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,10 +13,12 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.FileService;
 import page.clab.api.type.dto.ResponseModel;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/files")
 @RequiredArgsConstructor
-@Tag(name = "File", description = "파일 업로드 관련 API")
+@Tag(name = "FileEntity", description = "파일 업로드 관련 API")
 @Slf4j
 public class FileController {
 
@@ -30,11 +29,12 @@ public class FileController {
     @PostMapping(value ="/boards/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel boardUpload(
             @PathVariable("boardId") String boardId,
-            @RequestParam("multipartFile") MultipartFile multipartFile
+            @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam("storagePeriod") int storagePeriod
     ) throws FileUploadFailException {
-        String url = fileService.saveFile(multipartFile, "boards/" + boardId);
+        List<String> path = fileService.saveFiles(multipartFiles, "boards\\" + boardId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(path);
         return responseModel;
     }
 
@@ -43,11 +43,12 @@ public class FileController {
     @PostMapping(value ="/news/{newsId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel newsUpload(
             @PathVariable("newsId") String newsId,
-            @RequestParam("multipartFile") MultipartFile multipartFile
+            @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam("storagePeriod") int storagePeriod
     ) throws FileUploadFailException {
-        String url = fileService.saveFile(multipartFile, "news/" + newsId);
+        List<String> path = fileService.saveFiles(multipartFiles, "news\\" + newsId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(path);
         return responseModel;
     }
 
@@ -56,11 +57,12 @@ public class FileController {
     @PostMapping(value ="/books/{bookId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel bookUpload(
             @PathVariable("bookId") String bookId,
-            @RequestParam("multipartFile") MultipartFile multipartFile
+            @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam("storagePeriod") int storagePeriod
     ) throws FileUploadFailException {
-        String url = fileService.saveFile(multipartFile, "books/" + bookId);
+        List<String> path = fileService.saveFiles(multipartFiles, "books\\" + bookId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(path);
         return responseModel;
     }
 
@@ -69,11 +71,12 @@ public class FileController {
     @PostMapping(value ="/profiles/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel profileUpload(
             @PathVariable("memberId") String memberId,
-            @RequestParam("multipartFile") MultipartFile multipartFile
+            @RequestParam("multipartFile") MultipartFile multipartFile,
+            @RequestParam("storagePeriod") int storagePeriod
     ) throws FileUploadFailException {
-        String url = fileService.saveFile(multipartFile, "profiles/" + memberId);
+        String path = fileService.saveFile(multipartFile, "profiles\\" + memberId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(path);
         return responseModel;
     }
 
@@ -82,11 +85,12 @@ public class FileController {
     @PostMapping(value = "/activity-photos/{activityPhotoId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel activityUpload(
             @PathVariable("activityPhotoId") String activityPhotoId,
-            @RequestParam("multipartFile") MultipartFile multipartFile
+            @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam("storagePeriod") int storagePeriod
     ) throws FileUploadFailException {
-        String url = fileService.saveFile(multipartFile, "activity-photos/" + activityPhotoId);
+        List<String> path = fileService.saveFiles(multipartFiles, "activity-photos\\" + activityPhotoId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(path);
         return responseModel;
     }
 
@@ -95,11 +99,12 @@ public class FileController {
     @PostMapping(value ="/members/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel memberCloudUpload(
             @PathVariable("memberId") String memberId,
-            @RequestParam("multipartFile") MultipartFile multipartFile
+            @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam("storagePeriod") int storagePeriod
     ) throws FileUploadFailException {
-        String url = fileService.saveFile(multipartFile, "members/" + memberId);
+        List<String> path = fileService.saveFiles(multipartFiles, "members\\" + memberId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(path);
         return responseModel;
     }
 
@@ -107,11 +112,12 @@ public class FileController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value ="/forms", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel formUpload(
-            @RequestParam("multipartFile") MultipartFile multipartFile
+            @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam("storagePeriod") int storagePeriod
     ) throws FileUploadFailException {
-        String url = fileService.saveFile(multipartFile, "forms");
+        List<String> path = fileService.saveFiles(multipartFiles, "forms\\", storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(path);
         return responseModel;
     }
 
@@ -121,13 +127,13 @@ public class FileController {
     public ResponseModel deleteFile(
             @PathVariable Long fileId
     ) throws PermissionDeniedException {
-        Long id = fileService.deleteFile(fileId);
+        String path = fileService.deleteFile(fileId);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
+        responseModel.addData(path);
         return responseModel;
     }
 
-    @Operation(summary = "[U] 파일 다운로드", description = "ROLE_USER 이상의 권한이 필요함")
+    /*@Operation(summary = "[U] 파일 다운로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{fileId}")
     public ResponseEntity<Resource> fileDownload(
@@ -138,7 +144,6 @@ public class FileController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileResource.getFilename() + "\"")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(fileResource);
-    }
-
+    }*/
 
 }

@@ -7,6 +7,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -15,7 +19,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class File{
+public class FileEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,4 +45,11 @@ public class File{
 
     @Column(nullable = false)
     private String category;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "storage_period")
+    private int storagePeriod; // 보관 기간 (일)
 }
