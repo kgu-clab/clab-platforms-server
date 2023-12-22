@@ -10,6 +10,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.exception.FileUploadFailException;
+import page.clab.api.type.entity.FileEntity;
 import page.clab.api.util.ImageCompressionUtil;
 
 import java.io.File;
@@ -41,7 +42,7 @@ public class FileHandler {
         Arrays.stream(imageExtensions).forEach(this.imageExtensions::add);
     }
 
-    public String saveFile(MultipartFile multipartFile, String category) throws FileUploadFailException {
+    public String saveFile(MultipartFile multipartFile, String category, FileEntity fileEntity) throws FileUploadFailException {
 
         String originalFilename = multipartFile.getOriginalFilename();
         if (!validateFilename(originalFilename)) {
@@ -54,17 +55,20 @@ public class FileHandler {
         }
 
         //originalFilename은 유저가 올린 파일이름. saveFilename은 서버에 저장될 파일 이름.
-        String saveFilename = category.startsWith("members\\") ? originalFilename :
+        String saveFilename = category.startsWith("members") ? originalFilename :
                 System.nanoTime() + "_" + UUID.randomUUID() + "." + extension;
-        String savePath = filePath + File.separator + category + File.separator + saveFilename; //user.dir/cloud/카테고리/서버에 저장될 파일이름
-        File file = new File(savePath);
+
+        String savePath = filePath + File.separator + category + File.separator + saveFilename;
+
+        File file = new File(savePath); // 해당 경로에 파일 객체를 만듦. 실제 데이터는 없음. 파일을 나타내기 위한 메모리 상의 객체일 뿐.
 
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
+
         try {
             String os = System.getProperty("os.name").toLowerCase();
-            multipartFile.transferTo(file); // savePath 경로에 실질적으로 File이 저장됨.
+            multipartFile.transferTo(file); // multifile에 있는 파일정보를 file로 복사
             if (imageExtensions.contains(extension.toLowerCase())) {
                 ImageCompressionUtil.compressImage(savePath, 0.5f);
             }
@@ -78,7 +82,11 @@ public class FileHandler {
         } catch (IOException e) {
             throw new FileUploadFailException("파일 저장 실패", e);
         }
-        return category + "\\" + saveFilename;
+
+        fileEntity.setSavedPath(savePath);
+        fileEntity.setSaveFileName(saveFilename);
+        fileEntity.setCategory(category);
+        return "/" + saveFilename;
     }
 
     private boolean validateExtension(String extension) {

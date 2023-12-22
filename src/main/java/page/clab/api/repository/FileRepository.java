@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface FileRepository extends JpaRepository<FileEntity, Long> {
     FileEntity findBySavedPath(String savedPath);
-    //void deleteBySavedFileName(String saveFileName);
+
+    FileEntity findBySaveFileName(String saveFileName);
     List<FileEntity> findByCategory(String category);
 }

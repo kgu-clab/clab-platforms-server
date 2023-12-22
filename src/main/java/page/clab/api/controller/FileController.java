@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.FileService;
 import page.clab.api.type.dto.ResponseModel;
 
+import java.io.File;
 import java.util.List;
 
 @RestController
@@ -30,11 +32,11 @@ public class FileController {
     public ResponseModel boardUpload(
             @PathVariable("boardId") String boardId,
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
-            @RequestParam("storagePeriod") int storagePeriod
+            @RequestParam("storagePeriod") long storagePeriod
     ) throws FileUploadFailException {
-        List<String> path = fileService.saveFiles(multipartFiles, "boards\\" + boardId, storagePeriod);
+        List<String> url = fileService.saveFiles(multipartFiles, "boards" + File.separator + boardId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(path);
+        responseModel.addData(url);
         return responseModel;
     }
 
@@ -44,11 +46,11 @@ public class FileController {
     public ResponseModel newsUpload(
             @PathVariable("newsId") String newsId,
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
-            @RequestParam("storagePeriod") int storagePeriod
+            @RequestParam("storagePeriod") long storagePeriod
     ) throws FileUploadFailException {
-        List<String> path = fileService.saveFiles(multipartFiles, "news\\" + newsId, storagePeriod);
+        List<String> url = fileService.saveFiles(multipartFiles, "news" + File.separator + newsId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(path);
+        responseModel.addData(url);
         return responseModel;
     }
 
@@ -58,11 +60,11 @@ public class FileController {
     public ResponseModel bookUpload(
             @PathVariable("bookId") String bookId,
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
-            @RequestParam("storagePeriod") int storagePeriod
+            @RequestParam("storagePeriod") long storagePeriod
     ) throws FileUploadFailException {
-        List<String> path = fileService.saveFiles(multipartFiles, "books\\" + bookId, storagePeriod);
+        List<String> url = fileService.saveFiles(multipartFiles, "books" + File.separator + bookId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(path);
+        responseModel.addData(url);
         return responseModel;
     }
 
@@ -72,11 +74,11 @@ public class FileController {
     public ResponseModel profileUpload(
             @PathVariable("memberId") String memberId,
             @RequestParam("multipartFile") MultipartFile multipartFile,
-            @RequestParam("storagePeriod") int storagePeriod
+            @RequestParam("storagePeriod") long storagePeriod
     ) throws FileUploadFailException {
-        String path = fileService.saveFile(multipartFile, "profiles\\" + memberId, storagePeriod);
+        String url = fileService.saveFile(multipartFile, "profiles" + File.separator + memberId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(path);
+        responseModel.addData(url);
         return responseModel;
     }
 
@@ -86,11 +88,11 @@ public class FileController {
     public ResponseModel activityUpload(
             @PathVariable("activityPhotoId") String activityPhotoId,
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
-            @RequestParam("storagePeriod") int storagePeriod
+            @RequestParam("storagePeriod") long storagePeriod
     ) throws FileUploadFailException {
-        List<String> path = fileService.saveFiles(multipartFiles, "activity-photos\\" + activityPhotoId, storagePeriod);
+        List<String> url = fileService.saveFiles(multipartFiles, "activity-photos" + File.separator + activityPhotoId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(path);
+        responseModel.addData(url);
         return responseModel;
     }
 
@@ -100,11 +102,11 @@ public class FileController {
     public ResponseModel memberCloudUpload(
             @PathVariable("memberId") String memberId,
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
-            @RequestParam("storagePeriod") int storagePeriod
+            @RequestParam("storagePeriod") long storagePeriod
     ) throws FileUploadFailException {
-        List<String> path = fileService.saveFiles(multipartFiles, "members\\" + memberId, storagePeriod);
+        List<String> url = fileService.saveFiles(multipartFiles, "members" + File.separator + memberId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(path);
+        responseModel.addData(url);
         return responseModel;
     }
 
@@ -113,23 +115,23 @@ public class FileController {
     @PostMapping(value ="/forms", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel formUpload(
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
-            @RequestParam("storagePeriod") int storagePeriod
+            @RequestParam("storagePeriod") long storagePeriod
     ) throws FileUploadFailException {
-        List<String> path = fileService.saveFiles(multipartFiles, "forms\\", storagePeriod);
+        List<String> url = fileService.saveFiles(multipartFiles, "forms", storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(path);
+        responseModel.addData(url);
         return responseModel;
     }
 
     @Operation(summary = "[U] 파일 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @DeleteMapping("/{fileId}")
+    @DeleteMapping("/{saveFileName}")
     public ResponseModel deleteFile(
-            @PathVariable Long fileId
+            @PathVariable String saveFileName
     ) throws PermissionDeniedException {
-        String path = fileService.deleteFile(fileId);
+        String url = fileService.deleteFile(saveFileName);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(path);
+        responseModel.addData(url);
         return responseModel;
     }
 
