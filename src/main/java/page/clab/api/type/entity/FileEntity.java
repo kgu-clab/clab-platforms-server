@@ -31,11 +31,14 @@ public class FileEntity {
     @Column(nullable = false)
     private String originalFileName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String saveFileName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String savedPath;
+
+    @Column(nullable = false, unique = true)
+    private String url;
 
     @Column(nullable = false)
     private Long fileSize;
@@ -51,5 +54,5 @@ public class FileEntity {
     private LocalDateTime createdAt;
 
     @Column(name = "storage_period")
-    private int storagePeriod; // 보관 기간 (일)
+    private Long storagePeriod; // 보관 기간 (일)
 }

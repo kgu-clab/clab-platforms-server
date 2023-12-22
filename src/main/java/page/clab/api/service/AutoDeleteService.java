@@ -21,30 +21,30 @@ public class AutoDeleteService {
     @Value("${resource.file.url}")
     private String fileURL;
 
-    @Value("${user.dir}\\cloud")
+    @Value("${resource.file.path}")
     private String filePath;
 
-    @Scheduled(cron = "0 0 0 * * *") //20 * * * * * : 20초마다. test용
+    @Scheduled(cron = "20 * * * * *"/*"0 0 0 * * *"*/) //20 * * * * * : 20초마다. test용
     public void autoDeleteFiles(){
-        String boardCategoryPath = filePath + "\\boards";
+        String boardCategoryPath = filePath + File.separator +"boards";
         deleteFilesInDirectory(boardCategoryPath);
 
-        String newsCategoryPath = filePath + "\\news";
+        String newsCategoryPath = filePath + File.separator + "news";
         deleteFilesInDirectory(newsCategoryPath);
 
-        String bookCategoryPath = filePath + "\\books";
+        String bookCategoryPath = filePath + File.separator + "books";
         deleteFilesInDirectory(bookCategoryPath);
 
-        String profilesCategoryPath = filePath + "\\profiles";
+        String profilesCategoryPath = filePath + File.separator + "profiles";
         deleteFilesInDirectory(profilesCategoryPath);
 
-        String activityCategoryPath = filePath + "\\activity-photos";
+        String activityCategoryPath = filePath + File.separator + "activity-photos";
         deleteFilesInDirectory(activityCategoryPath);
 
-        String membersCategoryPath = filePath + "\\members";
+        String membersCategoryPath = filePath + File.separator + "members";
         deleteFilesInDirectory(membersCategoryPath);
 
-        String formsCategoryPath = filePath + "\\forms";
+        String formsCategoryPath = filePath + File.separator + "forms";
         deleteFilesInDirectory(formsCategoryPath);
     }
 
@@ -95,7 +95,7 @@ public class AutoDeleteService {
 
         LocalDateTime fileCreatedAt  = fileEntity.getCreatedAt();
 
-        int storagePeriod = fileEntity.getStoragePeriod();
+        long storagePeriod = fileEntity.getStoragePeriod();
 
         //파일생성날짜 + 보관기간이 현재날짜보다 이전이면 삭제
         if(fileCreatedAt.plusDays(storagePeriod).isBefore(currentDate)){
