@@ -1,7 +1,7 @@
 package page.clab.api.type.dto;
 
 import lombok.*;
-import page.clab.api.type.entity.FileEntity;
+import page.clab.api.type.entity.UploadedFile;
 import page.clab.api.util.ModelMapperUtil;
 
 @Getter
@@ -28,11 +28,11 @@ public class FileResponseDto {
 
     private String category;
 
-    public static FileResponseDto of(FileEntity fileEntity) {
-        FileResponseDto fileResponseDto = ModelMapperUtil.getModelMapper().map(fileEntity, FileResponseDto.class);
-        if(fileEntity.getUploader() != null){
-            fileResponseDto.setUploaderId(fileEntity.getUploader().getId());
-            fileResponseDto.setUploaderName(fileEntity.getUploader().getName());
+    public static FileResponseDto of(UploadedFile uploadedFile) {
+        FileResponseDto fileResponseDto = ModelMapperUtil.getModelMapper().map(uploadedFile, FileResponseDto.class);
+        if(uploadedFile.getUploader() != null){
+            fileResponseDto.setUploaderId(uploadedFile.getUploader().getId());
+            fileResponseDto.setUploaderName(uploadedFile.getUploader().getName());
         }
         return fileResponseDto;
     }
