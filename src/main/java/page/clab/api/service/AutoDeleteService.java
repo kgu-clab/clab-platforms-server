@@ -23,7 +23,7 @@ public class AutoDeleteService {
     private String filePath;
 
     @Scheduled(cron = "0 0 0 * * *")
-    public void autoDeleteFiles(){
+    public void autoDeleteFiles() {
         List<String> categoryPaths = Arrays.asList(
                 "boards", "news", "books", "profiles",
                 "activity-photos", "members", "forms"
@@ -33,9 +33,9 @@ public class AutoDeleteService {
                 .forEach(this::deleteFilesInDirectory);
     }
 
-    private void deleteFilesInDirectory(String directoryPath){
+    private void deleteFilesInDirectory(String directoryPath) {
         File directory = new File(directoryPath);
-        if(!directory.exists()){
+        if (!directory.exists()) {
             log.info("No Directory : " + directory);
             return;
         }
@@ -44,7 +44,7 @@ public class AutoDeleteService {
 
     private void processFilesInDirectory(File directory) {
         File[] files = directory.listFiles();
-        if(files == null){
+        if (files == null) {
             log.info("No file in Directory : " + directory);
         }
         for (File file : files) {
@@ -60,13 +60,13 @@ public class AutoDeleteService {
     private void processFile(File file) {
         LocalDateTime currentDate = LocalDateTime.now();
         UploadedFile uploadedFile = uploadFileRepository.findBySavedPath(file.getAbsolutePath());
-        if(uploadedFile == null){
+        if (uploadedFile == null) {
             log.info("No UploadedFile in DB : " + file.getAbsolutePath());
             return;
         }
         LocalDateTime fileCreatedAt = uploadedFile.getCreatedAt();
         long storagePeriod = uploadedFile.getStoragePeriod();
-        if(fileCreatedAt.plusDays(storagePeriod).isBefore(currentDate)){
+        if (fileCreatedAt.plusDays(storagePeriod).isBefore(currentDate)) {
             uploadFileRepository.deleteById(uploadedFile.getId());
             boolean deleted = file.delete();
             if (!deleted) {

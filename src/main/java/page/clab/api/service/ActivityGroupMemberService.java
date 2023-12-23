@@ -57,7 +57,7 @@ public class ActivityGroupMemberService {
 
     public ActivityGroupStudyResponseDto getActivityGroupStudy(Long activityGroupId) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroup.getCategory().equals(ActivityGroupCategory.STUDY)){
+        if (!activityGroup.getCategory().equals(ActivityGroupCategory.STUDY)) {
             throw new IllegalStateException("해당 활동은 스터디 활동이 아닙니다.");
         }
         List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
@@ -68,7 +68,7 @@ public class ActivityGroupMemberService {
 
     public ActivityGroupProjectResponseDto getActivityGroupProject(Long activityGroupId) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroup.getCategory().equals(ActivityGroupCategory.PROJECT)){
+        if (!activityGroup.getCategory().equals(ActivityGroupCategory.PROJECT)) {
             throw new IllegalStateException("해당 활동은 프로젝트 활동이 아닙니다.");
         }
         List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
@@ -91,7 +91,7 @@ public class ActivityGroupMemberService {
     public Long applyActivityGroup(Long activityGroupId) throws MessagingException {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroup.getStatus().equals(ActivityGroupStatus.PROGRESSING)){
+        if (!activityGroup.getStatus().equals(ActivityGroupStatus.PROGRESSING)) {
             throw new IllegalStateException("해당 활동은 진행중인 활동이 아닙니다.");
         }
         GroupMember groupMember = GroupMember.of(member, activityGroup);

@@ -23,7 +23,7 @@ public class IpAuthenticationFilter implements Filter {
         String ipAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         InetAddress inetAddress = InetAddress.getByName(ipAddress);
         String country = GeoIpUtil.getInfoByIp(inetAddress.toString()).getCountry();
-        if(country != null && !country.equals("South Korea")){
+        if (country != null && !country.equals("South Korea")) {
             log.info("Access Rejected : {}, {}", ipAddress, country);
             return;
         }
