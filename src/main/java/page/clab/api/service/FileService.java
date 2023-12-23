@@ -1,9 +1,11 @@
 package page.clab.api.service;
 
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,29 +13,30 @@ import page.clab.api.exception.FileUploadFailException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.handler.FileHandler;
-import page.clab.api.repository.FileRepository;
-import page.clab.api.type.entity.UploadedFile;
+import page.clab.api.repository.UploadFileRepository;
 import page.clab.api.type.entity.Member;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import page.clab.api.type.entity.UploadedFile;
+import page.clab.api.util.FileSystemUtil;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FileService {
 
-    private final FileRepository fileRepository;
+    private final UploadFileRepository uploadFileRepository;
 
     private final FileHandler fileHandler;
 
     private final MemberService memberService;
 
     @Value("${resource.file.url}")
-    private String fileURL; // 네트워크 상에서 파일 위치 식별
+    private String fileURL;
 
     @Value("${resource.file.path}")
-    private String filePath; //실제 저장 위치
+    private String filePath;
+
+    @Value("${spring.servlet.multipart.max-file-size}")
+    private String maxFileSize;
 
     public List<String> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws FileUploadFailException {
         List<String> urls = new ArrayList<>();
@@ -45,94 +48,44 @@ public class FileService {
     }
 
     public String saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws FileUploadFailException {
-
-        Logger logger = LoggerFactory.getLogger(this.getClass());
-
         Member member = memberService.getCurrentMember();
-
         if (path.startsWith("members")) {
-            String memberId = path.split(File.separator)[1]; // members\{memberId}
+            String memberId = path.split(File.separator)[1];
             double usage = memberService.getCloudUsageByMemberId(memberId).getUsage();
-            if (multipartFile.getSize() + usage > (10 * 1024 * 1024)) { // 10MB 제한
+            if (multipartFile.getSize() + usage > FileSystemUtil.convertToBytes(maxFileSize)) {
                 return "저장 공간이 부족합니다.";
             }
         }
-
         UploadedFile uploadedFile = new UploadedFile();
-
         String url = fileURL + "/" + path.replace(File.separator.toString(), "/") + fileHandler.saveFile(multipartFile, path, uploadedFile);
-        // FileEntity의 경우 RequestDto를 사용하지 않고 multipartFile을 파라미터로 받음.
-
         uploadedFile.setOriginalFileName(multipartFile.getOriginalFilename());
         uploadedFile.setStoragePeriod(storagePeriod);
         uploadedFile.setFileSize(multipartFile.getSize());
         uploadedFile.setContentType(multipartFile.getContentType());
         uploadedFile.setUploader(member);
         uploadedFile.setUrl(url);
-
-        fileRepository.save(uploadedFile);
-
-        logger.info(uploadedFile.getSavedPath());
-
+        uploadFileRepository.save(uploadedFile);
         return url;
     }
 
-    public String deleteFile(String saveFileName) throws PermissionDeniedException{
-
-        Logger logger = LoggerFactory.getLogger(this.getClass());
-
+    public String deleteFile(String saveFileName) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-
-        UploadedFile uploadedFile = fileRepository.findBySaveFileName(saveFileName);
-
-        if(uploadedFile == null){
-            throw new NotFoundException("파일 이름에 해당되는 DB 정보가 없습니다.");
+        UploadedFile uploadedFile = uploadFileRepository.findBySaveFileName(saveFileName);
+        String filePath = uploadedFile.getSavedPath();
+        File storedFile = new File(filePath);
+        if(uploadedFile == null || !storedFile.exists()){
+            throw new NotFoundException("존재하지 않는 파일입니다.");
         }
-
         if(!(uploadedFile.getUploader().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))){
             throw new PermissionDeniedException("해당 파일을 삭제할 권한이 없습니다.");
         }
-
-        String filePath = uploadedFile.getSavedPath();
-        File storedFile = new File(filePath);
-
-        if(!storedFile.exists()){
-            throw new NotFoundException("파일이 존재하지 않습니다.");
-        }
-
         if(!storedFile.delete()){
-            logger.info("파일 삭제 실패"); // 삭제 실패 exception 만들기..?
+            log.info("파일 삭제 오류 : {}", filePath);
         }
-
         String url = uploadedFile.getUrl();
-        fileRepository.deleteById(uploadedFile.getId()); //deleteBySaveFileName을 만들어서 사용하는거랑 어떤게 더 효율?
-
+        uploadFileRepository.deleteById(uploadedFile.getId());
         return url;
     }
 
-/*    public Resource downloadFile(Long fileId){
-        UploadedFile fileEntity = fileRepository.findById(fileId)
-                .orElseThrow(() -> new NotFoundException("UploadedFile not found with id: " + fileId));
-        Path filePath = Paths.get(fileURL + "/" + fileEntity.getSavedPath());
-        try {
-            // 파일 리소스 생성
-            Resource resource = new UrlResource(filePath.toUri());
-
-            // 파일이 존재하는지 확인
-            if (resource.exists() && resource.isReadable()) {
-                return resource;
-            } else {
-                throw new NotFoundException("UploadedFile not found: ");
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }*/
-
-    /*private UploadedFile getFileByIdOrThrow(Long fileId){
-        return fileRepository.findById(fileId)
-                .orElseThrow(() -> new NotFoundException("해당 파일이 존재하지 않습니다."));
-    }
-*/
 }
 
