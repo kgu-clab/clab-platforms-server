@@ -1,13 +1,9 @@
 package page.clab.api.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import page.clab.api.type.entity.FileEntity;
+import page.clab.api.type.entity.UploadedFile;
 
-import java.util.List;
-
-public interface FileRepository extends JpaRepository<FileEntity, Long> {
-    FileEntity findBySavedPath(String savedPath);
-
-    FileEntity findBySaveFileName(String saveFileName);
-    List<FileEntity> findByCategory(String category);
+public interface FileRepository extends JpaRepository<UploadedFile, Long> {
+    UploadedFile findBySavedPath(String savedPath);
+    UploadedFile findBySaveFileName(String saveFileName);
 }

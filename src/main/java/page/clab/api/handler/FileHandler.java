@@ -10,7 +10,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.exception.FileUploadFailException;
-import page.clab.api.type.entity.FileEntity;
+import page.clab.api.type.entity.UploadedFile;
 import page.clab.api.util.ImageCompressionUtil;
 
 import java.io.File;
@@ -42,7 +42,7 @@ public class FileHandler {
         Arrays.stream(imageExtensions).forEach(this.imageExtensions::add);
     }
 
-    public String saveFile(MultipartFile multipartFile, String category, FileEntity fileEntity) throws FileUploadFailException {
+    public String saveFile(MultipartFile multipartFile, String category, UploadedFile uploadedFile) throws FileUploadFailException {
 
         String originalFilename = multipartFile.getOriginalFilename();
         if (!validateFilename(originalFilename)) {
@@ -83,9 +83,9 @@ public class FileHandler {
             throw new FileUploadFailException("파일 저장 실패", e);
         }
 
-        fileEntity.setSavedPath(savePath);
-        fileEntity.setSaveFileName(saveFilename);
-        fileEntity.setCategory(category);
+        uploadedFile.setSavedPath(savePath);
+        uploadedFile.setSaveFileName(saveFilename);
+        uploadedFile.setCategory(category);
         return "/" + saveFilename;
     }
 

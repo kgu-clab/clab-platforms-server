@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/files")
 @RequiredArgsConstructor
-@Tag(name = "FileEntity", description = "파일 업로드 관련 API")
+@Tag(name = "UploadedFile", description = "파일 업로드 관련 API")
 @Slf4j
 public class FileController {
 
@@ -134,18 +133,5 @@ public class FileController {
         responseModel.addData(url);
         return responseModel;
     }
-
-    /*@Operation(summary = "[U] 파일 다운로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/{fileId}")
-    public ResponseEntity<Resource> fileDownload(
-            @PathVariable Long fileId
-    ){
-        Resource fileResource = fileService.downloadFile(fileId);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileResource.getFilename() + "\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(fileResource);
-    }*/
 
 }

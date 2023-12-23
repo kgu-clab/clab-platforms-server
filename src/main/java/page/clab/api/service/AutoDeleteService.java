@@ -7,9 +7,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import page.clab.api.repository.FileRepository;
-import page.clab.api.type.entity.FileEntity;
+import page.clab.api.type.entity.UploadedFile;
+
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 
 @Service
@@ -18,34 +21,19 @@ public class AutoDeleteService {
 
     private final FileRepository fileRepository;
 
-    @Value("${resource.file.url}")
-    private String fileURL;
-
     @Value("${resource.file.path}")
     private String filePath;
 
-    @Scheduled(cron = "20 * * * * *"/*"0 0 0 * * *"*/) //20 * * * * * : 20초마다. test용
+    @Scheduled(cron = "0 0 0 * * *") //20 * * * * *   : 20초마다. test용
     public void autoDeleteFiles(){
-        String boardCategoryPath = filePath + File.separator +"boards";
-        deleteFilesInDirectory(boardCategoryPath);
+        List<String> categoryPaths = Arrays.asList(
+                "boards", "news", "books", "profiles",
+                "activity-photos", "members", "forms"
+        );
 
-        String newsCategoryPath = filePath + File.separator + "news";
-        deleteFilesInDirectory(newsCategoryPath);
-
-        String bookCategoryPath = filePath + File.separator + "books";
-        deleteFilesInDirectory(bookCategoryPath);
-
-        String profilesCategoryPath = filePath + File.separator + "profiles";
-        deleteFilesInDirectory(profilesCategoryPath);
-
-        String activityCategoryPath = filePath + File.separator + "activity-photos";
-        deleteFilesInDirectory(activityCategoryPath);
-
-        String membersCategoryPath = filePath + File.separator + "members";
-        deleteFilesInDirectory(membersCategoryPath);
-
-        String formsCategoryPath = filePath + File.separator + "forms";
-        deleteFilesInDirectory(formsCategoryPath);
+        categoryPaths.stream()
+                .map(category -> filePath + File.separator + category)
+                .forEach(this::deleteFilesInDirectory);
     }
 
     private void deleteFilesInDirectory(String directoryPath){
@@ -87,19 +75,19 @@ public class AutoDeleteService {
 
         LocalDateTime currentDate = LocalDateTime.now();
 
-        FileEntity fileEntity = fileRepository.findBySavedPath(file.getAbsolutePath());
-        if(fileEntity == null){
+        UploadedFile uploadedFile = fileRepository.findBySavedPath(file.getAbsolutePath());
+        if(uploadedFile == null){
             logger.info("No Entity : " + file.getAbsolutePath());
             return;
         }
 
-        LocalDateTime fileCreatedAt  = fileEntity.getCreatedAt();
+        LocalDateTime fileCreatedAt  = uploadedFile.getCreatedAt();
 
-        long storagePeriod = fileEntity.getStoragePeriod();
+        long storagePeriod = uploadedFile.getStoragePeriod();
 
         //파일생성날짜 + 보관기간이 현재날짜보다 이전이면 삭제
         if(fileCreatedAt.plusDays(storagePeriod).isBefore(currentDate)){
-            fileRepository.deleteById(fileEntity.getId());
+            fileRepository.deleteById(uploadedFile.getId());
             boolean deleted = file.delete();
             if (deleted) {
                 logger.info("Deleted file: " + file.getName());
