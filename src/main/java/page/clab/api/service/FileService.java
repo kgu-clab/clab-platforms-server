@@ -73,13 +73,13 @@ public class FileService {
         UploadedFile uploadedFile = uploadFileRepository.findBySaveFileName(saveFileName);
         String filePath = uploadedFile.getSavedPath();
         File storedFile = new File(filePath);
-        if(uploadedFile == null || !storedFile.exists()){
+        if (uploadedFile == null || !storedFile.exists()) {
             throw new NotFoundException("존재하지 않는 파일입니다.");
         }
-        if(!(uploadedFile.getUploader().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))){
+        if (!(uploadedFile.getUploader().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("해당 파일을 삭제할 권한이 없습니다.");
         }
-        if(!storedFile.delete()){
+        if (!storedFile.delete()) {
             log.info("파일 삭제 오류 : {}", filePath);
         }
         String url = uploadedFile.getUrl();
