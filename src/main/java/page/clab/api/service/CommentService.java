@@ -79,7 +79,7 @@ public class CommentService {
         return comment.getId();
     }
 
-    public Comment getCommentByIdOrThrow(Long id){
+    public Comment getCommentByIdOrThrow(Long id) {
         return commentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("댓글을 찾을 수 없습니다."));
     }

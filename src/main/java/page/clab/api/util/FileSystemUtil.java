@@ -1,10 +1,9 @@
 package page.clab.api.util;
 
-import org.springframework.stereotype.Component;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 @Component
 public class FileSystemUtil {
@@ -13,7 +12,7 @@ public class FileSystemUtil {
         long bytes = 0;
         if (!directory.exists()) {
             if (!directory.mkdirs()) {
-                return -1; // 디렉토리 생성 실패
+                return -1;
             }
         }
         if (directory.isDirectory()) {
@@ -21,14 +20,14 @@ public class FileSystemUtil {
             if (files != null) {
                 for (File file : files) {
                     if (file.isFile()) {
-                        bytes += file.length(); // 파일 크기 합산
+                        bytes += file.length();
                     } else if (file.isDirectory()) {
                         bytes += calculateDirectorySize(file);
                     }
                 }
             }
         } else {
-            return -1; // 디렉토리가 아닌 경우 -1 반환
+            return -1;
         }
         return bytes;
     }
@@ -44,6 +43,26 @@ public class FileSystemUtil {
             }
         }
         return fileList;
+    }
+
+    public static long convertToBytes(String size) {
+        String number = size.replaceAll("[^\\d.]", "");
+        String unit = size.replaceAll("[\\d.]", "").toUpperCase();
+        long sizeInBytes = Long.parseLong(number);
+        switch (unit) {
+            case "KB":
+                sizeInBytes *= 1024;
+                break;
+            case "MB":
+                sizeInBytes *= 1024 * 1024;
+                break;
+            case "GB":
+                sizeInBytes *= 1024 * 1024 * 1024;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid size unit, only KB, MB, and GB are allowed.");
+        }
+        return sizeInBytes;
     }
 
 }
