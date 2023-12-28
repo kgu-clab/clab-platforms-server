@@ -81,6 +81,22 @@ public class AwardController {
         return responseModel;
     }
 
+    @Operation(summary = "[U] 수상 이력 년도별 조회", description = "ROLE_USER 이상의 권한이 필요함" +
+            "년도를 기준으로 검색")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/annual/search")
+    public ResponseModel searchAnnualAwards(
+            @RequestParam int year,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.searchAnnualAwards(year, pageable);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(awardResponseDtos);
+        return responseModel;
+    }
+
   @Operation(summary = "[U] 수상 이력 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
   @PatchMapping("/{awardId}")
