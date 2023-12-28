@@ -1,5 +1,7 @@
 package page.clab.api.service;
 
+import java.time.LocalDate;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,8 +14,6 @@ import page.clab.api.type.dto.AwardResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Award;
 import page.clab.api.type.entity.Member;
-
-import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +40,11 @@ public class AwardService {
     public PagedResponseDto<AwardResponseDto> searchAwards(String memberId, Pageable pageable) {
         Member member = memberService.getMemberByIdOrThrow(memberId);
         Page<Award> awards = getAwardByMember(pageable, member);
+        return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
+    }
+    @Transactional
+    public PagedResponseDto<AwardResponseDto> searchAnnualAwards(int year, Pageable pageable){
+        Page<Award> awards = getAwardByYear(pageable, year);
         return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
     }
 
@@ -71,6 +76,12 @@ public class AwardService {
 
     private Page<Award> getAwardByMember(Pageable pageable, Member member) {
         return awardRepository.findAllByMemberOrderByAwardDateDesc(member, pageable);
+    }
+
+    private Page<Award> getAwardByYear(Pageable pageable, int year){
+        LocalDate startOfYear = LocalDate.of(year, 1, 1);
+        LocalDate endOfYear = LocalDate.of(year, 12, 31);
+        return awardRepository.findAllByAwardDateBetween(startOfYear, endOfYear, pageable);
     }
 
 }
