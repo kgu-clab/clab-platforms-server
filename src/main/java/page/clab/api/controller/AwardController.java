@@ -86,13 +86,13 @@ public class AwardController {
             "년도를 기준으로 검색")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/annual/search")
-    public ResponseModel searchAnualAwards(
-            @RequestParam String year,
+    public ResponseModel searchAnnualAwards(
+            @RequestParam int year,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.searchAnualAwards(year, pageable);
+        PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.searchAnnualAwards(year, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(awardResponseDtos);
         return responseModel;
