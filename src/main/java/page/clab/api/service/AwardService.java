@@ -14,6 +14,7 @@ import page.clab.api.type.entity.Award;
 import page.clab.api.type.entity.Member;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -42,9 +43,10 @@ public class AwardService {
         Page<Award> awards = getAwardByMember(pageable, member);
         return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
     }
-
-    public PagedResponseDto<AwardResponseDto> searchAnualAwards(String year, Pageable pageable){
-        return null;
+    @Transactional
+    public PagedResponseDto<AwardResponseDto> searchAnnualAwards(int year, Pageable pageable){
+        Page<Award> awards = getAwardByYear(pageable, year);
+        return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
     }
 
     public Long updateAward(Long awardId, AwardRequestDto awardRequestDto) throws PermissionDeniedException {
@@ -75,6 +77,12 @@ public class AwardService {
 
     private Page<Award> getAwardByMember(Pageable pageable, Member member) {
         return awardRepository.findAllByMemberOrderByAwardDateDesc(member, pageable);
+    }
+
+    private Page<Award> getAwardByYear(Pageable pageable, int year){
+        LocalDate startOfYear = LocalDate.of(year, 1, 1);
+        LocalDate endOfYear = LocalDate.of(year, 12, 31);
+        return awardRepository.findAllByAwardDateBetween(startOfYear, endOfYear, pageable);
     }
 
 }
