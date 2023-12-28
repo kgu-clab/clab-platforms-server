@@ -43,6 +43,10 @@ public class AwardService {
         return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
     }
 
+    public PagedResponseDto<AwardResponseDto> searchAnualAwards(String year, Pageable pageable){
+        return null;
+    }
+
     public Long updateAward(Long awardId, AwardRequestDto awardRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);

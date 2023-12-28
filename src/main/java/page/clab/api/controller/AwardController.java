@@ -2,7 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +24,8 @@ import page.clab.api.type.dto.AwardRequestDto;
 import page.clab.api.type.dto.AwardResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/awards")
@@ -76,6 +77,22 @@ public class AwardController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.searchAwards(memberId, pageable);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(awardResponseDtos);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 수상 이력 년도별 조회", description = "ROLE_USER 이상의 권한이 필요함" +
+            "년도를 기준으로 검색")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/annual/search")
+    public ResponseModel searchAnualAwards(
+            @RequestParam String year,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.searchAnualAwards(year, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(awardResponseDtos);
         return responseModel;
