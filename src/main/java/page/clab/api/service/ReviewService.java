@@ -1,6 +1,5 @@
 package page.clab.api.service;
 
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,6 +21,8 @@ import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.Review;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
+
+import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -108,10 +109,10 @@ public class ReviewService {
 
     public Long deleteReview(Long reviewId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
+        Review review = getReviewByIdOrThrow(reviewId);
         if (!(member.getId().equals(reviewId) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("해당 리뷰를 삭제할 권한이 없습니다.");
         }
-        Review review = getReviewByIdOrThrow(reviewId);
         reviewRepository.delete(review);
         return review.getId();
     }
