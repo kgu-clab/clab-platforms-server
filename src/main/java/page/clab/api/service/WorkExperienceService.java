@@ -63,8 +63,8 @@ public class WorkExperienceService {
     }
 
     private WorkExperience getWorkExperienceByIdOrThrow(Long workExperienceId) {
-    return workExperienceRepository.findById(workExperienceId)
-            .orElseThrow(() -> new NotFoundException("해당 경력사항이 존재하지 않습니다."));
+        return workExperienceRepository.findById(workExperienceId)
+                .orElseThrow(() -> new NotFoundException("해당 경력사항이 존재하지 않습니다."));
     }
 
 }

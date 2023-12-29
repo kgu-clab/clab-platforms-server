@@ -1,14 +1,5 @@
 package page.clab.api.type.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import page.clab.api.type.dto.ExecutivesRequestDto;
-import page.clab.api.type.etc.ExecutivesPosition;
-import page.clab.api.util.ModelMapperUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,6 +8,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import page.clab.api.type.dto.ExecutivesRequestDto;
+import page.clab.api.type.etc.ExecutivesPosition;
+import page.clab.api.util.ModelMapperUtil;
 
 @Entity
 @Getter
@@ -40,7 +39,7 @@ public class Executives {
     @Column(nullable = false)
     @Size(min = 1, message = "{size.executives.year}")
     private String year;
-    
+
     public static Executives of(ExecutivesRequestDto executivesRequestDto) {
         Executives executives = ModelMapperUtil.getModelMapper().map(executivesRequestDto, Executives.class);
         executives.setMember(Member.builder().id(executivesRequestDto.getMemberId()).build());

@@ -1,5 +1,7 @@
 package page.clab.api.type.dto;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,9 +11,6 @@ import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupStatus;
 import page.clab.api.util.ModelMapperUtil;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter

@@ -6,14 +6,13 @@ import com.maxmind.geoip2.model.CityResponse;
 import com.maxmind.geoip2.record.City;
 import com.maxmind.geoip2.record.Country;
 import com.maxmind.geoip2.record.Location;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import page.clab.api.type.dto.GeoIpInfo;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetAddress;
 
 @Component
 public class GeoIpUtil {

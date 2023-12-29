@@ -1,10 +1,9 @@
 package page.clab.api.type.etc;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @Getter
 @AllArgsConstructor

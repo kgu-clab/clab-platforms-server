@@ -2,6 +2,7 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +21,6 @@ import page.clab.api.type.dto.ActivityGroupBoardRequestDto;
 import page.clab.api.type.dto.ActivityGroupBoardResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/activity-group/boards")

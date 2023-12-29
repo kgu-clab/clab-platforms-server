@@ -2,6 +2,8 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
@@ -14,9 +16,6 @@ import page.clab.api.service.EmailService;
 import page.clab.api.type.dto.EmailDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 @RestController
 @RequestMapping("/emails")
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class EmailController {
 
     @Operation(summary = "[A] 메일 전송", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(path ="", consumes = "multipart/form-data")
+    @PostMapping(path = "", consumes = "multipart/form-data")
     public ResponseModel broadcastEmail(
             EmailDto emailDto,
             @RequestPart(required = false) List<MultipartFile> files
@@ -43,7 +42,7 @@ public class EmailController {
 
     @Operation(summary = "[A] 전체 메일 전송", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(path ="/all", consumes = "multipart/form-data")
+    @PostMapping(path = "/all", consumes = "multipart/form-data")
     public ResponseModel broadcastEmailToAllMember(
             EmailDto emailDto,
             @RequestPart(required = false) List<MultipartFile> files
