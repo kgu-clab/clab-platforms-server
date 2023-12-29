@@ -1,12 +1,13 @@
 package page.clab.api.type.entity;
 
-import java.io.Serializable;
-import javax.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 @Data
 @Builder

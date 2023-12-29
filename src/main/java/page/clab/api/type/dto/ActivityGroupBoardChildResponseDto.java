@@ -1,7 +1,5 @@
 package page.clab.api.type.dto;
 
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,6 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.type.entity.ActivityGroupBoard;
 import page.clab.api.util.ModelMapperUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter

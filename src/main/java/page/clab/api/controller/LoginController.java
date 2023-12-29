@@ -2,8 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
@@ -20,6 +18,9 @@ import page.clab.api.type.dto.LoginRequestDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.TokenInfo;
 import page.clab.api.type.dto.TwoFactorAuthenticationRequestDto;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/login")

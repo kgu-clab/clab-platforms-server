@@ -1,7 +1,5 @@
 package page.clab.api.type.entity;
 
-import java.time.LocalDateTime;
-import javax.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,6 +8,9 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
+
+import javax.persistence.Column;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter

@@ -7,10 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.type.dto.ScheduleRequestDto;
+import page.clab.api.type.etc.ScheduleType;
 import page.clab.api.util.ModelMapperUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -30,14 +33,15 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ScheduleType scheduleType;
+
     @NotNull
     private String title;
 
     @NotNull
     private String detail;
-
-    @Column(nullable = false)
-    private Boolean isPublic;
 
     @NotNull
     @Column(name = "start_date")
@@ -55,9 +59,7 @@ public class Schedule {
     @JoinColumn(name = "member_id")
     private Member scheduleWriter;
 
-    @ManyToOne
-    @JoinColumn(name = "activity_group_id")
-    private ActivityGroup activityGroup;
+    private Long activityGroupId;
 
     public static Schedule of(ScheduleRequestDto scheduleRequestDto){
         return ModelMapperUtil.getModelMapper().map(scheduleRequestDto, Schedule.class);

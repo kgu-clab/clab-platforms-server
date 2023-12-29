@@ -27,20 +27,10 @@ public class ScheduleResponseDto {
 
     private LocalDateTime endDate;
 
-    private Long activityGroupId;
-
-    private String activityGroupName;
-
-    private String activityGroupCategory;
-
-    private Boolean isPublic;
 
     public static ScheduleResponseDto of(Schedule schedule){
         ScheduleResponseDto scheduleResponseDto = ModelMapperUtil.getModelMapper()
                 .map(schedule, ScheduleResponseDto.class);
-        scheduleResponseDto.setActivityGroupId(schedule.getActivityGroup().getId());
-        scheduleResponseDto.setActivityGroupCategory(String.valueOf(schedule.getActivityGroup().getCategory()));
-        scheduleResponseDto.setActivityGroupName(schedule.getActivityGroup().getName());
 
         return scheduleResponseDto;
     }

@@ -2,9 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
@@ -16,6 +13,9 @@ import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.service.EmailService;
 import page.clab.api.type.dto.EmailDto;
 import page.clab.api.type.dto.ResponseModel;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/emails")

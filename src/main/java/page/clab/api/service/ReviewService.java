@@ -110,7 +110,7 @@ public class ReviewService {
     public Long deleteReview(Long reviewId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Review review = getReviewByIdOrThrow(reviewId);
-        if (!(member.getId().equals(reviewId) || memberService.isMemberAdminRole(member))) {
+        if (!(member.getId().equals(review.getMember().getId()) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("해당 리뷰를 삭제할 권한이 없습니다.");
         }
         reviewRepository.delete(review);
