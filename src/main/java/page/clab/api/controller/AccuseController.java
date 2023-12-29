@@ -2,6 +2,7 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -24,8 +25,6 @@ import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.etc.AccuseStatus;
 import page.clab.api.type.etc.TargetType;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/accuses")
@@ -51,7 +50,7 @@ public class AccuseController {
         responseModel.addData(id);
         return responseModel;
     }
-    
+
     @Operation(summary = "[A] 신고 내역 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
@@ -65,7 +64,7 @@ public class AccuseController {
         responseModel.addData(accuses);
         return responseModel;
     }
-    
+
     @Operation(summary = "[A] 유형/상태별 신고 내역 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
@@ -81,7 +80,7 @@ public class AccuseController {
         responseModel.addData(accuses);
         return responseModel;
     }
-    
+
     @Operation(summary = "[A] 신고 상태 변경", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{accuseId}")
@@ -94,5 +93,5 @@ public class AccuseController {
         responseModel.addData(id);
         return responseModel;
     }
-    
+
 }

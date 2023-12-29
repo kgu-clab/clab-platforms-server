@@ -1,6 +1,12 @@
 package page.clab.api.handler;
 
 import com.google.common.base.Strings;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,13 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.exception.FileUploadFailException;
 import page.clab.api.type.entity.UploadedFile;
 import page.clab.api.util.ImageCompressionUtil;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
 
 @Component
 @Slf4j

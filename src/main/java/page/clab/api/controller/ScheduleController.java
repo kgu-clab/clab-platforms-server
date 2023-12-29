@@ -3,6 +3,7 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,8 +22,6 @@ import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.ScheduleRequestDto;
 import page.clab.api.type.dto.ScheduleResponseDto;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/schedule")
@@ -44,7 +43,7 @@ public class ScheduleController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 일정 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 일정 조회", description = "ROLE_USER 이상의 권한이 필요함, 날짜시간은 다음과 같이 작성. yyyy-MM-dd HH:mm:ss.SSS")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getSchedules(
@@ -52,8 +51,7 @@ public class ScheduleController {
             @RequestParam(name = "end_date_time") String endDateTime,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
-            ){
-
+    ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ScheduleResponseDto> scheduleResponseDtos
                 = scheduleService.getSchedules(startDateTime, endDateTime, pageable);
@@ -67,12 +65,11 @@ public class ScheduleController {
     @DeleteMapping("/{scheduleId}")
     public ResponseModel deleteSchedule(
             @PathVariable Long scheduleId
-            )throws PermissionDeniedException {
+    ) throws PermissionDeniedException {
         Long id = scheduleService.deleteSchedule(scheduleId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
     }
-
 
 }

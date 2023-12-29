@@ -1,6 +1,12 @@
 package page.clab.api.type.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,13 +16,6 @@ import org.hibernate.validator.constraints.URL;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.StudentStatus;
 import page.clab.api.util.ModelMapperUtil;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.time.LocalDate;
 
 @Getter
 @Setter

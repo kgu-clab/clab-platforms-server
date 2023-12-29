@@ -1,16 +1,7 @@
 package page.clab.api.type.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.validator.constraints.URL;
-import page.clab.api.type.dto.ApplicationRequestDto;
-import page.clab.api.type.etc.ApplicationType;
-import page.clab.api.util.ModelMapperUtil;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -22,8 +13,16 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.URL;
+import page.clab.api.type.dto.ApplicationRequestDto;
+import page.clab.api.type.etc.ApplicationType;
+import page.clab.api.util.ModelMapperUtil;
 
 @Entity
 @Getter

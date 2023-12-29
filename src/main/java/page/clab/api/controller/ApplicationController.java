@@ -2,6 +2,8 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.LocalDate;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -26,9 +28,6 @@ import page.clab.api.type.dto.ApplicationResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import javax.validation.Valid;
-import java.time.LocalDate;
-
 @RestController
 @RequestMapping("/applications")
 @RequiredArgsConstructor
@@ -40,7 +39,7 @@ public class ApplicationController {
 
     @Operation(summary = "가입 신청", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("")
-    public ResponseModel createApplication (
+    public ResponseModel createApplication(
             @Valid @RequestBody ApplicationRequestDto applicationRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {

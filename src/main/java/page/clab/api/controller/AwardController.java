@@ -2,6 +2,7 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -24,8 +25,6 @@ import page.clab.api.type.dto.AwardRequestDto;
 import page.clab.api.type.dto.AwardResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/awards")
@@ -82,14 +81,14 @@ public class AwardController {
         return responseModel;
     }
 
-  @Operation(summary = "[U] 수상 이력 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 수상 이력 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-  @PatchMapping("/{awardId}")
-  public ResponseModel updateAward(
-      @PathVariable Long awardId,
-      @Valid @RequestBody AwardRequestDto awardRequestDto,
-      BindingResult result
-  ) throws MethodArgumentNotValidException, PermissionDeniedException {
+    @PatchMapping("/{awardId}")
+    public ResponseModel updateAward(
+            @PathVariable Long awardId,
+            @Valid @RequestBody AwardRequestDto awardRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }

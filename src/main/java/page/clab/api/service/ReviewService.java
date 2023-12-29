@@ -1,5 +1,6 @@
 package page.clab.api.service;
 
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,8 +22,6 @@ import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.Review;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
-
-import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor

@@ -1,7 +1,14 @@
 package page.clab.api.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
@@ -18,8 +25,6 @@ import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.Schedule;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ScheduleType;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -56,17 +61,64 @@ public class ScheduleService {
         }
 
         Schedule schedule = Schedule.of(scheduleRequestDto);
+        schedule.setId(null);
         schedule.setScheduleWriter(member);
+
+        if (scheduleRequestDto.getActivityGroupId() != null) {
+            schedule.setActivityGroupId(scheduleRequestDto.getActivityGroupId());
+        }
+
         Long id = scheduleRepository.save(schedule).getId();
 
         return id;
     }
 
-    public PagedResponseDto<ScheduleResponseDto> getSchedules(String startDate, String endDate, Pageable pageable){
-        return null;
+    public PagedResponseDto<ScheduleResponseDto> getSchedules(String startDate, String endDate, Pageable pageable) {
+        Member member = memberService.getCurrentMember();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+        LocalDateTime startDateTime = LocalDateTime.parse(startDate, formatter);
+        LocalDateTime endDateTime = LocalDateTime.parse(endDate, formatter);
+
+        List<GroupMember> groupMemberList = groupMemberRepository.findAllByMember(member)
+                .stream()
+                .distinct()
+                .toList();
+
+        List<Long> activityGroupIdList = groupMemberList.stream()
+                .map(GroupMember::getActivityGroup)
+                .map(ActivityGroup::getId)
+                .collect(Collectors.toList());
+
+        List<Schedule> validDateSchedules = scheduleRepository.findAllByStartDateBetween(startDateTime, endDateTime);
+
+        List<Schedule> mySchedules = validDateSchedules.stream()
+                .filter(schedule -> isValid(schedule, activityGroupIdList))
+                .collect(Collectors.toList());
+
+
+        Page<Schedule> myPagedSchedules = new PageImpl<>(mySchedules, pageable, mySchedules.size()) ;
+
+        return new PagedResponseDto<>(myPagedSchedules.map(ScheduleResponseDto::of));
+
     }
 
-    public Long deleteSchedule(Long scheduleId) throws PermissionDeniedException{
+    private boolean isValid(Schedule schedule, List<Long> activityGroupIdList) {
+        if (schedule.getScheduleType() == ScheduleType.ALL) {
+            return true;
+        }
+
+        Long activityGroupId = schedule.getActivityGroupId();
+
+        if (activityGroupIdList.contains(activityGroupId)) {
+            return true;
+        }
+
+        return false;
+
+    }
+
+    public Long deleteSchedule(Long scheduleId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Schedule schedule = scheduleRepository.findById(scheduleId).get();
 

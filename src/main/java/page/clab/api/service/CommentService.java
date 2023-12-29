@@ -1,5 +1,7 @@
 package page.clab.api.service;
 
+import java.time.LocalDateTime;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,9 +16,6 @@ import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Board;
 import page.clab.api.type.entity.Comment;
 import page.clab.api.type.entity.Member;
-
-import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -70,7 +69,7 @@ public class CommentService {
         return commentRepository.save(comment).getId();
     }
 
-    public Long deleteComment(Long commentId) throws PermissionDeniedException{
+    public Long deleteComment(Long commentId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
         if (!(comment.getWriter().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {

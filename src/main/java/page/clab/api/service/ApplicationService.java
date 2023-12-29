@@ -1,5 +1,9 @@
 package page.clab.api.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,11 +20,6 @@ import page.clab.api.type.entity.Application;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.Role;
 
-import javax.transaction.Transactional;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -29,7 +28,7 @@ public class ApplicationService {
     private final MemberService memberService;
 
     private final NotificationService notificationService;
-    
+
     private final ApplicationRepository applicationRepository;
 
     @Transactional

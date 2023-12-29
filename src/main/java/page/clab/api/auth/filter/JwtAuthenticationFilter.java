@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     private final RedisTokenService redisTokenService;
 
     private final RedisIpAttemptService redisIpAttemptService;
-    
+
     private final BlacklistIpRepository blacklistIpRepository;
 
     private static final String[] SWAGGER_PATTERNS = {

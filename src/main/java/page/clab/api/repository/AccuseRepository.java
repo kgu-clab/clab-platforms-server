@@ -1,5 +1,6 @@
 package page.clab.api.repository;
 
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,8 +9,6 @@ import page.clab.api.type.entity.Accuse;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.AccuseStatus;
 import page.clab.api.type.etc.TargetType;
-
-import java.util.Optional;
 
 @Repository
 public interface AccuseRepository extends JpaRepository<Accuse, Long> {

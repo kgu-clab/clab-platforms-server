@@ -2,6 +2,7 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -25,15 +26,13 @@ import page.clab.api.type.dto.MembershipFeeResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
-import javax.validation.Valid;
-
 @RestController
 @RequestMapping("/membership-fees")
 @RequiredArgsConstructor
 @Tag(name = "MembershipFee", description = "회비 관련 API")
 @Slf4j
 public class MembershipFeeController {
-    
+
     private final MembershipFeeService membershipFeeService;
 
     @Operation(summary = "[U] 회비 신청", description = "ROLE_USER 이상의 권한이 필요함")
@@ -110,5 +109,5 @@ public class MembershipFeeController {
         responseModel.addData(id);
         return responseModel;
     }
-    
+
 }

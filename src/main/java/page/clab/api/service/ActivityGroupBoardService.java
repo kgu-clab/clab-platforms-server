@@ -1,5 +1,9 @@
 package page.clab.api.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,11 +21,6 @@ import page.clab.api.type.entity.ActivityGroupBoard;
 import page.clab.api.type.entity.GroupMember;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.ActivityGroupRole;
-
-import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -116,7 +115,7 @@ public class ActivityGroupBoardService {
     private List<ActivityGroupBoard> getChildBoards(Long activityGroupBoardId) {
         List<ActivityGroupBoard> boardList = new ArrayList<>();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        if (board.getParent() == null || board.getChildren()!= null) {
+        if (board.getParent() == null || board.getChildren() != null) {
             boardList.add(board);
             for (ActivityGroupBoard child : board.getChildren()) {
                 boardList.addAll(getChildBoards(child.getId()));

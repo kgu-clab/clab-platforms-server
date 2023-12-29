@@ -1,5 +1,7 @@
 package page.clab.api.type.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,14 +10,11 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 import page.clab.api.type.etc.Role;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash(value = "refresh", timeToLive = 60*60*24*14)
+@RedisHash(value = "refresh", timeToLive = 60 * 60 * 24 * 14)
 public class RedisToken {
 
     @Id

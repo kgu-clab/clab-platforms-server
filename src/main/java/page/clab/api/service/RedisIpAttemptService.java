@@ -1,12 +1,11 @@
 package page.clab.api.service;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import page.clab.api.repository.RedisIpAttemptRepository;
 import page.clab.api.type.entity.RedisIpAttempt;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor

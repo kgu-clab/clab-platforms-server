@@ -16,7 +16,7 @@ import page.clab.api.util.ModelMapperUtil;
 public class ActivityPhotoResponseDto {
 
     private Long id;
-    
+
     private String imageUrl;
 
     private Boolean isPublic;

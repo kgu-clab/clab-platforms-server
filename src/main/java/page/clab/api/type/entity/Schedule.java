@@ -1,15 +1,6 @@
 package page.clab.api.type.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import page.clab.api.type.dto.ScheduleRequestDto;
-import page.clab.api.type.etc.ScheduleType;
-import page.clab.api.util.ModelMapperUtil;
-
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -20,7 +11,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import page.clab.api.type.dto.ScheduleRequestDto;
+import page.clab.api.type.etc.ScheduleType;
 
 @Entity
 @Getter
@@ -29,6 +27,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Schedule {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -61,8 +60,14 @@ public class Schedule {
 
     private Long activityGroupId;
 
-    public static Schedule of(ScheduleRequestDto scheduleRequestDto){
-        return ModelMapperUtil.getModelMapper().map(scheduleRequestDto, Schedule.class);
+    public static Schedule of(ScheduleRequestDto scheduleRequestDto) {
+        return Schedule.builder()
+                .scheduleType(scheduleRequestDto.getScheduleType())
+                .title(scheduleRequestDto.getTitle())
+                .detail(scheduleRequestDto.getDetail())
+                .startDate(scheduleRequestDto.getStartDate())
+                .endDate(scheduleRequestDto.getEndDate())
+                .build();
     }
 
 }
