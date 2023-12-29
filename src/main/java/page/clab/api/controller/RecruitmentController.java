@@ -2,8 +2,6 @@ package page.clab.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
@@ -21,6 +19,9 @@ import page.clab.api.service.RecruitmentService;
 import page.clab.api.type.dto.RecruitmentRequestDto;
 import page.clab.api.type.dto.RecruitmentResponseDto;
 import page.clab.api.type.dto.ResponseModel;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/recruitments")

@@ -32,12 +32,12 @@ public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    @Operation(summary = "[A] 일정 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[U] 일정 등록", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createSchedule(
             @Valid @RequestBody ScheduleRequestDto scheduleRequestDto
-    ){
+    ) throws PermissionDeniedException {
         Long id = scheduleService.createSchedule(scheduleRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -48,15 +48,15 @@ public class ScheduleController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getSchedules(
-            @RequestParam(name = "start_date") String startDate,
-            @RequestParam(name = "end_date") String endDate,
+            @RequestParam(name = "start_date_time") String startDateTime,
+            @RequestParam(name = "end_date_time") String endDateTime,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
             ){
 
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ScheduleResponseDto> scheduleResponseDtos
-                = scheduleService.getSchedules(startDate, endDate, pageable);
+                = scheduleService.getSchedules(startDateTime, endDateTime, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(scheduleResponseDtos);
         return responseModel;
