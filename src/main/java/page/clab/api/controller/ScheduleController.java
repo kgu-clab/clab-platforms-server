@@ -60,8 +60,8 @@ public class ScheduleController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 일정 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[U] 일정 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{scheduleId}")
     public ResponseModel deleteSchedule(
             @PathVariable Long scheduleId
