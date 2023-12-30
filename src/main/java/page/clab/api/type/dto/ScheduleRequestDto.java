@@ -20,22 +20,25 @@ import page.clab.api.type.etc.ScheduleType;
 @Data
 public class ScheduleRequestDto {
 
-    @NotNull
+    @NotNull(message = "{nonull.schedule.scheduleType}")
+    @Schema(description = "일정 타입", example = "ALL")
     private ScheduleType scheduleType;
 
-    @NotNull
+    @NotNull(message = "{nonull.schedule.title}")
+    @Schema(description = "일정 제목", example = "동아리 개강총회")
     private String title;
 
-    @NotNull
+    @NotNull(message = "{nonull.schedule.detail}")
+    @Schema(description = "일정 세부사항", example = "학기를 C-Lab과 함께 시작할 수 있는 자리!")
     private String detail;
 
-    @NotNull
-    @Schema(example = "2023-11-28")
-    private LocalDateTime startDate;
+    @NotNull(message = "{nonull.schedule.startDate}")
+    @Schema(description = "일정 시작날짜와 시간", example = "2023-11-28 18:00:00.000")
+    private LocalDateTime startDateTime;
 
-    @NotNull
-    @Schema(example = "2023-12-28")
-    private LocalDateTime endDate;
+    @NotNull(message = "{nonull.schedule.endDate}")
+    @Schema(description = "일정 종료날짜와 시간", example = "2023-11-28 22:00:00.000")
+    private LocalDateTime endDateTime;
 
     private Long activityGroupId;
 

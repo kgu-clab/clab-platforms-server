@@ -26,7 +26,6 @@ public class ScheduleResponseDto {
 
     private LocalDateTime endDate;
 
-
     public static ScheduleResponseDto of(Schedule schedule) {
         ScheduleResponseDto scheduleResponseDto = ModelMapperUtil.getModelMapper()
                 .map(schedule, ScheduleResponseDto.class);

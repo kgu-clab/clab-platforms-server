@@ -43,12 +43,12 @@ public class Schedule {
     private String detail;
 
     @NotNull
-    @Column(name = "start_date")
-    private LocalDateTime startDate;
+    @Column(name = "start_date_time")
+    private LocalDateTime startDateTime;
 
     @NotNull
-    @Column(name = "end_date")
-    private LocalDateTime endDate;
+    @Column(name = "end_date_time")
+    private LocalDateTime endDateTime;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -65,8 +65,8 @@ public class Schedule {
                 .scheduleType(scheduleRequestDto.getScheduleType())
                 .title(scheduleRequestDto.getTitle())
                 .detail(scheduleRequestDto.getDetail())
-                .startDate(scheduleRequestDto.getStartDate())
-                .endDate(scheduleRequestDto.getEndDate())
+                .startDateTime(scheduleRequestDto.getStartDateTime())
+                .endDateTime(scheduleRequestDto.getEndDateTime())
                 .build();
     }
 

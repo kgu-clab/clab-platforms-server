@@ -145,6 +145,10 @@ public class ActivityGroupMemberService {
                 .orElseThrow(() -> new NotFoundException("해당 활동의 리더가 존재하지 않습니다."));
     }
 
+    public List<GroupMember> getGroupMemberByMember(Member member){
+        return groupMemberRepository.findAllByMember(member);
+    }
+
     public GroupMember save(GroupMember groupMember) {
         return groupMemberRepository.save(groupMember);
     }
