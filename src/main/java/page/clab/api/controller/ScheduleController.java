@@ -43,7 +43,7 @@ public class ScheduleController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 일정 조회", description = "ROLE_USER 이상의 권한이 필요함, 날짜시간은 다음과 같이 작성. yyyy-MM-dd HH:mm:ss.SSS")
+    @Operation(summary = "[U] 일정 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getSchedules(

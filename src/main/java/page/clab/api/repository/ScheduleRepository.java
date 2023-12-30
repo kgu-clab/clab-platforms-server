@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import page.clab.api.type.entity.Schedule;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
-    List<Schedule> findAllByStartDateBetween(LocalDateTime startDateTime, LocalDateTime endDateTime);
 
+    List<Schedule> findAllByStartDateTimeBetween(LocalDateTime startDateTime, LocalDateTime endDateTime);
 
 }
