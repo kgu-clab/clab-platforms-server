@@ -66,16 +66,17 @@ public class AwardController {
     }
 
     @Operation(summary = "[U] 수상 이력 검색", description = "ROLE_USER 이상의 권한이 필요함" +
-            "학번을 기준으로 검색")
+            "학번, 연도를 기준으로 검색")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel searchAwards(
-            @RequestParam String memberId,
+            @RequestParam(required = false) String memberId,
+            @RequestParam(required = false) Long year,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.searchAwards(memberId, pageable);
+        PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.searchAwards(memberId, year, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(awardResponseDtos);
         return responseModel;
