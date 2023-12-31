@@ -115,7 +115,7 @@ public class ActivityGroupBoardService {
     private List<ActivityGroupBoard> getChildBoards(Long activityGroupBoardId) {
         List<ActivityGroupBoard> boardList = new ArrayList<>();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        if (board.getParent() == null || board.getChildren()!= null) {
+        if (board.getParent() == null || board.getChildren() != null) {
             boardList.add(board);
             for (ActivityGroupBoard child : board.getChildren()) {
                 boardList.addAll(getChildBoards(child.getId()));

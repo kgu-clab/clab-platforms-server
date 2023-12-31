@@ -11,7 +11,7 @@ import page.clab.api.type.entity.GroupSchedule;
 public interface GroupScheduleRepository extends JpaRepository<GroupSchedule, Long> {
 
     List<GroupSchedule> findAllByActivityGroupIdOrderByIdDesc(Long activityGroupId);
-    
+
     Page<GroupSchedule> findAllByActivityGroupIdOrderByIdDesc(Long activityGroupId, Pageable pageable);
 
 }

@@ -51,7 +51,7 @@ public class FileService {
     public String saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws FileUploadFailException {
         Member member = memberService.getCurrentMember();
         if (path.startsWith("members")) {
-            String memberId =  path.split(Pattern.quote(File.separator))[1];
+            String memberId = path.split(Pattern.quote(File.separator))[1];
             double usage = memberService.getCloudUsageByMemberId(memberId).getUsage();
             if (multipartFile.getSize() + usage > FileSystemUtil.convertToBytes(maxFileSize)) {
                 return "저장 공간이 부족합니다.";

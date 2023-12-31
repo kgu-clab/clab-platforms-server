@@ -31,7 +31,7 @@ public class FileController {
 
     @Operation(summary = "[U] 게시글 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(value ="/boards/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/boards/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel boardUpload(
             @PathVariable("boardId") String boardId,
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
@@ -45,7 +45,7 @@ public class FileController {
 
     @Operation(summary = "[U] 뉴스 사진 업로드", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(value ="/news/{newsId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/news/{newsId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel newsUpload(
             @PathVariable("newsId") String newsId,
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
@@ -59,7 +59,7 @@ public class FileController {
 
     @Operation(summary = "[U] 도서 사진 업로드", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(value ="/books/{bookId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/books/{bookId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel bookUpload(
             @PathVariable("bookId") String bookId,
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
@@ -73,7 +73,7 @@ public class FileController {
 
     @Operation(summary = "[U] 멤버 프로필 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(value ="/profiles/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/profiles/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel profileUpload(
             @PathVariable("memberId") String memberId,
             @RequestParam("multipartFile") MultipartFile multipartFile,
@@ -101,7 +101,7 @@ public class FileController {
 
     @Operation(summary = "[U] 멤버 클라우드 파일 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(value ="/members/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/members/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel memberCloudUpload(
             @PathVariable("memberId") String memberId,
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
@@ -115,7 +115,7 @@ public class FileController {
 
     @Operation(summary = "[U] 양식 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(value ="/forms", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/forms", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel formUpload(
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam("storagePeriod") long storagePeriod

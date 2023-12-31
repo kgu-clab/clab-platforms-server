@@ -36,7 +36,7 @@ import page.clab.api.type.dto.ResponseModel;
 public class BoardController {
 
     private final BoardService boardService;
-    
+
     @Operation(summary = "[U] 커뮤니티 게시글 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
