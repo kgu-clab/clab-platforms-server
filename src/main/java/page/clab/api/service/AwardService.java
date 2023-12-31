@@ -1,5 +1,6 @@
 package page.clab.api.service;
 
+import java.time.LocalDate;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,9 +37,16 @@ public class AwardService {
     }
 
     @Transactional
-    public PagedResponseDto<AwardResponseDto> searchAwards(String memberId, Pageable pageable) {
-        Member member = memberService.getMemberByIdOrThrow(memberId);
-        Page<Award> awards = getAwardByMember(pageable, member);
+    public PagedResponseDto<AwardResponseDto> searchAwards(String memberId, Long year, Pageable pageable) {
+        Page<Award> awards = null;
+        if (memberId != null) {
+            Member member = memberService.getMemberByIdOrThrow(memberId);
+            awards = getAwardByMember(pageable, member);
+        } else if (year != null) {
+            awards = getAwardByYear(pageable, year);
+        } else {
+            throw new NotFoundException("적어도 학번 혹은 연도 중 하나는 입력해야 합니다.");
+        }
         return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
     }
 
@@ -70,6 +78,12 @@ public class AwardService {
 
     private Page<Award> getAwardByMember(Pageable pageable, Member member) {
         return awardRepository.findAllByMemberOrderByAwardDateDesc(member, pageable);
+    }
+
+    private Page<Award> getAwardByYear(Pageable pageable, Long year){
+        LocalDate startOfYear = LocalDate.of(year.intValue(), 1, 1);
+        LocalDate endOfYear = LocalDate.of(year.intValue(), 12, 31);
+        return awardRepository.findAllByAwardDateBetween(startOfYear, endOfYear, pageable);
     }
 
 }
