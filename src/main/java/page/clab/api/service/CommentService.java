@@ -69,7 +69,7 @@ public class CommentService {
         return commentRepository.save(comment).getId();
     }
 
-    public Long deleteComment(Long commentId) throws PermissionDeniedException{
+    public Long deleteComment(Long commentId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
         if (!(comment.getWriter().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {

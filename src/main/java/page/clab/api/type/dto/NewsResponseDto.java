@@ -13,7 +13,7 @@ import page.clab.api.util.ModelMapperUtil;
 public class NewsResponseDto {
 
     private Long id;
-    
+
     private String title;
 
     private String category;
@@ -21,7 +21,7 @@ public class NewsResponseDto {
     private String imageUrl;
 
     private LocalDateTime createdAt;
-    
+
     public static NewsResponseDto of(News news) {
         return ModelMapperUtil.getModelMapper().map(news, NewsResponseDto.class);
     }
