@@ -2,15 +2,21 @@ package page.clab.api.service;
 
 import com.google.zxing.WriterException;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.AttendanceRepository;
 import page.clab.api.type.dto.AttendanceRequestDto;
+import page.clab.api.type.dto.AttendanceResponseDto;
+import page.clab.api.type.dto.PagedResponseDto;
+import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.Attendance;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.ActivityGroupRole;
@@ -27,16 +33,29 @@ public class AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
 
-    public byte[] generateAttendanceQRCode(Long activityGroupId) throws IOException, WriterException, PermissionDeniedException {
+    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    public byte[] generateAttendanceQRCode(Long activityGroupId) throws IOException, WriterException, PermissionDeniedException, IllegalAccessException {
         Member member = memberService.getCurrentMember();
+
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
 
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
             throw new PermissionDeniedException("해당 그룹의 LEADER만 출석체크 QR을 생성할 수 있습니다.");
         }
 
-        String data = activityGroupId.toString() + "/" + member.getId() + "/" + getCurrentTimestamp();
+        if (!activityGroupAdminService.isActivityGroupProgressing(activityGroupId)) {
+            throw new IllegalAccessException("활동이 진행 중인 그룹이 아닙니다. 출석 QR 코드를 생성할 수 없습니다.");
+        }
+
+        String nowDateTime = getCurrentTimestamp();
+        String data = activityGroupId.toString() + "/" + member.getId() + "/" + nowDateTime;
 
         Attendance attendance = Attendance.of(data, member);
+        attendance.setActivityGroup(activityGroup);
+        attendance.setActivityDate(LocalDate.parse(nowDateTime.split(" ")[0], dateFormatter));
         save(attendance);
 
         return QRCodeUtil.encodeQRCode(data);
@@ -60,8 +79,9 @@ public class AttendanceService {
             }
 
             Long activityGroupId = Long.parseLong(QRCodeTokens[0]);
-
             String QRCodeGeneratedTime = QRCodeTokens[2];
+
+            ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
 
             if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.MEMBER, activityGroupId)) {
                 return "해당 그룹의 멤버가 아닙니다. 출석체크 인증을 진행할 수 없습니다.";
@@ -72,6 +92,8 @@ public class AttendanceService {
             }
 
             Attendance attendance = Attendance.of(QRCodeData, member);
+            attendance.setActivityGroup(activityGroup);
+            attendance.setActivityDate(LocalDate.parse(QRCodeGeneratedTime.split(" ")[0], dateFormatter));
             Member attendancedMember = save(attendance).getAttendanceId().getMember();
 
             return attendancedMember.getId() + " " + attendancedMember.getName() + " "  + "출석체크 성공";
@@ -82,17 +104,50 @@ public class AttendanceService {
         }
     }
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public PagedResponseDto<AttendanceResponseDto> getMyAttendances(Long activityGroupId, Pageable pageable) throws IllegalAccessException {
+        Member member = memberService.getCurrentMember();
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+
+        if (activityGroupAdminService.isActivityGroupProgressing(activityGroupId)) {
+            throw new IllegalAccessException("활동이 진행 중인 그룹이 아닙니다. 출석 정보를 불러올 수 없습니다.");
+        }
+
+        Page<Attendance> attendances = getAttendanceByMember(pageable, member, activityGroup);
+
+        return new PagedResponseDto<>(attendances.map(AttendanceResponseDto::of));
+    }
+
+    public PagedResponseDto<AttendanceResponseDto> getGroupAttendances(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+
+        if (!memberService.isMemberAdminRole(member) || !activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
+            throw new PermissionDeniedException("그룹의 출석기록을 조회할 권한이 없습니다.");
+        }
+
+        Page<Attendance> attendances = getAttendanceByActivityGroup(pageable, activityGroup);
+
+        return new PagedResponseDto<>(attendances.map(AttendanceResponseDto::of));
+    }
+
     private static String getCurrentTimestamp() {
         LocalDateTime now = LocalDateTime.now();
 
-        return now.format(formatter);
+        return now.format(dateTimeFormatter);
     }
 
     private static boolean isValidQRCode(String QRCodeGeneratedTime, LocalDateTime enterTime){
-        LocalDateTime QRCodeGeneratedAt = LocalDateTime.parse(QRCodeGeneratedTime, formatter);
+        LocalDateTime QRCodeGeneratedAt = LocalDateTime.parse(QRCodeGeneratedTime, dateTimeFormatter);
 
         return java.time.Duration.between(QRCodeGeneratedAt, enterTime).getSeconds() <= 30;
+    }
+
+    private Page<Attendance> getAttendanceByMember(Pageable pageable, Member member, ActivityGroup activityGroup){
+        return attendanceRepository.findAllByAttendanceIdMemberAndActivityGroupOrderByCreatedAt(member, activityGroup, pageable);
+    }
+
+    private Page<Attendance> getAttendanceByActivityGroup(Pageable pageable, ActivityGroup activityGroup){
+        return attendanceRepository.findAllByActivityGroupOrderByActivityDateAscAttendanceIdMemberAsc(activityGroup, pageable);
     }
 
     public Attendance save(Attendance attendance){
