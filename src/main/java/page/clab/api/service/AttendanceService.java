@@ -108,7 +108,7 @@ public class AttendanceService {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
 
-        if (activityGroupAdminService.isActivityGroupProgressing(activityGroupId)) {
+        if (!activityGroupAdminService.isActivityGroupProgressing(activityGroupId)) {
             throw new IllegalAccessException("활동이 진행 중인 그룹이 아닙니다. 출석 정보를 불러올 수 없습니다.");
         }
 
