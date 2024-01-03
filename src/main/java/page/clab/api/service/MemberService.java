@@ -114,6 +114,7 @@ public class MemberService {
             throw new PermissionDeniedException("멤버 수정 권한이 부족합니다.");
         }
         Member updatedMember = Member.of(memberRequestDto);
+        updatedMember.setPassword(passwordEncoder.encode(updatedMember.getPassword()));
         updatedMember.setMemberStatus(member.getMemberStatus());
         updatedMember.setRole(member.getRole());
         updatedMember.setProvider(member.getProvider());
