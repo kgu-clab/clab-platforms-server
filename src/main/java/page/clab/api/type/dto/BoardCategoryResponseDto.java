@@ -25,7 +25,7 @@ public class BoardCategoryResponseDto {
     private LocalDateTime createdAt;
 
     public static BoardCategoryResponseDto of(Board board) {
-        BoardCategoryResponseDto boardCategoryResponseDto =  ModelMapperUtil.getModelMapper().map(board, BoardCategoryResponseDto.class);
+        BoardCategoryResponseDto boardCategoryResponseDto = ModelMapperUtil.getModelMapper().map(board, BoardCategoryResponseDto.class);
         boardCategoryResponseDto.setMemberName(board.getMember().getName());
         return boardCategoryResponseDto;
     }

@@ -46,7 +46,7 @@ public class ActivityPhotoService {
 
     private ActivityPhoto getActivityPhotoByIdOrThrow(Long activityPhotoId) {
         return activityPhotoRepository.findById(activityPhotoId)
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 활동 사진입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 활동 사진입니다."));
     }
 
     private Page<ActivityPhoto> getActivityPhotoByIsPublicTrue(Pageable pageable) {

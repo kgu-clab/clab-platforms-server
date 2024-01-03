@@ -27,7 +27,7 @@ public class EmailController {
 
     @Operation(summary = "[A] 메일 전송", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(path ="", consumes = "multipart/form-data")
+    @PostMapping(path = "", consumes = "multipart/form-data")
     public ResponseModel broadcastEmail(
             EmailDto emailDto,
             @RequestPart(required = false) List<MultipartFile> files
@@ -42,7 +42,7 @@ public class EmailController {
 
     @Operation(summary = "[A] 전체 메일 전송", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(path ="/all", consumes = "multipart/form-data")
+    @PostMapping(path = "/all", consumes = "multipart/form-data")
     public ResponseModel broadcastEmailToAllMember(
             EmailDto emailDto,
             @RequestPart(required = false) List<MultipartFile> files

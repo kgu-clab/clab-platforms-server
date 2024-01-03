@@ -39,7 +39,7 @@ public class ApplicationController {
 
     @Operation(summary = "가입 신청", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("")
-    public ResponseModel createApplication (
+    public ResponseModel createApplication(
             @Valid @RequestBody ApplicationRequestDto applicationRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {

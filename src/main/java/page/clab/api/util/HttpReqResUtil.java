@@ -25,7 +25,7 @@ public class HttpReqResUtil {
             return "0.0.0.0";
         }
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        for (String header: IP_HEADER_CANDIDATES) {
+        for (String header : IP_HEADER_CANDIDATES) {
             String ipList = request.getHeader(header);
             if (ipList != null && ipList.length() != 0 && !"unknown".equalsIgnoreCase(ipList)) {
                 String ip = ipList.split(",")[0];
