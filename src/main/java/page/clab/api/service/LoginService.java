@@ -6,11 +6,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -29,7 +29,8 @@ import page.clab.api.type.etc.LoginAttemptResult;
 @Slf4j
 public class LoginService {
 
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    @Qualifier("loginAuthenticationManager")
+    private final AuthenticationManager loginAuthenticationManager;
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -49,15 +50,14 @@ public class LoginService {
         String password = loginRequestDto.getPassword();
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
         try {
-            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            loginAuthenticationManager.authenticate(authenticationToken);
             loginFailInfoService.handleLoginFailInfo(id);
             memberService.setLastLoginTime(id);
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.TOTP);
             if (!authenticatorService.isAuthenticatorExist(id)) {
                 authenticatorService.generateSecretKey(id);
             }
-//            return authenticatorService.getAuthenticatorById(id).getSecretKey();
-            return authenticatorService.generateSecretKeyQRCodeUrl(id);
+            return authenticatorService.getAuthenticatorById(id).getSecretKey();
         } catch (BadCredentialsException e) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
             loginFailInfoService.updateLoginFailInfo(id);
