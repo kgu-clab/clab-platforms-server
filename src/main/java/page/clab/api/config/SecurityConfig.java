@@ -1,5 +1,6 @@
 package page.clab.api.config;
 
+import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -17,8 +19,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -28,6 +29,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import page.clab.api.auth.filter.CustomBasicAuthenticationFilter;
 import page.clab.api.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.auth.jwt.JwtTokenProvider;
+import page.clab.api.auth.service.CustomUserDetailsService;
 import page.clab.api.repository.BlacklistIpRepository;
 import page.clab.api.service.RedisIpAttemptService;
 import page.clab.api.service.RedisTokenService;
@@ -49,6 +51,8 @@ public class SecurityConfig {
     private final BlacklistIpRepository blacklistIpRepository;
 
     private final AuthenticationConfiguration authenticationConfiguration;
+    
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Value("${springdoc.account.id}")
     private String username;
@@ -143,9 +147,17 @@ public class SecurityConfig {
         return authProvider;
     }
 
+    @Bean(name = "loginAuthenticationManager")
+    public AuthenticationManager loginAuthenticationManager() {
+        DaoAuthenticationProvider loginProvider = new DaoAuthenticationProvider();
+        loginProvider.setUserDetailsService(customUserDetailsService);
+        loginProvider.setPasswordEncoder(passwordEncoder());
+        return new ProviderManager(Arrays.asList(loginProvider));
+    }
+
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
