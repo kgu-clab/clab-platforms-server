@@ -32,7 +32,7 @@ import page.clab.api.type.dto.ResponseModel;
 @Tag(name = "MembershipFee", description = "회비 관련 API")
 @Slf4j
 public class MembershipFeeController {
-    
+
     private final MembershipFeeService membershipFeeService;
 
     @Operation(summary = "[U] 회비 신청", description = "ROLE_USER 이상의 권한이 필요함")
@@ -109,5 +109,5 @@ public class MembershipFeeController {
         responseModel.addData(id);
         return responseModel;
     }
-    
+
 }

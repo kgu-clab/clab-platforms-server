@@ -34,7 +34,7 @@ public class ActivityPhoto {
 
     @Column(nullable = false)
     private Boolean isPublic;
-    
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

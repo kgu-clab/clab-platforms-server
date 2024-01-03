@@ -16,7 +16,7 @@ import org.springframework.data.redis.core.index.Indexed;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash(value = "ipAttempt", timeToLive = 60*5)
+@RedisHash(value = "ipAttempt", timeToLive = 60 * 5)
 public class RedisIpAttempt {
 
     @Id
@@ -25,7 +25,7 @@ public class RedisIpAttempt {
     @Indexed
     @Column(nullable = false)
     private int attempts;
-    
+
     @Column(nullable = false)
     private LocalDateTime lastAttempt;
 

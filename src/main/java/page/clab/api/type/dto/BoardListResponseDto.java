@@ -22,7 +22,7 @@ public class BoardListResponseDto {
     private String title;
 
     public static BoardListResponseDto of(Board board) {
-        BoardListResponseDto boardResponseDto =  ModelMapperUtil.getModelMapper().map(board, BoardListResponseDto.class);
+        BoardListResponseDto boardResponseDto = ModelMapperUtil.getModelMapper().map(board, BoardListResponseDto.class);
         return boardResponseDto;
     }
 

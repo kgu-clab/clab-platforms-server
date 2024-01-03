@@ -50,7 +50,7 @@ public class AccuseController {
         responseModel.addData(id);
         return responseModel;
     }
-    
+
     @Operation(summary = "[A] 신고 내역 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
@@ -64,7 +64,7 @@ public class AccuseController {
         responseModel.addData(accuses);
         return responseModel;
     }
-    
+
     @Operation(summary = "[A] 유형/상태별 신고 내역 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
@@ -80,7 +80,7 @@ public class AccuseController {
         responseModel.addData(accuses);
         return responseModel;
     }
-    
+
     @Operation(summary = "[A] 신고 상태 변경", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{accuseId}")
@@ -93,5 +93,5 @@ public class AccuseController {
         responseModel.addData(id);
         return responseModel;
     }
-    
+
 }

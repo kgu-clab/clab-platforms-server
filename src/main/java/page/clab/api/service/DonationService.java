@@ -26,7 +26,7 @@ public class DonationService {
         Member member = memberService.getCurrentMember();
         Donation donation = Donation.of(donationRequestDto);
         donation.setDonor(member);
-        Long id =  donationRepository.save(donation).getId();
+        Long id = donationRepository.save(donation).getId();
         return id;
     }
 

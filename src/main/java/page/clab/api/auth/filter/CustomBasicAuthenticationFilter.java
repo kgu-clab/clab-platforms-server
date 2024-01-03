@@ -21,7 +21,7 @@ import page.clab.api.type.dto.ResponseModel;
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final RedisIpAttemptService redisIpAttemptService;
-    
+
     private final BlacklistIpRepository blacklistIpRepository;
 
     private static final String[] SWAGGER_PATTERNS = {

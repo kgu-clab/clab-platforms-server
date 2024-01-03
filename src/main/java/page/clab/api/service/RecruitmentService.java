@@ -21,7 +21,7 @@ public class RecruitmentService {
     private final MemberService memberService;
 
     private final NotificationService notificationService;
-    
+
     private final RecruitmentRepository recruitmentRepository;
 
     @Transactional
