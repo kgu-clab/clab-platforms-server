@@ -55,9 +55,8 @@ public class LoginService {
             memberService.setLastLoginTime(id);
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.TOTP);
             if (!authenticatorService.isAuthenticatorExist(id)) {
-                authenticatorService.generateSecretKey(id);
+                return authenticatorService.generateSecretKey(id);
             }
-            return authenticatorService.getAuthenticatorById(id).getSecretKey();
         } catch (BadCredentialsException e) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
             loginFailInfoService.updateLoginFailInfo(id);

@@ -49,11 +49,6 @@ public class AuthenticatorService {
         return gAuth.authorize(secretKey, Integer.parseInt(totp));
     }
 
-    public Authenticator getAuthenticatorById(String memberId) {
-        return authenticatorRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("해당 아이디에 대한 정보가 존재하지 않습니다."));
-    }
-
     public boolean isAuthenticatorExist(String memberId) {
         return authenticatorRepository.existsById(memberId);
     }
