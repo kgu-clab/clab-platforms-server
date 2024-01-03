@@ -2,6 +2,7 @@ package page.clab.api.service;
 
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
+import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ public class AuthenticatorService {
 
     private final AuthenticatorRepository authenticatorRepository;
 
+    private final String issuer = "C-Lab";
+
     public String generateSecretKey(String memberId) {
         GoogleAuthenticator gAuth = new GoogleAuthenticator();
         GoogleAuthenticatorKey key = gAuth.createCredentials();
@@ -26,6 +29,13 @@ public class AuthenticatorService {
                 .build();
         authenticatorRepository.save(authenticator);
         return secretKey;
+    }
+
+    public String generateSecretKeyQRCodeUrl(String accountName) {
+        Authenticator authenticator = authenticatorRepository.getById(accountName);
+        String secretKey = authenticator.getSecretKey();
+        GoogleAuthenticatorKey googleAuthenticatorKey = new GoogleAuthenticatorKey.Builder(secretKey).build();
+        return GoogleAuthenticatorQRGenerator.getOtpAuthURL(issuer, accountName, googleAuthenticatorKey);
     }
 
     public boolean isAuthenticatorValid(String memberId, String totp) {
