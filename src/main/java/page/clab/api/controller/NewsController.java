@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.NewsService;
 import page.clab.api.type.dto.NewsDetailsResponseDto;
 import page.clab.api.type.dto.NewsRequestDto;
@@ -36,20 +36,23 @@ public class NewsController {
     private final NewsService newsService;
 
     @Operation(summary = "뉴스 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createNews(
             @Valid @RequestBody NewsRequestDto newsRequestDto,
             BindingResult result
-    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+    ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        newsService.createNews(newsRequestDto);
+        Long id = newsService.createNews(newsRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "[U] 뉴스 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getNews(
             @RequestParam(defaultValue = "0") int page,
@@ -63,6 +66,7 @@ public class NewsController {
     }
 
     @Operation(summary = "[U] 뉴스 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{newsId}")
     public ResponseModel getNewsDetails(
             @PathVariable Long newsId
@@ -75,6 +79,7 @@ public class NewsController {
 
     @Operation(summary = "[U] 뉴스 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "카테고리, 제목을 기준으로 검색")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel searchNews(
             @RequestParam(required = false) String category,
@@ -90,27 +95,31 @@ public class NewsController {
     }
 
     @Operation(summary = "[A] 뉴스 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{newsId}")
     public ResponseModel updateNews(
             @PathVariable Long newsId,
             @Valid @RequestBody NewsRequestDto newsRequestDto,
             BindingResult result
-    ) throws MethodArgumentNotValidException, PermissionDeniedException {
+    ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        newsService.updateNews(newsId, newsRequestDto);
+        Long id = newsService.updateNews(newsId, newsRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "[A] 뉴스 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{newsId}")
     public ResponseModel deleteNews(
             @PathVariable Long newsId
-    ) throws PermissionDeniedException {
-        newsService.deleteNews(newsId);
+    ) {
+        Long id = newsService.deleteNews(newsId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

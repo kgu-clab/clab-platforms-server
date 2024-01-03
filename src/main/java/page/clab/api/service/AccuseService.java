@@ -1,5 +1,6 @@
 package page.clab.api.service;
 
+import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,15 +8,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.AccuseRepository;
 import page.clab.api.type.dto.AccuseRequestDto;
 import page.clab.api.type.dto.AccuseResponseDto;
+import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Accuse;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.AccuseStatus;
+import page.clab.api.type.etc.Role;
 import page.clab.api.type.etc.TargetType;
 
 @Service
@@ -31,10 +33,12 @@ public class AccuseService {
 
     private final ReviewService reviewService;
 
+    private final NotificationService notificationService;
+
     private final AccuseRepository accuseRepository;
 
     @Transactional
-    public void createAccuse(AccuseRequestDto accuseRequestDto) {
+    public Long createAccuse(AccuseRequestDto accuseRequestDto) {
         if (accuseRequestDto.getTargetType() == TargetType.BOARD) {
             boardService.getBoardByIdOrThrow(accuseRequestDto.getTargetId());
         } else if (accuseRequestDto.getTargetType() == TargetType.COMMENT) {
@@ -44,34 +48,43 @@ public class AccuseService {
         } else {
             throw new IllegalArgumentException("신고 대상 유형이 올바르지 않습니다.");
         }
+        Long id;
         Member member = memberService.getCurrentMember();
         Accuse existingAccuse = getAccuseByMemberAndTargetTypeAndTargetId(member, accuseRequestDto);
         if (existingAccuse != null) {
             existingAccuse.setReason(accuseRequestDto.getReason());
-            accuseRepository.save(existingAccuse);
+            id = accuseRepository.save(existingAccuse).getId();
         } else {
             Accuse accuse = Accuse.of(accuseRequestDto);
             accuse.setId(null);
             accuse.setMember(member);
             accuse.setAccuseStatus(AccuseStatus.PENDING);
-            accuseRepository.save(accuse);
+            id = accuseRepository.save(accuse).getId();
         }
+
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .content("신고하신 내용이 접수되었습니다.")
+                .memberId(member.getId())
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+
+        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
+        for (Member superMember : superMembers) {
+            NotificationRequestDto notificationRequestDtoForSuper = NotificationRequestDto.builder()
+                    .content(member.getName() + "님이 신고를 접수하였습니다. 확인해주세요.")
+                    .memberId(superMember.getId())
+                    .build();
+            notificationService.createNotification(notificationRequestDtoForSuper);
+        }
+        return id;
     }
 
-    public PagedResponseDto<AccuseResponseDto> getAccuses(Pageable pageable) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("해당 신고 내역을 수정할 권한이 없습니다.");
-        }
+    public PagedResponseDto<AccuseResponseDto> getAccuses(Pageable pageable) {
         Page<Accuse> accuses = accuseRepository.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(accuses.map(AccuseResponseDto::of));
     }
 
-    public PagedResponseDto<AccuseResponseDto> searchAccuse(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("해당 신고 내역을 수정할 권한이 없습니다.");
-        }
+    public PagedResponseDto<AccuseResponseDto> searchAccuse(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable) {
         Page<Accuse> accuses;
         if (targetType != null && accuseStatus != null) {
             accuses = getAccuseByTargetTypeAndAccuseStatus(targetType, accuseStatus, pageable);
@@ -88,14 +101,16 @@ public class AccuseService {
         return new PagedResponseDto<>(accuses.map(AccuseResponseDto::of));
     }
 
-    public void updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("해당 신고 내역을 수정할 권한이 없습니다.");
-        }
+    public Long updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) {
         Accuse accuse = getAccuseByIdOrThrow(accuseId);
         accuse.setAccuseStatus(accuseStatus);
-        accuseRepository.save(accuse);
+        Long id = accuseRepository.save(accuse).getId();
+        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                .content("신고 상태가 " + accuseStatus + "로 변경되었습니다.")
+                .memberId(accuse.getMember().getId())
+                .build();
+        notificationService.createNotification(notificationRequestDto);
+        return id;
     }
 
     private Accuse getAccuseByIdOrThrow(Long accuseId) {

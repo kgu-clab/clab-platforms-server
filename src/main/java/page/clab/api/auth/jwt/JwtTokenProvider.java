@@ -1,6 +1,11 @@
 package page.clab.api.auth.jwt;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Arrays;
@@ -30,7 +35,7 @@ public class JwtTokenProvider {
 
     private static final long ACCESS_TOKEN_DURATION = 30L * 60L * 1000L; // 30분
 
-    private static final long REFRESH_TOKEN_DURATION = 40L * 60L * 1000L; // 40분
+    private static final long REFRESH_TOKEN_DURATION = 60L * 60L * 1000L * 24L * 14L; // 14일
 
     public JwtTokenProvider(@Value("${jwt.secret-key}") String secretKey) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
@@ -42,12 +47,16 @@ public class JwtTokenProvider {
         String accessToken = Jwts.builder()
                 .setSubject(id)
                 .claim("role", role)
+                .setIssuedAt(expiry)
                 .setExpiration(accessTokenExpiry)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
         Date refreshTokenExpiry = new Date(expiry.getTime() + (REFRESH_TOKEN_DURATION));
         String refreshToken = Jwts.builder()
+                .setSubject(id)
+                .claim("role", role)
+                .setIssuedAt(expiry)
                 .setExpiration(refreshTokenExpiry)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -56,6 +65,21 @@ public class JwtTokenProvider {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    public boolean isRefreshToken(String token) {
+        try {
+            Claims claims = parseClaims(token);
+            Date issuedAt = claims.getIssuedAt();
+            Date expiration = claims.getExpiration();
+            if (issuedAt != null && expiration != null) {
+                long duration = expiration.getTime() - issuedAt.getTime();
+                return duration == REFRESH_TOKEN_DURATION;
+            }
+        } catch (Exception e) {
+            log.debug("Failed to check if the token is a refresh token", e);
+        }
+        return false;
     }
 
     public Authentication getAuthentication(String accessToken) {
@@ -69,6 +93,7 @@ public class JwtTokenProvider {
 
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("role").toString().split(","))
+                        .map(this::formatRoleString)
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
@@ -106,6 +131,13 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
+    }
+
+    private String formatRoleString(String role) {
+        if (!role.startsWith("ROLE_")) {
+            return "ROLE_" + role;
+        }
+        return role;
     }
 
 }

@@ -7,13 +7,19 @@ plugins {
 group = 'page.clab'
 version = '0.0.1-SNAPSHOT'
 
+jar {
+	enabled = false
+}
+
 bootJar {
 	archivesBaseName = "clab"
 	archiveFileName = "clab.jar"
 	archiveVersion = "0.0.1"
 	from("/src/main/resources") {
 		into 'BOOT-INF/classes'
+		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	}
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 java {
@@ -33,7 +39,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 템플릿 엔진
 	implementation 'org.springframework.boot:spring-boot-starter-webflux' // WebFlux
 	developmentOnly 'org.springframework.boot:spring-boot-devtools' // 개발 도구
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis' // Redis
+	//annotationProcessor "org.springframework.boot:spring-boot-configuration-processor" // FileHandler 의존성 오류
 
 	// Util
 	compileOnly 'org.projectlombok:lombok' // 롬복
@@ -49,6 +55,7 @@ dependencies {
 
 	// DB
 	implementation 'org.postgresql:postgresql:42.6.0' // PostgreSQL JDBC Driver
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis' // Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
 	implementation 'org.springframework.boot:spring-boot-starter-validation' // Hibernate Validator
 	implementation 'org.hibernate.validator:hibernate-validator:6.2.5.Final' // Bean Validation
@@ -56,10 +63,11 @@ dependencies {
 	implementation 'jakarta.validation:jakarta.validation-api:2.0.2' // Jakarta Bean Validation
 	implementation 'com.maxmind.geoip2:geoip2:4.1.0' // GeoIP2
 
-	// OAuth
+	// Security
 	implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // OAuth 2.0 Client
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server' // OAuth 2.0 Resource Server
+	implementation 'com.warrenstrange:googleauth:1.5.0' // Google Authenticator
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5' // JWT 라이브러리
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // JWT 구현체
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JWT Jackson 모듈

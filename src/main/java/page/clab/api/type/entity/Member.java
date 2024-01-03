@@ -149,5 +149,5 @@ public class Member implements UserDetails {
         member.setProvider(OAuthProvider.LOCAL);
         return member;
     }
-  
+
 }

@@ -7,10 +7,11 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ActivityGroupStatus {
 
-    승인대기("WAITING", "승인대기"),
-    활동중("ACTIVE", "활동중"),
-    활동종료("END", "활동종료");
+    WAITING("WAITING", "승인 대기"),
+    PROGRESSING("ACTIVE", "활동 중"),
+    END("END", "활동 종료");
 
     private String key;
     private String description;
+
 }

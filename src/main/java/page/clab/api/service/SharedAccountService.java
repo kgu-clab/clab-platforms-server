@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.SharedAccountRepository;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.SharedAccountRequestDto;
@@ -16,14 +15,11 @@ import page.clab.api.type.entity.SharedAccount;
 @RequiredArgsConstructor
 public class SharedAccountService {
 
-    private final MemberService memberService;
-
     private final SharedAccountRepository sharedAccountRepository;
 
-    public void createSharedAccount(SharedAccountRequestDto sharedAccountRequestDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long createSharedAccount(SharedAccountRequestDto sharedAccountRequestDto) {
         SharedAccount sharedAccount = SharedAccount.of(sharedAccountRequestDto);
-        sharedAccountRepository.save(sharedAccount);
+        return sharedAccountRepository.save(sharedAccount).getId();
     }
 
     public PagedResponseDto<SharedAccountResponseDto> getSharedAccounts(Pageable pageable) {
@@ -31,18 +27,17 @@ public class SharedAccountService {
         return new PagedResponseDto<>(sharedAccounts.map(SharedAccountResponseDto::of));
     }
 
-    public void updateSharedAccount(Long accountId, SharedAccountRequestDto sharedAccountRequestDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long updateSharedAccount(Long accountId, SharedAccountRequestDto sharedAccountRequestDto) {
         SharedAccount sharedAccount = getSharedAccountByIdOrThrow(accountId);
         SharedAccount updatedAccount = SharedAccount.of(sharedAccountRequestDto);
         updatedAccount.setId(sharedAccount.getId());
-        sharedAccountRepository.save(updatedAccount);
+        return sharedAccountRepository.save(updatedAccount).getId();
     }
 
-    public void deleteSharedAccount(Long accountId) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long deleteSharedAccount(Long accountId) {
         SharedAccount sharedAccount = getSharedAccountByIdOrThrow(accountId);
         sharedAccountRepository.delete(sharedAccount);
+        return sharedAccount.getId();
     }
 
     private SharedAccount getSharedAccountByIdOrThrow(Long accountId) {

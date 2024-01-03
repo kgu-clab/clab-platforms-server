@@ -21,11 +21,11 @@ public class WorkExperienceService {
 
     private final WorkExperienceRepository workExperienceRepository;
 
-    public void createWorkExperience(WorkExperienceRequestDto workExperienceRequestDto) {
+    public Long createWorkExperience(WorkExperienceRequestDto workExperienceRequestDto) {
         Member member = memberService.getCurrentMember();
         WorkExperience workExperience = WorkExperience.of(workExperienceRequestDto);
         workExperience.setMember(member);
-        workExperienceRepository.save(workExperience);
+        return workExperienceRepository.save(workExperience).getId();
     }
 
     public PagedResponseDto<WorkExperienceResponseDto> getMyWorkExperience(Pageable pageable) {
@@ -40,7 +40,7 @@ public class WorkExperienceService {
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::of));
     }
 
-    public void updateWorkExperience(Long workExperienceId, WorkExperienceRequestDto workExperienceRequestDto) throws PermissionDeniedException {
+    public Long updateWorkExperience(Long workExperienceId, WorkExperienceRequestDto workExperienceRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
         if (!(workExperience.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
@@ -49,21 +49,22 @@ public class WorkExperienceService {
         WorkExperience updatedWorkExperience = WorkExperience.of(workExperienceRequestDto);
         updatedWorkExperience.setId(workExperienceId);
         updatedWorkExperience.setMember(member);
-        workExperienceRepository.save(updatedWorkExperience);
+        return workExperienceRepository.save(updatedWorkExperience).getId();
     }
 
-    public void deleteWorkExperience(Long workExperienceId) throws PermissionDeniedException {
+    public Long deleteWorkExperience(Long workExperienceId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
         if (!(workExperience.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("해당 경력사항을 삭제할 권한이 없습니다.");
         }
         workExperienceRepository.deleteById(workExperienceId);
+        return workExperience.getId();
     }
 
     private WorkExperience getWorkExperienceByIdOrThrow(Long workExperienceId) {
-    return workExperienceRepository.findById(workExperienceId)
-            .orElseThrow(() -> new NotFoundException("해당 경력사항이 존재하지 않습니다."));
+        return workExperienceRepository.findById(workExperienceId)
+                .orElseThrow(() -> new NotFoundException("해당 경력사항이 존재하지 않습니다."));
     }
 
 }

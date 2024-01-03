@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 public class OpenApiConfig {
-    
+
     @Value("${jwt.example-token}")
     private String jwtToken;
 

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,6 +36,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @Operation(summary = "[U] 리뷰 등록", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createReview(
             @Valid @RequestBody ReviewRequestDto reviewRequestDto,
@@ -43,12 +45,14 @@ public class ReviewController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        reviewService.createReview(reviewRequestDto);
+        Long id = reviewService.createReview(reviewRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "[U] 리뷰 목록", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getReviews(
             @RequestParam(defaultValue = "0") int page,
@@ -62,6 +66,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "[U] 나의 리뷰 목록", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my-reviews")
     public ResponseModel getMyReviews(
             @RequestParam(defaultValue = "0") int page,
@@ -75,6 +80,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "[U] 공개 리뷰 목록", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/public-reviews")
     public ResponseModel getPublicReview(
             @RequestParam(defaultValue = "0") int page,
@@ -89,6 +95,7 @@ public class ReviewController {
 
     @Operation(summary = "[U] 리뷰 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "멤버 ID, 이름을 기준으로 검색")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel searchReview(
             @RequestParam(required = false) String memberId,
@@ -106,6 +113,7 @@ public class ReviewController {
     }
 
     @Operation(summary = "[U] 리뷰 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{reviewId}")
     public ResponseModel updateReview(
             @PathVariable Long reviewId,
@@ -115,29 +123,34 @@ public class ReviewController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        reviewService.updateReview(reviewId, reviewRequestDto);
+        Long id = reviewService.updateReview(reviewId, reviewRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "[U] 리뷰 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{reviewId}")
     public ResponseModel deleteReview(
             @PathVariable Long reviewId
     ) throws PermissionDeniedException {
-        reviewService.deleteReview(reviewId);
+        Long id = reviewService.deleteReview(reviewId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "[A] 리뷰 공개/비공개", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "공개/비공개가 반전됨")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/public/{reviewId}")
     public ResponseModel publicReview(
             @PathVariable Long reviewId
-    ) throws PermissionDeniedException {
-        reviewService.publicReview(reviewId);
+    ) {
+        Long id = reviewService.publicReview(reviewId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
