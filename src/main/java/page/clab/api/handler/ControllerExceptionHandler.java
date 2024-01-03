@@ -39,6 +39,7 @@ import page.clab.api.exception.BookAlreadyBorrowedException;
 import page.clab.api.exception.DuplicateLoginException;
 import page.clab.api.exception.FileUploadFailException;
 import page.clab.api.exception.InvalidBorrowerException;
+import page.clab.api.exception.InvalidInformationException;
 import page.clab.api.exception.LoanSuspensionException;
 import page.clab.api.exception.LoginFaliedException;
 import page.clab.api.exception.MemberLockedException;
@@ -100,6 +101,7 @@ public class ControllerExceptionHandler {
             ActivityGroupNotFinishedException.class,
             AlreadyReviewedException.class,
             IllegalStateException.class,
+            InvalidInformationException.class,
             Exception.class
     })
     public ResponseModel errorException(HttpServletRequest request, HttpServletResponse response, Exception e) {
