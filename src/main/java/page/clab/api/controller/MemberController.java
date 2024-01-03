@@ -23,9 +23,11 @@ import page.clab.api.service.MemberService;
 import page.clab.api.type.dto.CloudUsageInfo;
 import page.clab.api.type.dto.FileInfo;
 import page.clab.api.type.dto.MemberRequestDto;
+import page.clab.api.type.dto.MemberResetPasswordRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
+import page.clab.api.type.dto.VerificationCodeRequestDto;
 import page.clab.api.type.etc.MemberStatus;
 
 @RestController
@@ -127,6 +129,34 @@ public class MemberController {
         String id = memberService.updateMemberStatusByAdmin(memberId, memberStatus);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
+        return responseModel;
+    }
+
+    @Operation(summary = "멤버 비밀번호 재발급 요청", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @PostMapping("/password-reset-requests")
+    public ResponseModel requestResetMemberPassword(
+            @Valid @RequestBody MemberResetPasswordRequestDto memberResetPasswordRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
+        memberService.requestResetMemberPassword(memberResetPasswordRequestDto);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        return responseModel;
+    }
+
+    @Operation(summary = "멤버 비밀번호 재발급 인증", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @PostMapping("/password-reset-verifications")
+    public ResponseModel verifyResetMemberPassword(
+            @Valid @RequestBody VerificationCodeRequestDto verificationCodeRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
+        memberService.verifyResetMemberPassword(verificationCodeRequestDto);
+        ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
 

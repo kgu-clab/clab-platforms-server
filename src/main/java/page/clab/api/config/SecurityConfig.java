@@ -82,7 +82,7 @@ public class SecurityConfig {
             "/swagger-ui/**"
     };
 
-    private static final String[] PERMIT_ALL_API_ENDPOINTS = {
+    private static final String[] PERMIT_ALL_API_ENDPOINTS_GET = {
             "/applications/{applicationId}",
             "/recruitments",
             "/news", "/news/**",
@@ -94,6 +94,12 @@ public class SecurityConfig {
             "/products", "/products/**",
             "/reviews", "/reviews/**",
             "/activity-photos", "/activity-photos/**"
+    };
+
+    private static final String[] PERMIT_ALL_API_ENDPOINTS_POST = {
+            "/applications",
+            "/members/password-reset-requests",
+            "/members/password-reset-verifications",
     };
 
     @Bean
@@ -108,8 +114,8 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers(SWAGGER_PATTERNS).hasRole(role)
                 .antMatchers(PERMIT_ALL).permitAll()
-                .antMatchers(HttpMethod.POST, "/applications").permitAll()
-                .antMatchers(HttpMethod.GET, PERMIT_ALL_API_ENDPOINTS).permitAll()
+                .antMatchers(HttpMethod.GET, PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
+                .antMatchers(HttpMethod.POST, PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .authenticationProvider(authenticationProvider())
