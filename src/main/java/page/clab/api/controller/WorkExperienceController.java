@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,6 +36,7 @@ public class WorkExperienceController {
     private final WorkExperienceService workExperienceService;
 
     @Operation(summary = "[U] 경력사항 등록", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createWorkExperience(
             @Valid @RequestBody WorkExperienceRequestDto workExperienceRequestDto,
@@ -43,13 +45,15 @@ public class WorkExperienceController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        workExperienceService.createWorkExperience(workExperienceRequestDto);
+        Long id = workExperienceService.createWorkExperience(workExperienceRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "[U] 나의 경력사항 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getMyWorkExperience(
             @RequestParam(defaultValue = "0") int page,
@@ -64,6 +68,7 @@ public class WorkExperienceController {
 
     @Operation(summary = "[U] 멤버의 경력사항 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel searchWorkExperience(
             @RequestParam String memberId,
@@ -78,6 +83,7 @@ public class WorkExperienceController {
     }
 
     @Operation(summary = "[U] 경력사항 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{workExperienceId}")
     public ResponseModel updateWorkExperience(
             @PathVariable Long workExperienceId,
@@ -87,18 +93,21 @@ public class WorkExperienceController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        workExperienceService.updateWorkExperience(workExperienceId, workExperienceRequestDto);
+        Long id = workExperienceService.updateWorkExperience(workExperienceId, workExperienceRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "[U] 경력사항 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{workExperienceId}")
     public ResponseModel deleteWorkExperience(
             @PathVariable Long workExperienceId
     ) throws PermissionDeniedException {
-        workExperienceService.deleteWorkExperience(workExperienceId);
+        Long id = workExperienceService.deleteWorkExperience(workExperienceId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

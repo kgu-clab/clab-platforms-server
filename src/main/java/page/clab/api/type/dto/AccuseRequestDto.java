@@ -32,7 +32,7 @@ public class AccuseRequestDto {
     @Schema(description = "신고 사유", example = "부적절한 게시글입니다.", required = true)
     private String reason;
 
-    public static AccuseRequestDto of(Accuse accuse){
+    public static AccuseRequestDto of(Accuse accuse) {
         return ModelMapperUtil.getModelMapper().map(accuse, AccuseRequestDto.class);
     }
 

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,6 +36,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @Operation(summary = "[U] 댓글 생성", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/{boardId}")
     public ResponseModel createComment(
             @PathVariable Long boardId,
@@ -44,12 +46,14 @@ public class CommentController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        commentService.createComment(boardId, commentRequestDto);
+        Long id = commentService.createComment(boardId, commentRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "[U] 댓글 리스트 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{boardId}")
     public ResponseModel getComments(
             @PathVariable Long boardId,
@@ -64,6 +68,7 @@ public class CommentController {
     }
 
     @Operation(summary = "[U] 나의 댓글 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my-comments")
     public ResponseModel getMyComments(
             @RequestParam(defaultValue = "0") int page,
@@ -77,6 +82,7 @@ public class CommentController {
     }
 
     @Operation(summary = "[U] 댓글 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{commentId}")
     public ResponseModel updateComment(
             @PathVariable Long commentId,
@@ -86,18 +92,21 @@ public class CommentController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        commentService.updateComment(commentId, commentRequestDto);
+        Long id = commentService.updateComment(commentId, commentRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "[U] 댓글 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{commentId}")
     public ResponseModel deleteComment(
             @PathVariable Long commentId
     ) throws PermissionDeniedException {
-        commentService.deleteComment(commentId);
+        Long id = commentService.deleteComment(commentId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

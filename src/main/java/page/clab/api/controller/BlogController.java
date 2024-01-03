@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,6 +37,7 @@ public class BlogController {
     private final BlogService blogService;
 
     @Operation(summary = "[U] 블로그 포스트 생성", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createBlog(
             @Valid @RequestBody BlogRequestDto blogRequestDto,
@@ -44,12 +46,14 @@ public class BlogController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        blogService.createBlog(blogRequestDto);
+        Long id = blogService.createBlog(blogRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "[U] 블로그 포스트 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getBlogs(
             @RequestParam(defaultValue = "0") int page,
@@ -63,6 +67,7 @@ public class BlogController {
     }
 
     @Operation(summary = "[U] 블로그 포스트 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{blogId}")
     public ResponseModel getBlogDetails(
             @PathVariable Long blogId
@@ -75,6 +80,7 @@ public class BlogController {
 
     @Operation(summary = "[U] 블로그 포스트 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "검색어에는 제목, 부제목, 내용, 작성자명가 포함됨")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel searchBlog(
             @RequestParam String keyword,
@@ -89,6 +95,7 @@ public class BlogController {
     }
 
     @Operation(summary = "[U] 블로그 포스트 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{blogId}")
     public ResponseModel updateBlog(
             @PathVariable Long blogId,
@@ -98,18 +105,21 @@ public class BlogController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        blogService.updateBlog(blogId, blogRequestDto);
+        Long id = blogService.updateBlog(blogId, blogRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "[U] 블로그 포스트 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{blogId}")
     public ResponseModel deleteBlog(
             @PathVariable Long blogId
     ) throws PermissionDeniedException {
-        blogService.deleteBlog(blogId);
+        Long id = blogService.deleteBlog(blogId);
         ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 

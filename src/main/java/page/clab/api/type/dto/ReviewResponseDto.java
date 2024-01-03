@@ -40,7 +40,7 @@ public class ReviewResponseDto {
         ReviewResponseDto reviewResponseDto = ModelMapperUtil.getModelMapper().map(review, ReviewResponseDto.class);
         reviewResponseDto.setActivityGroupId(review.getActivityGroup().getId());
         reviewResponseDto.setActivityGroupName(review.getActivityGroup().getName());
-        reviewResponseDto.setActivityGroupCategory(review.getActivityGroup().getCategory());
+        reviewResponseDto.setActivityGroupCategory(String.valueOf(review.getActivityGroup().getCategory()));
         reviewResponseDto.setMemberId(review.getMember().getId());
         reviewResponseDto.setName(review.getMember().getName());
         reviewResponseDto.setDepartment(review.getMember().getDepartment());

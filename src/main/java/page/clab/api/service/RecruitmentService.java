@@ -1,17 +1,18 @@
 package page.clab.api.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import page.clab.api.exception.NotFoundException;
-import page.clab.api.exception.PermissionDeniedException;
-import page.clab.api.repository.RecruitmentRepository;
-import page.clab.api.type.dto.RecruitmentRequestDto;
-import page.clab.api.type.dto.RecruitmentResponseDto;
-import page.clab.api.type.entity.Recruitment;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import page.clab.api.exception.NotFoundException;
+import page.clab.api.repository.RecruitmentRepository;
+import page.clab.api.type.dto.NotificationRequestDto;
+import page.clab.api.type.dto.RecruitmentRequestDto;
+import page.clab.api.type.dto.RecruitmentResponseDto;
+import page.clab.api.type.entity.Member;
+import page.clab.api.type.entity.Recruitment;
 
 @Service
 @RequiredArgsConstructor
@@ -19,12 +20,24 @@ public class RecruitmentService {
 
     private final MemberService memberService;
 
+    private final NotificationService notificationService;
+
     private final RecruitmentRepository recruitmentRepository;
 
-    public void createRecruitment(RecruitmentRequestDto recruitmentRequestDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    @Transactional
+    public Long createRecruitment(RecruitmentRequestDto recruitmentRequestDto) {
         Recruitment recruitment = Recruitment.of(recruitmentRequestDto);
-        recruitmentRepository.save(recruitment);
+        Long id = recruitmentRepository.save(recruitment).getId();
+        List<Member> members = memberService.findAll();
+        members.stream()
+                .forEach(member -> {
+                    NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                            .memberId(member.getId())
+                            .content("새로운 모집 공고가 등록되었습니다.")
+                            .build();
+                    notificationService.createNotification(notificationRequestDto);
+                });
+        return id;
     }
 
     public List<RecruitmentResponseDto> getRecentRecruitments() {
@@ -34,20 +47,19 @@ public class RecruitmentService {
                 .collect(Collectors.toList());
     }
 
-    public void updateRecruitment(Long recruitmentId, RecruitmentRequestDto recruitmentRequestDto) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long updateRecruitment(Long recruitmentId, RecruitmentRequestDto recruitmentRequestDto) {
         Recruitment recruitment = getRecruitmentByIdOrThrow(recruitmentId);
         Recruitment updatedRecruitment = Recruitment.of(recruitmentRequestDto);
         updatedRecruitment.setId(recruitment.getId());
         updatedRecruitment.setCreatedAt(recruitment.getCreatedAt());
         updatedRecruitment.setUpdateTime(LocalDateTime.now());
-        recruitmentRepository.save(updatedRecruitment);
+        return recruitmentRepository.save(updatedRecruitment).getId();
     }
 
-    public void deleteRecruitment(Long recruitmentId) throws PermissionDeniedException {
-        memberService.checkMemberAdminRole();
+    public Long deleteRecruitment(Long recruitmentId) {
         Recruitment recruitment = getRecruitmentByIdOrThrow(recruitmentId);
         recruitmentRepository.delete(recruitment);
+        return recruitment.getId();
     }
 
     private Recruitment getRecruitmentByIdOrThrow(Long recruitmentId) {

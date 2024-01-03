@@ -5,30 +5,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
-import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.ProductRepository;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ProductRequestDto;
 import page.clab.api.type.dto.ProductResponseDto;
-import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.Product;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 
-    private final MemberService memberService;
-
     private final ProductRepository productRepository;
 
 
-    public void createProduct(ProductRequestDto productRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("서비스를 등록 권한이 없습니다.");
-        }
+    public Long createProduct(ProductRequestDto productRequestDto) {
         Product product = Product.of(productRequestDto);
-        productRepository.save(product);
+        return productRepository.save(product).getId();
     }
 
     public PagedResponseDto<ProductResponseDto> getProducts(Pageable pageable) {
@@ -49,25 +41,18 @@ public class ProductService {
         return new PagedResponseDto<>(products.map(ProductResponseDto::of));
     }
 
-    public void updateProduct(Long productId, ProductRequestDto productRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("서비스를 수정할 권한이 없습니다.");
-        }
+    public Long updateProduct(Long productId, ProductRequestDto productRequestDto) {
         Product product = getProductByIdOrThrow(productId);
         Product updatedProduct = Product.of(productRequestDto);
         updatedProduct.setId(product.getId());
         updatedProduct.setCreatedAt(product.getCreatedAt());
-        productRepository.save(updatedProduct);
+        return productRepository.save(updatedProduct).getId();
     }
 
-    public void deleteProduct(Long productId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("서비스를 삭제할 권한이 없습니다.");
-        }
+    public Long deleteProduct(Long productId) {
         Product product = getProductByIdOrThrow(productId);
         productRepository.delete(product);
+        return product.getId();
     }
 
     private Product getProductByIdOrThrow(Long productId) {

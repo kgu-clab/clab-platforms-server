@@ -1,6 +1,8 @@
 package page.clab.api.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,14 +19,19 @@ import page.clab.api.type.entity.Notification;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private final MemberService memberService;
+    private MemberService memberService;
 
     private final NotificationRepository notificationRepository;
 
-    public void createNotification(NotificationRequestDto notificationRequestDto) {
+    @Autowired
+    public void setMemberService(@Lazy MemberService memberService) {
+        this.memberService = memberService;
+    }
+
+    public Long createNotification(NotificationRequestDto notificationRequestDto) {
         Member member = memberService.getMemberByIdOrThrow(notificationRequestDto.getMemberId());
         Notification notification = Notification.of(notificationRequestDto);
-        notificationRepository.save(notification);
+        return notificationRepository.save(notification).getId();
     }
 
     public PagedResponseDto<NotificationResponseDto> getNotifications(Pageable pageable) {
@@ -33,13 +40,14 @@ public class NotificationService {
         return new PagedResponseDto<>(notifications.map(NotificationResponseDto::of));
     }
 
-    public void deleteNotification(Long notificationId) throws PermissionDeniedException {
+    public Long deleteNotification(Long notificationId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Notification notification = getNotificationByIdOrThrow(notificationId);
         if (!member.equals(notification.getMember())) {
             throw new PermissionDeniedException();
         }
         notificationRepository.delete(notification);
+        return notification.getId();
     }
 
     private Notification getNotificationByIdOrThrow(Long notificationId) {
