@@ -2,6 +2,7 @@ package page.clab.api.service;
 
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
+import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ public class AuthenticatorService {
 
     private final AuthenticatorRepository authenticatorRepository;
 
+    private final String issuer = "C-Lab";
+
     public String generateSecretKey(String memberId) {
         GoogleAuthenticator gAuth = new GoogleAuthenticator();
         GoogleAuthenticatorKey key = gAuth.createCredentials();
@@ -28,6 +31,13 @@ public class AuthenticatorService {
         return secretKey;
     }
 
+    public String generateSecretKeyQRCodeUrl(String accountName) {
+        Authenticator authenticator = authenticatorRepository.getById(accountName);
+        String secretKey = authenticator.getSecretKey();
+        GoogleAuthenticatorKey googleAuthenticatorKey = new GoogleAuthenticatorKey.Builder(secretKey).build();
+        return GoogleAuthenticatorQRGenerator.getOtpAuthURL(issuer, accountName, googleAuthenticatorKey);
+    }
+
     public boolean isAuthenticatorValid(String memberId, String totp) {
         return isAuthenticatorExist(memberId) && validateTotp(memberId, totp);
     }
@@ -37,11 +47,6 @@ public class AuthenticatorService {
         Authenticator authenticator = authenticatorRepository.getById(memberId);
         String secretKey = authenticator.getSecretKey();
         return gAuth.authorize(secretKey, Integer.parseInt(totp));
-    }
-
-    public Authenticator getAuthenticatorById(String memberId) {
-        return authenticatorRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("해당 아이디에 대한 정보가 존재하지 않습니다."));
     }
 
     public boolean isAuthenticatorExist(String memberId) {

@@ -6,7 +6,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -17,7 +21,6 @@ import page.clab.api.exception.MemberLockedException;
 import page.clab.api.type.dto.LoginRequestDto;
 import page.clab.api.type.dto.TokenInfo;
 import page.clab.api.type.dto.TwoFactorAuthenticationRequestDto;
-import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.RedisToken;
 import page.clab.api.type.etc.LoginAttemptResult;
 
@@ -25,6 +28,9 @@ import page.clab.api.type.etc.LoginAttemptResult;
 @RequiredArgsConstructor
 @Slf4j
 public class LoginService {
+
+    @Qualifier("loginAuthenticationManager")
+    private final AuthenticationManager loginAuthenticationManager;
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -42,20 +48,16 @@ public class LoginService {
     public String login(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFaliedException, MemberLockedException {
         String id = loginRequestDto.getId();
         String password = loginRequestDto.getPassword();
-        Member member = memberService.getMemberById(id);
-        if (member == null) {
-            throw new LoginFaliedException("존재하지 않는 아이디입니다.");
-        }
-        boolean loginSuccess = barunLogin(id, password);
-        if (loginSuccess) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
+        try {
+            loginAuthenticationManager.authenticate(authenticationToken);
             loginFailInfoService.handleLoginFailInfo(id);
             memberService.setLastLoginTime(id);
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.TOTP);
             if (!authenticatorService.isAuthenticatorExist(id)) {
-                authenticatorService.generateSecretKey(id);
+                return authenticatorService.generateSecretKey(id);
             }
-            return authenticatorService.getAuthenticatorById(id).getSecretKey();
-        } else {
+        } catch (BadCredentialsException e) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
             loginFailInfoService.updateLoginFailInfo(id);
         }
