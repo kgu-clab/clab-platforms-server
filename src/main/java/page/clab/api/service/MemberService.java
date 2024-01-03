@@ -1,13 +1,17 @@
 package page.clab.api.service;
 
 import java.io.File;
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -18,17 +22,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import page.clab.api.auth.util.AuthUtil;
 import page.clab.api.exception.AssociatedAccountExistsException;
+import page.clab.api.exception.InvalidInformationException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
 import page.clab.api.repository.MemberRepository;
 import page.clab.api.type.dto.CloudUsageInfo;
+import page.clab.api.type.dto.EmailDto;
 import page.clab.api.type.dto.FileInfo;
 import page.clab.api.type.dto.MemberRequestDto;
+import page.clab.api.type.dto.MemberResetPasswordRequestDto;
 import page.clab.api.type.dto.MemberResponseDto;
 import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
+import page.clab.api.type.dto.VerificationCodeRequestDto;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.entity.VerificationCode;
 import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.Role;
 import page.clab.api.util.FileSystemUtil;
@@ -37,18 +46,23 @@ import page.clab.api.util.FileSystemUtil;
 @RequiredArgsConstructor
 public class MemberService {
 
-    private NotificationService notificationService;
-
     private final MemberRepository memberRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final VerificationCodeService verificationCodeService;
+
+    private NotificationService notificationService;
+
+    private EmailService emailService;
 
     @Value("${resource.file.path}")
     private String filePath;
 
     @Autowired
-    public void setNotificationService(@Lazy NotificationService notificationService) {
+    public void setNotificationService(@Lazy NotificationService notificationService, @Lazy EmailService emailService) {
         this.notificationService = notificationService;
+        this.emailService = emailService;
     }
 
     public String createMember(MemberRequestDto memberRequestDto) {
@@ -133,6 +147,39 @@ public class MemberService {
                 .build();
         notificationService.createNotification(notificationRequestDto);
         return id;
+    }
+
+    @Transactional
+    public void requestResetMemberPassword(MemberResetPasswordRequestDto memberResetPasswordRequestDto) {
+        Member member = getMemberByIdOrThrow(memberResetPasswordRequestDto.getId());
+        if (!(Objects.equals(member.getName(), memberResetPasswordRequestDto.getName())
+                && Objects.equals(member.getEmail(), memberResetPasswordRequestDto.getEmail()))) {
+            throw new InvalidInformationException("올바르지 않은 정보입니다.");
+        }
+        String code = generateVerificationCode();
+        verificationCodeService.saveVerificationCode(member.getId(), code);
+        emailService.broadcastEmail(
+            new EmailDto(
+                List.of(member.getEmail()),
+                "C-Lab 비밀번호 재발급 인증 안내",
+                "C-Lab 비밀번호 재발급 인증 안내 메일입니다.\n" +
+                        "인증번호는 " + code + "입니다.\n"
+            ), null
+        );
+    }
+
+    @Transactional
+    public void verifyResetMemberPassword(VerificationCodeRequestDto verificationCodeRequestDto) {
+        String memberId = verificationCodeRequestDto.getMemberId();
+        Member member = getMemberByIdOrThrow(memberId);
+        VerificationCode verificationCode = verificationCodeService.getVerificationCode(verificationCodeRequestDto.getVerificationCode());
+        if (!verificationCode.getId().equals(memberId)) {
+            throw new InvalidInformationException("올바르지 않은 인증 요청입니다.");
+        }
+        String newPassword = passwordEncoder.encode(verificationCode.getVerificationCode());
+        member.setPassword(newPassword);
+        memberRepository.save(member);
+        verificationCodeService.deleteVerificationCode(verificationCodeRequestDto.getVerificationCode());
     }
 
     public PagedResponseDto<CloudUsageInfo> getAllCloudUsages(Pageable pageable) {
@@ -228,6 +275,13 @@ public class MemberService {
 
     public List<Member> findAll() {
         return memberRepository.findAll();
+    }
+
+    public String generateVerificationCode() {
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] codeBytes = new byte[9];
+        secureRandom.nextBytes(codeBytes);
+        return Base64.encodeBase64URLSafeString(codeBytes);
     }
 
 }
