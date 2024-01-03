@@ -30,8 +30,7 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    @Operation(summary = "유저 로그인", description = "ROLE_ANONYMOUS 권한이 필요함<br>" +
-            "경기대학교 ID, PW로 로그인")
+    @Operation(summary = "유저 로그인", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("")
     public ResponseModel login(
             HttpServletRequest httpServletRequest,
