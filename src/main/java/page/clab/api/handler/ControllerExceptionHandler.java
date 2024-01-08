@@ -57,7 +57,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler({
             ActivityGroupNotFinishedException.class,
-            InvalidInformationException .class,
+            InvalidInformationException.class,
             OverdueException.class,
             StringIndexOutOfBoundsException.class,
             MissingServletRequestParameterException.class,
@@ -127,7 +127,6 @@ public class ControllerExceptionHandler {
             WebClientRequestException.class,
             TransactionSystemException.class,
             Exception.class
-
     })
     public ResponseModel serverException(HttpServletResponse response, Exception e){
         log.warn(e.getMessage());
@@ -158,7 +157,7 @@ public class ControllerExceptionHandler {
         return messageSource.getMessage(code, null, Locale.getDefault());
     }
 
-    private ResponseModel makeExceptionResponseModel(String message){
+    private ResponseModel makeExceptionResponseModel(String message) {
         return ResponseModel.builder()
                 .success(false)
                 .data(message)
