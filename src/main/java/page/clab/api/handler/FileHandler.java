@@ -37,7 +37,12 @@ public class FileHandler {
         Arrays.stream(imageExtensions).forEach(this.imageExtensions::add);
     }
 
+    public void init() {
+        filePath = filePath.replace("/", File.separator).replace("\\", File.separator);
+    }
+
     public String saveFile(MultipartFile multipartFile, String category, UploadedFile uploadedFile) throws FileUploadFailException {
+        init();
         String originalFilename = multipartFile.getOriginalFilename();
         if (!validateFilename(originalFilename)) {
             throw new FileUploadFailException("허용되지 않은 파일명 : " + originalFilename);
