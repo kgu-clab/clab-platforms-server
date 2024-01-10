@@ -67,7 +67,7 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel badRequestException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        return makeExceptionResponseModel(e.getMessage());
+        return makeExceptionResponseModel(null);
     }
 
     @ExceptionHandler({
@@ -81,7 +81,7 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel unAuthorizeException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        return makeExceptionResponseModel(e.getMessage());
+        return makeExceptionResponseModel(null);
     }
 
     @ExceptionHandler({
@@ -91,7 +91,7 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel deniedException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        return makeExceptionResponseModel(e.getMessage());
+        return makeExceptionResponseModel(null);
     }
 
     @ExceptionHandler({
@@ -104,7 +104,7 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel notFoundException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        return makeExceptionResponseModel(e.getMessage());
+        return makeExceptionResponseModel(null);
     }
 
     @ExceptionHandler({
@@ -115,7 +115,7 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel conflictException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_CONFLICT);
-        return makeExceptionResponseModel(e.getMessage());
+        return makeExceptionResponseModel(null);
     }
 
     @ExceptionHandler({
@@ -131,7 +131,7 @@ public class ControllerExceptionHandler {
     public ResponseModel serverException(HttpServletResponse response, Exception e){
         log.warn(e.getMessage());
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        return makeExceptionResponseModel("서버 에러");
+        return makeExceptionResponseModel(null);
     }
 
     @ExceptionHandler({
@@ -150,7 +150,7 @@ public class ControllerExceptionHandler {
 
         log.info("Validation error: {}", errorList);
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        return makeExceptionResponseModel(ex.getMessage());
+        return makeExceptionResponseModel(null);
     }
 
     private String getMessage(String code) {
