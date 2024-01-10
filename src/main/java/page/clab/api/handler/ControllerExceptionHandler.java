@@ -12,7 +12,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,65 +56,88 @@ public class ControllerExceptionHandler {
     private final MessageSource messageSource;
 
     @ExceptionHandler({
-            NullPointerException.class,
-            SearchResultNotExistException.class,
-            NotFoundException.class
-    })
-    public ResponseModel Exception(HttpServletRequest request, HttpServletResponse response, Exception e) {
-        ResponseModel responseModel = ResponseModel.builder()
-                .success(true)
-                .build();
-        response.setStatus(200);
-        return responseModel;
-    }
-
-    @ExceptionHandler({
-            NoSuchElementException.class,
+            ActivityGroupNotFinishedException.class,
+            InvalidInformationException.class,
+            OverdueException.class,
+            StringIndexOutOfBoundsException.class,
             MissingServletRequestParameterException.class,
             MalformedJsonException.class,
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class,
-            DataIntegrityViolationException.class,
-            FileUploadFailException.class,
+    })
+    public ResponseModel badRequestException(HttpServletResponse response, Exception e){
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return makeExceptionResponseModel(e.getMessage());
+    }
+
+    @ExceptionHandler({
             UnAuthorizeException.class,
             AccessDeniedException.class,
-            PermissionDeniedException.class,
-            TokenValidateException.class,
             LoginFaliedException.class,
             MemberLockedException.class,
             BadCredentialsException.class,
+            TokenValidateException.class,
+            MessagingException.class,
+    })
+    public ResponseModel unAuthorizeException(HttpServletResponse response, Exception e){
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        return makeExceptionResponseModel(e.getMessage());
+    }
+
+    @ExceptionHandler({
+            PermissionDeniedException.class,
+            LoanSuspensionException.class,
+            InvalidBorrowerException.class,
+    })
+    public ResponseModel deniedException(HttpServletResponse response, Exception e){
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        return makeExceptionResponseModel(e.getMessage());
+    }
+
+    @ExceptionHandler({
+            NullPointerException.class,
+            SearchResultNotExistException.class,
+            NotFoundException.class,
+            NoSuchElementException.class,
             FileNotFoundException.class,
-            AssociatedAccountExistsException.class,
-            GeoIp2Exception.class,
             AddressNotFoundException.class,
+    })
+    public ResponseModel notFoundException(HttpServletResponse response, Exception e){
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        return makeExceptionResponseModel(e.getMessage());
+    }
+
+    @ExceptionHandler({
+            AssociatedAccountExistsException.class,
+            BookAlreadyBorrowedException.class,
+            DuplicateLoginException.class,
+            AlreadyReviewedException.class,
+    })
+    public ResponseModel conflictException(HttpServletResponse response, Exception e){
+        response.setStatus(HttpServletResponse.SC_CONFLICT);
+        return makeExceptionResponseModel(e.getMessage());
+    }
+
+    @ExceptionHandler({
+            IllegalStateException.class,
+            FileUploadFailException.class,
+            DataIntegrityViolationException.class,
+            GeoIp2Exception.class,
             IOException.class,
             WebClientRequestException.class,
-            BookAlreadyBorrowedException.class,
-            InvalidBorrowerException.class,
-            LoanSuspensionException.class,
-            OverdueException.class,
             TransactionSystemException.class,
-            StringIndexOutOfBoundsException.class,
-            MessagingException.class,
-            DuplicateLoginException.class,
-            ActivityGroupNotFinishedException.class,
-            AlreadyReviewedException.class,
-            IllegalStateException.class,
-            InvalidInformationException.class,
             Exception.class
     })
-    public ResponseModel errorException(HttpServletRequest request, HttpServletResponse response, Exception e) {
-        ResponseModel responseModel = ResponseModel.builder()
-                .success(false)
-                .build();
-        response.setStatus(200);
-        return responseModel;
+    public ResponseModel serverException(HttpServletResponse response, Exception e){
+        log.warn(e.getMessage());
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        return makeExceptionResponseModel("서버 에러");
     }
 
     @ExceptionHandler({
             MethodArgumentNotValidException.class
     })
-    public ResponseModel handleValidationException(HttpServletRequest request, HttpServletResponse response, MethodArgumentNotValidException ex) {
+    public ResponseModel handleValidationException(HttpServletResponse response, MethodArgumentNotValidException ex) {
         BindingResult result = ex.getBindingResult();
         List<Map<String, String>> errorList = new ArrayList<>();
 
@@ -126,17 +148,20 @@ public class ControllerExceptionHandler {
             errorList.add(error);
         }
 
-        ResponseModel responseModel = ResponseModel.builder()
-                .success(false)
-                .data(errorList)
-                .build();
-        response.setStatus(200);
         log.info("Validation error: {}", errorList);
-        return responseModel;
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return makeExceptionResponseModel(ex.getMessage());
     }
 
     private String getMessage(String code) {
         return messageSource.getMessage(code, null, Locale.getDefault());
+    }
+
+    private ResponseModel makeExceptionResponseModel(String message) {
+        return ResponseModel.builder()
+                .success(false)
+                .data(message)
+                .build();
     }
 
 }
