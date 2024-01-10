@@ -6,7 +6,6 @@ import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import page.clab.api.exception.NotFoundException;
 import page.clab.api.repository.AuthenticatorRepository;
 import page.clab.api.type.entity.Authenticator;
 
