@@ -3,6 +3,8 @@ package page.clab.api.service;
 import java.time.LocalDateTime;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import page.clab.api.type.entity.Member;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommentService {
 
     private final CommentRepository commentRepository;
@@ -54,7 +57,8 @@ public class CommentService {
     }
 
     public PagedResponseDto<CommentResponseDto> getComments(Long boardId, Pageable pageable) {
-        Page<Comment> comments = getCommentByBoardId(boardId, pageable);
+        Page<Comment> comments = getCommentByBoardIdAndParentIsNull(boardId, pageable);
+        comments.forEach(comment -> Hibernate.initialize(comment.getChildren()));
         return new PagedResponseDto<>(comments.map(CommentResponseDto::of));
     }
 
@@ -90,8 +94,8 @@ public class CommentService {
                 .orElseThrow(() -> new NotFoundException("댓글을 찾을 수 없습니다."));
     }
 
-    private Page<Comment> getCommentByBoardId(Long boardId, Pageable pageable) {
-        return commentRepository.findAllByBoardIdOrderByCreatedAtDesc(boardId, pageable);
+    private Page<Comment> getCommentByBoardIdAndParentIsNull(Long boardId, Pageable pageable) {
+        return commentRepository.findAllByBoardIdAndParentIsNullOrderByCreatedAtDesc(boardId, pageable);
     }
 
     private Page<Comment> getCommentByWriter(Member member, Pageable pageable) {
