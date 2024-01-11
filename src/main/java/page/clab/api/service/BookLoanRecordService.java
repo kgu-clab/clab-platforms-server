@@ -6,8 +6,10 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.BookAlreadyBorrowedException;
+import page.clab.api.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.exception.InvalidBorrowerException;
 import page.clab.api.exception.LoanSuspensionException;
 import page.clab.api.exception.NotFoundException;
@@ -38,31 +40,35 @@ public class BookLoanRecordService {
     private final BookLoanRecordRepository bookLoanRecordRepository;
 
     @Transactional
-    public Long borrowBook(BookLoanRecordRequestDto bookLoanRecordRequestDto) {
-        Long bookId = bookLoanRecordRequestDto.getBookId();
-        String borrowerId = bookLoanRecordRequestDto.getBorrowerId();
-        Book book = bookService.getBookByIdOrThrow(bookId);
-        if (book.getBorrower() != null) {
-            throw new BookAlreadyBorrowedException("이미 대출 중인 도서입니다.");
+    public Long borrowBook(BookLoanRecordRequestDto bookLoanRecordRequestDto) throws CustomOptimisticLockingFailureException {
+        try {
+            Long bookId = bookLoanRecordRequestDto.getBookId();
+            String borrowerId = bookLoanRecordRequestDto.getBorrowerId();
+            Book book = bookService.getBookByIdOrThrow(bookId);
+            if (book.getBorrower() != null) {
+                throw new BookAlreadyBorrowedException("이미 대출 중인 도서입니다.");
+            }
+            Member borrower = memberService.getMemberByIdOrThrow(borrowerId);
+            if (borrower.getLoanSuspensionDate() != null && LocalDateTime.now().isBefore(borrower.getLoanSuspensionDate())) {
+                throw new LoanSuspensionException("대출 정지 중입니다. 대출 정지일까지는 책을 대출할 수 없습니다.");
+            }
+            book.setBorrower(borrower);
+            bookRepository.save(book);
+            BookLoanRecord bookLoanRecord = BookLoanRecord.builder()
+                    .book(book)
+                    .borrower(borrower)
+                    .borrowedAt(LocalDateTime.now())
+                    .build();
+            Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
+            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                    .memberId(borrowerId)
+                    .content("[" + book.getTitle() + "] 도서 대출이 완료되었습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDto);
+            return id;
+        } catch (ObjectOptimisticLockingFailureException e) {
+            throw new CustomOptimisticLockingFailureException("도서 대출에 실패했습니다. 다시 시도해주세요.");
         }
-        Member borrower = memberService.getMemberByIdOrThrow(borrowerId);
-        if (borrower.getLoanSuspensionDate() != null && LocalDateTime.now().isBefore(borrower.getLoanSuspensionDate())) {
-            throw new LoanSuspensionException("대출 정지 중입니다. 대출 정지일까지는 책을 대출할 수 없습니다.");
-        }
-        book.setBorrower(borrower);
-        bookRepository.save(book);
-        BookLoanRecord bookLoanRecord = BookLoanRecord.builder()
-                .book(book)
-                .borrower(borrower)
-                .borrowedAt(LocalDateTime.now())
-                .build();
-        Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(borrowerId)
-                .content("[" + book.getTitle() + "] 도서 대출이 완료되었습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
-        return id;
     }
 
     @Transactional

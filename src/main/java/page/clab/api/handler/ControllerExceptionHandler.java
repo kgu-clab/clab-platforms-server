@@ -35,6 +35,7 @@ import page.clab.api.exception.ActivityGroupNotFinishedException;
 import page.clab.api.exception.AlreadyReviewedException;
 import page.clab.api.exception.AssociatedAccountExistsException;
 import page.clab.api.exception.BookAlreadyBorrowedException;
+import page.clab.api.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.exception.DuplicateLoginException;
 import page.clab.api.exception.FileUploadFailException;
 import page.clab.api.exception.InvalidBorrowerException;
@@ -126,6 +127,7 @@ public class ControllerExceptionHandler {
             IOException.class,
             WebClientRequestException.class,
             TransactionSystemException.class,
+            CustomOptimisticLockingFailureException.class,
             Exception.class
     })
     public ResponseModel serverException(HttpServletResponse response, Exception e){
