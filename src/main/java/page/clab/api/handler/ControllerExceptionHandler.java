@@ -126,6 +126,7 @@ public class ControllerExceptionHandler {
             IOException.class,
             WebClientRequestException.class,
             TransactionSystemException.class,
+            SecurityException.class,
             Exception.class
     })
     public ResponseModel serverException(HttpServletResponse response, Exception e){
