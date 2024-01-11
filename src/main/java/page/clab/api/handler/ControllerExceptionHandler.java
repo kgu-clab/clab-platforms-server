@@ -127,6 +127,7 @@ public class ControllerExceptionHandler {
             IOException.class,
             WebClientRequestException.class,
             TransactionSystemException.class,
+            SecurityException.class,
             CustomOptimisticLockingFailureException.class,
             Exception.class
     })
