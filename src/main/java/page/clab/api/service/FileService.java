@@ -2,6 +2,7 @@ package page.clab.api.service;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -10,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import page.clab.api.exception.FileUploadFailException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.handler.FileHandler;
@@ -39,7 +39,25 @@ public class FileService {
     @Value("${spring.servlet.multipart.max-file-size}")
     private String maxFileSize;
 
-    public List<String> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws FileUploadFailException {
+    public String saveQRCodeImage(byte[] QRCodeImage, String path, long storagePeriod, String nowDateTime) throws IOException {
+        Member member = memberService.getCurrentMember();
+        //log.info("path " + path);
+        UploadedFile uploadedFile = new UploadedFile();
+        String extension = "png";
+        String originalFileName = path.replace(File.separator.toString(), "-") + nowDateTime;
+        //log.info("원본파일명 " + originalFileName);
+        String url = fileURL + "/" + path.replace(File.separator.toString(), "/")
+                + fileHandler.saveQRCodeImage(QRCodeImage, path, originalFileName, extension, uploadedFile);
+        uploadedFile.setOriginalFileName(originalFileName);
+        uploadedFile.setStoragePeriod(storagePeriod);
+        uploadedFile.setContentType("image/png");
+        uploadedFile.setUploader(member);
+        uploadedFile.setUrl(url);
+        uploadFileRepository.save(uploadedFile);
+        return url;
+    }
+
+    public List<String> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws IOException {
         List<String> urls = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
             String url = saveFile(multipartFile, path, storagePeriod);
@@ -48,7 +66,7 @@ public class FileService {
         return urls;
     }
 
-    public String saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws FileUploadFailException {
+    public String saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws IOException {
         Member member = memberService.getCurrentMember();
         if (path.startsWith("members")) {
             String memberId = path.split(Pattern.quote(File.separator))[1];

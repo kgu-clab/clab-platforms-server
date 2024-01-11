@@ -1,6 +1,9 @@
 package page.clab.api.service;
 
 import com.google.zxing.WriterException;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
+import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,12 +16,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.AttendanceRepository;
+import page.clab.api.repository.RedisQRKeyRepository;
 import page.clab.api.type.dto.AttendanceRequestDto;
 import page.clab.api.type.dto.AttendanceResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.Attendance;
 import page.clab.api.type.entity.Member;
+import page.clab.api.type.entity.RedisQRKey;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.util.QRCodeUtil;
 
@@ -29,15 +34,19 @@ public class AttendanceService {
 
     private final MemberService memberService;
 
+    private final FileService fileService;
+
     private final ActivityGroupAdminService activityGroupAdminService;
 
     private final AttendanceRepository attendanceRepository;
+
+    private final RedisQRKeyRepository redisQRKeyRepository;
 
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public byte[] generateAttendanceQRCode(Long activityGroupId) throws IOException, WriterException, PermissionDeniedException, IllegalAccessException {
+    public String generateAttendanceQRCode(Long activityGroupId) throws IOException, WriterException, PermissionDeniedException, IllegalAccessException {
         Member member = memberService.getCurrentMember();
 
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
@@ -51,14 +60,32 @@ public class AttendanceService {
         }
 
         String nowDateTime = getCurrentTimestamp();
-        String data = activityGroupId.toString() + "/" + member.getId() + "/" + nowDateTime;
 
-        Attendance attendance = Attendance.of(data, member);
+        //무작위 문자열 토큰 url에 포함해야 함.
+        GoogleAuthenticator gAuth = new GoogleAuthenticator();
+        GoogleAuthenticatorKey key = gAuth.createCredentials();
+        String secretKey = key.getKey();
+
+        RedisQRKey redisQRKey = RedisQRKey.builder().QRCodeKey(secretKey).build();
+        redisQRKeyRepository.save(redisQRKey);
+
+        String url = "clab.page/attendance?activityGroupId=" + activityGroupId.toString() + "&secretKey=" + secretKey;
+
+        Attendance attendance = Attendance.of(secretKey, member);
         attendance.setActivityGroup(activityGroup);
         attendance.setActivityDate(LocalDate.parse(nowDateTime.split(" ")[0], dateFormatter));
         save(attendance);
 
-        return QRCodeUtil.encodeQRCode(data);
+        byte[] QRCodeImage = QRCodeUtil.encodeQRCode(url);
+
+        String path = "attendance" + File.separator
+                + activityGroup.getCategory().toString() + File.separator
+                + activityGroup.getId().toString() + File.separator; //attendance/STUDY/1
+
+        String fileUrl = fileService.saveQRCodeImage(QRCodeImage, path, 1, nowDateTime);
+        //log.info("큐알파일 url" + fileUrl);
+
+        return url;
     }
 
     public String checkMemberAttendance(AttendanceRequestDto attendanceRequestDto) {

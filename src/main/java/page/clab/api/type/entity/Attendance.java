@@ -39,7 +39,6 @@ public class Attendance {
     public static Attendance of(String QRCodeData, Member member){
         AttendanceId attendanceId = AttendanceId.builder()
                 .member(member)
-                .QRCodeData(QRCodeData)
                 .build();
 
         return Attendance.builder()
