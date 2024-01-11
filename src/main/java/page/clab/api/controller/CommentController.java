@@ -39,6 +39,7 @@ public class CommentController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/{boardId}")
     public ResponseModel createComment(
+            @RequestParam(required = false) Long parentId,
             @PathVariable Long boardId,
             @Valid @RequestBody CommentRequestDto commentRequestDto,
             BindingResult result
@@ -46,7 +47,7 @@ public class CommentController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = commentService.createComment(boardId, commentRequestDto);
+        Long id = commentService.createComment(parentId, boardId, commentRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

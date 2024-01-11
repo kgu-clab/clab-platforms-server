@@ -30,13 +30,19 @@ public class CommentService {
     private final NotificationService notificationService;
 
     @Transactional
-    public Long createComment(Long boardId, CommentRequestDto commentRequestDto) {
+    public Long createComment(Long parentId, Long boardId, CommentRequestDto commentRequestDto) {
         Member member = memberService.getCurrentMember();
         Board board = boardService.getBoardByIdOrThrow(boardId);
         Comment comment = Comment.of(commentRequestDto);
         comment.setBoard(board);
         comment.setWriter(member);
         comment.setCreatedAt(LocalDateTime.now());
+        if (parentId != null) {
+            Comment parentComment = getCommentByIdOrThrow(parentId);
+            comment.setParent(parentComment);
+            parentComment.getChildren().add(comment);
+            commentRepository.save(parentComment);
+        }
         Long id = commentRepository.save(comment).getId();
 
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
