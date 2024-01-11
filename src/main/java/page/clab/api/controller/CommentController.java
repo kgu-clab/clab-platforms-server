@@ -21,8 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.CommentService;
+import page.clab.api.type.dto.CommentGetAllResponseDto;
+import page.clab.api.type.dto.CommentGetMyResponseDto;
 import page.clab.api.type.dto.CommentRequestDto;
-import page.clab.api.type.dto.CommentResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 
@@ -39,6 +40,7 @@ public class CommentController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/{boardId}")
     public ResponseModel createComment(
+            @RequestParam(required = false) Long parentId,
             @PathVariable Long boardId,
             @Valid @RequestBody CommentRequestDto commentRequestDto,
             BindingResult result
@@ -46,7 +48,7 @@ public class CommentController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = commentService.createComment(boardId, commentRequestDto);
+        Long id = commentService.createComment(parentId, boardId, commentRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -61,7 +63,7 @@ public class CommentController {
             @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<CommentResponseDto> comments = commentService.getComments(boardId, pageable);
+        PagedResponseDto<CommentGetAllResponseDto> comments = commentService.getComments(boardId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(comments);
         return responseModel;
@@ -75,7 +77,7 @@ public class CommentController {
             @RequestParam(defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<CommentResponseDto> comments = commentService.getMyComments(pageable);
+        PagedResponseDto<CommentGetMyResponseDto> comments = commentService.getMyComments(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(comments);
         return responseModel;
