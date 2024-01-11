@@ -11,8 +11,9 @@ import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.CommentRepository;
+import page.clab.api.type.dto.CommentGetAllResponseDto;
+import page.clab.api.type.dto.CommentGetMyResponseDto;
 import page.clab.api.type.dto.CommentRequestDto;
-import page.clab.api.type.dto.CommentResponseDto;
 import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Board;
@@ -56,16 +57,16 @@ public class CommentService {
         return id;
     }
 
-    public PagedResponseDto<CommentResponseDto> getComments(Long boardId, Pageable pageable) {
+    public PagedResponseDto<CommentGetAllResponseDto> getComments(Long boardId, Pageable pageable) {
         Page<Comment> comments = getCommentByBoardIdAndParentIsNull(boardId, pageable);
         comments.forEach(comment -> Hibernate.initialize(comment.getChildren()));
-        return new PagedResponseDto<>(comments.map(CommentResponseDto::of));
+        return new PagedResponseDto<>(comments.map(CommentGetAllResponseDto::of));
     }
 
-    public PagedResponseDto<CommentResponseDto> getMyComments(Pageable pageable) {
+    public PagedResponseDto<CommentGetMyResponseDto> getMyComments(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByWriter(member, pageable);
-        return new PagedResponseDto<>(comments.map(CommentResponseDto::of));
+        return new PagedResponseDto<>(comments.map(CommentGetMyResponseDto::of));
     }
 
     public Long updateComment(Long commentId, CommentRequestDto commentRequestDto) throws PermissionDeniedException {
