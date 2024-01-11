@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import page.clab.api.type.entity.Comment;
 import page.clab.api.util.ModelMapperUtil;
 
@@ -14,7 +15,8 @@ import page.clab.api.util.ModelMapperUtil;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CommentResponseDto {
+@ToString
+public class CommentGetMyResponseDto {
 
     private Long id;
 
@@ -26,11 +28,11 @@ public class CommentResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static CommentResponseDto of(Comment comment) {
-        CommentResponseDto commentResponseDto = ModelMapperUtil.getModelMapper().map(comment, CommentResponseDto.class);
-        commentResponseDto.setWriterName(comment.getWriter().getName());
-        commentResponseDto.setWriterImageUrl(comment.getWriter().getImageUrl());
-        return commentResponseDto;
+    public static CommentGetMyResponseDto of(Comment comment) {
+        CommentGetMyResponseDto commentGetAllResponseDto = ModelMapperUtil.getModelMapper().map(comment, CommentGetMyResponseDto.class);
+        commentGetAllResponseDto.setWriterName(comment.getWriter().getName());
+        commentGetAllResponseDto.setWriterImageUrl(comment.getWriter().getImageUrl());
+        return commentGetAllResponseDto;
     }
 
 }

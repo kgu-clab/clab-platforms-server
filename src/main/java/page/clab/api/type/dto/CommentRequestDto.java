@@ -23,8 +23,8 @@ public class CommentRequestDto {
     @Schema(description = "내용", example = "댓글 내용", required = true)
     private String content;
 
-    public static CommentResponseDto of(Comment comment) {
-        return ModelMapperUtil.getModelMapper().map(comment, CommentResponseDto.class);
+    public static CommentGetAllResponseDto of(Comment comment) {
+        return ModelMapperUtil.getModelMapper().map(comment, CommentGetAllResponseDto.class);
     }
 
 }
