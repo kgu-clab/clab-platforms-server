@@ -19,12 +19,24 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class QRCodeUtil {
 
+    @Value("${resource.file.path}")
+    private String filePath;
+
     private static final int SIZE = 200;
+
+  /*  public static void encodeQRCode(String url) throws WriterException, IOException {
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(url, BarcodeFormat.QR_CODE, SIZE, SIZE);
+
+        Path path = FileSystems.getDefault().getPath();
+        MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
+    }*/
 
     public static byte[] encodeQRCode(String data) throws WriterException, IOException{
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
@@ -32,9 +44,8 @@ public class QRCodeUtil {
 
         ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
         MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
-        byte[] QRCodeImage = pngOutputStream.toByteArray();
 
-        return QRCodeImage;
+        return pngOutputStream.toByteArray();
     }
 
     public static String decodeQRCode(byte[] qrCodeImage) throws IOException, NotFoundException, ChecksumException, FormatException {

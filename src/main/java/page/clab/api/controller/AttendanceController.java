@@ -37,9 +37,9 @@ public class AttendanceController {
     public ResponseModel generateAttendanceQRCode (
             @RequestParam Long activityGroupId
     ) throws IOException, WriterException, PermissionDeniedException, IllegalAccessException {
-        byte[] QRCode = attendanceService.generateAttendanceQRCode(activityGroupId);
+        String QRCodeURL = attendanceService.generateAttendanceQRCode(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(QRCode);
+        responseModel.addData(QRCodeURL);
         return responseModel;
     }
 
