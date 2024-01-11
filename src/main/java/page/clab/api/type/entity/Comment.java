@@ -1,11 +1,11 @@
 package page.clab.api.type.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -46,12 +46,14 @@ public class Comment {
     @Size(min = 1, max = 1000, message = "{size.comment.content}")
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "parent_id")
+    @JsonIgnoreProperties("children")
     private Comment parent;
 
     @Builder.Default
     @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    @JsonIgnoreProperties("parent")
     private List<Comment> children = new ArrayList<>();
 
     @Column(name = "update_time")
