@@ -25,7 +25,7 @@ public class AttendanceResponseDto {
     public static AttendanceResponseDto of(Attendance attendance){
         AttendanceResponseDto attendanceResponseDto = ModelMapperUtil.getModelMapper().map(attendance, AttendanceResponseDto.class);
         attendanceResponseDto.setActivityGroupId(attendance.getActivityGroup().getId());
-        attendanceResponseDto.setMemberId(attendance.getAttendanceId().getMember().getId());
+        attendanceResponseDto.setMemberId(attendance.getMember().getId());
         attendanceResponseDto.setAttendanceDateTime(attendance.getCreatedAt());
 
         return attendanceResponseDto;

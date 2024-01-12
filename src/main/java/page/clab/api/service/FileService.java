@@ -41,13 +41,13 @@ public class FileService {
 
     public String saveQRCodeImage(byte[] QRCodeImage, String path, long storagePeriod, String nowDateTime) throws IOException {
         Member member = memberService.getCurrentMember();
-        //log.info("path " + path);
         UploadedFile uploadedFile = new UploadedFile();
+
         String extension = "png";
         String originalFileName = path.replace(File.separator.toString(), "-") + nowDateTime;
-        //log.info("원본파일명 " + originalFileName);
         String url = fileURL + "/" + path.replace(File.separator.toString(), "/")
                 + fileHandler.saveQRCodeImage(QRCodeImage, path, originalFileName, extension, uploadedFile);
+
         uploadedFile.setOriginalFileName(originalFileName);
         uploadedFile.setStoragePeriod(storagePeriod);
         uploadedFile.setContentType("image/png");
