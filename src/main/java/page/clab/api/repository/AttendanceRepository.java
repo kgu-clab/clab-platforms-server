@@ -1,5 +1,6 @@
 package page.clab.api.repository;
 
+import java.time.LocalDate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,5 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
         Page<Attendance> findAllByActivityGroupOrderByActivityDateAscMemberAsc(ActivityGroup activityGroup, Pageable pageable);
 
+        Attendance findByActivityGroupAndMemberAndActivityDate(ActivityGroup activityGroup, Member member, LocalDate activityDate);
 }

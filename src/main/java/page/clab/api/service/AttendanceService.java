@@ -95,6 +95,10 @@ public class AttendanceService {
 
         LocalDateTime enterTime = LocalDateTime.now();
 
+        if(hasAttendanceHistory(activityGroup, member, enterTime.toLocalDate())){
+            return "이미 오늘의 출석 기록이 있습니다.";
+        }
+
         String QRCodeData  = attendanceRequestDto.getQRCodeSecretKey();
         if (QRCodeData == null) {
             return "QRCode 정보가 잘못 되었습니다.";
@@ -154,6 +158,14 @@ public class AttendanceService {
 
     public Attendance save(Attendance attendance){
         return attendanceRepository.save(attendance);
+    }
+
+    public boolean hasAttendanceHistory(ActivityGroup activityGroup, Member member, LocalDate activityDate){
+        Attendance attendanceHistory = attendanceRepository.findByActivityGroupAndMemberAndActivityDate(activityGroup, member, activityDate);
+
+        if(attendanceHistory == null)
+            return false;
+        return true;
     }
 
 }
