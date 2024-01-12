@@ -79,7 +79,7 @@ public class AttendanceService {
 
         String path = "attendance" + File.separator
                 + activityGroup.getCategory().toString() + File.separator
-                + activityGroup.getId().toString() + File.separator;
+                + activityGroup.getId().toString();
         String fileUrl = fileService.saveQRCodeImage(QRCodeImage, path, 1, nowDateTime);
 
         return url;

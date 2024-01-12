@@ -48,7 +48,6 @@ public class FileHandler {
         init();
 
         fileValidation(originalFilename, extension);
-
         String saveFilename = makeSaveFileName(category, originalFilename, extension);
         String savePath = filePath + File.separator + category + File.separator + saveFilename;
 
@@ -72,8 +71,6 @@ public class FileHandler {
         String originalFilename = multipartFile.getOriginalFilename();
         String extension = FilenameUtils.getExtension(originalFilename);
         fileValidation(originalFilename, extension);
-
-
         String saveFilename = makeSaveFileName(category, originalFilename, extension);
         String savePath = filePath + File.separator + category + File.separator + saveFilename;
 

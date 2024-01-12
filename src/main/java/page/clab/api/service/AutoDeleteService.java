@@ -26,7 +26,7 @@ public class AutoDeleteService {
     public void autoDeleteFiles() {
         List<String> categoryPaths = Arrays.asList(
                 "boards", "news", "books", "profiles",
-                "activity-photos", "members", "forms"
+                "activity-photos", "members", "forms", "attendance"
         );
         categoryPaths.stream()
                 .map(category -> filePath + File.separator + category)
