@@ -56,11 +56,9 @@ public class FileHandler {
         BufferedImage bufferedImage = ImageIO.read(inputStream);
 
         File file = new File(savePath);
-        //log.info("qr 파일 생성");
         checkDir(file);
         ImageIO.write(bufferedImage, extension, file);
         save(file, savePath, extension);
-        //log.info("디렉토리 생성 후 저장완료");
         uploadedFile.setFileSize(file.length());
         uploadedFile.setSavedPath(savePath);
         uploadedFile.setSaveFileName(saveFilename);
@@ -72,9 +70,7 @@ public class FileHandler {
         init();
 
         String originalFilename = multipartFile.getOriginalFilename();
-        //log.info("일반파일 원본 이름" + originalFilename);
         String extension = FilenameUtils.getExtension(originalFilename);
-        //log.info("일반파일 확장자" + extension);
         fileValidation(originalFilename, extension);
 
 
@@ -84,9 +80,7 @@ public class FileHandler {
         File file = new File(savePath);
         checkDir(file);
         multipartFile.transferTo(file);
-        //log.info("일반 파일 생성");
         save(file, savePath, extension);
-        //log.info("디렉토리 생성 후 저장완료");
 
         uploadedFile.setSavedPath(savePath);
         uploadedFile.setSaveFileName(saveFilename);

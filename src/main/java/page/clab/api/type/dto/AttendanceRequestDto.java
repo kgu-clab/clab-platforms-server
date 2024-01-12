@@ -13,6 +13,8 @@ import lombok.Setter;
 @Builder
 public class AttendanceRequestDto {
 
-    private String QRCodeData;
+    private Long activityGroupId;
+
+    private String QRCodeSecretKey;
 
 }
