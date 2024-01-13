@@ -7,9 +7,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.AccountInUseException;
+import page.clab.api.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SharedAccountUsageStateException;
@@ -34,7 +36,7 @@ public class SharedAccountUsageService {
     private final SharedAccountUsageRepository sharedAccountUsageRepository;
 
     @Transactional
-    public Long requestSharedAccountUsage(SharedAccountUsageRequestDto sharedAccountUsageRequestDto) {
+    public Long requestSharedAccountUsage(SharedAccountUsageRequestDto sharedAccountUsageRequestDto) throws CustomOptimisticLockingFailureException {
         Long sharedAccountId = sharedAccountUsageRequestDto.getSharedAccountId();
         SharedAccount sharedAccount = sharedAccountService.getSharedAccountByIdOrThrow(sharedAccountId);
         if (sharedAccount.isInUse()) {
@@ -49,15 +51,19 @@ public class SharedAccountUsageService {
         if (endTime.isBefore(startTime)) {
             throw new IllegalArgumentException("이용 종료 시간은 시작 시간 이후여야 합니다.");
         }
-        String memberId = memberService.getCurrentMember().getId();
-        SharedAccountUsage sharedAccountUsage = SharedAccountUsage.of(sharedAccountUsageRequestDto);
-        sharedAccountUsage.setId(null);
-        sharedAccountUsage.setSharedAccount(sharedAccount);
-        sharedAccountUsage.setMemberId(memberId);
-        sharedAccountUsage.setStatus(SharedAccountUsageStatus.IN_USE);
-        sharedAccount.setInUse(true);
-        sharedAccountUsageRepository.save(sharedAccountUsage);
-        return sharedAccountService.save(sharedAccount).getId();
+        try {
+            String memberId = memberService.getCurrentMember().getId();
+            SharedAccountUsage sharedAccountUsage = SharedAccountUsage.of(sharedAccountUsageRequestDto);
+            sharedAccountUsage.setId(null);
+            sharedAccountUsage.setSharedAccount(sharedAccount);
+            sharedAccountUsage.setMemberId(memberId);
+            sharedAccountUsage.setStatus(SharedAccountUsageStatus.IN_USE);
+            sharedAccount.setInUse(true);
+            sharedAccountUsageRepository.save(sharedAccountUsage);
+            return sharedAccountService.save(sharedAccount).getId();
+        } catch (ObjectOptimisticLockingFailureException e) {
+              throw new CustomOptimisticLockingFailureException("공유 계정 이용 요청에 실패했습니다. 다시 시도해주세요.");
+        }
     }
 
     public PagedResponseDto<SharedAccountUsageResponseDto> getSharedAccountUsages(Pageable pageable) {
