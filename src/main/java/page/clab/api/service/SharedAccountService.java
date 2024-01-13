@@ -19,6 +19,7 @@ public class SharedAccountService {
 
     public Long createSharedAccount(SharedAccountRequestDto sharedAccountRequestDto) {
         SharedAccount sharedAccount = SharedAccount.of(sharedAccountRequestDto);
+        sharedAccount.setInUse(false);
         return sharedAccountRepository.save(sharedAccount).getId();
     }
 
@@ -40,9 +41,13 @@ public class SharedAccountService {
         return sharedAccount.getId();
     }
 
-    private SharedAccount getSharedAccountByIdOrThrow(Long accountId) {
+    public SharedAccount getSharedAccountByIdOrThrow(Long accountId) {
         return sharedAccountRepository.findById(accountId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 계정입니다."));
+    }
+
+    public SharedAccount save(SharedAccount sharedAccount) {
+        return sharedAccountRepository.save(sharedAccount);
     }
 
 }
