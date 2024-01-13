@@ -43,6 +43,9 @@ public class SharedAccount {
     @URL(message = "{url.sharedAccount.platformUrl}")
     private String platformUrl;
 
+    @Column(nullable = false)
+    private boolean isInUse;
+
     public static SharedAccount of(SharedAccountRequestDto sharedAccountRequestDto) {
         return ModelMapperUtil.getModelMapper().map(sharedAccountRequestDto, SharedAccount.class);
     }
