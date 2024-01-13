@@ -52,4 +52,10 @@ public class AuthenticatorService {
         return authenticatorRepository.existsById(memberId);
     }
 
+    public String resetAuthenticator(String memberId) {
+        Authenticator authenticator = authenticatorRepository.getById(memberId);
+        authenticatorRepository.deleteById(memberId);
+        return authenticator.getMemberId();
+    }
+
 }
