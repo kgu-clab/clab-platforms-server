@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import page.clab.api.exception.DuplicateAttendanceException;
+import page.clab.api.exception.InvalidInformationException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.AttendanceRepository;
@@ -69,10 +71,12 @@ public class AttendanceService {
 
         String url = "clab.page/attendance?activityGroupId=" + activityGroupId.toString() + "&secretKey=" + secretKey;
 
-        Attendance attendance = new Attendance();
-        attendance.setMember(member);
-        attendance.setActivityGroup(activityGroup);
-        attendance.setActivityDate(LocalDate.parse(nowDateTime.split(" ")[0], dateFormatter));
+        Attendance attendance = Attendance.builder()
+                .member(member)
+                .activityGroup(activityGroup)
+                .activityDate(LocalDate.parse(nowDateTime.split(" ")[0], dateFormatter))
+                .build();
+
         save(attendance);
 
         byte[] QRCodeImage = QRCodeUtil.encodeQRCode(url);
@@ -82,7 +86,7 @@ public class AttendanceService {
                 + activityGroup.getId().toString();
         String fileUrl = fileService.saveQRCodeImage(QRCodeImage, path, 1, nowDateTime);
 
-        return url;
+        return fileUrl;
     }
 
     public String checkMemberAttendance(AttendanceRequestDto attendanceRequestDto) {
@@ -95,22 +99,24 @@ public class AttendanceService {
 
         LocalDateTime enterTime = LocalDateTime.now();
 
-        if(hasAttendanceHistory(activityGroup, member, enterTime.toLocalDate())){
-            return "이미 오늘의 출석 기록이 있습니다.";
+        if (hasAttendanceHistory(activityGroup, member, enterTime.toLocalDate())) {
+            throw new DuplicateAttendanceException("이미 오늘의 출석 기록이 있습니다.");
         }
 
         String QRCodeData  = attendanceRequestDto.getQRCodeSecretKey();
         if (QRCodeData == null) {
-            return "QRCode 정보가 잘못 되었습니다.";
+            throw new InvalidInformationException("QRCode 정보가 잘못 되었습니다.");
         }
 
-        RedisQRKey redisQRKey = redisQRKeyRepository.findByQRCodeKey(QRCodeData)
+        redisQRKeyRepository.findByQRCodeKey(QRCodeData)
                 .orElseThrow(() -> new NotFoundException("QRCode 정보가 없습니다."));
 
-        Attendance attendance = new Attendance();
-        attendance.setMember(member);
-        attendance.setActivityGroup(activityGroup);
-        attendance.setActivityDate(enterTime.toLocalDate());
+        Attendance attendance = Attendance.builder()
+                .member(member)
+                .activityGroup(activityGroup)
+                .activityDate(enterTime.toLocalDate())
+                .build();
+
         Member attendancedMember = save(attendance).getMember();
 
         return attendancedMember.getId() + " " + attendancedMember.getName() + " "  + "출석체크 성공";
