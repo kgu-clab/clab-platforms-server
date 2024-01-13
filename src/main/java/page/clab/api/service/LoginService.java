@@ -23,6 +23,7 @@ import page.clab.api.type.dto.TokenInfo;
 import page.clab.api.type.dto.TwoFactorAuthenticationRequestDto;
 import page.clab.api.type.entity.RedisToken;
 import page.clab.api.type.etc.LoginAttemptResult;
+import page.clab.api.util.HttpReqResUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -73,7 +74,7 @@ public class LoginService {
         }
         loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.SUCCESS);
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(id, memberService.getMemberById(id).getRole());
-        String clientIpAddress = httpServletRequest.getHeader("X-Forwarded-For");
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         redisTokenService.saveRedisToken(id, memberService.getMemberById(id).getRole(), tokenInfo, clientIpAddress);
         return tokenInfo;
     }
@@ -109,7 +110,7 @@ public class LoginService {
     public TokenInfo reissue(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
         RedisToken redisToken = redisTokenService.getRedisTokenByRefreshToken(token);
-        String clientIpAddress = request.getHeader("X-Forwarded-For");
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         if (!redisToken.getIp().equals(clientIpAddress)) {
             redisTokenService.deleteRedisTokenByAccessToken(redisToken.getAccessToken());
             throw new SecurityException("올바르지 않은 토큰 재발급 시도가 감지되어 토큰을 삭제하였습니다.");
