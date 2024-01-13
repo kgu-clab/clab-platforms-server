@@ -31,6 +31,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import page.clab.api.auth.exception.TokenValidateException;
 import page.clab.api.auth.exception.UnAuthorizeException;
+import page.clab.api.exception.AccountInUseException;
 import page.clab.api.exception.ActivityGroupNotFinishedException;
 import page.clab.api.exception.AlreadyReviewedException;
 import page.clab.api.exception.AssociatedAccountExistsException;
@@ -47,6 +48,7 @@ import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.OverdueException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.exception.SearchResultNotExistException;
+import page.clab.api.exception.SharedAccountUsageStateException;
 import page.clab.api.type.dto.ResponseModel;
 
 @RestControllerAdvice(basePackages = "page.clab.api.controller")
@@ -113,6 +115,8 @@ public class ControllerExceptionHandler {
             BookAlreadyBorrowedException.class,
             DuplicateLoginException.class,
             AlreadyReviewedException.class,
+            AccountInUseException.class,
+            SharedAccountUsageStateException.class
     })
     public ResponseModel conflictException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_CONFLICT);
