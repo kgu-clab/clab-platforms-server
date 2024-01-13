@@ -14,6 +14,7 @@ import page.clab.api.type.entity.LoginAttemptLog;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.LoginAttemptResult;
 import page.clab.api.util.GeoIpUtil;
+import page.clab.api.util.HttpReqResUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +25,7 @@ public class LoginAttemptLogService {
     private final MemberService memberService;
 
     public void createLoginAttemptLog(HttpServletRequest httpServletRequest, String memberId, LoginAttemptResult loginAttemptResult) {
-        String clientIpAddress = httpServletRequest.getHeader("X-Forwarded-For");
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         GeoIpInfo geoIpInfo = GeoIpUtil.getInfoByIp(clientIpAddress);
         LoginAttemptLog loginAttemptLog = LoginAttemptLog.builder()
                 .member(memberService.getMemberByIdOrThrow(memberId))

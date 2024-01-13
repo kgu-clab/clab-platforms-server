@@ -19,6 +19,7 @@ import page.clab.api.service.RedisIpAttemptService;
 import page.clab.api.service.RedisTokenService;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.entity.RedisToken;
+import page.clab.api.util.HttpReqResUtil;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -49,7 +50,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             chain.doFilter(request, response);
             return;
         }
-        String clientIpAddress = ((HttpServletRequest) request).getHeader("X-Forwarded-For");
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAttemptService.isBlocked(clientIpAddress)) {
             log.info("[{}] : 서비스 이용이 제한된 IP입니다.", clientIpAddress);
             ResponseModel responseModel = ResponseModel.builder()

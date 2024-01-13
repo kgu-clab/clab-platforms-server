@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import page.clab.api.repository.BlacklistIpRepository;
 import page.clab.api.service.RedisIpAttemptService;
 import page.clab.api.type.dto.ResponseModel;
+import page.clab.api.util.HttpReqResUtil;
 
 @Slf4j
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
@@ -48,7 +49,7 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
             chain.doFilter(request, response);
             return;
         }
-        String clientIpAddress = request.getHeader("X-Forwarded-For");
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAttemptService.isBlocked(clientIpAddress)) {
             log.info("[{}] : 서비스 이용이 제한된 IP입니다.", clientIpAddress);
             ResponseModel responseModel = ResponseModel.builder()

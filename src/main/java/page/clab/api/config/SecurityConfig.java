@@ -34,6 +34,7 @@ import page.clab.api.repository.BlacklistIpRepository;
 import page.clab.api.service.RedisIpAttemptService;
 import page.clab.api.service.RedisTokenService;
 import page.clab.api.type.dto.ResponseModel;
+import page.clab.api.util.HttpReqResUtil;
 
 @Configuration
 @EnableWebSecurity
@@ -123,7 +124,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAttemptService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint((request, response, authException) -> {
-                    String clientIpAddress = request.getHeader("X-Forwarded-For");
+                    String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
                     log.info("[{}] : 비정상적인 접근이 감지되었습니다.", clientIpAddress);
                     redisIpAttemptService.registerLoginAttempt(clientIpAddress);
                     ResponseModel responseModel = ResponseModel.builder()
