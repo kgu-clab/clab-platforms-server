@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             chain.doFilter(request, response);
             return;
         }
-        String clientIpAddress = request.getRemoteAddr();
+        String clientIpAddress = ((HttpServletRequest) request).getHeader("X-Forwarded-For");
         if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAttemptService.isBlocked(clientIpAddress)) {
             log.info("[{}] : 서비스 이용이 제한된 IP입니다.", clientIpAddress);
             ResponseModel responseModel = ResponseModel.builder()
