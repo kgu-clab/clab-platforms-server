@@ -60,7 +60,7 @@ public class SharedAccountUsageService {
     }
 
     public PagedResponseDto<SharedAccountUsageResponseDto> getSharedAccountUsages(Pageable pageable) {
-        Page<SharedAccountUsage> sharedAccountUsages = sharedAccountUsageRepository.findAll(pageable);
+        Page<SharedAccountUsage> sharedAccountUsages = sharedAccountUsageRepository.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(sharedAccountUsages.map(SharedAccountUsageResponseDto::of));
     }
 
