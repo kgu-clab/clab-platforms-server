@@ -51,6 +51,7 @@ public class SharedAccountUsageService {
         }
         String memberId = memberService.getCurrentMember().getId();
         SharedAccountUsage sharedAccountUsage = SharedAccountUsage.of(sharedAccountUsageRequestDto);
+        sharedAccountUsage.setId(null);
         sharedAccountUsage.setSharedAccount(sharedAccount);
         sharedAccountUsage.setMemberId(memberId);
         sharedAccountUsage.setStatus(SharedAccountUsageStatus.IN_USE);
