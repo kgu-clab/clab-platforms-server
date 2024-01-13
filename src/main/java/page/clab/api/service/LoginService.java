@@ -79,6 +79,10 @@ public class LoginService {
         return tokenInfo;
     }
 
+    public String resetAuthenticator(String memberId) {
+        return authenticatorService.resetAuthenticator(memberId);
+    }
+
     private boolean barunLogin(String id, String password) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("email", id);
@@ -105,6 +109,7 @@ public class LoginService {
             return false;
         }
     }
+
 
     @Transactional
     public TokenInfo reissue(HttpServletRequest request) {

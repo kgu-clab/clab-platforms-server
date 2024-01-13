@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,7 +48,7 @@ public class LoginController {
         return responseModel;
     }
 
-    @Operation(summary = "2FA 인증", description = "ROLE_ANONYMOUS 권한이 필요함")
+    @Operation(summary = "TOTP 인증", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("/authenticator")
     public ResponseModel authenticator(
             HttpServletRequest httpServletRequest,
@@ -59,6 +61,18 @@ public class LoginController {
         ResponseModel responseModel = ResponseModel.builder().build();
         TokenInfo tokenInfo = loginService.authenticator(httpServletRequest, twoFactorAuthenticationRequestDto);
         responseModel.addData(tokenInfo);
+        return responseModel;
+    }
+
+    @Operation(summary = "[A] TOTP 초기화", description = "ROLE_ADMIN 권한이 필요함")
+    @DeleteMapping("/authenticator/{memberId}")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    public ResponseModel deleteAuthenticator(
+            @PathVariable String memberId
+    ) {
+        String id = loginService.resetAuthenticator(memberId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
         return responseModel;
     }
 
