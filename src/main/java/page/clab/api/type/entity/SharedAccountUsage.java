@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.type.dto.SharedAccountUsageRequestDto;
 import page.clab.api.type.etc.SharedAccountUsageStatus;
 import page.clab.api.util.ModelMapperUtil;
@@ -47,6 +48,9 @@ public class SharedAccountUsage {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private SharedAccountUsageStatus status;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     public static SharedAccountUsage of(SharedAccountUsageRequestDto sharedAccountUsageRequestDto) {
         return ModelMapperUtil.getModelMapper().map(sharedAccountUsageRequestDto, SharedAccountUsage.class);
