@@ -31,6 +31,8 @@ public class SharedAccountUsageResponseDto {
 
     private SharedAccountUsageStatus status;
 
+    private LocalDateTime createdAt;
+
     public static SharedAccountUsageResponseDto of(SharedAccountUsage sharedAccountUsage) {
         SharedAccountUsageResponseDto sharedAccountUsageResponseDto = ModelMapperUtil.getModelMapper().map(sharedAccountUsage, SharedAccountUsageResponseDto.class);
         sharedAccountUsageResponseDto.setUsername(sharedAccountUsage.getSharedAccount().getUsername());
