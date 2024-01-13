@@ -25,6 +25,8 @@ public class SharedAccountResponseDto {
 
     private String platformUrl;
 
+    private boolean isInUse;
+
     public static SharedAccountResponseDto of(SharedAccount sharedAccount) {
         return ModelMapperUtil.getModelMapper().map(sharedAccount, SharedAccountResponseDto.class);
     }
