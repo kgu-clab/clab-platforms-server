@@ -24,11 +24,12 @@ public class LoginAttemptLogService {
     private final MemberService memberService;
 
     public void createLoginAttemptLog(HttpServletRequest httpServletRequest, String memberId, LoginAttemptResult loginAttemptResult) {
-        GeoIpInfo geoIpInfo = GeoIpUtil.getInfoByIp(httpServletRequest.getRemoteAddr());
+        String clientIpAddress = httpServletRequest.getHeader("X-Forwarded-For");
+        GeoIpInfo geoIpInfo = GeoIpUtil.getInfoByIp(clientIpAddress);
         LoginAttemptLog loginAttemptLog = LoginAttemptLog.builder()
                 .member(memberService.getMemberByIdOrThrow(memberId))
                 .userAgent(httpServletRequest.getHeader("User-Agent"))
-                .ipAddress(httpServletRequest.getRemoteAddr())
+                .ipAddress(clientIpAddress)
                 .location(geoIpInfo.getLocation())
                 .loginAttemptResult(loginAttemptResult)
                 .loginAttemptTime(LocalDateTime.now())

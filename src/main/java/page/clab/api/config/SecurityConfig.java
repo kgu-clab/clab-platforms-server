@@ -123,8 +123,9 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAttemptService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint((request, response, authException) -> {
-                    log.info("[{}] : 비정상적인 접근이 감지되었습니다.", request.getRemoteAddr());
-                    redisIpAttemptService.registerLoginAttempt(request.getRemoteAddr());
+                    String clientIpAddress = request.getHeader("X-Forwarded-For");
+                    log.info("[{}] : 비정상적인 접근이 감지되었습니다.", clientIpAddress);
+                    redisIpAttemptService.registerLoginAttempt(clientIpAddress);
                     ResponseModel responseModel = ResponseModel.builder()
                             .success(false)
                             .build();

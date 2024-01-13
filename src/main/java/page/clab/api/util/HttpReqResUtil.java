@@ -32,7 +32,7 @@ public class HttpReqResUtil {
                 return ip;
             }
         }
-        return request.getRemoteAddr();
+        return request.getHeader("X-Forwarded-For");
     }
 
 }
