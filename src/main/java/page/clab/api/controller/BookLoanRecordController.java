@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.service.BookLoanRecordService;
 import page.clab.api.type.dto.BookLoanRecordRequestDto;
 import page.clab.api.type.dto.BookLoanRecordResponseDto;
@@ -37,7 +38,7 @@ public class BookLoanRecordController {
     public ResponseModel borrowBook(
             @Valid @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto,
             BindingResult result
-    ) throws MethodArgumentNotValidException {
+    ) throws MethodArgumentNotValidException, CustomOptimisticLockingFailureException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
