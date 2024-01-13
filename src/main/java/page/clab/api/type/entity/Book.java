@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,6 +53,9 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member borrower;
+
+    @Version
+    private Long version;
 
     public static Book of(BookRequestDto bookRequestDto) {
         return ModelMapperUtil.getModelMapper().map(bookRequestDto, Book.class);

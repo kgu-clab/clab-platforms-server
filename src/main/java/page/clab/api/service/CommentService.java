@@ -3,14 +3,17 @@ package page.clab.api.service;
 import java.time.LocalDateTime;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.repository.CommentRepository;
+import page.clab.api.type.dto.CommentGetAllResponseDto;
+import page.clab.api.type.dto.CommentGetMyResponseDto;
 import page.clab.api.type.dto.CommentRequestDto;
-import page.clab.api.type.dto.CommentResponseDto;
 import page.clab.api.type.dto.NotificationRequestDto;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.entity.Board;
@@ -19,6 +22,7 @@ import page.clab.api.type.entity.Member;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CommentService {
 
     private final CommentRepository commentRepository;
@@ -30,13 +34,19 @@ public class CommentService {
     private final NotificationService notificationService;
 
     @Transactional
-    public Long createComment(Long boardId, CommentRequestDto commentRequestDto) {
+    public Long createComment(Long parentId, Long boardId, CommentRequestDto commentRequestDto) {
         Member member = memberService.getCurrentMember();
         Board board = boardService.getBoardByIdOrThrow(boardId);
         Comment comment = Comment.of(commentRequestDto);
         comment.setBoard(board);
         comment.setWriter(member);
         comment.setCreatedAt(LocalDateTime.now());
+        if (parentId != null) {
+            Comment parentComment = getCommentByIdOrThrow(parentId);
+            comment.setParent(parentComment);
+            parentComment.getChildren().add(comment);
+            commentRepository.save(parentComment);
+        }
         Long id = commentRepository.save(comment).getId();
 
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
@@ -47,15 +57,16 @@ public class CommentService {
         return id;
     }
 
-    public PagedResponseDto<CommentResponseDto> getComments(Long boardId, Pageable pageable) {
-        Page<Comment> comments = getCommentByBoardId(boardId, pageable);
-        return new PagedResponseDto<>(comments.map(CommentResponseDto::of));
+    public PagedResponseDto<CommentGetAllResponseDto> getComments(Long boardId, Pageable pageable) {
+        Page<Comment> comments = getCommentByBoardIdAndParentIsNull(boardId, pageable);
+        comments.forEach(comment -> Hibernate.initialize(comment.getChildren()));
+        return new PagedResponseDto<>(comments.map(CommentGetAllResponseDto::of));
     }
 
-    public PagedResponseDto<CommentResponseDto> getMyComments(Pageable pageable) {
+    public PagedResponseDto<CommentGetMyResponseDto> getMyComments(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByWriter(member, pageable);
-        return new PagedResponseDto<>(comments.map(CommentResponseDto::of));
+        return new PagedResponseDto<>(comments.map(CommentGetMyResponseDto::of));
     }
 
     public Long updateComment(Long commentId, CommentRequestDto commentRequestDto) throws PermissionDeniedException {
@@ -84,8 +95,8 @@ public class CommentService {
                 .orElseThrow(() -> new NotFoundException("댓글을 찾을 수 없습니다."));
     }
 
-    private Page<Comment> getCommentByBoardId(Long boardId, Pageable pageable) {
-        return commentRepository.findAllByBoardIdOrderByCreatedAtDesc(boardId, pageable);
+    private Page<Comment> getCommentByBoardIdAndParentIsNull(Long boardId, Pageable pageable) {
+        return commentRepository.findAllByBoardIdAndParentIsNullOrderByCreatedAtDesc(boardId, pageable);
     }
 
     private Page<Comment> getCommentByWriter(Member member, Pageable pageable) {

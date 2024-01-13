@@ -1,6 +1,9 @@
 package page.clab.api.type.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,6 +45,16 @@ public class Comment {
     @Column(nullable = false, length = 1000)
     @Size(min = 1, max = 1000, message = "{size.comment.content}")
     private String content;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    @JsonIgnoreProperties("children")
+    private Comment parent;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    @JsonIgnoreProperties("parent")
+    private List<Comment> children = new ArrayList<>();
 
     @Column(name = "update_time")
     private LocalDateTime updateTime;
