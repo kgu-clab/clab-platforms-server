@@ -89,12 +89,13 @@ public class AttendanceService {
         return fileUrl;
     }
 
-    public String checkMemberAttendance(AttendanceRequestDto attendanceRequestDto) {
+    public String checkMemberAttendance(AttendanceRequestDto attendanceRequestDto) throws IllegalAccessException {
         Member member = memberService.getCurrentMember();
         Long activityGroupId = attendanceRequestDto.getActivityGroupId();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.MEMBER, activityGroupId)) {
-            return "해당 그룹의 멤버가 아닙니다. 출석체크 인증을 진행할 수 없습니다.";
+            throw new IllegalAccessException("해당 그룹의 멤버가 아닙니다. 출석체크 인증을 진행할 수 없습니다.");
         }
 
         LocalDateTime enterTime = LocalDateTime.now();
@@ -126,6 +127,10 @@ public class AttendanceService {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
 
+        if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.MEMBER, activityGroupId)) {
+            throw new IllegalAccessException("해당 그룹의 멤버가 아닙니다. 출석체크 인증을 진행할 수 없습니다.");
+        }
+
         if (!activityGroupAdminService.isActivityGroupProgressing(activityGroupId)) {
             throw new IllegalAccessException("활동이 진행 중인 그룹이 아닙니다. 출석 정보를 불러올 수 없습니다.");
         }
@@ -150,7 +155,6 @@ public class AttendanceService {
 
     private static String getCurrentTimestamp() {
         LocalDateTime now = LocalDateTime.now();
-
         return now.format(dateTimeFormatter);
     }
 
