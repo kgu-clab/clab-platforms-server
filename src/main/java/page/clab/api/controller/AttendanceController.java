@@ -48,7 +48,7 @@ public class AttendanceController {
     @PostMapping("/check-in")
     public ResponseModel checkInAttendance(
             @RequestBody AttendanceRequestDto attendanceRequestDto
-    ){
+    ) throws IllegalAccessException {
         String id = attendanceService.checkMemberAttendance(attendanceRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
