@@ -19,11 +19,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.exception.CustomOptimisticLockingFailureException;
+import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.SharedAccountService;
+import page.clab.api.service.SharedAccountUsageService;
 import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.ResponseModel;
 import page.clab.api.type.dto.SharedAccountRequestDto;
 import page.clab.api.type.dto.SharedAccountResponseDto;
+import page.clab.api.type.dto.SharedAccountUsageRequestDto;
+import page.clab.api.type.dto.SharedAccountUsageResponseDto;
 
 @RestController
 @RequestMapping("/shared-accounts")
@@ -33,6 +38,8 @@ import page.clab.api.type.dto.SharedAccountResponseDto;
 public class SharedAccountController {
 
     private final SharedAccountService sharedAccountService;
+
+    private final SharedAccountUsageService sharedAccountUsageService;
 
     @Operation(summary = "[A] 공동 계정 추가", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -88,6 +95,60 @@ public class SharedAccountController {
             @PathVariable("accountId") Long accountId
     ) {
         Long id = sharedAccountService.deleteSharedAccount(accountId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 공동 계정 이용 신청", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @PostMapping("/usage")
+    public ResponseModel requestSharedAccountUsage(
+            @Valid @RequestBody SharedAccountUsageRequestDto sharedAccountUsageRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, CustomOptimisticLockingFailureException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
+        Long id = sharedAccountUsageService.requestSharedAccountUsage(sharedAccountUsageRequestDto);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 공동 계정 이용 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/usage")
+    public ResponseModel getSharedAccountUsages(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<SharedAccountUsageResponseDto> sharedAccountUsages = sharedAccountUsageService.getSharedAccountUsages(pageable);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(sharedAccountUsages);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 공동 계정 이용 신청 취소", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @PatchMapping("/usage/cancel/{usageId}")
+    public ResponseModel cancelSharedAccountUsage(
+            @PathVariable("usageId") Long usageId
+    ) throws PermissionDeniedException {
+        Long id = sharedAccountUsageService.cancelSharedAccountUsage(usageId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 공동 계정 이용 완료", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @PatchMapping("/usage/complete/{usageId}")
+    public ResponseModel completeSharedAccountUsage(
+            @PathVariable("usageId") Long usageId
+    ) throws PermissionDeniedException {
+        Long id = sharedAccountUsageService.completeSharedAccountUsage(usageId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

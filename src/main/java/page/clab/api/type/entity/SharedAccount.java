@@ -1,5 +1,6 @@
 package page.clab.api.type.entity;
 
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,6 +12,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.type.dto.SharedAccountRequestDto;
 import page.clab.api.util.ModelMapperUtil;
@@ -42,6 +44,12 @@ public class SharedAccount {
     @Column(nullable = false)
     @URL(message = "{url.sharedAccount.platformUrl}")
     private String platformUrl;
+
+    @Column(nullable = false)
+    private boolean isInUse;
+    
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     public static SharedAccount of(SharedAccountRequestDto sharedAccountRequestDto) {
         return ModelMapperUtil.getModelMapper().map(sharedAccountRequestDto, SharedAccount.class);
