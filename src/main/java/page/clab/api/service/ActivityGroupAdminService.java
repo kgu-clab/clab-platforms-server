@@ -169,12 +169,30 @@ public class ActivityGroupAdminService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 활동입니다."));
     }
 
+    public boolean isActivityGroupProgressing(Long activityGroupId){
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        if (activityGroup.getStatus() != ActivityGroupStatus.PROGRESSING) {
+            return false;
+        }
+        return true;
+    }
+
     public boolean isMemberGroupLeaderRole(Member member) {
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByMemberOrThrow(member);
         if (groupMember.getRole() != ActivityGroupRole.LEADER || !memberService.isMemberAdminRole(member)) {
             return false;
         }
         return true;
+    }
+
+    public boolean isMemberHasRoleInActivityGroup(Member member, ActivityGroupRole role ,Long activityGroupId){
+        List<GroupMember> groupMemberList = activityGroupMemberService.getGroupMemberByMember(member);
+        ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(activityGroupId);
+
+        return groupMemberList.stream()
+                .anyMatch(groupMember ->
+                        groupMember.getActivityGroup().getId() == activityGroup.getId() &&
+                        groupMember.getRole() == role);
     }
 
 }
