@@ -119,7 +119,7 @@ public class ControllerExceptionHandler {
             DuplicateLoginException.class,
             AlreadyReviewedException.class,
             DuplicateAttendanceException.class,
-            DuplicateAbsentExcuseException.class
+            DuplicateAbsentExcuseException.class,
             AccountInUseException.class,
             SharedAccountUsageStateException.class
     })
