@@ -1,12 +1,15 @@
 package page.clab.api.handler;
 
 import com.google.common.base.Strings;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,25 +40,82 @@ public class FileHandler {
         Arrays.stream(imageExtensions).forEach(this.imageExtensions::add);
     }
 
-    public String saveFile(MultipartFile multipartFile, String category, UploadedFile uploadedFile) throws FileUploadFailException {
+    public void init() {
+        filePath = filePath.replace("/", File.separator).replace("\\", File.separator);
+    }
+
+    public String saveQRCodeImage(byte[] image, String category, String originalFilename, String extension, UploadedFile uploadedFile) throws IOException {
+        init();
+
+        fileValidation(originalFilename, extension);
+        String saveFilename = makeSaveFileName(category, originalFilename, extension);
+        String savePath = filePath + File.separator + category + File.separator + saveFilename;
+
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(image);
+        BufferedImage bufferedImage = ImageIO.read(inputStream);
+
+        File file = new File(savePath);
+        checkDir(file);
+        ImageIO.write(bufferedImage, extension, file);
+        save(file, savePath, extension);
+        uploadedFile.setFileSize(file.length());
+        uploadedFile.setSavedPath(savePath);
+        uploadedFile.setSaveFileName(saveFilename);
+        uploadedFile.setCategory(category);
+        return "/" + saveFilename;
+    }
+
+    public String saveFile(MultipartFile multipartFile, String category, UploadedFile uploadedFile) throws IOException {
+        init();
+
         String originalFilename = multipartFile.getOriginalFilename();
+        String extension = FilenameUtils.getExtension(originalFilename);
+        fileValidation(originalFilename, extension);
+        String saveFilename = makeSaveFileName(category, originalFilename, extension);
+        String savePath = filePath + File.separator + category + File.separator + saveFilename;
+
+        File file = new File(savePath);
+        checkDir(file);
+        multipartFile.transferTo(file);
+        save(file, savePath, extension);
+
+        uploadedFile.setSavedPath(savePath);
+        uploadedFile.setSaveFileName(saveFilename);
+        uploadedFile.setCategory(category);
+        return "/" + saveFilename;
+    }
+    private void fileValidation(String originalFilename, String extension) throws FileUploadFailException {
         if (!validateFilename(originalFilename)) {
             throw new FileUploadFailException("허용되지 않은 파일명 : " + originalFilename);
         }
-        String extension = FilenameUtils.getExtension(originalFilename);
+
         if (!validateExtension(extension)) {
             throw new FileUploadFailException("허용되지 않은 확장자 : " + originalFilename);
         }
-        String saveFilename = category.startsWith("members") ? originalFilename :
-                System.nanoTime() + "_" + UUID.randomUUID() + "." + extension;
-        String savePath = filePath + File.separator + category + File.separator + saveFilename;
-        File file = new File(savePath);
+    }
+
+    private boolean validateExtension(String extension) {
+        return !disallowExtensions.contains(extension.toLowerCase());
+    }
+
+    private boolean validateFilename(String fileName) {
+        return !Strings.isNullOrEmpty(fileName);
+    }
+
+    private String makeSaveFileName(String category, String originalFilename, String extension){
+        return (category.startsWith("members") ? originalFilename :
+                System.nanoTime() + "_" + UUID.randomUUID() + "." + extension);
+    }
+
+    private void checkDir(File file){
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
+    }
+
+    private void save(File file, String savePath, String extension) throws FileUploadFailException {
         try {
             String os = System.getProperty("os.name").toLowerCase();
-            multipartFile.transferTo(file);
             if (imageExtensions.contains(extension.toLowerCase())) {
                 ImageCompressionUtil.compressImage(savePath, 0.5f);
             }
@@ -69,18 +129,6 @@ public class FileHandler {
         } catch (IOException e) {
             throw new FileUploadFailException("파일 저장 실패", e);
         }
-        uploadedFile.setSavedPath(savePath);
-        uploadedFile.setSaveFileName(saveFilename);
-        uploadedFile.setCategory(category);
-        return "/" + saveFilename;
-    }
-
-    private boolean validateExtension(String extension) {
-        return !disallowExtensions.contains(extension.toLowerCase());
-    }
-
-    private boolean validateFilename(String fileName) {
-        return !Strings.isNullOrEmpty(fileName);
     }
 
 }

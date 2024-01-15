@@ -3,6 +3,7 @@ package page.clab.api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import page.clab.api.exception.FileUploadFailException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.FileService;
 import page.clab.api.type.dto.ResponseModel;
@@ -36,7 +36,7 @@ public class FileController {
             @PathVariable("boardId") String boardId,
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam("storagePeriod") long storagePeriod
-    ) throws FileUploadFailException {
+    ) throws IOException {
         List<String> url = fileService.saveFiles(multipartFiles, "boards" + File.separator + boardId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
@@ -50,7 +50,7 @@ public class FileController {
             @PathVariable("newsId") String newsId,
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam("storagePeriod") long storagePeriod
-    ) throws FileUploadFailException {
+    ) throws IOException {
         List<String> url = fileService.saveFiles(multipartFiles, "news" + File.separator + newsId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
@@ -64,7 +64,7 @@ public class FileController {
             @PathVariable("bookId") String bookId,
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam("storagePeriod") long storagePeriod
-    ) throws FileUploadFailException {
+    ) throws IOException {
         List<String> url = fileService.saveFiles(multipartFiles, "books" + File.separator + bookId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
@@ -78,7 +78,7 @@ public class FileController {
             @PathVariable("memberId") String memberId,
             @RequestParam("multipartFile") MultipartFile multipartFile,
             @RequestParam("storagePeriod") long storagePeriod
-    ) throws FileUploadFailException {
+    ) throws IOException {
         String url = fileService.saveFile(multipartFile, "profiles" + File.separator + memberId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
@@ -92,7 +92,7 @@ public class FileController {
             @PathVariable("activityPhotoId") String activityPhotoId,
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam("storagePeriod") long storagePeriod
-    ) throws FileUploadFailException {
+    ) throws IOException {
         List<String> url = fileService.saveFiles(multipartFiles, "activity-photos" + File.separator + activityPhotoId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
@@ -106,7 +106,7 @@ public class FileController {
             @PathVariable("memberId") String memberId,
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam("storagePeriod") long storagePeriod
-    ) throws FileUploadFailException {
+    ) throws IOException {
         List<String> url = fileService.saveFiles(multipartFiles, "members" + File.separator + memberId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
@@ -119,7 +119,7 @@ public class FileController {
     public ResponseModel formUpload(
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam("storagePeriod") long storagePeriod
-    ) throws FileUploadFailException {
+    ) throws IOException {
         List<String> url = fileService.saveFiles(multipartFiles, "forms", storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
