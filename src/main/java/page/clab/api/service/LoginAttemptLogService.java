@@ -14,6 +14,7 @@ import page.clab.api.type.entity.LoginAttemptLog;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.LoginAttemptResult;
 import page.clab.api.util.GeoIpUtil;
+import page.clab.api.util.HttpReqResUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -24,11 +25,12 @@ public class LoginAttemptLogService {
     private final MemberService memberService;
 
     public void createLoginAttemptLog(HttpServletRequest httpServletRequest, String memberId, LoginAttemptResult loginAttemptResult) {
-        GeoIpInfo geoIpInfo = GeoIpUtil.getInfoByIp(httpServletRequest.getRemoteAddr());
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        GeoIpInfo geoIpInfo = GeoIpUtil.getInfoByIp(clientIpAddress);
         LoginAttemptLog loginAttemptLog = LoginAttemptLog.builder()
                 .member(memberService.getMemberByIdOrThrow(memberId))
                 .userAgent(httpServletRequest.getHeader("User-Agent"))
-                .ipAddress(httpServletRequest.getRemoteAddr())
+                .ipAddress(clientIpAddress)
                 .location(geoIpInfo.getLocation())
                 .loginAttemptResult(loginAttemptResult)
                 .loginAttemptTime(LocalDateTime.now())
