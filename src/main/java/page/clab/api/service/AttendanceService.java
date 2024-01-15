@@ -13,15 +13,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import page.clab.api.exception.DuplicateAbsentExcuseException;
 import page.clab.api.exception.DuplicateAttendanceException;
 import page.clab.api.exception.InvalidInformationException;
 import page.clab.api.exception.NotFoundException;
 import page.clab.api.exception.PermissionDeniedException;
+import page.clab.api.repository.AbsentRepository;
 import page.clab.api.repository.AttendanceRepository;
 import page.clab.api.repository.RedisQRKeyRepository;
+import page.clab.api.type.dto.AbsentRequestDto;
+import page.clab.api.type.dto.AbsentResponseDto;
 import page.clab.api.type.dto.AttendanceRequestDto;
 import page.clab.api.type.dto.AttendanceResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
+import page.clab.api.type.entity.Absent;
 import page.clab.api.type.entity.ActivityGroup;
 import page.clab.api.type.entity.Attendance;
 import page.clab.api.type.entity.Member;
@@ -43,6 +48,8 @@ public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
 
     private final RedisQRKeyRepository redisQRKeyRepository;
+
+    private final AbsentRepository absentRepository;
 
     private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -153,6 +160,70 @@ public class AttendanceService {
         return new PagedResponseDto<>(attendances.map(AttendanceResponseDto::of));
     }
 
+    public Long writeAbsentExcuse(AbsentRequestDto absentRequestDto) throws IllegalAccessException, DuplicateAbsentExcuseException {
+        String absenteeId = absentRequestDto.getAbsenteeId();
+        Member absentee = memberService.getMemberById(absenteeId);
+
+        if(absentee == null){
+            throw new NullPointerException("해당 학생이 존재하지 않습니다.");
+        }
+
+        Long activityGroupId = absentRequestDto.getActivityGroupId();
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+
+        if (!activityGroupAdminService.isActivityGroupProgressing(activityGroupId)) {
+            throw new IllegalAccessException("활동이 진행 중인 그룹이 아닙니다. 불참 사유서를 등록할 수 없습니다.");
+        }
+
+        if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(absentee, ActivityGroupRole.MEMBER, activityGroupId)) {
+            throw new IllegalAccessException("해당 그룹의 멤버가 아닙니다. 불참 사유서를 등록할 수 없습니다.");
+        }
+
+        LocalDate absentDate = LocalDate.parse(absentRequestDto.getAbsentDate(), dateFormatter);
+
+        if (!isActivityExistedAt(activityGroup, absentDate)) {
+            throw new NotFoundException("해당 날짜에 진행한 그룹 활동이 없습니다. 불참 사유서를 등록할 수 없습니다.");
+        }
+
+        if (hasAttendanceHistory(activityGroup, absentee, absentDate)) {
+            throw new IllegalAccessException("해당 요일에 출석한 기록이 있습니다. 불참 사유서를 등록할 수 없습니다.");
+        }
+
+        if (hasAbsentExcuseHistory(activityGroup, absentee, absentDate)) {
+            throw new DuplicateAbsentExcuseException("이미 해당 결석에 대해 불참 사유서가 등록되어 있습니다.");
+        }
+
+        String reason = absentRequestDto.getReason();
+
+        if (reason == null) {
+            throw new NullPointerException("불참 사유서가 공란입니다. 불참 사유를 적어주세요");
+        }
+
+        Absent absent = Absent.builder()
+                .id(null)
+                .absentee(absentee)
+                .activityGroup(activityGroup)
+                .absentDate(absentDate)
+                .reason(reason)
+                .build();
+
+        return save(absent).getId();
+    }
+
+    public PagedResponseDto<AbsentResponseDto> getActivityGroupAbsentExcuses(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
+
+        Member member = memberService.getCurrentMember();
+        if (!memberService.isMemberAdminRole(member) &&
+            !activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
+            throw new PermissionDeniedException("해당 그룹의 불참사유서를 열람할 권한이 부족합니다.");
+        }
+
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+        Page<Absent> absents = absentRepository.findAllByActivityGroup(activityGroup, pageable);
+
+        return new PagedResponseDto<>(absents.map(AbsentResponseDto::of));
+    }
+
     private static String getCurrentTimestamp() {
         LocalDateTime now = LocalDateTime.now();
         return now.format(dateTimeFormatter);
@@ -176,6 +247,22 @@ public class AttendanceService {
         if(attendanceHistory == null)
             return false;
         return true;
+    }
+
+    public boolean isActivityExistedAt(ActivityGroup activityGroup, LocalDate date){
+        return attendanceRepository.existsByActivityGroupAndActivityDate(activityGroup, date);
+    }
+
+    public boolean hasAbsentExcuseHistory(ActivityGroup activityGroup, Member absentee, LocalDate absentDate){
+        Absent absentHistory = absentRepository.findByActivityGroupAndAbsenteeAndAbsentDate(activityGroup, absentee, absentDate);
+
+        if(absentHistory == null)
+            return false;
+        return true;
+    }
+
+    public Absent save(Absent absent){
+        return absentRepository.save(absent);
     }
 
 }

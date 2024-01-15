@@ -36,6 +36,7 @@ import page.clab.api.exception.AlreadyReviewedException;
 import page.clab.api.exception.AssociatedAccountExistsException;
 import page.clab.api.exception.BookAlreadyBorrowedException;
 import page.clab.api.exception.CustomOptimisticLockingFailureException;
+import page.clab.api.exception.DuplicateAbsentExcuseException;
 import page.clab.api.exception.DuplicateAttendanceException;
 import page.clab.api.exception.DuplicateLoginException;
 import page.clab.api.exception.FileUploadFailException;
@@ -115,7 +116,8 @@ public class ControllerExceptionHandler {
             BookAlreadyBorrowedException.class,
             DuplicateLoginException.class,
             AlreadyReviewedException.class,
-            DuplicateAttendanceException.class
+            DuplicateAttendanceException.class,
+            DuplicateAbsentExcuseException.class
     })
     public ResponseModel conflictException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_CONFLICT);

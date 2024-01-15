@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.exception.DuplicateAbsentExcuseException;
 import page.clab.api.exception.PermissionDeniedException;
 import page.clab.api.service.AttendanceService;
+import page.clab.api.type.dto.AbsentRequestDto;
+import page.clab.api.type.dto.AbsentResponseDto;
 import page.clab.api.type.dto.AttendanceRequestDto;
 import page.clab.api.type.dto.AttendanceResponseDto;
 import page.clab.api.type.dto.PagedResponseDto;
@@ -82,6 +85,33 @@ public class AttendanceController {
         PagedResponseDto<AttendanceResponseDto> attendanceResponseDtos = attendanceService.getGroupAttendances(activityGroupId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(attendanceResponseDtos);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 불참 사유서 등록", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @PostMapping({"/absent"})
+    public ResponseModel writeAbsentExcuse(
+            @RequestBody AbsentRequestDto absentRequestDto
+    ) throws IllegalAccessException, DuplicateAbsentExcuseException {
+        Long id = attendanceService.writeAbsentExcuse(absentRequestDto);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 그룹의 불참 사유서 열람", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping({"/absent/{ActivityGroupId}"})
+    public ResponseModel getActivityGroupAbsentExcuses(
+            @RequestParam("activityGroupId") Long activityGroupId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) throws PermissionDeniedException {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<AbsentResponseDto> absentExcuses = attendanceService.getActivityGroupAbsentExcuses(activityGroupId, pageable);
+        ResponseModel responseModel =  ResponseModel.builder().build();
+        responseModel.addData(absentExcuses);
         return responseModel;
     }
 
