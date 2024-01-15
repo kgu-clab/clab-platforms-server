@@ -179,7 +179,7 @@ public class AttendanceService {
             throw new IllegalAccessException("해당 그룹의 멤버가 아닙니다. 불참 사유서를 등록할 수 없습니다.");
         }
 
-        LocalDate absentDate = LocalDate.parse(absentRequestDto.getAbsentDate(), dateFormatter);
+        LocalDate absentDate = absentRequestDto.getAbsentDate();
 
         if (!isActivityExistedAt(activityGroup, absentDate)) {
             throw new NotFoundException("해당 날짜에 진행한 그룹 활동이 없습니다. 불참 사유서를 등록할 수 없습니다.");
