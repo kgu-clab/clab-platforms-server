@@ -1,23 +1,32 @@
 package page.clab.api.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeUtility;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 import page.clab.api.type.dto.EmailDto;
 import page.clab.api.type.dto.MemberResponseDto;
+import page.clab.api.type.entity.Member;
+import page.clab.api.type.etc.EmailTemplateType;
 
 @Service
 @RequiredArgsConstructor
@@ -28,39 +37,95 @@ public class EmailService {
 
     private final MemberService memberService;
 
+    private final SpringTemplateEngine springTemplateEngine;
+
     @Value("${spring.mail.username}")
     private String sender;
+
+    @Value("${resource.file.path}")
+    private String filePath;
 
     private static final int MAX_BATCH_SIZE = 10;
 
     private static final BlockingQueue<EmailTask> emailQueue = new LinkedBlockingQueue<>();
 
+    public void broadcastEmail(EmailDto emailDto, List<MultipartFile> multipartFiles) {
+        List<File> convertedFiles;
+        if(!multipartFiles.isEmpty()){
+            convertedFiles = convertMultipartFiles(multipartFiles);
+        } else {
+            convertedFiles = null;
+        }
 
-    public void broadcastEmail(EmailDto emailDto, List<MultipartFile> files) {
-        emailDto.getTo().parallelStream().forEach(member -> {
+        emailDto.getTo().parallelStream().forEach(address -> {
             try {
-                sendEmailAsync(member, emailDto.getSubject(), emailDto.getContent(), files);
+                Member recipient = memberService.getMemberByEmail(address);
+                String emailContent = generateEmailContent(emailDto, recipient.getName());
+                sendEmailAsync(address, emailDto.getSubject(), emailContent, convertedFiles, emailDto.getEmailTemplateType());
             } catch (MessagingException e) {
                 throw new RuntimeException(e);
             }
         });
     }
 
-    public void broadcastEmailToAllMember(EmailDto emailDto, List<MultipartFile> files) {
+    public void broadcastEmailToAllMember(EmailDto emailDto, List<MultipartFile> multipartFiles) {
+        List<File> convertedFiles;
+        if(!multipartFiles.isEmpty()){
+            convertedFiles = convertMultipartFiles(multipartFiles);
+        } else {
+            convertedFiles = null;
+        }
+
         List<MemberResponseDto> memberList = memberService.getMembers();
         memberList.parallelStream().forEach(member -> {
             try {
-                sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailDto.getContent(), files);
+                String emailContent = generateEmailContent(emailDto, member.getName());
+                sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, convertedFiles, emailDto.getEmailTemplateType());
             } catch (MessagingException e) {
                 throw new RuntimeException(e);
             }
         });
     }
 
+    private List<File> convertMultipartFiles(List<MultipartFile> multipartFiles) {
+        List<File> convertedFiles = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFiles) {
+            File file = convertMultipartFileToFile(multipartFile);
+            convertedFiles.add(file);
+        }
+        return convertedFiles;
+    }
+
+    private File convertMultipartFileToFile(MultipartFile multipartFile) {
+        String originalFilename = multipartFile.getOriginalFilename();
+        String extension = FilenameUtils.getExtension(originalFilename);
+        String path = filePath + File.separator + "temp" + File.separator + System.nanoTime() + "_" + UUID.randomUUID() + "." + extension;
+        path = path.replace("/", File.separator).replace("\\", File.separator);
+        File file = new File(path);
+        checkDir(file);
+
+        try {
+            multipartFile.transferTo(file);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to convert MultipartFile to File", e);
+        }
+        return file;
+    }
+
+    private String generateEmailContent(EmailDto emailDto, String name){
+        Context context = new Context();
+        context.setVariable("title", emailDto.getSubject());
+        context.setVariable("name", name);
+        context.setVariable("content", emailDto.getContent());
+
+        String emailTemplate = emailDto.getEmailTemplateType().getTemplateName();
+        return springTemplateEngine.process(emailTemplate, context);
+    }
+
     @Async
-    public void sendEmailAsync(String to, String subject, String content, List<MultipartFile> files) throws MessagingException {
+    public void sendEmailAsync(String to, String subject, String content, List<File> files, EmailTemplateType emailTemplateType) throws MessagingException {
         log.debug("Sending email to: {}", to);
-        emailQueue.add(new EmailTask(to, subject, content, files));
+        emailQueue.add(new EmailTask(to, subject, content, files, emailTemplateType));
     }
 
     @Async
@@ -84,24 +149,30 @@ public class EmailService {
         }
     }
 
-    public void sendBatchEmail(List<EmailTask> emailTasks) throws MessagingException {
+    public void sendBatchEmail(List<EmailTask> emailTasks) throws MessagingException, IOException {
         MimeMessage[] mimeMessages = new MimeMessage[emailTasks.size()];
         for (int i = 0; i < emailTasks.size(); i++) {
             EmailTask task = emailTasks.get(i);
             MimeMessage message = javaMailSender.createMimeMessage();
-            MimeMessageHelper messageHelper = new MimeMessageHelper(message, true);
+            MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
             messageHelper.setFrom(sender);
             messageHelper.setTo(task.getTo());
             messageHelper.setSubject(task.getSubject());
-            messageHelper.setText(task.getContent());
+            messageHelper.setText(task.getContent(), true);
+            setImageInTemplate(messageHelper, task.getTemplateType());
             if (task.getFiles() != null) {
-                for (MultipartFile file : task.getFiles()) {
-                    messageHelper.addAttachment(Objects.requireNonNull(file.getOriginalFilename()), file);
+                for (File file : task.getFiles()) {
+                    messageHelper.addAttachment(MimeUtility.encodeText(file.getName(), "UTF-8", "B"), file);
                 }
             }
             mimeMessages[i] = message;
         }
-        javaMailSender.send(mimeMessages);
+
+        try {
+            javaMailSender.send(mimeMessages);
+        } catch (Exception e) {
+            log.error("Error sending batch email: " + e.getMessage(), e);
+        }
         log.debug("Batch email sent successfully.");
     }
 
@@ -109,13 +180,15 @@ public class EmailService {
         private final String to;
         private final String subject;
         private final String content;
-        private final List<MultipartFile> files;
+        private final List<File> files;
+        private final EmailTemplateType templateType;
 
-        public EmailTask(String to, String subject, String content, List<MultipartFile> files) {
+        public EmailTask(String to, String subject, String content, List<File> files, EmailTemplateType templateType) {
             this.to = to;
             this.subject = subject;
             this.content = content;
             this.files = files;
+            this.templateType = templateType;
         }
 
         public String getTo() {
@@ -130,8 +203,27 @@ public class EmailService {
             return content;
         }
 
-        public List<MultipartFile> getFiles() {
+        public List<File> getFiles() {
             return files;
+        }
+
+        public EmailTemplateType getTemplateType(){
+            return templateType;
+        }
+    }
+
+    private void setImageInTemplate(MimeMessageHelper messageHelper, EmailTemplateType templateType) throws MessagingException {
+        switch(templateType){
+            case NORMAL -> {
+                messageHelper.addInline("image-1", new ClassPathResource("images/image-1.png"));
+                break;
+            }
+        }
+    }
+
+    private void checkDir(File file){
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
         }
     }
 

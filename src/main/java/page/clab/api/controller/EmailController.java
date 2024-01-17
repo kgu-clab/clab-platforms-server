@@ -6,10 +6,11 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.service.EmailService;
@@ -27,10 +28,10 @@ public class EmailController {
 
     @Operation(summary = "[A] 메일 전송", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(path = "", consumes = "multipart/form-data")
+    @PostMapping(path = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel broadcastEmail(
             EmailDto emailDto,
-            @RequestPart(required = false) List<MultipartFile> files
+            @RequestParam(name = "multipartFile", required = false) List<MultipartFile> files
     ) {
         CompletableFuture<Void> emailTask = CompletableFuture.runAsync(() -> {
             emailService.broadcastEmail(emailDto, files);
@@ -42,10 +43,10 @@ public class EmailController {
 
     @Operation(summary = "[A] 전체 메일 전송", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(path = "/all", consumes = "multipart/form-data")
+    @PostMapping(path = "/all", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel broadcastEmailToAllMember(
             EmailDto emailDto,
-            @RequestPart(required = false) List<MultipartFile> files
+            @RequestParam(name = "multipartFile", required = false) List<MultipartFile> files
     ) {
         CompletableFuture<Void> emailTask = CompletableFuture.runAsync(() -> {
             emailService.broadcastEmailToAllMember(emailDto, files);
