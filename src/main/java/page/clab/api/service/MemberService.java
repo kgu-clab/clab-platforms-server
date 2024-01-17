@@ -38,6 +38,7 @@ import page.clab.api.type.dto.PagedResponseDto;
 import page.clab.api.type.dto.VerificationCodeRequestDto;
 import page.clab.api.type.entity.Member;
 import page.clab.api.type.entity.VerificationCode;
+import page.clab.api.type.etc.EmailTemplateType;
 import page.clab.api.type.etc.MemberStatus;
 import page.clab.api.type.etc.Role;
 import page.clab.api.util.FileSystemUtil;
@@ -163,7 +164,8 @@ public class MemberService {
                 List.of(member.getEmail()),
                 "C-Lab 비밀번호 재발급 인증 안내",
                 "C-Lab 비밀번호 재발급 인증 안내 메일입니다.\n" +
-                        "인증번호는 " + code + "입니다.\n"
+                        "인증번호는 " + code + "입니다.\n",
+                    EmailTemplateType.NORMAL
             ), null
         );
     }
@@ -271,6 +273,11 @@ public class MemberService {
 
     public List<Member> getMembersByRole(Role role) {
         return memberRepository.findAllByRole(role);
+    }
+
+    public Member getMemberByEmail(String email){
+        return (Member)memberRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("해당 이메일을 사용하는 멤버가 없습니다."));
     }
 
     public List<Member> findAll() {

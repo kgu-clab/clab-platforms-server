@@ -26,6 +26,7 @@ import page.clab.api.type.entity.Member;
 import page.clab.api.type.etc.ActivityGroupCategory;
 import page.clab.api.type.etc.ActivityGroupRole;
 import page.clab.api.type.etc.ActivityGroupStatus;
+import page.clab.api.type.etc.EmailTemplateType;
 import page.clab.api.type.etc.GroupMemberStatus;
 
 @Service
@@ -101,7 +102,7 @@ public class ActivityGroupMemberService {
         GroupMember groupLeader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         String subject = "[" + activityGroup.getName() + "] 활동 참가 신청이 들어왔습니다.";
         String content = member.getName() + "에게서 활동 참가 신청이 들어왔습니다.";
-        emailService.sendEmailAsync(groupLeader.getMember().getEmail(), subject, content, null);
+        emailService.sendEmailAsync(groupLeader.getMember().getEmail(), subject, content, null, EmailTemplateType.NORMAL);
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(groupLeader.getMember().getId())
                 .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 활동 참가 신청을 하였습니다.")
