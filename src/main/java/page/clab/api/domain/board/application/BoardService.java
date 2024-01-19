@@ -1,7 +1,7 @@
 package page.clab.api.domain.board.application;
 
 import java.time.LocalDateTime;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
