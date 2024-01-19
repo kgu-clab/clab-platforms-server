@@ -14,9 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.dao.UploadFileRepository;
+import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.util.FileSystemUtil;
 
 @Service

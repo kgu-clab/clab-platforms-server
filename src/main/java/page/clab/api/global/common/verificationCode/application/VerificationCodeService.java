@@ -2,9 +2,9 @@ package page.clab.api.global.common.verificationCode.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.common.verificationCode.dao.VerificationCodeRepository;
 import page.clab.api.global.common.verificationCode.domain.VerificationCode;
+import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor

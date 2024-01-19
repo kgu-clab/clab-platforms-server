@@ -16,8 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.common.file.domain.UploadedFile;
+import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.util.ImageCompressionUtil;
 
 @Component
