@@ -20,8 +20,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
-import page.clab.api.global.util.ModelMapperUtil;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.util.ModelMapperUtil;
 
 @Entity
 @Getter

@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.login.exception.LoginFaliedException;
-import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.login.application.LoginService;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
-import page.clab.api.global.dto.ResponseModel;
-import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
+import page.clab.api.domain.login.dto.response.TokenInfo;
+import page.clab.api.domain.login.exception.LoginFaliedException;
+import page.clab.api.domain.login.exception.MemberLockedException;
+import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
 @RequestMapping("/login")

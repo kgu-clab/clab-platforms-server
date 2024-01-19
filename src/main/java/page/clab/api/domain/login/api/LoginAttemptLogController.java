@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.login.application.LoginAttemptLogService;
 import page.clab.api.domain.login.dto.response.LoginAttemptLogResponseDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.global.dto.ResponseModel;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
 @RequestMapping("/login-attempt-logs")

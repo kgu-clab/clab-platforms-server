@@ -25,8 +25,8 @@ import page.clab.api.domain.application.application.ApplicationService;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.application.dto.response.ApplicationPassResponseDto;
 import page.clab.api.domain.application.dto.response.ApplicationResponseDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.global.dto.ResponseModel;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
 @RequestMapping("/applications")

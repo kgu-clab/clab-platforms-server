@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,13 +15,13 @@ import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.application.dto.response.ApplicationPassResponseDto;
 import page.clab.api.domain.application.dto.response.ApplicationResponseDto;
-import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
-import page.clab.api.global.dto.PagedResponseDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.domain.Role;
+import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor

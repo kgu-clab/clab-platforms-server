@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.executives.domain.Executives;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.executives.domain.ExecutivesPosition;
+import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter

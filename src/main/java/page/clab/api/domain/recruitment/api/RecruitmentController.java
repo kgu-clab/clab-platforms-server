@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.recruitment.application.RecruitmentService;
 import page.clab.api.domain.recruitment.dto.request.RecruitmentRequestDto;
 import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
-import page.clab.api.global.dto.ResponseModel;
+import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
 @RequestMapping("/recruitments")

@@ -7,14 +7,14 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.domain.recruitment.dao.RecruitmentRepository;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
+import page.clab.api.domain.recruitment.dao.RecruitmentRepository;
+import page.clab.api.domain.recruitment.domain.Recruitment;
 import page.clab.api.domain.recruitment.dto.request.RecruitmentRequestDto;
 import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
-import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.recruitment.domain.Recruitment;
+import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor

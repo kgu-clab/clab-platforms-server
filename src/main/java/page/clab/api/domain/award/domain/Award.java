@@ -15,8 +15,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.award.dto.request.AwardRequestDto;
-import page.clab.api.global.util.ModelMapperUtil;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.util.ModelMapperUtil;
 
 @Entity
 @Getter

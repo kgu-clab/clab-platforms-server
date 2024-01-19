@@ -2,11 +2,11 @@ package page.clab.api.domain.login.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.domain.login.dao.RedisTokenRepository;
-import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.domain.RedisToken;
+import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.member.domain.Role;
+import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor

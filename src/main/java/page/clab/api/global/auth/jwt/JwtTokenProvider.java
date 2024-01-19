@@ -23,9 +23,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import page.clab.api.global.auth.exception.TokenValidateException;
 import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.member.domain.Role;
+import page.clab.api.global.auth.exception.TokenValidateException;
 
 @Slf4j
 @Component

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.login.application.LoginFailInfoService;
-import page.clab.api.global.dto.ResponseModel;
+import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
 @RequestMapping("/login-fail-info")

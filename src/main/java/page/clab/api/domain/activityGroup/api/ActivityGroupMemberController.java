@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
+import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupProjectResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
-import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.global.dto.ResponseModel;
-import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
 @RequestMapping("/activity-group/member")

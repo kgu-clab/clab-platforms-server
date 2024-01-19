@@ -15,7 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.global.auth.application.RedisIpAttemptService;
-import page.clab.api.global.dto.ResponseModel;
+import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.util.HttpReqResUtil;
 
 @Slf4j

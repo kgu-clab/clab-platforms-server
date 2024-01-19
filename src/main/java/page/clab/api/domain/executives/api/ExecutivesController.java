@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.executives.application.ExecutivesService;
 import page.clab.api.domain.executives.dto.request.ExecutivesRequestDto;
 import page.clab.api.domain.executives.dto.response.ExecutivesResponseDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.global.dto.ResponseModel;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
 @RequestMapping("/executives")

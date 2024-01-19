@@ -7,13 +7,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.login.dao.LoginAttemptLogRepository;
-import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.login.domain.GeoIpInfo;
-import page.clab.api.domain.login.dto.response.LoginAttemptLogResponseDto;
-import page.clab.api.global.dto.PagedResponseDto;
 import page.clab.api.domain.login.domain.LoginAttemptLog;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.login.domain.LoginAttemptResult;
+import page.clab.api.domain.login.dto.response.LoginAttemptLogResponseDto;
+import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.util.GeoIpUtil;
 import page.clab.api.global.util.HttpReqResUtil;
 

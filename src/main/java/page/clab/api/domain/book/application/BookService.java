@@ -15,12 +15,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.domain.book.dao.BookRepository;
+import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.domain.book.domain.Book;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor

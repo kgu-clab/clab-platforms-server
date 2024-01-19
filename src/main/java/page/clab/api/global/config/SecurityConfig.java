@@ -26,14 +26,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
+import page.clab.api.domain.login.application.RedisTokenService;
+import page.clab.api.global.auth.application.CustomUserDetailsService;
+import page.clab.api.global.auth.application.RedisIpAttemptService;
 import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
 import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
-import page.clab.api.global.auth.application.CustomUserDetailsService;
-import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
-import page.clab.api.global.auth.application.RedisIpAttemptService;
-import page.clab.api.domain.login.application.RedisTokenService;
-import page.clab.api.global.dto.ResponseModel;
+import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.util.HttpReqResUtil;
 
 @Configuration

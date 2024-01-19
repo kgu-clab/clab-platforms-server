@@ -29,31 +29,31 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
-import page.clab.api.global.auth.exception.TokenValidateException;
-import page.clab.api.global.auth.exception.UnAuthorizeException;
-import page.clab.api.domain.sharedAccount.exception.SharedAccountInUseException;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
-import page.clab.api.domain.review.exception.AlreadyReviewedException;
-import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
-import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
-import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.domain.activityGroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.attendance.exception.DuplicateAttendanceException;
-import page.clab.api.domain.login.exception.DuplicateLoginException;
-import page.clab.api.global.file.exception.FileUploadFailException;
+import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
-import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
+import page.clab.api.domain.book.exception.OverdueException;
+import page.clab.api.domain.login.exception.DuplicateLoginException;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
+import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
+import page.clab.api.domain.review.exception.AlreadyReviewedException;
+import page.clab.api.domain.sharedAccount.exception.SharedAccountInUseException;
+import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
+import page.clab.api.global.auth.exception.TokenValidateException;
+import page.clab.api.global.auth.exception.UnAuthorizeException;
+import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
+import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.domain.book.exception.OverdueException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
-import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
-import page.clab.api.global.dto.ResponseModel;
+import page.clab.api.global.common.file.exception.FileUploadFailException;
 
-@RestControllerAdvice(basePackages = "page.clab.api.controller")
+@RestControllerAdvice(basePackages = "page.clab.api.domain")
 @RequiredArgsConstructor
 @Slf4j
 public class ControllerExceptionHandler {

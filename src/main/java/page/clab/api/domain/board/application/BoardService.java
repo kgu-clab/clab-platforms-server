@@ -6,19 +6,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.domain.board.dao.BoardRepository;
-import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.dto.request.BoardRequestDto;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
 import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
-import page.clab.api.domain.board.dto.request.BoardRequestDto;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
