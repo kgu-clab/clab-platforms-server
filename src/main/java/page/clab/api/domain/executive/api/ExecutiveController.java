@@ -1,4 +1,4 @@
-package page.clab.api.domain.executives.api;
+package page.clab.api.domain.executive.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,32 +18,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.executives.application.ExecutivesService;
-import page.clab.api.domain.executives.dto.request.ExecutivesRequestDto;
-import page.clab.api.domain.executives.dto.response.ExecutivesResponseDto;
+import page.clab.api.domain.executive.application.ExecutiveService;
+import page.clab.api.domain.executive.dto.request.ExecutiveRequestDto;
+import page.clab.api.domain.executive.dto.response.ExecutiveResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
 @RequestMapping("/executives")
 @RequiredArgsConstructor
-@Tag(name = "Executives", description = "역대 운영진 관련 API")
+@Tag(name = "Executive", description = "역대 운영진 관련 API")
 @Slf4j
-public class ExecutivesController {
+public class ExecutiveController {
 
-    private final ExecutivesService executivesService;
+    private final ExecutiveService executiveService;
 
     @Operation(summary = "운영진 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel createExecutives(
-            @Valid @RequestBody ExecutivesRequestDto executivesRequestDto,
+    public ResponseModel createExecutive(
+            @Valid @RequestBody ExecutiveRequestDto executiveRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = executivesService.createExecutives(executivesRequestDto);
+        Long id = executiveService.createExecutive(executiveRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -57,7 +57,7 @@ public class ExecutivesController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ExecutivesResponseDto> executives = executivesService.getExecutives(pageable);
+        PagedResponseDto<ExecutiveResponseDto> executives = executiveService.getExecutives(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(executives);
         return responseModel;
@@ -67,12 +67,12 @@ public class ExecutivesController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{year}")
     public ResponseModel getExecutivesByYear(
-            @PathVariable String year,
+            @PathVariable(name = "year") String year,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ExecutivesResponseDto> executives = executivesService.getExecutivesByYear(pageable, year);
+        PagedResponseDto<ExecutiveResponseDto> executives = executiveService.getExecutivesByYear(pageable, year);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(executives);
         return responseModel;
@@ -80,11 +80,11 @@ public class ExecutivesController {
 
     @Operation(summary = "역대 운영진 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @DeleteMapping("/{executivesId}")
-    public ResponseModel deleteExecutives(
-            @PathVariable Long executivesId
+    @DeleteMapping("/{executiveId}")
+    public ResponseModel deleteExecutive(
+            @PathVariable(name = "executiveId") Long executiveId
     ) {
-        Long id = executivesService.deleteExecutives(executivesId);
+        Long id = executiveService.deleteExecutive(executiveId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

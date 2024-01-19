@@ -86,7 +86,7 @@ public class AwardController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{awardId}")
     public ResponseModel updateAward(
-            @PathVariable Long awardId,
+            @PathVariable(name = "awardId") Long awardId,
             @Valid @RequestBody AwardRequestDto awardRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
@@ -103,7 +103,7 @@ public class AwardController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{awardId}")
     public ResponseModel deleteAward(
-            @PathVariable Long awardId
+            @PathVariable(name = "awardId") Long awardId
     ) throws PermissionDeniedException {
         Long id = awardService.deleteAward(awardId);
         ResponseModel responseModel = ResponseModel.builder().build();

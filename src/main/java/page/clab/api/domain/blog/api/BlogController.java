@@ -70,7 +70,7 @@ public class BlogController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{blogId}")
     public ResponseModel getBlogDetails(
-            @PathVariable Long blogId
+            @PathVariable(name = "blogId") Long blogId
     ) {
         BlogDetailsResponseDto blog = blogService.getBlogDetails(blogId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -98,7 +98,7 @@ public class BlogController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{blogId}")
     public ResponseModel updateBlog(
-            @PathVariable Long blogId,
+            @PathVariable(name = "blogId") Long blogId,
             @Valid @RequestBody BlogRequestDto blogRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
@@ -115,7 +115,7 @@ public class BlogController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{blogId}")
     public ResponseModel deleteBlog(
-            @PathVariable Long blogId
+            @PathVariable(name = "blogId") Long blogId
     ) throws PermissionDeniedException {
         Long id = blogService.deleteBlog(blogId);
         ResponseModel responseModel = ResponseModel.builder().build();

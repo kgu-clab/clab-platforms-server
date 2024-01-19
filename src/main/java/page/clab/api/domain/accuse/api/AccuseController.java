@@ -85,7 +85,7 @@ public class AccuseController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{accuseId}")
     public ResponseModel updateAccuseStatus(
-            @PathVariable Long accuseId,
+            @PathVariable(name = "accuseId") Long accuseId,
             @RequestParam(name = "accuseStatus") AccuseStatus accuseStatus
     ) {
         Long id = accuseService.updateAccuseStatus(accuseId, accuseStatus);

@@ -75,7 +75,7 @@ public class ActivityGroupAdminController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{activityGroupId}")
     public ResponseModel updateActivityGroup(
-            @PathVariable Long activityGroupId,
+            @PathVariable(name = "activityGroupId") Long activityGroupId,
             @Valid @RequestBody ActivityGroupRequestDto activityGroupRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
@@ -92,7 +92,7 @@ public class ActivityGroupAdminController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("manage/{activityGroupId}")
     public ResponseModel manageActivityGroupStatus(
-            @PathVariable Long activityGroupId,
+            @PathVariable(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "activityGroupStatus") ActivityGroupStatus activityGroupStatus
     ) {
         Long id = activityGroupAdminService.manageActivityGroup(activityGroupId, activityGroupStatus);
@@ -105,7 +105,7 @@ public class ActivityGroupAdminController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{activityGroupId}")
     public ResponseModel deleteActivityGroup(
-            @PathVariable Long activityGroupId
+            @PathVariable(name = "activityGroupId") Long activityGroupId
     ) {
         Long id = activityGroupAdminService.deleteActivityGroup(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -118,7 +118,7 @@ public class ActivityGroupAdminController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/progress/{activityGroupId}")
     public ResponseModel updateProjectProgress(
-            @PathVariable Long activityGroupId,
+            @PathVariable(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "progress") Long progress
     ) throws PermissionDeniedException {
         Long id = activityGroupAdminService.updateProjectProgress(activityGroupId, progress);
