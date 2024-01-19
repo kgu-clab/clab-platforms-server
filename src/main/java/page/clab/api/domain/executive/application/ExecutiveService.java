@@ -6,8 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.executive.dao.ExecutiveRepository;
 import page.clab.api.domain.executive.domain.Executive;
-import page.clab.api.domain.executive.dto.request.ExecutivesRequestDto;
-import page.clab.api.domain.executive.dto.response.ExecutivesResponseDto;
+import page.clab.api.domain.executive.dto.request.ExecutiveRequestDto;
+import page.clab.api.domain.executive.dto.response.ExecutiveResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -21,20 +21,20 @@ public class ExecutiveService {
 
     private final ExecutiveRepository executiveRepository;
 
-    public Long createExecutive(ExecutivesRequestDto executivesRequestDto) {
-        Member executiveMember = memberService.getMemberByIdOrThrow(executivesRequestDto.getMemberId());
-        Executive executive = Executive.of(executivesRequestDto);
+    public Long createExecutive(ExecutiveRequestDto executiveRequestDto) {
+        Member executiveMember = memberService.getMemberByIdOrThrow(executiveRequestDto.getMemberId());
+        Executive executive = Executive.of(executiveRequestDto);
         return executiveRepository.save(executive).getId();
     }
 
-    public PagedResponseDto<ExecutivesResponseDto> getExecutives(Pageable pageable) {
+    public PagedResponseDto<ExecutiveResponseDto> getExecutives(Pageable pageable) {
         Page<Executive> executives = executiveRepository.findAllByOrderByYearDescPositionAsc(pageable);
-        return new PagedResponseDto<>(executives.map(ExecutivesResponseDto::of));
+        return new PagedResponseDto<>(executives.map(ExecutiveResponseDto::of));
     }
 
-    public PagedResponseDto<ExecutivesResponseDto> getExecutivesByYear(Pageable pageable, String year) {
+    public PagedResponseDto<ExecutiveResponseDto> getExecutivesByYear(Pageable pageable, String year) {
         Page<Executive> executives = getExecutivesByYear(year, pageable);
-        return new PagedResponseDto<>(executives.map(ExecutivesResponseDto::of));
+        return new PagedResponseDto<>(executives.map(ExecutiveResponseDto::of));
     }
 
     public Long deleteExecutive(Long executivesId) {

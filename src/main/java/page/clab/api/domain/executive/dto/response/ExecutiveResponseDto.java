@@ -15,7 +15,7 @@ import page.clab.api.global.util.ModelMapperUtil;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ExecutivesResponseDto {
+public class ExecutiveResponseDto {
 
     private Long id;
 
@@ -33,15 +33,15 @@ public class ExecutivesResponseDto {
 
     private String year;
 
-    public static ExecutivesResponseDto of(Executive executive) {
-        ExecutivesResponseDto executivesResponseDto = ModelMapperUtil.getModelMapper().map(executive, ExecutivesResponseDto.class);
+    public static ExecutiveResponseDto of(Executive executive) {
+        ExecutiveResponseDto executiveResponseDto = ModelMapperUtil.getModelMapper().map(executive, ExecutiveResponseDto.class);
         Member member = executive.getMember();
-        executivesResponseDto.setName(member.getName());
-        executivesResponseDto.setEmail(member.getEmail());
-        executivesResponseDto.setImageUrl(member.getImageUrl());
-        executivesResponseDto.setInterests(member.getInterests());
-        executivesResponseDto.setGithubUrl(member.getGithubUrl());
-        return executivesResponseDto;
+        executiveResponseDto.setName(member.getName());
+        executiveResponseDto.setEmail(member.getEmail());
+        executiveResponseDto.setImageUrl(member.getImageUrl());
+        executiveResponseDto.setInterests(member.getInterests());
+        executiveResponseDto.setGithubUrl(member.getGithubUrl());
+        return executiveResponseDto;
     }
 
 }

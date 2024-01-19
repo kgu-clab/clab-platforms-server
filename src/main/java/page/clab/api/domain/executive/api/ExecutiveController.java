@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.executive.application.ExecutiveService;
-import page.clab.api.domain.executive.dto.request.ExecutivesRequestDto;
-import page.clab.api.domain.executive.dto.response.ExecutivesResponseDto;
+import page.clab.api.domain.executive.dto.request.ExecutiveRequestDto;
+import page.clab.api.domain.executive.dto.response.ExecutiveResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
@@ -37,13 +37,13 @@ public class ExecutiveController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createExecutive(
-            @Valid @RequestBody ExecutivesRequestDto executivesRequestDto,
+            @Valid @RequestBody ExecutiveRequestDto executiveRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = executiveService.createExecutive(executivesRequestDto);
+        Long id = executiveService.createExecutive(executiveRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -57,7 +57,7 @@ public class ExecutiveController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ExecutivesResponseDto> executives = executiveService.getExecutives(pageable);
+        PagedResponseDto<ExecutiveResponseDto> executives = executiveService.getExecutives(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(executives);
         return responseModel;
@@ -72,7 +72,7 @@ public class ExecutiveController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ExecutivesResponseDto> executives = executiveService.getExecutivesByYear(pageable, year);
+        PagedResponseDto<ExecutiveResponseDto> executives = executiveService.getExecutivesByYear(pageable, year);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(executives);
         return responseModel;

@@ -15,7 +15,7 @@ import page.clab.api.domain.executive.domain.ExecutivePosition;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ExecutivesRequestDto {
+public class ExecutiveRequestDto {
 
     @NotNull(message = "{notNull.executive.memberId}")
     @Schema(description = "학번", example = "201912156", required = true)
