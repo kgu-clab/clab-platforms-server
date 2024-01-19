@@ -49,8 +49,8 @@ public class ScheduleController {
     public ResponseModel getSchedules(
             @RequestParam(name = "start_date_time") String startDateTime,
             @RequestParam(name = "end_date_time") String endDateTime,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ScheduleResponseDto> scheduleResponseDtos

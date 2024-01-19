@@ -53,8 +53,8 @@ public class ActivityPhotoController {
     @Operation(summary = "활동 사진 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getActivityPhotos(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ActivityPhotoResponseDto> activityPhotos = activityPhotoService.getActivityPhotos(pageable);
@@ -66,8 +66,8 @@ public class ActivityPhotoController {
     @Operation(summary = "공개된 활동 사진 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/public")
     public ResponseModel getPublicActivityPhotos(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ActivityPhotoResponseDto> activityPhotos = activityPhotoService.getPublicActivityPhotos(pageable);

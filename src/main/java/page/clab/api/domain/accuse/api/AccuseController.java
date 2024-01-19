@@ -55,8 +55,8 @@ public class AccuseController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getAccuses(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccuses(pageable);
@@ -69,10 +69,10 @@ public class AccuseController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel searchAccuse(
-            @RequestParam(required = false) TargetType targetType,
-            @RequestParam(required = false) AccuseStatus accuseStatus,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "targetType", required = false) TargetType targetType,
+            @RequestParam(name = "accuseStatus", required = false) AccuseStatus accuseStatus,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AccuseResponseDto> accuses = accuseService.searchAccuse(targetType, accuseStatus, pageable);
@@ -86,7 +86,7 @@ public class AccuseController {
     @PatchMapping("/{accuseId}")
     public ResponseModel updateAccuseStatus(
             @PathVariable Long accuseId,
-            @RequestParam AccuseStatus accuseStatus
+            @RequestParam(name = "accuseStatus") AccuseStatus accuseStatus
     ) {
         Long id = accuseService.updateAccuseStatus(accuseId, accuseStatus);
         ResponseModel responseModel = ResponseModel.builder().build();
