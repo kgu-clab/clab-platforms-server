@@ -84,7 +84,7 @@ public class ProductController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{productId}")
     public ResponseModel updateProduct(
-            @PathVariable Long productId,
+            @PathVariable(name = "productId") Long productId,
             @Valid @RequestBody ProductRequestDto productRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {

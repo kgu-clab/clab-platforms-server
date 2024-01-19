@@ -25,7 +25,7 @@ public class LoginFailInfoController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/ban/{memberId}")
     public ResponseModel banMember(
-            @PathVariable String memberId
+            @PathVariable(name = "memberId") String memberId
     ) {
         Long id = loginFailInfoService.banMemberById(memberId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -37,7 +37,7 @@ public class LoginFailInfoController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/unban/{memberId}")
     public ResponseModel unbanMember(
-            @PathVariable String memberId
+            @PathVariable(name = "memberId") String memberId
     ) {
         Long id = loginFailInfoService.unbanMemberById(memberId);
         ResponseModel responseModel = ResponseModel.builder().build();

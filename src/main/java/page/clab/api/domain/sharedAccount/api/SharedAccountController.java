@@ -75,7 +75,7 @@ public class SharedAccountController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{accountId}")
     public ResponseModel updateSharedAccount(
-            @PathVariable("accountId") Long accountId,
+            @PathVariable(name = "accountId") Long accountId,
             @Valid @RequestBody SharedAccountRequestDto sharedAccountRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
@@ -92,7 +92,7 @@ public class SharedAccountController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{accountId}")
     public ResponseModel deleteSharedAccount(
-            @PathVariable("accountId") Long accountId
+            @PathVariable(name = "accountId") Long accountId
     ) {
         Long id = sharedAccountService.deleteSharedAccount(accountId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -134,7 +134,7 @@ public class SharedAccountController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/usage/cancel/{usageId}")
     public ResponseModel cancelSharedAccountUsage(
-            @PathVariable("usageId") Long usageId
+            @PathVariable(name = "usageId") Long usageId
     ) throws PermissionDeniedException {
         Long id = sharedAccountUsageService.cancelSharedAccountUsage(usageId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -146,7 +146,7 @@ public class SharedAccountController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/usage/complete/{usageId}")
     public ResponseModel completeSharedAccountUsage(
-            @PathVariable("usageId") Long usageId
+            @PathVariable(name = "usageId") Long usageId
     ) throws PermissionDeniedException {
         Long id = sharedAccountUsageService.completeSharedAccountUsage(usageId);
         ResponseModel responseModel = ResponseModel.builder().build();

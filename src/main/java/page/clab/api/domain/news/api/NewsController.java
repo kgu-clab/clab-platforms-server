@@ -69,7 +69,7 @@ public class NewsController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{newsId}")
     public ResponseModel getNewsDetails(
-            @PathVariable Long newsId
+            @PathVariable(name = "newsId") Long newsId
     ) {
         NewsDetailsResponseDto news = newsService.getNewsDetails(newsId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -98,7 +98,7 @@ public class NewsController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{newsId}")
     public ResponseModel updateNews(
-            @PathVariable Long newsId,
+            @PathVariable(name = "newsId") Long newsId,
             @Valid @RequestBody NewsRequestDto newsRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
@@ -115,7 +115,7 @@ public class NewsController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{newsId}")
     public ResponseModel deleteNews(
-            @PathVariable Long newsId
+            @PathVariable(name = "newsId") Long newsId
     ) {
         Long id = newsService.deleteNews(newsId);
         ResponseModel responseModel = ResponseModel.builder().build();

@@ -41,7 +41,7 @@ public class CommentController {
     @PostMapping("/{boardId}")
     public ResponseModel createComment(
             @RequestParam(name = "parentId", required = false) Long parentId,
-            @PathVariable Long boardId,
+            @PathVariable(name = "boardId") Long boardId,
             @Valid @RequestBody CommentRequestDto commentRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
@@ -58,7 +58,7 @@ public class CommentController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{boardId}")
     public ResponseModel getComments(
-            @PathVariable Long boardId,
+            @PathVariable(name = "boardId") Long boardId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
@@ -87,7 +87,7 @@ public class CommentController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{commentId}")
     public ResponseModel updateComment(
-            @PathVariable Long commentId,
+            @PathVariable(name = "commentId") Long commentId,
             @Valid @RequestBody CommentRequestDto commentRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
@@ -104,7 +104,7 @@ public class CommentController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{commentId}")
     public ResponseModel deleteComment(
-            @PathVariable Long commentId
+            @PathVariable(name = "commentId") Long commentId
     ) throws PermissionDeniedException {
         Long id = commentService.deleteComment(commentId);
         ResponseModel responseModel = ResponseModel.builder().build();

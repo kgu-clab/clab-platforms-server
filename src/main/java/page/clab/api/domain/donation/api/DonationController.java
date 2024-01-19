@@ -100,7 +100,7 @@ public class DonationController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{donationId}")
     public ResponseModel updateDonation(
-            @PathVariable Long donationId,
+            @PathVariable(name = "donationId") Long donationId,
             @Valid @RequestBody DonationRequestDto donationRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
@@ -117,7 +117,7 @@ public class DonationController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{donationId}")
     public ResponseModel deleteDonation(
-            @PathVariable Long donationId
+            @PathVariable(name = "donationId") Long donationId
     ) throws PermissionDeniedException {
         Long id = donationService.deleteDonation(donationId);
         ResponseModel responseModel = ResponseModel.builder().build();

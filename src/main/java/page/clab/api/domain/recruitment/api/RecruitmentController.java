@@ -61,7 +61,7 @@ public class RecruitmentController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{recruitmentId}")
     public ResponseModel updateRecruitment(
-            @PathVariable Long recruitmentId,
+            @PathVariable(name = "recruitmentId") Long recruitmentId,
             @Valid @RequestBody RecruitmentRequestDto recruitmentRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
@@ -78,7 +78,7 @@ public class RecruitmentController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{recruitmentId}")
     public ResponseModel deleteRecruitment(
-            @PathVariable Long recruitmentId
+            @PathVariable(name = "recruitmentId") Long recruitmentId
     ) {
         Long id = recruitmentService.deleteRecruitment(recruitmentId);
         ResponseModel responseModel = ResponseModel.builder().build();

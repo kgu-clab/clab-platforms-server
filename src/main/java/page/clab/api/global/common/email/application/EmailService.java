@@ -52,7 +52,7 @@ public class EmailService {
 
     public void broadcastEmail(EmailDto emailDto, List<MultipartFile> multipartFiles) {
         List<File> convertedFiles;
-        if(!multipartFiles.isEmpty()){
+        if(multipartFiles != null && !multipartFiles.isEmpty()) {
             convertedFiles = convertMultipartFiles(multipartFiles);
         } else {
             convertedFiles = null;
@@ -71,7 +71,7 @@ public class EmailService {
 
     public void broadcastEmailToAllMember(EmailDto emailDto, List<MultipartFile> multipartFiles) {
         List<File> convertedFiles;
-        if(!multipartFiles.isEmpty()){
+        if(multipartFiles != null && !multipartFiles.isEmpty()) {
             convertedFiles = convertMultipartFiles(multipartFiles);
         } else {
             convertedFiles = null;
