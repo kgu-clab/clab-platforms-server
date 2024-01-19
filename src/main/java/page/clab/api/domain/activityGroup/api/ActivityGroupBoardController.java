@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activityGroup.application.ActivityGroupBoardService;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
+import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.global.dto.ResponseModel;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
 @RequestMapping("/activity-group/boards")

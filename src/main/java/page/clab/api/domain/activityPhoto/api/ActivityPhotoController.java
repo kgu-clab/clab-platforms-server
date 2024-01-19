@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activityPhoto.application.ActivityPhotoService;
 import page.clab.api.domain.activityPhoto.dto.request.ActivityPhotoRequestDto;
 import page.clab.api.domain.activityPhoto.dto.response.ActivityPhotoResponseDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.global.dto.ResponseModel;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
 @RequestMapping("/activity-photos")

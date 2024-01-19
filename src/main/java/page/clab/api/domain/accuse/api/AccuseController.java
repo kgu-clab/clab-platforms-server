@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.accuse.application.AccuseService;
-import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
-import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.global.dto.ResponseModel;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.TargetType;
+import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
+import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
 @RequestMapping("/accuses")

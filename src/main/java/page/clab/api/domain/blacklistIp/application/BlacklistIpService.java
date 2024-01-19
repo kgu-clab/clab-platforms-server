@@ -6,10 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
-import page.clab.api.global.dto.PagedResponseDto;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor

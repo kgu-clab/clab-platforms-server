@@ -5,14 +5,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.workExperience.dao.WorkExperienceRepository;
-import page.clab.api.global.dto.PagedResponseDto;
+import page.clab.api.domain.workExperience.domain.WorkExperience;
 import page.clab.api.domain.workExperience.dto.request.WorkExperienceRequestDto;
 import page.clab.api.domain.workExperience.dto.response.WorkExperienceResponseDto;
-import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.workExperience.domain.WorkExperience;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor

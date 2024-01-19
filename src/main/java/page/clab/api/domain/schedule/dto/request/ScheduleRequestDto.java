@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.schedule.domain.ScheduleType;
 
-
 @Getter
 @Setter
 @AllArgsConstructor

@@ -18,17 +18,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.domain.member.dto.response.CloudUsageInfo;
-import page.clab.api.global.file.dto.response.FileInfo;
+import page.clab.api.domain.member.domain.MemberStatus;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
+import page.clab.api.domain.member.dto.response.CloudUsageInfo;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.global.dto.ResponseModel;
-import page.clab.api.global.verificationCode.dto.request.VerificationCodeRequestDto;
-import page.clab.api.domain.member.domain.MemberStatus;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.common.file.dto.response.FileInfo;
+import page.clab.api.global.common.verificationCode.dto.request.VerificationCodeRequestDto;
 
 @RestController
 @RequestMapping("/members")

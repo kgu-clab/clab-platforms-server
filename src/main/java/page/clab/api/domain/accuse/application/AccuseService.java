@@ -7,23 +7,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.SearchResultNotExistException;
 import page.clab.api.domain.accuse.dao.AccuseRepository;
+import page.clab.api.domain.accuse.domain.Accuse;
+import page.clab.api.domain.accuse.domain.AccuseStatus;
+import page.clab.api.domain.accuse.domain.TargetType;
+import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
+import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
 import page.clab.api.domain.board.application.BoardService;
 import page.clab.api.domain.comment.application.CommentService;
 import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.review.application.ReviewService;
-import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
-import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.member.domain.Role;
-import page.clab.api.domain.accuse.domain.TargetType;
+import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
+import page.clab.api.domain.review.application.ReviewService;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.SearchResultNotExistException;
 
 @Service
 @RequiredArgsConstructor

@@ -6,25 +6,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activityGroup.dao.GroupScheduleRepository;
-import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
+import page.clab.api.domain.activityGroup.domain.GroupMember;
+import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
+import page.clab.api.domain.activityGroup.domain.GroupSchedule;
+import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
-import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.domain.activityGroup.domain.ActivityGroup;
-import page.clab.api.domain.activityGroup.domain.GroupMember;
-import page.clab.api.domain.activityGroup.domain.GroupSchedule;
+import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
-import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
-import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
+import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor

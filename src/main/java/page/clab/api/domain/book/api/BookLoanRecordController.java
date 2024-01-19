@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.domain.book.application.BookLoanRecordService;
 import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.global.dto.ResponseModel;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 
 @RestController
 @RequestMapping("/book-loan-records")

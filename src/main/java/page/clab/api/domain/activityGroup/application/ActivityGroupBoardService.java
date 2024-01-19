@@ -9,20 +9,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupBoardRepository;
-import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
-import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
-import page.clab.api.global.dto.PagedResponseDto;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
-import page.clab.api.domain.activityGroup.domain.GroupMember;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
+import page.clab.api.domain.activityGroup.domain.GroupMember;
+import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
+import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
+import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
+import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor

@@ -9,19 +9,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.board.application.BoardService;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.dao.CommentRepository;
-import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.comment.domain.Comment;
+import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.response.CommentGetAllResponseDto;
 import page.clab.api.domain.comment.dto.response.CommentGetMyResponseDto;
-import page.clab.api.domain.comment.dto.request.CommentRequestDto;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.comment.domain.Comment;
+import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor

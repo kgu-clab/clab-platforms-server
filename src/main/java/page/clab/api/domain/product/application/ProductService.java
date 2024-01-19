@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.domain.product.dao.ProductRepository;
-import page.clab.api.global.dto.PagedResponseDto;
+import page.clab.api.domain.product.domain.Product;
 import page.clab.api.domain.product.dto.request.ProductRequestDto;
 import page.clab.api.domain.product.dto.response.ProductResponseDto;
-import page.clab.api.domain.product.domain.Product;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor

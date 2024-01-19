@@ -7,14 +7,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.dao.NotificationRepository;
+import page.clab.api.domain.notification.domain.Notification;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.domain.notification.dto.response.NotificationResponseDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.notification.domain.Notification;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor

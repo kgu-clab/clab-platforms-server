@@ -4,14 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import page.clab.api.domain.news.dao.NewsRepository;
+import page.clab.api.domain.news.domain.News;
+import page.clab.api.domain.news.dto.request.NewsRequestDto;
+import page.clab.api.domain.news.dto.response.NewsDetailsResponseDto;
+import page.clab.api.domain.news.dto.response.NewsResponseDto;
+import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.SearchResultNotExistException;
-import page.clab.api.domain.news.dao.NewsRepository;
-import page.clab.api.domain.news.dto.response.NewsDetailsResponseDto;
-import page.clab.api.domain.news.dto.request.NewsRequestDto;
-import page.clab.api.domain.news.dto.response.NewsResponseDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.domain.news.domain.News;
 
 @Service
 @RequiredArgsConstructor

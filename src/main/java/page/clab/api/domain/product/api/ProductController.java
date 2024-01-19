@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.product.application.ProductService;
-import page.clab.api.global.dto.PagedResponseDto;
 import page.clab.api.domain.product.dto.request.ProductRequestDto;
 import page.clab.api.domain.product.dto.response.ProductResponseDto;
-import page.clab.api.global.dto.ResponseModel;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
 @RequestMapping("/products")

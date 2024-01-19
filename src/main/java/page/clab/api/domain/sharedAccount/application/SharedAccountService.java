@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.domain.sharedAccount.dao.SharedAccountRepository;
-import page.clab.api.global.dto.PagedResponseDto;
+import page.clab.api.domain.sharedAccount.domain.SharedAccount;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountRequestDto;
 import page.clab.api.domain.sharedAccount.dto.response.SharedAccountResponseDto;
-import page.clab.api.domain.sharedAccount.domain.SharedAccount;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor

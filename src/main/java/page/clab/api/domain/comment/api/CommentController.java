@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.domain.comment.application.CommentService;
+import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.response.CommentGetAllResponseDto;
 import page.clab.api.domain.comment.dto.response.CommentGetMyResponseDto;
-import page.clab.api.domain.comment.dto.request.CommentRequestDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.global.dto.ResponseModel;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/comments")

@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.domain.workExperience.application.WorkExperienceService;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.global.dto.ResponseModel;
 import page.clab.api.domain.workExperience.dto.request.WorkExperienceRequestDto;
 import page.clab.api.domain.workExperience.dto.response.WorkExperienceResponseDto;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/work-experiences")

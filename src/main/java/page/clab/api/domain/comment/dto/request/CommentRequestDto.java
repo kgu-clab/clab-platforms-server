@@ -8,8 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.comment.dto.response.CommentGetAllResponseDto;
 import page.clab.api.domain.comment.domain.Comment;
+import page.clab.api.domain.comment.dto.response.CommentGetAllResponseDto;
 import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter

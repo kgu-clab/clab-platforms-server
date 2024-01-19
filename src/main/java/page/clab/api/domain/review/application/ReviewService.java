@@ -7,24 +7,24 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService;
-import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
+import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
+import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
+import page.clab.api.domain.review.dao.ReviewRepository;
+import page.clab.api.domain.review.domain.Review;
+import page.clab.api.domain.review.dto.request.ReviewRequestDto;
+import page.clab.api.domain.review.dto.response.ReviewResponseDto;
 import page.clab.api.domain.review.exception.AlreadyReviewedException;
+import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
-import page.clab.api.domain.review.dao.ReviewRepository;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.domain.review.dto.request.ReviewRequestDto;
-import page.clab.api.domain.review.dto.response.ReviewResponseDto;
-import page.clab.api.domain.activityGroup.domain.ActivityGroup;
-import page.clab.api.domain.activityGroup.domain.GroupMember;
-import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.review.domain.Review;
-import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
-import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
 
 @Service
 @RequiredArgsConstructor

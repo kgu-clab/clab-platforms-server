@@ -11,19 +11,19 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.domain.sharedAccount.exception.SharedAccountInUseException;
-import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
-import page.clab.api.domain.sharedAccount.dao.SharedAccountUsageRepository;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUsageRequestDto;
-import page.clab.api.domain.sharedAccount.dto.response.SharedAccountUsageResponseDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.sharedAccount.dao.SharedAccountUsageRepository;
 import page.clab.api.domain.sharedAccount.domain.SharedAccount;
 import page.clab.api.domain.sharedAccount.domain.SharedAccountUsage;
 import page.clab.api.domain.sharedAccount.domain.SharedAccountUsageStatus;
+import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUsageRequestDto;
+import page.clab.api.domain.sharedAccount.dto.response.SharedAccountUsageResponseDto;
+import page.clab.api.domain.sharedAccount.exception.SharedAccountInUseException;
+import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
+import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor

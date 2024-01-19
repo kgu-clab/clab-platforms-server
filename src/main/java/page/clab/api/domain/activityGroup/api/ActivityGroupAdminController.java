@@ -20,16 +20,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.domain.activityGroup.application.ActivityGroupAdminService;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
+import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
+import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
-import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.global.dto.ResponseModel;
-import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
-import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/activity-group/admin")

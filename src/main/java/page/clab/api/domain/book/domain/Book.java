@@ -17,8 +17,8 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.book.dto.request.BookRequestDto;
-import page.clab.api.global.util.ModelMapperUtil;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.util.ModelMapperUtil;
 
 @Entity
 @Getter

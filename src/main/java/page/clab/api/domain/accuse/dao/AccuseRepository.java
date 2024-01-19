@@ -6,9 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.accuse.domain.Accuse;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.TargetType;
+import page.clab.api.domain.member.domain.Member;
 
 @Repository
 public interface AccuseRepository extends JpaRepository<Accuse, Long> {

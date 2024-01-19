@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.book.application.BookService;
 import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
-import page.clab.api.global.dto.PagedResponseDto;
-import page.clab.api.global.dto.ResponseModel;
+import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
 @RequestMapping("/books")
