@@ -36,7 +36,7 @@ public class AttendanceController {
 
     @Operation(summary = "[U] 출석체크 QR 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping(value = "")
+    @PostMapping(value = "")
     public ResponseModel generateAttendanceQRCode (
             @RequestParam(name = "activityGroupId") Long activityGroupId
     ) throws IOException, WriterException, PermissionDeniedException, IllegalAccessException {
