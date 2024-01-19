@@ -2,7 +2,7 @@ package page.clab.api.domain.award.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -55,8 +55,8 @@ public class AwardController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getMyAwards(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.getMyAwards(pageable);
@@ -70,10 +70,10 @@ public class AwardController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel searchAwards(
-            @RequestParam(required = false) String memberId,
-            @RequestParam(required = false) Long year,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "memberId", required = false) String memberId,
+            @RequestParam(name = "year", required = false) Long year,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.searchAwards(memberId, year, pageable);

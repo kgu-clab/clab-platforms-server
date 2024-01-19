@@ -2,8 +2,8 @@ package page.clab.api.domain.login.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.transaction.Transactional;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;

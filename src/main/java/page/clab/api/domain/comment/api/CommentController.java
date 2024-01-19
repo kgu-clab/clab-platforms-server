@@ -2,7 +2,7 @@ package page.clab.api.domain.comment.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -40,7 +40,7 @@ public class CommentController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/{boardId}")
     public ResponseModel createComment(
-            @RequestParam(required = false) Long parentId,
+            @RequestParam(name = "parentId", required = false) Long parentId,
             @PathVariable Long boardId,
             @Valid @RequestBody CommentRequestDto commentRequestDto,
             BindingResult result
@@ -59,8 +59,8 @@ public class CommentController {
     @GetMapping("/{boardId}")
     public ResponseModel getComments(
             @PathVariable Long boardId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<CommentGetAllResponseDto> comments = commentService.getComments(boardId, pageable);
@@ -73,8 +73,8 @@ public class CommentController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my-comments")
     public ResponseModel getMyComments(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<CommentGetMyResponseDto> comments = commentService.getMyComments(pageable);

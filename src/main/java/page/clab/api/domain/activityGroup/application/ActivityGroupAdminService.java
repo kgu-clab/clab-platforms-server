@@ -1,7 +1,7 @@
 package page.clab.api.domain.activityGroup.application;
 
 import java.util.List;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

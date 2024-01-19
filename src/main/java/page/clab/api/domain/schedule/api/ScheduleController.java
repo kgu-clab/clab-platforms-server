@@ -3,7 +3,7 @@ package page.clab.api.domain.schedule.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -49,8 +49,8 @@ public class ScheduleController {
     public ResponseModel getSchedules(
             @RequestParam(name = "start_date_time") String startDateTime,
             @RequestParam(name = "end_date_time") String endDateTime,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ScheduleResponseDto> scheduleResponseDtos
