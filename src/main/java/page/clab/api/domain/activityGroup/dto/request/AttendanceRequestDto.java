@@ -1,4 +1,4 @@
-package page.clab.api.domain.attendance.dto.request;
+package page.clab.api.domain.activityGroup.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
