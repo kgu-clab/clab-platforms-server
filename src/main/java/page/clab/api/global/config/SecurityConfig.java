@@ -1,8 +1,8 @@
 package page.clab.api.global.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -107,33 +108,49 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
         http
-                .csrf().disable()
-                .cors().configurationSource(corsConfigurationSource())
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                .antMatchers(SWAGGER_PATTERNS).hasRole(role)
-                .antMatchers(PERMIT_ALL).permitAll()
-                .antMatchers(HttpMethod.GET, PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
-                .antMatchers(HttpMethod.POST, PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
-                .anyRequest().authenticated()
-                .and()
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(sessionManagement ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .cors(cors ->
+                        cors.configurationSource(corsConfigurationSource())
+                )
+                .authorizeRequests(authorizeRequests ->
+                        authorizeRequests
+                                .requestMatchers(SWAGGER_PATTERNS).hasRole(role)
+                                .requestMatchers(PERMIT_ALL).permitAll()
+                                .requestMatchers(HttpMethod.GET, PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
+                                .requestMatchers(HttpMethod.POST, PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
+                                .anyRequest().authenticated()
+                )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager, redisIpAttemptService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAttemptService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling()
-                .authenticationEntryPoint((request, response, authException) -> {
-                    String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-                    log.info("[{}] : 비정상적인 접근이 감지되었습니다.", clientIpAddress);
-                    redisIpAttemptService.registerLoginAttempt(clientIpAddress);
-                    ResponseModel responseModel = ResponseModel.builder()
-                            .success(false)
-                            .build();
-                    response.getWriter().write(responseModel.toJson());
-                    response.setContentType("application/json");
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                });
+                .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
+                        httpSecurityExceptionHandlingConfigurer
+                                .authenticationEntryPoint((request, response, authException) -> {
+                                    String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+                                    log.info("[{}] : 비정상적인 접근이 감지되었습니다.", clientIpAddress);
+                                    redisIpAttemptService.registerLoginAttempt(clientIpAddress);
+                                    ResponseModel responseModel = ResponseModel.builder()
+                                            .success(false)
+                                            .build();
+                                    response.getWriter().write(responseModel.toJson());
+                                    response.setContentType("application/json");
+                                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                })
+                                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                                    String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+                                    log.info("[{}] : 비정상적인 접근이 감지되었습니다.", clientIpAddress);
+                                    redisIpAttemptService.registerLoginAttempt(clientIpAddress);
+                                    ResponseModel responseModel = ResponseModel.builder()
+                                            .success(false)
+                                            .build();
+                                    response.getWriter().write(responseModel.toJson());
+                                    response.setContentType("application/json");
+                                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                                })
+                );
         return http.build();
     }
 

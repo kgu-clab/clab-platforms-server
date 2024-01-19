@@ -3,7 +3,7 @@ package page.clab.api.domain.activityGroup.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -60,9 +60,9 @@ public class ActivityGroupAdminController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getActivityGroupsByStatus (
-            @RequestParam ActivityGroupStatus activityGroupStatus,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "activityGroupStatus") ActivityGroupStatus activityGroupStatus,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ActivityGroupResponseDto> activityGroupList = activityGroupAdminService.getActivityGroupsByStatus(activityGroupStatus, pageable);
@@ -93,7 +93,7 @@ public class ActivityGroupAdminController {
     @PatchMapping("manage/{activityGroupId}")
     public ResponseModel manageActivityGroupStatus(
             @PathVariable Long activityGroupId,
-            @RequestParam ActivityGroupStatus activityGroupStatus
+            @RequestParam(name = "activityGroupStatus") ActivityGroupStatus activityGroupStatus
     ) {
         Long id = activityGroupAdminService.manageActivityGroup(activityGroupId, activityGroupStatus);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -119,7 +119,7 @@ public class ActivityGroupAdminController {
     @PatchMapping("/progress/{activityGroupId}")
     public ResponseModel updateProjectProgress(
             @PathVariable Long activityGroupId,
-            @RequestParam Long progress
+            @RequestParam(name = "progress") Long progress
     ) throws PermissionDeniedException {
         Long id = activityGroupAdminService.updateProjectProgress(activityGroupId, progress);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -131,7 +131,7 @@ public class ActivityGroupAdminController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/schedule")
     public ResponseModel addSchedule(
-            @RequestParam Long activityGroupId,
+            @RequestParam(name = "activityGroupId") Long activityGroupId,
             @Valid @RequestBody List<GroupScheduleDto> groupScheduleDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
@@ -148,9 +148,9 @@ public class ActivityGroupAdminController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/apply-members")
     public ResponseModel getApplyGroupMemberList(
-            @RequestParam Long activityGroupId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "activityGroupId") Long activityGroupId,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<GroupMemberResponseDto> applyMemberList = activityGroupAdminService.getApplyGroupMemberList(activityGroupId, pageable);

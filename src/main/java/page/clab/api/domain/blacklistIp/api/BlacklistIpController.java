@@ -31,7 +31,7 @@ public class BlacklistIpController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel addBlacklistedIp(
-            @RequestParam String ipAddress
+            @RequestParam(name = "ipAddress") String ipAddress
     ) {
         Long id = blacklistIpService.addBlacklistedIp(ipAddress);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -43,8 +43,8 @@ public class BlacklistIpController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getBlacklistedIps(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BlacklistIp> blacklistedIps = blacklistIpService.getBlacklistedIps(pageable);
@@ -57,7 +57,7 @@ public class BlacklistIpController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("")
     public ResponseModel removeBlacklistedIp(
-            @RequestParam String ipAddress
+            @RequestParam(name = "ipAddress") String ipAddress
     ) {
         Long id = blacklistIpService.deleteBlacklistedIp(ipAddress);
         ResponseModel responseModel = ResponseModel.builder().build();

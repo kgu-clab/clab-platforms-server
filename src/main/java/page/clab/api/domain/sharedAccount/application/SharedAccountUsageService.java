@@ -2,7 +2,7 @@ package page.clab.api.domain.sharedAccount.application;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

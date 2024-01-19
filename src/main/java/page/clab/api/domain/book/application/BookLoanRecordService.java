@@ -2,7 +2,7 @@ package page.clab.api.domain.book.application;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

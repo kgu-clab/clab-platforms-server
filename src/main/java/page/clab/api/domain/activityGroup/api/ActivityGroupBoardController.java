@@ -2,7 +2,7 @@ package page.clab.api.domain.activityGroup.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -35,8 +35,8 @@ public class ActivityGroupBoardController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createActivityGroupBoard(
-            @RequestParam(required = false) Long parentId,
-            @RequestParam Long activityGroupId,
+            @RequestParam(name = "parentId", required = false) Long parentId,
+            @RequestParam(name = "activityGroupId") Long activityGroupId,
             @Valid @RequestBody ActivityGroupBoardRequestDto activityGroupBoardRequestDto
     ) {
         Long id = activityGroupBoardService.createActivityGroupBoard(parentId, activityGroupId, activityGroupBoardRequestDto);
@@ -49,8 +49,8 @@ public class ActivityGroupBoardController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/list")
     public ResponseModel getActivityGroupBoardList(
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "20") Integer size
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = Pageable.ofSize(size).withPage(page);
         PagedResponseDto<ActivityGroupBoardResponseDto> allBoards = activityGroupBoardService.getAllActivityGroupBoard(pageable);
@@ -63,7 +63,7 @@ public class ActivityGroupBoardController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getActivityGroupBoardById(
-            @RequestParam Long activityGroupBoardId
+            @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId
     ) {
         ActivityGroupBoardResponseDto board = activityGroupBoardService.getActivityGroupBoardById(activityGroupBoardId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -75,9 +75,9 @@ public class ActivityGroupBoardController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/by-parent")
     public ResponseModel getActivityGroupBoardByParent(
-            @RequestParam Long parentId,
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "20") Integer size
+            @RequestParam(name = "parentId") Long parentId,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = Pageable.ofSize(size).withPage(page);
         PagedResponseDto<ActivityGroupBoardChildResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByParent(parentId, pageable);
