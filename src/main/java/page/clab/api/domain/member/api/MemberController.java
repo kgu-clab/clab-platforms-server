@@ -26,9 +26,9 @@ import page.clab.api.domain.member.dto.response.CloudUsageInfo;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
-import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.common.file.dto.response.FileInfo;
 import page.clab.api.global.common.verificationCode.dto.request.VerificationCodeRequestDto;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/members")

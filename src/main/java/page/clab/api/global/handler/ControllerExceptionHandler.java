@@ -46,12 +46,12 @@ import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateExcep
 import page.clab.api.global.auth.exception.TokenValidateException;
 import page.clab.api.global.auth.exception.UnAuthorizeException;
 import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
-import page.clab.api.global.common.file.exception.FileUploadFailException;
 
 @RestControllerAdvice(basePackages = "page.clab.api.domain")
 @RequiredArgsConstructor

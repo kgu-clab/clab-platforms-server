@@ -36,15 +36,15 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.email.application.EmailService;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.common.email.dto.request.EmailDto;
+import page.clab.api.global.common.file.dto.response.FileInfo;
+import page.clab.api.global.common.verificationCode.application.VerificationCodeService;
+import page.clab.api.global.common.verificationCode.domain.VerificationCode;
+import page.clab.api.global.common.verificationCode.dto.request.VerificationCodeRequestDto;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
-import page.clab.api.global.common.file.dto.response.FileInfo;
 import page.clab.api.global.util.FileSystemUtil;
-import page.clab.api.global.common.verificationCode.application.VerificationCodeService;
-import page.clab.api.global.common.verificationCode.domain.VerificationCode;
-import page.clab.api.global.common.verificationCode.dto.request.VerificationCodeRequestDto;
 
 @Service
 @RequiredArgsConstructor
