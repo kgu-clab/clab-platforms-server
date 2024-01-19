@@ -1,4 +1,4 @@
-package page.clab.api.domain.attendance.api;
+package page.clab.api.domain.activityGroup.api;
 
 import com.google.zxing.WriterException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.activityGroup.application.AttendanceService;
 import page.clab.api.domain.activityGroup.dto.request.AbsentRequestDto;
+import page.clab.api.domain.activityGroup.dto.request.AttendanceRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.AbsentResponseDto;
+import page.clab.api.domain.activityGroup.dto.response.AttendanceResponseDto;
 import page.clab.api.domain.activityGroup.exception.DuplicateAbsentExcuseException;
-import page.clab.api.domain.attendance.application.AttendanceService;
-import page.clab.api.domain.attendance.dto.request.AttendanceRequestDto;
-import page.clab.api.domain.attendance.dto.response.AttendanceResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
