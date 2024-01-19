@@ -13,7 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.executive.dto.request.ExecutivesRequestDto;
+import page.clab.api.domain.executive.dto.request.ExecutiveRequestDto;
 import page.clab.api.domain.member.domain.Member;
 
 @Entity
@@ -39,11 +39,11 @@ public class Executive {
     @Size(min = 1, message = "{size.executive.year}")
     private String year;
 
-    public static Executive of(ExecutivesRequestDto executivesRequestDto) {
+    public static Executive of(ExecutiveRequestDto executiveRequestDto) {
         return Executive.builder()
-                .member(Member.builder().id(executivesRequestDto.getMemberId()).build())
-                .position(executivesRequestDto.getPosition())
-                .year(executivesRequestDto.getYear())
+                .member(Member.builder().id(executiveRequestDto.getMemberId()).build())
+                .position(executiveRequestDto.getPosition())
+                .year(executiveRequestDto.getYear())
                 .build();
     }
 
