@@ -1,9 +1,9 @@
 package page.clab.api.domain.activityGroup.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

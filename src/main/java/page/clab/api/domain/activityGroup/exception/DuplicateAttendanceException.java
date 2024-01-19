@@ -1,4 +1,4 @@
-package page.clab.api.domain.attendance.exception;
+package page.clab.api.domain.activityGroup.exception;
 
 public class DuplicateAttendanceException extends RuntimeException {
 

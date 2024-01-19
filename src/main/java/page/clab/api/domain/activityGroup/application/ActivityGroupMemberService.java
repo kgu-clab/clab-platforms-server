@@ -1,8 +1,8 @@
 package page.clab.api.domain.activityGroup.application;
 
-import java.util.List;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

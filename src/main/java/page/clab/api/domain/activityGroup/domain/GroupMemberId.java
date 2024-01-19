@@ -1,7 +1,7 @@
 package page.clab.api.domain.activityGroup.domain;
 
-import java.io.Serializable;
 import jakarta.persistence.Embeddable;
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

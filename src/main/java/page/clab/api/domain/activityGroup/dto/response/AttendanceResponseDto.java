@@ -1,4 +1,4 @@
-package page.clab.api.domain.attendance.dto.response;
+package page.clab.api.domain.activityGroup.dto.response;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.attendance.domain.Attendance;
+import page.clab.api.domain.activityGroup.domain.Attendance;
 import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter
