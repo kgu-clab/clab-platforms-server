@@ -44,7 +44,7 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok' // 롬복
 	annotationProcessor 'org.projectlombok:lombok' // 롬복
 	implementation 'com.google.code.gson:gson:2.10.1' // JSON 라이브러리
-	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0' // Swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0' // Swagger
 	implementation 'org.modelmapper:modelmapper:3.2.0' // ModelMapper
 	implementation 'commons-io:commons-io:2.15.1' // Apache Commons IO
 	implementation 'com.google.guava:guava:33.0.0-jre' // Google Core Libraries For Java
