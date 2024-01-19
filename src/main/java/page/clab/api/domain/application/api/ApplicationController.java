@@ -101,7 +101,7 @@ public class ApplicationController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{applicationId}")
     public ResponseModel approveApplication(
-            @PathVariable String applicationId
+            @PathVariable(name = "applicationId") String applicationId
     ) {
         String id = applicationService.approveApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -126,7 +126,7 @@ public class ApplicationController {
     @Operation(summary = "합격 여부 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/{applicationId}")
     public ResponseModel getApplicationPass(
-            @PathVariable String applicationId
+            @PathVariable(name = "applicationId") String applicationId
     ) {
         ApplicationPassResponseDto applicationPassResponseDto = applicationService.getApplicationPass(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -138,7 +138,7 @@ public class ApplicationController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{applicationId}")
     public ResponseModel deleteApplication(
-            @PathVariable String applicationId
+            @PathVariable(name = "applicationId") String applicationId
     ) {
         String id = applicationService.deleteApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();

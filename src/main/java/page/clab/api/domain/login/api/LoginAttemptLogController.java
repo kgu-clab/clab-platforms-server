@@ -30,7 +30,7 @@ public class LoginAttemptLogController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{memberId}")
     public ResponseModel getLoginAttemptLogs(
-            @PathVariable String memberId,
+            @PathVariable(name = "memberId") String memberId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {

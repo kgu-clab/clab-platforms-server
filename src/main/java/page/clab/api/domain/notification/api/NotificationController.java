@@ -68,7 +68,7 @@ public class NotificationController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{notificationId}")
     public ResponseModel deleteNotification(
-            @PathVariable("notificationId") Long notificationId
+            @PathVariable(name = "notificationId") Long notificationId
     ) throws PermissionDeniedException {
         Long id = notificationService.deleteNotification(notificationId);
         ResponseModel responseModel = ResponseModel.builder().build();

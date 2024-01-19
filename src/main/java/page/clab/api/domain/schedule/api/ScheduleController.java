@@ -64,7 +64,7 @@ public class ScheduleController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{scheduleId}")
     public ResponseModel deleteSchedule(
-            @PathVariable Long scheduleId
+            @PathVariable(name = "scheduleId") Long scheduleId
     ) throws PermissionDeniedException {
         Long id = scheduleService.deleteSchedule(scheduleId);
         ResponseModel responseModel = ResponseModel.builder().build();

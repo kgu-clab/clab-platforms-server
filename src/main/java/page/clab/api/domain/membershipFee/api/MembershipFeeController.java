@@ -85,7 +85,7 @@ public class MembershipFeeController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{membershipFeeId}")
     public ResponseModel updateMembershipFee(
-            @PathVariable Long membershipFeeId,
+            @PathVariable(name = "membershipFeeId") Long membershipFeeId,
             @Valid @RequestBody MembershipFeeRequestDto membershipFeeRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
@@ -102,7 +102,7 @@ public class MembershipFeeController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{membershipFeeId}")
     public ResponseModel deleteMembershipFee(
-            @PathVariable Long membershipFeeId
+            @PathVariable(name = "membershipFeeId") Long membershipFeeId
     ) throws PermissionDeniedException {
         Long id = membershipFeeService.deleteMembershipFee(membershipFeeId);
         ResponseModel responseModel = ResponseModel.builder().build();

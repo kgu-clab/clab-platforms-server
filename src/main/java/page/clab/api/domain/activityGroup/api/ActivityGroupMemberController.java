@@ -63,7 +63,7 @@ public class ActivityGroupMemberController {
     @Operation(summary = "스터디 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/study/{activityGroupId}")
     public ResponseModel getActivityGroupStudy(
-            @PathVariable Long activityGroupId
+            @PathVariable(name = "activityGroupId") Long activityGroupId
     ) {
         ActivityGroupStudyResponseDto activityGroup = activityGroupMemberService.getActivityGroupStudy(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -74,7 +74,7 @@ public class ActivityGroupMemberController {
     @Operation(summary = "프로젝트 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/project/{activityGroupId}")
     public ResponseModel getActivityGroupProject(
-            @PathVariable Long activityGroupId
+            @PathVariable(name = "activityGroupId") Long activityGroupId
     ) {
         ActivityGroupProjectResponseDto activityGroup = activityGroupMemberService.getActivityGroupProject(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();

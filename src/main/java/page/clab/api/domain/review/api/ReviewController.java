@@ -116,7 +116,7 @@ public class ReviewController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{reviewId}")
     public ResponseModel updateReview(
-            @PathVariable Long reviewId,
+            @PathVariable(name = "reviewId") Long reviewId,
             @Valid @RequestBody ReviewRequestDto reviewRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
@@ -133,7 +133,7 @@ public class ReviewController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{reviewId}")
     public ResponseModel deleteReview(
-            @PathVariable Long reviewId
+            @PathVariable(name = "reviewId") Long reviewId
     ) throws PermissionDeniedException {
         Long id = reviewService.deleteReview(reviewId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -146,7 +146,7 @@ public class ReviewController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/public/{reviewId}")
     public ResponseModel publicReview(
-            @PathVariable Long reviewId
+            @PathVariable(name = "reviewId") Long reviewId
     ) {
         Long id = reviewService.publicReview(reviewId);
         ResponseModel responseModel = ResponseModel.builder().build();
