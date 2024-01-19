@@ -68,7 +68,7 @@ public class LoginController {
     @DeleteMapping("/authenticator/{memberId}")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel deleteAuthenticator(
-            @PathVariable String memberId
+            @PathVariable(name = "memberId") String memberId
     ) {
         String id = loginService.resetAuthenticator(memberId);
         ResponseModel responseModel = ResponseModel.builder().build();

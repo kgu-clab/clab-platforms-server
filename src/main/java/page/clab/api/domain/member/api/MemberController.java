@@ -106,7 +106,7 @@ public class MemberController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{memberId}")
     public ResponseModel updateMemberInfoByMember(
-            @PathVariable String memberId,
+            @PathVariable(name = "memberId") String memberId,
             @Valid @RequestBody MemberRequestDto memberRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
@@ -123,7 +123,7 @@ public class MemberController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/status/{memberId}")
     public ResponseModel updateMemberStatusByAdmin(
-            @PathVariable String memberId,
+            @PathVariable(name = "memberId") String memberId,
             @RequestParam MemberStatus memberStatus
     ) {
         String id = memberService.updateMemberStatusByAdmin(memberId, memberStatus);
@@ -180,7 +180,7 @@ public class MemberController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/cloud/{memberId}")
     public ResponseModel getCloudUsageByMemberId(
-            @PathVariable String memberId
+            @PathVariable(name = "memberId") String memberId
     ) {
         CloudUsageInfo usage = memberService.getCloudUsageByMemberId(memberId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -192,7 +192,7 @@ public class MemberController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/files/{memberId}")
     public ResponseModel getMemberUploadedFiles(
-            @PathVariable String memberId,
+            @PathVariable(name = "memberId") String memberId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {

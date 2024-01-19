@@ -80,7 +80,7 @@ public class ActivityPhotoController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{activityPhotoId}")
     public ResponseModel updateActivityPhoto(
-            @PathVariable Long activityPhotoId
+            @PathVariable(name = "activityPhotoId") Long activityPhotoId
     ) {
         Long id = activityPhotoService.updateActivityPhoto(activityPhotoId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -92,7 +92,7 @@ public class ActivityPhotoController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{activityPhotoId}")
     public ResponseModel deleteActivityPhoto(
-            @PathVariable Long activityPhotoId
+            @PathVariable(name = "activityPhotoId") Long activityPhotoId
     ) {
         Long id = activityPhotoService.deleteActivityPhoto(activityPhotoId);
         ResponseModel responseModel = ResponseModel.builder().build();

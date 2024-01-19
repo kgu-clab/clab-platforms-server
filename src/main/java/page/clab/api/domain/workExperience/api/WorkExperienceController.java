@@ -86,7 +86,7 @@ public class WorkExperienceController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{workExperienceId}")
     public ResponseModel updateWorkExperience(
-            @PathVariable Long workExperienceId,
+            @PathVariable(name = "workExperienceId") Long workExperienceId,
             @Valid @RequestBody WorkExperienceRequestDto workExperienceRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
@@ -103,7 +103,7 @@ public class WorkExperienceController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{workExperienceId}")
     public ResponseModel deleteWorkExperience(
-            @PathVariable Long workExperienceId
+            @PathVariable(name = "workExperienceId") Long workExperienceId
     ) throws PermissionDeniedException {
         Long id = workExperienceService.deleteWorkExperience(workExperienceId);
         ResponseModel responseModel = ResponseModel.builder().build();

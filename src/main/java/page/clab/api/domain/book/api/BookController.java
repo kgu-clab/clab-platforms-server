@@ -101,7 +101,7 @@ public class BookController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{bookId}")
     public ResponseModel deleteBook(
-            @PathVariable("bookId") Long bookId
+            @PathVariable(name = "bookId") Long bookId
     ) {
         Long id = bookService.deleteBook(bookId);
         ResponseModel responseModel = ResponseModel.builder().build();

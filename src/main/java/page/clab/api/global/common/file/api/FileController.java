@@ -33,9 +33,9 @@ public class FileController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/boards/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel boardUpload(
-            @PathVariable("boardId") String boardId,
-            @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
-            @RequestParam("storagePeriod") long storagePeriod
+            @PathVariable(name = "boardId") String boardId,
+            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException {
         List<String> url = fileService.saveFiles(multipartFiles, "boards" + File.separator + boardId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -47,9 +47,9 @@ public class FileController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/news/{newsId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel newsUpload(
-            @PathVariable("newsId") String newsId,
-            @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
-            @RequestParam("storagePeriod") long storagePeriod
+            @PathVariable(name = "newsId") String newsId,
+            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException {
         List<String> url = fileService.saveFiles(multipartFiles, "news" + File.separator + newsId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -61,9 +61,9 @@ public class FileController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/books/{bookId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel bookUpload(
-            @PathVariable("bookId") String bookId,
-            @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
-            @RequestParam("storagePeriod") long storagePeriod
+            @PathVariable(name = "bookId") String bookId,
+            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException {
         List<String> url = fileService.saveFiles(multipartFiles, "books" + File.separator + bookId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -75,9 +75,9 @@ public class FileController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/profiles/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel profileUpload(
-            @PathVariable("memberId") String memberId,
-            @RequestParam("multipartFile") MultipartFile multipartFile,
-            @RequestParam("storagePeriod") long storagePeriod
+            @PathVariable(name = "memberId") String memberId,
+            @RequestParam(name = "multipartFile") MultipartFile multipartFile,
+            @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException {
         String url = fileService.saveFile(multipartFile, "profiles" + File.separator + memberId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -89,9 +89,9 @@ public class FileController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/activity-photos/{activityPhotoId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel activityUpload(
-            @PathVariable("activityPhotoId") String activityPhotoId,
-            @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
-            @RequestParam("storagePeriod") long storagePeriod
+            @PathVariable(name = "activityPhotoId") String activityPhotoId,
+            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException {
         List<String> url = fileService.saveFiles(multipartFiles, "activity-photos" + File.separator + activityPhotoId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -103,9 +103,9 @@ public class FileController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/members/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel memberCloudUpload(
-            @PathVariable("memberId") String memberId,
-            @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
-            @RequestParam("storagePeriod") long storagePeriod
+            @PathVariable(name = "memberId") String memberId,
+            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException {
         List<String> url = fileService.saveFiles(multipartFiles, "members" + File.separator + memberId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -130,7 +130,7 @@ public class FileController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{saveFileName}")
     public ResponseModel deleteFile(
-            @PathVariable String saveFileName
+            @PathVariable(name = "saveFileName") String saveFileName
     ) throws PermissionDeniedException {
         String url = fileService.deleteFile(saveFileName);
         ResponseModel responseModel = ResponseModel.builder().build();

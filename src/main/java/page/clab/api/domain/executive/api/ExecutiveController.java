@@ -80,11 +80,11 @@ public class ExecutiveController {
 
     @Operation(summary = "역대 운영진 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @DeleteMapping("/{executivesId}")
+    @DeleteMapping("/{executiveId}")
     public ResponseModel deleteExecutive(
-            @PathVariable(name = "executivesId") Long executivesId
+            @PathVariable(name = "executiveId") Long executiveId
     ) {
-        Long id = executiveService.deleteExecutive(executivesId);
+        Long id = executiveService.deleteExecutive(executiveId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
