@@ -56,8 +56,8 @@ public class ApplicationController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getApplications(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ApplicationResponseDto> applications = applicationService.getApplications(pageable);
@@ -71,10 +71,10 @@ public class ApplicationController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/filter")
     public ResponseModel getApplicationsBetweenDates(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ApplicationResponseDto> applications = applicationService.getApplicationsBetweenDates(startDate, endDate, pageable);
@@ -88,7 +88,7 @@ public class ApplicationController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel searchApplication(
-            @RequestParam String applicationId
+            @RequestParam(name = "applicationId") String applicationId
     ) {
         ApplicationResponseDto application = applicationService.searchApplication(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -113,8 +113,8 @@ public class ApplicationController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/pass")
     public ResponseModel getApprovedApplications(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ApplicationResponseDto> approvedApplications = applicationService.getApprovedApplications(pageable);

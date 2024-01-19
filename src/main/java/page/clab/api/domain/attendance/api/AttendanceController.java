@@ -38,7 +38,7 @@ public class AttendanceController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping(value = "")
     public ResponseModel generateAttendanceQRCode (
-            @RequestParam Long activityGroupId
+            @RequestParam(name = "activityGroupId") Long activityGroupId
     ) throws IOException, WriterException, PermissionDeniedException, IllegalAccessException {
         String QRCodeURL = attendanceService.generateAttendanceQRCode(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -62,9 +62,9 @@ public class AttendanceController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping({"/my-attendance"})
     public ResponseModel searchMyAttendance(
-            @RequestParam(defaultValue = "1") Long activityGroupId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "activityGroupId", defaultValue = "1") Long activityGroupId,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) throws IllegalAccessException {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AttendanceResponseDto> attendanceResponseDtos = attendanceService.getMyAttendances(activityGroupId, pageable);
@@ -77,9 +77,9 @@ public class AttendanceController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping({"/group-attendance"})
     public ResponseModel searchGroupAttendance(
-            @RequestParam(defaultValue = "1") Long activityGroupId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "activityGroupId", defaultValue = "1") Long activityGroupId,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AttendanceResponseDto> attendanceResponseDtos = attendanceService.getGroupAttendances(activityGroupId, pageable);
@@ -104,9 +104,9 @@ public class AttendanceController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping({"/absent/{ActivityGroupId}"})
     public ResponseModel getActivityGroupAbsentExcuses(
-            @RequestParam("activityGroupId") Long activityGroupId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "activityGroupId") Long activityGroupId,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AbsentResponseDto> absentExcuses = attendanceService.getActivityGroupAbsentExcuses(activityGroupId, pageable);

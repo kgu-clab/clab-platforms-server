@@ -54,8 +54,8 @@ public class BookController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getBooks(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BookResponseDto> books = bookService.getBooks(pageable);
@@ -69,9 +69,9 @@ public class BookController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel searchBook(
-            @RequestParam String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(name = "keyword") String keyword,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BookResponseDto> books = bookService.searchBook(keyword, pageable);
@@ -84,7 +84,7 @@ public class BookController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("")
     public ResponseModel updateBookInfo(
-            @RequestParam Long bookId,
+            @RequestParam(name = "bookId") Long bookId,
             @Valid @RequestBody BookRequestDto bookRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
