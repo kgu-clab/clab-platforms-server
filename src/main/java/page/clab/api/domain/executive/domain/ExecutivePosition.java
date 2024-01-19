@@ -1,4 +1,4 @@
-package page.clab.api.domain.executives.domain;
+package page.clab.api.domain.executive.domain;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum ExecutivesPosition {
+public enum ExecutivePosition {
 
     PRESIDENT("PRESIDENT", "회장"),
     VICE_PRESIDENT("VICE_PRESIDENT", "부회장"),
