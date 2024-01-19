@@ -1,10 +1,6 @@
 package page.clab.api.domain.member.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,6 +10,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

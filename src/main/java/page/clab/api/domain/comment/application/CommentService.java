@@ -1,7 +1,7 @@
 package page.clab.api.domain.comment.application;
 
-import java.time.LocalDateTime;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
