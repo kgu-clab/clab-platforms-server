@@ -1,5 +1,6 @@
 package page.clab.api.domain.news.dto.response;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +21,11 @@ public class NewsDetailsResponseDto {
 
     private String content;
 
-    private String imageUrl;
+    private String articleUrl;
+
+    private String source;
+
+    private LocalDate date;
 
     private LocalDateTime createdAt;
 
