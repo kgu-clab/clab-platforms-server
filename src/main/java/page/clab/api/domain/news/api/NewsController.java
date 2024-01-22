@@ -82,8 +82,8 @@ public class NewsController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel searchNews(
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String title,
+            @RequestParam(name = "category", required = false) String category,
+            @RequestParam(name = "title", required = false) String title,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
