@@ -5,7 +5,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +26,7 @@ import page.clab.api.global.util.ModelMapperUtil;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(indexes = {@Index(name = "idx_article_url", columnList = "articleUrl")})
 public class News {
 
     @Id
@@ -41,8 +45,15 @@ public class News {
     @Size(min = 1, max = 10000, message = "{size.news.content}")
     private String content;
 
-    @URL(message = "{url.news.imageUrl}")
-    private String imageUrl;
+    @Column(nullable = false)
+    @URL(message = "{url.news.articleUrl}")
+    private String articleUrl;
+
+    @Column(nullable = false)
+    private String source;
+
+    @Column(nullable = false)
+    private LocalDate date;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

@@ -1,6 +1,6 @@
 package page.clab.api.domain.news.dto.response;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,9 +18,9 @@ public class NewsResponseDto {
 
     private String category;
 
-    private String imageUrl;
+    private String articleUrl;
 
-    private LocalDateTime createdAt;
+    private LocalDate date;
 
     public static NewsResponseDto of(News news) {
         return ModelMapperUtil.getModelMapper().map(news, NewsResponseDto.class);
