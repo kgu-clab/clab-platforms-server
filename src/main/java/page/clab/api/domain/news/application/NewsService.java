@@ -41,7 +41,7 @@ public class NewsService {
         } else if (title != null) {
             news = getNewsByTitleContaining(title, pageable);
         } else {
-            throw new IllegalArgumentException("적어도 newsId, category, title 중 하나를 제공해야 합니다.");
+            throw new IllegalArgumentException("적어도 category, title 중 하나를 제공해야 합니다.");
         }
         if (news.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
