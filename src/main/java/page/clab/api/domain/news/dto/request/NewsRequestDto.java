@@ -3,6 +3,7 @@ package page.clab.api.domain.news.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -30,9 +31,17 @@ public class NewsRequestDto {
     @Schema(description = "내용", example = "컴퓨터공학과, SW 개발보안 경진대회 최우수상, 우수상 수상", required = true)
     private String content;
 
-    @URL(message = "{url.news.url}")
-    @Schema(description = "URL", example = "https://blog.naver.com/kyonggi_love/223199431495")
-    private String imageUrl;
+    @URL(message = "{url.news.articleUrl}")
+    @Schema(description = "URL", example = "https://blog.naver.com/kyonggi_love/223199431495", required = true)
+    private String articleUrl;
+
+    @NotNull(message = "{notNull.news.source}")
+    @Schema(description = "출처", example = "경기대학교 공식 블로그", required = true)
+    private String source;
+
+    @NotNull(message = "{notNull.news.date}")
+    @Schema(description = "날짜", example = "2021-08-31", required = true)
+    private LocalDate date;
 
     public static NewsRequestDto of(News news) {
         return ModelMapperUtil.getModelMapper().map(news, NewsRequestDto.class);
