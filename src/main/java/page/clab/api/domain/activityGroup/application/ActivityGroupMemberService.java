@@ -9,16 +9,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupRepository;
+import page.clab.api.domain.activityGroup.dao.ApplyFormRepository;
 import page.clab.api.domain.activityGroup.dao.GroupMemberRepository;
 import page.clab.api.domain.activityGroup.dao.GroupScheduleRepository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
+import page.clab.api.domain.activityGroup.domain.ApplyForm;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activityGroup.domain.GroupSchedule;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
+import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupProjectResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyResponseDto;
@@ -31,6 +34,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.email.application.EmailService;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +52,8 @@ public class ActivityGroupMemberService {
     private final GroupScheduleRepository groupScheduleRepository;
 
     private final GroupMemberRepository groupMemberRepository;
+
+    private final ApplyFormRepository applyFormRepository;
 
     public PagedResponseDto<ActivityGroupResponseDto> getActivityGroups(Pageable pageable) {
         Page<ActivityGroup> activityGroupList = activityGroupRepository.findAllByOrderByCreatedAtDesc(pageable);
@@ -112,6 +118,22 @@ public class ActivityGroupMemberService {
                 .build();
         notificationService.createNotification(notificationRequestDto);
         return activityGroup.getId();
+    }
+
+    public Long writeApplyForm(ApplyFormRequestDto formRequestDto) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
+        Member applier = memberService.getMemberById(formRequestDto.getApplierId());
+        if(member.getId() != applier.getId()){
+            throw new PermissionDeniedException("지원자 본인만 신청서를 작성할 수 있습니다.");
+        }
+
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(formRequestDto.getActivityGroupId());
+
+        ApplyForm form = ApplyForm.of(formRequestDto);
+        form.setActivityGroup(activityGroup);
+        form.setMember(applier);
+
+        return applyFormRepository.save(form).getId();
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
