@@ -40,6 +40,7 @@ public class JobPostingRequestDto {
     @Schema(description = "채용 기간", example = "2024.01.11 ~ 2024.01.28", required = false)
     private String recruitmentPeriod;
 
+    @NotNull(message = "{notNull.jobPosting.jobPostingUrl}")
     @URL(message = "{url.jobPosting.jobPostingUrl}")
     @Schema(description = "채용 공고 URL", example = "https://recruit.navercorp.com/rcrt/view.do?annoId=30001804&sw=&subJobCdArr=1010001%2C1010002%2C1010003%2C1010004%2C1010005%2C1010006%2C1010007%2C1010008%2C1010020%2C1020001%2C1030001%2C1030002%2C1040001%2C1050001%2C1050002%2C1060001&sysCompanyCdArr=&empTypeCdArr=&entTypeCdArr=&workAreaCdArr=", required = false)
     private String jobPostingUrl;

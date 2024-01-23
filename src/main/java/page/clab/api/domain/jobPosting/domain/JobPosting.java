@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
+import page.clab.api.domain.jobPosting.dto.request.JobPostingRequestDto;
+import page.clab.api.global.util.ModelMapperUtil;
 
 @Entity
 @Getter
@@ -44,11 +46,16 @@ public class JobPosting {
 
     private String recruitmentPeriod;
 
+    @Column(nullable = false, length = 1000)
     @URL(message = "{url.jobPosting.jobPostingUrl}")
     private String jobPostingUrl;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    public static JobPosting of(JobPostingRequestDto jobPostingRequestDto) {
+        return ModelMapperUtil.getModelMapper().map(jobPostingRequestDto, JobPosting.class);
+    }
 
 }
