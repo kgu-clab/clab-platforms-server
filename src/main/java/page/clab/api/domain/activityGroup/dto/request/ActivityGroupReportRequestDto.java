@@ -16,7 +16,7 @@ import lombok.Setter;
 public class ActivityGroupReportRequestDto {
 
     @NotNull(message = "notNull.report.turn")
-    @Schema(description = "차시", example = "1차시", required = true)
+    @Schema(description = "차시", example = "1", required = true)
     private Long turn;
 
     @NotNull(message = "notNull.report.activityGroupId")
