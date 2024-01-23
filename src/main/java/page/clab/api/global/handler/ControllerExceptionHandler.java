@@ -32,6 +32,7 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
 import page.clab.api.domain.activityGroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activityGroup.exception.DuplicateAttendanceException;
+import page.clab.api.domain.activityGroup.exception.DuplicateReportException;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
@@ -120,6 +121,7 @@ public class ControllerExceptionHandler {
             AlreadyReviewedException.class,
             DuplicateAttendanceException.class,
             DuplicateAbsentExcuseException.class,
+            DuplicateReportException.class,
             SharedAccountInUseException.class,
             SharedAccountUsageStateException.class
     })
