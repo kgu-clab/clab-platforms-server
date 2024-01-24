@@ -19,6 +19,7 @@ import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.util.RandomNicknameUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -30,11 +31,14 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
 
+    private final RandomNicknameUtil randomNicknameUtil;
+
     @Transactional
     public Long createBoard(BoardRequestDto boardRequestDto) {
         Member member = memberService.getCurrentMember();
         Board board = Board.of(boardRequestDto);
         board.setMember(member);
+        board.setNickName(randomNicknameUtil.makeRandomNickname());
         Long id = boardRepository.save(board).getId();
         if (memberService.isMemberAdminRole(member) && boardRequestDto.getCategory().equals("공지사항")) {
             NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
@@ -77,6 +81,7 @@ public class BoardService {
         Board updatedBoard = Board.of(boardRequestDto);
         updatedBoard.setId(board.getId());
         updatedBoard.setMember(board.getMember());
+        updatedBoard.setNickName(board.getNickName());
         updatedBoard.setUpdateTime(LocalDateTime.now());
         updatedBoard.setCreatedAt(board.getCreatedAt());
         return boardRepository.save(updatedBoard).getId();

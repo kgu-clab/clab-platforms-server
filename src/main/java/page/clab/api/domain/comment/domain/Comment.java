@@ -44,6 +44,9 @@ public class Comment {
     @JoinColumn(name = "member_id")
     private Member writer;
 
+    @Column(nullable = false)
+    private String nickname;
+
     @Column(nullable = false, length = 1000)
     @Size(min = 1, max = 1000, message = "{size.comment.content}")
     private String content;

@@ -20,9 +20,7 @@ public class CommentGetMyResponseDto {
 
     private Long id;
 
-    private String writerName;
-
-    private String writerImageUrl;
+    private String nickname;
 
     private String content;
 
@@ -30,8 +28,7 @@ public class CommentGetMyResponseDto {
 
     public static CommentGetMyResponseDto of(Comment comment) {
         CommentGetMyResponseDto commentGetAllResponseDto = ModelMapperUtil.getModelMapper().map(comment, CommentGetMyResponseDto.class);
-        commentGetAllResponseDto.setWriterName(comment.getWriter().getName());
-        commentGetAllResponseDto.setWriterImageUrl(comment.getWriter().getImageUrl());
+        commentGetAllResponseDto.setNickname(comment.getNickname());
         return commentGetAllResponseDto;
     }
 
