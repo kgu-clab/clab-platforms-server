@@ -18,7 +18,7 @@ public class BoardCategoryResponseDto {
 
     private Long id;
 
-    private String memberName;
+    private String nickname;
 
     private String title;
 
@@ -26,7 +26,7 @@ public class BoardCategoryResponseDto {
 
     public static BoardCategoryResponseDto of(Board board) {
         BoardCategoryResponseDto boardCategoryResponseDto = ModelMapperUtil.getModelMapper().map(board, BoardCategoryResponseDto.class);
-        boardCategoryResponseDto.setMemberName(board.getMember().getName());
+        boardCategoryResponseDto.setNickname(board.getNickName());
         return boardCategoryResponseDto;
     }
 

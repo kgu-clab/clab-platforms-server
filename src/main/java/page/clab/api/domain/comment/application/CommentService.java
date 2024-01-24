@@ -22,6 +22,7 @@ import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.util.RandomNicknameUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,8 @@ public class CommentService {
 
     private final NotificationService notificationService;
 
+    private final RandomNicknameUtil randomNicknameUtil;
+
     @Transactional
     public Long createComment(Long parentId, Long boardId, CommentRequestDto commentRequestDto) {
         Member member = memberService.getCurrentMember();
@@ -43,6 +46,8 @@ public class CommentService {
         Comment comment = Comment.of(commentRequestDto);
         comment.setBoard(board);
         comment.setWriter(member);
+        String nickname = randomNicknameUtil.makeRandomNickname();
+        comment.setNickname(nickname);
         comment.setCreatedAt(LocalDateTime.now());
         if (parentId != null) {
             Comment parentComment = getCommentByIdOrThrow(parentId);
@@ -54,7 +59,7 @@ public class CommentService {
 
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(board.getMember().getId())
-                .content("[" + board.getTitle() + "] " + member.getName() + "님이 게시글에 댓글을 남겼습니다.")
+                .content("[" + board.getTitle() + "] " + nickname + "님이 게시글에 댓글을 남겼습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
         return id;
@@ -79,6 +84,7 @@ public class CommentService {
             throw new PermissionDeniedException("댓글 작성자만 수정할 수 있습니다.");
         }
         comment.setContent(commentRequestDto.getContent());
+        comment.setNickname(comment.getNickname());
         comment.setUpdateTime(LocalDateTime.now());
         return commentRepository.save(comment).getId();
     }
