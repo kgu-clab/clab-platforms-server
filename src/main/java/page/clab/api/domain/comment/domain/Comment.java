@@ -68,6 +68,9 @@ public class Comment {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "want_anonymous", nullable = false)
+    private boolean wantAnonymous;
+
     public static Comment of(CommentRequestDto commentRequestDto) {
         return ModelMapperUtil.getModelMapper().map(commentRequestDto, Comment.class);
     }

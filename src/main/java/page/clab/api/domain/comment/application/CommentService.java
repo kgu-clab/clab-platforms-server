@@ -49,6 +49,7 @@ public class CommentService {
         String nickname = randomNicknameUtil.makeRandomNickname();
         comment.setNickname(nickname);
         comment.setCreatedAt(LocalDateTime.now());
+        comment.setWantAnonymous(commentRequestDto.isWantAnonymous());
         if (parentId != null) {
             Comment parentComment = getCommentByIdOrThrow(parentId);
             comment.setParent(parentComment);
@@ -57,9 +58,14 @@ public class CommentService {
         }
         Long id = commentRepository.save(comment).getId();
 
+        String writer = member.getName();
+        if(commentRequestDto.isWantAnonymous()){
+            writer = nickname;
+        }
+
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(board.getMember().getId())
-                .content("[" + board.getTitle() + "] " + nickname + "님이 게시글에 댓글을 남겼습니다.")
+                .content("[" + board.getTitle() + "] " + writer + "님이 게시글에 댓글을 남겼습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
         return id;
