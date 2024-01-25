@@ -57,6 +57,8 @@ public class Board {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    private boolean wantAnonymous;
+
     public static Board of(BoardRequestDto boardRequestDto) {
         return ModelMapperUtil.getModelMapper().map(boardRequestDto, Board.class);
     }

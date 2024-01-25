@@ -18,7 +18,7 @@ public class BoardDetailsResponseDto {
 
     private Long id;
 
-    private String nickname;
+    private String writer;
 
     private String title;
 
@@ -28,7 +28,14 @@ public class BoardDetailsResponseDto {
 
     public static BoardDetailsResponseDto of(Board board) {
         BoardDetailsResponseDto boardResponseDto = ModelMapperUtil.getModelMapper().map(board, BoardDetailsResponseDto.class);
-        boardResponseDto.setNickname(board.getNickName());
+
+        if(board.isWantAnonymous()){
+            boardResponseDto.setWriter(board.getNickName());
+        }
+        else{
+            boardResponseDto.setWriter(board.getMember().getName());
+        }
+
         return boardResponseDto;
     }
 

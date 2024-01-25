@@ -39,6 +39,7 @@ public class BoardService {
         Board board = Board.of(boardRequestDto);
         board.setMember(member);
         board.setNickName(randomNicknameUtil.makeRandomNickname());
+        board.setWantAnonymous(boardRequestDto.isWantAnonymous());
         Long id = boardRepository.save(board).getId();
         if (memberService.isMemberAdminRole(member) && boardRequestDto.getCategory().equals("공지사항")) {
             NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
