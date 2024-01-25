@@ -20,7 +20,7 @@ public class CommentGetMyResponseDto {
 
     private Long id;
 
-    private String nickname;
+    private String writer;
 
     private String content;
 
@@ -28,7 +28,14 @@ public class CommentGetMyResponseDto {
 
     public static CommentGetMyResponseDto of(Comment comment) {
         CommentGetMyResponseDto commentGetAllResponseDto = ModelMapperUtil.getModelMapper().map(comment, CommentGetMyResponseDto.class);
-        commentGetAllResponseDto.setNickname(comment.getNickname());
+
+        if(comment.isWantAnonymous()){
+            commentGetAllResponseDto.setWriter(comment.getNickname());
+        }
+        else{
+            commentGetAllResponseDto.setWriter(comment.getWriter().getName());
+        }
+
         return commentGetAllResponseDto;
     }
 
