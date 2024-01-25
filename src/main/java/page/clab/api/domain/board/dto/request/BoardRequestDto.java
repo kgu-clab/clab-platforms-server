@@ -36,7 +36,7 @@ public class BoardRequestDto {
 
     @NotNull(message = "{notNull.board.wantAnonymous}")
     @Column(name = "want_anonymous", nullable = false)
-    @Schema(description = "익명 사용 여부", example = "true", required = true)
+    @Schema(description = "익명 사용 여부", example = "false", required = true)
     private boolean wantAnonymous;
 
     public static BoardRequestDto of(Board board) {
