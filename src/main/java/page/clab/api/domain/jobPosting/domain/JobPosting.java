@@ -2,6 +2,8 @@ package page.clab.api.domain.jobPosting.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,8 +38,10 @@ public class JobPosting {
     @Size(min = 1, max = 100, message = "{size.jobPosting.title}")
     private String title;
 
+    @Enumerated(EnumType.STRING)
     private CareerLevel careerLevel;
 
+    @Enumerated(EnumType.STRING)
     private EmploymentType employmentType;
 
     @Column(nullable = false)
