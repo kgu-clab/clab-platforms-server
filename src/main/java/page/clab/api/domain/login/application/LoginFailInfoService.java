@@ -87,7 +87,7 @@ public class LoginFailInfoService {
     }
 
     public void updateLoginFailInfo(String memberId) throws LoginFaliedException {
-        LoginFailInfo loginFailInfo = getLoginFailInfoByMemberIdOrThrow(memberId);
+        LoginFailInfo loginFailInfo = getLoginFailInfoByMemberId(memberId);
         if (loginFailInfo != null) {
             incrementFailCountAndLock(loginFailInfo);
         }
