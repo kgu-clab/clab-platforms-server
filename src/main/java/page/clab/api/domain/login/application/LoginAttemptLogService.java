@@ -29,7 +29,7 @@ public class LoginAttemptLogService {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         GeoIpInfo geoIpInfo = GeoIpUtil.getInfoByIp(clientIpAddress);
         LoginAttemptLog loginAttemptLog = LoginAttemptLog.builder()
-                .member(memberService.getMemberByIdOrThrow(memberId))
+                .member(memberService.getMemberById(memberId))
                 .userAgent(httpServletRequest.getHeader("User-Agent"))
                 .ipAddress(clientIpAddress)
                 .location(geoIpInfo.getLocation())
