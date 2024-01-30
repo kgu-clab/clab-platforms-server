@@ -193,7 +193,7 @@ public class SecurityConfig {
                 List.of(
                         "http://clab.page", "https://clab.page",
                         "http://*.clab.page", "https://*.clab.page",
-                        "http://localhost:6000", "http://localhost:6001"
+                        "http://localhost:6001", "http://localhost:6002"
                 )
         );
         corsConfiguration.setAllowedMethods(List.of("*"));
