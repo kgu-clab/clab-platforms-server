@@ -1,4 +1,4 @@
-package page.clab.api.domain.executive.api;
+package page.clab.api.domain.position.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.executive.application.ExecutiveService;
-import page.clab.api.domain.executive.dto.request.ExecutiveRequestDto;
-import page.clab.api.domain.executive.dto.response.ExecutiveResponseDto;
+import page.clab.api.domain.position.application.PositionService;
+import page.clab.api.domain.position.dto.request.PositionRequestDto;
+import page.clab.api.domain.position.dto.response.PositionResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
@@ -29,21 +29,21 @@ import page.clab.api.global.common.dto.ResponseModel;
 @RequiredArgsConstructor
 @Tag(name = "Executive", description = "역대 운영진 관련 API")
 @Slf4j
-public class ExecutiveController {
+public class PositionController {
 
-    private final ExecutiveService executiveService;
+    private final PositionService positionService;
 
     @Operation(summary = "운영진 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createExecutive(
-            @Valid @RequestBody ExecutiveRequestDto executiveRequestDto,
+            @Valid @RequestBody PositionRequestDto positionRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = executiveService.createExecutive(executiveRequestDto);
+        Long id = positionService.createExecutive(positionRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -57,7 +57,7 @@ public class ExecutiveController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ExecutiveResponseDto> executives = executiveService.getExecutives(pageable);
+        PagedResponseDto<PositionResponseDto> executives = positionService.getExecutives(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(executives);
         return responseModel;
@@ -72,7 +72,7 @@ public class ExecutiveController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ExecutiveResponseDto> executives = executiveService.getExecutivesByYear(pageable, year);
+        PagedResponseDto<PositionResponseDto> executives = positionService.getExecutivesByYear(pageable, year);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(executives);
         return responseModel;
@@ -84,7 +84,7 @@ public class ExecutiveController {
     public ResponseModel deleteExecutive(
             @PathVariable(name = "executiveId") Long executiveId
     ) {
-        Long id = executiveService.deleteExecutive(executiveId);
+        Long id = positionService.deleteExecutive(executiveId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
