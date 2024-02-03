@@ -24,6 +24,8 @@ public class CommentGetAllResponseDto {
 
     private String writer;
 
+    private String writerImageUrl;
+
     private String content;
 
     private List<CommentGetAllResponseDto> children;
@@ -39,6 +41,8 @@ public class CommentGetAllResponseDto {
         else{
             commentGetAllResponseDto.setWriter(comment.getWriter().getName());
         }
+
+        commentGetAllResponseDto.setWriterImageUrl(comment.getWriter().getImageUrl());
 
         List<CommentGetAllResponseDto> childrenDto = comment.getChildren().stream()
                 .map(CommentGetAllResponseDto::of)
