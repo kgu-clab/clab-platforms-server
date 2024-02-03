@@ -20,6 +20,8 @@ public class BoardDetailsResponseDto {
 
     private String writer;
 
+    private String memberImageUrl;
+
     private String title;
 
     private String content;
@@ -35,6 +37,8 @@ public class BoardDetailsResponseDto {
         else{
             boardResponseDto.setWriter(board.getMember().getName());
         }
+
+        boardResponseDto.setMemberImageUrl(board.getMember().getImageUrl());
 
         return boardResponseDto;
     }

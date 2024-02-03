@@ -22,6 +22,8 @@ public class CommentGetMyResponseDto {
 
     private String writer;
 
+    private String writerImageUrl;
+
     private String content;
 
     private LocalDateTime createdAt;
@@ -35,6 +37,8 @@ public class CommentGetMyResponseDto {
         else{
             commentGetAllResponseDto.setWriter(comment.getWriter().getName());
         }
+
+        commentGetAllResponseDto.setWriterImageUrl(comment.getWriter().getImageUrl());
 
         return commentGetAllResponseDto;
     }
