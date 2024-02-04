@@ -28,6 +28,7 @@ import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
+import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
 import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
@@ -229,9 +230,18 @@ public class MemberService {
         return new PagedResponseDto<>(fileInfoPage);
     }
 
-    public MemberResponseDto getMemberProfile(){
+    public MyProfileResponseDto getMyProfile(){
         Member currentMember = getCurrentMember();
-        return MemberResponseDto.of(currentMember);
+        return MyProfileResponseDto.builder()
+                .name(currentMember.getName())
+                .id(currentMember.getId())
+                .interests(currentMember.getInterests())
+                .contact(currentMember.getContact())
+                .email(currentMember.getEmail())
+                .address(currentMember.getAddress())
+                .githubUrl(currentMember.getGithubUrl())
+                .imageUrl(currentMember.getImageUrl())
+                .build();
     }
 
     public void setLastLoginTime(String memberId) {
