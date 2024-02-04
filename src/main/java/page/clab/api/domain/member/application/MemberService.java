@@ -230,18 +230,9 @@ public class MemberService {
         return new PagedResponseDto<>(fileInfoPage);
     }
 
-    public MyProfileResponseDto getMyProfile(){
+    public MyProfileResponseDto getMyProfile() {
         Member currentMember = getCurrentMember();
-        return MyProfileResponseDto.builder()
-                .name(currentMember.getName())
-                .id(currentMember.getId())
-                .interests(currentMember.getInterests())
-                .contact(currentMember.getContact())
-                .email(currentMember.getEmail())
-                .address(currentMember.getAddress())
-                .githubUrl(currentMember.getGithubUrl())
-                .imageUrl(currentMember.getImageUrl())
-                .build();
+        return MyProfileResponseDto.of(currentMember);
     }
 
     public void setLastLoginTime(String memberId) {
