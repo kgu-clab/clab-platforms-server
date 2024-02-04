@@ -229,6 +229,11 @@ public class MemberService {
         return new PagedResponseDto<>(fileInfoPage);
     }
 
+    public MemberResponseDto getMemberProfile(){
+        Member currentMember = getCurrentMember();
+        return MemberResponseDto.of(currentMember);
+    }
+
     public void setLastLoginTime(String memberId) {
         Member member = getMemberByIdOrThrow(memberId);
         member.setLastLoginTime(LocalDateTime.now());
