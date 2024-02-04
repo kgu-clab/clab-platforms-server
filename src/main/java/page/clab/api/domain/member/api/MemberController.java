@@ -203,4 +203,14 @@ public class MemberController {
         return responseModel;
     }
 
+    @Operation(summary = "[U] 내 프로필 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/my-profile")
+    public ResponseModel getMemberProfile(){
+        MemberResponseDto memberResponseDto = memberService.getMemberProfile();
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(memberResponseDto);
+        return responseModel;
+    }
+
 }
