@@ -17,6 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
 
@@ -58,7 +60,9 @@ public class Schedule {
     @JoinColumn(name = "member_id")
     private Member scheduleWriter;
 
-    private Long activityGroupId;
+    @ManyToOne
+    @JoinColumn(name = "activityGroup")
+    private ActivityGroup activityGroup;
 
     public static Schedule of(ScheduleRequestDto scheduleRequestDto) {
         return Schedule.builder()
