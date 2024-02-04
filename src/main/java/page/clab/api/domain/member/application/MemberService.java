@@ -28,6 +28,7 @@ import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
+import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
 import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
@@ -227,6 +228,11 @@ public class MemberService {
                 .map(FileInfo::of)
                 .collect(Collectors.toList()).subList(start, end), pageable, totalFiles);
         return new PagedResponseDto<>(fileInfoPage);
+    }
+
+    public MyProfileResponseDto getMyProfile() {
+        Member currentMember = getCurrentMember();
+        return MyProfileResponseDto.of(currentMember);
     }
 
     public void setLastLoginTime(String memberId) {
