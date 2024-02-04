@@ -60,6 +60,23 @@ public class ScheduleController {
         return responseModel;
     }
 
+    @Operation(summary = "[U] 내 활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/activity")
+    public ResponseModel getActivitySchedules(
+            @RequestParam(name = "start_date_time") String startDateTime,
+            @RequestParam(name = "end_date_time") String endDateTime,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<ScheduleResponseDto> scheduleResponseDtos
+                = scheduleService.getActivitySchedules(startDateTime, endDateTime, pageable);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(scheduleResponseDtos);
+        return responseModel;
+    }
+
     @Operation(summary = "[U] 일정 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{scheduleId}")
