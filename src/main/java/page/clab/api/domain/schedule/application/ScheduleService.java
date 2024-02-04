@@ -44,6 +44,7 @@ public class ScheduleService {
         Member member = memberService.getCurrentMember();
         ScheduleType scheduleType = scheduleRequestDto.getScheduleType();
         boolean isMemberAdminRole = memberService.isMemberAdminRole(member);
+        ActivityGroup activityGroup = null;
 
         if (!isMemberAdminRole && scheduleType.equals(ScheduleType.ALL)) {
             throw new PermissionDeniedException("동아리 공통 일정은 ADMIN 이상의 권한만 추가할 수 있습니다.");
@@ -52,7 +53,7 @@ public class ScheduleService {
         if (!scheduleType.equals(ScheduleType.ALL)) {
             Long activityGroupId = Optional.ofNullable(scheduleRequestDto.getActivityGroupId())
                     .orElseThrow(() -> new NullPointerException("스터디 또는 프로젝트 일정은 그룹 id를 입력해야 합니다."));
-            ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+            activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
             GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
             if (!isMemberAdminRole && !member.getId().equals(groupMember.getMember().getId())) {
                 throw new PermissionDeniedException("해당 스터디 또는 프로젝트의 LEADER만 그룹 일정을 추가할 수 있습니다.");
@@ -64,7 +65,7 @@ public class ScheduleService {
         schedule.setScheduleWriter(member);
 
         if (scheduleRequestDto.getActivityGroupId() != null) {
-            schedule.setActivityGroupId(scheduleRequestDto.getActivityGroupId());
+            schedule.setActivityGroup(activityGroup);
         }
 
         Long id = save(schedule).getId();
@@ -79,6 +80,31 @@ public class ScheduleService {
         LocalDateTime startDateTime = LocalDateTime.parse(startDate, formatter);
         LocalDateTime endDateTime = LocalDateTime.parse(endDate, formatter);
 
+        List<Schedule> mySchedules = getSchedules(startDateTime, endDateTime, member);
+        Page<Schedule> myPagedSchedules = new PageImpl<>(mySchedules, pageable, mySchedules.size()) ;
+
+        return new PagedResponseDto<>(myPagedSchedules.map(ScheduleResponseDto::of));
+    }
+
+    public PagedResponseDto<ScheduleResponseDto> getActivitySchedules(String startDate, String endDate, Pageable pageable) {
+        Member member = memberService.getCurrentMember();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+        LocalDateTime startDateTime = LocalDateTime.parse(startDate, formatter);
+        LocalDateTime endDateTime = LocalDateTime.parse(endDate, formatter);
+
+        List<Schedule> mySchedules = getSchedules(startDateTime, endDateTime, member);
+
+        List<Schedule> myActivitySchedules = mySchedules.stream()
+                .filter(schedule -> isActivitySchedule(schedule))
+                .collect(Collectors.toList());
+
+        Page<Schedule> myPagedActivitySchedules = new PageImpl<>(myActivitySchedules, pageable, myActivitySchedules.size()) ;
+
+        return new PagedResponseDto<>(myPagedActivitySchedules.map(ScheduleResponseDto::of));
+    }
+
+    public List<Schedule> getSchedules(LocalDateTime startDateTime, LocalDateTime endDateTime, Member member) {
         List<GroupMember> groupMemberList = activityGroupMemberService.getGroupMemberByMember(member)
                 .stream()
                 .distinct()
@@ -95,9 +121,14 @@ public class ScheduleService {
                 .filter(schedule -> isValid(schedule, activityGroupIdList))
                 .collect(Collectors.toList());
 
-        Page<Schedule> myPagedSchedules = new PageImpl<>(mySchedules, pageable, mySchedules.size()) ;
+        return mySchedules;
+    }
 
-        return new PagedResponseDto<>(myPagedSchedules.map(ScheduleResponseDto::of));
+    private boolean isActivitySchedule(Schedule schedule) {
+        if(schedule.getScheduleType() == ScheduleType.ALL) {
+            return false;
+        }
+        return true;
     }
 
     private boolean isValid(Schedule schedule, List<Long> activityGroupIdList) {
@@ -105,7 +136,7 @@ public class ScheduleService {
             return true;
         }
 
-        Long activityGroupId = schedule.getActivityGroupId();
+        Long activityGroupId = schedule.getActivityGroup().getId();
 
         if (activityGroupIdList.contains(activityGroupId)) {
             return true;
