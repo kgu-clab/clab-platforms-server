@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter
 @Setter
@@ -28,5 +30,9 @@ public class MyProfileResponseDto {
     private String githubUrl;
 
     private String imageUrl;
+
+    public static MyProfileResponseDto of(Member member) {
+        return ModelMapperUtil.getModelMapper().map(member, MyProfileResponseDto.class);
+    }
 
 }
