@@ -90,7 +90,7 @@ public class ActivityGroupBoardController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("")
     public ResponseModel updateActivityGroupBoard(
-            @RequestParam Long activityGroupBoardId,
+            @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId,
             @Valid @RequestBody ActivityGroupBoardRequestDto activityGroupBoardRequestDto
     ) {
         Long id = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, activityGroupBoardRequestDto);
