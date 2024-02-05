@@ -125,32 +125,32 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager, redisIpAttemptService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAttemptService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
-                        httpSecurityExceptionHandlingConfigurer
-                                .authenticationEntryPoint((request, response, authException) -> {
-                                    String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-                                    log.info("[{}] : 비정상적인 접근이 감지되었습니다.", clientIpAddress);
-                                    redisIpAttemptService.registerLoginAttempt(clientIpAddress);
-                                    ResponseModel responseModel = ResponseModel.builder()
-                                            .success(false)
-                                            .build();
-                                    response.getWriter().write(responseModel.toJson());
-                                    response.setContentType("application/json");
-                                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                                })
-                                .accessDeniedHandler((request, response, accessDeniedException) -> {
-                                    String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-                                    log.info("[{}] : 비정상적인 접근이 감지되었습니다.", clientIpAddress);
-                                    redisIpAttemptService.registerLoginAttempt(clientIpAddress);
-                                    ResponseModel responseModel = ResponseModel.builder()
-                                            .success(false)
-                                            .build();
-                                    response.getWriter().write(responseModel.toJson());
-                                    response.setContentType("application/json");
-                                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                                })
-                );
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAttemptService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class);
+//                .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
+//                        httpSecurityExceptionHandlingConfigurer
+//                                .authenticationEntryPoint((request, response, authException) -> {
+//                                    String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+//                                    log.info("[{}] : 비정상적인 접근이 감지되었습니다.", clientIpAddress);
+//                                    redisIpAttemptService.registerLoginAttempt(clientIpAddress);
+//                                    ResponseModel responseModel = ResponseModel.builder()
+//                                            .success(false)
+//                                            .build();
+//                                    response.getWriter().write(responseModel.toJson());
+//                                    response.setContentType("application/json");
+//                                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                                })
+//                                .accessDeniedHandler((request, response, accessDeniedException) -> {
+//                                    String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+//                                    log.info("[{}] : 비정상적인 접근이 감지되었습니다.", clientIpAddress);
+//                                    redisIpAttemptService.registerLoginAttempt(clientIpAddress);
+//                                    ResponseModel responseModel = ResponseModel.builder()
+//                                            .success(false)
+//                                            .build();
+//                                    response.getWriter().write(responseModel.toJson());
+//                                    response.setContentType("application/json");
+//                                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+//                                })
+//                );
         return http.build();
     }
 
