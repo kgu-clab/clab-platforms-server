@@ -8,6 +8,8 @@ import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.util.ModelMapperUtil;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -30,6 +32,8 @@ public class MyProfileResponseDto {
     private String githubUrl;
 
     private String imageUrl;
+
+    private LocalDateTime createdAt;
 
     public static MyProfileResponseDto of(Member member) {
         return ModelMapperUtil.getModelMapper().map(member, MyProfileResponseDto.class);
