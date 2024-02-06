@@ -95,8 +95,8 @@ public class MemberService {
         return new PagedResponseDto<>(members.map(MemberResponseDto::of));
     }
 
-    public PagedResponseDto<MemberResponseDto> getBirthdaysThisMonth(String month, Pageable pageable) {
-        LocalDate currentMonth = LocalDate.now().withMonth(Integer.parseInt(month));
+    public PagedResponseDto<MemberResponseDto> getBirthdaysThisMonth(int month, Pageable pageable) {
+        LocalDate currentMonth = LocalDate.now().withMonth(month);
         List<Member> members = memberRepository.findAll();
         List<Member> birthdayMembers = members.stream()
                 .filter(member -> member.getBirth().getMonth() == currentMonth.getMonth())
