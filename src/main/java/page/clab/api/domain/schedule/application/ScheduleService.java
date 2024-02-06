@@ -1,7 +1,6 @@
 package page.clab.api.domain.schedule.application;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -73,25 +72,17 @@ public class ScheduleService {
         return id;
     }
 
-    public PagedResponseDto<ScheduleResponseDto> getSchedules(String startDate, String endDate, Pageable pageable) {
+    public PagedResponseDto<ScheduleResponseDto> getSchedules(LocalDateTime startDateTime, LocalDateTime endDateTime, Pageable pageable) {
         Member member = memberService.getCurrentMember();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-        LocalDateTime startDateTime = LocalDateTime.parse(startDate, formatter);
-        LocalDateTime endDateTime = LocalDateTime.parse(endDate, formatter);
-
         List<Schedule> mySchedules = getSchedules(startDateTime, endDateTime, member);
-        Page<Schedule> myPagedSchedules = new PageImpl<>(mySchedules, pageable, mySchedules.size()) ;
+        Page<Schedule> myPagedSchedules = new PageImpl<>(mySchedules, pageable, mySchedules.size());
 
         return new PagedResponseDto<>(myPagedSchedules.map(ScheduleResponseDto::of));
     }
 
-    public PagedResponseDto<ScheduleResponseDto> getActivitySchedules(String startDate, String endDate, Pageable pageable) {
+    public PagedResponseDto<ScheduleResponseDto> getActivitySchedules(LocalDateTime startDateTime, LocalDateTime endDateTime, Pageable pageable) {
         Member member = memberService.getCurrentMember();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-        LocalDateTime startDateTime = LocalDateTime.parse(startDate, formatter);
-        LocalDateTime endDateTime = LocalDateTime.parse(endDate, formatter);
 
         List<Schedule> mySchedules = getSchedules(startDateTime, endDateTime, member);
 
@@ -99,7 +90,7 @@ public class ScheduleService {
                 .filter(schedule -> isActivitySchedule(schedule))
                 .collect(Collectors.toList());
 
-        Page<Schedule> myPagedActivitySchedules = new PageImpl<>(myActivitySchedules, pageable, myActivitySchedules.size()) ;
+        Page<Schedule> myPagedActivitySchedules = new PageImpl<>(myActivitySchedules, pageable, myActivitySchedules.size());
 
         return new PagedResponseDto<>(myPagedActivitySchedules.map(ScheduleResponseDto::of));
     }
