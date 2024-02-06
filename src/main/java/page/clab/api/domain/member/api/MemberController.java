@@ -74,7 +74,7 @@ public class MemberController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/birthday")
     public ResponseModel getBirthdaysThisMonth(
-            @RequestParam(name = "month") String month,
+            @RequestParam(name = "month") int month,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
