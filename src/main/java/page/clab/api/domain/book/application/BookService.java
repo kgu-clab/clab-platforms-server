@@ -6,10 +6,6 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,6 +17,11 @@ import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
+
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -73,6 +74,7 @@ public class BookService {
         updatedBook.setId(book.getId());
         updatedBook.setCreatedAt(book.getCreatedAt());
         updatedBook.setBorrower(book.getBorrower());
+        updatedBook.setVersion(book.getVersion());
         return bookRepository.save(updatedBook).getId();
     }
 
