@@ -36,7 +36,7 @@ public class SlackService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
 
-        String message = String.format("[Server Error Alert]\n- Time: %s\n- username: %s\n- IP: %s\n- Endpoint: %s\n- Location: %s\n- Error: %s",
+        String message = String.format("[Server Error Alert]\n- Time: %s\n- Username: %s\n- IP: %s\n- Endpoint: %s\n- Location: %s\n- Error: %s",
                 serverTime, username, clientIpAddress, requestUrl, errorLocation, e.getMessage());
         return sendSlackMessage(message);
     }
@@ -48,7 +48,7 @@ public class SlackService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
 
-        String message = String.format("[Security Alert - %s]\n- Time: %s\n- username: %s\n- IP: %s\n- Endpoint: %s\n- Details: %s",
+        String message = String.format("[Security Alert - %s]\n- Time: %s\n- Username: %s\n- IP: %s\n- Endpoint: %s\n- Details: %s",
                 alertType.getTitle(), serverTime, username, clientIpAddress, requestUrl, alertType.getDefaultMessage());
         return sendSlackMessage(message);
     }
@@ -60,7 +60,7 @@ public class SlackService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
 
-        String message = String.format("[Security Alert - %s]\n- Time: %s\n- username: %s\n- IP: %s\n- Endpoint: %s\n- Details: %s\n- %s",
+        String message = String.format("[Security Alert - %s]\n- Time: %s\n- Username: %s\n- IP: %s\n- Endpoint: %s\n- Details: %s\n- %s",
                 alertType.getTitle(), serverTime, username, clientIpAddress, requestUrl, alertType.getDefaultMessage(), additionalMessage);
         return sendSlackMessage(message);
     }
