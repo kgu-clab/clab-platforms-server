@@ -60,7 +60,7 @@ public class SlackService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
 
-        String message = String.format("[Security Alert - %s]\n- Time: %s\n- username: %s\n- IP: %s\n- Endpoint: %s\n- Details: %s\n%s",
+        String message = String.format("[Security Alert - %s]\n- Time: %s\n- username: %s\n- IP: %s\n- Endpoint: %s\n- Details: %s\n- %s",
                 alertType.getTitle(), serverTime, username, clientIpAddress, requestUrl, alertType.getDefaultMessage(), additionalMessage);
         return sendSlackMessage(message);
     }
