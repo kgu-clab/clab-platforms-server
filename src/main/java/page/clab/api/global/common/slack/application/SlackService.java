@@ -6,6 +6,8 @@ import com.slack.api.webhook.WebhookResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.domain.Role;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
@@ -31,27 +33,44 @@ public class SlackService {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String requestUrl = request.getRequestURI();
         String errorLocation = e.getStackTrace()[0].toString();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
 
-        String message = String.format("Server Error Alert - %s\n- Time: %s\n- IP: %s\n- Endpoint: %s\n- Location: %s\n- Error: %s",
-                serverTime, serverTime, clientIpAddress, requestUrl, errorLocation, e.getMessage());
+        String message = String.format("[Server Error Alert]\n- Time: %s\n- username: %s\n- IP: %s\n- Endpoint: %s\n- Location: %s\n- Error: %s",
+                serverTime, username, clientIpAddress, requestUrl, errorLocation, e.getMessage());
         return sendSlackMessage(message);
     }
 
-    public boolean sendSecurityAlertNotification(HttpServletRequest request, SecurityAlertType alertType, String additionalInfo) {
+    public boolean sendSecurityAlertNotification(HttpServletRequest request, SecurityAlertType alertType) {
         String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String requestUrl = request.getRequestURI();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
 
-        String message = String.format("Security Alert - %s: %s\n- Time: %s\n- IP: %s\n- Endpoint: %s\n- Details: %s\n%s",
-                alertType.getTitle(), serverTime, serverTime, clientIpAddress, requestUrl, alertType.getDefaultMessage(), additionalInfo);
+        String message = String.format("[Security Alert - %s]\n- Time: %s\n- username: %s\n- IP: %s\n- Endpoint: %s\n- Details: %s",
+                alertType.getTitle(), serverTime, username, clientIpAddress, requestUrl, alertType.getDefaultMessage());
         return sendSlackMessage(message);
     }
 
-    public boolean sendAdminLoginNotification(String adminUsername, Role role) {
+    public boolean sendSecurityAlertNotification(HttpServletRequest request, SecurityAlertType alertType, String additionalMessage) {
+        String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        String requestUrl = request.getRequestURI();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
+
+        String message = String.format("[Security Alert - %s]\n- Time: %s\n- username: %s\n- IP: %s\n- Endpoint: %s\n- Details: %s\n%s",
+                alertType.getTitle(), serverTime, username, clientIpAddress, requestUrl, alertType.getDefaultMessage(), additionalMessage);
+        return sendSlackMessage(message);
+    }
+
+    public boolean sendAdminLoginNotification(String username, Role role) {
         String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
 
-        String message = String.format("%s Login Alert - %s\n- username: %s\n- IP: %s", role.getDescription(), serverTime, adminUsername, clientIpAddress);
+        String message = String.format("[%s Login Alert]\n- Time: %s\n- username: %s\n- IP: %s",
+                role.getDescription(), serverTime, username, clientIpAddress);
         return sendSlackMessage(message);
     }
 
