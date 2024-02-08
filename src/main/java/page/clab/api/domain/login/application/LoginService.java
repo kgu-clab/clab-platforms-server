@@ -3,7 +3,6 @@ package page.clab.api.domain.login.application;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,8 +22,13 @@ import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.domain.Role;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
+import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +49,8 @@ public class LoginService {
     private final RedisTokenService redisTokenService;
 
     private final AuthenticatorService authenticatorService;
+
+    private final SlackService slackService;
 
     @Transactional
     public String login(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFaliedException, MemberLockedException {
@@ -77,6 +83,10 @@ public class LoginService {
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(id, memberService.getMemberById(id).getRole());
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         redisTokenService.saveRedisToken(id, memberService.getMemberById(id).getRole(), tokenInfo, clientIpAddress);
+        Member loginMember = memberService.getMemberById(id);
+        if (loginMember.getRole().equals(Role.SUPER)) {
+            slackService.sendAdminLoginNotification(loginMember.getId(), loginMember.getRole());
+        }
         return tokenInfo;
     }
 
