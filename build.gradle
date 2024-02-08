@@ -51,6 +51,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail' // Spring Mail
 	implementation 'com.google.zxing:core:3.4.1' // QR 코드
 	implementation 'com.google.zxing:javase:3.4.1' // QR 코드
+	implementation 'com.slack.api:slack-api-client:1.38.0' // Slack API
 
 	// DB
 	implementation 'org.postgresql:postgresql:42.7.1' // PostgreSQL JDBC Driver
