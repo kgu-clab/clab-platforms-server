@@ -126,7 +126,7 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager, redisIpAttemptService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAttemptService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAttemptService, slackService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class);
 //                .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
 //                        httpSecurityExceptionHandlingConfigurer
 //                                .authenticationEntryPoint((request, response, authException) -> {
