@@ -67,7 +67,7 @@ public class LoginService {
             }
         } catch (BadCredentialsException e) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
-            loginFailInfoService.updateLoginFailInfo(id);
+            loginFailInfoService.updateLoginFailInfo(httpServletRequest, id);
         }
         return null;
     }
@@ -77,6 +77,7 @@ public class LoginService {
         String totp = twoFactorAuthenticationRequestDto.getTotp();
         if (!authenticatorService.isAuthenticatorValid(id, totp)) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
+            loginFailInfoService.updateLoginFailInfo(httpServletRequest, id);
             throw new LoginFaliedException("잘못된 인증번호입니다.");
         }
         loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.SUCCESS);
