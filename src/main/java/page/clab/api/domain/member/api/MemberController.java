@@ -24,6 +24,7 @@ import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
+import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.common.file.dto.response.FileInfo;
@@ -73,7 +74,7 @@ public class MemberController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/birthday")
     public ResponseModel getBirthdaysThisMonth(
-            @RequestParam String month,
+            @RequestParam(name = "month") int month,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
@@ -200,6 +201,16 @@ public class MemberController {
         PagedResponseDto<FileInfo> files = memberService.getFilesInMemberDirectory(memberId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(files);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 내 프로필 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/my-profile")
+    public ResponseModel getMyProfile(){
+        MyProfileResponseDto memberResponseDto = memberService.getMyProfile();
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(memberResponseDto);
         return responseModel;
     }
 

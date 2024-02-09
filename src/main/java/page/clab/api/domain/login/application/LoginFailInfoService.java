@@ -1,6 +1,6 @@
 package page.clab.api.domain.login.application;
 
-import java.time.LocalDateTime;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,7 +10,11 @@ import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.slack.application.SlackService;
+import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.exception.NotFoundException;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +22,8 @@ import page.clab.api.global.exception.NotFoundException;
 public class LoginFailInfoService {
 
     private final MemberService memberService;
+
+    private final SlackService slackService;
 
     private final LoginFailInfoRepository loginFailInfoRepository;
 
@@ -86,20 +92,24 @@ public class LoginFailInfoService {
         }
     }
 
-    public void updateLoginFailInfo(String memberId) throws LoginFaliedException {
-        LoginFailInfo loginFailInfo = getLoginFailInfoByMemberIdOrThrow(memberId);
-        if (loginFailInfo != null) {
-            incrementFailCountAndLock(loginFailInfo);
+    public void updateLoginFailInfo(HttpServletRequest request, String memberId) throws LoginFaliedException {
+        LoginFailInfo loginFailInfo = getLoginFailInfoByMemberId(memberId);
+        if ((loginFailInfo == null)) {
+            createLoginFailInfo(memberService.getMemberByIdOrThrow(memberId));
+        } else {
+            incrementFailCountAndLock(request, loginFailInfo);
         }
         throw new LoginFaliedException();
     }
 
-    public void incrementFailCountAndLock(LoginFailInfo loginFailInfo) {
+    public void incrementFailCountAndLock(HttpServletRequest request, LoginFailInfo loginFailInfo) {
         loginFailInfo.setLoginFailCount(loginFailInfo.getLoginFailCount() + 1);
         if (loginFailInfo.getLoginFailCount() >= MAX_LOGIN_FAILURES) {
             if (loginFailInfo.getIsLock().equals(false)) {
                 loginFailInfo.setLatestTryLoginDate(LocalDateTime.now());
                 loginFailInfo.setIsLock(true);
+                slackService.sendSecurityAlertNotification(request, SecurityAlertType.REPEATED_LOGIN_FAILURES,
+                        "[" + loginFailInfo.getMember().getId() + "/" + loginFailInfo.getMember().getName() + "]" + " 로그인 실패 횟수 초과로 계정이 잠겼습니다.");
             }
         }
         loginFailInfoRepository.save(loginFailInfo);
