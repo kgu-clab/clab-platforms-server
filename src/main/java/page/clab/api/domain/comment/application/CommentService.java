@@ -143,6 +143,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentGetAllResponseDto.getId())
                 .orElseThrow(() -> new NotFoundException("댓글이 존재하지 않습니다."));
         commentGetAllResponseDto.setHasLikeByMe(commentLikeRepository.existsByCommentIdAndMemberId(comment.getId(), member.getId()));
+        commentGetAllResponseDto.getChildren().forEach(dto -> setHasLikeByMeAtCommentGetAllResponseDto(dto, member));
         return commentGetAllResponseDto;
     }
 
