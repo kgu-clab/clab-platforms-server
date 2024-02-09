@@ -15,7 +15,7 @@ import lombok.Setter;
 @Builder
 public class CommentLikeRequestDto {
 
-    @NotNull(message = "{notNull.board.category}")
+    @NotNull(message = "{notNull.commentLike.commentId}")
     @Schema(description = "댓글 아이디", example = "1", required = true)
     private Long commentId;
 

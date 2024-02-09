@@ -15,7 +15,7 @@ import lombok.Setter;
 @Builder
 public class BoardLikeRequestDto {
 
-    @NotNull(message = "{notNull.board.category}")
+    @NotNull(message = "{notNull.boardLike.boardId}")
     @Schema(description = "게시글 아이디", example = "1", required = true)
     private Long boardId;
 
