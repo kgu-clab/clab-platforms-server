@@ -3,9 +3,7 @@ package page.clab.api.domain.board.dao;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
-import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.BoardLike;
-import page.clab.api.domain.member.domain.Member;
 
 public interface BoardLikeRepository extends JpaRepository<BoardLike, Long> {
 

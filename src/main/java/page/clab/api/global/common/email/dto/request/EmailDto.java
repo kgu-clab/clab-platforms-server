@@ -1,8 +1,8 @@
 package page.clab.api.global.common.email.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.util.List;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

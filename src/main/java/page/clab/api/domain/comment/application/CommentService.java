@@ -2,7 +2,6 @@ package page.clab.api.domain.comment.application;
 
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.board.application.BoardService;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.board.domain.BoardLike;
 import page.clab.api.domain.comment.dao.CommentLikeRepository;
 import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.comment.domain.Comment;
