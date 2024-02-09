@@ -26,7 +26,6 @@ public class CommentRequestDto {
     private String content;
 
     @NotNull(message = "{notNull.comment.wantAnonymous}")
-    @Column(name = "want_anonymous", nullable = false)
     @Schema(description = "익명 사용 여부", example = "false", required = true)
     private boolean wantAnonymous;
 
