@@ -10,8 +10,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.board.application.BoardService;
 import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.comment.dao.CommentLikeRepository;
 import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.comment.domain.Comment;
+import page.clab.api.domain.comment.domain.CommentLike;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.response.CommentGetAllResponseDto;
 import page.clab.api.domain.comment.dto.response.CommentGetMyResponseDto;
@@ -22,6 +24,7 @@ import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.util.RandomNicknameUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -30,11 +33,15 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
 
+    private final CommentLikeRepository commentLikeRepository;
+
     private final BoardService boardService;
 
     private final MemberService memberService;
 
     private final NotificationService notificationService;
+
+    private final RandomNicknameUtil randomNicknameUtil;
 
     @Transactional
     public Long createComment(Long parentId, Long boardId, CommentRequestDto commentRequestDto) {
@@ -43,7 +50,11 @@ public class CommentService {
         Comment comment = Comment.of(commentRequestDto);
         comment.setBoard(board);
         comment.setWriter(member);
+        String nickname = randomNicknameUtil.makeRandomNickname();
+        comment.setNickname(nickname);
         comment.setCreatedAt(LocalDateTime.now());
+        comment.setWantAnonymous(commentRequestDto.isWantAnonymous());
+        comment.setLikes(0L);
         if (parentId != null) {
             Comment parentComment = getCommentByIdOrThrow(parentId);
             comment.setParent(parentComment);
@@ -52,23 +63,33 @@ public class CommentService {
         }
         Long id = commentRepository.save(comment).getId();
 
+        String writer = member.getName();
+        if(commentRequestDto.isWantAnonymous()){
+            writer = nickname;
+        }
+
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                 .memberId(board.getMember().getId())
-                .content("[" + board.getTitle() + "] " + member.getName() + "님이 게시글에 댓글을 남겼습니다.")
+                .content("[" + board.getTitle() + "] " + writer + "님이 게시글에 댓글을 남겼습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
         return id;
     }
 
     public PagedResponseDto<CommentGetAllResponseDto> getComments(Long boardId, Pageable pageable) {
+        Member member = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByBoardIdAndParentIsNull(boardId, pageable);
         comments.forEach(comment -> Hibernate.initialize(comment.getChildren()));
-        return new PagedResponseDto<>(comments.map(CommentGetAllResponseDto::of));
+        Page<CommentGetAllResponseDto> pagedResponseDto = comments.map(CommentGetAllResponseDto::of);
+        pagedResponseDto.forEach(dto -> setHasLikeByMeAtCommentGetAllResponseDto(dto, member));
+        return new PagedResponseDto<>(pagedResponseDto);
     }
 
     public PagedResponseDto<CommentGetMyResponseDto> getMyComments(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByWriter(member, pageable);
+        Page<CommentGetMyResponseDto> pagedResponseDto = comments.map(CommentGetMyResponseDto::of);
+        pagedResponseDto.forEach(dto -> setHasLikeByMeAtCommentGetMyResponseDto(dto, member));
         return new PagedResponseDto<>(comments.map(CommentGetMyResponseDto::of));
     }
 
@@ -79,7 +100,9 @@ public class CommentService {
             throw new PermissionDeniedException("댓글 작성자만 수정할 수 있습니다.");
         }
         comment.setContent(commentRequestDto.getContent());
+        comment.setNickname(comment.getNickname());
         comment.setUpdateTime(LocalDateTime.now());
+        comment.setLikes(comment.getLikes());
         return commentRepository.save(comment).getId();
     }
 
@@ -91,6 +114,42 @@ public class CommentService {
         }
         commentRepository.delete(comment);
         return comment.getId();
+    }
+
+    public Long updateLikes(Long commentId) {
+        Member member = memberService.getCurrentMember();
+        Comment comment = getCommentByIdOrThrow(commentId);
+        CommentLike commentLike = commentLikeRepository.findByCommentIdAndMemberId(comment.getId(), member.getId());
+
+        if (commentLike != null) {
+            comment.setLikes(Math.min(comment.getLikes() - 1, 0));
+            commentLikeRepository.delete(commentLike);
+        }
+        else {
+            comment.setLikes(comment.getLikes() + 1);
+            CommentLike newCommentLike= CommentLike.builder()
+                    .memberId(member.getId())
+                    .commentId(comment.getId())
+                    .build();
+            commentLikeRepository.save(newCommentLike);
+        }
+
+        return comment.getLikes();
+    }
+
+    public CommentGetAllResponseDto setHasLikeByMeAtCommentGetAllResponseDto(CommentGetAllResponseDto commentGetAllResponseDto, Member member) {
+        Comment comment = commentRepository.findById(commentGetAllResponseDto.getId())
+                .orElseThrow(() -> new NotFoundException("댓글이 존재하지 않습니다."));
+        commentGetAllResponseDto.setHasLikeByMe(commentLikeRepository.existsByCommentIdAndMemberId(comment.getId(), member.getId()));
+        commentGetAllResponseDto.getChildren().forEach(dto -> setHasLikeByMeAtCommentGetAllResponseDto(dto, member));
+        return commentGetAllResponseDto;
+    }
+
+    public CommentGetMyResponseDto setHasLikeByMeAtCommentGetMyResponseDto(CommentGetMyResponseDto commentGetMyResponseDto, Member member) {
+        Comment comment = commentRepository.findById(commentGetMyResponseDto.getId())
+                .orElseThrow(() -> new NotFoundException("댓글이 존재하지 않습니다."));
+        commentGetMyResponseDto.setHasLikeByMe(commentLikeRepository.existsByCommentIdAndMemberId(comment.getId(), member.getId()));
+        return commentGetMyResponseDto;
     }
 
     public Comment getCommentByIdOrThrow(Long id) {
