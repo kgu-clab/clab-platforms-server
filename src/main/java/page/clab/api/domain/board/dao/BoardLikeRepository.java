@@ -7,8 +7,8 @@ import page.clab.api.domain.member.domain.Member;
 
 public interface BoardLikeRepository extends JpaRepository<BoardLike, Long> {
 
-    BoardLike findByBoardAndMember(Board board, Member member);
+    BoardLike findByBoardIdAndMemberId(Long boardId, String memberId);
 
-    boolean existsByBoardAndMember(Board board, Member member);
+    boolean existsByBoardIdAndMemberId(Long boardId, String memberId);
 
 }

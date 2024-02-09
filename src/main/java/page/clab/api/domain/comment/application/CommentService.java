@@ -118,10 +118,10 @@ public class CommentService {
         return comment.getId();
     }
 
-    public synchronized Long updateLikes(Long commentId) {
+    public Long updateLikes(Long commentId) {
         Member member = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
-        CommentLike commentLike = commentLikeRepository.findByCommentAndMember(comment, member);
+        CommentLike commentLike = commentLikeRepository.findByCommentIdAndMemberId(comment.getId(), member.getId());
 
         if (commentLike != null) {
             comment.setLikes(Math.min(comment.getLikes() - 1, 0));
@@ -130,8 +130,8 @@ public class CommentService {
         else {
             comment.setLikes(comment.getLikes() + 1);
             CommentLike newCommentLike= CommentLike.builder()
-                    .member(member)
-                    .comment(comment)
+                    .memberId(member.getId())
+                    .commentId(comment.getId())
                     .build();
             commentLikeRepository.save(newCommentLike);
         }
@@ -142,14 +142,14 @@ public class CommentService {
     public CommentGetAllResponseDto setHasLikeByMeAtCommentGetAllResponseDto(CommentGetAllResponseDto commentGetAllResponseDto, Member member) {
         Comment comment = commentRepository.findById(commentGetAllResponseDto.getId())
                 .orElseThrow(() -> new NotFoundException("댓글이 존재하지 않습니다."));
-        commentGetAllResponseDto.setHasLikeByMe(commentLikeRepository.existsByCommentAndMember(comment, member));
+        commentGetAllResponseDto.setHasLikeByMe(commentLikeRepository.existsByCommentIdAndMemberId(comment.getId(), member.getId()));
         return commentGetAllResponseDto;
     }
 
     public CommentGetMyResponseDto setHasLikeByMeAtCommentGetMyResponseDto(CommentGetMyResponseDto commentGetMyResponseDto, Member member) {
         Comment comment = commentRepository.findById(commentGetMyResponseDto.getId())
                 .orElseThrow(() -> new NotFoundException("댓글이 존재하지 않습니다."));
-        commentGetMyResponseDto.setHasLikeByMe(commentLikeRepository.existsByCommentAndMember(comment, member));
+        commentGetMyResponseDto.setHasLikeByMe(commentLikeRepository.existsByCommentIdAndMemberId(comment.getId(), member.getId()));
         return commentGetMyResponseDto;
     }
 
