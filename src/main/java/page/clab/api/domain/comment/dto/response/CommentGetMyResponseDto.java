@@ -26,6 +26,10 @@ public class CommentGetMyResponseDto {
 
     private String content;
 
+    private Long likes;
+
+    private boolean hasLikeByMe;
+
     private LocalDateTime createdAt;
 
     public static CommentGetMyResponseDto of(Comment comment) {

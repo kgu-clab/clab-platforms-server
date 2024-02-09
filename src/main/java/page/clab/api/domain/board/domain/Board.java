@@ -59,6 +59,8 @@ public class Board {
 
     private boolean wantAnonymous;
 
+    private Long Likes;
+
     public static Board of(BoardRequestDto boardRequestDto) {
         return ModelMapperUtil.getModelMapper().map(boardRequestDto, Board.class);
     }

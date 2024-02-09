@@ -30,6 +30,10 @@ public class CommentGetAllResponseDto {
 
     private List<CommentGetAllResponseDto> children;
 
+    private Long likes;
+
+    private boolean hasLikeByMe;
+
     private LocalDateTime createdAt;
 
     public static CommentGetAllResponseDto of(Comment comment) {
@@ -37,14 +41,12 @@ public class CommentGetAllResponseDto {
 
         if(comment.isWantAnonymous()){
             commentGetAllResponseDto.setWriter(comment.getNickname());
-            commentGetAllResponseDto.setWriter(null);
+            commentGetAllResponseDto.setWriterImageUrl(null);
         }
         else{
             commentGetAllResponseDto.setWriter(comment.getWriter().getName());
-            commentGetAllResponseDto.setWriter(comment.getWriter().getImageUrl());
+            commentGetAllResponseDto.setWriterImageUrl(comment.getWriter().getImageUrl());
         }
-
-        commentGetAllResponseDto.setWriterImageUrl(comment.getWriter().getImageUrl());
 
         List<CommentGetAllResponseDto> childrenDto = comment.getChildren().stream()
                 .map(CommentGetAllResponseDto::of)
