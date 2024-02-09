@@ -33,12 +33,12 @@ public class BoardDetailsResponseDto {
 
         if(board.isWantAnonymous()){
             boardResponseDto.setWriter(board.getNickName());
+            boardResponseDto.setMemberImageUrl(null);
         }
         else{
             boardResponseDto.setWriter(board.getMember().getName());
+            boardResponseDto.setMemberImageUrl(board.getMember().getImageUrl());
         }
-
-        boardResponseDto.setMemberImageUrl(board.getMember().getImageUrl());
 
         return boardResponseDto;
     }

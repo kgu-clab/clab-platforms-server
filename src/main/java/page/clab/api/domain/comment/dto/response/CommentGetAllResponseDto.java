@@ -37,9 +37,11 @@ public class CommentGetAllResponseDto {
 
         if(comment.isWantAnonymous()){
             commentGetAllResponseDto.setWriter(comment.getNickname());
+            commentGetAllResponseDto.setWriter(null);
         }
         else{
             commentGetAllResponseDto.setWriter(comment.getWriter().getName());
+            commentGetAllResponseDto.setWriter(comment.getWriter().getImageUrl());
         }
 
         commentGetAllResponseDto.setWriterImageUrl(comment.getWriter().getImageUrl());
