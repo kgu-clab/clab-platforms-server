@@ -1,7 +1,7 @@
 package page.clab.api.global.auth.domain;
 
-import java.time.LocalDateTime;
 import jakarta.persistence.Column;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

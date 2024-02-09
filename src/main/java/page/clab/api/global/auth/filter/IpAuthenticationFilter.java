@@ -1,13 +1,13 @@
 package page.clab.api.global.auth.filter;
 
-import java.io.IOException;
-import java.net.InetAddress;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import java.io.IOException;
+import java.net.InetAddress;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import page.clab.api.global.util.GeoIpUtil;

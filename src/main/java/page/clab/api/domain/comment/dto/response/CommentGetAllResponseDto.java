@@ -22,7 +22,7 @@ public class CommentGetAllResponseDto {
 
     private Long id;
 
-    private String writerName;
+    private String writer;
 
     private String writerImageUrl;
 
@@ -30,12 +30,24 @@ public class CommentGetAllResponseDto {
 
     private List<CommentGetAllResponseDto> children;
 
+    private Long likes;
+
+    private boolean hasLikeByMe;
+
     private LocalDateTime createdAt;
 
     public static CommentGetAllResponseDto of(Comment comment) {
         CommentGetAllResponseDto commentGetAllResponseDto = ModelMapperUtil.getModelMapper().map(comment, CommentGetAllResponseDto.class);
-        commentGetAllResponseDto.setWriterName(comment.getWriter().getName());
-        commentGetAllResponseDto.setWriterImageUrl(comment.getWriter().getImageUrl());
+
+        if(comment.isWantAnonymous()){
+            commentGetAllResponseDto.setWriter(comment.getNickname());
+            commentGetAllResponseDto.setWriterImageUrl(null);
+        }
+        else{
+            commentGetAllResponseDto.setWriter(comment.getWriter().getName());
+            commentGetAllResponseDto.setWriterImageUrl(comment.getWriter().getImageUrl());
+        }
+
         List<CommentGetAllResponseDto> childrenDto = comment.getChildren().stream()
                 .map(CommentGetAllResponseDto::of)
                 .collect(Collectors.toList());
