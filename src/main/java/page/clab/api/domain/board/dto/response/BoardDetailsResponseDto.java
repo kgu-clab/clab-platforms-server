@@ -26,6 +26,10 @@ public class BoardDetailsResponseDto {
 
     private String content;
 
+    private Long likes;
+
+    private boolean hasLikeByMe;
+
     private LocalDateTime createdAt;
 
     public static BoardDetailsResponseDto of(Board board) {

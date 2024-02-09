@@ -71,6 +71,8 @@ public class Comment {
     @Column(name = "want_anonymous", nullable = false)
     private boolean wantAnonymous;
 
+    private Long Likes;
+
     public static Comment of(CommentRequestDto commentRequestDto) {
         return ModelMapperUtil.getModelMapper().map(commentRequestDto, Comment.class);
     }

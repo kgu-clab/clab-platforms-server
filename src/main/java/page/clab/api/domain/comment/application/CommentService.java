@@ -2,6 +2,7 @@ package page.clab.api.domain.comment.application;
 
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
@@ -10,8 +11,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.board.application.BoardService;
 import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.domain.BoardLike;
+import page.clab.api.domain.comment.dao.CommentLikeRepository;
 import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.comment.domain.Comment;
+import page.clab.api.domain.comment.domain.CommentLike;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.response.CommentGetAllResponseDto;
 import page.clab.api.domain.comment.dto.response.CommentGetMyResponseDto;
@@ -30,6 +34,8 @@ import page.clab.api.global.util.RandomNicknameUtil;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+
+    private final CommentLikeRepository commentLikeRepository;
 
     private final BoardService boardService;
 
@@ -50,6 +56,7 @@ public class CommentService {
         comment.setNickname(nickname);
         comment.setCreatedAt(LocalDateTime.now());
         comment.setWantAnonymous(commentRequestDto.isWantAnonymous());
+        comment.setLikes(0L);
         if (parentId != null) {
             Comment parentComment = getCommentByIdOrThrow(parentId);
             comment.setParent(parentComment);
@@ -72,14 +79,19 @@ public class CommentService {
     }
 
     public PagedResponseDto<CommentGetAllResponseDto> getComments(Long boardId, Pageable pageable) {
+        Member member = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByBoardIdAndParentIsNull(boardId, pageable);
         comments.forEach(comment -> Hibernate.initialize(comment.getChildren()));
-        return new PagedResponseDto<>(comments.map(CommentGetAllResponseDto::of));
+        Page<CommentGetAllResponseDto> pagedResponseDto = comments.map(CommentGetAllResponseDto::of);
+        pagedResponseDto.forEach(dto -> setHasLikeByMeAtCommentGetAllResponseDto(dto, member));
+        return new PagedResponseDto<>(pagedResponseDto);
     }
 
     public PagedResponseDto<CommentGetMyResponseDto> getMyComments(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByWriter(member, pageable);
+        Page<CommentGetMyResponseDto> pagedResponseDto = comments.map(CommentGetMyResponseDto::of);
+        pagedResponseDto.forEach(dto -> setHasLikeByMeAtCommentGetMyResponseDto(dto, member));
         return new PagedResponseDto<>(comments.map(CommentGetMyResponseDto::of));
     }
 
@@ -92,6 +104,7 @@ public class CommentService {
         comment.setContent(commentRequestDto.getContent());
         comment.setNickname(comment.getNickname());
         comment.setUpdateTime(LocalDateTime.now());
+        comment.setLikes(comment.getLikes());
         return commentRepository.save(comment).getId();
     }
 
@@ -103,6 +116,41 @@ public class CommentService {
         }
         commentRepository.delete(comment);
         return comment.getId();
+    }
+
+    public Long updateLikes(Long commentId) {
+        Member member = memberService.getCurrentMember();
+        Comment comment = getCommentByIdOrThrow(commentId);
+        CommentLike commentLike = commentLikeRepository.findByCommentAndMember(comment, member);
+
+        if (commentLike != null) {
+            comment.setLikes(Math.min(comment.getLikes() - 1, 0));
+            commentLikeRepository.delete(commentLike);
+        }
+        else {
+            comment.setLikes(comment.getLikes() + 1);
+            CommentLike newCommentLike= CommentLike.builder()
+                    .member(member)
+                    .comment(comment)
+                    .build();
+            commentLikeRepository.save(newCommentLike);
+        }
+
+        return comment.getLikes();
+    }
+
+    public CommentGetAllResponseDto setHasLikeByMeAtCommentGetAllResponseDto(CommentGetAllResponseDto commentGetAllResponseDto, Member member) {
+        Comment comment = commentRepository.findById(commentGetAllResponseDto.getId())
+                .orElseThrow(() -> new NotFoundException("댓글이 존재하지 않습니다."));
+        commentGetAllResponseDto.setHasLikeByMe(commentLikeRepository.existsByCommentAndMember(comment, member));
+        return commentGetAllResponseDto;
+    }
+
+    public CommentGetMyResponseDto setHasLikeByMeAtCommentGetMyResponseDto(CommentGetMyResponseDto commentGetMyResponseDto, Member member) {
+        Comment comment = commentRepository.findById(commentGetMyResponseDto.getId())
+                .orElseThrow(() -> new NotFoundException("댓글이 존재하지 않습니다."));
+        commentGetMyResponseDto.setHasLikeByMe(commentLikeRepository.existsByCommentAndMember(comment, member));
+        return commentGetMyResponseDto;
     }
 
     public Comment getCommentByIdOrThrow(Long id) {
