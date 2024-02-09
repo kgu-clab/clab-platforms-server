@@ -65,7 +65,7 @@ public class BoardService {
         Member member = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
         BoardDetailsResponseDto boardDetailsResponseDto = BoardDetailsResponseDto.of(board);
-        boardDetailsResponseDto.setHasLikeByMe(boardLikeRepository.existsByBoardAndMember(board, member));
+        boardDetailsResponseDto.setHasLikeByMe(boardLikeRepository.existsByBoardIdAndMemberId(board.getId(), member.getId()));
         return boardDetailsResponseDto;
     }
 
@@ -97,10 +97,10 @@ public class BoardService {
         return boardRepository.save(updatedBoard).getId();
     }
 
-    public synchronized Long updateLikes(Long boardId) {
+    public Long updateLikes(Long boardId) {
         Member member = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
-        BoardLike boardLike = boardLikeRepository.findByBoardAndMember(board, member);
+        BoardLike boardLike = boardLikeRepository.findByBoardIdAndMemberId(board.getId(), member.getId());
 
         if (boardLike != null) {
             board.setLikes(Math.min(board.getLikes() - 1, 0));
@@ -109,9 +109,9 @@ public class BoardService {
         else {
             board.setLikes(board.getLikes() + 1);
             BoardLike newBoardLike = BoardLike.builder()
-                   .member(member)
-                   .board(board)
-                   .build();
+                    .memberId(member.getId())
+                    .boardId(board.getId())
+                    .build();
            boardLikeRepository.save(newBoardLike);
         }
 

@@ -4,8 +4,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,18 +22,15 @@ import page.clab.api.domain.member.domain.Member;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "BoardLike", indexes = @Index(name = "boardLike_index", columnList = "memberId, boardId"))
 public class BoardLike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long boardLikeId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "memberId")
-    private Member member;
+    private String memberId;
 
-    @ManyToOne
-    @JoinColumn(name = "boardId")
-    private Board board;
+    private Long boardId;
 
 }

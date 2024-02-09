@@ -10,9 +10,8 @@ import page.clab.api.domain.member.domain.Member;
 
 @Repository
 public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> {
+    CommentLike findByCommentIdAndMemberId(Long commentId, String memberId);
 
-    CommentLike findByCommentAndMember(Comment comment, Member member);
-
-    boolean existsByCommentAndMember(Comment comment, Member member);
+    boolean existsByCommentIdAndMemberId(Long commentId, String memberId);
 
 }
