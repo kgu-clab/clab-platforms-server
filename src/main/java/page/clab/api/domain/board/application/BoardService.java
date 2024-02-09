@@ -97,7 +97,7 @@ public class BoardService {
         return boardRepository.save(updatedBoard).getId();
     }
 
-    public Long updateLikes(Long boardId) {
+    public synchronized Long updateLikes(Long boardId) {
         Member member = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
         BoardLike boardLike = boardLikeRepository.findByBoardAndMember(board, member);

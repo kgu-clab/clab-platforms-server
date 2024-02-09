@@ -118,7 +118,7 @@ public class CommentService {
         return comment.getId();
     }
 
-    public Long updateLikes(Long commentId) {
+    public synchronized Long updateLikes(Long commentId) {
         Member member = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
         CommentLike commentLike = commentLikeRepository.findByCommentAndMember(comment, member);
