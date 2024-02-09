@@ -1,4 +1,4 @@
-package page.clab.api.domain.executive.dto.request;
+package page.clab.api.domain.position.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -8,14 +8,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.executive.domain.ExecutivePosition;
+import page.clab.api.domain.position.domain.PositionType;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ExecutiveRequestDto {
+public class PositionRequestDto {
 
     @NotNull(message = "{notNull.executive.memberId}")
     @Schema(description = "학번", example = "201912156", required = true)
@@ -23,7 +23,7 @@ public class ExecutiveRequestDto {
 
     @NotNull(message = "{notNull.executive.position}")
     @Schema(description = "직책", example = "OPERATIONS", required = true)
-    private ExecutivePosition position;
+    private PositionType positionType;
 
     @NotNull(message = "{notNull.executive.year}")
     @Size(min = 4, max = 4, message = "{size.executive.year}")
