@@ -40,8 +40,8 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @Operation(summary = "[A] 신규 멤버 생성", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 신규 멤버 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createMember(
             @Valid @RequestBody MemberRequestDto memberRequestDto,
@@ -103,7 +103,8 @@ public class MemberController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 멤버 정보 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 멤버 정보 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{memberId}")
     public ResponseModel updateMemberInfoByMember(
@@ -120,8 +121,8 @@ public class MemberController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 계정 상태 변경", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 계정 상태 변경", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @PatchMapping("/status/{memberId}")
     public ResponseModel updateMemberStatusByAdmin(
             @PathVariable(name = "memberId") String memberId,
@@ -161,9 +162,9 @@ public class MemberController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 모든 멤버의 클라우드 사용량 조회", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[S] 모든 멤버의 클라우드 사용량 조회", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "usage 단위: byte")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({"ROLE_SUPER"})
     @GetMapping("/cloud")
     public ResponseModel getAllCloudUsages(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -177,19 +178,21 @@ public class MemberController {
     }
 
     @Operation(summary = "[U] 멤버의 클라우드 사용량 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "본인 외의 정보는 ROLE_SUPER만 가능<br>" +
             "usage 단위: byte")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/cloud/{memberId}")
     public ResponseModel getCloudUsageByMemberId(
             @PathVariable(name = "memberId") String memberId
-    ) {
+    ) throws PermissionDeniedException {
         CloudUsageInfo usage = memberService.getCloudUsageByMemberId(memberId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(usage);
         return responseModel;
     }
 
-    @Operation(summary = "[U] 멤버 업로드 파일 리스트 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 멤버 업로드 파일 리스트 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/files/{memberId}")
     public ResponseModel getMemberUploadedFiles(

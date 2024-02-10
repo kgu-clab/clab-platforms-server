@@ -130,7 +130,7 @@ public class MemberService {
     public String updateMemberInfo(String memberId, MemberRequestDto memberRequestDto) throws PermissionDeniedException {
         Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
-        if (!(member.getId().equals(currentMember.getId()) || isMemberAdminRole(currentMember))) {
+        if (!(member.getId().equals(currentMember.getId()) || isMemberSuperRole(currentMember))) {
             throw new PermissionDeniedException("멤버 수정 권한이 부족합니다.");
         }
         Member updatedMember = Member.of(memberRequestDto);
@@ -191,10 +191,20 @@ public class MemberService {
 
     public PagedResponseDto<CloudUsageInfo> getAllCloudUsages(Pageable pageable) {
         Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(members.map(member -> getCloudUsageByMemberId(member.getId())));
+        return new PagedResponseDto<>(members.map(member -> {
+            try {
+                return getCloudUsageByMemberId(member.getId());
+            } catch (PermissionDeniedException e) {
+                throw new RuntimeException(e);
+            }
+        }));
     }
 
-    public CloudUsageInfo getCloudUsageByMemberId(String memberId) {
+    public CloudUsageInfo getCloudUsageByMemberId(String memberId) throws PermissionDeniedException {
+        Member currentMember = getCurrentMember();
+        if (!(memberId.equals(currentMember.getId()) || isMemberSuperRole(currentMember))) {
+            throw new PermissionDeniedException("본인 또는 관리자만 접근 가능합니다.");
+        }
         Member member = getMemberByIdOrThrow(memberId);
         File directory = new File(filePath + "/members/" + memberId);
         long usage = FileSystemUtil.calculateDirectorySize(directory);
@@ -211,7 +221,7 @@ public class MemberService {
     public PagedResponseDto<FileInfo> getFilesInMemberDirectory(String memberId, Pageable pageable) {
         Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
-        if (!(isMemberAdminRole(member) || currentMember.getId().equals(memberId))) {
+        if (!(currentMember.getId().equals(memberId) || isMemberSuperRole(member))) {
             return null;
         }
         File directory = new File(filePath + "/members/" + memberId);

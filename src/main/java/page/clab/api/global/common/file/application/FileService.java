@@ -1,11 +1,6 @@
 package page.clab.api.global.common.file.application;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +13,12 @@ import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.FileSystemUtil;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +58,7 @@ public class FileService {
         return url;
     }
 
-    public List<String> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws IOException {
+    public List<String> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws IOException, PermissionDeniedException {
         List<String> urls = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
             String url = saveFile(multipartFile, path, storagePeriod);
@@ -66,7 +67,7 @@ public class FileService {
         return urls;
     }
 
-    public String saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws IOException {
+    public String saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws IOException, PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (path.startsWith("members")) {
             String memberId = path.split(Pattern.quote(File.separator))[1];
