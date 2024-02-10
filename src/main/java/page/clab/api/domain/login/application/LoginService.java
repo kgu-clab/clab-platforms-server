@@ -71,9 +71,10 @@ public class LoginService {
         return null;
     }
 
-    public TokenInfo authenticator(HttpServletRequest httpServletRequest, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException {
+    public TokenInfo authenticator(HttpServletRequest httpServletRequest, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
         String id = twoFactorAuthenticationRequestDto.getMemberId();
         String totp = twoFactorAuthenticationRequestDto.getTotp();
+        accountLockInfoService.handleAccountLockInfo(id);
         if (!authenticatorService.isAuthenticatorValid(id, totp)) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
             accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
