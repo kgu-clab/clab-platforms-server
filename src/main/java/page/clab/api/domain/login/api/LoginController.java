@@ -54,7 +54,7 @@ public class LoginController {
             HttpServletRequest httpServletRequest,
             @Valid @RequestBody TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto,
             BindingResult result
-    ) throws MethodArgumentNotValidException, LoginFaliedException {
+    ) throws MethodArgumentNotValidException, LoginFaliedException, MemberLockedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
