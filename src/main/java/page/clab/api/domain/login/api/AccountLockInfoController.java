@@ -13,19 +13,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.login.application.LoginFailInfoService;
-import page.clab.api.domain.login.dto.response.LoginFailInfoResponseDto;
+import page.clab.api.domain.login.application.AccountLockInfoService;
+import page.clab.api.domain.login.dto.response.AccountLockInfoResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
-@RequestMapping("/login-fail-info")
+@RequestMapping("/account-lock-info")
 @RequiredArgsConstructor
 @Tag(name = "Login", description = "로그인 관련 API")
 @Slf4j
-public class LoginFailInfoController {
+public class AccountLockInfoController {
 
-    private final LoginFailInfoService loginFailInfoService;
+    private final AccountLockInfoService accountLockInfoService;
 
     @Operation(summary = "[S] 유저 밴 설정", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
@@ -33,7 +33,7 @@ public class LoginFailInfoController {
     public ResponseModel banMember(
             @PathVariable(name = "memberId") String memberId
     ) {
-        Long id = loginFailInfoService.banMemberById(memberId);
+        Long id = accountLockInfoService.banMemberById(memberId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -45,7 +45,7 @@ public class LoginFailInfoController {
     public ResponseModel unbanMember(
             @PathVariable(name = "memberId") String memberId
     ) {
-        Long id = loginFailInfoService.unbanMemberById(memberId);
+        Long id = accountLockInfoService.unbanMemberById(memberId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -59,7 +59,7 @@ public class LoginFailInfoController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<LoginFailInfoResponseDto> loginFailInfoResponseDtos = loginFailInfoService.getBanList(pageable);
+        PagedResponseDto<AccountLockInfoResponseDto> loginFailInfoResponseDtos = accountLockInfoService.getBanList(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(loginFailInfoResponseDtos);
         return responseModel;

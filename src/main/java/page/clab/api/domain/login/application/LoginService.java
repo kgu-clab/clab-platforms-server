@@ -39,7 +39,7 @@ public class LoginService {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    private final LoginFailInfoService loginFailInfoService;
+    private final AccountLockInfoService accountLockInfoService;
 
     private final MemberService memberService;
 
@@ -58,7 +58,7 @@ public class LoginService {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
         try {
             loginAuthenticationManager.authenticate(authenticationToken);
-            loginFailInfoService.handleLoginFailInfo(id);
+            accountLockInfoService.handleAccountLockInfo(id);
             memberService.setLastLoginTime(id);
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.TOTP);
             if (!authenticatorService.isAuthenticatorExist(id)) {
@@ -66,7 +66,7 @@ public class LoginService {
             }
         } catch (BadCredentialsException e) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
-            loginFailInfoService.updateLoginFailInfo(httpServletRequest, id);
+            accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
         }
         return null;
     }
@@ -76,7 +76,7 @@ public class LoginService {
         String totp = twoFactorAuthenticationRequestDto.getTotp();
         if (!authenticatorService.isAuthenticatorValid(id, totp)) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
-            loginFailInfoService.updateLoginFailInfo(httpServletRequest, id);
+            accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
             throw new LoginFaliedException("잘못된 인증번호입니다.");
         }
         loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.SUCCESS);
