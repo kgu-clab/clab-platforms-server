@@ -37,7 +37,7 @@ public class BlogController {
     private final BlogService blogService;
 
     @Operation(summary = "[U] 블로그 포스트 생성", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createBlog(
             @Valid @RequestBody BlogRequestDto blogRequestDto,
@@ -95,7 +95,7 @@ public class BlogController {
     }
 
     @Operation(summary = "[U] 블로그 포스트 수정", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{blogId}")
     public ResponseModel updateBlog(
             @PathVariable(name = "blogId") Long blogId,
@@ -112,7 +112,7 @@ public class BlogController {
     }
 
     @Operation(summary = "[U] 블로그 포스트 삭제", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{blogId}")
     public ResponseModel deleteBlog(
             @PathVariable(name = "blogId") Long blogId
