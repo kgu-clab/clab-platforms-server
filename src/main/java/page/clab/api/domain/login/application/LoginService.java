@@ -23,7 +23,6 @@ import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.domain.Role;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
@@ -85,7 +84,7 @@ public class LoginService {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         redisTokenService.saveRedisToken(id, memberService.getMemberById(id).getRole(), tokenInfo, clientIpAddress);
         Member loginMember = memberService.getMemberById(id);
-        if (loginMember.getRole().equals(Role.SUPER)) {
+        if (memberService.isMemberSuperRole(loginMember)) {
             slackService.sendAdminLoginNotification(loginMember.getId(), loginMember.getRole());
         }
         return tokenInfo;

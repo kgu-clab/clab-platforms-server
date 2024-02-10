@@ -1,15 +1,6 @@
 package page.clab.api.domain.member.application;
 
 import jakarta.transaction.Transactional;
-import java.io.File;
-import java.security.SecureRandom;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +37,16 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
 import page.clab.api.global.util.FileSystemUtil;
+
+import java.io.File;
+import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -242,10 +243,11 @@ public class MemberService {
     }
 
     public boolean isMemberAdminRole(Member member) {
-        if (!member.getRole().equals(Role.USER)) {
-            return true;
-        }
-        return false;
+        return (member.getRole().equals(Role.ADMIN) || member.getRole().equals(Role.SUPER));
+    }
+
+    public boolean isMemberSuperRole(Member member) {
+        return member.getRole().equals(Role.SUPER);
     }
 
     public Member getMemberById(String memberId) {
