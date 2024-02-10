@@ -97,7 +97,7 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 가입 신청 승인/취소", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[S] 가입 신청 승인/취소", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "승인/취소 상태가 반전됨")
     @Secured({"ROLE_SUPER"})
     @PatchMapping("/{applicationId}")
