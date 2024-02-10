@@ -3,13 +3,17 @@ package page.clab.api.domain.login.application;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.login.dao.LoginFailInfoRepository;
 import page.clab.api.domain.login.domain.LoginFailInfo;
+import page.clab.api.domain.login.dto.response.LoginFailInfoResponseDto;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.exception.NotFoundException;
@@ -59,6 +63,12 @@ public class LoginFailInfoService {
             return loginFailInfoRepository.save(loginFailInfo).getId();
         }
         return loginFailInfo.getId();
+    }
+
+    public PagedResponseDto<LoginFailInfoResponseDto> getBanList(Pageable pageable) {
+        LocalDateTime banDate = LocalDateTime.of(9999, 12, 31, 23, 59);
+        Page<LoginFailInfo> banList = loginFailInfoRepository.findByLatestTryLoginDate(banDate, pageable);
+        return new PagedResponseDto<>(banList.map(LoginFailInfoResponseDto::of));
     }
 
     public void handleLoginFailInfo(String memberId) throws MemberLockedException {
