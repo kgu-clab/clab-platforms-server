@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.domain.MemberStatus;
 import page.clab.api.domain.member.domain.Role;
 import page.clab.api.domain.member.domain.StudentStatus;
 import page.clab.api.global.util.ModelMapperUtil;
@@ -44,8 +43,6 @@ public class MemberResponseDto {
     private StudentStatus studentStatus;
 
     private String imageUrl;
-
-    private MemberStatus memberStatus;
 
     private Role role;
 

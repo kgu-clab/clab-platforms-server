@@ -86,10 +86,6 @@ public class Member implements UserDetails {
     @URL(message = "{url.member.imageUrl}")
     private String imageUrl;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private MemberStatus memberStatus;
-
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -138,7 +134,6 @@ public class Member implements UserDetails {
 
     public static Member of(MemberRequestDto memberRequestDto) {
         Member member = ModelMapperUtil.getModelMapper().map(memberRequestDto, Member.class);
-        member.setMemberStatus(MemberStatus.ACTIVE);
         member.setRole(Role.USER);
         return member;
     }
