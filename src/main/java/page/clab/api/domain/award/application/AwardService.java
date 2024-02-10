@@ -1,7 +1,6 @@
 package page.clab.api.domain.award.application;
 
 import jakarta.transaction.Transactional;
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +14,8 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +55,7 @@ public class AwardService {
     public Long updateAward(Long awardId, AwardRequestDto awardRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
-        if (!(award.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
+        if (!(award.getMember().getId().equals(member.getId()) || memberService.isMemberSuperRole(member))) {
             throw new PermissionDeniedException("해당 수상 이력을 수정할 권한이 없습니다.");
         }
         Award updatedAward = Award.of(awardRequestDto);
@@ -65,7 +66,7 @@ public class AwardService {
     public Long deleteAward(Long awardId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
-        if (!(award.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
+        if (!(award.getMember().getId().equals(member.getId()) || memberService.isMemberSuperRole(member))) {
             throw new PermissionDeniedException("해당 수상 이력을 수정할 권한이 없습니다.");
         }
         awardRepository.delete(award);
