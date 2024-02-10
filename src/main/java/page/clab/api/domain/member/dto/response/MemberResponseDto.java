@@ -1,7 +1,5 @@
 package page.clab.api.domain.member.dto.response;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,10 +7,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.domain.MemberStatus;
-import page.clab.api.domain.member.domain.OAuthProvider;
 import page.clab.api.domain.member.domain.Role;
 import page.clab.api.domain.member.domain.StudentStatus;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -48,8 +48,6 @@ public class MemberResponseDto {
     private MemberStatus memberStatus;
 
     private Role role;
-
-    private OAuthProvider provider;
 
     private LocalDateTime createdAt;
 

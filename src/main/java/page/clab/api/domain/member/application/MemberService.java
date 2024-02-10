@@ -137,7 +137,6 @@ public class MemberService {
         updatedMember.setPassword(passwordEncoder.encode(updatedMember.getPassword()));
         updatedMember.setMemberStatus(member.getMemberStatus());
         updatedMember.setRole(member.getRole());
-        updatedMember.setProvider(member.getProvider());
         updatedMember.setLastLoginTime(member.getLastLoginTime());
         updatedMember.setLoanSuspensionDate(member.getLoanSuspensionDate());
         return memberRepository.save(updatedMember).getId();
