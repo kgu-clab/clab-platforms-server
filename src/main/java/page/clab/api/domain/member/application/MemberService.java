@@ -13,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.dao.MemberRepository;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.domain.MemberStatus;
 import page.clab.api.domain.member.domain.Role;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
@@ -22,7 +21,6 @@ import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
 import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.email.application.EmailService;
@@ -109,17 +107,15 @@ public class MemberService {
         return new PagedResponseDto<>(birthdayMembersPage.map(MemberResponseDto::of));
     }
 
-    public PagedResponseDto<MemberResponseDto> searchMember(String memberId, String name, MemberStatus memberStatus, Pageable pageable) {
+    public PagedResponseDto<MemberResponseDto> searchMember(String memberId, String name, Pageable pageable) {
         Page<Member> members;
         if (memberId != null) {
             Member member = getMemberByIdOrThrow(memberId);
             members = new PageImpl<>(Arrays.asList(member), pageable, 1);
         } else if (name != null) {
             members = getMemberByName(name, pageable);
-        } else if (memberStatus != null) {
-            members = getMemberByMemberStatus(memberStatus, pageable);
         } else {
-            throw new IllegalArgumentException("적어도 memberId, name, memberStatus 중 하나를 제공해야 합니다.");
+            throw new IllegalArgumentException("적어도 memberId, name 중 하나를 제공해야 합니다.");
         }
         if (members.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
@@ -135,23 +131,10 @@ public class MemberService {
         }
         Member updatedMember = Member.of(memberRequestDto);
         updatedMember.setPassword(passwordEncoder.encode(updatedMember.getPassword()));
-        updatedMember.setMemberStatus(member.getMemberStatus());
         updatedMember.setRole(member.getRole());
         updatedMember.setLastLoginTime(member.getLastLoginTime());
         updatedMember.setLoanSuspensionDate(member.getLoanSuspensionDate());
         return memberRepository.save(updatedMember).getId();
-    }
-
-    public String updateMemberStatusByAdmin(String memberId, MemberStatus memberStatus) {
-        Member member = getMemberByIdOrThrow(memberId);
-        member.setMemberStatus(memberStatus);
-        String id = memberRepository.save(member).getId();
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(member.getId())
-                .content("관리자가 " + member.getName() + "님의 회원 상태를 [" + memberStatus.getDescription() + "]으로 변경하였습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
-        return id;
     }
 
     @Transactional
@@ -271,10 +254,6 @@ public class MemberService {
 
     public Page<Member> getMemberByName(String name, Pageable pageable) {
         return memberRepository.findAllByNameOrderByCreatedAtDesc(name, pageable);
-    }
-
-    public Page<Member> getMemberByMemberStatus(MemberStatus memberStatus, Pageable pageable) {
-        return memberRepository.findByMemberStatusOrderByCreatedAtDesc(memberStatus, pageable);
     }
 
     public Member saveMember(Member updatedMember) {

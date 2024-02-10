@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.domain.member.domain.MemberStatus;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
@@ -92,12 +91,11 @@ public class MemberController {
     public ResponseModel searchMember(
             @RequestParam(required = false) String memberId,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) MemberStatus memberStatus,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<MemberResponseDto> members = memberService.searchMember(memberId, name, memberStatus, pageable);
+        PagedResponseDto<MemberResponseDto> members = memberService.searchMember(memberId, name, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(members);
         return responseModel;
@@ -116,19 +114,6 @@ public class MemberController {
             throw new MethodArgumentNotValidException(null, result);
         }
         String id = memberService.updateMemberInfo(memberId, memberRequestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
-    }
-
-    @Operation(summary = "[S] 계정 상태 변경", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
-    @PatchMapping("/status/{memberId}")
-    public ResponseModel updateMemberStatusByAdmin(
-            @PathVariable(name = "memberId") String memberId,
-            @RequestParam MemberStatus memberStatus
-    ) {
-        String id = memberService.updateMemberStatusByAdmin(memberId, memberStatus);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
