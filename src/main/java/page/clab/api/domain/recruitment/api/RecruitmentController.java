@@ -3,7 +3,6 @@ package page.clab.api.domain.recruitment.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
@@ -22,6 +21,8 @@ import page.clab.api.domain.recruitment.dto.request.RecruitmentRequestDto;
 import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/recruitments")
 @RequiredArgsConstructor
@@ -31,8 +32,8 @@ public class RecruitmentController {
 
     private final RecruitmentService recruitmentService;
 
-    @Operation(summary = "[A] 모집 공고 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 모집 공고 등록", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createRecruitment(
             @Valid @RequestBody RecruitmentRequestDto recruitmentRequestDto,
@@ -57,8 +58,8 @@ public class RecruitmentController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 모집 공고 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 모집 공고 수정", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @PatchMapping("/{recruitmentId}")
     public ResponseModel updateRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
@@ -74,8 +75,8 @@ public class RecruitmentController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 모집 공고 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 모집 공고 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{recruitmentId}")
     public ResponseModel deleteRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId

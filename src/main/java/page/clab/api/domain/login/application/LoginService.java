@@ -23,7 +23,6 @@ import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.domain.Role;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
@@ -40,7 +39,7 @@ public class LoginService {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    private final LoginFailInfoService loginFailInfoService;
+    private final AccountLockInfoService accountLockInfoService;
 
     private final MemberService memberService;
 
@@ -59,7 +58,7 @@ public class LoginService {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
         try {
             loginAuthenticationManager.authenticate(authenticationToken);
-            loginFailInfoService.handleLoginFailInfo(id);
+            accountLockInfoService.handleAccountLockInfo(id);
             memberService.setLastLoginTime(id);
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.TOTP);
             if (!authenticatorService.isAuthenticatorExist(id)) {
@@ -67,7 +66,7 @@ public class LoginService {
             }
         } catch (BadCredentialsException e) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
-            loginFailInfoService.updateLoginFailInfo(httpServletRequest, id);
+            accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
         }
         return null;
     }
@@ -77,7 +76,7 @@ public class LoginService {
         String totp = twoFactorAuthenticationRequestDto.getTotp();
         if (!authenticatorService.isAuthenticatorValid(id, totp)) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
-            loginFailInfoService.updateLoginFailInfo(httpServletRequest, id);
+            accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
             throw new LoginFaliedException("잘못된 인증번호입니다.");
         }
         loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.SUCCESS);
@@ -85,7 +84,7 @@ public class LoginService {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         redisTokenService.saveRedisToken(id, memberService.getMemberById(id).getRole(), tokenInfo, clientIpAddress);
         Member loginMember = memberService.getMemberById(id);
-        if (loginMember.getRole().equals(Role.SUPER)) {
+        if (memberService.isMemberSuperRole(loginMember)) {
             slackService.sendAdminLoginNotification(loginMember.getId(), loginMember.getRole());
         }
         return tokenInfo;
