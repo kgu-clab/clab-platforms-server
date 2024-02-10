@@ -73,7 +73,7 @@ public class FileController {
     }
 
     @Operation(summary = "[U] 멤버 프로필 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_SUPER"})
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/profiles/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel profileUpload(
             @PathVariable(name = "memberId") String memberId,
@@ -87,7 +87,7 @@ public class FileController {
     }
 
     @Operation(summary = "[U] 함께하는 활동 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/activity-photos/{activityPhotoId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel activityUpload(
             @PathVariable(name = "activityPhotoId") String activityPhotoId,
@@ -127,7 +127,8 @@ public class FileController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 파일 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 파일 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{saveFileName}")
     public ResponseModel deleteFile(
