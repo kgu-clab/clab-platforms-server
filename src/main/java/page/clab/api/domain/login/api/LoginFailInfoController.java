@@ -21,8 +21,8 @@ public class LoginFailInfoController {
 
     private final LoginFailInfoService loginFailInfoService;
 
-    @Operation(summary = "[A] 유저 밴 처리", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 유저 밴 설정", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @PostMapping("/ban/{memberId}")
     public ResponseModel banMember(
             @PathVariable(name = "memberId") String memberId
@@ -33,8 +33,8 @@ public class LoginFailInfoController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 유저 밴 해제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 유저 밴 해제", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @PostMapping("/unban/{memberId}")
     public ResponseModel unbanMember(
             @PathVariable(name = "memberId") String memberId
