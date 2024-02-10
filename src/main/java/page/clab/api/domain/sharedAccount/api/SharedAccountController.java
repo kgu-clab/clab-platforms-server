@@ -41,8 +41,8 @@ public class SharedAccountController {
 
     private final SharedAccountUsageService sharedAccountUsageService;
 
-    @Operation(summary = "[A] 공동 계정 추가", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 공동 계정 추가", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createSharedAccount(
             @Valid @RequestBody SharedAccountRequestDto sharedAccountRequestDto,
@@ -71,8 +71,8 @@ public class SharedAccountController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 공동 계정 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 공동 계정 수정", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @PatchMapping("/{accountId}")
     public ResponseModel updateSharedAccount(
             @PathVariable(name = "accountId") Long accountId,
@@ -88,8 +88,8 @@ public class SharedAccountController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 공동 계정 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 공동 계정 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{accountId}")
     public ResponseModel deleteSharedAccount(
             @PathVariable(name = "accountId") Long accountId
