@@ -42,12 +42,13 @@ public class LoginFailInfoService {
     }
 
     public Long banMemberById(String memberId) {
-        LoginFailInfo loginFailInfo = getLoginFailInfoByMemberIdOrThrow(memberId);
+        Member member = memberService.getMemberById(memberId);
+        LoginFailInfo loginFailInfo = getLoginFailInfoByMemberId(memberId);
         if (loginFailInfo == null) {
-            return null;
+            loginFailInfo = createLoginFailInfo(member);
         }
         loginFailInfo.setIsLock(true);
-        loginFailInfo.setLatestTryLoginDate(LocalDateTime.now().plusYears(100));
+        loginFailInfo.setLatestTryLoginDate(LocalDateTime.of(9999, 12, 31, 23, 59));
         return loginFailInfoRepository.save(loginFailInfo).getId();
     }
 
