@@ -96,7 +96,8 @@ public class DonationController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 후원 정보 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 후원 정보 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{donationId}")
     public ResponseModel updateDonation(
@@ -113,7 +114,8 @@ public class DonationController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 후원 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 후원 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{donationId}")
     public ResponseModel deleteDonation(
