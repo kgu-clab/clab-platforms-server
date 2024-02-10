@@ -81,8 +81,8 @@ public class MembershipFeeController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 회비 정보 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 회비 정보 수정", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @PatchMapping("/{membershipFeeId}")
     public ResponseModel updateMembershipFee(
             @PathVariable(name = "membershipFeeId") Long membershipFeeId,
@@ -98,8 +98,8 @@ public class MembershipFeeController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 회비 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 회비 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{membershipFeeId}")
     public ResponseModel deleteMembershipFee(
             @PathVariable(name = "membershipFeeId") Long membershipFeeId

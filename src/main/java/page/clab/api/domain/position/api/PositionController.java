@@ -35,8 +35,8 @@ public class PositionController {
 
     private final PositionService positionService;
 
-    @Operation(summary = "직책 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 직책 등록", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createPosition(
             @Valid @RequestBody PositionRequestDto positionRequestDto,
@@ -51,7 +51,7 @@ public class PositionController {
         return responseModel;
     }
 
-    @Operation(summary = "연도/직책별 목록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[U] 연도/직책별 목록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "연도와 직책을 선택하여 조회할 수 있음<br>" +
             "연도와 직책을 선택하지 않으면 전체 목록을 조회함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
@@ -69,7 +69,7 @@ public class PositionController {
         return responseModel;
     }
 
-    @Operation(summary = "나의 직책 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 나의 직책 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my-positions")
     public ResponseModel getMyPositionsByYear(
@@ -81,8 +81,8 @@ public class PositionController {
         return responseModel;
     }
 
-    @Operation(summary = "직책 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 직책 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{positionId}")
     public ResponseModel deletePosition(
             @PathVariable("positionId") Long positionId
