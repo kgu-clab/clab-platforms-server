@@ -45,7 +45,7 @@ public class AccountLockInfoService {
         return accountLockInfo;
     }
 
-    public Long banMemberById(String memberId) {
+    public Long banMemberById(HttpServletRequest request, String memberId) {
         Member member = memberService.getMemberById(memberId);
         AccountLockInfo accountLockInfo = getAccountLockInfoByMemberId(memberId);
         if (accountLockInfo == null) {
@@ -53,17 +53,20 @@ public class AccountLockInfoService {
         }
         accountLockInfo.setIsLock(true);
         accountLockInfo.setLockUntil(LocalDateTime.of(9999, 12, 31, 23, 59));
+        slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_BANNED, "ID: " + member.getId() + ", Name: " + member.getName());
         return accountLockInfoRepository.save(accountLockInfo).getId();
     }
 
-    public Long unbanMemberById(String memberId) {
+    public Long unbanMemberById(HttpServletRequest request, String memberId) {
+        Member member = memberService.getMemberById(memberId);
         AccountLockInfo accountLockInfo = getAccountLockInfoByMemberIdOrThrow(memberId);
         if (accountLockInfo != null) {
             accountLockInfo.setIsLock(false);
             accountLockInfo.setLockUntil(null);
+            slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_UNBANNED, "ID: " + member.getId() + ", Name: " + member.getName());
             return accountLockInfoRepository.save(accountLockInfo).getId();
         }
-        return accountLockInfo.getId();
+        return null;
     }
 
     public PagedResponseDto<AccountLockInfoResponseDto> getBanList(Pageable pageable) {
