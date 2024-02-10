@@ -29,7 +29,7 @@ public class BlacklistIpController {
     private final BlacklistIpService blacklistIpService;
 
     @Operation(summary = "[A] 블랙리스트 IP 추가", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel addBlacklistedIp(
             HttpServletRequest request,
@@ -56,7 +56,7 @@ public class BlacklistIpController {
     }
 
     @Operation(summary = "[A] 블랙리스트 IP 제거", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({"ROLE_SUPER"})
     @DeleteMapping("")
     public ResponseModel removeBlacklistedIp(
             HttpServletRequest request,
@@ -69,7 +69,7 @@ public class BlacklistIpController {
     }
 
     @Operation(summary = "[A] 블랙리스트 IP 초기화", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({"ROLE_SUPER"})
     @DeleteMapping("/clear")
     public ResponseModel clearBlacklist(HttpServletRequest request) {
         blacklistIpService.clearBlacklist(request);
