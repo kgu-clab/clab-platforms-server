@@ -1,9 +1,5 @@
 package page.clab.api.domain.schedule.application;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,6 +21,12 @@ import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -106,7 +108,10 @@ public class ScheduleService {
                 .map(ActivityGroup::getId)
                 .collect(Collectors.toList());
 
-        List<Schedule> validDateSchedules = getScheduleByDateBetween(startDateTime, endDateTime);
+        List<Schedule> validDateSchedules = getScheduleByDateBetween(startDateTime, endDateTime)
+                .stream()
+                .sorted(Comparator.comparing(Schedule::getStartDateTime))
+                .collect(Collectors.toList());
 
         List<Schedule> mySchedules = validDateSchedules.stream()
                 .filter(schedule -> isValid(schedule, activityGroupIdList))
