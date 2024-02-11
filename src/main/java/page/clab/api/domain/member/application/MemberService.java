@@ -18,6 +18,7 @@ import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
 import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
+import page.clab.api.domain.member.dto.response.MemberBirthdayResponseDto;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
 import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
@@ -95,7 +96,7 @@ public class MemberService {
         return new PagedResponseDto<>(members.map(MemberResponseDto::of));
     }
 
-    public PagedResponseDto<MemberResponseDto> getBirthdaysThisMonth(int month, Pageable pageable) {
+    public PagedResponseDto<MemberBirthdayResponseDto> getBirthdaysThisMonth(int month, Pageable pageable) {
         LocalDate currentMonth = LocalDate.now().withMonth(month);
         List<Member> members = memberRepository.findAll();
         List<Member> birthdayMembers = members.stream()
@@ -105,7 +106,7 @@ public class MemberService {
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), birthdayMembers.size());
         Page<Member> birthdayMembersPage = new PageImpl<>(birthdayMembers.subList(start, end), pageable, birthdayMembers.size());
-        return new PagedResponseDto<>(birthdayMembersPage.map(MemberResponseDto::of));
+        return new PagedResponseDto<>(birthdayMembersPage.map(MemberBirthdayResponseDto::of));
     }
 
     public PagedResponseDto<MemberResponseDto> searchMember(String memberId, String name, Pageable pageable) {
