@@ -10,10 +10,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +22,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 
 @Entity
 @Getter
@@ -85,15 +86,8 @@ public class Member implements UserDetails {
     @URL(message = "{url.member.imageUrl}")
     private String imageUrl;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private MemberStatus memberStatus;
-
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    @Enumerated(EnumType.STRING)
-    private OAuthProvider provider;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -140,9 +134,7 @@ public class Member implements UserDetails {
 
     public static Member of(MemberRequestDto memberRequestDto) {
         Member member = ModelMapperUtil.getModelMapper().map(memberRequestDto, Member.class);
-        member.setMemberStatus(MemberStatus.ACTIVE);
         member.setRole(Role.USER);
-        member.setProvider(OAuthProvider.LOCAL);
         return member;
     }
 

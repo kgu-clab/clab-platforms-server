@@ -54,7 +54,7 @@ public class LoginController {
             HttpServletRequest httpServletRequest,
             @Valid @RequestBody TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto,
             BindingResult result
-    ) throws MethodArgumentNotValidException, LoginFaliedException {
+    ) throws MethodArgumentNotValidException, LoginFaliedException, MemberLockedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
@@ -64,9 +64,9 @@ public class LoginController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] TOTP 초기화", description = "ROLE_ADMIN 권한이 필요함")
+    @Operation(summary = "[S] TOTP 초기화", description = "ROLE_SUPER 권한이 필요함")
     @DeleteMapping("/authenticator/{memberId}")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({"ROLE_SUPER"})
     public ResponseModel deleteAuthenticator(
             @PathVariable(name = "memberId") String memberId
     ) {

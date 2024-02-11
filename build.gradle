@@ -51,6 +51,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail' // Spring Mail
 	implementation 'com.google.zxing:core:3.4.1' // QR 코드
 	implementation 'com.google.zxing:javase:3.4.1' // QR 코드
+	implementation 'com.slack.api:slack-api-client:1.38.0' // Slack API
 
 	// DB
 	implementation 'org.postgresql:postgresql:42.7.1' // PostgreSQL JDBC Driver
@@ -63,8 +64,6 @@ dependencies {
 
 	// Security
 	implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' // OAuth 2.0 Client
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server' // OAuth 2.0 Resource Server
 	implementation 'com.warrenstrange:googleauth:1.5.0' // Google Authenticator
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5' // JWT 라이브러리
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // JWT 구현체

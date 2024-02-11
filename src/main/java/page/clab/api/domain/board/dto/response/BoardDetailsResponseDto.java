@@ -18,7 +18,7 @@ public class BoardDetailsResponseDto {
 
     private Long id;
 
-    private String memberName;
+    private String writer;
 
     private String memberImageUrl;
 
@@ -26,12 +26,24 @@ public class BoardDetailsResponseDto {
 
     private String content;
 
+    private Long likes;
+
+    private boolean hasLikeByMe;
+
     private LocalDateTime createdAt;
 
     public static BoardDetailsResponseDto of(Board board) {
         BoardDetailsResponseDto boardResponseDto = ModelMapperUtil.getModelMapper().map(board, BoardDetailsResponseDto.class);
-        boardResponseDto.setMemberName(board.getMember().getName());
-        boardResponseDto.setMemberImageUrl(board.getMember().getImageUrl());
+
+        if(board.isWantAnonymous()){
+            boardResponseDto.setWriter(board.getNickName());
+            boardResponseDto.setMemberImageUrl(null);
+        }
+        else{
+            boardResponseDto.setWriter(board.getMember().getName());
+            boardResponseDto.setMemberImageUrl(board.getMember().getImageUrl());
+        }
+
         return boardResponseDto;
     }
 

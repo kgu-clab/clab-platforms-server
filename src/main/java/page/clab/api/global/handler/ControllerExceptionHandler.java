@@ -4,15 +4,8 @@ import com.google.gson.stream.MalformedJsonException;
 import com.maxmind.geoip2.exception.AddressNotFoundException;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -48,16 +41,28 @@ import page.clab.api.global.auth.exception.TokenValidateException;
 import page.clab.api.global.auth.exception.UnAuthorizeException;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.common.file.exception.FileUploadFailException;
+import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
 @RestControllerAdvice(basePackages = "page.clab.api.domain")
 @RequiredArgsConstructor
 @Slf4j
 public class ControllerExceptionHandler {
+
+    private final SlackService slackService;
 
     private final MessageSource messageSource;
 
@@ -142,7 +147,8 @@ public class ControllerExceptionHandler {
             CustomOptimisticLockingFailureException.class,
             Exception.class
     })
-    public ResponseModel serverException(HttpServletResponse response, Exception e){
+    public ResponseModel serverException(HttpServletRequest request, HttpServletResponse response, Exception e){
+        slackService.sendServerErrorNotification(request, e);
         log.warn(e.getMessage());
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         return makeExceptionResponseModel(null);
