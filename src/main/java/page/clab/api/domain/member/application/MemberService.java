@@ -16,7 +16,9 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.domain.Role;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
+import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
+import page.clab.api.domain.member.dto.response.MemberBirthdayResponseDto;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
 import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
@@ -94,7 +96,7 @@ public class MemberService {
         return new PagedResponseDto<>(members.map(MemberResponseDto::of));
     }
 
-    public PagedResponseDto<MemberResponseDto> getBirthdaysThisMonth(int month, Pageable pageable) {
+    public PagedResponseDto<MemberBirthdayResponseDto> getBirthdaysThisMonth(int month, Pageable pageable) {
         LocalDate currentMonth = LocalDate.now().withMonth(month);
         List<Member> members = memberRepository.findAll();
         List<Member> birthdayMembers = members.stream()
@@ -104,7 +106,7 @@ public class MemberService {
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), birthdayMembers.size());
         Page<Member> birthdayMembersPage = new PageImpl<>(birthdayMembers.subList(start, end), pageable, birthdayMembers.size());
-        return new PagedResponseDto<>(birthdayMembersPage.map(MemberResponseDto::of));
+        return new PagedResponseDto<>(birthdayMembersPage.map(MemberBirthdayResponseDto::of));
     }
 
     public PagedResponseDto<MemberResponseDto> searchMember(String memberId, String name, Pageable pageable) {
@@ -123,18 +125,43 @@ public class MemberService {
         return new PagedResponseDto<>(members.map(MemberResponseDto::of));
     }
 
-    public String updateMemberInfo(String memberId, MemberRequestDto memberRequestDto) throws PermissionDeniedException {
+    public String updateMemberInfo(String memberId, MemberUpdateRequestDto memberUpdateRequestDto) throws PermissionDeniedException {
         Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
         if (!(member.getId().equals(currentMember.getId()) || isMemberSuperRole(currentMember))) {
             throw new PermissionDeniedException("멤버 수정 권한이 부족합니다.");
         }
-        Member updatedMember = Member.of(memberRequestDto);
-        updatedMember.setPassword(passwordEncoder.encode(updatedMember.getPassword()));
-        updatedMember.setRole(member.getRole());
-        updatedMember.setLastLoginTime(member.getLastLoginTime());
-        updatedMember.setLoanSuspensionDate(member.getLoanSuspensionDate());
-        return memberRepository.save(updatedMember).getId();
+        if (memberUpdateRequestDto.getPassword() != null) {
+            member.setPassword(passwordEncoder.encode(memberUpdateRequestDto.getPassword()));
+        }
+        if (memberUpdateRequestDto.getContact() != null) {
+            member.setContact(removeHyphensFromContact(memberUpdateRequestDto.getContact()));
+        }
+        if (memberUpdateRequestDto.getEmail() != null) {
+            member.setEmail(memberUpdateRequestDto.getEmail());
+        }
+        if (memberUpdateRequestDto.getGrade() != null) {
+            member.setGrade(memberUpdateRequestDto.getGrade());
+        }
+        if (memberUpdateRequestDto.getBirth() != null) {
+            member.setBirth(memberUpdateRequestDto.getBirth());
+        }
+        if (memberUpdateRequestDto.getAddress() != null) {
+            member.setAddress(memberUpdateRequestDto.getAddress());
+        }
+        if (memberUpdateRequestDto.getInterests() != null) {
+            member.setInterests(memberUpdateRequestDto.getInterests());
+        }
+        if (memberUpdateRequestDto.getGithubUrl() != null) {
+            member.setGithubUrl(memberUpdateRequestDto.getGithubUrl());
+        }
+        if (memberUpdateRequestDto.getStudentStatus() != null) {
+            member.setStudentStatus(memberUpdateRequestDto.getStudentStatus());
+        }
+        if (memberUpdateRequestDto.getImageUrl() != null) {
+            member.setImageUrl(memberUpdateRequestDto.getImageUrl());
+        }
+        return memberRepository.save(member).getId();
     }
 
     @Transactional
