@@ -69,6 +69,7 @@ public class SecurityConfig {
     private static final String[] PERMIT_ALL = {
             "/login/**",
             "/static/**",
+            "/resources/files/**",
             "/configuration/ui",
             "/configuration/security",
             "/webjars/**",
