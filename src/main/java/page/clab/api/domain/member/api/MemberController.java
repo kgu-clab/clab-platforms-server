@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
+import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
@@ -107,13 +108,13 @@ public class MemberController {
     @PatchMapping("/{memberId}")
     public ResponseModel updateMemberInfoByMember(
             @PathVariable(name = "memberId") String memberId,
-            @Valid @RequestBody MemberRequestDto memberRequestDto,
+            @Valid @RequestBody MemberUpdateRequestDto memberUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        String id = memberService.updateMemberInfo(memberId, memberRequestDto);
+        String id = memberService.updateMemberInfo(memberId, memberUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
