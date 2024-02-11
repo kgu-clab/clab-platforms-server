@@ -23,6 +23,7 @@ import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
 import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
+import page.clab.api.domain.member.dto.response.MemberBirthdayResponseDto;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -79,7 +80,7 @@ public class MemberController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<MemberResponseDto> birthdayMembers = memberService.getBirthdaysThisMonth(month, pageable);
+        PagedResponseDto<MemberBirthdayResponseDto> birthdayMembers = memberService.getBirthdaysThisMonth(month, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(birthdayMembers);
         return responseModel;
