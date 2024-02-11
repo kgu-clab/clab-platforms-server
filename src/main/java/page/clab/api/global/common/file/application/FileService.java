@@ -10,6 +10,7 @@ import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.dao.UploadFileRepository;
 import page.clab.api.global.common.file.domain.UploadedFile;
+import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.FileSystemUtil;
@@ -88,9 +89,10 @@ public class FileService {
         return url;
     }
 
-    public String deleteFile(String saveFileName) throws PermissionDeniedException {
+    public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        UploadedFile uploadedFile = uploadFileRepository.findBySaveFileName(saveFileName);
+        String url = deleteFileRequestDto.getUrl();
+        UploadedFile uploadedFile = uploadFileRepository.findByUrl(url);
         String filePath = uploadedFile.getSavedPath();
         File storedFile = new File(filePath);
         if (uploadedFile == null || !storedFile.exists()) {
@@ -102,9 +104,9 @@ public class FileService {
         if (!storedFile.delete()) {
             log.info("파일 삭제 오류 : {}", filePath);
         }
-        String url = uploadedFile.getUrl();
+        String deletedFileUrl = uploadedFile.getUrl();
         uploadFileRepository.deleteById(uploadedFile.getId());
-        return url;
+        return deletedFileUrl;
     }
 
 }
