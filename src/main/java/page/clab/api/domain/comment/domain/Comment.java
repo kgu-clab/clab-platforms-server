@@ -44,6 +44,9 @@ public class Comment {
     @JoinColumn(name = "member_id")
     private Member writer;
 
+    @Column(nullable = false)
+    private String nickname;
+
     @Column(nullable = false, length = 1000)
     @Size(min = 1, max = 1000, message = "{size.comment.content}")
     private String content;
@@ -64,6 +67,11 @@ public class Comment {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "want_anonymous", nullable = false)
+    private boolean wantAnonymous;
+
+    private Long Likes;
 
     public static Comment of(CommentRequestDto commentRequestDto) {
         return ModelMapperUtil.getModelMapper().map(commentRequestDto, Comment.class);

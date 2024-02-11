@@ -1,15 +1,6 @@
 package page.clab.api.domain.member.application;
 
 import jakarta.transaction.Transactional;
-import java.io.File;
-import java.security.SecureRandom;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +13,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.dao.MemberRepository;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.domain.MemberStatus;
 import page.clab.api.domain.member.domain.Role;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
+import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
+import page.clab.api.domain.member.dto.response.MemberBirthdayResponseDto;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
+import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
 import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.email.application.EmailService;
@@ -45,6 +37,16 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
 import page.clab.api.global.util.FileSystemUtil;
+
+import java.io.File;
+import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -94,8 +96,8 @@ public class MemberService {
         return new PagedResponseDto<>(members.map(MemberResponseDto::of));
     }
 
-    public PagedResponseDto<MemberResponseDto> getBirthdaysThisMonth(String month, Pageable pageable) {
-        LocalDate currentMonth = LocalDate.now().withMonth(Integer.parseInt(month));
+    public PagedResponseDto<MemberBirthdayResponseDto> getBirthdaysThisMonth(int month, Pageable pageable) {
+        LocalDate currentMonth = LocalDate.now().withMonth(month);
         List<Member> members = memberRepository.findAll();
         List<Member> birthdayMembers = members.stream()
                 .filter(member -> member.getBirth().getMonth() == currentMonth.getMonth())
@@ -104,20 +106,18 @@ public class MemberService {
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), birthdayMembers.size());
         Page<Member> birthdayMembersPage = new PageImpl<>(birthdayMembers.subList(start, end), pageable, birthdayMembers.size());
-        return new PagedResponseDto<>(birthdayMembersPage.map(MemberResponseDto::of));
+        return new PagedResponseDto<>(birthdayMembersPage.map(MemberBirthdayResponseDto::of));
     }
 
-    public PagedResponseDto<MemberResponseDto> searchMember(String memberId, String name, MemberStatus memberStatus, Pageable pageable) {
+    public PagedResponseDto<MemberResponseDto> searchMember(String memberId, String name, Pageable pageable) {
         Page<Member> members;
         if (memberId != null) {
             Member member = getMemberByIdOrThrow(memberId);
             members = new PageImpl<>(Arrays.asList(member), pageable, 1);
         } else if (name != null) {
             members = getMemberByName(name, pageable);
-        } else if (memberStatus != null) {
-            members = getMemberByMemberStatus(memberStatus, pageable);
         } else {
-            throw new IllegalArgumentException("적어도 memberId, name, memberStatus 중 하나를 제공해야 합니다.");
+            throw new IllegalArgumentException("적어도 memberId, name 중 하나를 제공해야 합니다.");
         }
         if (members.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
@@ -125,32 +125,43 @@ public class MemberService {
         return new PagedResponseDto<>(members.map(MemberResponseDto::of));
     }
 
-    public String updateMemberInfo(String memberId, MemberRequestDto memberRequestDto) throws PermissionDeniedException {
+    public String updateMemberInfo(String memberId, MemberUpdateRequestDto memberUpdateRequestDto) throws PermissionDeniedException {
         Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
-        if (!(member.getId().equals(currentMember.getId()) || isMemberAdminRole(currentMember))) {
+        if (!(member.getId().equals(currentMember.getId()) || isMemberSuperRole(currentMember))) {
             throw new PermissionDeniedException("멤버 수정 권한이 부족합니다.");
         }
-        Member updatedMember = Member.of(memberRequestDto);
-        updatedMember.setPassword(passwordEncoder.encode(updatedMember.getPassword()));
-        updatedMember.setMemberStatus(member.getMemberStatus());
-        updatedMember.setRole(member.getRole());
-        updatedMember.setProvider(member.getProvider());
-        updatedMember.setLastLoginTime(member.getLastLoginTime());
-        updatedMember.setLoanSuspensionDate(member.getLoanSuspensionDate());
-        return memberRepository.save(updatedMember).getId();
-    }
-
-    public String updateMemberStatusByAdmin(String memberId, MemberStatus memberStatus) {
-        Member member = getMemberByIdOrThrow(memberId);
-        member.setMemberStatus(memberStatus);
-        String id = memberRepository.save(member).getId();
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(member.getId())
-                .content("관리자가 " + member.getName() + "님의 회원 상태를 [" + memberStatus.getDescription() + "]으로 변경하였습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
-        return id;
+        if (memberUpdateRequestDto.getPassword() != null) {
+            member.setPassword(passwordEncoder.encode(memberUpdateRequestDto.getPassword()));
+        }
+        if (memberUpdateRequestDto.getContact() != null) {
+            member.setContact(removeHyphensFromContact(memberUpdateRequestDto.getContact()));
+        }
+        if (memberUpdateRequestDto.getEmail() != null) {
+            member.setEmail(memberUpdateRequestDto.getEmail());
+        }
+        if (memberUpdateRequestDto.getGrade() != null) {
+            member.setGrade(memberUpdateRequestDto.getGrade());
+        }
+        if (memberUpdateRequestDto.getBirth() != null) {
+            member.setBirth(memberUpdateRequestDto.getBirth());
+        }
+        if (memberUpdateRequestDto.getAddress() != null) {
+            member.setAddress(memberUpdateRequestDto.getAddress());
+        }
+        if (memberUpdateRequestDto.getInterests() != null) {
+            member.setInterests(memberUpdateRequestDto.getInterests());
+        }
+        if (memberUpdateRequestDto.getGithubUrl() != null) {
+            member.setGithubUrl(memberUpdateRequestDto.getGithubUrl());
+        }
+        if (memberUpdateRequestDto.getStudentStatus() != null) {
+            member.setStudentStatus(memberUpdateRequestDto.getStudentStatus());
+        }
+        if (memberUpdateRequestDto.getImageUrl() != null) {
+            member.setImageUrl(memberUpdateRequestDto.getImageUrl());
+        }
+        return memberRepository.save(member).getId();
     }
 
     @Transactional
@@ -189,10 +200,20 @@ public class MemberService {
 
     public PagedResponseDto<CloudUsageInfo> getAllCloudUsages(Pageable pageable) {
         Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(members.map(member -> getCloudUsageByMemberId(member.getId())));
+        return new PagedResponseDto<>(members.map(member -> {
+            try {
+                return getCloudUsageByMemberId(member.getId());
+            } catch (PermissionDeniedException e) {
+                throw new RuntimeException(e);
+            }
+        }));
     }
 
-    public CloudUsageInfo getCloudUsageByMemberId(String memberId) {
+    public CloudUsageInfo getCloudUsageByMemberId(String memberId) throws PermissionDeniedException {
+        Member currentMember = getCurrentMember();
+        if (!(memberId.equals(currentMember.getId()) || isMemberSuperRole(currentMember))) {
+            throw new PermissionDeniedException("본인 또는 관리자만 접근 가능합니다.");
+        }
         Member member = getMemberByIdOrThrow(memberId);
         File directory = new File(filePath + "/members/" + memberId);
         long usage = FileSystemUtil.calculateDirectorySize(directory);
@@ -209,7 +230,7 @@ public class MemberService {
     public PagedResponseDto<FileInfo> getFilesInMemberDirectory(String memberId, Pageable pageable) {
         Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
-        if (!(isMemberAdminRole(member) || currentMember.getId().equals(memberId))) {
+        if (!(currentMember.getId().equals(memberId) || isMemberSuperRole(member))) {
             return null;
         }
         File directory = new File(filePath + "/members/" + memberId);
@@ -229,6 +250,11 @@ public class MemberService {
         return new PagedResponseDto<>(fileInfoPage);
     }
 
+    public MyProfileResponseDto getMyProfile() {
+        Member currentMember = getCurrentMember();
+        return MyProfileResponseDto.of(currentMember);
+    }
+
     public void setLastLoginTime(String memberId) {
         Member member = getMemberByIdOrThrow(memberId);
         member.setLastLoginTime(LocalDateTime.now());
@@ -236,10 +262,11 @@ public class MemberService {
     }
 
     public boolean isMemberAdminRole(Member member) {
-        if (!member.getRole().equals(Role.USER)) {
-            return true;
-        }
-        return false;
+        return (member.getRole().equals(Role.ADMIN) || member.getRole().equals(Role.SUPER));
+    }
+
+    public boolean isMemberSuperRole(Member member) {
+        return member.getRole().equals(Role.SUPER);
     }
 
     public Member getMemberById(String memberId) {
@@ -254,10 +281,6 @@ public class MemberService {
 
     public Page<Member> getMemberByName(String name, Pageable pageable) {
         return memberRepository.findAllByNameOrderByCreatedAtDesc(name, pageable);
-    }
-
-    public Page<Member> getMemberByMemberStatus(MemberStatus memberStatus, Pageable pageable) {
-        return memberRepository.findByMemberStatusOrderByCreatedAtDesc(memberStatus, pageable);
     }
 
     public Member saveMember(Member updatedMember) {

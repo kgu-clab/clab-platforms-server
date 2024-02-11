@@ -3,7 +3,6 @@ package page.clab.api.domain.application.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +26,8 @@ import page.clab.api.domain.application.dto.response.ApplicationPassResponseDto;
 import page.clab.api.domain.application.dto.response.ApplicationResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/applications")
@@ -96,9 +97,9 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 가입 신청 승인/취소", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[S] 가입 신청 승인/취소", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "승인/취소 상태가 반전됨")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({"ROLE_SUPER"})
     @PatchMapping("/{applicationId}")
     public ResponseModel approveApplication(
             @PathVariable(name = "applicationId") String applicationId
@@ -135,7 +136,7 @@ public class ApplicationController {
     }
 
     @Operation(summary = "[A] 가입 신청서 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{applicationId}")
     public ResponseModel deleteApplication(
             @PathVariable(name = "applicationId") String applicationId

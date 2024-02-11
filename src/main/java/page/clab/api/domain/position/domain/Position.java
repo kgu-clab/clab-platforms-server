@@ -1,4 +1,4 @@
-package page.clab.api.domain.executive.domain;
+package page.clab.api.domain.position.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.executive.dto.request.ExecutiveRequestDto;
+import page.clab.api.domain.position.dto.request.PositionRequestDto;
 import page.clab.api.domain.member.domain.Member;
 
 @Entity
@@ -22,7 +22,7 @@ import page.clab.api.domain.member.domain.Member;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Executive {
+public class Position {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,17 +33,17 @@ public class Executive {
     private Member member;
 
     @Column(nullable = false)
-    private ExecutivePosition position;
+    private PositionType positionType;
 
     @Column(nullable = false)
     @Size(min = 1, message = "{size.executive.year}")
     private String year;
 
-    public static Executive of(ExecutiveRequestDto executiveRequestDto) {
-        return Executive.builder()
-                .member(Member.builder().id(executiveRequestDto.getMemberId()).build())
-                .position(executiveRequestDto.getPosition())
-                .year(executiveRequestDto.getYear())
+    public static Position of(PositionRequestDto positionRequestDto) {
+        return Position.builder()
+                .member(Member.builder().id(positionRequestDto.getMemberId()).build())
+                .positionType(positionRequestDto.getPositionType())
+                .year(positionRequestDto.getYear())
                 .build();
     }
 

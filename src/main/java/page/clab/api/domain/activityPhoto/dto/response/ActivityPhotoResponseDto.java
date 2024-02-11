@@ -8,6 +8,8 @@ import lombok.Setter;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.global.util.ModelMapperUtil;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -17,7 +19,11 @@ public class ActivityPhotoResponseDto {
 
     private Long id;
 
+    private String title;
+
     private String imageUrl;
+
+    private LocalDate date;
 
     private Boolean isPublic;
 

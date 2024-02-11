@@ -3,7 +3,6 @@ package page.clab.api.domain.login.application;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,8 +22,12 @@ import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
+import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +39,7 @@ public class LoginService {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    private final LoginFailInfoService loginFailInfoService;
+    private final AccountLockInfoService accountLockInfoService;
 
     private final MemberService memberService;
 
@@ -46,6 +49,8 @@ public class LoginService {
 
     private final AuthenticatorService authenticatorService;
 
+    private final SlackService slackService;
+
     @Transactional
     public String login(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFaliedException, MemberLockedException {
         String id = loginRequestDto.getId();
@@ -53,7 +58,7 @@ public class LoginService {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
         try {
             loginAuthenticationManager.authenticate(authenticationToken);
-            loginFailInfoService.handleLoginFailInfo(id);
+            accountLockInfoService.handleAccountLockInfo(id);
             memberService.setLastLoginTime(id);
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.TOTP);
             if (!authenticatorService.isAuthenticatorExist(id)) {
@@ -61,22 +66,28 @@ public class LoginService {
             }
         } catch (BadCredentialsException e) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
-            loginFailInfoService.updateLoginFailInfo(id);
+            accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
         }
         return null;
     }
 
-    public TokenInfo authenticator(HttpServletRequest httpServletRequest, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException {
+    public TokenInfo authenticator(HttpServletRequest httpServletRequest, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
         String id = twoFactorAuthenticationRequestDto.getMemberId();
         String totp = twoFactorAuthenticationRequestDto.getTotp();
+        accountLockInfoService.handleAccountLockInfo(id);
         if (!authenticatorService.isAuthenticatorValid(id, totp)) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
+            accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
             throw new LoginFaliedException("잘못된 인증번호입니다.");
         }
         loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.SUCCESS);
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(id, memberService.getMemberById(id).getRole());
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         redisTokenService.saveRedisToken(id, memberService.getMemberById(id).getRole(), tokenInfo, clientIpAddress);
+        Member loginMember = memberService.getMemberById(id);
+        if (memberService.isMemberSuperRole(loginMember)) {
+            slackService.sendAdminLoginNotification(loginMember.getId(), loginMember.getRole());
+        }
         return tokenInfo;
     }
 

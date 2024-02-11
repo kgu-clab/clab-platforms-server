@@ -2,6 +2,7 @@ package page.clab.api.domain.blacklistIp.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -27,13 +28,14 @@ public class BlacklistIpController {
 
     private final BlacklistIpService blacklistIpService;
 
-    @Operation(summary = "[A] 블랙리스트 IP 추가", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 블랙리스트 IP 추가", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel addBlacklistedIp(
+            HttpServletRequest request,
             @RequestParam(name = "ipAddress") String ipAddress
     ) {
-        Long id = blacklistIpService.addBlacklistedIp(ipAddress);
+        Long id = blacklistIpService.addBlacklistedIp(request, ipAddress);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -53,23 +55,24 @@ public class BlacklistIpController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 블랙리스트 IP 제거", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 블랙리스트 IP 제거", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @DeleteMapping("")
     public ResponseModel removeBlacklistedIp(
+            HttpServletRequest request,
             @RequestParam(name = "ipAddress") String ipAddress
     ) {
-        Long id = blacklistIpService.deleteBlacklistedIp(ipAddress);
+        Long id = blacklistIpService.deleteBlacklistedIp(request, ipAddress);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
     }
 
-    @Operation(summary = "[A] 블랙리스트 IP 초기화", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 블랙리스트 IP 초기화", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @DeleteMapping("/clear")
-    public ResponseModel clearBlacklist() {
-        blacklistIpService.clearBlacklist();
+    public ResponseModel clearBlacklist(HttpServletRequest request) {
+        blacklistIpService.clearBlacklist(request);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }

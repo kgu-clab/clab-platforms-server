@@ -26,8 +26,8 @@ public class LoginAttemptLogController {
 
     private final LoginAttemptLogService loginAttemptLogService;
 
-    @Operation(summary = "[A] 계정별 로그인 시도 로그 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 계정별 로그인 시도 로그 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @GetMapping("/{memberId}")
     public ResponseModel getLoginAttemptLogs(
             @PathVariable(name = "memberId") String memberId,

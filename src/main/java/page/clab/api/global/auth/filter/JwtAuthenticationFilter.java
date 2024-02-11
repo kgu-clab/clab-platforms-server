@@ -1,13 +1,10 @@
 package page.clab.api.global.auth.filter;
 
-import java.io.IOException;
-import java.util.regex.Pattern;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -15,11 +12,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.domain.login.application.RedisTokenService;
-import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.global.auth.application.RedisIpAttemptService;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
-import page.clab.api.global.common.dto.ResponseModel;
-import page.clab.api.global.util.HttpReqResUtil;
+import page.clab.api.global.common.slack.application.SlackService;
+
+import java.io.IOException;
+import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -30,6 +28,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     private final RedisTokenService redisTokenService;
 
     private final RedisIpAttemptService redisIpAttemptService;
+
+    private final SlackService slackService;
 
     private final BlacklistIpRepository blacklistIpRepository;
 
@@ -50,27 +50,28 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             chain.doFilter(request, response);
             return;
         }
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAttemptService.isBlocked(clientIpAddress)) {
-            log.info("[{}] : 서비스 이용이 제한된 IP입니다.", clientIpAddress);
-            ResponseModel responseModel = ResponseModel.builder()
-                    .success(false)
-                    .build();
-            response.getWriter().write(responseModel.toJson());
-            response.setContentType("application/json");
-            ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
+//        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+//        if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAttemptService.isBlocked(clientIpAddress)) {
+//            log.info("[{}] : 서비스 이용이 제한된 IP입니다.", clientIpAddress);
+//            ResponseModel responseModel = ResponseModel.builder()
+//                    .success(false)
+//                    .build();
+//            response.getWriter().write(responseModel.toJson());
+//            response.setContentType("application/json");
+//            ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            return;
+//        }
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
         if (token != null && jwtTokenProvider.validateToken(token)) {
-            RedisToken redisToken = (jwtTokenProvider.isRefreshToken(token)) ? redisTokenService.getRedisTokenByRefreshToken(token) : redisTokenService.getRedisTokenByAccessToken(token);
-            if (redisToken == null) {
-                throw new SecurityException("존재하지 않는 토큰입니다.");
-            }
-            if (!redisToken.getIp().equals(clientIpAddress)) {
-                redisTokenService.deleteRedisTokenByAccessToken(token);
-                throw new SecurityException("[" + clientIpAddress + "] 토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
-            }
+//            RedisToken redisToken = (jwtTokenProvider.isRefreshToken(token)) ? redisTokenService.getRedisTokenByRefreshToken(token) : redisTokenService.getRedisTokenByAccessToken(token);
+//            if (redisToken == null) {
+//                throw new SecurityException("존재하지 않는 토큰입니다.");
+//            }
+//            if (!redisToken.getIp().equals(clientIpAddress)) {
+//                redisTokenService.deleteRedisTokenByAccessToken(token);
+//                slackService.sendSecurityAlertNotification((HttpServletRequest) request, SecurityAlertType.DUPLICATE_LOGIN, "토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
+//                throw new SecurityException("[" + clientIpAddress + "] 토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
+//            }
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

@@ -112,4 +112,16 @@ public class CommentController {
         return responseModel;
     }
 
+    @PostMapping("/likes/{commentId}")
+    @Operation(summary = "[U] 댓글 좋아요 누르기/취소하기", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    public ResponseModel updateLikes(
+            @PathVariable(name = "commentId") Long commentId
+    ) {
+        Long id = commentService.updateLikes(commentId);
+        ResponseModel responseModel= ResponseModel.builder().build();
+        responseModel.addData(id);
+        return responseModel;
+    }
+
 }

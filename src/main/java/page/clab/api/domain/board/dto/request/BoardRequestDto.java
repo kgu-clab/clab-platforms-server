@@ -1,6 +1,7 @@
 package page.clab.api.domain.board.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,11 @@ public class BoardRequestDto {
     @Size(min = 1, max = 10000, message = "{size.board.content}")
     @Schema(description = "내용", example = "2023년 2학기 모집 안내", required = true)
     private String content;
+
+    @NotNull(message = "{notNull.board.wantAnonymous}")
+    @Column(name = "want_anonymous", nullable = false)
+    @Schema(description = "익명 사용 여부", example = "false", required = true)
+    private boolean wantAnonymous;
 
     public static BoardRequestDto of(Board board) {
         return ModelMapperUtil.getModelMapper().map(board, BoardRequestDto.class);

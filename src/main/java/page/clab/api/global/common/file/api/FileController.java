@@ -2,9 +2,6 @@ package page.clab.api.global.common.file.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -19,6 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/files")
@@ -36,7 +37,7 @@ public class FileController {
             @PathVariable(name = "boardId") String boardId,
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws IOException {
+    ) throws IOException, PermissionDeniedException {
         List<String> url = fileService.saveFiles(multipartFiles, "boards" + File.separator + boardId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
@@ -50,7 +51,7 @@ public class FileController {
             @PathVariable(name = "newsId") String newsId,
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws IOException {
+    ) throws IOException, PermissionDeniedException {
         List<String> url = fileService.saveFiles(multipartFiles, "news" + File.separator + newsId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
@@ -64,7 +65,7 @@ public class FileController {
             @PathVariable(name = "bookId") String bookId,
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws IOException {
+    ) throws IOException, PermissionDeniedException {
         List<String> url = fileService.saveFiles(multipartFiles, "books" + File.separator + bookId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
@@ -78,7 +79,7 @@ public class FileController {
             @PathVariable(name = "memberId") String memberId,
             @RequestParam(name = "multipartFile") MultipartFile multipartFile,
             @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws IOException {
+    ) throws IOException, PermissionDeniedException {
         String url = fileService.saveFile(multipartFile, "profiles" + File.separator + memberId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
@@ -86,13 +87,13 @@ public class FileController {
     }
 
     @Operation(summary = "[U] 함께하는 활동 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/activity-photos/{activityPhotoId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel activityUpload(
             @PathVariable(name = "activityPhotoId") String activityPhotoId,
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws IOException {
+    ) throws IOException, PermissionDeniedException {
         List<String> url = fileService.saveFiles(multipartFiles, "activity-photos" + File.separator + activityPhotoId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
@@ -106,7 +107,7 @@ public class FileController {
             @PathVariable(name = "memberId") String memberId,
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws IOException {
+    ) throws IOException, PermissionDeniedException {
         List<String> url = fileService.saveFiles(multipartFiles, "members" + File.separator + memberId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
@@ -119,14 +120,15 @@ public class FileController {
     public ResponseModel formUpload(
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam("storagePeriod") long storagePeriod
-    ) throws IOException {
+    ) throws IOException, PermissionDeniedException {
         List<String> url = fileService.saveFiles(multipartFiles, "forms", storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
         return responseModel;
     }
 
-    @Operation(summary = "[U] 파일 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 파일 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{saveFileName}")
     public ResponseModel deleteFile(

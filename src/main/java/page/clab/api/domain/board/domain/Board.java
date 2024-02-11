@@ -36,6 +36,9 @@ public class Board {
     private Member member;
 
     @Column(nullable = false)
+    private String nickName;
+
+    @Column(nullable = false)
     @Size(min = 1, max = 50, message = "{size.board.category}")
     private String category;
 
@@ -53,6 +56,10 @@ public class Board {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    private boolean wantAnonymous;
+
+    private Long Likes;
 
     public static Board of(BoardRequestDto boardRequestDto) {
         return ModelMapperUtil.getModelMapper().map(boardRequestDto, Board.class);

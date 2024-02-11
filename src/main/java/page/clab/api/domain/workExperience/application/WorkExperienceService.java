@@ -44,7 +44,7 @@ public class WorkExperienceService {
     public Long updateWorkExperience(Long workExperienceId, WorkExperienceRequestDto workExperienceRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
-        if (!(workExperience.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
+        if (!(workExperience.getMember().getId().equals(member.getId()) || memberService.isMemberSuperRole(member))) {
             throw new PermissionDeniedException("해당 경력사항을 수정할 권한이 없습니다.");
         }
         WorkExperience updatedWorkExperience = WorkExperience.of(workExperienceRequestDto);
@@ -56,7 +56,7 @@ public class WorkExperienceService {
     public Long deleteWorkExperience(Long workExperienceId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
-        if (!(workExperience.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
+        if (!(workExperience.getMember().getId().equals(member.getId()) || memberService.isMemberSuperRole(member))) {
             throw new PermissionDeniedException("해당 경력사항을 삭제할 권한이 없습니다.");
         }
         workExperienceRepository.deleteById(workExperienceId);
