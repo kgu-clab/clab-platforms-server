@@ -1,5 +1,9 @@
 package page.clab.api.domain.position.dto.response;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,11 +12,6 @@ import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter

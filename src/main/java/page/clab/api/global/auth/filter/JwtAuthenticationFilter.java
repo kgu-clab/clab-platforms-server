@@ -5,6 +5,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -15,9 +17,6 @@ import page.clab.api.domain.login.application.RedisTokenService;
 import page.clab.api.global.auth.application.RedisIpAttemptService;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
-
-import java.io.IOException;
-import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 @Slf4j
