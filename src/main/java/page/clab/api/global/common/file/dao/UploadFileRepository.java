@@ -7,6 +7,6 @@ public interface UploadFileRepository extends JpaRepository<UploadedFile, Long> 
 
     UploadedFile findBySavedPath(String savedPath);
 
-    UploadedFile findBySaveFileName(String saveFileName);
+    UploadedFile findByUrl(String url);
 
 }
