@@ -121,13 +121,8 @@ public class ActivityGroupMemberService {
         return activityGroup.getId();
     }
 
-    public Long writeApplyForm(ApplyFormRequestDto formRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        Member applier = memberService.getMemberById(formRequestDto.getApplierId());
-        if(member.getId() != applier.getId()){
-            throw new PermissionDeniedException("지원자 본인만 신청서를 작성할 수 있습니다.");
-        }
-
+    public Long writeApplyForm(ApplyFormRequestDto formRequestDto) {
+        Member applier = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(formRequestDto.getActivityGroupId());
 
         ApplyForm form = ApplyForm.of(formRequestDto);

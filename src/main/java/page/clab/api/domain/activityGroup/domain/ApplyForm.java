@@ -36,23 +36,11 @@ public class ApplyForm {
     private Member member;
 
     @NotNull
-    private String contact;
-
-    @NotNull
-    private String email;
-
-    @NotNull
     private String applyReason;
-
-    @NotNull
-    private String spec;
 
     public static ApplyForm of(ApplyFormRequestDto requestDto){
         return ApplyForm.builder()
-                .contact(requestDto.getContact())
-                .email(requestDto.getEmail())
                 .applyReason(requestDto.getApplyReason())
-                .spec(requestDto.getSpec())
                 .build();
     }
 
