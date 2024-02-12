@@ -34,6 +34,8 @@ import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedExce
 import page.clab.api.domain.activityGroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activityGroup.exception.DuplicateAttendanceException;
 import page.clab.api.domain.activityGroup.exception.DuplicateReportException;
+import page.clab.api.domain.activityGroup.exception.NotAProjectGroup;
+import page.clab.api.domain.activityGroup.exception.NotAStudyGroup;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
@@ -74,7 +76,9 @@ public class ControllerExceptionHandler {
             MalformedJsonException.class,
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class,
-            IllegalAccessException.class
+            IllegalAccessException.class,
+            NotAStudyGroup.class,
+            NotAProjectGroup.class
     })
     public ResponseModel badRequestException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

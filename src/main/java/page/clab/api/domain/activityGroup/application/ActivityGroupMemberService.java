@@ -27,6 +27,8 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupProjectRespo
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
+import page.clab.api.domain.activityGroup.exception.NotAProjectGroup;
+import page.clab.api.domain.activityGroup.exception.NotAStudyGroup;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -68,7 +70,7 @@ public class ActivityGroupMemberService {
     public ActivityGroupStudyResponseDto getActivityGroupStudy(Long activityGroupId) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!activityGroup.getCategory().equals(ActivityGroupCategory.STUDY)) {
-            throw new IllegalStateException("해당 활동은 스터디 활동이 아닙니다.");
+            throw new NotAStudyGroup("해당 활동은 스터디 활동이 아닙니다.");
         }
         List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
         ActivityGroupStudyResponseDto activityGroupStudyResponseDto = ActivityGroupStudyResponseDto.of(activityGroup);
@@ -79,7 +81,7 @@ public class ActivityGroupMemberService {
     public ActivityGroupProjectResponseDto getActivityGroupProject(Long activityGroupId) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!activityGroup.getCategory().equals(ActivityGroupCategory.PROJECT)) {
-            throw new IllegalStateException("해당 활동은 프로젝트 활동이 아닙니다.");
+            throw new NotAProjectGroup("해당 활동은 프로젝트 활동이 아닙니다.");
         }
         List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
         ActivityGroupProjectResponseDto activityGroupProjectResponseDto = ActivityGroupProjectResponseDto.of(activityGroup);
