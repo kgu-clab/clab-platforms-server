@@ -133,8 +133,7 @@ public class ActivityGroupMemberController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/apply-form")
     public ResponseModel writeApplyForm(
-            @RequestBody ApplyFormRequestDto formRequestDto
-            ) throws MessagingException, PermissionDeniedException {
+            @RequestBody ApplyFormRequestDto formRequestDto) {
         Long id = activityGroupMemberService.writeApplyForm(formRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
