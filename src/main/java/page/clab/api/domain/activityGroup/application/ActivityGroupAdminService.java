@@ -7,16 +7,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupRepository;
+import page.clab.api.domain.activityGroup.dao.ApplyFormRepository;
 import page.clab.api.domain.activityGroup.dao.GroupScheduleRepository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
+import page.clab.api.domain.activityGroup.domain.ApplyForm;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activityGroup.domain.GroupSchedule;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
+import page.clab.api.domain.activityGroup.dto.response.ApplyFormResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
@@ -37,6 +40,8 @@ public class ActivityGroupAdminService {
     private final ActivityGroupRepository activityGroupRepository;
 
     private final GroupScheduleRepository groupScheduleRepository;
+
+    private final ApplyFormRepository applyFormRepository;
 
     private final NotificationService notificationService;
 
@@ -160,6 +165,20 @@ public class ActivityGroupAdminService {
                 .build();
         notificationService.createNotification(notificationRequestDto);
         return id;
+    }
+
+    public PagedResponseDto<ApplyFormResponseDto> getApplyFormList(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
+        Member currentMember = memberService.getCurrentMember();
+
+        ActivityGroup activityGroup = activityGroupRepository.findById(activityGroupId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 활동입니다."));
+
+        if (!isMemberHasRoleInActivityGroup(currentMember, ActivityGroupRole.LEADER, activityGroupId)) {
+            throw new PermissionDeniedException("해당 활동의 지원서 목록을 조회할 권한이 없습니다.");
+        }
+
+        Page<ApplyForm> applyFormList = applyFormRepository.findAllByActivityGroup(activityGroup, pageable);
+        return new PagedResponseDto<>(applyFormList.map(ApplyFormResponseDto::of));
     }
 
     public Page<ActivityGroup> getActivityGroupByStatus(ActivityGroupStatus status, Pageable pageable) {
