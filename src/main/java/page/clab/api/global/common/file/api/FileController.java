@@ -9,12 +9,14 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.io.File;
@@ -128,15 +130,14 @@ public class FileController {
     }
 
     @Operation(summary = "[U] 파일 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "본인 외의 정보는 ROLE_SUPER만 가능")
+            "본인 외의 정보는 ROLE_SUPER만 가능<br>" + "/resources/files/~를 입력. 즉 생성시 전달받은 url을 입력.")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @DeleteMapping("/{saveFileName}")
-    public ResponseModel deleteFile(
-            @PathVariable(name = "saveFileName") String saveFileName
-    ) throws PermissionDeniedException {
-        String url = fileService.deleteFile(saveFileName);
+    @DeleteMapping("")
+    public ResponseModel deleteFile(@RequestBody DeleteFileRequestDto deleteFileRequestDto)
+            throws PermissionDeniedException {
+        String deletedFileUrl = fileService.deleteFile(deleteFileRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(deletedFileUrl);
         return responseModel;
     }
 
