@@ -1,6 +1,7 @@
 package page.clab.api.domain.login.application;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,8 +18,6 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.exception.NotFoundException;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
