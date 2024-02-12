@@ -31,11 +31,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
+import page.clab.api.domain.activityGroup.exception.ActivityGroupNotProgressingException;
 import page.clab.api.domain.activityGroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activityGroup.exception.DuplicateAttendanceException;
 import page.clab.api.domain.activityGroup.exception.DuplicateReportException;
-import page.clab.api.domain.activityGroup.exception.NotAProjectGroup;
-import page.clab.api.domain.activityGroup.exception.NotAStudyGroup;
+import page.clab.api.domain.activityGroup.exception.NotAProjectGroupException;
+import page.clab.api.domain.activityGroup.exception.NotAStudyGroupException;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
@@ -77,8 +78,9 @@ public class ControllerExceptionHandler {
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class,
             IllegalAccessException.class,
-            NotAStudyGroup.class,
-            NotAProjectGroup.class
+            NotAStudyGroupException.class,
+            NotAProjectGroupException.class,
+            ActivityGroupNotProgressingException.class
     })
     public ResponseModel badRequestException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
