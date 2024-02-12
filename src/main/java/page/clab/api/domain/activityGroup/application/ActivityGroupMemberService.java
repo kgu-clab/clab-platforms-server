@@ -22,6 +22,7 @@ import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activityGroup.domain.GroupSchedule;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
+import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberApplierResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupProjectResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyResponseDto;
@@ -134,6 +135,16 @@ public class ActivityGroupMemberService {
         form.setMember(applier);
 
         return applyFormRepository.save(form).getId();
+    }
+
+    public ActivityGroupMemberApplierResponseDto getApplierInformation() {
+        Member member = memberService.getCurrentMember();
+        return ActivityGroupMemberApplierResponseDto.builder()
+                .id(member.getId())
+                .grade(member.getGrade())
+                .name(member.getName())
+                .department(member.getDepartment())
+                .build();
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
