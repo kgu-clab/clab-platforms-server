@@ -3,6 +3,7 @@ package page.clab.api.global.common.file.application;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.NotActiveException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -11,6 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import page.clab.api.domain.activityGroup.dao.ActivityGroupBoardRepository;
+import page.clab.api.domain.activityGroup.dao.ActivityGroupRepository;
+import page.clab.api.domain.activityGroup.dao.GroupMemberRepository;
+import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupReport;
+import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.dao.UploadFileRepository;
@@ -30,6 +37,12 @@ public class FileService {
     private final FileHandler fileHandler;
 
     private final MemberService memberService;
+
+    private final ActivityGroupRepository activityGroupRepository;
+
+    private final GroupMemberRepository groupMemberRepository;
+
+    private final ActivityGroupBoardRepository activityGroupBoardRepository;
 
     @Value("${resource.file.url}")
     private String fileURL;
@@ -74,6 +87,21 @@ public class FileService {
             double usage = memberService.getCloudUsageByMemberId(memberId).getUsage();
             if (multipartFile.getSize() + usage > FileSystemUtil.convertToBytes(maxFileSize)) {
                 return "저장 공간이 부족합니다.";
+            }
+        }
+        if (path.startsWith("assignment")) {
+            Long activityGroupId = Long.parseLong(path.split(Pattern.quote(File.separator))[1]);
+            Long activityGroupBoardId = Long.parseLong(path.split(Pattern.quote(File.separator))[2]);
+            String memberId = path.split(Pattern.quote(File.separator))[3];
+            Member assignmentWriter = memberService.getMemberById(memberId);
+            if (!activityGroupRepository.existsById(activityGroupId)) {
+                return "해당 아이디의 활동 그룹이 존재하지 않습니다.";
+            }
+            if (!groupMemberRepository.existsByMemberAndActivityGroupId(assignmentWriter, activityGroupId)) {
+                return "해당 활동에 참여하고 있지 않은 멤버입니다.";
+            }
+            if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
+                return "해당 활동그룹 게시판이 존재하지 않습니다.";
             }
         }
         UploadedFile uploadedFile = new UploadedFile();
