@@ -2,7 +2,6 @@ package page.clab.api.domain.activityGroup.application;
 
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,10 +21,14 @@ import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activityGroup.domain.GroupSchedule;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
+import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberApplierResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupProjectResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
+import page.clab.api.domain.activityGroup.exception.ActivityGroupNotProgressingException;
+import page.clab.api.domain.activityGroup.exception.NotAProjectGroupException;
+import page.clab.api.domain.activityGroup.exception.NotAStudyGroupException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -34,7 +37,8 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.email.application.EmailService;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -68,7 +72,7 @@ public class ActivityGroupMemberService {
     public ActivityGroupStudyResponseDto getActivityGroupStudy(Long activityGroupId) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!activityGroup.getCategory().equals(ActivityGroupCategory.STUDY)) {
-            throw new IllegalStateException("해당 활동은 스터디 활동이 아닙니다.");
+            throw new NotAStudyGroupException("해당 활동은 스터디 활동이 아닙니다.");
         }
         List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
         ActivityGroupStudyResponseDto activityGroupStudyResponseDto = ActivityGroupStudyResponseDto.of(activityGroup);
@@ -79,7 +83,7 @@ public class ActivityGroupMemberService {
     public ActivityGroupProjectResponseDto getActivityGroupProject(Long activityGroupId) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!activityGroup.getCategory().equals(ActivityGroupCategory.PROJECT)) {
-            throw new IllegalStateException("해당 활동은 프로젝트 활동이 아닙니다.");
+            throw new NotAProjectGroupException("해당 활동은 프로젝트 활동이 아닙니다.");
         }
         List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
         ActivityGroupProjectResponseDto activityGroupProjectResponseDto = ActivityGroupProjectResponseDto.of(activityGroup);
@@ -102,7 +106,7 @@ public class ActivityGroupMemberService {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!activityGroup.getStatus().equals(ActivityGroupStatus.PROGRESSING)) {
-            throw new IllegalStateException("해당 활동은 진행중인 활동이 아닙니다.");
+            throw new ActivityGroupNotProgressingException("해당 활동은 진행중인 활동이 아닙니다.");
         }
         GroupMember groupMember = GroupMember.of(member, activityGroup);
         groupMember.setRole(ActivityGroupRole.MEMBER);
@@ -120,13 +124,8 @@ public class ActivityGroupMemberService {
         return activityGroup.getId();
     }
 
-    public Long writeApplyForm(ApplyFormRequestDto formRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        Member applier = memberService.getMemberById(formRequestDto.getApplierId());
-        if(member.getId() != applier.getId()){
-            throw new PermissionDeniedException("지원자 본인만 신청서를 작성할 수 있습니다.");
-        }
-
+    public Long writeApplyForm(ApplyFormRequestDto formRequestDto) {
+        Member applier = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(formRequestDto.getActivityGroupId());
 
         ApplyForm form = ApplyForm.of(formRequestDto);
@@ -134,6 +133,11 @@ public class ActivityGroupMemberService {
         form.setMember(applier);
 
         return applyFormRepository.save(form).getId();
+    }
+
+    public ActivityGroupMemberApplierResponseDto getApplierInformation() {
+        Member member = memberService.getCurrentMember();
+        return ActivityGroupMemberApplierResponseDto.of(member);
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {

@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
-import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
 

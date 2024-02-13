@@ -1,6 +1,5 @@
 package page.clab.api.global.common.file.dto.request;
 
-import io.netty.channel.ChannelHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

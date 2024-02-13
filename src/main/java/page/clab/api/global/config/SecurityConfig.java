@@ -1,5 +1,7 @@
 package page.clab.api.global.config;
 
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,9 +34,6 @@ import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
 import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
