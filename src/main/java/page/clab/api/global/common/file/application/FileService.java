@@ -3,7 +3,6 @@ package page.clab.api.global.common.file.application;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.NotActiveException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -15,9 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activityGroup.dao.GroupMemberRepository;
-import page.clab.api.domain.activityGroup.domain.ActivityGroup;
-import page.clab.api.domain.activityGroup.domain.ActivityGroupReport;
-import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.dao.UploadFileRepository;
