@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ApplyForm;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,9 +24,11 @@ public class ApplyFormResponseDto {
 
     private String applierYear;
 
-    private String contact;
+    private String applierContact;
 
     private String applyReason;
+
+    private LocalDateTime createdAt;
 
     public static ApplyFormResponseDto of(ApplyForm applyForm) {
         return ApplyFormResponseDto.builder()
@@ -33,7 +37,7 @@ public class ApplyFormResponseDto {
                 .applierDepartment(applyForm.getMember().getDepartment())
                 .applierYear(applyForm.getMember().getGrade().toString())
                 .applyReason(applyForm.getApplyReason())
-                .contact(applyForm.getMember().getContact())
+                .applierContact(applyForm.getMember().getContact())
                 .build();
     }
 

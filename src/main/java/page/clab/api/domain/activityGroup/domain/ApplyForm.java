@@ -12,8 +12,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.member.domain.Member;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -37,6 +40,9 @@ public class ApplyForm {
 
     @NotNull
     private String applyReason;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     public static ApplyForm of(ApplyFormRequestDto requestDto){
         return ApplyForm.builder()
