@@ -36,8 +36,9 @@ public class ApplyFormResponseDto {
                 .applierId(applyForm.getMember().getId())
                 .applierDepartment(applyForm.getMember().getDepartment())
                 .applierYear(applyForm.getMember().getGrade().toString())
-                .applyReason(applyForm.getApplyReason())
                 .applierContact(applyForm.getMember().getContact())
+                .applyReason(applyForm.getApplyReason())
+                .createdAt(applyForm.getCreatedAt())
                 .build();
     }
 
