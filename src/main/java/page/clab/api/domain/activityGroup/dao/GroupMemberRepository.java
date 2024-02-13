@@ -19,6 +19,8 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupM
 
     List<GroupMember> findAllByMember(Member member);
 
+    boolean existsByMemberAndActivityGroupId(Member member, Long activityGroupId);
+
     Optional<GroupMember> findByActivityGroupIdAndRole(Long activityGroupId, ActivityGroupRole role);
 
     List<GroupMember> findAllByActivityGroupIdOrderByMember_IdAsc(Long activityGroupId);

@@ -11,4 +11,6 @@ public interface ActivityGroupBoardRepository extends JpaRepository<ActivityGrou
 
     Page<ActivityGroupBoard> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
+    boolean existsById(Long id);
+
 }
