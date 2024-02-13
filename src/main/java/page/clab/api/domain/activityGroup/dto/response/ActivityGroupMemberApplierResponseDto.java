@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.member.domain.Member;
 
 @Getter
 @Setter
@@ -20,5 +21,14 @@ public class ActivityGroupMemberApplierResponseDto {
     private String department;
 
     private Long grade;
+
+    public static ActivityGroupMemberApplierResponseDto of(Member member) {
+        return ActivityGroupMemberApplierResponseDto.builder()
+                .id(member.getId())
+                .name(member.getName())
+                .department(member.getDepartment())
+                .grade(member.getGrade())
+                .build();
+    }
 
 }
