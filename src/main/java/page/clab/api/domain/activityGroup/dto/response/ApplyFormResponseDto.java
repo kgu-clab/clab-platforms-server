@@ -22,6 +22,8 @@ public class ApplyFormResponseDto {
 
     private String applierYear;
 
+    private String contact;
+
     private String applyReason;
 
     public static ApplyFormResponseDto of(ApplyForm applyForm) {
@@ -31,6 +33,7 @@ public class ApplyFormResponseDto {
                 .applierDepartment(applyForm.getMember().getDepartment())
                 .applierYear(applyForm.getMember().getGrade().toString())
                 .applyReason(applyForm.getApplyReason())
+                .contact(applyForm.getMember().getContact())
                 .build();
     }
 
