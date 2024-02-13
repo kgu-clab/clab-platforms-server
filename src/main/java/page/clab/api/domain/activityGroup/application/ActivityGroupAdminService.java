@@ -1,7 +1,6 @@
 package page.clab.api.domain.activityGroup.application;
 
 import jakarta.transaction.Transactional;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +27,8 @@ import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -173,7 +174,7 @@ public class ActivityGroupAdminService {
         ActivityGroup activityGroup = activityGroupRepository.findById(activityGroupId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 활동입니다."));
 
-        if (!isMemberHasRoleInActivityGroup(currentMember, ActivityGroupRole.LEADER, activityGroupId)) {
+        if (!(isMemberHasRoleInActivityGroup(currentMember, ActivityGroupRole.LEADER, activityGroupId) || memberService.isMemberAdminRole(currentMember))) {
             throw new PermissionDeniedException("해당 활동의 지원서 목록을 조회할 권한이 없습니다.");
         }
 
