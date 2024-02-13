@@ -28,7 +28,7 @@ public class ApplyForm {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "activity_group_id", nullable = false)
