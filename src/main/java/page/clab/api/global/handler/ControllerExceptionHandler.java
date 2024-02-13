@@ -51,6 +51,7 @@ import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateExcep
 import page.clab.api.global.auth.exception.TokenValidateException;
 import page.clab.api.global.auth.exception.UnAuthorizeException;
 import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
 import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
@@ -59,7 +60,7 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
 
-@RestControllerAdvice(basePackages = "page.clab.api.domain")
+@RestControllerAdvice(basePackages = "page.clab.api")
 @RequiredArgsConstructor
 @Slf4j
 public class ControllerExceptionHandler {
@@ -80,7 +81,8 @@ public class ControllerExceptionHandler {
             IllegalAccessException.class,
             NotAStudyGroupException.class,
             NotAProjectGroupException.class,
-            ActivityGroupNotProgressingException.class
+            ActivityGroupNotProgressingException.class,
+            CloudStorageNotEnoughException.class
     })
     public ResponseModel badRequestException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

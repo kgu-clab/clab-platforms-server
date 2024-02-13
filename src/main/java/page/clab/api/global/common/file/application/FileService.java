@@ -23,6 +23,7 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.dao.UploadFileRepository;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
+import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.FileSystemUtil;
@@ -86,7 +87,7 @@ public class FileService {
             String memberId = path.split(Pattern.quote(File.separator))[1];
             double usage = memberService.getCloudUsageByMemberId(memberId).getUsage();
             if (multipartFile.getSize() + usage > FileSystemUtil.convertToBytes(maxFileSize)) {
-                return "저장 공간이 부족합니다.";
+                throw new CloudStorageNotEnoughException("클라우드 저장 공간이 부족합니다.");
             }
         }
         if (path.startsWith("assignment")) {
@@ -95,13 +96,13 @@ public class FileService {
             String memberId = path.split(Pattern.quote(File.separator))[3];
             Member assignmentWriter = memberService.getMemberById(memberId);
             if (!activityGroupRepository.existsById(activityGroupId)) {
-                return "해당 아이디의 활동 그룹이 존재하지 않습니다.";
+                throw new NotFoundException("해당 활동은 존재하지 않습니다.");
             }
             if (!groupMemberRepository.existsByMemberAndActivityGroupId(assignmentWriter, activityGroupId)) {
-                return "해당 활동에 참여하고 있지 않은 멤버입니다.";
+                throw new NotFoundException("해당 활동에 참여하고 있지 않은 멤버입니다.");
             }
             if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
-                return "해당 활동그룹 게시판이 존재하지 않습니다.";
+                throw new NotFoundException("해당 활동그룹 게시판이 존재하지 않습니다.");
             }
         }
         UploadedFile uploadedFile = new UploadedFile();
