@@ -1,5 +1,6 @@
 package page.clab.api.domain.activityPhoto.dto.response;
 
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,8 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.global.util.ModelMapperUtil;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter

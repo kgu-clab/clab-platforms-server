@@ -3,6 +3,7 @@ package page.clab.api.domain.recruitment.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
@@ -20,8 +21,6 @@ import page.clab.api.domain.recruitment.application.RecruitmentService;
 import page.clab.api.domain.recruitment.dto.request.RecruitmentRequestDto;
 import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/recruitments")
