@@ -24,6 +24,10 @@ public class MembershipFeeRequestDto {
     @Schema(description = "카테고리", example = "지출", required = true)
     private String category;
 
+    @NotNull(message = "{notNull.membershipFee.amount}")
+    @Schema(description = "금액", example = "10000", required = true)
+    private Long amount;
+
     @NotNull(message = "{notNull.membershipFee.content}")
     @Size(min = 1, max = 1000, message = "{size.membershipFee.content}")
     @Schema(description = "내용", example = "2023-2 동아리 종강총회", required = true)
