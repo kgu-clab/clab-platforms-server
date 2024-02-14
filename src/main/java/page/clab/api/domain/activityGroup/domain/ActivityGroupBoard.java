@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.util.ModelMapperUtil;
 
 @Entity
@@ -60,11 +61,9 @@ public class ActivityGroupBoard {
     @OneToMany(mappedBy = "parent", orphanRemoval = true)
     private List<ActivityGroupBoard> children = new ArrayList<>();
 
-    @Column
-    private String fileUrl;
-
-    @Column
-    private String fileName;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "files")
+    private List<UploadedFile> uploadedFiles = new ArrayList<>();
 
     @Column(name = "dueDate_time")
     private LocalDateTime dueDateTime;

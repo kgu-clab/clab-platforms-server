@@ -117,7 +117,7 @@ public class FileService {
     public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         String url = deleteFileRequestDto.getUrl();
-        UploadedFile uploadedFile = uploadFileRepository.findByUrl(url);
+        UploadedFile uploadedFile = getUploadedFileByUrl(url);
         String filePath = uploadedFile.getSavedPath();
         File storedFile = new File(filePath);
         if (uploadedFile == null || !storedFile.exists()) {
@@ -135,7 +135,7 @@ public class FileService {
     }
 
     public LocalDateTime getStorageDateTimeOfFile(String fileUrl) {
-        UploadedFile uploadedFile = uploadFileRepository.findByUrl(fileUrl);
+        UploadedFile uploadedFile = getUploadedFileByUrl(fileUrl);
         if (uploadedFile == null) {
             throw new NotFoundException("파일이 존재하지 않습니다.");
         }
@@ -144,6 +144,15 @@ public class FileService {
         Long storagePeriod =  uploadedFile.getStoragePeriod();
 
         return createdDateTime.plusDays(storagePeriod);
+    }
+
+    public UploadedFile getUploadedFileByUrl(String url) {
+        return uploadFileRepository.findByUrl(url)
+                .orElseThrow(() -> new NotFoundException("파일을 찾을 수 없습니다."));
+    }
+
+    public String getOriginalFileNameByUrl(String url) {
+        return getUploadedFileByUrl(url).getOriginalFileName();
     }
 
 }

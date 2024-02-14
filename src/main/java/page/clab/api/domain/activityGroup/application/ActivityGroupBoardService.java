@@ -4,7 +4,9 @@ import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -23,10 +25,14 @@ import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.file.dao.UploadFileRepository;
+import page.clab.api.global.common.file.domain.UploadedFile;
+import page.clab.api.global.common.file.dto.response.AssignmentFileResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ActivityGroupBoardService {
 
     private final ActivityGroupBoardRepository activityGroupBoardRepository;
@@ -53,6 +59,14 @@ public class ActivityGroupBoardService {
             board.setParent(parentBoard);
             parentBoard.getChildren().add(board);
             activityGroupBoardRepository.save(parentBoard);
+        }
+
+        List<String> fileUrls = activityGroupBoardRequestDto.getFileUrlList();
+        if (fileUrls != null) {
+            List<UploadedFile> uploadFileList =  fileUrls.stream()
+                    .map(url -> fileService.getUploadedFileByUrl(url))
+                    .collect(Collectors.toList());
+            board.setUploadedFiles(uploadFileList);
         }
         Long id = activityGroupBoardRepository.save(board).getId();
 
@@ -81,24 +95,25 @@ public class ActivityGroupBoardService {
     }
 
     public PagedResponseDto<ActivityGroupBoardResponseDto> getAllActivityGroupBoard(Pageable pageable) {
-        Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByOrderByCreatedAtDesc(pageable);
-        Page<ActivityGroupBoardResponseDto> pagedResponseDto = boards.map(ActivityGroupBoardResponseDto::of);
-        pagedResponseDto.forEach(dto -> setBoardResponseDtoStorageDateTimeOfFile(dto));
+        List<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByOrderByCreatedAtAsc();
+        List<ActivityGroupBoardResponseDto> activityGroupBoardResponseDtos = boards.stream()
+                .map(board -> toActivityGroupBoardResponseDto(board))
+                .collect(Collectors.toList());
+        Page<ActivityGroupBoardResponseDto> pagedResponseDto = new PageImpl<>(activityGroupBoardResponseDtos, pageable, activityGroupBoardResponseDtos.size());
         return new PagedResponseDto<>(pagedResponseDto);
     }
 
     public ActivityGroupBoardResponseDto getActivityGroupBoardById(Long activityGroupBoardId) {
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        ActivityGroupBoardResponseDto activityGroupBoardResponseDto = ActivityGroupBoardResponseDto.of(board);
-        setBoardResponseDtoStorageDateTimeOfFile(activityGroupBoardResponseDto);
-        return activityGroupBoardResponseDto;
+        return toActivityGroupBoardResponseDto(board);
     }
 
     public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) {
-        List<ActivityGroupBoard> boardList = getChildBoards(parentId);
-        Page<ActivityGroupBoard> boardPage = new PageImpl<>(boardList, pageable, boardList.size());
-        Page<ActivityGroupBoardChildResponseDto> pagedResponseDto = boardPage.map(ActivityGroupBoardChildResponseDto::of);
-        pagedResponseDto.forEach(dto -> setBoardChildResponseDtoStorageDateTimeOfFile(dto));
+        List<ActivityGroupBoard> boards = getChildBoards(parentId);
+        List<ActivityGroupBoardChildResponseDto> activityGroupBoardChildResponseDtos = boards.stream()
+                .map(board -> toActivityGroupBoardChildResponseDto(board))
+                .collect(Collectors.toList());
+        Page<ActivityGroupBoardChildResponseDto> pagedResponseDto = new PageImpl<>(activityGroupBoardChildResponseDtos, pageable, activityGroupBoardChildResponseDtos.size());
         return new PagedResponseDto<>(pagedResponseDto);
     }
 
@@ -107,8 +122,15 @@ public class ActivityGroupBoardService {
         board.setCategory(activityGroupBoardRequestDto.getCategory());
         board.setTitle(activityGroupBoardRequestDto.getTitle());
         board.setContent(activityGroupBoardRequestDto.getContent());
-        board.setFileUrl(activityGroupBoardRequestDto.getFileUrl());
-        board.setFileName(activityGroupBoardRequestDto.getFileName());
+
+        List<String> fileUrls = activityGroupBoardRequestDto.getFileUrlList();
+        if (fileUrls != null) {
+            List<UploadedFile> uploadFileList =  fileUrls.stream()
+                    .map(url -> fileService.getUploadedFileByUrl(url))
+                    .collect(Collectors.toList());
+            board.setUploadedFiles(uploadFileList);
+        }
+
         return activityGroupBoardRepository.save(board).getId();
     }
 
@@ -138,19 +160,53 @@ public class ActivityGroupBoardService {
         return boardList;
     }
 
-    public ActivityGroupBoardChildResponseDto setBoardChildResponseDtoStorageDateTimeOfFile(ActivityGroupBoardChildResponseDto activityGroupBoardChildResponseDto) {
-        String fileUrl = activityGroupBoardChildResponseDto.getFileUrl();
-        if(fileUrl != null) {
-            activityGroupBoardChildResponseDto.setStorageDateTimeOfFile(fileService.getStorageDateTimeOfFile(fileUrl));
-            activityGroupBoardChildResponseDto.getChildren().forEach(dto -> setBoardChildResponseDtoStorageDateTimeOfFile(dto));
-        }
-        return activityGroupBoardChildResponseDto;
-    }
+        public ActivityGroupBoardChildResponseDto toActivityGroupBoardChildResponseDto(ActivityGroupBoard board) {
+            ActivityGroupBoardChildResponseDto activityGroupBoardChildResponseDto = ActivityGroupBoardChildResponseDto.of(board);
 
-    public ActivityGroupBoardResponseDto setBoardResponseDtoStorageDateTimeOfFile(ActivityGroupBoardResponseDto activityGroupBoardResponseDto) {
-        String fileUrl = activityGroupBoardResponseDto.getFileUrl();
-        if (fileUrl != null) {
-            activityGroupBoardResponseDto.setStorageDateTimeOfFile(fileService.getStorageDateTimeOfFile(fileUrl));
+            if (board.getUploadedFiles() != null) {
+                List<String> fileUrls = board.getUploadedFiles().stream()
+                        .map(file -> file.getUrl()).collect(Collectors.toList());
+
+                List<AssignmentFileResponseDto> fileResponseDtos = fileUrls.stream()
+                        .map(url -> AssignmentFileResponseDto.builder()
+                                .fileUrl(url)
+                                .originalFileName(fileService.getOriginalFileNameByUrl(url))
+                                .storageDateTimeOfFile(fileService.getStorageDateTimeOfFile(url))
+                                .build())
+                        .collect(Collectors.toList());
+
+                activityGroupBoardChildResponseDto.setFileResponseDtoList(fileResponseDtos);
+            }
+
+            if (board.getChildren() != null && !board.getChildren().isEmpty()) {
+
+                List<ActivityGroupBoardChildResponseDto> childrenDtoList = new ArrayList<>();
+                for (ActivityGroupBoard child : board.getChildren()) {
+                    childrenDtoList.add(toActivityGroupBoardChildResponseDto(child));
+                }
+
+                activityGroupBoardChildResponseDto.setChildren(childrenDtoList);
+            }
+
+            return activityGroupBoardChildResponseDto;
+        }
+
+    public ActivityGroupBoardResponseDto toActivityGroupBoardResponseDto(ActivityGroupBoard board) {
+        ActivityGroupBoardResponseDto activityGroupBoardResponseDto = ActivityGroupBoardResponseDto.of(board);
+
+        if (board.getUploadedFiles() != null) {
+            List<String> fileUrls = board.getUploadedFiles().stream()
+                    .map(file -> file.getUrl()).collect(Collectors.toList());
+
+            List<AssignmentFileResponseDto> fileResponseDtos = fileUrls.stream()
+                            .map(url -> AssignmentFileResponseDto.builder()
+                                    .fileUrl(url)
+                                    .originalFileName(fileService.getOriginalFileNameByUrl(url))
+                                    .storageDateTimeOfFile(fileService.getStorageDateTimeOfFile(url))
+                                    .build())
+                            .collect(Collectors.toList());
+
+            activityGroupBoardResponseDto.setAssignmentFileResponseDtoList(fileResponseDtos);
         }
         return activityGroupBoardResponseDto;
     }

@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
+import page.clab.api.global.common.file.dto.response.AssignmentFileResponseDto;
 import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter
@@ -26,24 +27,14 @@ public class ActivityGroupBoardChildResponseDto {
 
     private String content;
 
-    private String fileUrl;
+    private LocalDateTime dueDateTime;
 
-    private String fileName;
-
-    private LocalDateTime storageDateTimeOfFile;
+    private List<AssignmentFileResponseDto> fileResponseDtoList = new ArrayList<>();
 
     private List<ActivityGroupBoardChildResponseDto> children;
 
     public static ActivityGroupBoardChildResponseDto of(ActivityGroupBoard activityGroupBoard) {
-        ActivityGroupBoardChildResponseDto activityGroupBoardResponseDto = ModelMapperUtil.getModelMapper().map(activityGroupBoard, ActivityGroupBoardChildResponseDto.class);
-        if (activityGroupBoard.getChildren() != null && !activityGroupBoard.getChildren().isEmpty()) {
-            List<ActivityGroupBoardChildResponseDto> childrenDtoList = new ArrayList<>();
-            for (ActivityGroupBoard child : activityGroupBoard.getChildren()) {
-                childrenDtoList.add(ActivityGroupBoardChildResponseDto.of(child));
-            }
-            activityGroupBoardResponseDto.setChildren(childrenDtoList);
-        }
-        return activityGroupBoardResponseDto;
+        return ModelMapperUtil.getModelMapper().map(activityGroupBoard, ActivityGroupBoardChildResponseDto.class);
     }
 
 }

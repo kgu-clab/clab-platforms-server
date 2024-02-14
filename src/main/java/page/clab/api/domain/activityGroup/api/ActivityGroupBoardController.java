@@ -85,7 +85,6 @@ public class ActivityGroupBoardController {
         responseModel.addData(boards);
         return responseModel;
     }
-
     @Operation(summary = "[U] 활동 그룹 게시판 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("")
