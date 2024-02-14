@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.ui.ModelMap;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.util.ModelMapperUtil;
 
