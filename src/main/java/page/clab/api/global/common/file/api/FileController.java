@@ -136,10 +136,10 @@ public class FileController {
             @PathVariable(name = "activityGroupId") Long activityGroupId,
             @PathVariable(name = "activityGroupBoardId") Long activityGroupBoardId,
             @PathVariable(name = "memberId") String memberId,
-            @RequestParam(name = "multipartFile") MultipartFile multipartFile,
+            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws PermissionDeniedException, IOException, NotFoundException {
-        String url = fileService.saveFile(multipartFile,
+        List<String> url = fileService.saveFiles(multipartFiles,
                 "assignment" + File.separator + activityGroupId + File.separator+ activityGroupBoardId + File.separator + memberId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
