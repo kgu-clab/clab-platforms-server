@@ -3,6 +3,7 @@ package page.clab.api.global.common.file.application;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -131,6 +132,18 @@ public class FileService {
         String deletedFileUrl = uploadedFile.getUrl();
         uploadFileRepository.deleteById(uploadedFile.getId());
         return deletedFileUrl;
+    }
+
+    public LocalDateTime getStorageDateTimeOfFile(String fileUrl) {
+        UploadedFile uploadedFile = uploadFileRepository.findByUrl(fileUrl);
+        if (uploadedFile == null) {
+            throw new NotFoundException("파일이 존재하지 않습니다.");
+        }
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime createdDateTime = uploadedFile.getCreatedAt();
+        Long storagePeriod =  uploadedFile.getStoragePeriod();
+
+        return createdDateTime.plusDays(storagePeriod);
     }
 
 }

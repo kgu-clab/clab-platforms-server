@@ -1,5 +1,6 @@
 package page.clab.api.domain.activityGroup.dto.response;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,9 +22,13 @@ public class ActivityGroupBoardResponseDto {
 
     private String content;
 
-    private String filePath;
+    private String fileUrl;
 
     private String fileName;
+
+    private LocalDateTime storageDateTimeOfFile;
+
+    private LocalDateTime dueDateTime;
 
     public static ActivityGroupBoardResponseDto of(ActivityGroupBoard activityGroupBoard) {
         return ModelMapperUtil.getModelMapper().map(activityGroupBoard, ActivityGroupBoardResponseDto.class);
