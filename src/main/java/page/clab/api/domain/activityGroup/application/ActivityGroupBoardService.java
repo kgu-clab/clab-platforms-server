@@ -116,6 +116,39 @@ public class ActivityGroupBoardService {
         return new PagedResponseDto<>(pagedResponseDto);
     }
 
+    public ActivityGroupBoardResponseDto getOneChildActivityGroupBoardByParentId(Long parentId) {
+        ActivityGroupBoard parentBoard = activityGroupBoardRepository.findById(parentId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 게시판입니다."));
+
+        if (parentBoard.getChildren().size() == 0) {
+            throw new NotFoundException("자식 활동 그룹 게시판이 아무것도 없습니다.");
+        }
+
+        if (parentBoard.getChildren().size() == 1) {
+            Long childId = parentBoard.getChildren().getFirst().getId();
+            return getActivityGroupBoardById(childId);
+        }
+
+        Member member = memberService.getCurrentMember();
+        List<ActivityGroupBoard> childrenBoardList = parentBoard.getChildren();
+
+        for(ActivityGroupBoard child : childrenBoardList){
+            log.info(child.getId().toString());
+        }
+
+        childrenBoardList = childrenBoardList.stream()
+                .filter(child -> child.getMember().getId().equals(member.getId()))
+                .collect(Collectors.toList());
+
+        if (childrenBoardList.size() > 1) {
+            throw new NotFoundException("자식 활동 그룹 게시판이 유일하지 않습니다.");
+        }
+
+        Long childId = childrenBoardList.getFirst().getId();
+        log.info(childId.toString());
+        return getActivityGroupBoardById(childId);
+    }
+
     public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
         board.setCategory(activityGroupBoardRequestDto.getCategory());
@@ -159,36 +192,36 @@ public class ActivityGroupBoardService {
         return boardList;
     }
 
-        public ActivityGroupBoardChildResponseDto toActivityGroupBoardChildResponseDto(ActivityGroupBoard board) {
-            ActivityGroupBoardChildResponseDto activityGroupBoardChildResponseDto = ActivityGroupBoardChildResponseDto.of(board);
+    public ActivityGroupBoardChildResponseDto toActivityGroupBoardChildResponseDto(ActivityGroupBoard board) {
+        ActivityGroupBoardChildResponseDto activityGroupBoardChildResponseDto = ActivityGroupBoardChildResponseDto.of(board);
 
-            if (board.getUploadedFiles() != null) {
-                List<String> fileUrls = board.getUploadedFiles().stream()
-                        .map(file -> file.getUrl()).collect(Collectors.toList());
+        if (board.getUploadedFiles() != null) {
+            List<String> fileUrls = board.getUploadedFiles().stream()
+                    .map(file -> file.getUrl()).collect(Collectors.toList());
 
-                List<AssignmentFileResponseDto> fileResponseDtos = fileUrls.stream()
-                        .map(url -> AssignmentFileResponseDto.builder()
-                                .fileUrl(url)
-                                .originalFileName(fileService.getOriginalFileNameByUrl(url))
-                                .storageDateTimeOfFile(fileService.getStorageDateTimeOfFile(url))
-                                .build())
-                        .collect(Collectors.toList());
+            List<AssignmentFileResponseDto> fileResponseDtos = fileUrls.stream()
+                    .map(url -> AssignmentFileResponseDto.builder()
+                            .fileUrl(url)
+                            .originalFileName(fileService.getOriginalFileNameByUrl(url))
+                            .storageDateTimeOfFile(fileService.getStorageDateTimeOfFile(url))
+                            .build())
+                    .collect(Collectors.toList());
 
-                activityGroupBoardChildResponseDto.setFileResponseDtoList(fileResponseDtos);
-            }
-
-            if (board.getChildren() != null && !board.getChildren().isEmpty()) {
-
-                List<ActivityGroupBoardChildResponseDto> childrenDtoList = new ArrayList<>();
-                for (ActivityGroupBoard child : board.getChildren()) {
-                    childrenDtoList.add(toActivityGroupBoardChildResponseDto(child));
-                }
-
-                activityGroupBoardChildResponseDto.setChildren(childrenDtoList);
-            }
-
-            return activityGroupBoardChildResponseDto;
+            activityGroupBoardChildResponseDto.setFileResponseDtoList(fileResponseDtos);
         }
+
+        if (board.getChildren() != null && !board.getChildren().isEmpty()) {
+
+            List<ActivityGroupBoardChildResponseDto> childrenDtoList = new ArrayList<>();
+            for (ActivityGroupBoard child : board.getChildren()) {
+                childrenDtoList.add(toActivityGroupBoardChildResponseDto(child));
+            }
+
+            activityGroupBoardChildResponseDto.setChildren(childrenDtoList);
+        }
+
+        return activityGroupBoardChildResponseDto;
+    }
 
     public ActivityGroupBoardResponseDto toActivityGroupBoardResponseDto(ActivityGroupBoard board) {
         ActivityGroupBoardResponseDto activityGroupBoardResponseDto = ActivityGroupBoardResponseDto.of(board);

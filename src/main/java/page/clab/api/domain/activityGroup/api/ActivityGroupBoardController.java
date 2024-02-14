@@ -10,6 +10,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,6 +67,18 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId
     ) {
         ActivityGroupBoardResponseDto board = activityGroupBoardService.getActivityGroupBoardById(activityGroupBoardId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(board);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 부모 활동 그룹 게시판에 대해 유일한 자식 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("{parentId}")
+    public ResponseModel getOneChildActivityGroupBoardByParentId(
+            @PathVariable Long parentId
+    ) {
+        ActivityGroupBoardResponseDto board = activityGroupBoardService.getOneChildActivityGroupBoardByParentId(parentId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(board);
         return responseModel;
