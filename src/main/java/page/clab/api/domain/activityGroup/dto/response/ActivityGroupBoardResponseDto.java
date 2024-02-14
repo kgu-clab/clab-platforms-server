@@ -1,12 +1,16 @@
 package page.clab.api.domain.activityGroup.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
+import page.clab.api.global.common.file.dto.response.AssignmentFileResponseDto;
 import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter
@@ -24,11 +28,7 @@ public class ActivityGroupBoardResponseDto {
 
     private String content;
 
-    private String fileUrl;
-
-    private String fileName;
-
-    private LocalDateTime storageDateTimeOfFile;
+    private List<AssignmentFileResponseDto> assignmentFileResponseDtoList = new ArrayList<>();
 
     private LocalDateTime dueDateTime;
 
