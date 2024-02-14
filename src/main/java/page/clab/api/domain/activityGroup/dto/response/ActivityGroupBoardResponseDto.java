@@ -16,6 +16,8 @@ import page.clab.api.global.util.ModelMapperUtil;
 @Builder
 public class ActivityGroupBoardResponseDto {
 
+    private Long id;
+
     private String category;
 
     private String title;
