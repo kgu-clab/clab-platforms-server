@@ -1,5 +1,6 @@
 package page.clab.api.domain.activityGroup.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -23,9 +24,11 @@ public class ActivityGroupBoardChildResponseDto {
 
     private String content;
 
-    private String filePath;
+    private String fileUrl;
 
     private String fileName;
+
+    private LocalDateTime storageDateTimeOfFile;
 
     private List<ActivityGroupBoardChildResponseDto> children;
 

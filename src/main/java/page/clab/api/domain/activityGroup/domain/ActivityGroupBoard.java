@@ -43,15 +43,13 @@ public class ActivityGroupBoard {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column(nullable = false)
     @Size(min = 1, max = 50)
     private String category;
 
-    @Column(nullable = false)
     @Size(min = 1, max = 100, message = "{size.board.title}")
     private String title;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -63,10 +61,13 @@ public class ActivityGroupBoard {
     private List<ActivityGroupBoard> children = new ArrayList<>();
 
     @Column
-    private String filePath;
+    private String fileUrl;
 
     @Column
     private String fileName;
+
+    @Column(name = "dueDate_time")
+    private LocalDateTime dueDateTime;
 
     @Column(name = "update_time")
     private LocalDateTime updateTime;

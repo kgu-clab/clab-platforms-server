@@ -22,6 +22,7 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.exception.NotFoundException;
 
 @Service
@@ -37,6 +38,8 @@ public class ActivityGroupBoardService {
     private final ActivityGroupMemberService activityGroupMemberService;
 
     private final NotificationService notificationService;
+
+    private final FileService fileService;
 
     @Transactional
     public Long createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
@@ -79,18 +82,24 @@ public class ActivityGroupBoardService {
 
     public PagedResponseDto<ActivityGroupBoardResponseDto> getAllActivityGroupBoard(Pageable pageable) {
         Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(boards.map(ActivityGroupBoardResponseDto::of));
+        Page<ActivityGroupBoardResponseDto> pagedResponseDto = boards.map(ActivityGroupBoardResponseDto::of);
+        pagedResponseDto.forEach(dto -> setBoardResponseDtoStorageDateTimeOfFile(dto));
+        return new PagedResponseDto<>(pagedResponseDto);
     }
 
     public ActivityGroupBoardResponseDto getActivityGroupBoardById(Long activityGroupBoardId) {
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        return ActivityGroupBoardResponseDto.of(board);
+        ActivityGroupBoardResponseDto activityGroupBoardResponseDto = ActivityGroupBoardResponseDto.of(board);
+        setBoardResponseDtoStorageDateTimeOfFile(activityGroupBoardResponseDto);
+        return activityGroupBoardResponseDto;
     }
 
     public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) {
         List<ActivityGroupBoard> boardList = getChildBoards(parentId);
         Page<ActivityGroupBoard> boardPage = new PageImpl<>(boardList, pageable, boardList.size());
-        return new PagedResponseDto<>(boardPage.map(ActivityGroupBoardChildResponseDto::of));
+        Page<ActivityGroupBoardChildResponseDto> pagedResponseDto = boardPage.map(ActivityGroupBoardChildResponseDto::of);
+        pagedResponseDto.forEach(dto -> setBoardChildResponseDtoStorageDateTimeOfFile(dto));
+        return new PagedResponseDto<>(pagedResponseDto);
     }
 
     public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
@@ -98,7 +107,7 @@ public class ActivityGroupBoardService {
         board.setCategory(activityGroupBoardRequestDto.getCategory());
         board.setTitle(activityGroupBoardRequestDto.getTitle());
         board.setContent(activityGroupBoardRequestDto.getContent());
-        board.setFilePath(activityGroupBoardRequestDto.getFilePath());
+        board.setFileUrl(activityGroupBoardRequestDto.getFileUrl());
         board.setFileName(activityGroupBoardRequestDto.getFileName());
         return activityGroupBoardRepository.save(board).getId();
     }
@@ -127,6 +136,23 @@ public class ActivityGroupBoardService {
         }
         boardList.sort((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()));
         return boardList;
+    }
+
+    public ActivityGroupBoardChildResponseDto setBoardChildResponseDtoStorageDateTimeOfFile(ActivityGroupBoardChildResponseDto activityGroupBoardChildResponseDto) {
+        String fileUrl = activityGroupBoardChildResponseDto.getFileUrl();
+        if(fileUrl != null) {
+            activityGroupBoardChildResponseDto.setStorageDateTimeOfFile(fileService.getStorageDateTimeOfFile(fileUrl));
+            activityGroupBoardChildResponseDto.getChildren().forEach(dto -> setBoardChildResponseDtoStorageDateTimeOfFile(dto));
+        }
+        return activityGroupBoardChildResponseDto;
+    }
+
+    public ActivityGroupBoardResponseDto setBoardResponseDtoStorageDateTimeOfFile(ActivityGroupBoardResponseDto activityGroupBoardResponseDto) {
+        String fileUrl = activityGroupBoardResponseDto.getFileUrl();
+        if (fileUrl != null) {
+            activityGroupBoardResponseDto.setStorageDateTimeOfFile(fileService.getStorageDateTimeOfFile(fileUrl));
+        }
+        return activityGroupBoardResponseDto;
     }
 
 }
