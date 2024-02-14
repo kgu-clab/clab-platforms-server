@@ -28,6 +28,7 @@ import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.dto.response.AssignmentFileResponseDto;
 import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -107,7 +108,20 @@ public class ActivityGroupBoardService {
         return toActivityGroupBoardResponseDto(board);
     }
 
-    public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) {
+    public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
+        ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
+        Long activityGroupId = parentBoard.getActivityGroup().getId();
+        if (!memberService.isMemberAdminRole(member) &&
+                !memberService.isMemberSuperRole(member) &&
+                !activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER).getMember().getId()
+                        .equals(member.getId())
+        ) {
+            if (parentBoard.isAssignmentBoard()) {
+                throw new PermissionDeniedException("전체 과제물은 그룹의 리더 또는 관리자만 열람할 수 있습니다.");
+            }
+        }
+
         List<ActivityGroupBoard> boards = getChildBoards(parentId);
         List<ActivityGroupBoardChildResponseDto> activityGroupBoardChildResponseDtos = boards.stream()
                 .map(board -> toActivityGroupBoardChildResponseDto(board))
@@ -124,17 +138,13 @@ public class ActivityGroupBoardService {
             throw new NotFoundException("자식 활동 그룹 게시판이 아무것도 없습니다.");
         }
 
-        if (parentBoard.getChildren().size() == 1) {
+        if (parentBoard.getChildren().size() == 1 && !parentBoard.isAssignmentBoard()) {
             Long childId = parentBoard.getChildren().getFirst().getId();
             return getActivityGroupBoardById(childId);
         }
 
         Member member = memberService.getCurrentMember();
         List<ActivityGroupBoard> childrenBoardList = parentBoard.getChildren();
-
-        for(ActivityGroupBoard child : childrenBoardList){
-            log.info(child.getId().toString());
-        }
 
         childrenBoardList = childrenBoardList.stream()
                 .filter(child -> child.getMember().getId().equals(member.getId()))
@@ -145,12 +155,20 @@ public class ActivityGroupBoardService {
         }
 
         Long childId = childrenBoardList.getFirst().getId();
-        log.info(childId.toString());
         return getActivityGroupBoardById(childId);
     }
 
-    public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
+    public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
+
+        if (!member.getId().equals(board.getMember().getId()) &&
+                !memberService.isMemberAdminRole(member) &&
+                !memberService.isMemberSuperRole(member)
+        ) {
+            throw new PermissionDeniedException("활동 그룹 게시판 작성자 또는 운영진만 수정할 수 있습니다.");
+        }
+
         board.setCategory(activityGroupBoardRequestDto.getCategory());
         board.setTitle(activityGroupBoardRequestDto.getTitle());
         board.setContent(activityGroupBoardRequestDto.getContent());
@@ -166,8 +184,17 @@ public class ActivityGroupBoardService {
         return activityGroupBoardRepository.save(board).getId();
     }
 
-    public Long deleteActivityGroupBoard(Long activityGroupBoardId) {
+    public Long deleteActivityGroupBoard(Long activityGroupBoardId) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
+
+        if (!member.getId().equals(board.getMember().getId()) &&
+                !memberService.isMemberAdminRole(member) &&
+                !memberService.isMemberSuperRole(member)
+        ) {
+            throw new PermissionDeniedException("활동 그룹 게시판 작성자 또는 운영진만 삭제할 수 있습니다.");
+        }
+
         activityGroupBoardRepository.delete(board);
         return board.getId();
     }
