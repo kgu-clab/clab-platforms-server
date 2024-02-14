@@ -2,9 +2,6 @@ package page.clab.api.global.common.file.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -22,6 +19,10 @@ import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/files")
@@ -141,6 +142,20 @@ public class FileController {
     ) throws PermissionDeniedException, IOException, NotFoundException {
         String url = fileService.saveFile(multipartFile,
                 "assignment" + File.separator + activityGroupId + File.separator+ activityGroupBoardId + File.separator + memberId, storagePeriod);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(url);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 회비 증빙 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @PostMapping(value = "/membership-fee/{membershipFeeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseModel assignmentUpload(
+            @PathVariable(name = "membershipFeeId") Long membershipFeeId,
+            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam(name = "storagePeriod") long storagePeriod
+    ) throws PermissionDeniedException, IOException, NotFoundException {
+        List<String> url = fileService.saveFiles(multipartFiles, "membership-fee" + File.separator + membershipFeeId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
         return responseModel;
