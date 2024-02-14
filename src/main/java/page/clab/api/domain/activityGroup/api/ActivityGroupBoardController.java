@@ -22,6 +22,7 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildRe
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/activity-group/boards")
@@ -91,7 +92,7 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "parentId") Long parentId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
+    ) throws PermissionDeniedException {
         Pageable pageable = Pageable.ofSize(size).withPage(page);
         PagedResponseDto<ActivityGroupBoardChildResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByParent(parentId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -104,7 +105,7 @@ public class ActivityGroupBoardController {
     public ResponseModel updateActivityGroupBoard(
             @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId,
             @Valid @RequestBody ActivityGroupBoardRequestDto activityGroupBoardRequestDto
-    ) {
+    ) throws PermissionDeniedException {
         Long id = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, activityGroupBoardRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -116,7 +117,7 @@ public class ActivityGroupBoardController {
     @DeleteMapping("")
     public ResponseModel deleteActivityGroupBoard(
             @RequestParam Long activityGroupBoardId
-    ) {
+    ) throws PermissionDeniedException {
         Long id = activityGroupBoardService.deleteActivityGroupBoard(activityGroupBoardId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
