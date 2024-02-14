@@ -150,7 +150,7 @@ public class ActivityGroupBoardService {
                 .filter(child -> child.getMember().getId().equals(member.getId()))
                 .collect(Collectors.toList());
 
-        if (childrenBoardList.size() > 1) {
+        if (childrenBoardList.size() != 1) {
             throw new NotFoundException("자식 활동 그룹 게시판이 유일하지 않습니다.");
         }
 
