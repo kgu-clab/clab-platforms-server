@@ -38,7 +38,6 @@ public class Member implements UserDetails {
 
     @Id
     @Column(updatable = false, unique = true, nullable = false)
-    @Size(min = 9, max = 9, message = "{size.member.id}")
     private String id;
 
     @JsonIgnore
