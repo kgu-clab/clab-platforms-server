@@ -59,7 +59,7 @@ public class DonationService {
     public Long updateDonation(Long donationId, DonationRequestDto donationRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Donation donation = getDonationByIdOrThrow(donationId);
-        if (!(donation.getDonor().getId().equals(member.getId()) || memberService.isMemberSuperRole(member))) {
+        if (!memberService.isMemberSuperRole(member)) {
             throw new PermissionDeniedException("해당 후원 정보를 수정할 권한이 없습니다.");
         }
         Donation updatedDonation = Donation.of(donationRequestDto);
@@ -72,7 +72,7 @@ public class DonationService {
     public Long deleteDonation(Long donationId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Donation donation = getDonationByIdOrThrow(donationId);
-        if (!(donation.getDonor().getId().equals(member.getId()) || memberService.isMemberSuperRole(member))) {
+        if (!memberService.isMemberSuperRole(member)) {
             throw new PermissionDeniedException("해당 후원 정보를 삭제할 권한이 없습니다.");
         }
         donationRepository.deleteById(donationId);
