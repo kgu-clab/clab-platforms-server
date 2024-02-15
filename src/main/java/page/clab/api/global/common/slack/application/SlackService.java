@@ -4,9 +4,6 @@ import com.slack.api.Slack;
 import com.slack.api.webhook.Payload;
 import com.slack.api.webhook.WebhookResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -15,6 +12,10 @@ import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.domain.Role;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @Slf4j
@@ -35,8 +36,8 @@ public class SlackService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
 
-        String message = String.format("[Server Error Alert]\n- Time: %s\n- Username: %s\n- IP: %s\n- Endpoint: %s\n- Location: %s\n- Error: %s",
-                serverTime, username, clientIpAddress, requestUrl, errorLocation, e.getMessage());
+        String message = String.format(":red_circle: *Server Error [%s]- %s*\n>*User*: %s\n>*Endpoint*: %s\n>*Location*: `%s`\n>*Error*: ```%s```",
+                clientIpAddress, serverTime, username, requestUrl, errorLocation, e.getMessage());
         return sendSlackMessage(message);
     }
 
@@ -47,8 +48,8 @@ public class SlackService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
 
-        String message = String.format("[Security Alert - %s]\n- Time: %s\n- Username: %s\n- IP: %s\n- Endpoint: %s\n- Details: %s",
-                alertType.getTitle(), serverTime, username, clientIpAddress, requestUrl, alertType.getDefaultMessage());
+        String message = String.format(":red_circle: *%s [%s]- %s*\n>*User*: %s\n>*Endpoint*: %s\n>*Details*: `%s`",
+                alertType.getTitle(), clientIpAddress, serverTime, username, requestUrl, alertType.getDefaultMessage());
         return sendSlackMessage(message);
     }
 
@@ -59,8 +60,8 @@ public class SlackService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
 
-        String message = String.format("[Security Alert - %s]\n- Time: %s\n- Username: %s\n- IP: %s\n- Endpoint: %s\n- Details: %s\n- %s",
-                alertType.getTitle(), serverTime, username, clientIpAddress, requestUrl, alertType.getDefaultMessage(), additionalMessage);
+        String message = String.format(":red_circle: *%s [%s]- %s*\n>*User*: %s\n>*Endpoint*: %s\n>*Details*: `%s`\n>```%s```",
+                alertType.getTitle(), clientIpAddress, serverTime, username, requestUrl, alertType.getDefaultMessage(), additionalMessage);
         return sendSlackMessage(message);
     }
 
@@ -68,8 +69,8 @@ public class SlackService {
         String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
 
-        String message = String.format("[%s Login Alert]\n- Time: %s\n- username: %s\n- IP: %s",
-                role.getDescription(), serverTime, username, clientIpAddress);
+        String message = String.format(":large_yellow_circle: *%s Login [%s] - %s*\n>*User*: %s",
+                role.getDescription(), clientIpAddress, serverTime, username);
         return sendSlackMessage(message);
     }
 
