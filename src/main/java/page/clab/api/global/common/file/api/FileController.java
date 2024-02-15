@@ -61,20 +61,6 @@ public class FileController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 도서 사진 업로드", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(value = "/books/{bookId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel bookUpload(
-            @PathVariable(name = "bookId") String bookId,
-            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
-            @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws IOException, PermissionDeniedException {
-        List<String> url = fileService.saveFiles(multipartFiles, "books" + File.separator + bookId, storagePeriod);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
-        return responseModel;
-    }
-
     @Operation(summary = "[U] 멤버 프로필 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/profiles/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
