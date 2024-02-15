@@ -75,7 +75,7 @@ public class ActivityGroupBoardController {
 
     @Operation(summary = "[U] 부모 활동 그룹 게시판에 대해 유일한 자식 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("{parentId}")
+    @GetMapping("/{parentId}")
     public ResponseModel getOneChildActivityGroupBoardByParentId(
             @PathVariable Long parentId
     ) {
