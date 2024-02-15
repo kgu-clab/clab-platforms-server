@@ -65,22 +65,25 @@ public class ReviewService {
     }
 
     public PagedResponseDto<ReviewResponseDto> getReviews(Pageable pageable) {
+        Member member = memberService.getCurrentMember();
         Page<Review> reviews = reviewRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(reviews.map(ReviewResponseDto::of));
+        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, member.getId())));
     }
 
     public PagedResponseDto<ReviewResponseDto> getMyReviews(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Review> reviews = getReviewByMember(pageable, member);
-        return new PagedResponseDto<>(reviews.map(ReviewResponseDto::of));
+        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, member.getId())));
     }
 
     public PagedResponseDto<ReviewResponseDto> getPublicReview(Pageable pageable) {
+        Member member = memberService.getCurrentMember();
         Page<Review> reviews = getReviewByIsPublic(pageable);
-        return new PagedResponseDto<>(reviews.map(ReviewResponseDto::of));
+        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, member.getId())));
     }
 
     public PagedResponseDto<ReviewResponseDto> searchReview(String memberId, String name, Long activityGroupId, String activityGroupCategory, Pageable pageable) {
+        Member member = memberService.getCurrentMember();
         Page<Review> reviews;
         if (memberId != null) {
             reviews = getReviewByMemberId(memberId, pageable);
@@ -96,7 +99,7 @@ public class ReviewService {
         if (reviews.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
         }
-        return new PagedResponseDto<>(reviews.map(ReviewResponseDto::of));
+        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, member.getId())));
     }
 
     public Long updateReview(Long reviewId, ReviewRequestDto reviewRequestDto) throws PermissionDeniedException {

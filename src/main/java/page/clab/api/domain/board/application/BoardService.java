@@ -1,7 +1,6 @@
 package page.clab.api.domain.board.application;
 
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +21,8 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.RandomNicknameUtil;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -66,6 +67,7 @@ public class BoardService {
         Board board = getBoardByIdOrThrow(boardId);
         BoardDetailsResponseDto boardDetailsResponseDto = BoardDetailsResponseDto.of(board);
         boardDetailsResponseDto.setHasLikeByMe(boardLikeRepository.existsByBoardIdAndMemberId(board.getId(), member.getId()));
+        boardDetailsResponseDto.setOwner(board.getMember().getId().equals(member.getId()));
         return boardDetailsResponseDto;
     }
 
