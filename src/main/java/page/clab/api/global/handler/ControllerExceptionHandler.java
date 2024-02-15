@@ -6,14 +6,6 @@ import com.maxmind.geoip2.exception.GeoIp2Exception;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -60,6 +52,15 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
 @RestControllerAdvice(basePackages = "page.clab.api")
 @RequiredArgsConstructor
 @Slf4j
@@ -86,7 +87,7 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel badRequestException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        return makeExceptionResponseModel(null);
+        return makeExceptionResponseModel(false, null);
     }
 
     @ExceptionHandler({
@@ -100,7 +101,7 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel unAuthorizeException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        return makeExceptionResponseModel(null);
+        return makeExceptionResponseModel(false, null);
     }
 
     @ExceptionHandler({
@@ -110,7 +111,7 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel deniedException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        return makeExceptionResponseModel(null);
+        return makeExceptionResponseModel(false, null);
     }
 
     @ExceptionHandler({
@@ -122,8 +123,8 @@ public class ControllerExceptionHandler {
             AddressNotFoundException.class,
     })
     public ResponseModel notFoundException(HttpServletResponse response, Exception e){
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        return makeExceptionResponseModel(null);
+        response.setStatus(HttpServletResponse.SC_OK);
+        return makeExceptionResponseModel(true, new ArrayList<>());
     }
 
     @ExceptionHandler({
@@ -139,7 +140,7 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel conflictException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_CONFLICT);
-        return makeExceptionResponseModel(null);
+        return makeExceptionResponseModel(false, null);
     }
 
     @ExceptionHandler({
@@ -158,7 +159,7 @@ public class ControllerExceptionHandler {
         slackService.sendServerErrorNotification(request, e);
         log.warn(e.getMessage());
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        return makeExceptionResponseModel(null);
+        return makeExceptionResponseModel(false, null);
     }
 
     @ExceptionHandler({
@@ -177,16 +178,16 @@ public class ControllerExceptionHandler {
 
         log.info("Validation error: {}", errorList);
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        return makeExceptionResponseModel(null);
+        return makeExceptionResponseModel(false, null);
     }
 
     private String getMessage(String code) {
         return messageSource.getMessage(code, null, Locale.getDefault());
     }
 
-    private ResponseModel makeExceptionResponseModel(String message) {
+    private ResponseModel makeExceptionResponseModel(boolean success, Object message) {
         return ResponseModel.builder()
-                .success(false)
+                .success(success)
                 .data(message)
                 .build();
     }
