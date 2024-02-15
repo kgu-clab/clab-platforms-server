@@ -46,7 +46,6 @@ public class Blog {
     @Size(min = 1, max = 10000, message = "{size.blog.content}")
     private String content;
 
-    @URL
     private String imageUrl;
 
     @CreationTimestamp

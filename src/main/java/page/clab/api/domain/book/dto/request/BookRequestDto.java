@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.URL;
 
 @Getter
 @Setter
@@ -32,7 +31,6 @@ public class BookRequestDto {
     @Schema(description = "출판사", example = "프리렉", required = true)
     private String publisher;
 
-    @URL(message = "{url.book.imageUrl}")
     @Schema(description = "이미지 URL", example = "https://shopping-phinf.pstatic.net/main_3243625/32436253723.20230928091945.jpg?type=w300")
     private String imageUrl;
 

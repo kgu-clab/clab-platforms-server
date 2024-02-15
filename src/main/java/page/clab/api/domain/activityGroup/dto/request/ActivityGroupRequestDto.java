@@ -34,7 +34,6 @@ public class ActivityGroupRequestDto {
     @Schema(description = "활동 설명", example = "2024-1 신입생 대상 C언어 스터디")
     private String content;
 
-    @URL(message = "{url.activityGroup.imageUrl}")
     @Schema(description = "활동 이미지 URL", example = "https://i.namu.wiki/i/KcqDuQYTxNpUcLIMZTg28QXse0XiWx1G7K68kYYCo1GuhoHmhB_V8Qe9odGGt0BH9-0nQZTN53WXTNpDmwVfWQ.svg")
     private String imageUrl;
 
