@@ -1,10 +1,6 @@
 package page.clab.api.domain.activityGroup.application;
 
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -29,6 +25,11 @@ import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.dto.response.AssignmentFileResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +65,7 @@ public class ActivityGroupBoardService {
         List<String> fileUrls = activityGroupBoardRequestDto.getFileUrlList();
         if (fileUrls != null) {
             List<UploadedFile> uploadFileList =  fileUrls.stream()
-                    .map(url -> fileService.getUploadedFileByUrl(url))
+                    .map(fileService::getUploadedFileByUrl)
                     .collect(Collectors.toList());
             board.setUploadedFiles(uploadFileList);
         }
@@ -73,7 +74,7 @@ public class ActivityGroupBoardService {
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByMemberOrThrow(member);
         if (groupMember.getRole() == ActivityGroupRole.LEADER) {
             List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
-            groupMembers.stream()
+            groupMembers
                     .forEach(gMember -> {
                         if (!Objects.equals(gMember.getMember().getId(), member.getId())) {
                             NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
@@ -97,7 +98,7 @@ public class ActivityGroupBoardService {
     public PagedResponseDto<ActivityGroupBoardResponseDto> getAllActivityGroupBoard(Pageable pageable) {
         List<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByOrderByCreatedAtAsc();
         List<ActivityGroupBoardResponseDto> activityGroupBoardResponseDtos = boards.stream()
-                .map(board -> toActivityGroupBoardResponseDto(board))
+                .map(this::toActivityGroupBoardResponseDto)
                 .collect(Collectors.toList());
         Page<ActivityGroupBoardResponseDto> pagedResponseDto = new PageImpl<>(activityGroupBoardResponseDtos, pageable, activityGroupBoardResponseDtos.size());
         return new PagedResponseDto<>(pagedResponseDto);
@@ -124,7 +125,7 @@ public class ActivityGroupBoardService {
 
         List<ActivityGroupBoard> boards = getChildBoards(parentId);
         List<ActivityGroupBoardChildResponseDto> activityGroupBoardChildResponseDtos = boards.stream()
-                .map(board -> toActivityGroupBoardChildResponseDto(board))
+                .map(this::toActivityGroupBoardChildResponseDto)
                 .collect(Collectors.toList());
         Page<ActivityGroupBoardChildResponseDto> pagedResponseDto = new PageImpl<>(activityGroupBoardChildResponseDtos, pageable, activityGroupBoardChildResponseDtos.size());
         return new PagedResponseDto<>(pagedResponseDto);
@@ -134,7 +135,7 @@ public class ActivityGroupBoardService {
         ActivityGroupBoard parentBoard = activityGroupBoardRepository.findById(parentId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 게시판입니다."));
 
-        if (parentBoard.getChildren().size() == 0) {
+        if (parentBoard.getChildren().isEmpty()) {
             throw new NotFoundException("자식 활동 그룹 게시판이 아무것도 없습니다.");
         }
 
@@ -176,7 +177,7 @@ public class ActivityGroupBoardService {
         List<String> fileUrls = activityGroupBoardRequestDto.getFileUrlList();
         if (fileUrls != null) {
             List<UploadedFile> uploadFileList =  fileUrls.stream()
-                    .map(url -> fileService.getUploadedFileByUrl(url))
+                    .map(fileService::getUploadedFileByUrl)
                     .collect(Collectors.toList());
             board.setUploadedFiles(uploadFileList);
         }
@@ -224,7 +225,7 @@ public class ActivityGroupBoardService {
 
         if (board.getUploadedFiles() != null) {
             List<String> fileUrls = board.getUploadedFiles().stream()
-                    .map(file -> file.getUrl()).collect(Collectors.toList());
+                    .map(UploadedFile::getUrl).collect(Collectors.toList());
 
             List<AssignmentFileResponseDto> fileResponseDtos = fileUrls.stream()
                     .map(url -> AssignmentFileResponseDto.builder()
@@ -255,7 +256,7 @@ public class ActivityGroupBoardService {
 
         if (board.getUploadedFiles() != null) {
             List<String> fileUrls = board.getUploadedFiles().stream()
-                    .map(file -> file.getUrl()).collect(Collectors.toList());
+                    .map(UploadedFile::getUrl).collect(Collectors.toList());
 
             List<AssignmentFileResponseDto> fileResponseDtos = fileUrls.stream()
                             .map(url -> AssignmentFileResponseDto.builder()
