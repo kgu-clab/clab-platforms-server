@@ -10,10 +10,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +23,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
+
 @Entity
 @Getter
 @Setter
@@ -37,7 +38,6 @@ public class Member implements UserDetails {
 
     @Id
     @Column(updatable = false, unique = true, nullable = false)
-    @Size(min = 9, max = 9, message = "{size.member.id}")
     private String id;
 
     @JsonIgnore
@@ -82,7 +82,6 @@ public class Member implements UserDetails {
     @Enumerated(EnumType.STRING)
     private StudentStatus studentStatus;
 
-    @URL(message = "{url.member.imageUrl}")
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
