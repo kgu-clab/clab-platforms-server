@@ -14,7 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
@@ -48,7 +47,6 @@ public class MembershipFee {
     @Size(min = 1, max = 1000, message = "{size.membershipFee.content}")
     private String content;
 
-    @URL(message = "{url.membershipFee.imageUrl}")
     private String imageUrl;
 
     @CreationTimestamp
