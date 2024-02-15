@@ -13,8 +13,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.position.dto.request.PositionRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.position.dto.request.PositionRequestDto;
 
 @Entity
 @Getter

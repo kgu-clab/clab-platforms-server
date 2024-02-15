@@ -7,11 +7,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.member.domain.Member;
 
@@ -25,7 +27,7 @@ public class ApplyForm {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "activity_group_id", nullable = false)
@@ -36,23 +38,14 @@ public class ApplyForm {
     private Member member;
 
     @NotNull
-    private String contact;
-
-    @NotNull
-    private String email;
-
-    @NotNull
     private String applyReason;
 
-    @NotNull
-    private String spec;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     public static ApplyForm of(ApplyFormRequestDto requestDto){
         return ApplyForm.builder()
-                .contact(requestDto.getContact())
-                .email(requestDto.getEmail())
                 .applyReason(requestDto.getApplyReason())
-                .spec(requestDto.getSpec())
                 .build();
     }
 

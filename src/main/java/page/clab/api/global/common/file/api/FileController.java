@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
+import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.io.File;
@@ -124,6 +125,37 @@ public class FileController {
             @RequestParam("storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
         List<String> url = fileService.saveFiles(multipartFiles, "forms", storagePeriod);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(url);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 활동 그룹 과제 업로드", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @PostMapping(value = "/assignment/{activityGroupId}/{activityGroupBoardId}/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseModel assignmentUpload(
+            @PathVariable(name = "activityGroupId") Long activityGroupId,
+            @PathVariable(name = "activityGroupBoardId") Long activityGroupBoardId,
+            @PathVariable(name = "memberId") String memberId,
+            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam(name = "storagePeriod") long storagePeriod
+    ) throws PermissionDeniedException, IOException, NotFoundException {
+        List<String> url = fileService.saveFiles(multipartFiles,
+                "assignment" + File.separator + activityGroupId + File.separator+ activityGroupBoardId + File.separator + memberId, storagePeriod);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(url);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 회비 증빙 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @PostMapping(value = "/membership-fee/{membershipFeeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseModel assignmentUpload(
+            @PathVariable(name = "membershipFeeId") Long membershipFeeId,
+            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam(name = "storagePeriod") long storagePeriod
+    ) throws PermissionDeniedException, IOException, NotFoundException {
+        List<String> url = fileService.saveFiles(multipartFiles, "membership-fee" + File.separator + membershipFeeId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
         return responseModel;
