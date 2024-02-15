@@ -235,7 +235,7 @@ public class ActivityGroupBoardService {
                             .build())
                     .collect(Collectors.toList());
 
-            activityGroupBoardChildResponseDto.setFileResponseDtoList(fileResponseDtos);
+            activityGroupBoardChildResponseDto.setAssignmentFiles(fileResponseDtos);
         }
 
         if (board.getChildren() != null && !board.getChildren().isEmpty()) {
@@ -266,7 +266,7 @@ public class ActivityGroupBoardService {
                                     .build())
                             .collect(Collectors.toList());
 
-            activityGroupBoardResponseDto.setAssignmentFileResponseDtoList(fileResponseDtos);
+            activityGroupBoardResponseDto.setAssignmentFiles(fileResponseDtos);
         }
         return activityGroupBoardResponseDto;
     }
