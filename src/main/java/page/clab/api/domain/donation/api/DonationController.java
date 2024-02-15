@@ -35,8 +35,8 @@ public class DonationController {
 
     private final DonationService donationService;
 
-    @Operation(summary = "[U] 후원 생성", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 후원 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createDonation(
             @Valid @RequestBody DonationRequestDto donationRequestDto,
@@ -96,9 +96,8 @@ public class DonationController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 후원 정보 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "본인 외의 정보는 ROLE_SUPER만 가능")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 후원 정보 수정", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @PatchMapping("/{donationId}")
     public ResponseModel updateDonation(
             @PathVariable(name = "donationId") Long donationId,
@@ -114,9 +113,8 @@ public class DonationController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 후원 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "본인 외의 정보는 ROLE_SUPER만 가능")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Operation(summary = "[S] 후원 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{donationId}")
     public ResponseModel deleteDonation(
             @PathVariable(name = "donationId") Long donationId
