@@ -3,13 +3,14 @@ package page.clab.api.domain.activityGroup.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -30,7 +31,7 @@ public class ActivityGroupBoardRequestDto {
     private String content;
 
     @Schema(description = "과제 제출 파일 경로", example = "/resources/files/assignment/1/1/superuser/339609571877700_4305d83e-090a-480b-a470-b5e96164d113.png")
-    private List<String> fileUrlList;
+    private List<String> fileUrls;
 
     @NotNull(message = "{notNull.activityGroupBoard.isAssignmentBoard}")
     @Schema(description = "과제 제출 게시판인지 아닌지", example = "false")

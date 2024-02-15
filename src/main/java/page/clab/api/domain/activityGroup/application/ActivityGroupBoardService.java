@@ -62,7 +62,7 @@ public class ActivityGroupBoardService {
             activityGroupBoardRepository.save(parentBoard);
         }
 
-        List<String> fileUrls = activityGroupBoardRequestDto.getFileUrlList();
+        List<String> fileUrls = activityGroupBoardRequestDto.getFileUrls();
         if (fileUrls != null) {
             List<UploadedFile> uploadFileList =  fileUrls.stream()
                     .map(fileService::getUploadedFileByUrl)
@@ -174,7 +174,7 @@ public class ActivityGroupBoardService {
         board.setTitle(activityGroupBoardRequestDto.getTitle());
         board.setContent(activityGroupBoardRequestDto.getContent());
 
-        List<String> fileUrls = activityGroupBoardRequestDto.getFileUrlList();
+        List<String> fileUrls = activityGroupBoardRequestDto.getFileUrls();
         if (fileUrls != null) {
             List<UploadedFile> uploadFileList =  fileUrls.stream()
                     .map(fileService::getUploadedFileByUrl)
