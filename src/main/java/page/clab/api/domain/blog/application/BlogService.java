@@ -50,8 +50,8 @@ public class BlogService {
     }
 
     public BlogDetailsResponseDto getBlogDetails(Long blogId) {
-        Blog blog = getBlogByIdOrThrow(blogId);
         Member member = memberService.getCurrentMember();
+        Blog blog = getBlogByIdOrThrow(blogId);
         BlogDetailsResponseDto blogDetailsResponseDto = BlogDetailsResponseDto.of(blog);
         blogDetailsResponseDto.setOwner(blog.getMember().equals(member));
         return blogDetailsResponseDto;
