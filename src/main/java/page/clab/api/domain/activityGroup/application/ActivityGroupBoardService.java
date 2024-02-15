@@ -173,6 +173,8 @@ public class ActivityGroupBoardService {
         board.setCategory(activityGroupBoardRequestDto.getCategory());
         board.setTitle(activityGroupBoardRequestDto.getTitle());
         board.setContent(activityGroupBoardRequestDto.getContent());
+        board.setDueDateTime(activityGroupBoardRequestDto.getDueDateTime());
+        board.setIsAssignmentBoard(activityGroupBoardRequestDto.isAssignmentBoard());
 
         List<String> fileUrls = activityGroupBoardRequestDto.getFileUrls();
         if (fileUrls != null) {
