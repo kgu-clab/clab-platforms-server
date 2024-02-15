@@ -6,10 +6,6 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,6 +17,11 @@ import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
+
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +39,11 @@ public class BookService {
     public PagedResponseDto<BookResponseDto> getBooks(Pageable pageable) {
         Page<Book> books = bookRepository.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(books.map(BookResponseDto::of));
+    }
+
+    public BookResponseDto getBookDetails(Long bookId) {
+        Book book = getBookByIdOrThrow(bookId);
+        return BookResponseDto.of(book);
     }
 
     public PagedResponseDto<BookResponseDto> searchBook(String keyword, Pageable pageable) {

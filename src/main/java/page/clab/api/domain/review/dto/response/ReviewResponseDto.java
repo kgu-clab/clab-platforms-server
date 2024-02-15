@@ -1,6 +1,5 @@
 package page.clab.api.domain.review.dto.response;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -34,9 +35,11 @@ public class ReviewResponseDto {
 
     private Boolean isPublic;
 
+    private Boolean isOwner;
+
     private LocalDateTime createdAt;
 
-    public static ReviewResponseDto of(Review review) {
+    public static ReviewResponseDto of(Review review, String currentMemberId) {
         ReviewResponseDto reviewResponseDto = ModelMapperUtil.getModelMapper().map(review, ReviewResponseDto.class);
         reviewResponseDto.setActivityGroupId(review.getActivityGroup().getId());
         reviewResponseDto.setActivityGroupName(review.getActivityGroup().getName());
@@ -44,6 +47,7 @@ public class ReviewResponseDto {
         reviewResponseDto.setMemberId(review.getMember().getId());
         reviewResponseDto.setName(review.getMember().getName());
         reviewResponseDto.setDepartment(review.getMember().getDepartment());
+        reviewResponseDto.setIsOwner(review.getMember().getId().equals(currentMemberId));
         return reviewResponseDto;
     }
 

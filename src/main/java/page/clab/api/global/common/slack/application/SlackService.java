@@ -36,7 +36,7 @@ public class SlackService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
 
-        String message = String.format(":red_circle: *Server Error [%s]- %s*\n>*User*: %s\n>*Endpoint*: %s\n>*Location*: `%s`\n>*Error*: ```%s```",
+        String message = String.format(":red_circle: *Server Error [%s]- %s*\n>*User*: %s\n>*Endpoint*: %s\n>*Error*: `%s`\n>```%s```",
                 clientIpAddress, serverTime, username, requestUrl, errorLocation, e.getMessage());
         return sendSlackMessage(message);
     }
