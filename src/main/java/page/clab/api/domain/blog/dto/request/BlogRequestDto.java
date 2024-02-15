@@ -32,7 +32,6 @@ public class BlogRequestDto {
     @Schema(description = "내용", example = "NestJs는 스웨거 설정에 있던데 스프링은........", required = true)
     private String content;
 
-    @URL(message = "{url.blog.imageUrl}")
     @Schema(description = "이미지 URL", example = "https://www.clab.page/assets/logoWhite-fc1ef9a0.webp")
     private String imageUrl;
 
