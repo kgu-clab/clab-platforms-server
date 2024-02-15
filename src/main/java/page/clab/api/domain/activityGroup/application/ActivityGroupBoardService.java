@@ -1,10 +1,8 @@
 package page.clab.api.domain.activityGroup.application;
 
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -22,10 +20,20 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.file.domain.UploadedFile;
+import page.clab.api.global.common.file.dto.response.AssignmentFileResponseDto;
 import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ActivityGroupBoardService {
 
     private final ActivityGroupBoardRepository activityGroupBoardRepository;
@@ -37,6 +45,8 @@ public class ActivityGroupBoardService {
     private final ActivityGroupMemberService activityGroupMemberService;
 
     private final NotificationService notificationService;
+
+    private final FileService fileService;
 
     @Transactional
     public Long createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
@@ -51,12 +61,20 @@ public class ActivityGroupBoardService {
             parentBoard.getChildren().add(board);
             activityGroupBoardRepository.save(parentBoard);
         }
+
+        List<String> fileUrls = activityGroupBoardRequestDto.getFileUrls();
+        if (fileUrls != null) {
+            List<UploadedFile> uploadFileList =  fileUrls.stream()
+                    .map(fileService::getUploadedFileByUrl)
+                    .collect(Collectors.toList());
+            board.setUploadedFiles(uploadFileList);
+        }
         Long id = activityGroupBoardRepository.save(board).getId();
 
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByMemberOrThrow(member);
         if (groupMember.getRole() == ActivityGroupRole.LEADER) {
             List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
-            groupMembers.stream()
+            groupMembers
                     .forEach(gMember -> {
                         if (!Objects.equals(gMember.getMember().getId(), member.getId())) {
                             NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
@@ -78,33 +96,108 @@ public class ActivityGroupBoardService {
     }
 
     public PagedResponseDto<ActivityGroupBoardResponseDto> getAllActivityGroupBoard(Pageable pageable) {
-        Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(boards.map(ActivityGroupBoardResponseDto::of));
+        List<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByOrderByCreatedAtAsc();
+        List<ActivityGroupBoardResponseDto> activityGroupBoardResponseDtos = boards.stream()
+                .map(this::toActivityGroupBoardResponseDto)
+                .collect(Collectors.toList());
+        Page<ActivityGroupBoardResponseDto> pagedResponseDto = new PageImpl<>(activityGroupBoardResponseDtos, pageable, activityGroupBoardResponseDtos.size());
+        return new PagedResponseDto<>(pagedResponseDto);
     }
 
     public ActivityGroupBoardResponseDto getActivityGroupBoardById(Long activityGroupBoardId) {
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        return ActivityGroupBoardResponseDto.of(board);
+        return toActivityGroupBoardResponseDto(board);
     }
 
-    public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) {
-        List<ActivityGroupBoard> boardList = getChildBoards(parentId);
-        Page<ActivityGroupBoard> boardPage = new PageImpl<>(boardList, pageable, boardList.size());
-        return new PagedResponseDto<>(boardPage.map(ActivityGroupBoardChildResponseDto::of));
+    public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
+        ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
+        Long activityGroupId = parentBoard.getActivityGroup().getId();
+        if (!memberService.isMemberAdminRole(member) &&
+                !memberService.isMemberSuperRole(member) &&
+                !activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER).getMember().getId()
+                        .equals(member.getId())
+        ) {
+            if (parentBoard.isAssignmentBoard()) {
+                throw new PermissionDeniedException("전체 과제물은 그룹의 리더 또는 관리자만 열람할 수 있습니다.");
+            }
+        }
+
+        List<ActivityGroupBoard> boards = getChildBoards(parentId);
+        List<ActivityGroupBoardChildResponseDto> activityGroupBoardChildResponseDtos = boards.stream()
+                .map(this::toActivityGroupBoardChildResponseDto)
+                .collect(Collectors.toList());
+        Page<ActivityGroupBoardChildResponseDto> pagedResponseDto = new PageImpl<>(activityGroupBoardChildResponseDtos, pageable, activityGroupBoardChildResponseDtos.size());
+        return new PagedResponseDto<>(pagedResponseDto);
     }
 
-    public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
+    public ActivityGroupBoardResponseDto getOneChildActivityGroupBoardByParentId(Long parentId) {
+        ActivityGroupBoard parentBoard = activityGroupBoardRepository.findById(parentId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 게시판입니다."));
+
+        if (parentBoard.getChildren().isEmpty()) {
+            throw new NotFoundException("자식 활동 그룹 게시판이 아무것도 없습니다.");
+        }
+
+        if (parentBoard.getChildren().size() == 1 && !parentBoard.isAssignmentBoard()) {
+            Long childId = parentBoard.getChildren().getFirst().getId();
+            return getActivityGroupBoardById(childId);
+        }
+
+        Member member = memberService.getCurrentMember();
+        List<ActivityGroupBoard> childrenBoardList = parentBoard.getChildren();
+
+        childrenBoardList = childrenBoardList.stream()
+                .filter(child -> child.getMember().getId().equals(member.getId()))
+                .collect(Collectors.toList());
+
+        if (childrenBoardList.size() != 1) {
+            throw new NotFoundException("자식 활동 그룹 게시판이 유일하지 않습니다.");
+        }
+
+        Long childId = childrenBoardList.getFirst().getId();
+        return getActivityGroupBoardById(childId);
+    }
+
+    public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
+
+        if (!member.getId().equals(board.getMember().getId()) &&
+                !memberService.isMemberAdminRole(member) &&
+                !memberService.isMemberSuperRole(member)
+        ) {
+            throw new PermissionDeniedException("활동 그룹 게시판 작성자 또는 운영진만 수정할 수 있습니다.");
+        }
+
         board.setCategory(activityGroupBoardRequestDto.getCategory());
         board.setTitle(activityGroupBoardRequestDto.getTitle());
         board.setContent(activityGroupBoardRequestDto.getContent());
-        board.setFilePath(activityGroupBoardRequestDto.getFilePath());
-        board.setFileName(activityGroupBoardRequestDto.getFileName());
+        board.setDueDateTime(activityGroupBoardRequestDto.getDueDateTime());
+        board.setIsAssignmentBoard(activityGroupBoardRequestDto.isAssignmentBoard());
+
+        List<String> fileUrls = activityGroupBoardRequestDto.getFileUrls();
+        if (fileUrls != null) {
+            List<UploadedFile> uploadFileList =  fileUrls.stream()
+                    .map(fileService::getUploadedFileByUrl)
+                    .collect(Collectors.toList());
+            board.setUploadedFiles(uploadFileList);
+        }
+
         return activityGroupBoardRepository.save(board).getId();
     }
 
-    public Long deleteActivityGroupBoard(Long activityGroupBoardId) {
+    public Long deleteActivityGroupBoard(Long activityGroupBoardId) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
+
+        if (!member.getId().equals(board.getMember().getId()) &&
+                !memberService.isMemberAdminRole(member) &&
+                !memberService.isMemberSuperRole(member)
+        ) {
+            throw new PermissionDeniedException("활동 그룹 게시판 작성자 또는 운영진만 삭제할 수 있습니다.");
+        }
+
         activityGroupBoardRepository.delete(board);
         return board.getId();
     }
@@ -127,6 +220,57 @@ public class ActivityGroupBoardService {
         }
         boardList.sort((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()));
         return boardList;
+    }
+
+    public ActivityGroupBoardChildResponseDto toActivityGroupBoardChildResponseDto(ActivityGroupBoard board) {
+        ActivityGroupBoardChildResponseDto activityGroupBoardChildResponseDto = ActivityGroupBoardChildResponseDto.of(board);
+
+        if (board.getUploadedFiles() != null) {
+            List<String> fileUrls = board.getUploadedFiles().stream()
+                    .map(UploadedFile::getUrl).collect(Collectors.toList());
+
+            List<AssignmentFileResponseDto> fileResponseDtos = fileUrls.stream()
+                    .map(url -> AssignmentFileResponseDto.builder()
+                            .fileUrl(url)
+                            .originalFileName(fileService.getOriginalFileNameByUrl(url))
+                            .storageDateTimeOfFile(fileService.getStorageDateTimeOfFile(url))
+                            .build())
+                    .collect(Collectors.toList());
+
+            activityGroupBoardChildResponseDto.setAssignmentFiles(fileResponseDtos);
+        }
+
+        if (board.getChildren() != null && !board.getChildren().isEmpty()) {
+
+            List<ActivityGroupBoardChildResponseDto> childrenDtoList = new ArrayList<>();
+            for (ActivityGroupBoard child : board.getChildren()) {
+                childrenDtoList.add(toActivityGroupBoardChildResponseDto(child));
+            }
+
+            activityGroupBoardChildResponseDto.setChildren(childrenDtoList);
+        }
+
+        return activityGroupBoardChildResponseDto;
+    }
+
+    public ActivityGroupBoardResponseDto toActivityGroupBoardResponseDto(ActivityGroupBoard board) {
+        ActivityGroupBoardResponseDto activityGroupBoardResponseDto = ActivityGroupBoardResponseDto.of(board);
+
+        if (board.getUploadedFiles() != null) {
+            List<String> fileUrls = board.getUploadedFiles().stream()
+                    .map(UploadedFile::getUrl).collect(Collectors.toList());
+
+            List<AssignmentFileResponseDto> fileResponseDtos = fileUrls.stream()
+                            .map(url -> AssignmentFileResponseDto.builder()
+                                    .fileUrl(url)
+                                    .originalFileName(fileService.getOriginalFileNameByUrl(url))
+                                    .storageDateTimeOfFile(fileService.getStorageDateTimeOfFile(url))
+                                    .build())
+                            .collect(Collectors.toList());
+
+            activityGroupBoardResponseDto.setAssignmentFiles(fileResponseDtos);
+        }
+        return activityGroupBoardResponseDto;
     }
 
 }

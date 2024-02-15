@@ -8,17 +8,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Version;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -44,7 +44,6 @@ public class Book {
     @Column(nullable = false)
     private String publisher;
 
-    @URL(message = "{url.book.imageUrl}")
     private String imageUrl;
 
     @CreationTimestamp

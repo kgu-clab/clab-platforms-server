@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDate;
 
@@ -23,7 +22,6 @@ public class ActivityPhotoRequestDto {
     private String title;
 
     @NotNull(message = "{notNull.activityPhoto.imageUrl}")
-    @URL(message = "{url.activityPhoto.imageUrl}")
     @Schema(description = "활동 사진 URL", example = "https://static.gwansik.dev/clab.page/1.webp", required = true)
     private String imageUrl;
 

@@ -6,7 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
+import page.clab.api.global.common.file.dto.response.AssignmentFileResponseDto;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,15 +20,17 @@ import page.clab.api.global.util.ModelMapperUtil;
 @Builder
 public class ActivityGroupBoardResponseDto {
 
+    private Long id;
+
     private String category;
 
     private String title;
 
     private String content;
 
-    private String filePath;
+    private List<AssignmentFileResponseDto> assignmentFiles = new ArrayList<>();
 
-    private String fileName;
+    private LocalDateTime dueDateTime;
 
     public static ActivityGroupBoardResponseDto of(ActivityGroupBoard activityGroupBoard) {
         return ModelMapperUtil.getModelMapper().map(activityGroupBoard, ActivityGroupBoardResponseDto.class);
