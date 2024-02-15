@@ -8,7 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.URL;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -17,26 +19,25 @@ import org.hibernate.validator.constraints.URL;
 @Builder
 public class ActivityGroupBoardRequestDto {
 
-    @NotNull(message = "{notNull.board.category}")
     @Size(min = 1, max = 50, message = "{size.board.category}")
-    @Schema(description = "카테고리", example = "공지사항", required = true)
+    @Schema(description = "카테고리", example = "공지사항")
     private String category;
 
-    @NotNull(message = "{notNull.board.title}")
     @Size(min = 1, max = 100, message = "{size.board.title}")
-    @Schema(description = "제목", example = "C언어 스터디 과제 제출 관련 공지", required = true)
+    @Schema(description = "제목", example = "C언어 스터디 과제 제출 관련 공지")
     private String title;
 
-    @NotNull(message = "{notNull.board.content}")
-    @Schema(description = "내용", example = "C언어 스터디 과제 제출 관련 공지", required = true)
+    @Schema(description = "내용", example = "C언어 스터디 과제 제출 관련 공지")
     private String content;
 
-    @Schema(description = "과제 제출 파일 경로", example = "https://shopping-phinf.pstatic.net/main_3243625/32436253723.20230928091945.jpg?type=w300")
-    private String filePath;
+    @Schema(description = "과제 제출 파일 경로", example = "/resources/files/assignment/1/1/superuser/339609571877700_4305d83e-090a-480b-a470-b5e96164d113.png")
+    private List<String> fileUrls;
 
-    @NotNull(message = "{notNull.board.title}")
-    @Size(min = 1, max = 100, message = "{size.board.title}")
-    @Schema(description = "과제 제목", example = "C언어 3주차 과제", required = true)
-    private String fileName;
+    @NotNull(message = "{notNull.activityGroupBoard.isAssignmentBoard}")
+    @Schema(description = "과제 제출 게시판인지 아닌지", example = "false")
+    private boolean isAssignmentBoard;
+
+    @Schema(description = "마감일자", example = "2024-11-28 18:00:00.000")
+    private LocalDateTime dueDateTime;
 
 }

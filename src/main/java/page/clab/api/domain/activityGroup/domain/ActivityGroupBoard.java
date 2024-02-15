@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.util.ModelMapperUtil;
 
 @Entity
@@ -43,15 +44,13 @@ public class ActivityGroupBoard {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column(nullable = false)
     @Size(min = 1, max = 50)
     private String category;
 
-    @Column(nullable = false)
     @Size(min = 1, max = 100, message = "{size.board.title}")
     private String title;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -62,11 +61,14 @@ public class ActivityGroupBoard {
     @OneToMany(mappedBy = "parent", orphanRemoval = true)
     private List<ActivityGroupBoard> children = new ArrayList<>();
 
-    @Column
-    private String filePath;
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "files")
+    private List<UploadedFile> uploadedFiles = new ArrayList<>();
 
-    @Column
-    private String fileName;
+    private boolean isAssignmentBoard;
+
+    @Column(name = "dueDate_time")
+    private LocalDateTime dueDateTime;
 
     @Column(name = "update_time")
     private LocalDateTime updateTime;
