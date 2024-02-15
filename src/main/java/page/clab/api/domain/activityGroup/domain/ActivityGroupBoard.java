@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ public class ActivityGroupBoard {
     @JoinColumn(name = "files")
     private List<UploadedFile> uploadedFiles = new ArrayList<>();
 
+    @NotNull
     private boolean isAssignmentBoard;
 
     @Column(name = "dueDate_time")
@@ -79,6 +81,10 @@ public class ActivityGroupBoard {
 
     public static ActivityGroupBoard of(ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
         return ModelMapperUtil.getModelMapper().map(activityGroupBoardRequestDto, ActivityGroupBoard.class);
+    }
+
+    public void setIsAssignmentBoard (boolean isAssignmentBoard) {
+        this.isAssignmentBoard = isAssignmentBoard;
     }
 
 }
