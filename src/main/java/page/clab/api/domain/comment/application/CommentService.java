@@ -1,7 +1,6 @@
 package page.clab.api.domain.comment.application;
 
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
@@ -25,6 +24,8 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.RandomNicknameUtil;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -80,7 +81,7 @@ public class CommentService {
         Member member = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByBoardIdAndParentIsNull(boardId, pageable);
         comments.forEach(comment -> Hibernate.initialize(comment.getChildren()));
-        Page<CommentGetAllResponseDto> pagedResponseDto = comments.map(CommentGetAllResponseDto::of);
+        Page<CommentGetAllResponseDto> pagedResponseDto = comments.map(dto -> CommentGetAllResponseDto.of(dto, member.getId()));
         pagedResponseDto.forEach(dto -> setHasLikeByMeAtCommentGetAllResponseDto(dto, member));
         return new PagedResponseDto<>(pagedResponseDto);
     }

@@ -61,20 +61,6 @@ public class FileController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 도서 사진 업로드", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(value = "/books/{bookId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel bookUpload(
-            @PathVariable(name = "bookId") String bookId,
-            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
-            @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws IOException, PermissionDeniedException {
-        List<String> url = fileService.saveFiles(multipartFiles, "books" + File.separator + bookId, storagePeriod);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
-        return responseModel;
-    }
-
     @Operation(summary = "[U] 멤버 프로필 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/profiles/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -149,13 +135,12 @@ public class FileController {
 
     @Operation(summary = "[U] 회비 증빙 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(value = "/membership-fee/{membershipFeeId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/membership-fee", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel assignmentUpload(
-            @PathVariable(name = "membershipFeeId") Long membershipFeeId,
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws PermissionDeniedException, IOException, NotFoundException {
-        List<String> url = fileService.saveFiles(multipartFiles, "membership-fee" + File.separator + membershipFeeId, storagePeriod);
+        List<String> url = fileService.saveFiles(multipartFiles, "membership-fee", storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(url);
         return responseModel;
