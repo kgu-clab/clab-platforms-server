@@ -31,7 +31,6 @@ public class ActivityGroupBoardRequestDto {
     @Schema(description = "내용", example = "C언어 스터디 과제 제출 관련 공지", required = true)
     private String content;
 
-    @URL(message = "{url.book.imageUrl}")
     @Schema(description = "과제 제출 파일 경로", example = "https://shopping-phinf.pstatic.net/main_3243625/32436253723.20230928091945.jpg?type=w300")
     private String filePath;
 
