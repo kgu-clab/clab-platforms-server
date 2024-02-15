@@ -1,8 +1,6 @@
 package page.clab.api.domain.comment.dto.response;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +9,10 @@ import lombok.Setter;
 import lombok.ToString;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -34,9 +36,12 @@ public class CommentGetAllResponseDto {
 
     private boolean hasLikeByMe;
 
+    @JsonProperty("isOwner")
+    private boolean isOwner;
+
     private LocalDateTime createdAt;
 
-    public static CommentGetAllResponseDto of(Comment comment) {
+    public static CommentGetAllResponseDto of(Comment comment, String currentMemberId) {
         CommentGetAllResponseDto commentGetAllResponseDto = ModelMapperUtil.getModelMapper().map(comment, CommentGetAllResponseDto.class);
 
         if(comment.isWantAnonymous()){
@@ -48,8 +53,10 @@ public class CommentGetAllResponseDto {
             commentGetAllResponseDto.setWriterImageUrl(comment.getWriter().getImageUrl());
         }
 
+        commentGetAllResponseDto.setOwner(comment.getWriter().getId().equals(currentMemberId));
+
         List<CommentGetAllResponseDto> childrenDto = comment.getChildren().stream()
-                .map(CommentGetAllResponseDto::of)
+                .map(child -> CommentGetAllResponseDto.of(child, currentMemberId))
                 .collect(Collectors.toList());
         commentGetAllResponseDto.setChildren(childrenDto);
         return commentGetAllResponseDto;
