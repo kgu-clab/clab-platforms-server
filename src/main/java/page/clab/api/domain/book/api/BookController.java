@@ -64,6 +64,18 @@ public class BookController {
         return responseModel;
     }
 
+    @Operation(summary = "[U] 도서 상세 정보", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/{bookId}")
+    public ResponseModel getBook(
+            @PathVariable(name = "bookId") Long bookId
+    ) {
+        BookResponseDto book = bookService.getBookDetails(bookId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(book);
+        return responseModel;
+    }
+
     @Operation(summary = "[U] 도서 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "카테고리, 제목, 저자, 출판사, 대여자 ID를 기준으로 검색")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
