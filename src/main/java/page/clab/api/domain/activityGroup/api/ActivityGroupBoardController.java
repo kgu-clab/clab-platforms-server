@@ -10,6 +10,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildRe
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/activity-group/boards")
@@ -71,6 +73,18 @@ public class ActivityGroupBoardController {
         return responseModel;
     }
 
+    @Operation(summary = "[U] 부모 활동 그룹 게시판에 대해 유일한 자식 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/{parentId}")
+    public ResponseModel getOneChildActivityGroupBoardByParentId(
+            @PathVariable Long parentId
+    ) {
+        ActivityGroupBoardResponseDto board = activityGroupBoardService.getOneChildActivityGroupBoardByParentId(parentId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(board);
+        return responseModel;
+    }
+
     @Operation(summary = "[U] 활동 그룹 게시판 계층 구조적 조회, 부모 및 자식 게시판 함께 반환", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/by-parent")
@@ -78,21 +92,20 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "parentId") Long parentId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
+    ) throws PermissionDeniedException {
         Pageable pageable = Pageable.ofSize(size).withPage(page);
         PagedResponseDto<ActivityGroupBoardChildResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByParent(parentId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boards);
         return responseModel;
     }
-
     @Operation(summary = "[U] 활동 그룹 게시판 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("")
     public ResponseModel updateActivityGroupBoard(
             @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId,
             @Valid @RequestBody ActivityGroupBoardRequestDto activityGroupBoardRequestDto
-    ) {
+    ) throws PermissionDeniedException {
         Long id = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, activityGroupBoardRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -104,7 +117,7 @@ public class ActivityGroupBoardController {
     @DeleteMapping("")
     public ResponseModel deleteActivityGroupBoard(
             @RequestParam Long activityGroupBoardId
-    ) {
+    ) throws PermissionDeniedException {
         Long id = activityGroupBoardService.deleteActivityGroupBoard(activityGroupBoardId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);

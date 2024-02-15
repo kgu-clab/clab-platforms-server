@@ -1,6 +1,12 @@
 package page.clab.api.global.common.file.application;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,12 +24,6 @@ import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.FileSystemUtil;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -117,7 +117,7 @@ public class FileService {
     public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         String url = deleteFileRequestDto.getUrl();
-        UploadedFile uploadedFile = uploadFileRepository.findByUrl(url);
+        UploadedFile uploadedFile = getUploadedFileByUrl(url);
         String filePath = uploadedFile.getSavedPath();
         File storedFile = new File(filePath);
         if (uploadedFile == null || !storedFile.exists()) {
@@ -132,6 +132,27 @@ public class FileService {
         String deletedFileUrl = uploadedFile.getUrl();
         uploadFileRepository.deleteById(uploadedFile.getId());
         return deletedFileUrl;
+    }
+
+    public LocalDateTime getStorageDateTimeOfFile(String fileUrl) {
+        UploadedFile uploadedFile = getUploadedFileByUrl(fileUrl);
+        if (uploadedFile == null) {
+            throw new NotFoundException("파일이 존재하지 않습니다.");
+        }
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime createdDateTime = uploadedFile.getCreatedAt();
+        Long storagePeriod =  uploadedFile.getStoragePeriod();
+
+        return createdDateTime.plusDays(storagePeriod);
+    }
+
+    public UploadedFile getUploadedFileByUrl(String url) {
+        return uploadFileRepository.findByUrl(url)
+                .orElseThrow(() -> new NotFoundException("파일을 찾을 수 없습니다."));
+    }
+
+    public String getOriginalFileNameByUrl(String url) {
+        return getUploadedFileByUrl(url).getOriginalFileName();
     }
 
 }
