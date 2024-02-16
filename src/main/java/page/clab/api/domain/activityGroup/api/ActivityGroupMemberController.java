@@ -36,7 +36,7 @@ public class ActivityGroupMemberController {
 
     private final ActivityGroupMemberService activityGroupMemberService;
 
-    @Operation(summary = "[U] 활동 전체 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Operation(summary = "활동 전체 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getActivityGroups(
             @RequestParam(name = "page", defaultValue = "0") int page,
