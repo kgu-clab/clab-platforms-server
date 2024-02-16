@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.global.common.file.dto.response.AssignmentFileResponseDto;
 import page.clab.api.global.util.ModelMapperUtil;
 
@@ -22,7 +23,7 @@ public class ActivityGroupBoardResponseDto {
 
     private Long id;
 
-    private String category;
+    private ActivityGroupBoardCategory category;
 
     private String title;
 
