@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,8 +18,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
