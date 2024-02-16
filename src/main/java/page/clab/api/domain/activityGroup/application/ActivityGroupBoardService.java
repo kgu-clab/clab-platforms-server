@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
@@ -109,6 +110,15 @@ public class ActivityGroupBoardService {
         return toActivityGroupBoardResponseDto(board);
     }
 
+    public PagedResponseDto<ActivityGroupBoardResponseDto> getActivityGroupBoardByCategory(Long activityGroupId, ActivityGroupBoardCategory category, Pageable pageable) {
+        List<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByActivityGroup_IdAndCategoryOrderByCreatedAtDesc(activityGroupId, category);
+        List<ActivityGroupBoardResponseDto> activityGroupBoardResponseDtos = boards.stream()
+                .map(this::toActivityGroupBoardResponseDto)
+                .collect(Collectors.toList());
+        Page<ActivityGroupBoardResponseDto> pagedResponseDto = new PageImpl<>(activityGroupBoardResponseDtos, pageable, activityGroupBoardResponseDtos.size());
+        return new PagedResponseDto<>(pagedResponseDto);
+    }
+
     public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
@@ -157,6 +167,19 @@ public class ActivityGroupBoardService {
 
         Long childId = childrenBoardList.getFirst().getId();
         return getActivityGroupBoardById(childId);
+    }
+
+    public ActivityGroupBoardResponseDto getMyAssignmentBoard(Long parentId) {
+        Member member = memberService.getCurrentMember();
+        ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
+        List<ActivityGroupBoard> childrenBoards = parentBoard.getChildren();
+        List<ActivityGroupBoard> assignmentBoard = childrenBoards.stream()
+                .filter(child -> child.getCategory() == ActivityGroupBoardCategory.ASSIGNMENT && child.getMember().getId().equals(member.getId()))
+                .collect(Collectors.toList());
+        if (assignmentBoard.isEmpty()) {
+            throw new NotFoundException("제출한 과제가 없습니다.");
+        }
+        return toActivityGroupBoardResponseDto(assignmentBoard.get(0));
     }
 
     public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) throws PermissionDeniedException {

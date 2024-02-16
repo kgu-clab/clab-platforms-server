@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,11 +20,11 @@ import java.util.List;
 @Builder
 public class ActivityGroupBoardRequestDto {
 
-    @Size(min = 1, max = 50, message = "{size.board.category}")
-    @Schema(description = "카테고리", example = "공지사항")
-    private String category;
+    @NotNull(message = "{notNull.activityGroupBoard.category}")
+    @Schema(description = "카테고리", example = "NOTICE")
+    private ActivityGroupBoardCategory category;
 
-    @Size(min = 1, max = 100, message = "{size.board.title}")
+    @Size(min = 1, max = 100, message = "{size.activityGroupBoard.title}")
     @Schema(description = "제목", example = "C언어 스터디 과제 제출 관련 공지")
     private String title;
 
