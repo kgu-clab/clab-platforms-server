@@ -1,6 +1,10 @@
 package page.clab.api.domain.activityGroup.application;
 
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,6 +20,7 @@ import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
+import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -26,11 +31,6 @@ import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.dto.response.AssignmentFileResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -123,13 +123,14 @@ public class ActivityGroupBoardService {
         Member member = memberService.getCurrentMember();
         ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
         Long activityGroupId = parentBoard.getActivityGroup().getId();
+
         if (!memberService.isMemberAdminRole(member) &&
                 !memberService.isMemberSuperRole(member) &&
                 !activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER).getMember().getId()
                         .equals(member.getId())
         ) {
-            if (parentBoard.isAssignmentBoard()) {
-                throw new PermissionDeniedException("전체 과제물은 그룹의 리더 또는 관리자만 열람할 수 있습니다.");
+            if (parentBoard.getCategory().equals(ActivityGroupBoardCategory.ASSIGNMENT)) {
+                throw new PermissionDeniedException("제출 카테고리 게시물 전체는 그룹의 리더 또는 관리자만 열람할 수 있습니다.");
             }
         }
 
@@ -141,31 +142,19 @@ public class ActivityGroupBoardService {
         return new PagedResponseDto<>(pagedResponseDto);
     }
 
-    public ActivityGroupBoardResponseDto getOneChildActivityGroupBoardByParentId(Long parentId) {
+    public ActivityGroupBoardResponseDto getFeedbackCategoryBoardByParent(Long parentId) {
         ActivityGroupBoard parentBoard = activityGroupBoardRepository.findById(parentId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 게시판입니다."));
+                .orElseThrow(() -> new NotFoundException("부모 게시판이 존재하지 않습니다."));
 
-        if (parentBoard.getChildren().isEmpty()) {
-            throw new NotFoundException("자식 활동 그룹 게시판이 아무것도 없습니다.");
+        if (!parentBoard.getCategory().equals(ActivityGroupBoardCategory.SUBMIT)) {
+            throw new NotSubmitCategoryBoardException("제출 카테고리 게시판이 아니기 때문에 피드백 카테고리 게시판을 찾을 수 없습니다.");
         }
 
-        if (parentBoard.getChildren().size() == 1 && !parentBoard.isAssignmentBoard()) {
-            Long childId = parentBoard.getChildren().getFirst().getId();
-            return getActivityGroupBoardById(childId);
+        if (parentBoard.getChildren().size() != 1) {
+            throw new NotFoundException("피드백 카테고리 게시판이 없거나 유일하지 않습니다.");
         }
 
-        Member member = memberService.getCurrentMember();
-        List<ActivityGroupBoard> childrenBoardList = parentBoard.getChildren();
-
-        childrenBoardList = childrenBoardList.stream()
-                .filter(child -> child.getMember().getId().equals(member.getId()))
-                .collect(Collectors.toList());
-
-        if (childrenBoardList.size() != 1) {
-            throw new NotFoundException("자식 활동 그룹 게시판이 유일하지 않습니다.");
-        }
-
-        Long childId = childrenBoardList.getFirst().getId();
+        Long childId = parentBoard.getChildren().getFirst().getId();
         return getActivityGroupBoardById(childId);
     }
 
@@ -174,7 +163,7 @@ public class ActivityGroupBoardService {
         ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
         List<ActivityGroupBoard> childrenBoards = parentBoard.getChildren();
         List<ActivityGroupBoard> assignmentBoard = childrenBoards.stream()
-                .filter(child -> child.getCategory() == ActivityGroupBoardCategory.ASSIGNMENT && child.getMember().getId().equals(member.getId()))
+                .filter(child -> child.getCategory() == ActivityGroupBoardCategory.SUBMIT && child.getMember().getId().equals(member.getId()))
                 .collect(Collectors.toList());
         if (assignmentBoard.isEmpty()) {
             throw new NotFoundException("제출한 과제가 없습니다.");
@@ -197,7 +186,6 @@ public class ActivityGroupBoardService {
         board.setTitle(activityGroupBoardRequestDto.getTitle());
         board.setContent(activityGroupBoardRequestDto.getContent());
         board.setDueDateTime(activityGroupBoardRequestDto.getDueDateTime());
-        board.setIsAssignmentBoard(activityGroupBoardRequestDto.isAssignmentBoard());
 
         List<String> fileUrls = activityGroupBoardRequestDto.getFileUrls();
         if (fileUrls != null) {

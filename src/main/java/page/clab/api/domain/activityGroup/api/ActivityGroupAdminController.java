@@ -3,6 +3,7 @@ package page.clab.api.domain.activityGroup.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -29,8 +30,6 @@ import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/activity-group/admin")
