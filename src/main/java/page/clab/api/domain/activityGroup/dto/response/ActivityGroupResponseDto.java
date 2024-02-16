@@ -24,6 +24,8 @@ public class ActivityGroupResponseDto {
 
     private ActivityGroupCategory category;
 
+    private String subject;
+
     private String imageUrl;
 
     private LocalDateTime createdAt;
