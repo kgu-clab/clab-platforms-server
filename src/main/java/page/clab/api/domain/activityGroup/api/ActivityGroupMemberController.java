@@ -52,7 +52,7 @@ public class ActivityGroupMemberController {
 
     @Operation(summary = "[U] 활동 상태별 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("")
+    @GetMapping("/status")
     public ResponseModel getActivityGroupsByStatus (
             @RequestParam(name = "activityGroupStatus") ActivityGroupStatus activityGroupStatus,
             @RequestParam(name = "page", defaultValue = "0") int page,
