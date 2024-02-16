@@ -33,6 +33,8 @@ public class ActivityGroupBoardResponseDto {
 
     private LocalDateTime dueDateTime;
 
+    private LocalDateTime createdAt;
+
     public static ActivityGroupBoardResponseDto of(ActivityGroupBoard activityGroupBoard) {
         return ModelMapperUtil.getModelMapper().map(activityGroupBoard, ActivityGroupBoardResponseDto.class);
     }
