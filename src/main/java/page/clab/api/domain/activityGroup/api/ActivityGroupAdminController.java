@@ -3,7 +3,6 @@ package page.clab.api.domain.activityGroup.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -25,12 +24,13 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
 import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ApplyFormResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/activity-group/admin")
@@ -54,21 +54,6 @@ public class ActivityGroupAdminController {
         Long id = activityGroupAdminService.createActivityGroup(activityGroupRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
-        return responseModel;
-    }
-
-    @Operation(summary = "[A] 활동 상태별 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("")
-    public ResponseModel getActivityGroupsByStatus (
-            @RequestParam(name = "activityGroupStatus") ActivityGroupStatus activityGroupStatus,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ActivityGroupResponseDto> activityGroupList = activityGroupAdminService.getActivityGroupsByStatus(activityGroupStatus, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(activityGroupList);
         return responseModel;
     }
 
