@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activityGroup.application.ActivityGroupBoardService;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
@@ -70,6 +71,22 @@ public class ActivityGroupBoardController {
         ActivityGroupBoardResponseDto board = activityGroupBoardService.getActivityGroupBoardById(activityGroupBoardId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(board);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 활동 그룹 ID에 대한 카테고리별 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/by-category")
+    public ResponseModel getActivityGroupBoardByCategory(
+            @RequestParam(name = "activityGroupId") Long activityGroupId,
+            @RequestParam(name = "category") ActivityGroupBoardCategory category,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        PagedResponseDto<ActivityGroupBoardResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByCategory(activityGroupId, category, pageable);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(boards);
         return responseModel;
     }
 
