@@ -169,6 +169,19 @@ public class ActivityGroupBoardService {
         return getActivityGroupBoardById(childId);
     }
 
+    public ActivityGroupBoardResponseDto getMyAssignmentBoard(Long parentId) {
+        Member member = memberService.getCurrentMember();
+        ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
+        List<ActivityGroupBoard> childrenBoards = parentBoard.getChildren();
+        List<ActivityGroupBoard> assignmentBoard = childrenBoards.stream()
+                .filter(child -> child.getCategory() == ActivityGroupBoardCategory.ASSIGNMENT && child.getMember().getId().equals(member.getId()))
+                .collect(Collectors.toList());
+        if (assignmentBoard.isEmpty()) {
+            throw new NotFoundException("제출한 과제가 없습니다.");
+        }
+        return toActivityGroupBoardResponseDto(assignmentBoard.get(0));
+    }
+
     public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
