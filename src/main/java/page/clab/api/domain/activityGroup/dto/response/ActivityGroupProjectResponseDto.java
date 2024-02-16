@@ -1,8 +1,5 @@
 package page.clab.api.domain.activityGroup.dto.response;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +10,10 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
 import page.clab.api.global.util.ModelMapperUtil;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -20,7 +21,11 @@ import page.clab.api.global.util.ModelMapperUtil;
 @Builder
 public class ActivityGroupProjectResponseDto {
 
+    private Long id;
+
     private ActivityGroupCategory category;
+
+    private String subject;
 
     private String name;
 

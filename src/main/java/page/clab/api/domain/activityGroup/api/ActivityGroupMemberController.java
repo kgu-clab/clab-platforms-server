@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberApplierResponseDto;
@@ -36,7 +37,7 @@ public class ActivityGroupMemberController {
 
     private final ActivityGroupMemberService activityGroupMemberService;
 
-    @Operation(summary = "[U] 활동 전체 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Operation(summary = "활동 전체 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("")
     public ResponseModel getActivityGroups(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -46,6 +47,21 @@ public class ActivityGroupMemberController {
         PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroups(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroups);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 활동 상태별 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/status")
+    public ResponseModel getActivityGroupsByStatus (
+            @RequestParam(name = "activityGroupStatus") ActivityGroupStatus activityGroupStatus,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<ActivityGroupResponseDto> activityGroupList = activityGroupMemberService.getActivityGroupsByStatus(activityGroupStatus, pageable);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(activityGroupList);
         return responseModel;
     }
 

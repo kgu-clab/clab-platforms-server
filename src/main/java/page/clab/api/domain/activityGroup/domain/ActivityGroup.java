@@ -39,6 +39,9 @@ public class ActivityGroup {
     private ActivityGroupCategory category;
 
     @Column(nullable = false)
+    private String subject;
+
+    @Column(nullable = false)
     @Size(min = 1, max = 30, message = "{size.activityGroup.name}")
     private String name;
 
