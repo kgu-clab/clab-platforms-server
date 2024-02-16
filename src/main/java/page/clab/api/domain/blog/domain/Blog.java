@@ -15,7 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.blog.dto.request.BlogRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.util.ModelMapperUtil;

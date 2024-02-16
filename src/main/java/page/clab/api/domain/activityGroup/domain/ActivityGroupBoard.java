@@ -12,6 +12,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,10 +25,6 @@ import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestD
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.util.ModelMapperUtil;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -69,9 +68,6 @@ public class ActivityGroupBoard {
     @JoinColumn(name = "files")
     private List<UploadedFile> uploadedFiles = new ArrayList<>();
 
-    @Column(nullable = false)
-    private boolean isAssignmentBoard;
-
     @Column(name = "dueDate_time")
     private LocalDateTime dueDateTime;
 
@@ -84,10 +80,6 @@ public class ActivityGroupBoard {
 
     public static ActivityGroupBoard of(ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
         return ModelMapperUtil.getModelMapper().map(activityGroupBoardRequestDto, ActivityGroupBoard.class);
-    }
-
-    public void setIsAssignmentBoard (boolean isAssignmentBoard) {
-        this.isAssignmentBoard = isAssignmentBoard;
     }
 
 }

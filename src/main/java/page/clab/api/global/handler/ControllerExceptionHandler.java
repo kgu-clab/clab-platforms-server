@@ -6,6 +6,14 @@ import com.maxmind.geoip2.exception.GeoIp2Exception;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -29,6 +37,7 @@ import page.clab.api.domain.activityGroup.exception.DuplicateAttendanceException
 import page.clab.api.domain.activityGroup.exception.DuplicateReportException;
 import page.clab.api.domain.activityGroup.exception.NotAProjectGroupException;
 import page.clab.api.domain.activityGroup.exception.NotAStudyGroupException;
+import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
@@ -52,15 +61,6 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
 @RestControllerAdvice(basePackages = "page.clab.api")
 @RequiredArgsConstructor
 @Slf4j
@@ -83,7 +83,8 @@ public class ControllerExceptionHandler {
             NotAStudyGroupException.class,
             NotAProjectGroupException.class,
             ActivityGroupNotProgressingException.class,
-            CloudStorageNotEnoughException.class
+            CloudStorageNotEnoughException.class,
+            NotSubmitCategoryBoardException.class
     })
     public ResponseModel badRequestException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
