@@ -29,6 +29,7 @@ import page.clab.api.domain.activityGroup.exception.DuplicateAttendanceException
 import page.clab.api.domain.activityGroup.exception.DuplicateReportException;
 import page.clab.api.domain.activityGroup.exception.NotAProjectGroupException;
 import page.clab.api.domain.activityGroup.exception.NotAStudyGroupException;
+import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
@@ -83,7 +84,8 @@ public class ControllerExceptionHandler {
             NotAStudyGroupException.class,
             NotAProjectGroupException.class,
             ActivityGroupNotProgressingException.class,
-            CloudStorageNotEnoughException.class
+            CloudStorageNotEnoughException.class,
+            NotSubmitCategoryBoardException.class
     })
     public ResponseModel badRequestException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

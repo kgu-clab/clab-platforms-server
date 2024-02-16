@@ -90,13 +90,11 @@ public class ActivityGroupBoardController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 부모 활동 그룹 게시판에 대해 유일한 자식 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 제출 게시판에 대한 유일한 피드백 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{parentId}")
-    public ResponseModel getOneChildActivityGroupBoardByParentId(
-            @PathVariable Long parentId
-    ) {
-        ActivityGroupBoardResponseDto board = activityGroupBoardService.getOneChildActivityGroupBoardByParentId(parentId);
+    public ResponseModel getFeedbackCategoryBoardByParent(@PathVariable Long parentId) {
+        ActivityGroupBoardResponseDto board = activityGroupBoardService.getFeedbackCategoryBoardByParent(parentId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(board);
         return responseModel;
