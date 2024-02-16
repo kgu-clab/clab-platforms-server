@@ -24,6 +24,8 @@ public class ActivityGroupStudyResponseDto {
 
     private ActivityGroupCategory category;
 
+    private String subject;
+
     private String name;
 
     private String content;

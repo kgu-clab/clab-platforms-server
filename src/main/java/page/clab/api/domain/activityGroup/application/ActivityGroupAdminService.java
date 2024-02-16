@@ -1,7 +1,6 @@
 package page.clab.api.domain.activityGroup.application;
 
 import jakarta.transaction.Transactional;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +17,6 @@ import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activityGroup.domain.GroupSchedule;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ApplyFormResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.member.application.MemberService;
@@ -28,6 +26,8 @@ import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -62,11 +62,6 @@ public class ActivityGroupAdminService {
                 .build();
         notificationService.createNotification(notificationRequestDto);
         return id;
-    }
-
-    public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus, Pageable pageable) {
-        Page<ActivityGroup> activityGroupList = getActivityGroupByStatus(activityGroupStatus, pageable);
-        return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
     }
 
     public Long updateActivityGroup(Long activityGroupId, ActivityGroupRequestDto activityGroupRequestDto) throws PermissionDeniedException {
@@ -179,10 +174,6 @@ public class ActivityGroupAdminService {
 
         Page<ApplyForm> applyFormList = applyFormRepository.findAllByActivityGroup(activityGroup, pageable);
         return new PagedResponseDto<>(applyFormList.map(ApplyFormResponseDto::of));
-    }
-
-    public Page<ActivityGroup> getActivityGroupByStatus(ActivityGroupStatus status, Pageable pageable) {
-        return activityGroupRepository.findAllByStatusOrderByCreatedAtDesc(status, pageable);
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {

@@ -3,7 +3,6 @@ package page.clab.api.domain.activityGroup.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +13,8 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 import page.clab.api.global.util.ModelMapperUtil;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -23,6 +24,10 @@ public class ActivityGroupRequestDto {
 
     @NotNull(message = "{notnull.activityGroup.category}")
     private ActivityGroupCategory category;
+
+    @NotNull(message = "{notnull.activityGroup.subject}")
+    @Schema(description = "활동 대상", example = "1학년 이상")
+    private String subject;
 
     @NotNull(message = "{notnull.activityGroup.name}")
     @Size(min = 1, max = 30, message = "{size.activityGroup.name}")
