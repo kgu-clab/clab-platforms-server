@@ -83,8 +83,4 @@ public class ActivityGroupBoard {
         return ModelMapperUtil.getModelMapper().map(activityGroupBoardRequestDto, ActivityGroupBoard.class);
     }
 
-    public void setIsAssignmentBoard (boolean isAssignmentBoard) {
-        this.isAssignmentBoard = isAssignmentBoard;
-    }
-
 }
