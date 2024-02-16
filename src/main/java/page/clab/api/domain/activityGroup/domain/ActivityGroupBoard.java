@@ -69,9 +69,6 @@ public class ActivityGroupBoard {
     @JoinColumn(name = "files")
     private List<UploadedFile> uploadedFiles = new ArrayList<>();
 
-    @Column(nullable = false)
-    private boolean isAssignmentBoard;
-
     @Column(name = "dueDate_time")
     private LocalDateTime dueDateTime;
 
