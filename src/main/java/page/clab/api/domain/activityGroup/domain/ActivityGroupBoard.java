@@ -2,6 +2,8 @@ package page.clab.api.domain.activityGroup.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -45,8 +47,9 @@ public class ActivityGroupBoard {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Size(min = 1, max = 50)
-    private String category;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ActivityGroupBoardCategory category;
 
     @Size(min = 1, max = 100, message = "{size.board.title}")
     private String title;
