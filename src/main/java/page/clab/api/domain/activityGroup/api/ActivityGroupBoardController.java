@@ -74,7 +74,7 @@ public class ActivityGroupBoardController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 활동 그룹 ID에 대한 카테고리별 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 활동 그룹 ID에 대한 카테고리별 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/by-category")
     public ResponseModel getActivityGroupBoardByCategory(
@@ -116,6 +116,19 @@ public class ActivityGroupBoardController {
         responseModel.addData(boards);
         return responseModel;
     }
+
+    @Operation(summary = "[U] 나의 과제 제출 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/my-assignment")
+    public ResponseModel getMyAssignmentBoard(
+            @RequestParam(name = "parentId") Long parentId
+    ) {
+        ActivityGroupBoardResponseDto board = activityGroupBoardService.getMyAssignmentBoard(parentId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(board);
+        return responseModel;
+    }
+
     @Operation(summary = "[U] 활동 그룹 게시판 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("")
