@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.blog.application.BlogService;
 import page.clab.api.domain.blog.dto.request.BlogRequestDto;
+import page.clab.api.domain.blog.dto.request.BlogUpdateRequestDto;
 import page.clab.api.domain.blog.dto.response.BlogDetailsResponseDto;
 import page.clab.api.domain.blog.dto.response.BlogResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -99,13 +100,13 @@ public class BlogController {
     @PatchMapping("/{blogId}")
     public ResponseModel updateBlog(
             @PathVariable(name = "blogId") Long blogId,
-            @Valid @RequestBody BlogRequestDto blogRequestDto,
+            @Valid @RequestBody BlogUpdateRequestDto blogUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = blogService.updateBlog(blogId, blogRequestDto);
+        Long id = blogService.updateBlog(blogId, blogUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
