@@ -14,6 +14,7 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
+import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
@@ -172,30 +173,13 @@ public class ActivityGroupBoardService {
         return toActivityGroupBoardResponseDto(assignmentBoard.get(0));
     }
 
-    public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) throws PermissionDeniedException {
+    public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardUpdateRequestDto activityGroupBoardUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-
-        if (!member.getId().equals(board.getMember().getId()) &&
-                !memberService.isMemberAdminRole(member) &&
-                !memberService.isMemberSuperRole(member)
-        ) {
+        if (!member.getId().equals(board.getMember().getId()) && !memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("활동 그룹 게시판 작성자 또는 운영진만 수정할 수 있습니다.");
         }
-
-        board.setCategory(activityGroupBoardRequestDto.getCategory());
-        board.setTitle(activityGroupBoardRequestDto.getTitle());
-        board.setContent(activityGroupBoardRequestDto.getContent());
-        board.setDueDateTime(activityGroupBoardRequestDto.getDueDateTime());
-
-        List<String> fileUrls = activityGroupBoardRequestDto.getFileUrls();
-        if (fileUrls != null) {
-            List<UploadedFile> uploadFileList =  fileUrls.stream()
-                    .map(fileService::getUploadedFileByUrl)
-                    .collect(Collectors.toList());
-            board.setUploadedFiles(uploadFileList);
-        }
-
+        board.update(activityGroupBoardUpdateRequestDto, fileService);
         return activityGroupBoardRepository.save(board).getId();
     }
 
