@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.review.application.ReviewService;
 import page.clab.api.domain.review.dto.request.ReviewRequestDto;
+import page.clab.api.domain.review.dto.request.ReviewUpdateRequestDto;
 import page.clab.api.domain.review.dto.response.ReviewResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -117,13 +118,13 @@ public class ReviewController {
     @PatchMapping("/{reviewId}")
     public ResponseModel updateReview(
             @PathVariable(name = "reviewId") Long reviewId,
-            @Valid @RequestBody ReviewRequestDto reviewRequestDto,
+            @Valid @RequestBody ReviewUpdateRequestDto reviewUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = reviewService.updateReview(reviewId, reviewRequestDto);
+        Long id = reviewService.updateReview(reviewId, reviewUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

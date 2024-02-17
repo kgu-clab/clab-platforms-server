@@ -14,6 +14,7 @@ import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.domain.CommentLike;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
+import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.comment.dto.response.CommentGetAllResponseDto;
 import page.clab.api.domain.comment.dto.response.CommentGetMyResponseDto;
 import page.clab.api.domain.member.application.MemberService;
@@ -94,16 +95,13 @@ public class CommentService {
         return new PagedResponseDto<>(comments.map(CommentGetMyResponseDto::of));
     }
 
-    public Long updateComment(Long commentId, CommentRequestDto commentRequestDto) throws PermissionDeniedException {
+    public Long updateComment(Long commentId, CommentUpdateRequestDto commentUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
         if (!(comment.getWriter().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("댓글 작성자만 수정할 수 있습니다.");
         }
-        comment.setContent(commentRequestDto.getContent());
-        comment.setNickname(comment.getNickname());
-        comment.setUpdateTime(LocalDateTime.now());
-        comment.setLikes(comment.getLikes());
+        comment.update(commentUpdateRequestDto);
         return commentRepository.save(comment).getId();
     }
 

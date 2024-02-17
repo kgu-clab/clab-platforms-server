@@ -17,10 +17,12 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
+import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity(name = "activity_group")
 @Getter
@@ -75,6 +77,19 @@ public class ActivityGroup {
 
     public static ActivityGroup of(ActivityGroupRequestDto activityGroupRequestDto) {
         return ModelMapperUtil.getModelMapper().map(activityGroupRequestDto, ActivityGroup.class);
+    }
+
+    public void update(ActivityGroupUpdateRequestDto dto) {
+        Optional.ofNullable(dto.getCategory()).ifPresent(this::setCategory);
+        Optional.ofNullable(dto.getSubject()).ifPresent(this::setSubject);
+        Optional.ofNullable(dto.getName()).ifPresent(this::setName);
+        Optional.ofNullable(dto.getContent()).ifPresent(this::setContent);
+        Optional.ofNullable(dto.getImageUrl()).ifPresent(this::setImageUrl);
+        Optional.ofNullable(dto.getCurriculum()).ifPresent(this::setCurriculum);
+        Optional.ofNullable(dto.getStartDate()).ifPresent(this::setStartDate);
+        Optional.ofNullable(dto.getEndDate()).ifPresent(this::setEndDate);
+        Optional.ofNullable(dto.getTechStack()).ifPresent(this::setTechStack);
+        Optional.ofNullable(dto.getGithubUrl()).ifPresent(this::setGithubUrl);
     }
 
 }

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.membershipFee.application.MembershipFeeService;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
+import page.clab.api.domain.membershipFee.dto.request.MembershipFeeUpdateRequestDto;
 import page.clab.api.domain.membershipFee.dto.response.MembershipFeeResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -86,13 +87,13 @@ public class MembershipFeeController {
     @PatchMapping("/{membershipFeeId}")
     public ResponseModel updateMembershipFee(
             @PathVariable(name = "membershipFeeId") Long membershipFeeId,
-            @Valid @RequestBody MembershipFeeRequestDto membershipFeeRequestDto,
+            @Valid @RequestBody MembershipFeeUpdateRequestDto membershipFeeUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = membershipFeeService.updateMembershipFee(membershipFeeId, membershipFeeRequestDto);
+        Long id = membershipFeeService.updateMembershipFee(membershipFeeId, membershipFeeUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

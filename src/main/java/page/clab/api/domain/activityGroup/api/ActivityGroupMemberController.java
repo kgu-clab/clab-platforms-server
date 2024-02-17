@@ -3,11 +3,14 @@ package page.clab.api.domain.activityGroup.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -116,7 +119,8 @@ public class ActivityGroupMemberController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 활동 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 활동 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "활동에 참여(수락)된 멤버만 조회 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/members")
     public ResponseModel getActivityGroupMemberList(
@@ -135,20 +139,14 @@ public class ActivityGroupMemberController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/apply")
     public ResponseModel applyActivityGroup(
-            @RequestParam Long activityGroupId
-    ) throws MessagingException {
-        Long id = activityGroupMemberService.applyActivityGroup(activityGroupId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 지원 폼으로 신청", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping("/apply-form")
-    public ResponseModel writeApplyForm(
-            @RequestBody ApplyFormRequestDto formRequestDto) {
-        Long id = activityGroupMemberService.writeApplyForm(formRequestDto);
+            @RequestParam Long activityGroupId,
+            @Valid @RequestBody ApplyFormRequestDto formRequestDto,
+            BindingResult result
+    ) throws MethodArgumentNotValidException, MessagingException {
+        if (result.hasErrors()) {
+            throw new MethodArgumentNotValidException(null, result);
+        }
+        Long id = activityGroupMemberService.applyActivityGroup(activityGroupId, formRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

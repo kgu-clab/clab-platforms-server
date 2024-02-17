@@ -3,7 +3,6 @@ package page.clab.api.domain.recruitment.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
@@ -19,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.recruitment.application.RecruitmentService;
 import page.clab.api.domain.recruitment.dto.request.RecruitmentRequestDto;
+import page.clab.api.domain.recruitment.dto.request.RecruitmentUpdateRequestDto;
 import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/recruitments")
@@ -62,13 +64,13 @@ public class RecruitmentController {
     @PatchMapping("/{recruitmentId}")
     public ResponseModel updateRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
-            @Valid @RequestBody RecruitmentRequestDto recruitmentRequestDto,
+            @Valid @RequestBody RecruitmentUpdateRequestDto recruitmentUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = recruitmentService.updateRecruitment(recruitmentId, recruitmentRequestDto);
+        Long id = recruitmentService.updateRecruitment(recruitmentId, recruitmentUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

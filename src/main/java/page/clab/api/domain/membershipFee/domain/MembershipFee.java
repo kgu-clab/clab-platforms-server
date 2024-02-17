@@ -16,9 +16,11 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
+import page.clab.api.domain.membershipFee.dto.request.MembershipFeeUpdateRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -55,6 +57,13 @@ public class MembershipFee {
 
     public static MembershipFee of(MembershipFeeRequestDto membershipFeeRequestDto) {
         return ModelMapperUtil.getModelMapper().map(membershipFeeRequestDto, MembershipFee.class);
+    }
+
+    public void update(MembershipFeeUpdateRequestDto membershipFeeUpdateRequestDto) {
+        Optional.ofNullable(membershipFeeUpdateRequestDto.getCategory()).ifPresent(this::setCategory);
+        Optional.ofNullable(membershipFeeUpdateRequestDto.getAmount()).ifPresent(this::setAmount);
+        Optional.ofNullable(membershipFeeUpdateRequestDto.getContent()).ifPresent(this::setContent);
+        Optional.ofNullable(membershipFeeUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
     }
 
 }

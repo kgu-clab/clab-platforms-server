@@ -1,6 +1,9 @@
 package page.clab.api.domain.comment.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,10 +12,6 @@ import lombok.Setter;
 import lombok.ToString;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.global.util.ModelMapperUtil;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter

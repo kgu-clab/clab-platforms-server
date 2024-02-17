@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.award.application.AwardService;
 import page.clab.api.domain.award.dto.request.AwardRequestDto;
+import page.clab.api.domain.award.dto.request.AwardUpdateRequestDto;
 import page.clab.api.domain.award.dto.response.AwardResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -88,13 +89,13 @@ public class AwardController {
     @PatchMapping("/{awardId}")
     public ResponseModel updateAward(
             @PathVariable(name = "awardId") Long awardId,
-            @Valid @RequestBody AwardRequestDto awardRequestDto,
+            @Valid @RequestBody AwardUpdateRequestDto awardUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = awardService.updateAward(awardId, awardRequestDto);
+        Long id = awardService.updateAward(awardId, awardUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

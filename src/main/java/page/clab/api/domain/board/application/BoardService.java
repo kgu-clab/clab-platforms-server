@@ -1,6 +1,9 @@
 package page.clab.api.domain.board.application;
 
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +13,7 @@ import page.clab.api.domain.board.dao.BoardRepository;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.BoardLike;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
+import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
 import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
@@ -18,11 +22,11 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.RandomNicknameUtil;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -38,10 +42,19 @@ public class BoardService {
 
     private final RandomNicknameUtil randomNicknameUtil;
 
+    private final FileService fileService;
+
     @Transactional
     public Long createBoard(BoardRequestDto boardRequestDto) {
         Member member = memberService.getCurrentMember();
         Board board = Board.of(boardRequestDto);
+        List<String> fileUrls = boardRequestDto.getFileUrlList();
+        if (fileUrls != null) {
+            List<UploadedFile> uploadFileList =  fileUrls.stream()
+                    .map(fileService::getUploadedFileByUrl)
+                    .collect(Collectors.toList());
+            board.setUploadedFiles(uploadFileList);
+        }
         board.setMember(member);
         board.setNickName(randomNicknameUtil.makeRandomNickname());
         board.setWantAnonymous(boardRequestDto.isWantAnonymous());
@@ -83,20 +96,14 @@ public class BoardService {
         return new PagedResponseDto<>(boards.map(BoardCategoryResponseDto::of));
     }
 
-    public Long updateBoard(Long boardId, BoardRequestDto boardRequestDto) throws PermissionDeniedException {
+    public Long updateBoard(Long boardId, BoardUpdateRequestDto boardUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
         if (!board.getMember().getId().equals(member.getId())) {
             throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
         }
-        Board updatedBoard = Board.of(boardRequestDto);
-        updatedBoard.setId(board.getId());
-        updatedBoard.setMember(board.getMember());
-        updatedBoard.setNickName(board.getNickName());
-        updatedBoard.setUpdateTime(LocalDateTime.now());
-        updatedBoard.setCreatedAt(board.getCreatedAt());
-        updatedBoard.setLikes(board.getLikes());
-        return boardRepository.save(updatedBoard).getId();
+        board.update(boardUpdateRequestDto);
+        return boardRepository.save(board).getId();
     }
 
     public Long updateLikes(Long boardId) {
@@ -133,6 +140,10 @@ public class BoardService {
     public Board getBoardByIdOrThrow(Long boardId) {
         return boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundException("해당 게시글이 존재하지 않습니다."));
+    }
+
+    public boolean isBoardExist(Long boardId) {
+        return boardRepository.existsById(boardId);
     }
 
     private Page<Board> getBoardByMember(Pageable pageable, Member member) {

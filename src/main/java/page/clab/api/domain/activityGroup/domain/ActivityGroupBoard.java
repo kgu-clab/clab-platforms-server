@@ -19,13 +19,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
+import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -66,11 +70,8 @@ public class ActivityGroupBoard {
     private List<ActivityGroupBoard> children = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "files")
+    @JoinColumn(name = "activity_group_board_files")
     private List<UploadedFile> uploadedFiles = new ArrayList<>();
-
-    @Column(nullable = false)
-    private boolean isAssignmentBoard;
 
     @Column(name = "dueDate_time")
     private LocalDateTime dueDateTime;
@@ -86,8 +87,18 @@ public class ActivityGroupBoard {
         return ModelMapperUtil.getModelMapper().map(activityGroupBoardRequestDto, ActivityGroupBoard.class);
     }
 
-    public void setIsAssignmentBoard (boolean isAssignmentBoard) {
-        this.isAssignmentBoard = isAssignmentBoard;
+    public void update(ActivityGroupBoardUpdateRequestDto dto, FileService fileService) {
+        Optional.ofNullable(dto.getCategory()).ifPresent(this::setCategory);
+        Optional.ofNullable(dto.getTitle()).ifPresent(this::setTitle);
+        Optional.ofNullable(dto.getContent()).ifPresent(this::setContent);
+        Optional.ofNullable(dto.getDueDateTime()).ifPresent(this::setDueDateTime);
+        Optional.ofNullable(dto.getFileUrls())
+                .ifPresent(urls -> {
+                    List<UploadedFile> uploadedFiles = urls.stream()
+                            .map(fileService::getUploadedFileByUrl)
+                            .collect(Collectors.toList());
+                    setUploadedFiles(uploadedFiles);
+                });
     }
 
 }

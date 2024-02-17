@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +14,11 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountRequestDto;
+import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUpdateRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -53,6 +56,13 @@ public class SharedAccount {
 
     public static SharedAccount of(SharedAccountRequestDto sharedAccountRequestDto) {
         return ModelMapperUtil.getModelMapper().map(sharedAccountRequestDto, SharedAccount.class);
+    }
+
+    public void update(SharedAccountUpdateRequestDto sharedAccountUpdateRequestDto) {
+        Optional.ofNullable(sharedAccountUpdateRequestDto.getUsername()).ifPresent(this::setUsername);
+        Optional.ofNullable(sharedAccountUpdateRequestDto.getPassword()).ifPresent(this::setPassword);
+        Optional.ofNullable(sharedAccountUpdateRequestDto.getPlatformName()).ifPresent(this::setPlatformName);
+        Optional.ofNullable(sharedAccountUpdateRequestDto.getPlatformUrl()).ifPresent(this::setPlatformUrl);
     }
 
 }
