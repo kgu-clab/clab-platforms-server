@@ -19,6 +19,7 @@ import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.domain.review.dao.ReviewRepository;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.domain.review.dto.request.ReviewRequestDto;
+import page.clab.api.domain.review.dto.request.ReviewUpdateRequestDto;
 import page.clab.api.domain.review.dto.response.ReviewResponseDto;
 import page.clab.api.domain.review.exception.AlreadyReviewedException;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -102,13 +103,13 @@ public class ReviewService {
         return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, member.getId())));
     }
 
-    public Long updateReview(Long reviewId, ReviewRequestDto reviewRequestDto) throws PermissionDeniedException {
+    public Long updateReview(Long reviewId, ReviewUpdateRequestDto reviewUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Review review = getReviewByIdOrThrow(reviewId);
         if (!member.getId().equals(review.getMember().getId())) {
             throw new PermissionDeniedException("해당 리뷰를 수정할 권한이 없습니다.");
         }
-        review.setContent(reviewRequestDto.getContent());
+        review.update(reviewUpdateRequestDto);
         return reviewRepository.save(review).getId();
     }
 
