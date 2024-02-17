@@ -20,6 +20,7 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.dao.UploadFileRepository;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
+import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -69,16 +70,16 @@ public class FileService {
         return url;
     }
 
-    public List<String> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws IOException, PermissionDeniedException {
-        List<String> urls = new ArrayList<>();
+    public List<UploadedFileResponseDto> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws IOException, PermissionDeniedException {
+        List<UploadedFileResponseDto> uploadedFileResponseDtos = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
-            String url = saveFile(multipartFile, path, storagePeriod);
-            urls.add(url);
+            UploadedFileResponseDto responseDto = saveFile(multipartFile, path, storagePeriod);
+            uploadedFileResponseDtos.add(responseDto);
         }
-        return urls;
+        return uploadedFileResponseDtos;
     }
 
-    public String saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws IOException, PermissionDeniedException {
+    public UploadedFileResponseDto saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws IOException, PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         if (!path.startsWith("membership-fee") && path.startsWith("members")) {
             String memberId = path.split(Pattern.quote(File.separator))[1];
@@ -111,7 +112,12 @@ public class FileService {
         uploadedFile.setUploader(member);
         uploadedFile.setUrl(url);
         uploadFileRepository.save(uploadedFile);
-        return url;
+
+        return UploadedFileResponseDto.builder()
+                .fileUrl(url)
+                .originalFileName(uploadedFile.getOriginalFileName())
+                .storageDateTimeOfFile(getStorageDateTimeOfFile(url))
+                .build();
     }
 
     public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) throws PermissionDeniedException {
