@@ -68,6 +68,10 @@ public class NewsService {
                 .orElseThrow(() -> new NotFoundException("해당 뉴스가 존재하지 않습니다."));
     }
 
+    public boolean isNewsExist(Long newsId) {
+        return newsRepository.existsById(newsId);
+    }
+
     private Page<News> getNewsByCategory(String category, Pageable pageable) {
         return newsRepository.findByCategoryOrderByCreatedAtDesc(category, pageable);
     }
