@@ -2,12 +2,18 @@ package page.clab.api.domain.board.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,10 +23,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.util.ModelMapperUtil;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Entity
 @Getter
@@ -52,6 +56,10 @@ public class Board {
     @Column(nullable = false, length = 10000)
     @Size(min = 1, max = 10000, message = "{size.board.content}")
     private String content;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_files")
+    private List<UploadedFile> uploadedFiles = new ArrayList<>();
 
     @Column(name = "update_time")
     private LocalDateTime updateTime;

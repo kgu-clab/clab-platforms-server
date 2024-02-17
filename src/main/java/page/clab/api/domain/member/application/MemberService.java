@@ -245,6 +245,10 @@ public class MemberService {
                 .orElse(null);
     }
 
+    public boolean isMemberExist(String memberId) {
+        return memberRepository.existsById(memberId);
+    }
+
     public Member getMemberByIdOrThrow(String memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));

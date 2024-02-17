@@ -1,5 +1,7 @@
 package page.clab.api.domain.news.application;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +13,8 @@ import page.clab.api.domain.news.dto.request.NewsUpdateRequestDto;
 import page.clab.api.domain.news.dto.response.NewsDetailsResponseDto;
 import page.clab.api.domain.news.dto.response.NewsResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.SearchResultNotExistException;
 
@@ -20,8 +24,17 @@ public class NewsService {
 
     private final NewsRepository newsRepository;
 
+    private final FileService fileService;
+
     public Long createNews(NewsRequestDto newsRequestDto) {
         News news = News.of(newsRequestDto);
+        List<String> fileUrls = newsRequestDto.getFileUrlList();
+        if (fileUrls != null) {
+            List<UploadedFile> uploadFileList =  fileUrls.stream()
+                    .map(fileService::getUploadedFileByUrl)
+                    .collect(Collectors.toList());
+            news.setUploadedFiles(uploadFileList);
+        }
         return newsRepository.save(news).getId();
     }
 
@@ -65,6 +78,10 @@ public class NewsService {
     public News getNewsByIdOrThrow(Long newsId) {
         return newsRepository.findById(newsId)
                 .orElseThrow(() -> new NotFoundException("해당 뉴스가 존재하지 않습니다."));
+    }
+
+    public boolean isNewsExist(Long newsId) {
+        return newsRepository.existsById(newsId);
     }
 
     private Page<News> getNewsByCategory(String category, Pageable pageable) {

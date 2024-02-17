@@ -2,12 +2,20 @@ package page.clab.api.domain.news.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,12 +24,9 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.news.dto.request.NewsRequestDto;
+import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.domain.news.dto.request.NewsUpdateRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Entity
 @Getter
@@ -54,6 +59,10 @@ public class News {
 
     @Column(nullable = false)
     private String source;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "news_files")
+    private List<UploadedFile> uploadedFiles = new ArrayList<>();
 
     @Column(nullable = false)
     private LocalDate date;
