@@ -8,7 +8,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +15,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportRequestDto;
+import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportUpdateRequestDto;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -55,6 +58,12 @@ public class ActivityGroupReport {
                 .title(reportRequestDto.getTitle())
                 .content(reportRequestDto.getContent())
                 .build();
+    }
+
+    public void update(ActivityGroupReportUpdateRequestDto reportRequestDto) {
+        Optional.ofNullable(reportRequestDto.getTurn()).ifPresent(this::setTurn);
+        Optional.ofNullable(reportRequestDto.getTitle()).ifPresent(this::setTitle);
+        Optional.ofNullable(reportRequestDto.getContent()).ifPresent(this::setContent);
     }
 
 }
