@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import page.clab.api.domain.product.dao.ProductRepository;
 import page.clab.api.domain.product.domain.Product;
 import page.clab.api.domain.product.dto.request.ProductRequestDto;
+import page.clab.api.domain.product.dto.request.ProductUpdateRequestDto;
 import page.clab.api.domain.product.dto.response.ProductResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
@@ -41,12 +42,10 @@ public class ProductService {
         return new PagedResponseDto<>(products.map(ProductResponseDto::of));
     }
 
-    public Long updateProduct(Long productId, ProductRequestDto productRequestDto) {
+    public Long updateProduct(Long productId, ProductUpdateRequestDto productUpdateRequestDto) {
         Product product = getProductByIdOrThrow(productId);
-        Product updatedProduct = Product.of(productRequestDto);
-        updatedProduct.setId(product.getId());
-        updatedProduct.setCreatedAt(product.getCreatedAt());
-        return productRepository.save(updatedProduct).getId();
+        product.update(productUpdateRequestDto);
+        return productRepository.save(product).getId();
     }
 
     public Long deleteProduct(Long productId) {
