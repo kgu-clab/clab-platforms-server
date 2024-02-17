@@ -27,6 +27,7 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotProgressingException;
+import page.clab.api.domain.activityGroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.activityGroup.exception.NotAProjectGroupException;
 import page.clab.api.domain.activityGroup.exception.NotAStudyGroupException;
 import page.clab.api.domain.member.application.MemberService;
@@ -112,6 +113,9 @@ public class ActivityGroupMemberService {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!activityGroup.getStatus().equals(ActivityGroupStatus.PROGRESSING)) {
             throw new ActivityGroupNotProgressingException("해당 활동은 진행중인 활동이 아닙니다.");
+        }
+        if (isGroupMember(activityGroup, member)) {
+            throw new AlreadyAppliedException("해당 활동에 신청한 내역이 존재합니다.");
         }
 
         ApplyForm form = ApplyForm.of(formRequestDto);
