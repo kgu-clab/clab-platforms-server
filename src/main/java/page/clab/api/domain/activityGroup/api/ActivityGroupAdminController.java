@@ -24,6 +24,7 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
 import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
+import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ApplyFormResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -62,13 +63,13 @@ public class ActivityGroupAdminController {
     @PatchMapping("/{activityGroupId}")
     public ResponseModel updateActivityGroup(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
-            @Valid @RequestBody ActivityGroupRequestDto activityGroupRequestDto,
+            @Valid @RequestBody ActivityGroupUpdateRequestDto activityGroupUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = activityGroupAdminService.updateActivityGroup(activityGroupId, activityGroupRequestDto);
+        Long id = activityGroupAdminService.updateActivityGroup(activityGroupId, activityGroupUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
