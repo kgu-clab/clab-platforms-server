@@ -1,6 +1,5 @@
 package page.clab.api.domain.activityGroup.application;
 
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +9,7 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupReport;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportRequestDto;
+import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupReportResponseDto;
 import page.clab.api.domain.activityGroup.exception.DuplicateReportException;
 import page.clab.api.domain.member.application.MemberService;
@@ -71,25 +71,18 @@ public class ActivityGroupReportService {
         return ActivityGroupReportResponseDto.of(report);
     }
 
-    public Long updateReport(Long reportId, ActivityGroupReportRequestDto reportRequestDto) throws PermissionDeniedException, IllegalAccessException {
+    public Long updateReport(Long reportId, Long activityGroupId, ActivityGroupReportUpdateRequestDto reportRequestDto) throws PermissionDeniedException, IllegalAccessException {
         Member member = memberService.getCurrentMember();
-        Long activityGroupId = reportRequestDto.getActivityGroupId();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
-
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
             throw new PermissionDeniedException("해당 그룹의 리더만 보고서를 수정할 수 있습니다.");
         }
-
         if (!activityGroupAdminService.isActivityGroupProgressing(activityGroupId)) {
             throw new IllegalAccessException("활동이 진행 중인 그룹이 아닙니다. 차시 보고서를 수정할 수 없습니다.");
         }
-
         ActivityGroupReport report = getReportByIdOrThrow(reportId);
-        ActivityGroupReport updatedReport = ActivityGroupReport.of(reportRequestDto);
-        updatedReport.setActivityGroup(activityGroup);
-        updatedReport.setUpdateTime(LocalDateTime.now());
-        updatedReport.setId(report.getId());
-        return save(updatedReport);
+        report.update(reportRequestDto);
+        return save(report);
     }
 
     public Long deleteReport(Long reportId) throws PermissionDeniedException {

@@ -9,6 +9,7 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.membershipFee.dao.MembershipFeeRepository;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
+import page.clab.api.domain.membershipFee.dto.request.MembershipFeeUpdateRequestDto;
 import page.clab.api.domain.membershipFee.dto.response.MembershipFeeResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
@@ -44,17 +45,14 @@ public class MembershipFeeService {
         return new PagedResponseDto<>(membershipFees.map(MembershipFeeResponseDto::of));
     }
 
-    public Long updateMembershipFee(Long membershipFeeId, MembershipFeeRequestDto membershipFeeRequestDto) throws PermissionDeniedException {
+    public Long updateMembershipFee(Long membershipFeeId, MembershipFeeUpdateRequestDto membershipFeeUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         MembershipFee membershipFee = getMembershipFeeByIdOrThrow(membershipFeeId);
         if (!(membershipFee.getApplicant().equals(member) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException();
         }
-        MembershipFee updatedMembershipFee = MembershipFee.of(membershipFeeRequestDto);
-        updatedMembershipFee.setId(membershipFee.getId());
-        updatedMembershipFee.setApplicant(membershipFee.getApplicant());
-        updatedMembershipFee.setCreatedAt(membershipFee.getCreatedAt());
-        return membershipFeeRepository.save(updatedMembershipFee).getId();
+        membershipFee.update(membershipFeeUpdateRequestDto);
+        return membershipFeeRepository.save(membershipFee).getId();
     }
 
     public Long deleteMembershipFee(Long membershipFeeId) throws PermissionDeniedException {
