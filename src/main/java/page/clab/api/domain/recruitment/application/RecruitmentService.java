@@ -1,9 +1,6 @@
 package page.clab.api.domain.recruitment.application;
 
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.application.MemberService;
@@ -13,8 +10,12 @@ import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.domain.recruitment.dao.RecruitmentRepository;
 import page.clab.api.domain.recruitment.domain.Recruitment;
 import page.clab.api.domain.recruitment.dto.request.RecruitmentRequestDto;
+import page.clab.api.domain.recruitment.dto.request.RecruitmentUpdateRequestDto;
 import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
 import page.clab.api.global.exception.NotFoundException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,13 +50,10 @@ public class RecruitmentService {
                 .collect(Collectors.toList());
     }
 
-    public Long updateRecruitment(Long recruitmentId, RecruitmentRequestDto recruitmentRequestDto) {
+    public Long updateRecruitment(Long recruitmentId, RecruitmentUpdateRequestDto recruitmentUpdateRequestDto) {
         Recruitment recruitment = getRecruitmentByIdOrThrow(recruitmentId);
-        Recruitment updatedRecruitment = Recruitment.of(recruitmentRequestDto);
-        updatedRecruitment.setId(recruitment.getId());
-        updatedRecruitment.setCreatedAt(recruitment.getCreatedAt());
-        updatedRecruitment.setUpdateTime(LocalDateTime.now());
-        return recruitmentRepository.save(updatedRecruitment).getId();
+        recruitment.update(recruitmentUpdateRequestDto);
+        return recruitmentRepository.save(recruitment).getId();
     }
 
     public Long deleteRecruitment(Long recruitmentId) {
