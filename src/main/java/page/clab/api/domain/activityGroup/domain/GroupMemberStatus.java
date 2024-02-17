@@ -9,7 +9,7 @@ public enum GroupMemberStatus {
 
     REJECTED("REJECTED", "거절"),
     ACCEPTED("ACCEPTED", "수락"),
-    IN_PROGRESS("IN_PROGRESS", "진행중");
+    WAITING("WAITING", "승인 대기");
 
     private String key;
     private String description;

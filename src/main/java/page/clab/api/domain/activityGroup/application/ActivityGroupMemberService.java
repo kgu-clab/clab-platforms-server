@@ -115,7 +115,7 @@ public class ActivityGroupMemberService {
         }
         GroupMember groupMember = GroupMember.of(member, activityGroup);
         groupMember.setRole(ActivityGroupRole.MEMBER);
-        groupMember.setStatus(GroupMemberStatus.IN_PROGRESS);
+        groupMember.setStatus(GroupMemberStatus.WAITING);
         groupMemberRepository.save(groupMember);
         GroupMember groupLeader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         String subject = "[" + activityGroup.getName() + "] 활동 참가 신청이 들어왔습니다.";
