@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.comment.application.CommentService;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
+import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.comment.dto.response.CommentGetAllResponseDto;
 import page.clab.api.domain.comment.dto.response.CommentGetMyResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -88,13 +89,13 @@ public class CommentController {
     @PatchMapping("/{commentId}")
     public ResponseModel updateComment(
             @PathVariable(name = "commentId") Long commentId,
-            @Valid @RequestBody CommentRequestDto commentRequestDto,
+            @Valid @RequestBody CommentUpdateRequestDto commentUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = commentService.updateComment(commentId, commentRequestDto);
+        Long id = commentService.updateComment(commentId, commentUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

@@ -9,7 +9,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,8 +16,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.donation.dto.request.DonationRequestDto;
+import page.clab.api.domain.donation.dto.request.DonationUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -50,6 +53,11 @@ public class Donation {
 
     public static Donation of(DonationRequestDto donationRequestDto) {
         return ModelMapperUtil.getModelMapper().map(donationRequestDto, Donation.class);
+    }
+
+    public void update(DonationUpdateRequestDto donationUpdateRequestDto) {
+        Optional.ofNullable(donationUpdateRequestDto.getAmount()).ifPresent(this::setAmount);
+        Optional.ofNullable(donationUpdateRequestDto.getMessage()).ifPresent(this::setMessage);
     }
 
 }

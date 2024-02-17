@@ -1,10 +1,6 @@
 package page.clab.api.domain.activityGroup.application;
 
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,6 +14,7 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
+import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
@@ -32,6 +29,11 @@ import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -73,7 +75,7 @@ public class ActivityGroupBoardService {
         }
         Long id = activityGroupBoardRepository.save(board).getId();
 
-        GroupMember groupMember = activityGroupMemberService.getGroupMemberByMemberOrThrow(member);
+        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
         if (groupMember.getRole() == ActivityGroupRole.LEADER) {
             List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
             groupMembers
@@ -161,30 +163,13 @@ public class ActivityGroupBoardService {
         return getActivityGroupBoardById(assignmentBoard.get(0).getId());
     }
 
-    public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) throws PermissionDeniedException {
+    public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardUpdateRequestDto activityGroupBoardUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-
-        if (!member.getId().equals(board.getMember().getId()) &&
-                !memberService.isMemberAdminRole(member) &&
-                !memberService.isMemberSuperRole(member)
-        ) {
+        if (!member.getId().equals(board.getMember().getId()) && !memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("활동 그룹 게시판 작성자 또는 운영진만 수정할 수 있습니다.");
         }
-
-        board.setCategory(activityGroupBoardRequestDto.getCategory());
-        board.setTitle(activityGroupBoardRequestDto.getTitle());
-        board.setContent(activityGroupBoardRequestDto.getContent());
-        board.setDueDateTime(activityGroupBoardRequestDto.getDueDateTime());
-
-        List<String> fileUrls = activityGroupBoardRequestDto.getFileUrls();
-        if (fileUrls != null) {
-            List<UploadedFile> uploadFileList =  fileUrls.stream()
-                    .map(fileService::getUploadedFileByUrl)
-                    .collect(Collectors.toList());
-            board.setUploadedFiles(uploadFileList);
-        }
-
+        board.update(activityGroupBoardUpdateRequestDto, fileService);
         return activityGroupBoardRepository.save(board).getId();
     }
 

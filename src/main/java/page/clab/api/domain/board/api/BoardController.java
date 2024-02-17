@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.board.application.BoardService;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
+import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
 import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
@@ -113,13 +114,13 @@ public class BoardController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel updateBoard(
             @PathVariable(name = "boardId") Long boardId,
-            @Valid @RequestBody BoardRequestDto boardDto,
+            @Valid @RequestBody BoardUpdateRequestDto boardUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = boardService.updateBoard(boardId, boardDto);
+        Long id = boardService.updateBoard(boardId, boardUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

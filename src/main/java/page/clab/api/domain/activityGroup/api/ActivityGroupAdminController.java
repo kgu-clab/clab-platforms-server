@@ -3,7 +3,6 @@ package page.clab.api.domain.activityGroup.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -25,11 +24,14 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
 import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
+import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ApplyFormResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/activity-group/admin")
@@ -61,13 +63,13 @@ public class ActivityGroupAdminController {
     @PatchMapping("/{activityGroupId}")
     public ResponseModel updateActivityGroup(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
-            @Valid @RequestBody ActivityGroupRequestDto activityGroupRequestDto,
+            @Valid @RequestBody ActivityGroupUpdateRequestDto activityGroupUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = activityGroupAdminService.updateActivityGroup(activityGroupId, activityGroupRequestDto);
+        Long id = activityGroupAdminService.updateActivityGroup(activityGroupId, activityGroupUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -164,10 +166,11 @@ public class ActivityGroupAdminController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/accept")
     public ResponseModel acceptGroupMember(
-            @RequestParam String memberId,
-            @RequestParam GroupMemberStatus status
+            @RequestParam(name = "activityGroupId") Long activityGroupId,
+            @RequestParam(name = "memberId") String memberId,
+            @RequestParam(name = "status") GroupMemberStatus status
     ) throws PermissionDeniedException {
-        String id = activityGroupAdminService.manageGroupMemberStatus(memberId, status);
+        String id = activityGroupAdminService.manageGroupMemberStatus(activityGroupId, memberId, status);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

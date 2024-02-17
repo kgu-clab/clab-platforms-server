@@ -9,6 +9,7 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.workExperience.dao.WorkExperienceRepository;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
 import page.clab.api.domain.workExperience.dto.request.WorkExperienceRequestDto;
+import page.clab.api.domain.workExperience.dto.request.WorkExperienceUpdateRequestDto;
 import page.clab.api.domain.workExperience.dto.response.WorkExperienceResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
@@ -41,16 +42,14 @@ public class WorkExperienceService {
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::of));
     }
 
-    public Long updateWorkExperience(Long workExperienceId, WorkExperienceRequestDto workExperienceRequestDto) throws PermissionDeniedException {
+    public Long updateWorkExperience(Long workExperienceId, WorkExperienceUpdateRequestDto workExperienceUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
         if (!(workExperience.getMember().getId().equals(member.getId()) || memberService.isMemberSuperRole(member))) {
             throw new PermissionDeniedException("해당 경력사항을 수정할 권한이 없습니다.");
         }
-        WorkExperience updatedWorkExperience = WorkExperience.of(workExperienceRequestDto);
-        updatedWorkExperience.setId(workExperienceId);
-        updatedWorkExperience.setMember(member);
-        return workExperienceRepository.save(updatedWorkExperience).getId();
+        workExperience.update(workExperienceUpdateRequestDto);
+        return workExperienceRepository.save(workExperience).getId();
     }
 
     public Long deleteWorkExperience(Long workExperienceId) throws PermissionDeniedException {

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import page.clab.api.domain.donation.dao.DonationRepository;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.dto.request.DonationRequestDto;
+import page.clab.api.domain.donation.dto.request.DonationUpdateRequestDto;
 import page.clab.api.domain.donation.dto.response.DonationResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
@@ -56,17 +57,14 @@ public class DonationService {
         return new PagedResponseDto<>(donations.map(DonationResponseDto::of));
     }
 
-    public Long updateDonation(Long donationId, DonationRequestDto donationRequestDto) throws PermissionDeniedException {
+    public Long updateDonation(Long donationId, DonationUpdateRequestDto donationUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Donation donation = getDonationByIdOrThrow(donationId);
         if (!memberService.isMemberSuperRole(member)) {
             throw new PermissionDeniedException("해당 후원 정보를 수정할 권한이 없습니다.");
         }
-        Donation updatedDonation = Donation.of(donationRequestDto);
-        updatedDonation.setDonor(donation.getDonor());
-        updatedDonation.setId(donation.getId());
-        updatedDonation.setCreatedAt(donation.getCreatedAt());
-        return donationRepository.save(updatedDonation).getId();
+        donation.update(donationUpdateRequestDto);
+        return donationRepository.save(donation).getId();
     }
 
     public Long deleteDonation(Long donationId) throws PermissionDeniedException {

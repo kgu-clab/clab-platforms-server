@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +25,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.news.dto.request.NewsRequestDto;
 import page.clab.api.global.common.file.domain.UploadedFile;
+import page.clab.api.domain.news.dto.request.NewsUpdateRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
 
 @Entity
@@ -71,6 +73,15 @@ public class News {
 
     public static News of(NewsRequestDto newsRequestDto) {
         return ModelMapperUtil.getModelMapper().map(newsRequestDto, News.class);
+    }
+
+    public void update(NewsUpdateRequestDto newsUpdateRequestDto) {
+        Optional.ofNullable(newsUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
+        Optional.ofNullable(newsUpdateRequestDto.getCategory()).ifPresent(this::setCategory);
+        Optional.ofNullable(newsUpdateRequestDto.getContent()).ifPresent(this::setContent);
+        Optional.ofNullable(newsUpdateRequestDto.getArticleUrl()).ifPresent(this::setArticleUrl);
+        Optional.ofNullable(newsUpdateRequestDto.getSource()).ifPresent(this::setSource);
+        Optional.ofNullable(newsUpdateRequestDto.getDate()).ifPresent(this::setDate);
     }
 
 }

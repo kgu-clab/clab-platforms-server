@@ -13,6 +13,7 @@ import page.clab.api.domain.board.dao.BoardRepository;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.BoardLike;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
+import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
 import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
@@ -95,20 +96,14 @@ public class BoardService {
         return new PagedResponseDto<>(boards.map(BoardCategoryResponseDto::of));
     }
 
-    public Long updateBoard(Long boardId, BoardRequestDto boardRequestDto) throws PermissionDeniedException {
+    public Long updateBoard(Long boardId, BoardUpdateRequestDto boardUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
         if (!board.getMember().getId().equals(member.getId())) {
             throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
         }
-        Board updatedBoard = Board.of(boardRequestDto);
-        updatedBoard.setId(board.getId());
-        updatedBoard.setMember(board.getMember());
-        updatedBoard.setNickName(board.getNickName());
-        updatedBoard.setUpdateTime(LocalDateTime.now());
-        updatedBoard.setCreatedAt(board.getCreatedAt());
-        updatedBoard.setLikes(board.getLikes());
-        return boardRepository.save(updatedBoard).getId();
+        board.update(boardUpdateRequestDto);
+        return boardRepository.save(board).getId();
     }
 
     public Long updateLikes(Long boardId) {
