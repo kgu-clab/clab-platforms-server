@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import page.clab.api.domain.blog.dao.BlogRepository;
 import page.clab.api.domain.blog.domain.Blog;
 import page.clab.api.domain.blog.dto.request.BlogRequestDto;
+import page.clab.api.domain.blog.dto.request.BlogUpdateRequestDto;
 import page.clab.api.domain.blog.dto.response.BlogDetailsResponseDto;
 import page.clab.api.domain.blog.dto.response.BlogResponseDto;
 import page.clab.api.domain.member.application.MemberService;
@@ -83,17 +84,14 @@ public class BlogService {
         return new PagedResponseDto<>(blogPage.map(BlogResponseDto::of));
     }
 
-    public Long updateBlog(Long blogId, BlogRequestDto blogRequestDto) throws PermissionDeniedException {
+    public Long updateBlog(Long blogId, BlogUpdateRequestDto blogUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
         if (!blog.getMember().equals(member)) {
             throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
         }
-        Blog updatedBlog = Blog.of(blogRequestDto);
-        updatedBlog.setId(blog.getId());
-        updatedBlog.setMember(blog.getMember());
-        updatedBlog.setCreatedAt(blog.getCreatedAt());
-        return blogRepository.save(updatedBlog).getId();
+        blog.update(blogUpdateRequestDto);
+        return blogRepository.save(blog).getId();
     }
 
     public Long deleteBlog(Long blogId) throws PermissionDeniedException {

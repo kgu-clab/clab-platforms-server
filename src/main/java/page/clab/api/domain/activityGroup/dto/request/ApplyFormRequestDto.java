@@ -15,10 +15,6 @@ import lombok.Setter;
 @Builder
 public class ApplyFormRequestDto {
 
-    @NotNull(message = "{notnull.applyForm.activityGroupId}")
-    @Schema(description = "그룹 아이디", example = "1")
-    private Long activityGroupId;
-
     @NotNull(message = "{notnull.applyForm.applierName}")
     @Schema(description = "지원자 이름", example = "홍길동")
     private String applierName;

@@ -102,21 +102,28 @@ public class ActivityGroupMemberService {
     }
 
     public PagedResponseDto<GroupMemberResponseDto> getActivityGroupMembers(Long activityGroupId, Pageable pageable) {
-        Page<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId, pageable);
+        Page<GroupMember> groupMembers = getGroupMemberByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.ACCEPTED, pageable);
         return new PagedResponseDto<>(groupMembers.map(GroupMemberResponseDto::of));
     }
 
     @Transactional
-    public Long applyActivityGroup(Long activityGroupId) throws MessagingException {
+    public Long applyActivityGroup(Long activityGroupId, ApplyFormRequestDto formRequestDto) throws MessagingException {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!activityGroup.getStatus().equals(ActivityGroupStatus.PROGRESSING)) {
             throw new ActivityGroupNotProgressingException("해당 활동은 진행중인 활동이 아닙니다.");
         }
+
+        ApplyForm form = ApplyForm.of(formRequestDto);
+        form.setActivityGroup(activityGroup);
+        form.setMember(member);
+        applyFormRepository.save(form);
+
         GroupMember groupMember = GroupMember.of(member, activityGroup);
         groupMember.setRole(ActivityGroupRole.MEMBER);
-        groupMember.setStatus(GroupMemberStatus.IN_PROGRESS);
+        groupMember.setStatus(GroupMemberStatus.WAITING);
         groupMemberRepository.save(groupMember);
+
         GroupMember groupLeader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         String subject = "[" + activityGroup.getName() + "] 활동 참가 신청이 들어왔습니다.";
         String content = member.getName() + "에게서 활동 참가 신청이 들어왔습니다.";
@@ -126,18 +133,8 @@ public class ActivityGroupMemberService {
                 .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 활동 참가 신청을 하였습니다.")
                 .build();
         notificationService.createNotification(notificationRequestDto);
+
         return activityGroup.getId();
-    }
-
-    public Long writeApplyForm(ApplyFormRequestDto formRequestDto) {
-        Member applier = memberService.getCurrentMember();
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(formRequestDto.getActivityGroupId());
-
-        ApplyForm form = ApplyForm.of(formRequestDto);
-        form.setActivityGroup(activityGroup);
-        form.setMember(applier);
-
-        return applyFormRepository.save(form).getId();
     }
 
     public ActivityGroupMemberApplierResponseDto getApplierInformation() {
@@ -148,6 +145,11 @@ public class ActivityGroupMemberService {
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
         return activityGroupRepository.findById(activityGroupId)
                 .orElseThrow(() -> new NotFoundException("해당 활동이 존재하지 않습니다."));
+    }
+
+    public GroupMember getGroupMemberByActivityGroupAndMemberOrThrow(ActivityGroup activityGroup, Member member) {
+        return groupMemberRepository.findByActivityGroupAndMember(activityGroup, member)
+                .orElseThrow(() -> new NotFoundException("해당 멤버가 활동에 참여하지 않았습니다."));
     }
 
     public Page<ActivityGroup> getActivityGroupByStatus(ActivityGroupStatus status, Pageable pageable) {
@@ -186,6 +188,10 @@ public class ActivityGroupMemberService {
 
     public List<GroupMember> getGroupMemberByMember(Member member){
         return groupMemberRepository.findAllByMember(member);
+    }
+
+    public boolean isGroupMember(ActivityGroup activityGroup, Member member) {
+        return groupMemberRepository.existsByActivityGroupAndMember(activityGroup, member);
     }
 
     public GroupMember save(GroupMember groupMember) {

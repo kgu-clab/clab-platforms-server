@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.sharedAccount.application.SharedAccountService;
 import page.clab.api.domain.sharedAccount.application.SharedAccountUsageService;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountRequestDto;
+import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUpdateRequestDto;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUsageRequestDto;
 import page.clab.api.domain.sharedAccount.dto.response.SharedAccountResponseDto;
 import page.clab.api.domain.sharedAccount.dto.response.SharedAccountUsageResponseDto;
@@ -76,13 +77,13 @@ public class SharedAccountController {
     @PatchMapping("/{accountId}")
     public ResponseModel updateSharedAccount(
             @PathVariable(name = "accountId") Long accountId,
-            @Valid @RequestBody SharedAccountRequestDto sharedAccountRequestDto,
+            @Valid @RequestBody SharedAccountUpdateRequestDto sharedAccountUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = sharedAccountService.updateSharedAccount(accountId, sharedAccountRequestDto);
+        Long id = sharedAccountService.updateSharedAccount(accountId, sharedAccountUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

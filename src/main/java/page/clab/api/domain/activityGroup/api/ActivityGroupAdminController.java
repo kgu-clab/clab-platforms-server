@@ -24,6 +24,7 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
 import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
+import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ApplyFormResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -62,13 +63,13 @@ public class ActivityGroupAdminController {
     @PatchMapping("/{activityGroupId}")
     public ResponseModel updateActivityGroup(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
-            @Valid @RequestBody ActivityGroupRequestDto activityGroupRequestDto,
+            @Valid @RequestBody ActivityGroupUpdateRequestDto activityGroupUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = activityGroupAdminService.updateActivityGroup(activityGroupId, activityGroupRequestDto);
+        Long id = activityGroupAdminService.updateActivityGroup(activityGroupId, activityGroupUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -130,16 +131,18 @@ public class ActivityGroupAdminController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 신청 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 상태별 활동 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "관리자 또는 리더만 조회 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/apply-members")
+    @GetMapping("/members")
     public ResponseModel getApplyGroupMemberList(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
+            @RequestParam(name = "status") GroupMemberStatus status,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<GroupMemberResponseDto> applyMemberList = activityGroupAdminService.getApplyGroupMemberList(activityGroupId, pageable);
+        PagedResponseDto<GroupMemberResponseDto> applyMemberList = activityGroupAdminService.getApplyGroupMemberList(activityGroupId, status, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applyMemberList);
         return responseModel;
@@ -165,10 +168,11 @@ public class ActivityGroupAdminController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/accept")
     public ResponseModel acceptGroupMember(
-            @RequestParam String memberId,
-            @RequestParam GroupMemberStatus status
+            @RequestParam(name = "activityGroupId") Long activityGroupId,
+            @RequestParam(name = "memberId") String memberId,
+            @RequestParam(name = "status") GroupMemberStatus status
     ) throws PermissionDeniedException {
-        String id = activityGroupAdminService.manageGroupMemberStatus(memberId, status);
+        String id = activityGroupAdminService.manageGroupMemberStatus(activityGroupId, memberId, status);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

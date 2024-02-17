@@ -10,9 +10,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,8 +18,14 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
+import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -75,6 +78,12 @@ public class Comment {
 
     public static Comment of(CommentRequestDto commentRequestDto) {
         return ModelMapperUtil.getModelMapper().map(commentRequestDto, Comment.class);
+    }
+
+    public void update(CommentUpdateRequestDto commentUpdateRequestDto) {
+        Optional.ofNullable(commentUpdateRequestDto.getContent()).ifPresent(this::setContent);
+        Optional.of(commentUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
+        this.setUpdateTime(LocalDateTime.now());
     }
 
 }

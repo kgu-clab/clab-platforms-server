@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -38,6 +39,9 @@ public class NewsRequestDto {
     @NotNull(message = "{notNull.news.source}")
     @Schema(description = "출처", example = "경기대학교 공식 블로그", required = true)
     private String source;
+
+    @Schema(description = "첨부파일 경로 리스트", example = "/resources/files/news/339609571877700_4305d83e-090a-480b-a470-b5e96164d113.png")
+    private List<String> fileUrlList;
 
     @NotNull(message = "{notNull.news.date}")
     @Schema(description = "날짜", example = "2021-08-31", required = true)

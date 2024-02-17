@@ -2,13 +2,18 @@ package page.clab.api.domain.board.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +21,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
+import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.util.ModelMapperUtil;
 
 @Entity
@@ -50,6 +57,10 @@ public class Board {
     @Size(min = 1, max = 10000, message = "{size.board.content}")
     private String content;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_files")
+    private List<UploadedFile> uploadedFiles = new ArrayList<>();
+
     @Column(name = "update_time")
     private LocalDateTime updateTime;
 
@@ -63,6 +74,14 @@ public class Board {
 
     public static Board of(BoardRequestDto boardRequestDto) {
         return ModelMapperUtil.getModelMapper().map(boardRequestDto, Board.class);
+    }
+
+    public void update(BoardUpdateRequestDto boardUpdateRequestDto) {
+        Optional.ofNullable(boardUpdateRequestDto.getCategory()).ifPresent(this::setCategory);
+        Optional.ofNullable(boardUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
+        Optional.ofNullable(boardUpdateRequestDto.getContent()).ifPresent(this::setContent);
+        Optional.of(boardUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
+        updateTime = LocalDateTime.now();
     }
 
 }

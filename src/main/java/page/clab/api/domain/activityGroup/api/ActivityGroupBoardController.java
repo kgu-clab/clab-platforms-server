@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activityGroup.application.ActivityGroupBoardService;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
+import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -34,14 +35,19 @@ public class ActivityGroupBoardController {
 
     private final ActivityGroupBoardService activityGroupBoardService;
 
-    @Operation(summary = "[U] 활동 그룹 게시판 생성", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 활동 그룹 게시판 생성", description = "ROLE_USER 이상의 권한이 필요함<br><br>" +
+            "활동 그룹 게시판 카테고리별 requestDto에 들어가야 할 필수내용과 (선택)내용입니다.<br><br>" +
+            "공지사항, 주차별활동, 피드백 : 카테고리, 제목, 내용 , 첨부파일 경로 리스트(선택)<br>" +
+            "과제 : 카테고리, 제목, 내용, 마감일자, 첨부파일 경로 리스트(선택)<br>" +
+            "제출 : 첨부파일 경로 리스트"
+    )
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createActivityGroupBoard(
             @RequestParam(name = "parentId", required = false) Long parentId,
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @Valid @RequestBody ActivityGroupBoardRequestDto activityGroupBoardRequestDto
-    ) {
+    ) throws PermissionDeniedException {
         Long id = activityGroupBoardService.createActivityGroupBoard(parentId, activityGroupId, activityGroupBoardRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -90,13 +96,11 @@ public class ActivityGroupBoardController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 부모 활동 그룹 게시판에 대해 유일한 자식 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 제출 게시판에 대한 유일한 피드백 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{parentId}")
-    public ResponseModel getOneChildActivityGroupBoardByParentId(
-            @PathVariable Long parentId
-    ) {
-        ActivityGroupBoardResponseDto board = activityGroupBoardService.getOneChildActivityGroupBoardByParentId(parentId);
+    public ResponseModel getFeedbackCategoryBoardByParent(@PathVariable Long parentId) {
+        ActivityGroupBoardResponseDto board = activityGroupBoardService.getFeedbackCategoryBoardByParent(parentId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(board);
         return responseModel;
@@ -134,9 +138,9 @@ public class ActivityGroupBoardController {
     @PatchMapping("")
     public ResponseModel updateActivityGroupBoard(
             @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId,
-            @Valid @RequestBody ActivityGroupBoardRequestDto activityGroupBoardRequestDto
+            @Valid @RequestBody ActivityGroupBoardUpdateRequestDto activityGroupBoardUpdateRequestDto
     ) throws PermissionDeniedException {
-        Long id = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, activityGroupBoardRequestDto);
+        Long id = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, activityGroupBoardUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

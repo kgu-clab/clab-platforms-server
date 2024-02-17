@@ -20,13 +20,16 @@ import org.hibernate.validator.constraints.URL;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
+import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -134,6 +137,20 @@ public class Member implements UserDetails {
         Member member = ModelMapperUtil.getModelMapper().map(memberRequestDto, Member.class);
         member.setRole(Role.USER);
         return member;
+    }
+
+    public void update(MemberUpdateRequestDto memberUpdateRequestDto, PasswordEncoder passwordEncoder) {
+        Optional.ofNullable(memberUpdateRequestDto.getPassword())
+                .ifPresent(password -> setPassword(passwordEncoder.encode(password)));
+        Optional.ofNullable(memberUpdateRequestDto.getContact()).ifPresent(this::setContact);
+        Optional.ofNullable(memberUpdateRequestDto.getEmail()).ifPresent(this::setEmail);
+        Optional.ofNullable(memberUpdateRequestDto.getGrade()).ifPresent(this::setGrade);
+        Optional.ofNullable(memberUpdateRequestDto.getBirth()).ifPresent(this::setBirth);
+        Optional.ofNullable(memberUpdateRequestDto.getAddress()).ifPresent(this::setAddress);
+        Optional.ofNullable(memberUpdateRequestDto.getInterests()).ifPresent(this::setInterests);
+        Optional.ofNullable(memberUpdateRequestDto.getGithubUrl()).ifPresent(this::setGithubUrl);
+        Optional.ofNullable(memberUpdateRequestDto.getStudentStatus()).ifPresent(this::setStudentStatus);
+        Optional.ofNullable(memberUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
     }
 
 }

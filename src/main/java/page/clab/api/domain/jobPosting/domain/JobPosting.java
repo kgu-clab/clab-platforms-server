@@ -7,10 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +16,11 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.jobPosting.dto.request.JobPostingRequestDto;
+import page.clab.api.domain.jobPosting.dto.request.JobPostingUpdateRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -27,7 +28,6 @@ import page.clab.api.global.util.ModelMapperUtil;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(indexes = {@Index(name = "idx_job_posting_url", columnList = "jobPostingUrl")})
 public class JobPosting {
 
     @Id
@@ -60,6 +60,15 @@ public class JobPosting {
 
     public static JobPosting of(JobPostingRequestDto jobPostingRequestDto) {
         return ModelMapperUtil.getModelMapper().map(jobPostingRequestDto, JobPosting.class);
+    }
+
+    public void update(JobPostingUpdateRequestDto jobPostingUpdateRequestDto) {
+        Optional.ofNullable(jobPostingUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
+        Optional.ofNullable(jobPostingUpdateRequestDto.getCareerLevel()).ifPresent(this::setCareerLevel);
+        Optional.ofNullable(jobPostingUpdateRequestDto.getEmploymentType()).ifPresent(this::setEmploymentType);
+        Optional.ofNullable(jobPostingUpdateRequestDto.getCompanyName()).ifPresent(this::setCompanyName);
+        Optional.ofNullable(jobPostingUpdateRequestDto.getRecruitmentPeriod()).ifPresent(this::setRecruitmentPeriod);
+        Optional.ofNullable(jobPostingUpdateRequestDto.getJobPostingUrl()).ifPresent(this::setJobPostingUrl);
     }
 
 }

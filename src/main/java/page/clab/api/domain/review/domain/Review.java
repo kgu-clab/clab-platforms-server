@@ -9,7 +9,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +18,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.review.dto.request.ReviewRequestDto;
+import page.clab.api.domain.review.dto.request.ReviewUpdateRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -54,6 +57,10 @@ public class Review {
 
     public static Review of(ReviewRequestDto reviewRequestDto) {
         return ModelMapperUtil.getModelMapper().map(reviewRequestDto, Review.class);
+    }
+
+    public void update(ReviewUpdateRequestDto reviewUpdateRequestDto) {
+        Optional.ofNullable(reviewUpdateRequestDto.getContent()).ifPresent(this::setContent);
     }
 
 }

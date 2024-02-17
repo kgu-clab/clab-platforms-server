@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.donation.application.DonationService;
 import page.clab.api.domain.donation.dto.request.DonationRequestDto;
+import page.clab.api.domain.donation.dto.request.DonationUpdateRequestDto;
 import page.clab.api.domain.donation.dto.response.DonationResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -101,13 +102,13 @@ public class DonationController {
     @PatchMapping("/{donationId}")
     public ResponseModel updateDonation(
             @PathVariable(name = "donationId") Long donationId,
-            @Valid @RequestBody DonationRequestDto donationRequestDto,
+            @Valid @RequestBody DonationUpdateRequestDto donationUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = donationService.updateDonation(donationId, donationRequestDto);
+        Long id = donationService.updateDonation(donationId, donationUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
