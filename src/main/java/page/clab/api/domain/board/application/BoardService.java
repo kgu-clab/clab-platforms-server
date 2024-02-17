@@ -2,6 +2,8 @@ package page.clab.api.domain.board.application;
 
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,8 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.RandomNicknameUtil;
@@ -37,10 +41,19 @@ public class BoardService {
 
     private final RandomNicknameUtil randomNicknameUtil;
 
+    private final FileService fileService;
+
     @Transactional
     public Long createBoard(BoardRequestDto boardRequestDto) {
         Member member = memberService.getCurrentMember();
         Board board = Board.of(boardRequestDto);
+        List<String> fileUrls = boardRequestDto.getFileUrlList();
+        if (fileUrls != null) {
+            List<UploadedFile> uploadFileList =  fileUrls.stream()
+                    .map(fileService::getUploadedFileByUrl)
+                    .collect(Collectors.toList());
+            board.setUploadedFiles(uploadFileList);
+        }
         board.setMember(member);
         board.setNickName(randomNicknameUtil.makeRandomNickname());
         board.setWantAnonymous(boardRequestDto.isWantAnonymous());
