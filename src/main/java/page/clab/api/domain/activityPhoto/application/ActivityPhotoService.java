@@ -25,7 +25,7 @@ public class ActivityPhotoService {
 
     public Long createActivityPhoto(ActivityPhotoRequestDto activityPhotoRequestDto) {
         ActivityPhoto activityPhoto = ActivityPhoto.of(activityPhotoRequestDto);
-        List<String> fileUrls = activityPhotoRequestDto.getFileUrls();
+        List<String> fileUrls = activityPhotoRequestDto.getFileUrlList();
         if (fileUrls != null) {
             List<UploadedFile> uploadFileList =  fileUrls.stream()
                     .map(fileService::getUploadedFileByUrl)
