@@ -6,10 +6,6 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,10 +14,16 @@ import org.springframework.stereotype.Service;
 import page.clab.api.domain.jobPosting.dao.JobPostingRepository;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
 import page.clab.api.domain.jobPosting.dto.request.JobPostingRequestDto;
+import page.clab.api.domain.jobPosting.dto.request.JobPostingUpdateRequestDto;
 import page.clab.api.domain.jobPosting.dto.response.JobPostingDetailsResponseDto;
 import page.clab.api.domain.jobPosting.dto.response.JobPostingResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
+
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -79,12 +81,10 @@ public class JobPostingService {
         return new PagedResponseDto<>(jobPostingPage.map(JobPostingResponseDto::of));
     }
 
-    public Long updateJobPosting(Long jobPostingId, JobPostingRequestDto jobPostingRequestDto) {
+    public Long updateJobPosting(Long jobPostingId, JobPostingUpdateRequestDto jobPostingUpdateRequestDto) {
         JobPosting jobPosting = getJobPostingByIdOrThrow(jobPostingId);
-        JobPosting updatedJobPosting = JobPosting.of(jobPostingRequestDto);
-        updatedJobPosting.setId(jobPostingId);
-        updatedJobPosting.setCreatedAt(jobPosting.getCreatedAt());
-        return jobPostingRepository.save(updatedJobPosting).getId();
+        jobPosting.update(jobPostingUpdateRequestDto);
+        return jobPostingRepository.save(jobPosting).getId();
     }
 
     public Long deleteJobPosting(Long jobPostingId) {
