@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activityGroup.application.ActivityGroupReportService;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportRequestDto;
+import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupReportResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -78,9 +79,10 @@ public class ActivityGroupReportController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel updateReport(
             @PathVariable(name = "reportId") Long reportId,
-            @Valid @RequestBody ActivityGroupReportRequestDto reportRequestDto
+            @RequestParam(name = "activityGroupId") Long activityGroupId,
+            @Valid @RequestBody ActivityGroupReportUpdateRequestDto reportRequestDto
     ) throws PermissionDeniedException, IllegalAccessException {
-        Long id = activityGroupReportService.updateReport(reportId, reportRequestDto);
+        Long id = activityGroupReportService.updateReport(reportId, activityGroupId, reportRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import page.clab.api.domain.news.dao.NewsRepository;
 import page.clab.api.domain.news.domain.News;
 import page.clab.api.domain.news.dto.request.NewsRequestDto;
+import page.clab.api.domain.news.dto.request.NewsUpdateRequestDto;
 import page.clab.api.domain.news.dto.response.NewsDetailsResponseDto;
 import page.clab.api.domain.news.dto.response.NewsResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -49,12 +50,10 @@ public class NewsService {
         return new PagedResponseDto<>(news.map(NewsResponseDto::of));
     }
 
-    public Long updateNews(Long newsId, NewsRequestDto newsRequestDto) {
+    public Long updateNews(Long newsId, NewsUpdateRequestDto newsUpdateRequestDto) {
         News news = getNewsByIdOrThrow(newsId);
-        News updatedNews = News.of(newsRequestDto);
-        updatedNews.setId(news.getId());
-        updatedNews.setCreatedAt(news.getCreatedAt());
-        return newsRepository.save(updatedNews).getId();
+        news.update(newsUpdateRequestDto);
+        return newsRepository.save(news).getId();
     }
 
     public Long deleteNews(Long newsId) {

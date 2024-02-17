@@ -8,7 +8,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +15,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.blog.dto.request.BlogRequestDto;
+import page.clab.api.domain.blog.dto.request.BlogUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -53,6 +56,13 @@ public class Blog {
 
     public static Blog of(BlogRequestDto blogRequestDto) {
         return ModelMapperUtil.getModelMapper().map(blogRequestDto, Blog.class);
+    }
+
+    public void update(BlogUpdateRequestDto blogUpdateRequestDto) {
+        Optional.ofNullable(blogUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
+        Optional.ofNullable(blogUpdateRequestDto.getSubTitle()).ifPresent(this::setSubTitle);
+        Optional.ofNullable(blogUpdateRequestDto.getContent()).ifPresent(this::setContent);
+        Optional.ofNullable(blogUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
     }
 
 }

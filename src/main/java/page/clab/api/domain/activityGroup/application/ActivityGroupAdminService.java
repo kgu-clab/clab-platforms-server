@@ -17,6 +17,7 @@ import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activityGroup.domain.GroupSchedule;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
+import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ApplyFormResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.member.application.MemberService;
@@ -64,16 +65,13 @@ public class ActivityGroupAdminService {
         return id;
     }
 
-    public Long updateActivityGroup(Long activityGroupId, ActivityGroupRequestDto activityGroupRequestDto) throws PermissionDeniedException {
+    public Long updateActivityGroup(Long activityGroupId, ActivityGroupUpdateRequestDto activityGroupUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!isMemberGroupLeaderRole(activityGroup, member)) {
             throw new PermissionDeniedException("해당 활동을 수정할 권한이 없습니다.");
         }
-        activityGroup.setCategory(activityGroupRequestDto.getCategory());
-        activityGroup.setName(activityGroupRequestDto.getName());
-        activityGroup.setContent(activityGroupRequestDto.getContent());
-        activityGroup.setImageUrl(activityGroupRequestDto.getImageUrl());
+        activityGroup.update(activityGroupUpdateRequestDto);
         return activityGroupRepository.save(activityGroup).getId();
     }
 
