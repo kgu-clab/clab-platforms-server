@@ -1,15 +1,6 @@
 package page.clab.api.domain.member.application;
 
 import jakarta.transaction.Transactional;
-import java.io.File;
-import java.security.SecureRandom;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +37,16 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
 import page.clab.api.global.util.FileSystemUtil;
+
+import java.io.File;
+import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -130,36 +131,7 @@ public class MemberService {
         if (!(member.getId().equals(currentMember.getId()) || isMemberSuperRole(currentMember))) {
             throw new PermissionDeniedException("멤버 수정 권한이 부족합니다.");
         }
-        if (memberUpdateRequestDto.getPassword() != null) {
-            member.setPassword(passwordEncoder.encode(memberUpdateRequestDto.getPassword()));
-        }
-        if (memberUpdateRequestDto.getContact() != null) {
-            member.setContact(removeHyphensFromContact(memberUpdateRequestDto.getContact()));
-        }
-        if (memberUpdateRequestDto.getEmail() != null) {
-            member.setEmail(memberUpdateRequestDto.getEmail());
-        }
-        if (memberUpdateRequestDto.getGrade() != null) {
-            member.setGrade(memberUpdateRequestDto.getGrade());
-        }
-        if (memberUpdateRequestDto.getBirth() != null) {
-            member.setBirth(memberUpdateRequestDto.getBirth());
-        }
-        if (memberUpdateRequestDto.getAddress() != null) {
-            member.setAddress(memberUpdateRequestDto.getAddress());
-        }
-        if (memberUpdateRequestDto.getInterests() != null) {
-            member.setInterests(memberUpdateRequestDto.getInterests());
-        }
-        if (memberUpdateRequestDto.getGithubUrl() != null) {
-            member.setGithubUrl(memberUpdateRequestDto.getGithubUrl());
-        }
-        if (memberUpdateRequestDto.getStudentStatus() != null) {
-            member.setStudentStatus(memberUpdateRequestDto.getStudentStatus());
-        }
-        if (memberUpdateRequestDto.getImageUrl() != null) {
-            member.setImageUrl(memberUpdateRequestDto.getImageUrl());
-        }
+        member.update(memberUpdateRequestDto, passwordEncoder);
         return memberRepository.save(member).getId();
     }
 
