@@ -7,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +14,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.workExperience.dto.request.WorkExperienceRequestDto;
+import page.clab.api.domain.workExperience.dto.request.WorkExperienceUpdateRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -48,6 +51,13 @@ public class WorkExperience {
 
     public static WorkExperience of(WorkExperienceRequestDto workExperienceRequestDto) {
         return ModelMapperUtil.getModelMapper().map(workExperienceRequestDto, WorkExperience.class);
+    }
+
+    public void update(WorkExperienceUpdateRequestDto workExperienceUpdateRequestDto) {
+        Optional.ofNullable(workExperienceUpdateRequestDto.getCompanyName()).ifPresent(this::setCompanyName);
+        Optional.ofNullable(workExperienceUpdateRequestDto.getPosition()).ifPresent(this::setPosition);
+        Optional.ofNullable(workExperienceUpdateRequestDto.getStartDate()).ifPresent(this::setStartDate);
+        Optional.ofNullable(workExperienceUpdateRequestDto.getEndDate()).ifPresent(this::setEndDate);
     }
 
 }

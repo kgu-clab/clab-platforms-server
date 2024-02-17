@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.workExperience.application.WorkExperienceService;
 import page.clab.api.domain.workExperience.dto.request.WorkExperienceRequestDto;
+import page.clab.api.domain.workExperience.dto.request.WorkExperienceUpdateRequestDto;
 import page.clab.api.domain.workExperience.dto.response.WorkExperienceResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -88,13 +89,13 @@ public class WorkExperienceController {
     @PatchMapping("/{workExperienceId}")
     public ResponseModel updateWorkExperience(
             @PathVariable(name = "workExperienceId") Long workExperienceId,
-            @Valid @RequestBody WorkExperienceRequestDto workExperienceRequestDto,
+            @Valid @RequestBody WorkExperienceUpdateRequestDto workExperienceUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, PermissionDeniedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = workExperienceService.updateWorkExperience(workExperienceId, workExperienceRequestDto);
+        Long id = workExperienceService.updateWorkExperience(workExperienceId, workExperienceUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

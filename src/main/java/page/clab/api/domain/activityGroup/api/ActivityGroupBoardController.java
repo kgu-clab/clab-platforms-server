@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activityGroup.application.ActivityGroupBoardService;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
+import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -137,9 +138,9 @@ public class ActivityGroupBoardController {
     @PatchMapping("")
     public ResponseModel updateActivityGroupBoard(
             @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId,
-            @Valid @RequestBody ActivityGroupBoardRequestDto activityGroupBoardRequestDto
+            @Valid @RequestBody ActivityGroupBoardUpdateRequestDto activityGroupBoardUpdateRequestDto
     ) throws PermissionDeniedException {
-        Long id = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, activityGroupBoardRequestDto);
+        Long id = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, activityGroupBoardUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

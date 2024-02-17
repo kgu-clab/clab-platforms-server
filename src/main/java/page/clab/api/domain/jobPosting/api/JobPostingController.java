@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.jobPosting.application.JobPostingService;
 import page.clab.api.domain.jobPosting.dto.request.JobPostingRequestDto;
+import page.clab.api.domain.jobPosting.dto.request.JobPostingUpdateRequestDto;
 import page.clab.api.domain.jobPosting.dto.response.JobPostingDetailsResponseDto;
 import page.clab.api.domain.jobPosting.dto.response.JobPostingResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -97,13 +98,13 @@ public class JobPostingController {
     @PostMapping("/{jobPostingId}")
     public ResponseModel updateJobPosting(
             @PathVariable(name = "jobPostingId") Long jobPostingId,
-            @Valid @RequestBody JobPostingRequestDto jobPostingRequestDto,
+            @Valid @RequestBody JobPostingUpdateRequestDto jobPostingUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = jobPostingService.updateJobPosting(jobPostingId, jobPostingRequestDto);
+        Long id = jobPostingService.updateJobPosting(jobPostingId, jobPostingUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

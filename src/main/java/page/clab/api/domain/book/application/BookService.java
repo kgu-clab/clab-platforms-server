@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import page.clab.api.domain.book.dao.BookRepository;
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.dto.request.BookRequestDto;
+import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
@@ -72,14 +73,10 @@ public class BookService {
         return new PagedResponseDto<>(bookPage.map(BookResponseDto::of));
     }
 
-    public Long updateBookInfo(Long bookId, BookRequestDto bookRequestDto) {
+    public Long updateBookInfo(Long bookId, BookUpdateRequestDto bookUpdateRequestDto) {
         Book book = getBookByIdOrThrow(bookId);
-        Book updatedBook = Book.of(bookRequestDto);
-        updatedBook.setId(book.getId());
-        updatedBook.setCreatedAt(book.getCreatedAt());
-        updatedBook.setBorrower(book.getBorrower());
-        updatedBook.setVersion(book.getVersion());
-        return bookRepository.save(updatedBook).getId();
+        book.update(bookUpdateRequestDto);
+        return bookRepository.save(book).getId();
     }
 
     public Long deleteBook(Long bookId) {
