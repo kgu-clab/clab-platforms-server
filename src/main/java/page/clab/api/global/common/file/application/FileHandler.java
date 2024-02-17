@@ -48,7 +48,7 @@ public class FileHandler {
         init();
 
         fileValidation(originalFilename, extension);
-        String saveFilename = makeSaveFileName(category, originalFilename, extension);
+        String saveFilename = makeSaveFileName(extension);
         String savePath = filePath + File.separator + category + File.separator + saveFilename;
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(image);
@@ -71,7 +71,7 @@ public class FileHandler {
         String originalFilename = multipartFile.getOriginalFilename();
         String extension = FilenameUtils.getExtension(originalFilename);
         fileValidation(originalFilename, extension);
-        String saveFilename = makeSaveFileName(category, originalFilename, extension);
+        String saveFilename = makeSaveFileName(extension);
         String savePath = filePath + File.separator + category + File.separator + saveFilename;
 
         File file = new File(savePath);
@@ -102,9 +102,8 @@ public class FileHandler {
         return !Strings.isNullOrEmpty(fileName);
     }
 
-    private String makeSaveFileName(String category, String originalFilename, String extension){
-        return (category.startsWith("members") ? originalFilename :
-                System.nanoTime() + "_" + UUID.randomUUID() + "." + extension);
+    private String makeSaveFileName(String extension){
+        return (System.nanoTime() + "_" + UUID.randomUUID() + "." + extension);
     }
 
     private void checkDir(File file){
