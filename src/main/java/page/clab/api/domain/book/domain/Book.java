@@ -8,7 +8,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Version;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +15,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.book.dto.request.BookRequestDto;
+import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -58,6 +61,14 @@ public class Book {
 
     public static Book of(BookRequestDto bookRequestDto) {
         return ModelMapperUtil.getModelMapper().map(bookRequestDto, Book.class);
+    }
+
+    public void update(BookUpdateRequestDto bookUpdateRequestDto) {
+        Optional.ofNullable(bookUpdateRequestDto.getCategory()).ifPresent(this::setCategory);
+        Optional.ofNullable(bookUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
+        Optional.ofNullable(bookUpdateRequestDto.getAuthor()).ifPresent(this::setAuthor);
+        Optional.ofNullable(bookUpdateRequestDto.getPublisher()).ifPresent(this::setPublisher);
+        Optional.ofNullable(bookUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
     }
 
 }
