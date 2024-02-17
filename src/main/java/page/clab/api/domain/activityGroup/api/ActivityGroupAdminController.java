@@ -131,16 +131,17 @@ public class ActivityGroupAdminController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 신청 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 상태별 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/apply-members")
+    @GetMapping("/members")
     public ResponseModel getApplyGroupMemberList(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
+            @RequestParam(name = "status") GroupMemberStatus status,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<GroupMemberResponseDto> applyMemberList = activityGroupAdminService.getApplyGroupMemberList(activityGroupId, pageable);
+        PagedResponseDto<GroupMemberResponseDto> applyMemberList = activityGroupAdminService.getApplyGroupMemberList(activityGroupId, status, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applyMemberList);
         return responseModel;
