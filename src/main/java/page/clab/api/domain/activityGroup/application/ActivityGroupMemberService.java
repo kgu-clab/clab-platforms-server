@@ -102,7 +102,7 @@ public class ActivityGroupMemberService {
     }
 
     public PagedResponseDto<GroupMemberResponseDto> getActivityGroupMembers(Long activityGroupId, Pageable pageable) {
-        Page<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId, pageable);
+        Page<GroupMember> groupMembers = getGroupMemberByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.ACCEPTED, pageable);
         return new PagedResponseDto<>(groupMembers.map(GroupMemberResponseDto::of));
     }
 
