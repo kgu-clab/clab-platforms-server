@@ -150,8 +150,8 @@ public class ActivityGroupMemberService {
                 .orElseThrow(() -> new NotFoundException("해당 활동이 존재하지 않습니다."));
     }
 
-    public GroupMember getGroupMemberByMemberAndActivityGroupOrThrow(Member member, ActivityGroup activityGroup) {
-        return groupMemberRepository.findByMemberAndActivityGroup(member, activityGroup)
+    public GroupMember getGroupMemberByActivityGroupAndMemberOrThrow(ActivityGroup activityGroup, Member member) {
+        return groupMemberRepository.findByActivityGroupAndMember(activityGroup, member)
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 활동에 참여하지 않았습니다."));
     }
 

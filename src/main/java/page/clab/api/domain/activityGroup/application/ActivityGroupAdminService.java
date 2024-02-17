@@ -1,7 +1,6 @@
 package page.clab.api.domain.activityGroup.application;
 
 import jakarta.transaction.Transactional;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +26,8 @@ import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -125,7 +126,7 @@ public class ActivityGroupAdminService {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         groupScheduleDto.stream()
                 .map(scheduleDto -> GroupSchedule.of(activityGroup, scheduleDto))
-                .forEach(groupSchedule -> groupScheduleRepository.save(groupSchedule));
+                .forEach(groupScheduleRepository::save);
         return activityGroup.getId();
     }
 
@@ -138,13 +139,14 @@ public class ActivityGroupAdminService {
         return new PagedResponseDto<>(groupMemberList.map(GroupMemberResponseDto::of));
     }
 
-    public String manageGroupMemberStatus(String memberId, GroupMemberStatus status) throws PermissionDeniedException {
+    public String manageGroupMemberStatus(Long activityGroupId, String memberId, GroupMemberStatus status) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         if (!isMemberGroupLeaderRole(currentMember)) {
             throw new PermissionDeniedException("해당 활동의 신청 멤버를 조회할 권한이 없습니다.");
         }
         Member member = memberService.getMemberByIdOrThrow(memberId);
-        GroupMember groupMember = activityGroupMemberService.getGroupMemberByMemberOrThrow(member);
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
         groupMember.setStatus(status);
         if (status == GroupMemberStatus.ACCEPTED) {
             groupMember.setRole(ActivityGroupRole.MEMBER);
