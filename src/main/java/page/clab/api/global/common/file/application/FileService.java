@@ -81,6 +81,12 @@ public class FileService {
 
     public UploadedFileResponseDto saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws IOException, PermissionDeniedException {
         Member member = memberService.getCurrentMember();
+
+        UploadedFile existingUploadedFile = getUploadedFileByCategoryAndOriginalName(path, multipartFile.getOriginalFilename());
+        if (existingUploadedFile != null) {
+            uploadFileRepository.delete(existingUploadedFile);
+        }
+
         if (!path.startsWith("membership-fee") && path.startsWith("members")) {
             String memberId = path.split(Pattern.quote(File.separator))[1];
             double usage = memberService.getCloudUsageByMemberId(memberId).getUsage();
@@ -155,6 +161,10 @@ public class FileService {
     public UploadedFile getUploadedFileByUrl(String url) {
         return uploadFileRepository.findByUrl(url)
                 .orElseThrow(() -> new NotFoundException("파일을 찾을 수 없습니다."));
+    }
+
+    public UploadedFile getUploadedFileByCategoryAndOriginalName(String category, String originalName) {
+        return uploadFileRepository.findByCategoryAndOriginalFileName(category, originalName);
     }
 
     public String getOriginalFileNameByUrl(String url) {
