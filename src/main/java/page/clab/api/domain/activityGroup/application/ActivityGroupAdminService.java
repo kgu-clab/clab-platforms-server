@@ -185,18 +185,12 @@ public class ActivityGroupAdminService {
 
     public boolean isActivityGroupProgressing(Long activityGroupId){
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (activityGroup.getStatus() != ActivityGroupStatus.PROGRESSING) {
-            return false;
-        }
-        return true;
+        return activityGroup.getStatus() == ActivityGroupStatus.PROGRESSING;
     }
 
     public boolean isMemberGroupLeaderRole(ActivityGroup activityGroup, Member member) {
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
-        if (groupMember.getRole() != ActivityGroupRole.LEADER || !memberService.isMemberAdminRole(member)) {
-            return false;
-        }
-        return true;
+        return groupMember.getRole() == ActivityGroupRole.LEADER && memberService.isMemberAdminRole(member);
     }
 
     public boolean isMemberHasRoleInActivityGroup(Member member, ActivityGroupRole role ,Long activityGroupId){
