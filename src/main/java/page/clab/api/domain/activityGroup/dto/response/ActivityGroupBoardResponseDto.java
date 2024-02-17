@@ -28,7 +28,7 @@ public class ActivityGroupBoardResponseDto {
 
     private String content;
 
-    private List<UploadedFileResponseDto> assignmentFiles = new ArrayList<>();
+    private List<UploadedFileResponseDto> files = new ArrayList<>();
 
     private LocalDateTime dueDateTime;
 

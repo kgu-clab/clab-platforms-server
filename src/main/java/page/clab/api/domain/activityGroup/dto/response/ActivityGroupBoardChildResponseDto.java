@@ -30,7 +30,7 @@ public class ActivityGroupBoardChildResponseDto {
 
     private LocalDateTime dueDateTime;
 
-    private List<UploadedFileResponseDto> assignmentFiles = new ArrayList<>();
+    private List<UploadedFileResponseDto> files = new ArrayList<>();
 
     private List<ActivityGroupBoardChildResponseDto> children;
 

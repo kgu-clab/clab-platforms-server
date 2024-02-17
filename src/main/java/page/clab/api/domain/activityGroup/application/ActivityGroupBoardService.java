@@ -21,6 +21,7 @@ import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestD
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
+import page.clab.api.domain.activityPhoto.dto.response.ActivityPhotoResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -97,26 +98,18 @@ public class ActivityGroupBoardService {
     }
 
     public PagedResponseDto<ActivityGroupBoardResponseDto> getAllActivityGroupBoard(Pageable pageable) {
-        List<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByOrderByCreatedAtAsc();
-        List<ActivityGroupBoardResponseDto> activityGroupBoardResponseDtos = boards.stream()
-                .map(this::toActivityGroupBoardResponseDto)
-                .collect(Collectors.toList());
-        Page<ActivityGroupBoardResponseDto> pagedResponseDto = new PageImpl<>(activityGroupBoardResponseDtos, pageable, activityGroupBoardResponseDtos.size());
-        return new PagedResponseDto<>(pagedResponseDto);
+        Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return new PagedResponseDto<>(boards.map(ActivityGroupBoardResponseDto::of));
     }
 
     public ActivityGroupBoardResponseDto getActivityGroupBoardById(Long activityGroupBoardId) {
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        return toActivityGroupBoardResponseDto(board);
+        return ActivityGroupBoardResponseDto.of(board);
     }
 
     public PagedResponseDto<ActivityGroupBoardResponseDto> getActivityGroupBoardByCategory(Long activityGroupId, ActivityGroupBoardCategory category, Pageable pageable) {
-        List<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByActivityGroup_IdAndCategoryOrderByCreatedAtDesc(activityGroupId, category);
-        List<ActivityGroupBoardResponseDto> activityGroupBoardResponseDtos = boards.stream()
-                .map(this::toActivityGroupBoardResponseDto)
-                .collect(Collectors.toList());
-        Page<ActivityGroupBoardResponseDto> pagedResponseDto = new PageImpl<>(activityGroupBoardResponseDtos, pageable, activityGroupBoardResponseDtos.size());
-        return new PagedResponseDto<>(pagedResponseDto);
+        Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByActivityGroup_IdAndCategoryOrderByCreatedAtDesc(activityGroupId, category, pageable);
+        return new PagedResponseDto<>(boards.map(ActivityGroupBoardResponseDto::of));
     }
 
     public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) throws PermissionDeniedException {
@@ -134,12 +127,9 @@ public class ActivityGroupBoardService {
             }
         }
 
-        List<ActivityGroupBoard> boards = getChildBoards(parentId);
-        List<ActivityGroupBoardChildResponseDto> activityGroupBoardChildResponseDtos = boards.stream()
-                .map(this::toActivityGroupBoardChildResponseDto)
-                .collect(Collectors.toList());
-        Page<ActivityGroupBoardChildResponseDto> pagedResponseDto = new PageImpl<>(activityGroupBoardChildResponseDtos, pageable, activityGroupBoardChildResponseDtos.size());
-        return new PagedResponseDto<>(pagedResponseDto);
+        List<ActivityGroupBoard> boardList = getChildBoards(parentId);
+        Page<ActivityGroupBoard> boardPage = new PageImpl<>(boardList, pageable, boardList.size());
+        return new PagedResponseDto<>(boardPage.map(ActivityGroupBoardChildResponseDto::of));
     }
 
     public ActivityGroupBoardResponseDto getFeedbackCategoryBoardByParent(Long parentId) {
@@ -168,7 +158,7 @@ public class ActivityGroupBoardService {
         if (assignmentBoard.isEmpty()) {
             throw new NotFoundException("제출한 과제가 없습니다.");
         }
-        return toActivityGroupBoardResponseDto(assignmentBoard.get(0));
+        return getActivityGroupBoardById(assignmentBoard.get(0).getId());
     }
 
     public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) throws PermissionDeniedException {
@@ -231,57 +221,6 @@ public class ActivityGroupBoardService {
         }
         boardList.sort((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()));
         return boardList;
-    }
-
-    public ActivityGroupBoardChildResponseDto toActivityGroupBoardChildResponseDto(ActivityGroupBoard board) {
-        ActivityGroupBoardChildResponseDto activityGroupBoardChildResponseDto = ActivityGroupBoardChildResponseDto.of(board);
-
-        if (board.getUploadedFiles() != null) {
-            List<String> fileUrls = board.getUploadedFiles().stream()
-                    .map(UploadedFile::getUrl).collect(Collectors.toList());
-
-            List<UploadedFileResponseDto> fileResponseDtos = fileUrls.stream()
-                    .map(url -> UploadedFileResponseDto.builder()
-                            .fileUrl(url)
-                            .originalFileName(fileService.getOriginalFileNameByUrl(url))
-                            .storageDateTimeOfFile(fileService.getStorageDateTimeOfFile(url))
-                            .build())
-                    .collect(Collectors.toList());
-
-            activityGroupBoardChildResponseDto.setAssignmentFiles(fileResponseDtos);
-        }
-
-        if (board.getChildren() != null && !board.getChildren().isEmpty()) {
-
-            List<ActivityGroupBoardChildResponseDto> childrenDtoList = new ArrayList<>();
-            for (ActivityGroupBoard child : board.getChildren()) {
-                childrenDtoList.add(toActivityGroupBoardChildResponseDto(child));
-            }
-
-            activityGroupBoardChildResponseDto.setChildren(childrenDtoList);
-        }
-
-        return activityGroupBoardChildResponseDto;
-    }
-
-    public ActivityGroupBoardResponseDto toActivityGroupBoardResponseDto(ActivityGroupBoard board) {
-        ActivityGroupBoardResponseDto activityGroupBoardResponseDto = ActivityGroupBoardResponseDto.of(board);
-
-        if (board.getUploadedFiles() != null) {
-            List<String> fileUrls = board.getUploadedFiles().stream()
-                    .map(UploadedFile::getUrl).collect(Collectors.toList());
-
-            List<UploadedFileResponseDto> fileResponseDtos = fileUrls.stream()
-                            .map(url -> UploadedFileResponseDto.builder()
-                                    .fileUrl(url)
-                                    .originalFileName(fileService.getOriginalFileNameByUrl(url))
-                                    .storageDateTimeOfFile(fileService.getStorageDateTimeOfFile(url))
-                                    .build())
-                            .collect(Collectors.toList());
-
-            activityGroupBoardResponseDto.setAssignmentFiles(fileResponseDtos);
-        }
-        return activityGroupBoardResponseDto;
     }
 
 }
