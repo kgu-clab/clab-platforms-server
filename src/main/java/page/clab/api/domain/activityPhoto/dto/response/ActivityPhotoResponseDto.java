@@ -23,7 +23,7 @@ public class ActivityPhotoResponseDto {
 
     private String title;
 
-    private List<UploadedFileResponseDto> fileList = new ArrayList<>();
+    private List<UploadedFileResponseDto> files = new ArrayList<>();
 
     private LocalDate date;
 
