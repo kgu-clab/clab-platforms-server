@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +14,11 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.product.dto.request.ProductRequestDto;
+import page.clab.api.domain.product.dto.request.ProductUpdateRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -45,6 +48,12 @@ public class Product {
 
     public static Product of(ProductRequestDto productRequestDto) {
         return ModelMapperUtil.getModelMapper().map(productRequestDto, Product.class);
+    }
+
+    public void update(ProductUpdateRequestDto productUpdateRequestDto) {
+        Optional.ofNullable(productUpdateRequestDto.getName()).ifPresent(this::setName);
+        Optional.ofNullable(productUpdateRequestDto.getDescription()).ifPresent(this::setDescription);
+        Optional.ofNullable(productUpdateRequestDto.getUrl()).ifPresent(this::setUrl);
     }
 
 }

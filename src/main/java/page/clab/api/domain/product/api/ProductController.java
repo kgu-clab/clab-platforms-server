@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.product.application.ProductService;
 import page.clab.api.domain.product.dto.request.ProductRequestDto;
+import page.clab.api.domain.product.dto.request.ProductUpdateRequestDto;
 import page.clab.api.domain.product.dto.response.ProductResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -85,13 +86,13 @@ public class ProductController {
     @PatchMapping("/{productId}")
     public ResponseModel updateProduct(
             @PathVariable(name = "productId") Long productId,
-            @Valid @RequestBody ProductRequestDto productRequestDto,
+            @Valid @RequestBody ProductUpdateRequestDto productUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = productService.updateProduct(productId, productRequestDto);
+        Long id = productService.updateProduct(productId, productUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
