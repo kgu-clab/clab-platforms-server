@@ -116,7 +116,8 @@ public class ActivityGroupMemberController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 활동 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 활동 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "활동에 참여(수락)된 멤버만 조회 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/members")
     public ResponseModel getActivityGroupMemberList(
