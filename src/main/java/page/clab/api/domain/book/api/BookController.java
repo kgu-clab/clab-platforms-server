@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.book.application.BookService;
 import page.clab.api.domain.book.dto.request.BookRequestDto;
+import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -97,13 +98,13 @@ public class BookController {
     @PatchMapping("")
     public ResponseModel updateBookInfo(
             @RequestParam(name = "bookId") Long bookId,
-            @Valid @RequestBody BookRequestDto bookRequestDto,
+            @Valid @RequestBody BookUpdateRequestDto bookUpdateRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        Long id = bookService.updateBookInfo(bookId, bookRequestDto);
+        Long id = bookService.updateBookInfo(bookId, bookUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
