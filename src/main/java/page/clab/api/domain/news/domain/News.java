@@ -59,7 +59,7 @@ public class News {
     private String source;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "files")
+    @JoinColumn(name = "news_files")
     private List<UploadedFile> uploadedFiles = new ArrayList<>();
 
     @Column(nullable = false)

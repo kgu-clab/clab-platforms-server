@@ -39,7 +39,7 @@ public class ActivityPhoto {
 
     @Column(nullable = false)
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "files")
+    @JoinColumn(name = "activity_photo_files")
     private List<UploadedFile> uploadedFiles = new ArrayList<>();
 
     @Column(nullable = false)

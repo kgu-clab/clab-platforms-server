@@ -65,7 +65,7 @@ public class ActivityGroupBoard {
     private List<ActivityGroupBoard> children = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "files")
+    @JoinColumn(name = "activity_group_board_files")
     private List<UploadedFile> uploadedFiles = new ArrayList<>();
 
     @Column(name = "dueDate_time")
