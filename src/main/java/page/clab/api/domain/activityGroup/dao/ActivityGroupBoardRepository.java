@@ -15,7 +15,7 @@ public interface ActivityGroupBoardRepository extends JpaRepository<ActivityGrou
 
     List<ActivityGroupBoard> findAllByOrderByCreatedAtAsc();
 
-    List<ActivityGroupBoard> findAllByActivityGroup_IdAndCategoryOrderByCreatedAtDesc(Long activityGroupId, ActivityGroupBoardCategory category);
+    Page<ActivityGroupBoard> findAllByActivityGroup_IdAndCategoryOrderByCreatedAtDesc(Long activityGroupId, ActivityGroupBoardCategory category, Pageable pageable);
 
     boolean existsById(Long id);
 

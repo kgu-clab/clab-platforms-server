@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
-import page.clab.api.global.common.file.dto.response.AssignmentFileResponseDto;
+import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter
@@ -30,7 +30,7 @@ public class ActivityGroupBoardChildResponseDto {
 
     private LocalDateTime dueDateTime;
 
-    private List<AssignmentFileResponseDto> assignmentFiles = new ArrayList<>();
+    private List<UploadedFileResponseDto> files = new ArrayList<>();
 
     private List<ActivityGroupBoardChildResponseDto> children;
 

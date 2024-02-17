@@ -20,6 +20,7 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.dao.UploadFileRepository;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
+import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -69,17 +70,22 @@ public class FileService {
         return url;
     }
 
-    public List<String> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws IOException, PermissionDeniedException {
-        List<String> urls = new ArrayList<>();
+    public List<UploadedFileResponseDto> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws IOException, PermissionDeniedException {
+        List<UploadedFileResponseDto> uploadedFileResponseDtos = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
-            String url = saveFile(multipartFile, path, storagePeriod);
-            urls.add(url);
+            UploadedFileResponseDto responseDto = saveFile(multipartFile, path, storagePeriod);
+            uploadedFileResponseDtos.add(responseDto);
         }
-        return urls;
+        return uploadedFileResponseDtos;
     }
 
-    public String saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws IOException, PermissionDeniedException {
+    public UploadedFileResponseDto saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws IOException, PermissionDeniedException {
         Member member = memberService.getCurrentMember();
+
+        if (!isValidPathVariable(path)) {
+            throw new NotFoundException("파일 업로드 api 요청 pathVariable이 유효하지 않습니다.");
+        }
+
         if (!path.startsWith("membership-fee") && path.startsWith("members")) {
             String memberId = path.split(Pattern.quote(File.separator))[1];
             double usage = memberService.getCloudUsageByMemberId(memberId).getUsage();
@@ -87,21 +93,19 @@ public class FileService {
                 throw new CloudStorageNotEnoughException("클라우드 저장 공간이 부족합니다.");
             }
         }
-        if (path.startsWith("assignment")) {
-            Long activityGroupId = Long.parseLong(path.split(Pattern.quote(File.separator))[1]);
-            Long activityGroupBoardId = Long.parseLong(path.split(Pattern.quote(File.separator))[2]);
-            String memberId = path.split(Pattern.quote(File.separator))[3];
-            Member assignmentWriter = memberService.getMemberById(memberId);
-            if (!activityGroupRepository.existsById(activityGroupId)) {
-                throw new NotFoundException("해당 활동은 존재하지 않습니다.");
-            }
-            if (!groupMemberRepository.existsByMemberAndActivityGroupId(assignmentWriter, activityGroupId)) {
-                throw new NotFoundException("해당 활동에 참여하고 있지 않은 멤버입니다.");
-            }
-            if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
-                throw new NotFoundException("해당 활동그룹 게시판이 존재하지 않습니다.");
+
+        UploadedFile existingUploadedFile = getUploadedFileByCategoryAndOriginalName(path, multipartFile.getOriginalFilename());
+        if (existingUploadedFile != null) {
+            uploadFileRepository.delete(existingUploadedFile);
+        }
+
+        if (path.startsWith("profiles")) {
+            UploadedFile profileFile = getUploadedFileByCategory(path);
+            if (profileFile != null) {
+                uploadFileRepository.delete(profileFile);
             }
         }
+
         UploadedFile uploadedFile = new UploadedFile();
         String url = fileURL + "/" + path.replace(File.separator.toString(), "/") + fileHandler.saveFile(multipartFile, path, uploadedFile);
         uploadedFile.setOriginalFileName(multipartFile.getOriginalFilename());
@@ -111,7 +115,42 @@ public class FileService {
         uploadedFile.setUploader(member);
         uploadedFile.setUrl(url);
         uploadFileRepository.save(uploadedFile);
-        return url;
+
+        return UploadedFileResponseDto.builder()
+                .fileUrl(url)
+                .originalFileName(uploadedFile.getOriginalFileName())
+                .createdAt(uploadedFile.getCreatedAt())
+                .storagePeriod(uploadedFile.getStoragePeriod())
+                .build();
+    }
+
+    public boolean isValidPathVariable(String path) throws PermissionDeniedException {
+        switch (path.split(Pattern.quote(File.separator))[0]) {
+            case "assignment" : {
+                Long activityGroupId = Long.parseLong(path.split(Pattern.quote(File.separator))[1]);
+                Long activityGroupBoardId = Long.parseLong(path.split(Pattern.quote(File.separator))[2]);
+                String memberId = path.split(Pattern.quote(File.separator))[3];
+                Member assignmentWriter = memberService.getMemberById(memberId);
+                if (!activityGroupRepository.existsById(activityGroupId)) {
+                    throw new NotFoundException("해당 활동은 존재하지 않습니다.");
+                }
+                if (!groupMemberRepository.existsByMemberAndActivityGroupId(assignmentWriter, activityGroupId)) {
+                    throw new NotFoundException("해당 활동에 참여하고 있지 않은 멤버입니다.");
+                }
+                if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
+                    throw new NotFoundException("해당 활동그룹 게시판이 존재하지 않습니다.");
+                }
+                return true;
+            }
+            case "members", "profiles": {
+                String memberId = path.split(Pattern.quote(File.separator))[1];
+                if (!memberService.getCurrentMember().getId().equals(memberId)) {
+                    throw new PermissionDeniedException("로그인한 멤버 id와 파일 업로드 pathVariable에 입력된 memberId가 다릅니다.");
+                }
+                return memberService.isMemberExist(memberId);
+            }
+        }
+        return true;
     }
 
     public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) throws PermissionDeniedException {
@@ -149,6 +188,14 @@ public class FileService {
     public UploadedFile getUploadedFileByUrl(String url) {
         return uploadFileRepository.findByUrl(url)
                 .orElseThrow(() -> new NotFoundException("파일을 찾을 수 없습니다."));
+    }
+
+    public UploadedFile getUploadedFileByCategoryAndOriginalName(String category, String originalName) {
+        return uploadFileRepository.findByCategoryAndOriginalFileName(category, originalName);
+    }
+
+    public UploadedFile getUploadedFileByCategory(String category) {
+        return uploadFileRepository.findByCategory(category);
     }
 
     public String getOriginalFileNameByUrl(String url) {
