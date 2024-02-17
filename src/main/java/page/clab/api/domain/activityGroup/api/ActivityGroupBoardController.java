@@ -47,7 +47,7 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "parentId", required = false) Long parentId,
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @Valid @RequestBody ActivityGroupBoardRequestDto activityGroupBoardRequestDto
-    ) {
+    ) throws PermissionDeniedException {
         Long id = activityGroupBoardService.createActivityGroupBoard(parentId, activityGroupId, activityGroupBoardRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
