@@ -56,7 +56,7 @@ public class Board {
     private String content;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "files")
+    @JoinColumn(name = "board_files")
     private List<UploadedFile> uploadedFiles = new ArrayList<>();
 
     @Column(name = "update_time")
