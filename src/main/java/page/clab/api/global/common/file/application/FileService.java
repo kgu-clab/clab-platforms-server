@@ -139,6 +139,7 @@ public class FileService {
                 if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
                     throw new NotFoundException("해당 활동그룹 게시판이 존재하지 않습니다.");
                 }
+                return true;
             }
             case "members", "profiles": {
                 String memberId = path.split(Pattern.quote(File.separator))[1];
