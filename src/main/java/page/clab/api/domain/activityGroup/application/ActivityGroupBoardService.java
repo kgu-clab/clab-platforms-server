@@ -73,7 +73,7 @@ public class ActivityGroupBoardService {
         }
         Long id = activityGroupBoardRepository.save(board).getId();
 
-        GroupMember groupMember = activityGroupMemberService.getGroupMemberByMemberAndActivityGroupOrThrow(member, activityGroup);
+        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
         if (groupMember.getRole() == ActivityGroupRole.LEADER) {
             List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
             groupMembers
