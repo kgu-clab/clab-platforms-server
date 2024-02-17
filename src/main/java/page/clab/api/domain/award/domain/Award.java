@@ -8,15 +8,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.award.dto.request.AwardRequestDto;
+import page.clab.api.domain.award.dto.request.AwardUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -51,6 +54,13 @@ public class Award {
 
     public static Award of(AwardRequestDto awardRequestDto) {
         return ModelMapperUtil.getModelMapper().map(awardRequestDto, Award.class);
+    }
+
+    public void update(AwardUpdateRequestDto awardUpdateRequestDto) {
+        Optional.ofNullable(awardUpdateRequestDto.getCompetitionName()).ifPresent(this::setCompetitionName);
+        Optional.ofNullable(awardUpdateRequestDto.getOrganizer()).ifPresent(this::setOrganizer);
+        Optional.ofNullable(awardUpdateRequestDto.getAwardName()).ifPresent(this::setAwardName);
+        Optional.ofNullable(awardUpdateRequestDto.getAwardDate()).ifPresent(this::setAwardDate);
     }
 
 }
