@@ -2,7 +2,6 @@ package page.clab.api.domain.activityGroup.application;
 
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -38,6 +37,8 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.email.application.EmailService;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.exception.NotFoundException;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -147,6 +148,11 @@ public class ActivityGroupMemberService {
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
         return activityGroupRepository.findById(activityGroupId)
                 .orElseThrow(() -> new NotFoundException("해당 활동이 존재하지 않습니다."));
+    }
+
+    public GroupMember getGroupMemberByMemberAndActivityGroupOrThrow(Member member, ActivityGroup activityGroup) {
+        return groupMemberRepository.findByMemberAndActivityGroup(member, activityGroup)
+                .orElseThrow(() -> new NotFoundException("해당 멤버가 활동에 참여하지 않았습니다."));
     }
 
     public Page<ActivityGroup> getActivityGroupByStatus(ActivityGroupStatus status, Pageable pageable) {
