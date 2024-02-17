@@ -44,9 +44,13 @@ public class ActivityPhotoService {
         return activityPhoto.getId();
     }
 
-    private ActivityPhoto getActivityPhotoByIdOrThrow(Long activityPhotoId) {
+    public ActivityPhoto getActivityPhotoByIdOrThrow(Long activityPhotoId) {
         return activityPhotoRepository.findById(activityPhotoId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 활동 사진입니다."));
+    }
+
+    public boolean isActivityPhotoExist(Long activityPhotoId) {
+        return activityPhotoRepository.existsById(activityPhotoId);
     }
 
     private Page<ActivityPhoto> getActivityPhotoByIsPublicTrue(Pageable pageable) {
