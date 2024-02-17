@@ -1,13 +1,15 @@
 package page.clab.api.domain.activityGroup.dto.response;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
+import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,11 +18,13 @@ import page.clab.api.global.util.ModelMapperUtil;
 @Builder
 public class GroupMemberResponseDto {
 
-    String memberId;
+    private String memberId;
 
-    String memberName;
+    private String memberName;
 
-    String role;
+    private String role;
+
+    private GroupMemberStatus status;
 
     public static GroupMemberResponseDto of(GroupMember groupMember) {
         GroupMemberResponseDto groupMemberResponseDto = ModelMapperUtil.getModelMapper().map(groupMember, GroupMemberResponseDto.class);
