@@ -66,10 +66,10 @@ public class ActivityGroupAdminService {
 
     public Long updateActivityGroup(Long activityGroupId, ActivityGroupRequestDto activityGroupRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        if (!isMemberGroupLeaderRole(member)) {
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        if (!isMemberGroupLeaderRole(activityGroup, member)) {
             throw new PermissionDeniedException("해당 활동을 수정할 권한이 없습니다.");
         }
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroup.setCategory(activityGroupRequestDto.getCategory());
         activityGroup.setName(activityGroupRequestDto.getName());
         activityGroup.setContent(activityGroupRequestDto.getContent());
@@ -109,10 +109,10 @@ public class ActivityGroupAdminService {
 
     public Long updateProjectProgress(Long activityGroupId, Long progress) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        if (!isMemberGroupLeaderRole(member)) {
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        if (!isMemberGroupLeaderRole(activityGroup, member)) {
             throw new PermissionDeniedException("해당 활동을 수정할 권한이 없습니다.");
         }
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroup.setProgress(progress);
         return activityGroupRepository.save(activityGroup).getId();
     }
@@ -120,10 +120,10 @@ public class ActivityGroupAdminService {
     @Transactional
     public Long addSchedule(Long activityGroupId, List<GroupScheduleDto> groupScheduleDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        if (!isMemberGroupLeaderRole(member)) {
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        if (!isMemberGroupLeaderRole(activityGroup, member)) {
             throw new PermissionDeniedException("해당 일정을 등록할 권한이 없습니다.");
         }
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         groupScheduleDto.stream()
                 .map(scheduleDto -> GroupSchedule.of(activityGroup, scheduleDto))
                 .forEach(groupScheduleRepository::save);
@@ -132,7 +132,8 @@ public class ActivityGroupAdminService {
 
     public PagedResponseDto<GroupMemberResponseDto> getApplyGroupMemberList(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        if (!isMemberGroupLeaderRole(member)) {
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        if (!isMemberGroupLeaderRole(activityGroup, member)) {
             throw new PermissionDeniedException("해당 활동의 신청 멤버를 조회할 권한이 없습니다.");
         }
         Page<GroupMember> groupMemberList = activityGroupMemberService.getGroupMemberByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.IN_PROGRESS, pageable);
@@ -141,11 +142,11 @@ public class ActivityGroupAdminService {
 
     public String manageGroupMemberStatus(Long activityGroupId, String memberId, GroupMemberStatus status) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
-        if (!isMemberGroupLeaderRole(currentMember)) {
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
             throw new PermissionDeniedException("해당 활동의 신청 멤버를 조회할 권한이 없습니다.");
         }
         Member member = memberService.getMemberByIdOrThrow(memberId);
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
         groupMember.setStatus(status);
         if (status == GroupMemberStatus.ACCEPTED) {
@@ -190,8 +191,8 @@ public class ActivityGroupAdminService {
         return true;
     }
 
-    public boolean isMemberGroupLeaderRole(Member member) {
-        GroupMember groupMember = activityGroupMemberService.getGroupMemberByMemberOrThrow(member);
+    public boolean isMemberGroupLeaderRole(ActivityGroup activityGroup, Member member) {
+        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
         if (groupMember.getRole() != ActivityGroupRole.LEADER || !memberService.isMemberAdminRole(member)) {
             return false;
         }
