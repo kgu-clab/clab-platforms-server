@@ -12,4 +12,6 @@ public interface UploadFileRepository extends JpaRepository<UploadedFile, Long> 
 
     UploadedFile findByCategoryAndOriginalFileName(String category, String originalFileName);
 
+    UploadedFile findByCategory(String category);
+
 }

@@ -99,6 +99,13 @@ public class FileService {
             uploadFileRepository.delete(existingUploadedFile);
         }
 
+        if (path.startsWith("profiles")) {
+            UploadedFile profileFile = getUploadedFileByCategory(path);
+            if (profileFile != null) {
+                uploadFileRepository.delete(profileFile);
+            }
+        }
+
         UploadedFile uploadedFile = new UploadedFile();
         String url = fileURL + "/" + path.replace(File.separator.toString(), "/") + fileHandler.saveFile(multipartFile, path, uploadedFile);
         uploadedFile.setOriginalFileName(multipartFile.getOriginalFilename());
@@ -183,6 +190,10 @@ public class FileService {
 
     public UploadedFile getUploadedFileByCategoryAndOriginalName(String category, String originalName) {
         return uploadFileRepository.findByCategoryAndOriginalFileName(category, originalName);
+    }
+
+    public UploadedFile getUploadedFileByCategory(String category) {
+        return uploadFileRepository.findByCategory(category);
     }
 
     public String getOriginalFileNameByUrl(String url) {
