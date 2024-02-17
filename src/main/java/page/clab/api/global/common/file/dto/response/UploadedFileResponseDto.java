@@ -20,7 +20,9 @@ public class UploadedFileResponseDto {
 
     private String originalFileName;
 
-    private LocalDateTime storageDateTimeOfFile;
+    private Long storagePeriod;
+
+    private LocalDateTime createdAt;
 
     public static UploadedFileResponseDto of(UploadedFile uploadedFile) {
         return ModelMapperUtil.getModelMapper().map(uploadedFile, UploadedFileResponseDto.class);

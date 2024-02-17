@@ -119,7 +119,8 @@ public class FileService {
         return UploadedFileResponseDto.builder()
                 .fileUrl(url)
                 .originalFileName(uploadedFile.getOriginalFileName())
-                .storageDateTimeOfFile(getStorageDateTimeOfFile(url))
+                .createdAt(uploadedFile.getCreatedAt())
+                .storagePeriod(uploadedFile.getStoragePeriod())
                 .build();
     }
 
