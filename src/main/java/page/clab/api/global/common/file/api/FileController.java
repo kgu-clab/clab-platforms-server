@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
+import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -40,9 +41,9 @@ public class FileController {
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
-        List<String> url = fileService.saveFiles(multipartFiles, "boards" + File.separator + boardId, storagePeriod);
+        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "boards" + File.separator + boardId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(responseDtos);
         return responseModel;
     }
 
@@ -54,9 +55,9 @@ public class FileController {
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
-        List<String> url = fileService.saveFiles(multipartFiles, "news" + File.separator + newsId, storagePeriod);
+        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "news" + File.separator + newsId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(responseDtos);
         return responseModel;
     }
 
@@ -68,9 +69,9 @@ public class FileController {
             @RequestParam(name = "multipartFile") MultipartFile multipartFile,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
-        String url = fileService.saveFile(multipartFile, "profiles" + File.separator + memberId, storagePeriod);
+        UploadedFileResponseDto responseDto = fileService.saveFile(multipartFile, "profiles" + File.separator + memberId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(responseDto);
         return responseModel;
     }
 
@@ -82,9 +83,9 @@ public class FileController {
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
-        List<String> url = fileService.saveFiles(multipartFiles, "activity-photos" + File.separator + activityPhotoId, storagePeriod);
+        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "activity-photos" + File.separator + activityPhotoId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(responseDtos);
         return responseModel;
     }
 
@@ -96,9 +97,9 @@ public class FileController {
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
-        List<String> url = fileService.saveFiles(multipartFiles, "members" + File.separator + memberId, storagePeriod);
+        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "members" + File.separator + memberId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(responseDtos);
         return responseModel;
     }
 
@@ -109,9 +110,9 @@ public class FileController {
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam("storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
-        List<String> url = fileService.saveFiles(multipartFiles, "forms", storagePeriod);
+        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "forms", storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(responseDtos);
         return responseModel;
     }
 
@@ -125,10 +126,10 @@ public class FileController {
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws PermissionDeniedException, IOException, NotFoundException {
-        List<String> url = fileService.saveFiles(multipartFiles,
+        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles,
                 "assignment" + File.separator + activityGroupId + File.separator+ activityGroupBoardId + File.separator + memberId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(responseDtos);
         return responseModel;
     }
 
@@ -139,9 +140,9 @@ public class FileController {
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws PermissionDeniedException, IOException, NotFoundException {
-        List<String> url = fileService.saveFiles(multipartFiles, "membership-fee", storagePeriod);
+        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "membership-fee", storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(url);
+        responseModel.addData(responseDtos);
         return responseModel;
     }
 

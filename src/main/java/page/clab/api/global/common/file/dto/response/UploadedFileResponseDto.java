@@ -14,7 +14,7 @@ import page.clab.api.global.util.ModelMapperUtil;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AssignmentFileResponseDto {
+public class UploadedFileResponseDto {
 
     private String fileUrl;
 
@@ -22,8 +22,8 @@ public class AssignmentFileResponseDto {
 
     private LocalDateTime storageDateTimeOfFile;
 
-    public static AssignmentFileResponseDto of(UploadedFile uploadedFile) {
-        return ModelMapperUtil.getModelMapper().map(uploadedFile, AssignmentFileResponseDto.class);
+    public static UploadedFileResponseDto of(UploadedFile uploadedFile) {
+        return ModelMapperUtil.getModelMapper().map(uploadedFile, UploadedFileResponseDto.class);
     }
 
 }

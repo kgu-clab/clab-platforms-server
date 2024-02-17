@@ -28,7 +28,7 @@ import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
-import page.clab.api.global.common.file.dto.response.AssignmentFileResponseDto;
+import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -240,8 +240,8 @@ public class ActivityGroupBoardService {
             List<String> fileUrls = board.getUploadedFiles().stream()
                     .map(UploadedFile::getUrl).collect(Collectors.toList());
 
-            List<AssignmentFileResponseDto> fileResponseDtos = fileUrls.stream()
-                    .map(url -> AssignmentFileResponseDto.builder()
+            List<UploadedFileResponseDto> fileResponseDtos = fileUrls.stream()
+                    .map(url -> UploadedFileResponseDto.builder()
                             .fileUrl(url)
                             .originalFileName(fileService.getOriginalFileNameByUrl(url))
                             .storageDateTimeOfFile(fileService.getStorageDateTimeOfFile(url))
@@ -271,8 +271,8 @@ public class ActivityGroupBoardService {
             List<String> fileUrls = board.getUploadedFiles().stream()
                     .map(UploadedFile::getUrl).collect(Collectors.toList());
 
-            List<AssignmentFileResponseDto> fileResponseDtos = fileUrls.stream()
-                            .map(url -> AssignmentFileResponseDto.builder()
+            List<UploadedFileResponseDto> fileResponseDtos = fileUrls.stream()
+                            .map(url -> UploadedFileResponseDto.builder()
                                     .fileUrl(url)
                                     .originalFileName(fileService.getOriginalFileNameByUrl(url))
                                     .storageDateTimeOfFile(fileService.getStorageDateTimeOfFile(url))
