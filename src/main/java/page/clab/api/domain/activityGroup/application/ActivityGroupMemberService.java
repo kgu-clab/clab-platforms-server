@@ -190,6 +190,10 @@ public class ActivityGroupMemberService {
         return groupMemberRepository.findAllByMember(member);
     }
 
+    public boolean isGroupMember(ActivityGroup activityGroup, Member member) {
+        return groupMemberRepository.existsByActivityGroupAndMember(activityGroup, member);
+    }
+
     public GroupMember save(GroupMember groupMember) {
         return groupMemberRepository.save(groupMember);
     }

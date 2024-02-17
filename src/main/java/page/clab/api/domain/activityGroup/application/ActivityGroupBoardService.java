@@ -18,7 +18,6 @@ import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRe
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
-import page.clab.api.domain.activityPhoto.dto.response.ActivityPhotoResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -26,7 +25,6 @@ import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
-import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -53,9 +51,12 @@ public class ActivityGroupBoardService {
     private final FileService fileService;
 
     @Transactional
-    public Long createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
+    public Long createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+        if (!activityGroupMemberService.isGroupMember(activityGroup, member)) {
+            throw new PermissionDeniedException("활동 그룹 멤버만 게시글을 등록할 수 있습니다.");
+        }
         ActivityGroupBoard board = ActivityGroupBoard.of(activityGroupBoardRequestDto);
         board.setMember(member);
         board.setActivityGroup(activityGroup);

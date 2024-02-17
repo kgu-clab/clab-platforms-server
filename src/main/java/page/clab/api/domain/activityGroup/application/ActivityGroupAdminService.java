@@ -29,6 +29,7 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -191,13 +192,13 @@ public class ActivityGroupAdminService {
         return groupMember.getRole() == ActivityGroupRole.LEADER && memberService.isMemberAdminRole(member);
     }
 
-    public boolean isMemberHasRoleInActivityGroup(Member member, ActivityGroupRole role ,Long activityGroupId){
+    public boolean isMemberHasRoleInActivityGroup(Member member, ActivityGroupRole role, Long activityGroupId){
         List<GroupMember> groupMemberList = activityGroupMemberService.getGroupMemberByMember(member);
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(activityGroupId);
 
         return groupMemberList.stream()
                 .anyMatch(groupMember ->
-                        groupMember.getActivityGroup().getId() == activityGroup.getId() &&
+                        Objects.equals(groupMember.getActivityGroup().getId(), activityGroup.getId()) &&
                         groupMember.getRole() == role);
     }
 
