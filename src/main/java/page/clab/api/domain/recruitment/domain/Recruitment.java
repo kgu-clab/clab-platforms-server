@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +16,11 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.application.domain.ApplicationType;
 import page.clab.api.domain.recruitment.dto.request.RecruitmentRequestDto;
+import page.clab.api.domain.recruitment.dto.request.RecruitmentUpdateRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -56,6 +59,15 @@ public class Recruitment {
 
     public static Recruitment of(RecruitmentRequestDto recruitmentRequestDto) {
         return ModelMapperUtil.getModelMapper().map(recruitmentRequestDto, Recruitment.class);
+    }
+
+    public void update(RecruitmentUpdateRequestDto recruitmentUpdateRequestDto) {
+        Optional.ofNullable(recruitmentUpdateRequestDto.getStartDate()).ifPresent(this::setStartDate);
+        Optional.ofNullable(recruitmentUpdateRequestDto.getEndDate()).ifPresent(this::setEndDate);
+        Optional.ofNullable(recruitmentUpdateRequestDto.getApplicationType()).ifPresent(this::setApplicationType);
+        Optional.ofNullable(recruitmentUpdateRequestDto.getTarget()).ifPresent(this::setTarget);
+        Optional.ofNullable(recruitmentUpdateRequestDto.getStatus()).ifPresent(this::setStatus);
+        updateTime = LocalDateTime.now();
     }
 
 }
