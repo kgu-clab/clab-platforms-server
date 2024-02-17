@@ -3,6 +3,7 @@ package page.clab.api.domain.activityPhoto.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,8 +22,8 @@ public class ActivityPhotoRequestDto {
     private String title;
 
     @NotNull(message = "{notNull.activityPhoto.imageUrl}")
-    @Schema(description = "활동 사진 URL", example = "https://static.gwansik.dev/clab.page/1.webp", required = true)
-    private String imageUrl;
+    @Schema(description = "첨부파일 경로 리스트", example = "/resources/files/activity-photos/339609571877700_4305d83e-090a-480b-a470-b5e96164d113.png")
+    private List<String> fileUrlList;
 
     @NotNull(message = "{notNull.activityPhoto.date}")
     @Schema(description = "활동 날짜", example = "2021-01-01", required = true)

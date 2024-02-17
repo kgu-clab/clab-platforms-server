@@ -1,12 +1,15 @@
 package page.clab.api.domain.activityPhoto.dto.response;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
+import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter
@@ -20,7 +23,7 @@ public class ActivityPhotoResponseDto {
 
     private String title;
 
-    private String imageUrl;
+    private List<UploadedFileResponseDto> fileList = new ArrayList<>();
 
     private LocalDate date;
 
