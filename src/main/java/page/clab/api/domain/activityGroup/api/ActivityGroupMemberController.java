@@ -26,6 +26,7 @@ import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberApplierResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupProjectResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
+import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStatusResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -62,7 +63,7 @@ public class ActivityGroupMemberController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ActivityGroupResponseDto> activityGroupList = activityGroupMemberService.getActivityGroupsByStatus(activityGroupStatus, pageable);
+        PagedResponseDto<ActivityGroupStatusResponseDto> activityGroupList = activityGroupMemberService.getActivityGroupsByStatus(activityGroupStatus, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroupList);
         return responseModel;
