@@ -3,7 +3,6 @@ package page.clab.api.domain.application.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -28,16 +27,18 @@ import page.clab.api.domain.application.dto.response.ApplicationResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/applications")
 @RequiredArgsConstructor
-@Tag(name = "Application", description = "동아리 가입 신청 관련 API")
+@Tag(name = "Application", description = "동아리 지원 관련 API")
 @Slf4j
 public class ApplicationController {
 
     private final ApplicationService applicationService;
 
-    @Operation(summary = "가입 신청", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Operation(summary = "동아리 지원", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("")
     public ResponseModel createApplication(
             @Valid @RequestBody ApplicationRequestDto applicationRequestDto,
@@ -52,7 +53,7 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 신청자 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Operation(summary = "[A] 지원자 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getApplications(
@@ -66,8 +67,8 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 신청자 목록 필터링(업데이트 날짜 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
-            "전달된 날짜 사이의 신청자를 필터링하여 반환")
+    @Operation(summary = "[A] 지원자 목록 필터링(업데이트 날짜 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
+            "전달된 날짜 사이의 지원자를 필터링하여 반환")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/filter")
     public ResponseModel getApplicationsBetweenDates(
@@ -83,8 +84,8 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 신청자 검색", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
-            "신청자의 학번을 기반으로 검색")
+    @Operation(summary = "[A] 지원자 검색", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
+            "지원자의 학번을 기반으로 검색")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
     public ResponseModel searchApplication(
@@ -96,7 +97,7 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "[S] 가입 신청 승인/취소", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[S] 지원 승인/취소", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "승인/취소 상태가 반전됨")
     @Secured({"ROLE_SUPER"})
     @PatchMapping("/{applicationId}")
@@ -134,7 +135,7 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 가입 신청서 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Operation(summary = "[A] 지원서 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{applicationId}")
     public ResponseModel deleteApplication(

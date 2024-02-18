@@ -47,7 +47,7 @@ public class ApplicationService {
                 .forEach(admin -> {
                     NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
                             .memberId(admin.getId())
-                            .content(applicationRequestDto.getStudentId() + " " + applicationRequestDto.getName() + "님이 동아리 가입을 신청하였습니다.")
+                            .content(applicationRequestDto.getStudentId() + " " + applicationRequestDto.getName() + "님이 동아리에 지원하였습니다.")
                             .build();
                     notificationService.createNotification(notificationRequestDto);
                 });
@@ -84,7 +84,7 @@ public class ApplicationService {
     public PagedResponseDto<ApplicationResponseDto> getApprovedApplications(Pageable pageable) {
         Page<Application> applications = getApplicationByIsPass(pageable);
         if (applications.isEmpty()) {
-            throw new NotFoundException("승인된 신청자가 없습니다.");
+            throw new NotFoundException("승인된 지원자가 없습니다.");
         } else {
             return new PagedResponseDto<>(applications.map(ApplicationResponseDto::of));
         }
@@ -108,7 +108,7 @@ public class ApplicationService {
 
     private Application getApplicationByIdOrThrow(String applicationId) {
         return applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new NotFoundException("해당 신청자가 없습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 지원자가 없습니다."));
     }
 
     private Application getApplicationById(String applicationId) {

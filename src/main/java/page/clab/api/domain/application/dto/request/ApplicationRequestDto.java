@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +16,8 @@ import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.domain.ApplicationType;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -37,8 +38,7 @@ public class ApplicationRequestDto {
     private String name;
 
     @NotNull(message = "{notNull.application.contact}")
-    @Size(min = 11, max = 11, message = "{size.application.contact}")
-    @Pattern(regexp = "^[0-9]+$", message = "{pattern.application.contact}")
+    @Size(min = 9, max = 13, message = "{size.application.contact}")
     @Schema(description = "연락처", example = "01012345678", required = true)
     private String contact;
 
@@ -72,8 +72,9 @@ public class ApplicationRequestDto {
     @Schema(description = "관심분야", example = "백엔드", required = true)
     private String interests;
 
+    @NotNull(message = "{notNull.application.otherActivities}")
     @Size(max = 1000, message = "{size.application.otherActivities}")
-    @Schema(description = "IT 관련 자격증 및 활동", example = "경기대학교 컴퓨터공학과 학생회")
+    @Schema(description = "IT 관련 자격증 및 활동", example = "경기대학교 컴퓨터공학과 학생회", required = true)
     private String otherActivities;
 
     @URL(message = "{url.application.githubUrl}")
