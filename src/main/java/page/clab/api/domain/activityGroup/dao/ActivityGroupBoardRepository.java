@@ -1,6 +1,5 @@
 package page.clab.api.domain.activityGroup.dao;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,10 +12,10 @@ public interface ActivityGroupBoardRepository extends JpaRepository<ActivityGrou
 
     Page<ActivityGroupBoard> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    List<ActivityGroupBoard> findAllByOrderByCreatedAtAsc();
-
     Page<ActivityGroupBoard> findAllByActivityGroup_IdAndCategoryOrderByCreatedAtDesc(Long activityGroupId, ActivityGroupBoardCategory category, Pageable pageable);
 
     boolean existsById(Long id);
+
+    Long countByActivityGroupIdAndCategory(Long id, ActivityGroupBoardCategory category);
 
 }

@@ -1,11 +1,13 @@
 package page.clab.api.global.common.dto;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,6 +37,16 @@ public class PagedResponseDto<T> {
         this.totalItems = page.getTotalElements();
         this.take = page.getNumberOfElements();
         this.items = page.getContent();
+    }
+
+    public PagedResponseDto(List<T> ts, Pageable pageable, int size) {
+        this.currentPage = pageable.getPageNumber();
+        this.hasPrevious = pageable.getPageNumber() > 0;
+        this.hasNext = ts.size() == size;
+        this.totalPages = (size != 0) ? ts.size() / size : 0;
+        this.totalItems = ts.size();
+        this.take = size;
+        this.items = ts;
     }
 
 }

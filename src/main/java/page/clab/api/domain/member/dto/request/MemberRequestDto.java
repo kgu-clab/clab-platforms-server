@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +15,8 @@ import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.domain.StudentStatus;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -38,7 +39,7 @@ public class MemberRequestDto {
     private String name;
 
     @NotNull(message = "{notNull.member.contact}")
-    @Size(min = 11, max = 11, message = "{size.member.contact}")
+    @Size(min = 9, max = 13, message = "{size.member.contact}")
     @Schema(description = "연락처", example = "01012345678", required = true)
     private String contact;
 
