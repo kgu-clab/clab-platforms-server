@@ -11,8 +11,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +20,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -69,7 +70,7 @@ public class Application {
     @Column(nullable = false)
     private String interests;
 
-    @Column(length = 1000)
+    @Column(nullable = false, length = 1000)
     @Size(max = 1000, message = "{size.application.otherActivities}")
     private String otherActivities;
 
