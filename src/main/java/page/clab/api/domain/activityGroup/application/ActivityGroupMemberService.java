@@ -7,11 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import page.clab.api.domain.activityGroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activityGroup.dao.ApplyFormRepository;
 import page.clab.api.domain.activityGroup.dao.GroupMemberRepository;
 import page.clab.api.domain.activityGroup.dao.GroupScheduleRepository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
@@ -24,6 +26,7 @@ import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberApplierResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupProjectResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
+import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStatusResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotProgressingException;
@@ -58,6 +61,8 @@ public class ActivityGroupMemberService {
 
     private final GroupMemberRepository groupMemberRepository;
 
+    private final ActivityGroupBoardRepository activityGroupBoardRepository;
+
     private final ApplyFormRepository applyFormRepository;
 
     public PagedResponseDto<ActivityGroupResponseDto> getActivityGroups(Pageable pageable) {
@@ -65,9 +70,19 @@ public class ActivityGroupMemberService {
         return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
     }
 
-    public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus, Pageable pageable) {
-        Page<ActivityGroup> activityGroupList = getActivityGroupByStatus(activityGroupStatus, pageable);
-        return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
+    public PagedResponseDto<ActivityGroupStatusResponseDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus, Pageable pageable) {
+        List<ActivityGroup> activityGroupList = getActivityGroupByStatus(activityGroupStatus);
+        List<ActivityGroupStatusResponseDto> activityGroupStatusResponseDtos = activityGroupList.stream()
+                .map(activityGroup -> {
+                    Long participantCount = getGroupMemberByActivityGroupId(activityGroup.getId()).stream()
+                            .filter(groupMember -> groupMember.getStatus().equals(GroupMemberStatus.ACCEPTED))
+                            .count();
+                    Member leader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER).getMember();
+                    Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroup.getId(), ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
+                    return ActivityGroupStatusResponseDto.of(activityGroup, leader, participantCount, weeklyActivityCount);
+                })
+                .toList();
+        return new PagedResponseDto<>(activityGroupStatusResponseDtos, pageable, activityGroupStatusResponseDtos.size());
     }
 
     public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByCategory(ActivityGroupCategory category, Pageable pageable) {
@@ -156,8 +171,8 @@ public class ActivityGroupMemberService {
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 활동에 참여하지 않았습니다."));
     }
 
-    public Page<ActivityGroup> getActivityGroupByStatus(ActivityGroupStatus status, Pageable pageable) {
-        return activityGroupRepository.findAllByStatusOrderByCreatedAtDesc(status, pageable);
+    public List<ActivityGroup> getActivityGroupByStatus(ActivityGroupStatus status) {
+        return activityGroupRepository.findAllByStatusOrderByCreatedAtDesc(status);
     }
 
     private Page<ActivityGroup> getActivityGroupByCategory(ActivityGroupCategory category, Pageable pageable) {
