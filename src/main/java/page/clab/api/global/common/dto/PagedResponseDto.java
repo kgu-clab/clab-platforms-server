@@ -43,7 +43,7 @@ public class PagedResponseDto<T> {
         this.currentPage = pageable.getPageNumber();
         this.hasPrevious = pageable.getPageNumber() > 0;
         this.hasNext = ts.size() == size;
-        this.totalPages = ts.size() / size;
+        this.totalPages = (size != 0) ? ts.size() / size : 0;
         this.totalItems = ts.size();
         this.take = size;
         this.items = ts;
