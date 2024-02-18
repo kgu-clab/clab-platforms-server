@@ -51,7 +51,7 @@ public class Member implements UserDetails {
     private String name;
 
     @Column(nullable = false)
-    @Size(min = 11, max = 11, message = "{size.member.contact}")
+    @Size(min = 9, max = 11, message = "{size.member.contact}")
     private String contact;
 
     @Column(nullable = false)
