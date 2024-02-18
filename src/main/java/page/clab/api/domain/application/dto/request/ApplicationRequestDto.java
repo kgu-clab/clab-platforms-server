@@ -38,8 +38,7 @@ public class ApplicationRequestDto {
     private String name;
 
     @NotNull(message = "{notNull.application.contact}")
-    @Size(min = 11, max = 11, message = "{size.application.contact}")
-    @Pattern(regexp = "^[0-9]+$", message = "{pattern.application.contact}")
+    @Size(min = 9, max = 13, message = "{size.application.contact}")
     @Schema(description = "연락처", example = "01012345678", required = true)
     private String contact;
 
