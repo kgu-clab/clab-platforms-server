@@ -30,7 +30,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 @RestController
 @RequestMapping("/news")
 @RequiredArgsConstructor
-@Tag(name = "News", description = "뉴스 관련 API")
+@Tag(name = "News", description = "뉴스")
 @Slf4j
 public class NewsController {
 

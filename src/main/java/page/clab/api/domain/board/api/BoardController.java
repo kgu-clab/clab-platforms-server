@@ -32,7 +32,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/boards")
 @RequiredArgsConstructor
-@Tag(name = "Board", description = "커뮤니티 게시판 관련 API")
+@Tag(name = "Board", description = "커뮤니티 게시판")
 @Slf4j
 public class BoardController {
 

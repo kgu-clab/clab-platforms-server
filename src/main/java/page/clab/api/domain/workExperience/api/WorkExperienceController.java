@@ -30,7 +30,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/work-experiences")
 @RequiredArgsConstructor
-@Tag(name = "WorkExperience", description = "경력사항 관련 API")
+@Tag(name = "WorkExperience", description = "경력사항")
 @Slf4j
 public class WorkExperienceController {
 

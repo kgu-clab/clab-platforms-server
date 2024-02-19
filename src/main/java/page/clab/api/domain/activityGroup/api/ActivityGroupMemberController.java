@@ -23,11 +23,8 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberApplierResponseDto;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupProjectResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStatusResponseDto;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -35,7 +32,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 @RestController
 @RequestMapping("/activity-group/member")
 @RequiredArgsConstructor
-@Tag(name = "ActivityGroupMember", description = "활동 그룹 멤버 관련 API")
+@Tag(name = "ActivityGroupMember", description = "활동 그룹 멤버")
 @Slf4j
 public class ActivityGroupMemberController {
 
@@ -51,6 +48,17 @@ public class ActivityGroupMemberController {
         PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroups(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroups);
+        return responseModel;
+    }
+
+    @Operation(summary = "활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @GetMapping("/{activityGroupId}")
+    public ResponseModel getActivityGroup(
+            @PathVariable(name = "activityGroupId") Long activityGroupId
+    ) {
+        Object activityGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(activityGroup);
         return responseModel;
     }
 
@@ -80,28 +88,6 @@ public class ActivityGroupMemberController {
         PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroupsByCategory(category, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroups);
-        return responseModel;
-    }
-
-    @Operation(summary = "스터디 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @GetMapping("/study/{activityGroupId}")
-    public ResponseModel getActivityGroupStudy(
-            @PathVariable(name = "activityGroupId") Long activityGroupId
-    ) {
-        ActivityGroupStudyResponseDto activityGroup = activityGroupMemberService.getActivityGroupStudy(activityGroupId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(activityGroup);
-        return responseModel;
-    }
-
-    @Operation(summary = "프로젝트 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @GetMapping("/project/{activityGroupId}")
-    public ResponseModel getActivityGroupProject(
-            @PathVariable(name = "activityGroupId") Long activityGroupId
-    ) {
-        ActivityGroupProjectResponseDto activityGroup = activityGroupMemberService.getActivityGroupProject(activityGroupId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(activityGroup);
         return responseModel;
     }
 
@@ -150,19 +136,6 @@ public class ActivityGroupMemberController {
         Long id = activityGroupMemberService.applyActivityGroup(activityGroupId, formRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 지원 폼에 들어갈 정보 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "지원폼을 작성할 때 로그인한 멤버에 대한 정보입니다.<br>" +
-            "이를 지원 폼에 고정으로 넣어서 변경할 수 없도록 해주세요.")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/apply-form/applier-information")
-    public ResponseModel getApplierInformation(){
-        ActivityGroupMemberApplierResponseDto activityGroupMemberApplierResponseDto
-                = activityGroupMemberService.getApplierInformation();
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(activityGroupMemberApplierResponseDto);
         return responseModel;
     }
 
