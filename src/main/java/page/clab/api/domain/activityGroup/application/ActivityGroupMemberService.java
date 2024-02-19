@@ -13,6 +13,7 @@ import page.clab.api.domain.activityGroup.dao.ApplyFormRepository;
 import page.clab.api.domain.activityGroup.dao.GroupMemberRepository;
 import page.clab.api.domain.activityGroup.dao.GroupScheduleRepository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
@@ -23,6 +24,7 @@ import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activityGroup.domain.GroupSchedule;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
+import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberApplierResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupProjectResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
@@ -42,6 +44,7 @@ import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.exception.NotFoundException;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -71,15 +74,24 @@ public class ActivityGroupMemberService {
 
     public Object getActivityGroup(Long activityGroupId) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        Member member = memberService.getCurrentMember();
         List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
+        GroupMember leader = groupMembers.stream()
+                .filter(groupMember -> groupMember.getRole().equals(ActivityGroupRole.LEADER))
+                .findFirst()
+                .orElse(null);
+        boolean isOwner = Objects.nonNull(leader) && leader.getMember().getId().equals(member.getId());
+
+        List<ActivityGroupBoard> activityGroupBoards = activityGroupBoardRepository.findAllByActivityGroupIdOrderByCreatedAtDesc(activityGroupId);
+        List<ActivityGroupBoardResponseDto> noticeAndWeeklyActivityBoards = activityGroupBoards.stream()
+                .filter(activityGroupBoard -> activityGroupBoard.getCategory().equals(ActivityGroupBoardCategory.NOTICE) || activityGroupBoard.getCategory().equals(ActivityGroupBoardCategory.WEEKLY_ACTIVITY))
+                .map(ActivityGroupBoardResponseDto::of)
+                .toList();
+
         if (activityGroup.getCategory().equals(ActivityGroupCategory.STUDY)) {
-            ActivityGroupStudyResponseDto activityGroupStudyResponseDto = ActivityGroupStudyResponseDto.of(activityGroup);
-            activityGroupStudyResponseDto.setGroupMembers(GroupMemberResponseDto.of(groupMembers));
-            return activityGroupStudyResponseDto;
+            return ActivityGroupStudyResponseDto.of(activityGroup, GroupMemberResponseDto.of(groupMembers), noticeAndWeeklyActivityBoards, isOwner);
         } else if (activityGroup.getCategory().equals(ActivityGroupCategory.PROJECT)) {
-            ActivityGroupProjectResponseDto activityGroupProjectResponseDto = ActivityGroupProjectResponseDto.of(activityGroup);
-            activityGroupProjectResponseDto.setGroupMembers(GroupMemberResponseDto.of(groupMembers));
-            return activityGroupProjectResponseDto;
+            return ActivityGroupProjectResponseDto.of(activityGroup, GroupMemberResponseDto.of(groupMembers), noticeAndWeeklyActivityBoards, isOwner);
         } else {
             throw new InvalidCategoryException("해당 카테고리가 존재하지 않습니다.");
         }
