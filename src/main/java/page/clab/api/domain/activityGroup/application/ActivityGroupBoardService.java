@@ -17,6 +17,7 @@ import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestD
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
+import page.clab.api.domain.activityGroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
@@ -58,6 +59,7 @@ public class ActivityGroupBoardService {
             throw new PermissionDeniedException("활동 그룹 멤버만 게시글을 등록할 수 있습니다.");
         }
         ActivityGroupBoard board = ActivityGroupBoard.of(activityGroupBoardRequestDto);
+        validateParentBoard(activityGroupBoardRequestDto.getCategory(), parentId);
         board.setMember(member);
         board.setActivityGroup(activityGroup);
         if (parentId != null) {
@@ -207,6 +209,36 @@ public class ActivityGroupBoardService {
         }
         boardList.sort((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()));
         return boardList;
+    }
+
+    private void validateParentBoard(ActivityGroupBoardCategory category, Long parentId) throws InvalidParentBoardException {
+        if (category == ActivityGroupBoardCategory.ASSIGNMENT || category == ActivityGroupBoardCategory.SUBMIT || category == ActivityGroupBoardCategory.FEEDBACK) {
+            if (parentId == null) {
+                throw new InvalidParentBoardException(category.getDescription() + "는 부모 게시판을 가져야 합니다.");
+            }
+            ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
+            switch (category) {
+                case ASSIGNMENT:
+                    if (parentBoard.getCategory() != ActivityGroupBoardCategory.WEEKLY_ACTIVITY) {
+                        throw new InvalidParentBoardException("과제의 부모 게시판은 주차별활동 게시판이어야 합니다.");
+                    }
+                    break;
+                case SUBMIT:
+                    if (parentBoard.getCategory() != ActivityGroupBoardCategory.ASSIGNMENT) {
+                        throw new InvalidParentBoardException("제출의 부모 게시판은 과제 게시판이어야 합니다.");
+                    }
+                    break;
+                case FEEDBACK:
+                    if (parentBoard.getCategory() != ActivityGroupBoardCategory.SUBMIT) {
+                        throw new InvalidParentBoardException("피드백의 부모 게시판은 제출 게시판이어야 합니다.");
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } else if (parentId != null) {
+            throw new InvalidParentBoardException("공지사항과 주차별활동의 부모 게시판은 존재할 수 없습니다.");
+        }
     }
 
 }
