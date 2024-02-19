@@ -23,7 +23,6 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberApplierResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStatusResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
@@ -137,19 +136,6 @@ public class ActivityGroupMemberController {
         Long id = activityGroupMemberService.applyActivityGroup(activityGroupId, formRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 지원 폼에 들어갈 정보 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "지원폼을 작성할 때 로그인한 멤버에 대한 정보입니다.<br>" +
-            "이를 지원 폼에 고정으로 넣어서 변경할 수 없도록 해주세요.")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/apply-form/applier-information")
-    public ResponseModel getApplierInformation(){
-        ActivityGroupMemberApplierResponseDto activityGroupMemberApplierResponseDto
-                = activityGroupMemberService.getApplierInformation();
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(activityGroupMemberApplierResponseDto);
         return responseModel;
     }
 
