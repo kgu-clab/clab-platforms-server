@@ -52,6 +52,17 @@ public class ActivityGroupMemberController {
         return responseModel;
     }
 
+    @Operation(summary = "활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @GetMapping("/{activityGroupId}")
+    public ResponseModel getActivityGroup(
+            @PathVariable(name = "activityGroupId") Long activityGroupId
+    ) {
+        Object activityGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(activityGroup);
+        return responseModel;
+    }
+
     @Operation(summary = "[U] 활동 상태별 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/status")
@@ -78,17 +89,6 @@ public class ActivityGroupMemberController {
         PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroupsByCategory(category, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroups);
-        return responseModel;
-    }
-
-    @Operation(summary = "활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @GetMapping("/{activityGroupId}")
-    public ResponseModel getActivityGroup(
-            @PathVariable(name = "activityGroupId") Long activityGroupId
-    ) {
-        Object activityGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(activityGroup);
         return responseModel;
     }
 
