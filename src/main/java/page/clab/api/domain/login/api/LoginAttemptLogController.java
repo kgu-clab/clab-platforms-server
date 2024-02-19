@@ -20,7 +20,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 @RestController
 @RequestMapping("/login-attempt-logs")
 @RequiredArgsConstructor
-@Tag(name = "LoginAttemptLog", description = "로그인 시도 로그 관련 API")
+@Tag(name = "LoginAttemptLog", description = "로그인 시도 로그")
 @Slf4j
 public class LoginAttemptLogController {
 

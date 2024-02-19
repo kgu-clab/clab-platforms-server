@@ -30,7 +30,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/awards")
 @RequiredArgsConstructor
-@Tag(name = "Award", description = "수상 이력 관련 API")
+@Tag(name = "Award", description = "수상 이력")
 @Slf4j
 public class AwardController {
 

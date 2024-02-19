@@ -27,7 +27,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/schedule")
 @RequiredArgsConstructor
-@Tag(name = "Schedule", description = "일정 관련 API")
+@Tag(name = "Schedule", description = "일정")
 public class ScheduleController {
 
     private final ScheduleService scheduleService;

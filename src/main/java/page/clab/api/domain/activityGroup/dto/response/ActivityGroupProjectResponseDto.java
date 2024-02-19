@@ -1,8 +1,6 @@
 package page.clab.api.domain.activityGroup.dto.response;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +10,10 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -44,9 +46,19 @@ public class ActivityGroupProjectResponseDto {
 
     private String githubUrl;
 
+    private List<ActivityGroupBoardResponseDto> activityGroupBoards;
+
+    @JsonProperty("isOwner")
+    private boolean isOwner;
+
     private LocalDateTime createdAt;
 
-    public static ActivityGroupProjectResponseDto of(ActivityGroup activityGroup) {
-        return ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupProjectResponseDto.class);
+    public static ActivityGroupProjectResponseDto of(ActivityGroup activityGroup, List<GroupMemberResponseDto> groupMembers, List<ActivityGroupBoardResponseDto> noticeAndWeeklyActivityBoards, boolean isOwner) {
+        ActivityGroupProjectResponseDto activityGroupProjectResponseDto = ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupProjectResponseDto.class);
+        activityGroupProjectResponseDto.setGroupMembers(groupMembers);
+        activityGroupProjectResponseDto.setActivityGroupBoards(noticeAndWeeklyActivityBoards);
+        activityGroupProjectResponseDto.setOwner(isOwner);
+        return activityGroupProjectResponseDto;
     }
+
 }

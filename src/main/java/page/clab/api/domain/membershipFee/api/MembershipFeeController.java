@@ -30,7 +30,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/membership-fees")
 @RequiredArgsConstructor
-@Tag(name = "MembershipFee", description = "회비 관련 API")
+@Tag(name = "MembershipFee", description = "회비")
 @Slf4j
 public class MembershipFeeController {
 

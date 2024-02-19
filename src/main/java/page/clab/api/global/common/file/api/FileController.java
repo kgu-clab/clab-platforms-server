@@ -27,7 +27,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/files")
 @RequiredArgsConstructor
-@Tag(name = "UploadedFile", description = "파일 업로드 관련 API")
+@Tag(name = "UploadedFile", description = "파일 업로드")
 @Slf4j
 public class FileController {
 

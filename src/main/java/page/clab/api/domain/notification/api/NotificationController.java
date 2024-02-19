@@ -28,7 +28,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/notifications")
 @RequiredArgsConstructor
-@Tag(name = "Notification", description = "알림 관련 API")
+@Tag(name = "Notification", description = "알림")
 @Slf4j
 public class NotificationController {
 

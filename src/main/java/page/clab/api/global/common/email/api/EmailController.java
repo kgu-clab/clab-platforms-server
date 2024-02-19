@@ -20,7 +20,7 @@ import page.clab.api.global.common.email.dto.request.EmailDto;
 @RestController
 @RequestMapping("/emails")
 @RequiredArgsConstructor
-@Tag(name = "Email", description = "이메일 관련 API")
+@Tag(name = "Email", description = "이메일")
 @Slf4j
 public class EmailController {
 

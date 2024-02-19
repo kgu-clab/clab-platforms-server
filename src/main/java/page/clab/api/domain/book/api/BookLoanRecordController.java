@@ -26,7 +26,7 @@ import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 @RestController
 @RequestMapping("/book-loan-records")
 @RequiredArgsConstructor
-@Tag(name = "BookLoanRecord", description = "도서 대출 관련 API")
+@Tag(name = "BookLoanRecord", description = "도서 대출")
 @Slf4j
 public class BookLoanRecordController {
 
