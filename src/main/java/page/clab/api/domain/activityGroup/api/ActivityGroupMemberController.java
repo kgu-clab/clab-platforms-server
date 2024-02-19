@@ -24,10 +24,8 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberApplierResponseDto;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupProjectResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStatusResponseDto;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -83,23 +81,12 @@ public class ActivityGroupMemberController {
         return responseModel;
     }
 
-    @Operation(summary = "스터디 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @GetMapping("/study/{activityGroupId}")
-    public ResponseModel getActivityGroupStudy(
+    @Operation(summary = "활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @GetMapping("/{activityGroupId}")
+    public ResponseModel getActivityGroup(
             @PathVariable(name = "activityGroupId") Long activityGroupId
     ) {
-        ActivityGroupStudyResponseDto activityGroup = activityGroupMemberService.getActivityGroupStudy(activityGroupId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(activityGroup);
-        return responseModel;
-    }
-
-    @Operation(summary = "프로젝트 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @GetMapping("/project/{activityGroupId}")
-    public ResponseModel getActivityGroupProject(
-            @PathVariable(name = "activityGroupId") Long activityGroupId
-    ) {
-        ActivityGroupProjectResponseDto activityGroup = activityGroupMemberService.getActivityGroupProject(activityGroupId);
+        Object activityGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityGroup);
         return responseModel;
