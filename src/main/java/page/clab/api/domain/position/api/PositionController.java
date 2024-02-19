@@ -29,7 +29,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 @RestController
 @RequestMapping("/positions")
 @RequiredArgsConstructor
-@Tag(name = "Position", description = "멤버 직책 관련 API")
+@Tag(name = "Position", description = "멤버 직책")
 @Slf4j
 public class PositionController {
 

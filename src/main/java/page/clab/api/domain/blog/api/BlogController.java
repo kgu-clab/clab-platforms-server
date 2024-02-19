@@ -31,7 +31,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/blogs")
 @RequiredArgsConstructor
-@Tag(name = "Blog", description = "블로그 포스트 관련 API")
+@Tag(name = "Blog", description = "블로그 포스트")
 @Slf4j
 public class BlogController {
 

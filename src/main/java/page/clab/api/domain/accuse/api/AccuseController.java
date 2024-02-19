@@ -29,7 +29,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 @RestController
 @RequestMapping("/accuses")
 @RequiredArgsConstructor
-@Tag(name = "Accuse", description = "신고 관련 API")
+@Tag(name = "Accuse", description = "신고")
 @Slf4j
 public class AccuseController {
 

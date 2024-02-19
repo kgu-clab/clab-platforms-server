@@ -13,6 +13,7 @@ import page.clab.api.domain.activityGroup.dao.ApplyFormRepository;
 import page.clab.api.domain.activityGroup.dao.GroupMemberRepository;
 import page.clab.api.domain.activityGroup.dao.GroupScheduleRepository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
@@ -23,7 +24,7 @@ import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activityGroup.domain.GroupSchedule;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberApplierResponseDto;
+import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupProjectResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStatusResponseDto;
@@ -31,8 +32,7 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyRespons
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotProgressingException;
 import page.clab.api.domain.activityGroup.exception.AlreadyAppliedException;
-import page.clab.api.domain.activityGroup.exception.NotAProjectGroupException;
-import page.clab.api.domain.activityGroup.exception.NotAStudyGroupException;
+import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -43,6 +43,7 @@ import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.exception.NotFoundException;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -70,6 +71,31 @@ public class ActivityGroupMemberService {
         return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
     }
 
+    public Object getActivityGroup(Long activityGroupId) {
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        Member member = memberService.getCurrentMember();
+        List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
+        GroupMember leader = groupMembers.stream()
+                .filter(groupMember -> groupMember.getRole().equals(ActivityGroupRole.LEADER))
+                .findFirst()
+                .orElse(null);
+        boolean isOwner = Objects.nonNull(leader) && leader.getMember().getId().equals(member.getId());
+
+        List<ActivityGroupBoard> activityGroupBoards = activityGroupBoardRepository.findAllByActivityGroupIdOrderByCreatedAtDesc(activityGroupId);
+        List<ActivityGroupBoardResponseDto> noticeAndWeeklyActivityBoards = activityGroupBoards.stream()
+                .filter(activityGroupBoard -> activityGroupBoard.getCategory().equals(ActivityGroupBoardCategory.NOTICE) || activityGroupBoard.getCategory().equals(ActivityGroupBoardCategory.WEEKLY_ACTIVITY))
+                .map(ActivityGroupBoardResponseDto::of)
+                .toList();
+
+        if (activityGroup.getCategory().equals(ActivityGroupCategory.STUDY)) {
+            return ActivityGroupStudyResponseDto.of(activityGroup, GroupMemberResponseDto.of(groupMembers), noticeAndWeeklyActivityBoards, isOwner);
+        } else if (activityGroup.getCategory().equals(ActivityGroupCategory.PROJECT)) {
+            return ActivityGroupProjectResponseDto.of(activityGroup, GroupMemberResponseDto.of(groupMembers), noticeAndWeeklyActivityBoards, isOwner);
+        } else {
+            throw new InvalidCategoryException("해당 카테고리가 존재하지 않습니다.");
+        }
+    }
+
     public PagedResponseDto<ActivityGroupStatusResponseDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus, Pageable pageable) {
         List<ActivityGroup> activityGroupList = getActivityGroupByStatus(activityGroupStatus);
         List<ActivityGroupStatusResponseDto> activityGroupStatusResponseDtos = activityGroupList.stream()
@@ -88,28 +114,6 @@ public class ActivityGroupMemberService {
     public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByCategory(ActivityGroupCategory category, Pageable pageable) {
         Page<ActivityGroup> activityGroupList = getActivityGroupByCategory(category, pageable);
         return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
-    }
-
-    public ActivityGroupStudyResponseDto getActivityGroupStudy(Long activityGroupId) {
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroup.getCategory().equals(ActivityGroupCategory.STUDY)) {
-            throw new NotAStudyGroupException("해당 활동은 스터디 활동이 아닙니다.");
-        }
-        List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
-        ActivityGroupStudyResponseDto activityGroupStudyResponseDto = ActivityGroupStudyResponseDto.of(activityGroup);
-        activityGroupStudyResponseDto.setGroupMembers(GroupMemberResponseDto.of(groupMembers));
-        return activityGroupStudyResponseDto;
-    }
-
-    public ActivityGroupProjectResponseDto getActivityGroupProject(Long activityGroupId) {
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroup.getCategory().equals(ActivityGroupCategory.PROJECT)) {
-            throw new NotAProjectGroupException("해당 활동은 프로젝트 활동이 아닙니다.");
-        }
-        List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
-        ActivityGroupProjectResponseDto activityGroupProjectResponseDto = ActivityGroupProjectResponseDto.of(activityGroup);
-        activityGroupProjectResponseDto.setGroupMembers(GroupMemberResponseDto.of(groupMembers));
-        return activityGroupProjectResponseDto;
     }
 
     public PagedResponseDto<GroupScheduleDto> getGroupSchedules(Long activityGroupId, Pageable pageable) {
@@ -154,11 +158,6 @@ public class ActivityGroupMemberService {
         notificationService.createNotification(notificationRequestDto);
 
         return activityGroup.getId();
-    }
-
-    public ActivityGroupMemberApplierResponseDto getApplierInformation() {
-        Member member = memberService.getCurrentMember();
-        return ActivityGroupMemberApplierResponseDto.of(member);
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {

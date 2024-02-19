@@ -35,7 +35,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
-@Tag(name = "Member", description = "멤버 관련 API")
+@Tag(name = "Member", description = "멤버")
 @Slf4j
 public class MemberController {
 

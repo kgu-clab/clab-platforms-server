@@ -26,7 +26,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 @RestController
 @RequestMapping("/login")
 @RequiredArgsConstructor
-@Tag(name = "Login", description = "로그인 관련 API")
+@Tag(name = "Login", description = "로그인")
 @Slf4j
 public class LoginController {
 
