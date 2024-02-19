@@ -28,7 +28,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/attendance")
 @RequiredArgsConstructor
-@Tag(name = "Attendance", description = "출석체크 관련 API")
+@Tag(name = "Attendance", description = "출석체크")
 @Slf4j
 public class AttendanceController {
 
