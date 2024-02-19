@@ -1,13 +1,12 @@
 package page.clab.api.domain.activityGroup.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +15,9 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -37,16 +39,14 @@ public class ApplyForm {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @NotNull
+    @Column(nullable = false)
     private String applyReason;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public static ApplyForm of(ApplyFormRequestDto requestDto){
-        return ApplyForm.builder()
-                .applyReason(requestDto.getApplyReason())
-                .build();
+    public static ApplyForm of(ApplyFormRequestDto applyFormRequestDto) {
+        return ModelMapperUtil.getModelMapper().map(applyFormRequestDto, ApplyForm.class);
     }
 
 }
