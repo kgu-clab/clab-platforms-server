@@ -1,8 +1,5 @@
 package page.clab.api.domain.activityGroup.dto.response;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +10,10 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 import page.clab.api.global.util.ModelMapperUtil;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,6 +22,8 @@ import page.clab.api.global.util.ModelMapperUtil;
 public class ActivityGroupBoardResponseDto {
 
     private Long id;
+
+    private Long parentId;
 
     private ActivityGroupBoardCategory category;
 
@@ -35,7 +38,9 @@ public class ActivityGroupBoardResponseDto {
     private LocalDateTime createdAt;
 
     public static ActivityGroupBoardResponseDto of(ActivityGroupBoard activityGroupBoard) {
-        return ModelMapperUtil.getModelMapper().map(activityGroupBoard, ActivityGroupBoardResponseDto.class);
+        ActivityGroupBoardResponseDto activityGroupBoardResponseDto = ModelMapperUtil.getModelMapper().map(activityGroupBoard, ActivityGroupBoardResponseDto.class);
+        activityGroupBoardResponseDto.setParentId(activityGroupBoard.getParent() != null ? activityGroupBoard.getParent().getId() : null);
+        return activityGroupBoardResponseDto;
     }
 
 }
