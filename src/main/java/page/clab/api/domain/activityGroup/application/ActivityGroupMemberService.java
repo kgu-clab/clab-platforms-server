@@ -31,8 +31,7 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyRespons
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotProgressingException;
 import page.clab.api.domain.activityGroup.exception.AlreadyAppliedException;
-import page.clab.api.domain.activityGroup.exception.NotAProjectGroupException;
-import page.clab.api.domain.activityGroup.exception.NotAStudyGroupException;
+import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -90,26 +89,20 @@ public class ActivityGroupMemberService {
         return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
     }
 
-    public ActivityGroupStudyResponseDto getActivityGroupStudy(Long activityGroupId) {
+    public Object getActivityGroup(Long activityGroupId) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroup.getCategory().equals(ActivityGroupCategory.STUDY)) {
-            throw new NotAStudyGroupException("해당 활동은 스터디 활동이 아닙니다.");
-        }
         List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
-        ActivityGroupStudyResponseDto activityGroupStudyResponseDto = ActivityGroupStudyResponseDto.of(activityGroup);
-        activityGroupStudyResponseDto.setGroupMembers(GroupMemberResponseDto.of(groupMembers));
-        return activityGroupStudyResponseDto;
-    }
-
-    public ActivityGroupProjectResponseDto getActivityGroupProject(Long activityGroupId) {
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroup.getCategory().equals(ActivityGroupCategory.PROJECT)) {
-            throw new NotAProjectGroupException("해당 활동은 프로젝트 활동이 아닙니다.");
+        if (activityGroup.getCategory().equals(ActivityGroupCategory.STUDY)) {
+            ActivityGroupStudyResponseDto activityGroupStudyResponseDto = ActivityGroupStudyResponseDto.of(activityGroup);
+            activityGroupStudyResponseDto.setGroupMembers(GroupMemberResponseDto.of(groupMembers));
+            return activityGroupStudyResponseDto;
+        } else if (activityGroup.getCategory().equals(ActivityGroupCategory.PROJECT)) {
+            ActivityGroupProjectResponseDto activityGroupProjectResponseDto = ActivityGroupProjectResponseDto.of(activityGroup);
+            activityGroupProjectResponseDto.setGroupMembers(GroupMemberResponseDto.of(groupMembers));
+            return activityGroupProjectResponseDto;
+        } else {
+            throw new InvalidCategoryException("해당 활동이 존재하지 않습니다.");
         }
-        List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
-        ActivityGroupProjectResponseDto activityGroupProjectResponseDto = ActivityGroupProjectResponseDto.of(activityGroup);
-        activityGroupProjectResponseDto.setGroupMembers(GroupMemberResponseDto.of(groupMembers));
-        return activityGroupProjectResponseDto;
     }
 
     public PagedResponseDto<GroupScheduleDto> getGroupSchedules(Long activityGroupId, Pageable pageable) {

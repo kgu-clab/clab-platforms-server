@@ -28,8 +28,7 @@ import page.clab.api.domain.activityGroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.activityGroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activityGroup.exception.DuplicateAttendanceException;
 import page.clab.api.domain.activityGroup.exception.DuplicateReportException;
-import page.clab.api.domain.activityGroup.exception.NotAProjectGroupException;
-import page.clab.api.domain.activityGroup.exception.NotAStudyGroupException;
+import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
 import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
@@ -75,6 +74,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler({
             ActivityGroupNotFinishedException.class,
             InvalidInformationException.class,
+            InvalidCategoryException.class,
             OverdueException.class,
             StringIndexOutOfBoundsException.class,
             MissingServletRequestParameterException.class,
@@ -82,8 +82,6 @@ public class ControllerExceptionHandler {
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class,
             IllegalAccessException.class,
-            NotAStudyGroupException.class,
-            NotAProjectGroupException.class,
             ActivityGroupNotProgressingException.class,
             CloudStorageNotEnoughException.class,
             NotSubmitCategoryBoardException.class
