@@ -4,17 +4,19 @@ import com.slack.api.Slack;
 import com.slack.api.webhook.Payload;
 import com.slack.api.webhook.WebhookResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.member.domain.Role;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @Slf4j
@@ -40,18 +42,6 @@ public class SlackService {
         return sendSlackMessage(message);
     }
 
-    public boolean sendSecurityAlertNotification(HttpServletRequest request, SecurityAlertType alertType) {
-        String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        String requestUrl = request.getRequestURI();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
-
-        String message = String.format(":red_circle: *%s [%s]- %s*\n>*User*: %s\n>*Endpoint*: %s\n>*Details*: `%s`",
-                alertType.getTitle(), clientIpAddress, serverTime, username, requestUrl, alertType.getDefaultMessage());
-        return sendSlackMessage(message);
-    }
-
     public boolean sendSecurityAlertNotification(HttpServletRequest request, SecurityAlertType alertType, String additionalMessage) {
         String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
@@ -59,7 +49,7 @@ public class SlackService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
 
-        String message = String.format(":red_circle: *%s [%s]- %s*\n>*User*: %s\n>*Endpoint*: %s\n>*Details*: `%s`\n>```%s```",
+        String message = String.format(":red_circle: *%s [%s] - %s*\n>*User*: %s\n>*Endpoint*: %s\n>*Details*: `%s`\n>```%s```",
                 alertType.getTitle(), clientIpAddress, serverTime, username, requestUrl, alertType.getDefaultMessage(), additionalMessage);
         return sendSlackMessage(message);
     }
@@ -72,6 +62,15 @@ public class SlackService {
                 role.getDescription(), clientIpAddress, serverTime, username);
         return sendSlackMessage(message);
     }
+
+    public boolean sendApplicationNotification(HttpServletRequest request, ApplicationRequestDto applicationRequestDto) {
+        String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        String message = String.format(":sparkles: *New Application [%s] - %s*\n>*Type*: %s\n>*Student*: %s %s\n>*Grade*: %s\n>*Interests*: %s\n>*Github*: %s",
+                clientIpAddress, serverTime, applicationRequestDto.getApplicationType().getDescription(), applicationRequestDto.getStudentId(), applicationRequestDto.getName(), applicationRequestDto.getGrade(), applicationRequestDto.getInterests(), applicationRequestDto.getGithubUrl());
+        return sendSlackMessage(message);
+    }
+
 
     private boolean sendSlackMessage(String message) {
         Payload payload = Payload.builder().text(message).build();
