@@ -31,7 +31,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/comments")
 @RequiredArgsConstructor
-@Tag(name = "Comment", description = "댓글 관련 API")
+@Tag(name = "Comment", description = "댓글")
 @Slf4j
 public class CommentController {
 

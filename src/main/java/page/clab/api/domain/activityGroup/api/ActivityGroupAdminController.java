@@ -36,7 +36,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/activity-group/admin")
 @RequiredArgsConstructor
-@Tag(name = "ActivityGroupAdmin", description = "활동 그룹 관리 관련 API")
+@Tag(name = "ActivityGroupAdmin", description = "활동 그룹 관리")
 @Slf4j
 public class ActivityGroupAdminController {
 

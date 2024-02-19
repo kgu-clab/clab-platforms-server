@@ -22,7 +22,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 @RestController
 @RequestMapping("/blacklists")
 @RequiredArgsConstructor
-@Tag(name = "Blacklist", description = "블랙리스트 관련 API")
+@Tag(name = "Blacklist", description = "블랙리스트")
 @Slf4j
 public class BlacklistIpController {
 

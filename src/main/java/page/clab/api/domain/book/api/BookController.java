@@ -29,7 +29,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 @RestController
 @RequestMapping("/books")
 @RequiredArgsConstructor
-@Tag(name = "Book", description = "도서 관련 API")
+@Tag(name = "Book", description = "도서")
 @Slf4j
 public class BookController {
 

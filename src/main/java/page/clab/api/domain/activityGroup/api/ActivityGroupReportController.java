@@ -28,7 +28,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/activity-group/report")
 @RequiredArgsConstructor
-@Tag(name = "ActivityGroupReport", description = "활동 그룹 보고서 관련 API")
+@Tag(name = "ActivityGroupReport", description = "활동 그룹 보고서")
 @Slf4j
 public class ActivityGroupReportController {
 

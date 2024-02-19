@@ -32,7 +32,7 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/applications")
 @RequiredArgsConstructor
-@Tag(name = "Application", description = "동아리 지원 관련 API")
+@Tag(name = "Application", description = "동아리 지원")
 @Slf4j
 public class ApplicationController {
 
