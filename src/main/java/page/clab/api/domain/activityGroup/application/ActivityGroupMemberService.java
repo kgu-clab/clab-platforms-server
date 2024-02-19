@@ -25,7 +25,6 @@ import page.clab.api.domain.activityGroup.domain.GroupSchedule;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberApplierResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupProjectResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStatusResponseDto;
@@ -159,11 +158,6 @@ public class ActivityGroupMemberService {
         notificationService.createNotification(notificationRequestDto);
 
         return activityGroup.getId();
-    }
-
-    public ActivityGroupMemberApplierResponseDto getApplierInformation() {
-        Member member = memberService.getCurrentMember();
-        return ActivityGroupMemberApplierResponseDto.of(member);
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
