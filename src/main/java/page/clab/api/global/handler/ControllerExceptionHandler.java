@@ -41,6 +41,7 @@ import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
 import page.clab.api.domain.review.exception.AlreadyReviewedException;
 import page.clab.api.domain.sharedAccount.exception.SharedAccountInUseException;
 import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
+import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
 import page.clab.api.global.auth.exception.TokenValidateException;
 import page.clab.api.global.auth.exception.UnAuthorizeException;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -92,6 +93,7 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler({
+            AuthenticationInfoNotFoundException.class,
             UnAuthorizeException.class,
             AccessDeniedException.class,
             LoginFaliedException.class,
