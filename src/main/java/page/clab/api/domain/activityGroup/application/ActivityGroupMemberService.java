@@ -69,6 +69,22 @@ public class ActivityGroupMemberService {
         return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
     }
 
+    public Object getActivityGroup(Long activityGroupId) {
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
+        if (activityGroup.getCategory().equals(ActivityGroupCategory.STUDY)) {
+            ActivityGroupStudyResponseDto activityGroupStudyResponseDto = ActivityGroupStudyResponseDto.of(activityGroup);
+            activityGroupStudyResponseDto.setGroupMembers(GroupMemberResponseDto.of(groupMembers));
+            return activityGroupStudyResponseDto;
+        } else if (activityGroup.getCategory().equals(ActivityGroupCategory.PROJECT)) {
+            ActivityGroupProjectResponseDto activityGroupProjectResponseDto = ActivityGroupProjectResponseDto.of(activityGroup);
+            activityGroupProjectResponseDto.setGroupMembers(GroupMemberResponseDto.of(groupMembers));
+            return activityGroupProjectResponseDto;
+        } else {
+            throw new InvalidCategoryException("해당 카테고리가 존재하지 않습니다.");
+        }
+    }
+
     public PagedResponseDto<ActivityGroupStatusResponseDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus, Pageable pageable) {
         List<ActivityGroup> activityGroupList = getActivityGroupByStatus(activityGroupStatus);
         List<ActivityGroupStatusResponseDto> activityGroupStatusResponseDtos = activityGroupList.stream()
@@ -87,22 +103,6 @@ public class ActivityGroupMemberService {
     public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByCategory(ActivityGroupCategory category, Pageable pageable) {
         Page<ActivityGroup> activityGroupList = getActivityGroupByCategory(category, pageable);
         return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
-    }
-
-    public Object getActivityGroup(Long activityGroupId) {
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
-        if (activityGroup.getCategory().equals(ActivityGroupCategory.STUDY)) {
-            ActivityGroupStudyResponseDto activityGroupStudyResponseDto = ActivityGroupStudyResponseDto.of(activityGroup);
-            activityGroupStudyResponseDto.setGroupMembers(GroupMemberResponseDto.of(groupMembers));
-            return activityGroupStudyResponseDto;
-        } else if (activityGroup.getCategory().equals(ActivityGroupCategory.PROJECT)) {
-            ActivityGroupProjectResponseDto activityGroupProjectResponseDto = ActivityGroupProjectResponseDto.of(activityGroup);
-            activityGroupProjectResponseDto.setGroupMembers(GroupMemberResponseDto.of(groupMembers));
-            return activityGroupProjectResponseDto;
-        } else {
-            throw new InvalidCategoryException("해당 활동이 존재하지 않습니다.");
-        }
     }
 
     public PagedResponseDto<GroupScheduleDto> getGroupSchedules(Long activityGroupId, Pageable pageable) {
