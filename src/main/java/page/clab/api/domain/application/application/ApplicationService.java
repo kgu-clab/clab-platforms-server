@@ -1,10 +1,8 @@
 package page.clab.api.domain.application.application;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,7 +19,12 @@ import page.clab.api.domain.member.domain.Role;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.exception.NotFoundException;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +35,12 @@ public class ApplicationService {
 
     private final NotificationService notificationService;
 
+    private final SlackService slackService;
+
     private final ApplicationRepository applicationRepository;
 
     @Transactional
-    public String createApplication(@Valid ApplicationRequestDto applicationRequestDto) {
+    public String createApplication(HttpServletRequest request, @Valid ApplicationRequestDto applicationRequestDto) {
         Application application = Application.of(applicationRequestDto);
         application.setContact(memberService.removeHyphensFromContact(application.getContact()));
         application.setIsPass(false);
@@ -51,6 +56,7 @@ public class ApplicationService {
                             .build();
                     notificationService.createNotification(notificationRequestDto);
                 });
+        slackService.sendApplicationNotification(request, applicationRequestDto);
         return id;
     }
 
