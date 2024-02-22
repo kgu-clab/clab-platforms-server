@@ -82,8 +82,9 @@ public class ActivityGroupMemberService {
         boolean isOwner = Objects.nonNull(leader) && leader.getMember().getId().equals(member.getId());
 
         List<ActivityGroupBoard> activityGroupBoards = activityGroupBoardRepository.findAllByActivityGroupIdOrderByCreatedAtDesc(activityGroupId);
+        List<ActivityGroupBoardCategory> categories = List.of(ActivityGroupBoardCategory.NOTICE, ActivityGroupBoardCategory.WEEKLY_ACTIVITY, ActivityGroupBoardCategory.ASSIGNMENT);
         List<ActivityGroupBoardResponseDto> noticeAndWeeklyActivityBoards = activityGroupBoards.stream()
-                .filter(activityGroupBoard -> activityGroupBoard.getCategory().equals(ActivityGroupBoardCategory.NOTICE) || activityGroupBoard.getCategory().equals(ActivityGroupBoardCategory.WEEKLY_ACTIVITY))
+                .filter(activityGroupBoard -> categories.contains(activityGroupBoard.getCategory()))
                 .map(ActivityGroupBoardResponseDto::of)
                 .toList();
 
