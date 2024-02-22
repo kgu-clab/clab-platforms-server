@@ -3,14 +3,15 @@ package page.clab.api.domain.news.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.news.domain.News;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -40,7 +41,7 @@ public class NewsRequestDto {
     @Schema(description = "출처", example = "경기대학교 공식 블로그", required = true)
     private String source;
 
-    @Schema(description = "첨부파일 경로 리스트", example = "/resources/files/news/339609571877700_4305d83e-090a-480b-a470-b5e96164d113.png")
+    @Schema(description = "첨부파일 경로 리스트", example = "[\"/resources/files/news/339609571877700_4305d83e-090a-480b-a470-b5e96164d113.png\", \"/resources/files/news/4305d83e-090a-480b-a470-b5e96164d114.png\"]")
     private List<String> fileUrlList;
 
     @NotNull(message = "{notNull.news.date}")

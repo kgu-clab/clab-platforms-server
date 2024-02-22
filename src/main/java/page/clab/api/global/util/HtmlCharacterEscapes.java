@@ -9,6 +9,8 @@ public class HtmlCharacterEscapes extends CharacterEscapes {
 
     private final int[] asciiEscapes;
 
+    private static final char ZERO_WIDTH_JOINER = 0x200D;
+
     public HtmlCharacterEscapes() {
         asciiEscapes = CharacterEscapes.standardAsciiEscapesForJSON();
         asciiEscapes['<'] = CharacterEscapes.ESCAPE_CUSTOM;
@@ -25,9 +27,16 @@ public class HtmlCharacterEscapes extends CharacterEscapes {
         return asciiEscapes;
     }
 
-
     @Override
     public SerializableString getEscapeSequence(int ch) {
-        return new SerializedString(StringEscapeUtils.escapeHtml4(Character.toString((char) ch)));
+        char charAt = (char)ch;
+        if (Character.isHighSurrogate(charAt) || Character.isLowSurrogate(charAt) || charAt == ZERO_WIDTH_JOINER) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("\\u");
+            sb.append(String.format("%04x", ch));
+            return new SerializedString(sb.toString());
+        } else {
+            return new SerializedString(StringEscapeUtils.escapeHtml4(Character.toString(charAt)));
+        }
     }
 }

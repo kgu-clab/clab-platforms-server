@@ -29,6 +29,7 @@ import page.clab.api.domain.activityGroup.exception.DuplicateAbsentExcuseExcepti
 import page.clab.api.domain.activityGroup.exception.DuplicateAttendanceException;
 import page.clab.api.domain.activityGroup.exception.DuplicateReportException;
 import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
+import page.clab.api.domain.activityGroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
@@ -41,6 +42,7 @@ import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
 import page.clab.api.domain.review.exception.AlreadyReviewedException;
 import page.clab.api.domain.sharedAccount.exception.SharedAccountInUseException;
 import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
+import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
 import page.clab.api.global.auth.exception.TokenValidateException;
 import page.clab.api.global.auth.exception.UnAuthorizeException;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -74,6 +76,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler({
             ActivityGroupNotFinishedException.class,
             InvalidInformationException.class,
+            InvalidParentBoardException.class,
             InvalidCategoryException.class,
             OverdueException.class,
             StringIndexOutOfBoundsException.class,
@@ -92,6 +95,7 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler({
+            AuthenticationInfoNotFoundException.class,
             UnAuthorizeException.class,
             AccessDeniedException.class,
             LoginFaliedException.class,
