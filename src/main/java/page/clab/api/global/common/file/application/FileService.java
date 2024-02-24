@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import jakarta.mail.Multipart;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -70,6 +72,24 @@ public class FileService {
         return url;
     }
 
+    public List<UploadedFileResponseDto> saveAssignmentFiles(List<MultipartFile> multipartFiles, Long activityGroupId, Long activityGroupBoardId, long storagePeriod) throws PermissionDeniedException, IOException {
+        Member member = memberService.getCurrentMember();
+        String path = "assignment" + File.separator + activityGroupId + File.separator+ activityGroupBoardId + File.separator + member.getId();
+        return saveFiles(multipartFiles, path, storagePeriod);
+    }
+
+    public UploadedFileResponseDto saveProfileFile(MultipartFile multipartFile, long storagePeriod) throws PermissionDeniedException, IOException {
+        Member member = memberService.getCurrentMember();
+        String path = "profiles" + File.separator + member.getId();
+        return saveFile(multipartFile, path, storagePeriod);
+    }
+
+    public List<UploadedFileResponseDto> saveCloudFiles(List<MultipartFile> multipartFiles, long storagePeriod) throws PermissionDeniedException, IOException {
+        Member member = memberService.getCurrentMember();
+        String path = "members" + File.separator + member.getId();
+        return saveFiles(multipartFiles, path, storagePeriod);
+    }
+
     public List<UploadedFileResponseDto> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws IOException, PermissionDeniedException {
         List<UploadedFileResponseDto> uploadedFileResponseDtos = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
@@ -94,15 +114,15 @@ public class FileService {
             }
         }
 
-        UploadedFile existingUploadedFile = getUploadedFileByCategoryAndOriginalName(path, multipartFile.getOriginalFilename());
+        UploadedFile existingUploadedFile = getUniqueUploadedFileByCategoryAndOriginalName(path, multipartFile.getOriginalFilename());
         if (existingUploadedFile != null) {
-            uploadFileRepository.delete(existingUploadedFile);
+            deleteFileBySavedPath(existingUploadedFile.getSavedPath());
         }
 
         if (path.startsWith("profiles")) {
-            UploadedFile profileFile = getUploadedFileByCategory(path);
+            UploadedFile profileFile = getUniqueUploadedFileByCategory(path);
             if (profileFile != null) {
-                uploadFileRepository.delete(profileFile);
+                deleteFileBySavedPath(profileFile.getSavedPath());
             }
         }
 
@@ -142,13 +162,6 @@ public class FileService {
                 }
                 return true;
             }
-            case "members", "profiles": {
-                String memberId = path.split(Pattern.quote(File.separator))[1];
-                if (!memberService.getCurrentMember().getId().equals(memberId)) {
-                    throw new PermissionDeniedException("로그인한 멤버 id와 파일 업로드 pathVariable에 입력된 memberId가 다릅니다.");
-                }
-                return memberService.isMemberExist(memberId);
-            }
         }
         return true;
     }
@@ -169,7 +182,7 @@ public class FileService {
             log.info("파일 삭제 오류 : {}", filePath);
         }
         String deletedFileUrl = uploadedFile.getUrl();
-        uploadFileRepository.deleteById(uploadedFile.getId());
+        deleteFileBySavedPath(filePath);
         return deletedFileUrl;
     }
 
@@ -190,12 +203,19 @@ public class FileService {
                 .orElseThrow(() -> new NotFoundException("파일을 찾을 수 없습니다."));
     }
 
-    public UploadedFile getUploadedFileByCategoryAndOriginalName(String category, String originalName) {
-        return uploadFileRepository.findByCategoryAndOriginalFileName(category, originalName);
+    public UploadedFile getUniqueUploadedFileByCategoryAndOriginalName(String category, String originalName) {
+        return uploadFileRepository.findTopByCategoryAndOriginalFileNameOrderByCreatedAtDesc(category, originalName);
     }
 
-    public UploadedFile getUploadedFileByCategory(String category) {
-        return uploadFileRepository.findByCategory(category);
+    public UploadedFile getUniqueUploadedFileByCategory(String category) {
+        return uploadFileRepository.findTopByCategoryOrderByCreatedAtDesc(category);
+    }
+
+    public void deleteFileBySavedPath(String savedPath) {
+        File existingFile = new File(savedPath);
+        if (existingFile != null) {
+            existingFile.delete();
+        }
     }
 
     public String getOriginalFileNameByUrl(String url) {
