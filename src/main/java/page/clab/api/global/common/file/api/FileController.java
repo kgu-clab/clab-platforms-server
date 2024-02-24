@@ -115,16 +115,14 @@ public class FileController {
 
     @Operation(summary = "[U] 활동 그룹 과제 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping(value = "/assignment/{activityGroupId}/{activityGroupBoardId}/{memberId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/assignment/{activityGroupId}/{activityGroupBoardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel assignmentUpload(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
             @PathVariable(name = "activityGroupBoardId") Long activityGroupBoardId,
-            @PathVariable(name = "memberId") String memberId,
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws PermissionDeniedException, IOException, NotFoundException {
-        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles,
-                "assignment" + File.separator + activityGroupId + File.separator+ activityGroupBoardId + File.separator + memberId, storagePeriod);
+        List<UploadedFileResponseDto> responseDtos = fileService.saveAssignmentFiles(multipartFiles, activityGroupId, activityGroupBoardId, storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(responseDtos);
         return responseModel;
