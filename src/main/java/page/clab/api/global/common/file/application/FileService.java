@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import jakarta.mail.Multipart;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,6 +70,12 @@ public class FileService {
         uploadedFile.setUrl(url);
         uploadFileRepository.save(uploadedFile);
         return url;
+    }
+
+    public List<UploadedFileResponseDto> saveAssignmentFiles(List<MultipartFile> multipartFiles, Long activityGroupId, Long activityGroupBoardId, long storagePeriod) throws PermissionDeniedException, IOException {
+        Member member = memberService.getCurrentMember();
+        String path = "assignment" + File.separator + activityGroupId + File.separator+ activityGroupBoardId + File.separator + member.getId();
+        return saveFiles(multipartFiles, path, storagePeriod);
     }
 
     public List<UploadedFileResponseDto> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws IOException, PermissionDeniedException {
