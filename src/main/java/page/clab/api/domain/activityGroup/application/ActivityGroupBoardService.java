@@ -29,6 +29,7 @@ import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -173,6 +174,7 @@ public class ActivityGroupBoardService {
             throw new PermissionDeniedException("활동 그룹 게시판 작성자 또는 운영진만 수정할 수 있습니다.");
         }
         board.update(activityGroupBoardUpdateRequestDto, fileService);
+        board.setUpdateTime(LocalDateTime.now());
         return activityGroupBoardRepository.save(board).getId();
     }
 

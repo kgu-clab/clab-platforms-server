@@ -67,7 +67,6 @@ public class AutoDeleteService {
         LocalDateTime fileCreatedAt = uploadedFile.getCreatedAt();
         long storagePeriod = uploadedFile.getStoragePeriod();
         if (fileCreatedAt.plusDays(storagePeriod).isBefore(currentDate)) {
-            uploadFileRepository.deleteById(uploadedFile.getId());
             boolean deleted = file.delete();
             if (!deleted) {
                 log.info("File Delete Error : " + file.getAbsolutePath());
