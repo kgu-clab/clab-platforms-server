@@ -104,13 +104,13 @@ public class FileService {
 
         UploadedFile existingUploadedFile = getUploadedFileByCategoryAndOriginalName(path, multipartFile.getOriginalFilename());
         if (existingUploadedFile != null) {
-            uploadFileRepository.delete(existingUploadedFile);
+            deleteFileBySavedPath(existingUploadedFile.getSavedPath());
         }
 
         if (path.startsWith("profiles")) {
             UploadedFile profileFile = getUploadedFileByCategory(path);
             if (profileFile != null) {
-                uploadFileRepository.delete(profileFile);
+                deleteFileBySavedPath(profileFile.getSavedPath());
             }
         }
 
@@ -177,7 +177,7 @@ public class FileService {
             log.info("파일 삭제 오류 : {}", filePath);
         }
         String deletedFileUrl = uploadedFile.getUrl();
-        uploadFileRepository.deleteById(uploadedFile.getId());
+        deleteFileBySavedPath(filePath);
         return deletedFileUrl;
     }
 
@@ -204,6 +204,13 @@ public class FileService {
 
     public UploadedFile getUploadedFileByCategory(String category) {
         return uploadFileRepository.findByCategory(category);
+    }
+
+    public void deleteFileBySavedPath(String savedPath) {
+        File existingFile = new File(savedPath);
+        if (existingFile != null) {
+            existingFile.delete();
+        }
     }
 
     public String getOriginalFileNameByUrl(String url) {
