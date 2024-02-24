@@ -78,6 +78,18 @@ public class FileService {
         return saveFiles(multipartFiles, path, storagePeriod);
     }
 
+    public UploadedFileResponseDto saveProfileFile(MultipartFile multipartFile, long storagePeriod) throws PermissionDeniedException, IOException {
+        Member member = memberService.getCurrentMember();
+        String path = "profiles" + File.separator + member.getId();
+        return saveFile(multipartFile, path, storagePeriod);
+    }
+
+    public List<UploadedFileResponseDto> saveCloudFiles(List<MultipartFile> multipartFiles, long storagePeriod) throws PermissionDeniedException, IOException {
+        Member member = memberService.getCurrentMember();
+        String path = "members" + File.separator + member.getId();
+        return saveFiles(multipartFiles, path, storagePeriod);
+    }
+
     public List<UploadedFileResponseDto> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws IOException, PermissionDeniedException {
         List<UploadedFileResponseDto> uploadedFileResponseDtos = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
@@ -102,13 +114,13 @@ public class FileService {
             }
         }
 
-        UploadedFile existingUploadedFile = getUploadedFileByCategoryAndOriginalName(path, multipartFile.getOriginalFilename());
+        UploadedFile existingUploadedFile = getUniqueUploadedFileByCategoryAndOriginalName(path, multipartFile.getOriginalFilename());
         if (existingUploadedFile != null) {
             deleteFileBySavedPath(existingUploadedFile.getSavedPath());
         }
 
         if (path.startsWith("profiles")) {
-            UploadedFile profileFile = getUploadedFileByCategory(path);
+            UploadedFile profileFile = getUniqueUploadedFileByCategory(path);
             if (profileFile != null) {
                 deleteFileBySavedPath(profileFile.getSavedPath());
             }
@@ -149,13 +161,6 @@ public class FileService {
                     throw new NotFoundException("해당 활동그룹 게시판이 존재하지 않습니다.");
                 }
                 return true;
-            }
-            case "members", "profiles": {
-                String memberId = path.split(Pattern.quote(File.separator))[1];
-                if (!memberService.getCurrentMember().getId().equals(memberId)) {
-                    throw new PermissionDeniedException("로그인한 멤버 id와 파일 업로드 pathVariable에 입력된 memberId가 다릅니다.");
-                }
-                return memberService.isMemberExist(memberId);
             }
         }
         return true;
@@ -198,12 +203,12 @@ public class FileService {
                 .orElseThrow(() -> new NotFoundException("파일을 찾을 수 없습니다."));
     }
 
-    public UploadedFile getUploadedFileByCategoryAndOriginalName(String category, String originalName) {
-        return uploadFileRepository.findByCategoryAndOriginalFileName(category, originalName);
+    public UploadedFile getUniqueUploadedFileByCategoryAndOriginalName(String category, String originalName) {
+        return uploadFileRepository.findTopByCategoryAndOriginalFileNameOrderByCreatedAtDesc(category, originalName);
     }
 
-    public UploadedFile getUploadedFileByCategory(String category) {
-        return uploadFileRepository.findByCategory(category);
+    public UploadedFile getUniqueUploadedFileByCategory(String category) {
+        return uploadFileRepository.findTopByCategoryOrderByCreatedAtDesc(category);
     }
 
     public void deleteFileBySavedPath(String savedPath) {
