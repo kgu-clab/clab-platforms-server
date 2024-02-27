@@ -30,6 +30,8 @@ public class AccountLockInfoService {
 
     private final SlackService slackService;
 
+    private final RedisTokenService redisTokenService;
+
     private final AccountLockInfoRepository accountLockInfoRepository;
 
     @Value("${security.login-attempt.max-failures}")
@@ -56,6 +58,7 @@ public class AccountLockInfoService {
         }
         accountLockInfo.setIsLock(true);
         accountLockInfo.setLockUntil(LocalDateTime.of(9999, 12, 31, 23, 59));
+        redisTokenService.deleteRedisTokenByMemberId(memberId);
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_BANNED, "ID: " + member.getId() + ", Name: " + member.getName());
         return accountLockInfoRepository.save(accountLockInfo).getId();
     }
