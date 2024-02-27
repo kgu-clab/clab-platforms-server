@@ -135,7 +135,7 @@ public class AccountLockInfoService {
 
     public AccountLockInfo getAccountLockInfoByMemberIdOrThrow(String memberId) {
         return accountLockInfoRepository.findByMember_Id(memberId)
-                .orElseThrow(() -> new NotFoundException("해당 유저가 없습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
     }
 
     public AccountLockInfo getAccountLockInfoByMemberId(String memberId) {
