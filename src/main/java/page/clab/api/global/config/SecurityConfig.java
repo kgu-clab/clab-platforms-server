@@ -31,7 +31,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.domain.login.application.RedisTokenService;
 import page.clab.api.global.auth.application.CustomUserDetailsService;
-import page.clab.api.global.auth.application.RedisIpAttemptService;
+import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
 import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
@@ -53,7 +53,7 @@ public class SecurityConfig {
 
     private final RedisTokenService redisTokenService;
 
-    private final RedisIpAttemptService redisIpAttemptService;
+    private final RedisIpAccessMonitorService redisIpAccessMonitorService;
 
     private final BlacklistIpRepository blacklistIpRepository;
 
@@ -147,15 +147,15 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager, redisIpAttemptService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAttemptService, slackService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAccessMonitorService, slackService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer
                                 .authenticationEntryPoint((request, response, authException) -> {
                                     String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
                                     slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS, "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.");
                                     apiLogging(request, response, clientIpAddress, "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.");
-                                    redisIpAttemptService.registerLoginAttempt(clientIpAddress);
+                                    redisIpAccessMonitorService.registerLoginAttempt(clientIpAddress);
                                     ResponseModel responseModel = ResponseModel.builder()
                                             .success(false)
                                             .build();
@@ -167,7 +167,7 @@ public class SecurityConfig {
                                     String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
                                     slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS, "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.");
                                     apiLogging(request, response, clientIpAddress, "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.");
-                                    redisIpAttemptService.registerLoginAttempt(clientIpAddress);
+                                    redisIpAccessMonitorService.registerLoginAttempt(clientIpAddress);
                                     ResponseModel responseModel = ResponseModel.builder()
                                             .success(false)
                                             .build();

@@ -14,14 +14,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
-import page.clab.api.global.auth.application.RedisIpAttemptService;
+import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.util.HttpReqResUtil;
 
 @Slf4j
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
-    private final RedisIpAttemptService redisIpAttemptService;
+    private final RedisIpAccessMonitorService redisIpAccessMonitorService;
 
     private final BlacklistIpRepository blacklistIpRepository;
 
@@ -35,9 +35,9 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
             "/swagger-ui/.*"
     };
 
-    public CustomBasicAuthenticationFilter(AuthenticationManager authenticationManager, RedisIpAttemptService redisIpAttemptService, BlacklistIpRepository blacklistIpRepository) {
+    public CustomBasicAuthenticationFilter(AuthenticationManager authenticationManager, RedisIpAccessMonitorService redisIpAccessMonitorService, BlacklistIpRepository blacklistIpRepository) {
         super(authenticationManager);
-        this.redisIpAttemptService = redisIpAttemptService;
+        this.redisIpAccessMonitorService = redisIpAccessMonitorService;
         this.blacklistIpRepository = blacklistIpRepository;
     }
 
@@ -50,7 +50,7 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
             return;
         }
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAttemptService.isBlocked(clientIpAddress)) {
+        if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAccessMonitorService.isBlocked(clientIpAddress)) {
             log.info("[{}] : 서비스 이용이 제한된 IP입니다.", clientIpAddress);
             ResponseModel responseModel = ResponseModel.builder()
                     .success(false)
