@@ -23,7 +23,6 @@ import page.clab.api.global.util.HtmlCharacterEscapes;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
 
 @Configuration
 @RequiredArgsConstructor
@@ -41,13 +40,13 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${resource.file.url}")
     private String fileURL;
 
-    @Value("${cors.path-pattern}")
+    @Value("${security.cors.path-pattern}")
     private String corsPathPattern;
 
-    @Value("${cors.allowed-origins}")
+    @Value("${security.cors.allowed-origins}")
     private String[] corsAllowedOrigins;
 
-    @Value("${cors.allowed-methods}")
+    @Value("${security.cors.allowed-methods}")
     private String[] corsAllowedMethods;
 
     @Override

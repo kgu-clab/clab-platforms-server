@@ -1,11 +1,12 @@
 package page.clab.api.global.auth.application;
 
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import page.clab.api.global.auth.dao.RedisIpAttemptRepository;
 import page.clab.api.global.auth.domain.RedisIpAttempt;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -13,7 +14,7 @@ public class RedisIpAttemptService {
 
     private final RedisIpAttemptRepository redisIpAttemptRepository;
 
-    @Value("${ip-attempt.max-attempts}")
+    @Value("${security.ip-attempt.max-attempts}")
     private int MAX_ATTEMPTS;
 
     public void registerLoginAttempt(String ipAddress) {

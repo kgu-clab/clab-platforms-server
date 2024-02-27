@@ -57,28 +57,28 @@ public class SecurityConfig {
 
     private final SlackService slackService;
 
-    @Value("${springdoc.account.id}")
+    @Value("${security.account.swagger.username}")
     private String username;
 
-    @Value("${springdoc.account.password}")
+    @Value("${security.account.swagger.password}")
     private String password;
 
-    @Value("${springdoc.account.role}")
+    @Value("${security.account.swagger.role}")
     private String role;
 
-    @Value("${cors.allowed-origins}")
+    @Value("${security.cors.allowed-origins}")
     private String[] corsAllowedOrigins;
 
-    @Value("${cors.allowed-methods}")
+    @Value("${security.cors.allowed-methods}")
     private String[] corsAllowedMethods;
 
-    @Value("${cors.allowed-headers}")
+    @Value("${security.cors.allowed-headers}")
     private String[] corsAllowedHeaders;
 
-    @Value("${cors.allow-credentials}")
+    @Value("${security.cors.allow-credentials}")
     private boolean corsAllowCredentials;
 
-    @Value("${cors.configuration-path}")
+    @Value("${security.cors.configuration-path}")
     private String corsConfigurationPath;
 
     private static final String[] PERMIT_ALL = {
