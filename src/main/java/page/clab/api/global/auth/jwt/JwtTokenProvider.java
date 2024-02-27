@@ -8,11 +8,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,23 +22,35 @@ import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.member.domain.Role;
 import page.clab.api.global.auth.exception.TokenValidateException;
 
+import java.security.Key;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Component
 public class JwtTokenProvider {
 
     private final Key key;
 
-    private static final long ACCESS_TOKEN_DURATION = 30L * 60L * 1000L; // 30분
+    private final long accessTokenDuration;
 
-    private static final long REFRESH_TOKEN_DURATION = 60L * 60L * 1000L * 24L * 14L; // 14일
+    private final long refreshTokenDuration;
 
-    public JwtTokenProvider(@Value("${jwt.secret-key}") String secretKey) {
+    public JwtTokenProvider(
+            @Value("${jwt.secret-key}") String secretKey,
+            @Value("${jwt.token-validity-in-seconds.access-token}") long accessTokenDuration,
+            @Value("${jwt.token-validity-in-seconds.refresh-token}") long refreshTokenDuration
+    ) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        this.accessTokenDuration = accessTokenDuration;
+        this.refreshTokenDuration = refreshTokenDuration;
     }
 
     public TokenInfo generateToken(String id, Role role) {
         Date expiry = new Date();
-        Date accessTokenExpiry = new Date(expiry.getTime() + (ACCESS_TOKEN_DURATION));
+        Date accessTokenExpiry = new Date(expiry.getTime() + (accessTokenDuration));
         String accessToken = Jwts.builder()
                 .setSubject(id)
                 .claim("role", role)
@@ -52,7 +59,7 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        Date refreshTokenExpiry = new Date(expiry.getTime() + (REFRESH_TOKEN_DURATION));
+        Date refreshTokenExpiry = new Date(expiry.getTime() + (refreshTokenDuration));
         String refreshToken = Jwts.builder()
                 .setSubject(id)
                 .claim("role", role)
@@ -74,7 +81,7 @@ public class JwtTokenProvider {
             Date expiration = claims.getExpiration();
             if (issuedAt != null && expiration != null) {
                 long duration = expiration.getTime() - issuedAt.getTime();
-                return duration == REFRESH_TOKEN_DURATION;
+                return duration == refreshTokenDuration;
             }
         } catch (Exception e) {
             log.debug("Failed to check if the token is a refresh token", e);
