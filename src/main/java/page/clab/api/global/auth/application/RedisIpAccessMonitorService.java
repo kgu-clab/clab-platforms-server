@@ -27,7 +27,7 @@ public class RedisIpAccessMonitorService {
     @Value("${security.ip-attempt.max-attempts}")
     private int maxAttempts;
 
-    public void registerLoginAttempt(String ipAddress) {
+    public void registerLoginAttempt(HttpServletRequest request, String ipAddress) {
         RedisIpAccessMonitor existingAttempt = redisIpAccessMonitorRepository.findById(ipAddress).orElse(null);
         if (existingAttempt != null) {
             existingAttempt.setAttempts(existingAttempt.getAttempts() + 1);
@@ -38,6 +38,9 @@ public class RedisIpAccessMonitorService {
                     .attempts(1)
                     .lastAttempt(LocalDateTime.now())
                     .build();
+        }
+        if (existingAttempt.getAttempts() >= maxAttempts) {
+            slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS_IP_BLOCKED, "Blocked IP: " + ipAddress);
         }
         redisIpAccessMonitorRepository.save(existingAttempt);
     }
