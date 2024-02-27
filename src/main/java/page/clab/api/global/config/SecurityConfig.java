@@ -62,6 +62,12 @@ public class SecurityConfig {
 
     private final SlackService slackService;
 
+    @Value("${security.swagger.whitelist.enabled}")
+    private boolean whitelistEnabled;
+
+    @Value("${security.swagger.whitelist.path}")
+    private String whitelistPath;
+
     @Value("${security.account.swagger.username}")
     private String username;
 
@@ -146,7 +152,7 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository, whitelistEnabled, whitelistPath), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAccessMonitorService, slackService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer
