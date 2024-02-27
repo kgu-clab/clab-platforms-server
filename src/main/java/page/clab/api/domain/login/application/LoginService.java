@@ -1,20 +1,15 @@
 package page.clab.api.domain.login.application;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.client.WebClient;
 import page.clab.api.domain.login.domain.LoginAttemptResult;
 import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
@@ -27,8 +22,6 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -95,34 +88,6 @@ public class LoginService {
     public String resetAuthenticator(String memberId) {
         return authenticatorService.resetAuthenticator(memberId);
     }
-
-    private boolean barunLogin(String id, String password) {
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("email", id);
-        formData.add("password", password);
-
-        WebClient webClient = WebClient.builder()
-                .baseUrl("https://barun.kyonggi.ac.kr")
-                .build();
-
-        String response = webClient
-                .post()
-                .uri("/ko/process/member/login")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .bodyValue(formData)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> jsonResponse = objectMapper.readValue(response, Map.class);
-            return (boolean) jsonResponse.get("success");
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
 
     @Transactional
     public TokenInfo reissue(HttpServletRequest request) {
