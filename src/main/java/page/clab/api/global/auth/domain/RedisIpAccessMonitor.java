@@ -16,8 +16,8 @@ import org.springframework.data.redis.core.index.Indexed;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash(value = "ipAttempt", timeToLive = 60 * 5)
-public class RedisIpAttempt {
+@RedisHash(value = "ipAccessMonitor", timeToLive = 60 * 5)
+public class RedisIpAccessMonitor {
 
     @Id
     private String ipAddress;
