@@ -37,7 +37,6 @@ import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.common.slack.application.SlackService;
-import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
 
 import java.util.List;
@@ -153,9 +152,8 @@ public class SecurityConfig {
                         httpSecurityExceptionHandlingConfigurer
                                 .authenticationEntryPoint((request, response, authException) -> {
                                     String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-                                    slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS, "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.");
                                     apiLogging(request, response, clientIpAddress, "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.");
-                                    redisIpAccessMonitorService.registerLoginAttempt(clientIpAddress);
+                                    redisIpAccessMonitorService.registerLoginAttempt(request, clientIpAddress);
                                     ResponseModel responseModel = ResponseModel.builder()
                                             .success(false)
                                             .build();
@@ -165,9 +163,8 @@ public class SecurityConfig {
                                 })
                                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                                     String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-                                    slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS, "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.");
                                     apiLogging(request, response, clientIpAddress, "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.");
-                                    redisIpAccessMonitorService.registerLoginAttempt(clientIpAddress);
+                                    redisIpAccessMonitorService.registerLoginAttempt(request, clientIpAddress);
                                     ResponseModel responseModel = ResponseModel.builder()
                                             .success(false)
                                             .build();
