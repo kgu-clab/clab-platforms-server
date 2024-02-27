@@ -35,7 +35,9 @@ import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.book.exception.OverdueException;
+import page.clab.api.global.exception.DecryptionException;
 import page.clab.api.domain.login.exception.DuplicateLoginException;
+import page.clab.api.global.exception.EncryptionException;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
@@ -54,6 +56,7 @@ import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
+import page.clab.api.global.exception.SecretKeyCreationException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -159,6 +162,9 @@ public class ControllerExceptionHandler {
             TransactionSystemException.class,
             SecurityException.class,
             CustomOptimisticLockingFailureException.class,
+            SecretKeyCreationException.class,
+            EncryptionException.class,
+            DecryptionException.class,
             Exception.class
     })
     public ResponseModel serverException(HttpServletRequest request, HttpServletResponse response, Exception e){

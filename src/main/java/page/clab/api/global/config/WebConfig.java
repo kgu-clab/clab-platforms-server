@@ -1,8 +1,6 @@
 package page.clab.api.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +21,9 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 import page.clab.api.global.handler.ApiLoggingInterceptor;
 import page.clab.api.global.util.HtmlCharacterEscapes;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
@@ -38,6 +39,15 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Value("${resource.file.url}")
     private String fileURL;
+
+    @Value("${security.cors.path-pattern}")
+    private String corsPathPattern;
+
+    @Value("${security.cors.allowed-origins}")
+    private String[] corsAllowedOrigins;
+
+    @Value("${security.cors.allowed-methods}")
+    private String[] corsAllowedMethods;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -60,9 +70,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("*")
-                .allowedOrigins("*")
-                .allowedMethods("*");
+        registry.addMapping(corsPathPattern)
+                .allowedOrigins(corsAllowedOrigins)
+                .allowedMethods(corsAllowedMethods);
     }
 
     @Bean
