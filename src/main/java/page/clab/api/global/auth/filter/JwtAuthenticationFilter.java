@@ -14,7 +14,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.domain.login.application.RedisTokenService;
 import page.clab.api.domain.login.domain.RedisToken;
-import page.clab.api.global.auth.application.RedisIpAttemptService;
+import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.common.slack.application.SlackService;
@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final RedisTokenService redisTokenService;
 
-    private final RedisIpAttemptService redisIpAttemptService;
+    private final RedisIpAccessMonitorService redisIpAccessMonitorService;
 
     private final SlackService slackService;
 
@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             return;
         }
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAttemptService.isBlocked(clientIpAddress)) {
+        if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAccessMonitorService.isBlocked(clientIpAddress)) {
             log.info("[{}] : 서비스 이용이 제한된 IP입니다.", clientIpAddress);
             ResponseModel responseModel = ResponseModel.builder()
                     .success(false)

@@ -3,38 +3,38 @@ package page.clab.api.global.auth.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import page.clab.api.global.auth.dao.RedisIpAttemptRepository;
-import page.clab.api.global.auth.domain.RedisIpAttempt;
+import page.clab.api.global.auth.dao.RedisIpAccessMonitorRepository;
+import page.clab.api.global.auth.domain.RedisIpAccessMonitor;
 
 import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class RedisIpAttemptService {
+public class RedisIpAccessMonitorService {
 
-    private final RedisIpAttemptRepository redisIpAttemptRepository;
+    private final RedisIpAccessMonitorRepository redisIpAccessMonitorRepository;
 
     @Value("${security.ip-attempt.max-attempts}")
-    private int MAX_ATTEMPTS;
+    private int maxAttempts;
 
     public void registerLoginAttempt(String ipAddress) {
-        RedisIpAttempt existingAttempt = redisIpAttemptRepository.findById(ipAddress).orElse(null);
+        RedisIpAccessMonitor existingAttempt = redisIpAccessMonitorRepository.findById(ipAddress).orElse(null);
         if (existingAttempt != null) {
             existingAttempt.setAttempts(existingAttempt.getAttempts() + 1);
             existingAttempt.setLastAttempt(LocalDateTime.now());
         } else {
-            existingAttempt = RedisIpAttempt.builder()
+            existingAttempt = RedisIpAccessMonitor.builder()
                     .ipAddress(ipAddress)
                     .attempts(1)
                     .lastAttempt(LocalDateTime.now())
                     .build();
         }
-        redisIpAttemptRepository.save(existingAttempt);
+        redisIpAccessMonitorRepository.save(existingAttempt);
     }
 
     public boolean isBlocked(String ipAddress) {
-        RedisIpAttempt existingAttempt = redisIpAttemptRepository.findById(ipAddress).orElse(null);
-        return existingAttempt != null && existingAttempt.getAttempts() >= MAX_ATTEMPTS;
+        RedisIpAccessMonitor existingAttempt = redisIpAccessMonitorRepository.findById(ipAddress).orElse(null);
+        return existingAttempt != null && existingAttempt.getAttempts() >= maxAttempts;
     }
 
 }
