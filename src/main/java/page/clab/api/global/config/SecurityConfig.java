@@ -1,7 +1,5 @@
 package page.clab.api.global.config;
 
-import java.util.Arrays;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +33,9 @@ import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true)
@@ -64,6 +65,21 @@ public class SecurityConfig {
 
     @Value("${springdoc.account.role}")
     private String role;
+
+    @Value("${cors.allowed-origins}")
+    private String[] corsAllowedOrigins;
+
+    @Value("${cors.allowed-methods}")
+    private String[] corsAllowedMethods;
+
+    @Value("${cors.allowed-headers}")
+    private String[] corsAllowedHeaders;
+
+    @Value("${cors.allow-credentials}")
+    private boolean corsAllowCredentials;
+
+    @Value("${cors.configuration-path}")
+    private String corsConfigurationPath;
 
     private static final String[] PERMIT_ALL = {
             "/login/**",
@@ -193,18 +209,14 @@ public class SecurityConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         corsConfiguration.setAllowedOriginPatterns(
-                List.of(
-                        "http://clab.page", "https://clab.page",
-                        "http://*.clab.page", "https://*.clab.page",
-                        "http://localhost:6001", "http://localhost:6002"
-                )
+                List.of(corsAllowedOrigins)
         );
-        corsConfiguration.setAllowedMethods(List.of("*"));
-        corsConfiguration.setAllowedHeaders(List.of("*"));
-        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowedMethods(List.of(corsAllowedMethods));
+        corsConfiguration.setAllowedHeaders(List.of(corsAllowedHeaders));
+        corsConfiguration.setAllowCredentials(corsAllowCredentials);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
+        source.registerCorsConfiguration(corsConfigurationPath, corsConfiguration);
 
         return source;
     }
