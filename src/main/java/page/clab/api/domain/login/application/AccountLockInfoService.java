@@ -32,10 +32,10 @@ public class AccountLockInfoService {
 
     private final AccountLockInfoRepository accountLockInfoRepository;
 
-    @Value("${login-attempt.max-failures}")
+    @Value("${security.login-attempt.max-failures}")
     private int maxLoginFailures;
 
-    @Value("${login-attempt.lock-duration-minutes}")
+    @Value("${security.login-attempt.lock-duration-minutes}")
     private int lockDurationMinutes;
 
     public AccountLockInfo createAccountLockInfo(Member member) {
