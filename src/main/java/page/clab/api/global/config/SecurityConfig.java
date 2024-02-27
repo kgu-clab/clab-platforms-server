@@ -1,5 +1,7 @@
 package page.clab.api.global.config;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +17,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,13 +31,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.domain.login.application.RedisTokenService;
 import page.clab.api.global.auth.application.CustomUserDetailsService;
-import page.clab.api.global.auth.application.RedisIpAttemptService;
+import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
 import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
+import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.common.slack.application.SlackService;
+import page.clab.api.global.util.HttpReqResUtil;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -47,7 +52,7 @@ public class SecurityConfig {
 
     private final RedisTokenService redisTokenService;
 
-    private final RedisIpAttemptService redisIpAttemptService;
+    private final RedisIpAccessMonitorService redisIpAccessMonitorService;
 
     private final BlacklistIpRepository blacklistIpRepository;
 
@@ -141,35 +146,33 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager, redisIpAttemptService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAttemptService, slackService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class);
-//                .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
-//                        httpSecurityExceptionHandlingConfigurer
-//                                .authenticationEntryPoint((request, response, authException) -> {
-//                                    String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-//                                    slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS);
-//                                    log.info("[{}] : 비정상적인 접근이 감지되었습니다.", clientIpAddress);
-//                                    redisIpAttemptService.registerLoginAttempt(clientIpAddress);
-//                                    ResponseModel responseModel = ResponseModel.builder()
-//                                            .success(false)
-//                                            .build();
-//                                    response.getWriter().write(responseModel.toJson());
-//                                    response.setContentType("application/json");
-//                                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                                })
-//                                .accessDeniedHandler((request, response, accessDeniedException) -> {
-//                                    String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-//                                    slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS);
-//                                    log.info("[{}] : 비정상적인 접근이 감지되었습니다.", clientIpAddress);
-//                                    redisIpAttemptService.registerLoginAttempt(clientIpAddress);
-//                                    ResponseModel responseModel = ResponseModel.builder()
-//                                            .success(false)
-//                                            .build();
-//                                    response.getWriter().write(responseModel.toJson());
-//                                    response.setContentType("application/json");
-//                                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-//                                })
-//                );
+                .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAccessMonitorService, slackService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
+                        httpSecurityExceptionHandlingConfigurer
+                                .authenticationEntryPoint((request, response, authException) -> {
+                                    String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+                                    apiLogging(request, response, clientIpAddress, "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.");
+                                    redisIpAccessMonitorService.registerLoginAttempt(request, clientIpAddress);
+                                    ResponseModel responseModel = ResponseModel.builder()
+                                            .success(false)
+                                            .build();
+                                    response.getWriter().write(responseModel.toJson());
+                                    response.setContentType("application/json");
+                                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                })
+                                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                                    String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+                                    apiLogging(request, response, clientIpAddress, "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.");
+                                    redisIpAccessMonitorService.registerLoginAttempt(request, clientIpAddress);
+                                    ResponseModel responseModel = ResponseModel.builder()
+                                            .success(false)
+                                            .build();
+                                    response.getWriter().write(responseModel.toJson());
+                                    response.setContentType("application/json");
+                                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                                })
+                );
         return http.build();
     }
 
@@ -196,7 +199,7 @@ public class SecurityConfig {
         DaoAuthenticationProvider loginProvider = new DaoAuthenticationProvider();
         loginProvider.setUserDetailsService(customUserDetailsService);
         loginProvider.setPasswordEncoder(passwordEncoder());
-        return new ProviderManager(Arrays.asList(loginProvider));
+        return new ProviderManager(List.of(loginProvider));
     }
 
     @Bean
@@ -219,6 +222,15 @@ public class SecurityConfig {
         source.registerCorsConfiguration(corsConfigurationPath, corsConfiguration);
 
         return source;
+    }
+
+    private void apiLogging(HttpServletRequest request, HttpServletResponse response, String clientIpAddress, String message) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String id = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
+        String requestUrl = request.getRequestURI();
+        String httpMethod = request.getMethod();
+        int httpStatus = response.getStatus();
+        log.info("[{}:{}] {} {} {} {}", clientIpAddress, id, requestUrl, httpMethod, httpStatus, message);
     }
 
 }

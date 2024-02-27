@@ -32,7 +32,7 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    @Operation(summary = "유저 로그인", description = "ROLE_ANONYMOUS 권한이 필요함")
+    @Operation(summary = "멤버 로그인", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("")
     public ResponseModel login(
             HttpServletRequest httpServletRequest,
@@ -76,7 +76,19 @@ public class LoginController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 유저 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[S] 멤버 토큰 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @DeleteMapping("/revoke/{memberId}")
+    @Secured({"ROLE_SUPER"})
+    public ResponseModel revoke(
+            @PathVariable(name = "memberId") String memberId
+    ) {
+        String id = loginService.revoke(memberId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 멤버 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/reissue")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel reissue(

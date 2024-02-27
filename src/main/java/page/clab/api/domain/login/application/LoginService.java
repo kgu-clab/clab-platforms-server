@@ -1,22 +1,17 @@
 package page.clab.api.domain.login.application;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.client.WebClient;
 import page.clab.api.domain.login.domain.LoginAttemptResult;
+import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
 import page.clab.api.domain.login.dto.response.TokenInfo;
@@ -59,7 +54,7 @@ public class LoginService {
             loginAuthenticationManager.authenticate(authenticationToken);
             accountLockInfoService.handleAccountLockInfo(id);
             memberService.setLastLoginTime(id);
-            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.TOTP);
+            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.SUCCESS);
             if (!authenticatorService.isAuthenticatorExist(id)) {
                 return authenticatorService.generateSecretKey(id);
             }
@@ -79,7 +74,7 @@ public class LoginService {
             accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
             throw new LoginFaliedException("잘못된 인증번호입니다.");
         }
-        loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.SUCCESS);
+        loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.TOTP);
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(id, memberService.getMemberById(id).getRole());
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         redisTokenService.saveRedisToken(id, memberService.getMemberById(id).getRole(), tokenInfo, clientIpAddress);
@@ -94,33 +89,11 @@ public class LoginService {
         return authenticatorService.resetAuthenticator(memberId);
     }
 
-    private boolean barunLogin(String id, String password) {
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("email", id);
-        formData.add("password", password);
-
-        WebClient webClient = WebClient.builder()
-                .baseUrl("https://barun.kyonggi.ac.kr")
-                .build();
-
-        String response = webClient
-                .post()
-                .uri("/ko/process/member/login")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .bodyValue(formData)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, Object> jsonResponse = objectMapper.readValue(response, Map.class);
-            return (boolean) jsonResponse.get("success");
-        } catch (Exception e) {
-            return false;
-        }
+    public String revoke(String memberId) {
+        Member member = memberService.getMemberById(memberId);
+        redisTokenService.deleteRedisTokenByMemberId(memberId);
+        return member.getId();
     }
-
 
     @Transactional
     public TokenInfo reissue(HttpServletRequest request) {
@@ -131,15 +104,14 @@ public class LoginService {
         if (member == null) {
             throw new SecurityException("존재하지 않는 회원입니다.");
         }
-        TokenInfo tokenInfo = jwtTokenProvider.generateToken(id, member.getRole());
-//        RedisToken redisToken = redisTokenService.getRedisTokenByRefreshToken(token);
-//        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-//        if (!redisToken.getIp().equals(clientIpAddress)) {
-//            redisTokenService.deleteRedisTokenByAccessToken(redisToken.getAccessToken());
-//            throw new SecurityException("올바르지 않은 토큰 재발급 시도가 감지되어 토큰을 삭제하였습니다.");
-//        }
-//        TokenInfo tokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
-//        redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), tokenInfo, redisToken.getIp());
+        RedisToken redisToken = redisTokenService.getRedisTokenByRefreshToken(token);
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        if (!redisToken.getIp().equals(clientIpAddress)) {
+            redisTokenService.deleteRedisTokenByAccessToken(redisToken.getAccessToken());
+            throw new SecurityException("올바르지 않은 토큰 재발급 시도가 감지되어 토큰을 삭제하였습니다.");
+        }
+        TokenInfo tokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
+        redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), tokenInfo, redisToken.getIp());
         return tokenInfo;
     }
 
