@@ -109,4 +109,10 @@ public class LoginService {
         return tokenInfo;
     }
 
+    public String revoke(String memberId) {
+        Member member = memberService.getMemberById(memberId);
+        redisTokenService.deleteRedisTokenByMemberId(memberId);
+        return member.getId();
+    }
+
 }

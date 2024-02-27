@@ -37,7 +37,12 @@ public class RedisTokenService {
 
     public void deleteRedisTokenByAccessToken(String accessToken) {
         redisTokenRepository.findByAccessToken(accessToken)
-                .ifPresent(redisToken -> redisTokenRepository.delete(redisToken));
+                .ifPresent(redisTokenRepository::delete);
+    }
+
+    public void deleteRedisTokenByMemberId(String memberId) {
+        redisTokenRepository.findById(memberId)
+                .ifPresent(redisTokenRepository::delete);
     }
 
 }
