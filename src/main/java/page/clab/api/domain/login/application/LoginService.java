@@ -89,6 +89,12 @@ public class LoginService {
         return authenticatorService.resetAuthenticator(memberId);
     }
 
+    public String revoke(String memberId) {
+        Member member = memberService.getMemberById(memberId);
+        redisTokenService.deleteRedisTokenByMemberId(memberId);
+        return member.getId();
+    }
+
     @Transactional
     public TokenInfo reissue(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
@@ -107,12 +113,6 @@ public class LoginService {
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
         redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), tokenInfo, redisToken.getIp());
         return tokenInfo;
-    }
-
-    public String revoke(String memberId) {
-        Member member = memberService.getMemberById(memberId);
-        redisTokenService.deleteRedisTokenByMemberId(memberId);
-        return member.getId();
     }
 
 }
