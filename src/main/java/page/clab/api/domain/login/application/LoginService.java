@@ -3,7 +3,6 @@ package page.clab.api.domain.login.application;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,6 +16,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import page.clab.api.domain.login.domain.LoginAttemptResult;
+import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
 import page.clab.api.domain.login.dto.response.TokenInfo;
@@ -27,6 +27,8 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -131,15 +133,14 @@ public class LoginService {
         if (member == null) {
             throw new SecurityException("존재하지 않는 회원입니다.");
         }
-        TokenInfo tokenInfo = jwtTokenProvider.generateToken(id, member.getRole());
-//        RedisToken redisToken = redisTokenService.getRedisTokenByRefreshToken(token);
-//        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-//        if (!redisToken.getIp().equals(clientIpAddress)) {
-//            redisTokenService.deleteRedisTokenByAccessToken(redisToken.getAccessToken());
-//            throw new SecurityException("올바르지 않은 토큰 재발급 시도가 감지되어 토큰을 삭제하였습니다.");
-//        }
-//        TokenInfo tokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
-//        redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), tokenInfo, redisToken.getIp());
+        RedisToken redisToken = redisTokenService.getRedisTokenByRefreshToken(token);
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        if (!redisToken.getIp().equals(clientIpAddress)) {
+            redisTokenService.deleteRedisTokenByAccessToken(redisToken.getAccessToken());
+            throw new SecurityException("올바르지 않은 토큰 재발급 시도가 감지되어 토큰을 삭제하였습니다.");
+        }
+        TokenInfo tokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
+        redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), tokenInfo, redisToken.getIp());
         return tokenInfo;
     }
 
