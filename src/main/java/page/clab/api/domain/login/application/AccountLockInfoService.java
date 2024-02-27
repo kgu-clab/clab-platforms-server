@@ -1,9 +1,9 @@
 package page.clab.api.domain.login.application;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,6 +19,8 @@ import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.exception.NotFoundException;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -30,9 +32,11 @@ public class AccountLockInfoService {
 
     private final AccountLockInfoRepository accountLockInfoRepository;
 
-    private static final int MAX_LOGIN_FAILURES = 5;
+    @Value("${login-attempt.max-failures}")
+    private int maxLoginFailures;
 
-    private static final int LOCK_DURATION_MINUTES = 5;
+    @Value("${login-attempt.lock-duration-minutes}")
+    private int lockDurationMinutes;
 
     public AccountLockInfo createAccountLockInfo(Member member) {
         AccountLockInfo accountLockInfo = AccountLockInfo.builder()
@@ -118,9 +122,9 @@ public class AccountLockInfoService {
 
     public void incrementFailCountAndLock(HttpServletRequest request, AccountLockInfo accountLockInfo) {
         accountLockInfo.setLoginFailCount(accountLockInfo.getLoginFailCount() + 1);
-        if (accountLockInfo.getLoginFailCount() >= MAX_LOGIN_FAILURES) {
+        if (accountLockInfo.getLoginFailCount() >= maxLoginFailures) {
             if (accountLockInfo.getIsLock().equals(false)) {
-                accountLockInfo.setLockUntil(LocalDateTime.now().plusMinutes(LOCK_DURATION_MINUTES));
+                accountLockInfo.setLockUntil(LocalDateTime.now().plusMinutes(lockDurationMinutes));
                 accountLockInfo.setIsLock(true);
                 slackService.sendSecurityAlertNotification(request, SecurityAlertType.REPEATED_LOGIN_FAILURES,
                         "[" + accountLockInfo.getMember().getId() + "/" + accountLockInfo.getMember().getName() + "]" + " 로그인 실패 횟수 초과로 계정이 잠겼습니다.");
