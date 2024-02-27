@@ -54,7 +54,7 @@ public class LoginService {
             loginAuthenticationManager.authenticate(authenticationToken);
             accountLockInfoService.handleAccountLockInfo(id);
             memberService.setLastLoginTime(id);
-            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.TOTP);
+            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.SUCCESS);
             if (!authenticatorService.isAuthenticatorExist(id)) {
                 return authenticatorService.generateSecretKey(id);
             }
@@ -74,7 +74,7 @@ public class LoginService {
             accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
             throw new LoginFaliedException("잘못된 인증번호입니다.");
         }
-        loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.SUCCESS);
+        loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.TOTP);
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(id, memberService.getMemberById(id).getRole());
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         redisTokenService.saveRedisToken(id, memberService.getMemberById(id).getRole(), tokenInfo, clientIpAddress);
