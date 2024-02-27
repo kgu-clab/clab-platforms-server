@@ -1,12 +1,11 @@
 package page.clab.api.global.auth.filter;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Base64;
-import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,12 +17,25 @@ import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.util.HttpReqResUtil;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
 @Slf4j
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final RedisIpAccessMonitorService redisIpAccessMonitorService;
 
     private final BlacklistIpRepository blacklistIpRepository;
+
+    private final boolean whitelistEnabled;
+
+    private final String whitelistPath;
 
     private static final String[] SWAGGER_PATTERNS = {
             "/v2/api-docs",
@@ -35,10 +47,18 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
             "/swagger-ui/.*"
     };
 
-    public CustomBasicAuthenticationFilter(AuthenticationManager authenticationManager, RedisIpAccessMonitorService redisIpAccessMonitorService, BlacklistIpRepository blacklistIpRepository) {
+    public CustomBasicAuthenticationFilter(
+            AuthenticationManager authenticationManager,
+            RedisIpAccessMonitorService redisIpAccessMonitorService,
+            BlacklistIpRepository blacklistIpRepository,
+            boolean whitelistEnabled,
+            String whitelistPath
+    ) {
         super(authenticationManager);
         this.redisIpAccessMonitorService = redisIpAccessMonitorService;
         this.blacklistIpRepository = blacklistIpRepository;
+        this.whitelistEnabled = whitelistEnabled;
+        this.whitelistPath = whitelistPath;
     }
 
     @Override
@@ -50,8 +70,21 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
             return;
         }
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        if (whitelistEnabled) {
+            List<String> whitelistIps = loadWhitelistIps();
+            if (whitelistIps != null && !whitelistIps.contains(clientIpAddress) && !whitelistIps.contains("*")) {
+                log.info("[{}] : 화이트리스트에 등록되지 않은 IP입니다.", clientIpAddress);
+                ResponseModel responseModel = ResponseModel.builder()
+                        .success(false)
+                        .build();
+                response.getWriter().write(responseModel.toJson());
+                response.setContentType("application/json");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+        }
         if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAccessMonitorService.isBlocked(clientIpAddress)) {
-            log.info("[{}] : 서비스 이용이 제한된 IP입니다.", clientIpAddress);
+            log.info("[{}] : 정책에 의해 차단된 IP입니다.", clientIpAddress);
             ResponseModel responseModel = ResponseModel.builder()
                     .success(false)
                     .build();
@@ -92,6 +125,23 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
             }
         }
         return false;
+    }
+
+    private List<String> loadWhitelistIps() {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Path path = Paths.get(whitelistPath);
+            if (Files.notExists(path)) {
+                Files.createDirectories(path.getParent());
+                Map<String, List<String>> defaultContent = Map.of("allowedIps", List.of("*"));
+                mapper.writeValue(Files.newBufferedWriter(path), defaultContent);
+            }
+            Map<String, List<String>> data = mapper.readValue(path.toFile(), new TypeReference<>() {});
+            return data.get("allowedIps");
+        } catch (IOException e) {
+            log.error("Failed to load or create IP whitelist from path: {}", whitelistPath, e);
+            return null;
+        }
     }
 
 }
