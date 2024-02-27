@@ -196,6 +196,7 @@ public class SecurityConfig {
         DaoAuthenticationProvider loginProvider = new DaoAuthenticationProvider();
         loginProvider.setUserDetailsService(customUserDetailsService);
         loginProvider.setPasswordEncoder(passwordEncoder());
+        loginProvider.setHideUserNotFoundExceptions(false);
         return new ProviderManager(Arrays.asList(loginProvider));
     }
 
