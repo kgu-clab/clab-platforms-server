@@ -13,6 +13,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -102,6 +103,7 @@ public class ControllerExceptionHandler {
             UnAuthorizeException.class,
             AccessDeniedException.class,
             LoginFaliedException.class,
+            UsernameNotFoundException.class,
             MemberLockedException.class,
             BadCredentialsException.class,
             TokenValidateException.class,
