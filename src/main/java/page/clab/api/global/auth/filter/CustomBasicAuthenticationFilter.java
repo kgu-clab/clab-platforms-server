@@ -51,16 +51,16 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
             chain.doFilter(request, response);
             return;
         }
-        if (!isAccessAllowed(response)) {
+        if (!verifyIpAddressAccess(response)) {
             return;
         }
-        if (!isAuthenticated(request, response)) {
+        if (!authenticateUserCredentials(request, response)) {
             return;
         }
         super.doFilterInternal(request, response, chain);
     }
 
-    private boolean isAuthenticated(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private boolean authenticateUserCredentials(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader == null || !authorizationHeader.startsWith("Basic ")) {
             response.setHeader("WWW-Authenticate", "Basic realm=\"Please enter your username and password\"");
@@ -84,7 +84,7 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
         return true;
     }
 
-    private boolean isAccessAllowed(HttpServletResponse response) throws IOException {
+    private boolean verifyIpAddressAccess(HttpServletResponse response) throws IOException {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         List<String> whitelistIps = whitelistService.loadWhitelistIps();
         if (!(whitelistIps.contains(clientIpAddress) || whitelistIps.contains("*")) ||
