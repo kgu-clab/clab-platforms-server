@@ -26,6 +26,7 @@ import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.response.Status;
 
 @RestController
 @RequestMapping("/login")
@@ -51,7 +52,7 @@ public class LoginController {
         String secretKey = loginService.login(httpServletRequest, loginRequestDto);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("secretKey", secretKey);
-        jsonObject.put("status", 1200);
+        jsonObject.put("status", Status.CLAB_ATUH.getCustomHttpStatus());
         String jsonString = jsonObject.toString();
 
         httpServletResponse.setHeader("X-Clab-Auth", jsonString);
@@ -74,7 +75,7 @@ public class LoginController {
 
         TokenInfo tokenInfo = loginService.authenticator(httpServletRequest, twoFactorAuthenticationRequestDto);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("status", 1200);
+        jsonObject.put("status", Status.CLAB_ATUH.getCustomHttpStatus());
         jsonObject.put("accessToken", tokenInfo.getAccessToken());
         jsonObject.put("refreshToken", tokenInfo.getRefreshToken());
         String jsonString = jsonObject.toString();
