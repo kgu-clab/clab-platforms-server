@@ -9,9 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,16 +17,11 @@ import org.springframework.security.config.annotation.web.configurers.Expression
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.domain.login.application.RedisTokenService;
-import page.clab.api.global.auth.application.CustomUserDetailsService;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
@@ -41,7 +33,6 @@ import page.clab.api.global.util.ResponseUtil;
 import page.clab.api.global.util.SwaggerUtil;
 
 import java.io.IOException;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -58,28 +49,20 @@ public class SecurityConfig {
 
     private final BlacklistIpRepository blacklistIpRepository;
 
-    private final AuthenticationConfiguration authenticationConfiguration;
-    
-    private final CustomUserDetailsService customUserDetailsService;
-
     private final SlackService slackService;
 
     private final WhitelistService whitelistService;
 
     private final CorsConfigurationSource corsConfigurationSource;
 
-    @Value("${security.account.swagger.username}")
-    private String username;
-
-    @Value("${security.account.swagger.password}")
-    private String password;
+    private final AuthenticationConfig authenticationConfig;
 
     @Value("${security.account.swagger.role}")
     private String role;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
+        AuthenticationManager authenticationManager = authenticationConfig.authenticationManager();
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagement ->
@@ -89,7 +72,7 @@ public class SecurityConfig {
                         cors.configurationSource(corsConfigurationSource)
                 )
                 .authorizeRequests(this::configureRequests)
-                .authenticationProvider(authenticationProvider())
+                .authenticationProvider(authenticationConfig.authenticationProvider())
                 .addFilterBefore(
                         new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository, whitelistService),
                         UsernamePasswordAuthenticationFilter.class
@@ -131,37 +114,6 @@ public class SecurityConfig {
         apiLogging(request, response, clientIpAddress, "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.");
         redisIpAccessMonitorService.registerLoginAttempt(request, clientIpAddress);
         ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN);
-    }
-
-    @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails user =
-                User.withUsername(username)
-                        .password(passwordEncoder().encode(password))
-                        .roles(role)
-                        .build();
-        return new InMemoryUserDetailsManager(user);
-    }
-
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
-
-    @Bean(name = "loginAuthenticationManager")
-    public AuthenticationManager loginAuthenticationManager() {
-        DaoAuthenticationProvider loginProvider = new DaoAuthenticationProvider();
-        loginProvider.setUserDetailsService(customUserDetailsService);
-        loginProvider.setPasswordEncoder(passwordEncoder());
-        return new ProviderManager(List.of(loginProvider));
-    }
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     private void apiLogging(HttpServletRequest request, HttpServletResponse response, String clientIpAddress, String message) {
