@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -50,41 +51,58 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
             chain.doFilter(request, response);
             return;
         }
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        List<String> whitelistIps = whitelistService.loadWhitelistIps();
-        if (!whitelistIps.contains(clientIpAddress) && !whitelistIps.contains("*")) {
-            log.info("[{}] : 화이트리스트에 등록되지 않은 IP입니다.", clientIpAddress);
-            ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
+        if (!isAccessAllowed(response)) {
             return;
         }
-        if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAccessMonitorService.isBlocked(clientIpAddress)) {
-            log.info("[{}] : 정책에 의해 차단된 IP입니다.", clientIpAddress);
-            ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
+        if (!isAuthenticated(request, response)) {
             return;
         }
+        super.doFilterInternal(request, response, chain);
+    }
+
+    private boolean isAuthenticated(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader == null || !authorizationHeader.startsWith("Basic ")) {
             response.setHeader("WWW-Authenticate", "Basic realm=\"Please enter your username and password\"");
             ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
-            return;
+            return false;
         }
-        String base64Credentials = authorizationHeader.substring("Basic ".length());
-        String credentials = new String(Base64.getDecoder().decode(base64Credentials));
-        String[] values = credentials.split(":", 2);
-        if (values.length < 2) {
+        String[] credentials = decodeCredentials(authorizationHeader);
+        if (credentials.length < 2) {
             ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            return false;
         }
-        String username = values[0];
-        String password = values[1];
+        String username = credentials[0];
+        String password = credentials[1];
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
         Authentication authentication = getAuthenticationManager().authenticate(authRequest);
         if (authentication == null) {
             ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
-            return;
+            return false;
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        super.doFilterInternal(request, response, chain);
+        return true;
+    }
+
+    private boolean isAccessAllowed(HttpServletResponse response) throws IOException {
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        List<String> whitelistIps = whitelistService.loadWhitelistIps();
+        if (!(whitelistIps.contains(clientIpAddress) || whitelistIps.contains("*")) ||
+                blacklistIpRepository.existsByIpAddress(clientIpAddress) ||
+                redisIpAccessMonitorService.isBlocked(clientIpAddress)
+        ) {
+            log.info("[{}] : 정책에 의해 차단된 IP입니다.", clientIpAddress);
+            ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
+        }
+        return true;
+    }
+
+    @NotNull
+    private static String[] decodeCredentials(String authorizationHeader) {
+        String base64Credentials = authorizationHeader.substring("Basic ".length());
+        String credentials = new String(Base64.getDecoder().decode(base64Credentials));
+        return credentials.split(":", 2);
     }
 
 }
