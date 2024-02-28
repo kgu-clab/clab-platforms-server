@@ -2,6 +2,16 @@ package page.clab.api.global.config;
 
 public class SecurityConstants {
 
+    public static final String[] SWAGGER_PATTERNS = {
+            "/v2/api-docs",
+            "/v3/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/.*",
+            "/swagger-ui.html",
+            "/v3/api-docs/.*",
+            "/swagger-ui/.*"
+    };
+
     public static final String[] PERMIT_ALL = {
             "/login/**",
             "/static/**",
