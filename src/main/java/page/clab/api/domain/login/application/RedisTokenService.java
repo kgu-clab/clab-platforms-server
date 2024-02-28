@@ -6,7 +6,7 @@ import page.clab.api.domain.login.dao.RedisTokenRepository;
 import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.member.domain.Role;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.auth.exception.TokenNotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -16,12 +16,12 @@ public class RedisTokenService {
 
     public RedisToken getRedisTokenByAccessToken(String accessToken) {
         return redisTokenRepository.findByAccessToken(accessToken)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 토큰입니다."));
+                .orElseThrow(() -> new TokenNotFoundException("존재하지 않는 토큰입니다."));
     }
 
     public RedisToken getRedisTokenByRefreshToken(String refreshToken) {
         return redisTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 토큰입니다."));
+                .orElseThrow(() -> new TokenNotFoundException("존재하지 않는 토큰입니다."));
     }
 
     public void saveRedisToken(String memberId, Role role, TokenInfo tokenInfo, String ip) {
@@ -37,7 +37,12 @@ public class RedisTokenService {
 
     public void deleteRedisTokenByAccessToken(String accessToken) {
         redisTokenRepository.findByAccessToken(accessToken)
-                .ifPresent(redisToken -> redisTokenRepository.delete(redisToken));
+                .ifPresent(redisTokenRepository::delete);
+    }
+
+    public void deleteRedisTokenByMemberId(String memberId) {
+        redisTokenRepository.findById(memberId)
+                .ifPresent(redisTokenRepository::delete);
     }
 
 }
