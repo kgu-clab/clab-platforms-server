@@ -20,9 +20,9 @@ import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
+import page.clab.api.global.util.SwaggerUtil;
 
 import java.io.IOException;
-import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -38,20 +38,10 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final BlacklistIpRepository blacklistIpRepository;
 
-    private static final String[] SWAGGER_PATTERNS = {
-            "/v2/api-docs",
-            "/v3/api-docs",
-            "/swagger-resources",
-            "/swagger-resources/.*",
-            "/swagger-ui.html",
-            "/v3/api-docs/.*",
-            "/swagger-ui/.*"
-    };
-
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String path = ((HttpServletRequest) request).getRequestURI();
-        if (isSwaggerRequest(path)) {
+        if (SwaggerUtil.isSwaggerRequest(path)) {
             chain.doFilter(request, response);
             return;
         }
@@ -81,15 +71,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         chain.doFilter(request, response);
-    }
-
-    private boolean isSwaggerRequest(String path) {
-        for (String pattern : SWAGGER_PATTERNS) {
-            if (Pattern.compile(pattern).matcher(path).find()) {
-                return true;
-            }
-        }
-        return false;
     }
 
 }

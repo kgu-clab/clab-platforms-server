@@ -38,6 +38,7 @@ import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
+import page.clab.api.global.util.SwaggerUtil;
 
 import java.util.List;
 
@@ -103,15 +104,6 @@ public class SecurityConfig {
             "/"
     };
 
-    private static final String[] SWAGGER_PATTERNS = {
-            "/v2/api-docs",
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/swagger-ui.html",
-            "/v3/api-docs/**",
-            "/swagger-ui/**"
-    };
-
     private static final String[] PERMIT_ALL_API_ENDPOINTS_GET = {
             "/applications/{applicationId}",
             "/recruitments",
@@ -145,7 +137,7 @@ public class SecurityConfig {
                 )
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers(SWAGGER_PATTERNS).hasRole(role)
+                                .requestMatchers(SwaggerUtil.getSwaggerPatterns()).hasRole(role)
                                 .requestMatchers(PERMIT_ALL).permitAll()
                                 .requestMatchers(HttpMethod.GET, PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
                                 .requestMatchers(HttpMethod.POST, PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
