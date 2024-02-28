@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Configuration
 @ConfigurationProperties(prefix = "security.account.swagger")
-public class OpenApiSecurityProperties {
+public class OpenApiAccountProperties {
 
     private String username;
 
