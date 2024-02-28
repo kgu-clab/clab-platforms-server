@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public class SwaggerUtil {
 
-    private static final String[] SWAGGER_PATTERNS = {
+    public static final String[] SWAGGER_PATTERNS = {
             "/v2/api-docs",
             "/v3/api-docs",
             "/swagger-resources",
@@ -22,10 +22,6 @@ public class SwaggerUtil {
             }
         }
         return false;
-    }
-
-    public static String[] getSwaggerPatterns() {
-        return SWAGGER_PATTERNS;
     }
 
 }
