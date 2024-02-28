@@ -21,8 +21,7 @@ import page.clab.api.domain.login.application.LoginService;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
 import page.clab.api.domain.login.dto.response.LoginHeader;
-import page.clab.api.domain.login.dto.response.TokenInfo;
-import page.clab.api.domain.login.dto.response.TwoFactorAuthenticationHeader;
+import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -64,7 +63,7 @@ public class LoginController {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        TwoFactorAuthenticationHeader headerData = loginService.authenticator(httpServletRequest, twoFactorAuthenticationRequestDto);
+        TokenHeader headerData = loginService.authenticator(httpServletRequest, twoFactorAuthenticationRequestDto);
         httpServletResponse.setHeader("X-Clab-Auth", headerData.toJson());
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -98,11 +97,12 @@ public class LoginController {
     @PostMapping("/reissue")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel reissue(
-            HttpServletRequest httpServletRequest
+            HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse
     ) {
-        TokenInfo tokenInfo = loginService.reissue(httpServletRequest);
+        TokenHeader headerData = loginService.reissue(httpServletRequest);
+        httpServletResponse.setHeader("X-Clab-Auth", headerData.toJson());
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(tokenInfo);
         return responseModel;
     }
 

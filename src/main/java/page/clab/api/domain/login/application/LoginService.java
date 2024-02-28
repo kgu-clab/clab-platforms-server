@@ -16,7 +16,7 @@ import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
 import page.clab.api.domain.login.dto.response.LoginHeader;
 import page.clab.api.domain.login.dto.response.TokenInfo;
-import page.clab.api.domain.login.dto.response.TwoFactorAuthenticationHeader;
+import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberService;
@@ -27,8 +27,6 @@ import page.clab.api.global.auth.exception.TokenMisuseException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -77,7 +75,7 @@ public class LoginService {
                 .build();
     }
 
-    public TwoFactorAuthenticationHeader authenticator(HttpServletRequest httpServletRequest, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
+    public TokenHeader authenticator(HttpServletRequest httpServletRequest, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
         String id = twoFactorAuthenticationRequestDto.getMemberId();
         String totp = twoFactorAuthenticationRequestDto.getTotp();
         accountLockInfoService.handleAccountLockInfo(id);
@@ -94,7 +92,7 @@ public class LoginService {
         if (memberService.isMemberSuperRole(loginMember)) {
             slackService.sendAdminLoginNotification(loginMember.getId(), loginMember.getRole());
         }
-        return TwoFactorAuthenticationHeader.builder()
+        return TokenHeader.builder()
                 .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
                 .accessToken(tokenInfo.getAccessToken())
                 .refreshToken(tokenInfo.getRefreshToken())
@@ -112,7 +110,7 @@ public class LoginService {
     }
 
     @Transactional
-    public TokenInfo reissue(HttpServletRequest request) {
+    public TokenHeader reissue(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
         Authentication authentication = jwtTokenProvider.getAuthentication(token);
         String id = authentication.getName();
@@ -128,7 +126,11 @@ public class LoginService {
         }
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
         redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), tokenInfo, redisToken.getIp());
-        return tokenInfo;
+        return TokenHeader.builder()
+                .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
+                .accessToken(tokenInfo.getAccessToken())
+                .refreshToken(tokenInfo.getRefreshToken())
+                .build();
     }
 
 }

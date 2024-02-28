@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TwoFactorAuthenticationHeader {
+public class TokenHeader {
 
     private String status;
 
