@@ -55,7 +55,9 @@ public class SecurityConfig {
 
     private final AuthenticationConfig authenticationConfig;
 
-    private final OpenApiSecurityProperties openApiSecurityProperties;
+    private final OpenApiAccountProperties openApiAccountProperties;
+
+    private final OpenApiPatternsProperties OpenApiPatternsProperties;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -92,7 +94,7 @@ public class SecurityConfig {
 
     private ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry configureRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequests) {
         return authorizeRequests
-                .requestMatchers(SecurityConstants.SWAGGER_PATTERNS).hasRole(openApiSecurityProperties.getRole())
+                .requestMatchers(OpenApiPatternsProperties.getPatterns()).hasRole(openApiAccountProperties.getRole())
                 .requestMatchers(SecurityConstants.PERMIT_ALL).permitAll()
                 .requestMatchers(HttpMethod.GET, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
                 .requestMatchers(HttpMethod.POST, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
