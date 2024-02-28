@@ -92,37 +92,6 @@ public class SecurityConfig {
     @Value("${security.cors.configuration-path}")
     private String corsConfigurationPath;
 
-    private static final String[] PERMIT_ALL = {
-            "/login/**",
-            "/static/**",
-            "/resources/files/**",
-            "/configuration/ui",
-            "/configuration/security",
-            "/webjars/**",
-            "/error",
-            "/"
-    };
-
-    private static final String[] PERMIT_ALL_API_ENDPOINTS_GET = {
-            "/applications/{applicationId}",
-            "/recruitments",
-            "/news", "/news/**",
-            "/blogs", "/blogs/**",
-            "/executives", "/executives/**",
-            "/awards", "/awards/**",
-            "/activity-group", "/activity-group/**",
-            "/work-experiences", "/work-experiences/**",
-            "/products", "/products/**",
-            "/reviews", "/reviews/**",
-            "/activity-photos", "/activity-photos/**"
-    };
-
-    private static final String[] PERMIT_ALL_API_ENDPOINTS_POST = {
-            "/applications",
-            "/members/password-reset-requests",
-            "/members/password-reset-verifications",
-    };
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         AuthenticationManager authenticationManager = authenticationConfiguration.getAuthenticationManager();
@@ -159,9 +128,9 @@ public class SecurityConfig {
     private ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry configureRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequests) {
         return authorizeRequests
                 .requestMatchers(SwaggerUtil.getSwaggerPatterns()).hasRole(role)
-                .requestMatchers(PERMIT_ALL).permitAll()
-                .requestMatchers(HttpMethod.GET, PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
-                .requestMatchers(HttpMethod.POST, PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
+                .requestMatchers(SecurityConstants.PERMIT_ALL).permitAll()
+                .requestMatchers(HttpMethod.GET, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
+                .requestMatchers(HttpMethod.POST, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
                 .anyRequest().authenticated();
     }
 
