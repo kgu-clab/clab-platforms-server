@@ -79,15 +79,11 @@ public class AccountLockInfoService {
         return new PagedResponseDto<>(banList.map(AccountLockInfoResponseDto::of));
     }
 
-    public void handleAccountLockInfo(String memberId) throws MemberLockedException, LoginFaliedException {
+    public void handleAccountLockInfo(String memberId) throws MemberLockedException {
         AccountLockInfo accountLockInfo = getAccountLockInfoByMemberId(memberId);
-        try {
-            if (accountLockInfo == null) {
-                Member member = memberService.getMemberByIdOrThrow(memberId);
-                accountLockInfo = createAccountLockInfo(member);
-            }
-        } catch (NotFoundException e) {
-            throw new LoginFaliedException("ID에 해당하는 멤버를 찾을 수 없습니다.");
+        if (accountLockInfo == null) {
+            Member member = memberService.getMemberByIdOrThrow(memberId);
+            accountLockInfo = createAccountLockInfo(member);
         }
 
         if (isMemberLocked(accountLockInfo)) {
