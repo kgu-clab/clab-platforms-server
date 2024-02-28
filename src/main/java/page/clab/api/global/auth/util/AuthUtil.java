@@ -15,7 +15,7 @@ public class AuthUtil {
         if (authentication.getPrincipal() instanceof User) {
             return (User) authentication.getPrincipal();
         } else {
-            throw new AuthenticationInfoNotFoundException("Authentication principal is not of type User.");
+            throw new AuthenticationInfoNotFoundException("인증 정보가 존재하지 않습니다.");
         }
     }
 
