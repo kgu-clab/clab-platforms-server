@@ -1,7 +1,6 @@
 package page.clab.api.global.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,14 +23,7 @@ public class AuthenticationConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
 
-    @Value("${security.account.swagger.username}")
-    private String username;
-
-    @Value("${security.account.swagger.password}")
-    private String password;
-
-    @Value("${security.account.swagger.role}")
-    private String role;
+    private final OpenApiSecurityProperties openApiSecurityProperties;
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
@@ -40,9 +32,9 @@ public class AuthenticationConfig {
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails user = User.withUsername(username)
-                .password(passwordEncoder().encode(password))
-                .roles(role)
+        UserDetails user = User.withUsername(openApiSecurityProperties.getUsername())
+                .password(passwordEncoder().encode(openApiSecurityProperties.getPassword()))
+                .roles(openApiSecurityProperties.getRole())
                 .build();
         return new InMemoryUserDetailsManager(user);
     }
