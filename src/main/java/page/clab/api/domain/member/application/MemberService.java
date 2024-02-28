@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.member.dao.MemberRepository;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.domain.Role;
@@ -252,6 +253,11 @@ public class MemberService {
     public Member getMemberByIdOrThrow(String memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
+    }
+
+    public Member getMemberByIdOrThrowLoginFaild(String memberId) throws LoginFaliedException {
+        return memberRepository.findById(memberId)
+                .orElseThrow(LoginFaliedException::new);
     }
 
     public Page<Member> getMemberByName(String name, Pageable pageable) {

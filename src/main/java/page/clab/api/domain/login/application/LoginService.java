@@ -28,7 +28,6 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.auth.domain.ClabAuthResponseStatus;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
-import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.util.HttpReqResUtil;
 
 import java.util.Map;
@@ -74,7 +73,6 @@ public class LoginService {
         } catch (BadCredentialsException e) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
             accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
-            throw new LoginFaliedException("비밀번호가 틀렸습니다.");
         }
         return LoginHeader.builder()
                 .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
@@ -84,21 +82,12 @@ public class LoginService {
     public TwoFactorAuthenticationHeader authenticator(HttpServletRequest httpServletRequest, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
         String id = twoFactorAuthenticationRequestDto.getMemberId();
         String totp = twoFactorAuthenticationRequestDto.getTotp();
-
-        try {
-            accountLockInfoService.handleAccountLockInfo(id);
-        } catch (NotFoundException e){
-            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
-            accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
-            throw new LoginFaliedException("ID에 해당하는 멤버를 찾을 수 없습니다.");
-        }
-
+        accountLockInfoService.handleAccountLockInfo(id);
         if (!authenticatorService.isAuthenticatorValid(id, totp)) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
             accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
             throw new LoginFaliedException("잘못된 인증번호입니다.");
         }
-
         loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.SUCCESS);
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(id, memberService.getMemberById(id).getRole());
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
