@@ -66,6 +66,7 @@ public class LoginService {
         } catch (BadCredentialsException e) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
             accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
+            throw new LoginFaliedException("비밀번호가 틀렸습니다.");
         }
         return null;
     }

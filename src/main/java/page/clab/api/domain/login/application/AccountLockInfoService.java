@@ -2,6 +2,7 @@ package page.clab.api.domain.login.application;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -78,12 +79,17 @@ public class AccountLockInfoService {
         return new PagedResponseDto<>(banList.map(AccountLockInfoResponseDto::of));
     }
 
-    public void handleAccountLockInfo(String memberId) throws MemberLockedException {
+    public void handleAccountLockInfo(String memberId) throws MemberLockedException, LoginFaliedException {
         AccountLockInfo accountLockInfo = getAccountLockInfoByMemberId(memberId);
-        if (accountLockInfo == null) {
-            Member member = memberService.getMemberByIdOrThrow(memberId);
-            accountLockInfo = createAccountLockInfo(member);
+        try {
+            if (accountLockInfo == null) {
+                Member member = memberService.getMemberByIdOrThrow(memberId);
+                accountLockInfo = createAccountLockInfo(member);
+            }
+        } catch (NotFoundException e) {
+            throw new LoginFaliedException("ID에 해당하는 멤버를 찾을 수 없습니다.");
         }
+
         if (isMemberLocked(accountLockInfo)) {
             throw new MemberLockedException();
         }
@@ -119,9 +125,8 @@ public class AccountLockInfoService {
                 incrementFailCountAndLock(request, accountLockInfo);
             }
         } catch (NotFoundException e){
-            throw new LoginFaliedException();
+            throw new LoginFaliedException("ID에 해당하는 멤버를 찾을 수 없습니다.");
         }
-        throw new LoginFaliedException();
     }
 
     public void incrementFailCountAndLock(HttpServletRequest request, AccountLockInfo accountLockInfo) {
