@@ -16,10 +16,10 @@ import page.clab.api.domain.login.application.RedisTokenService;
 import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
-import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
+import page.clab.api.global.util.ResponseUtil;
 import page.clab.api.global.util.SwaggerUtil;
 
 import java.io.IOException;
@@ -48,12 +48,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAccessMonitorService.isBlocked(clientIpAddress)) {
             log.info("[{}] : 서비스 이용이 제한된 IP입니다.", clientIpAddress);
-            ResponseModel responseModel = ResponseModel.builder()
-                    .success(false)
-                    .build();
-            response.getWriter().write(responseModel.toJson());
-            response.setContentType("application/json");
-            ((HttpServletResponse) response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            ResponseUtil.sendErrorResponse((HttpServletResponse) response, HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
