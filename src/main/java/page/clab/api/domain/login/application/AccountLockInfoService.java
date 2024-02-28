@@ -2,7 +2,6 @@ package page.clab.api.domain.login.application;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -79,13 +78,12 @@ public class AccountLockInfoService {
         return new PagedResponseDto<>(banList.map(AccountLockInfoResponseDto::of));
     }
 
-    public void handleAccountLockInfo(String memberId) throws MemberLockedException {
+    public void handleAccountLockInfo(String memberId) throws MemberLockedException, LoginFaliedException {
         AccountLockInfo accountLockInfo = getAccountLockInfoByMemberId(memberId);
         if (accountLockInfo == null) {
-            Member member = memberService.getMemberByIdOrThrow(memberId);
+            Member member = memberService.getMemberByIdOrThrowLoginFaild(memberId);
             accountLockInfo = createAccountLockInfo(member);
         }
-
         if (isMemberLocked(accountLockInfo)) {
             throw new MemberLockedException();
         }
@@ -94,10 +92,7 @@ public class AccountLockInfoService {
     }
 
     public boolean isMemberLocked(AccountLockInfo accountLockInfo) {
-        if (accountLockInfo != null && accountLockInfo.getIsLock() && isLockedForDuration(accountLockInfo)) {
-            return true;
-        }
-        return false;
+        return accountLockInfo != null && accountLockInfo.getIsLock() && isLockedForDuration(accountLockInfo);
     }
 
     public boolean isLockedForDuration(AccountLockInfo accountLockInfo) {
@@ -114,15 +109,12 @@ public class AccountLockInfoService {
 
     public void updateAccountLockInfo(HttpServletRequest request, String memberId) throws LoginFaliedException {
         AccountLockInfo accountLockInfo = getAccountLockInfoByMemberId(memberId);
-        try {
-            if ((accountLockInfo == null)) {
-                createAccountLockInfo(memberService.getMemberByIdOrThrow(memberId));
-            } else {
-                incrementFailCountAndLock(request, accountLockInfo);
-            }
-        } catch (NotFoundException e){
-            throw new LoginFaliedException("ID에 해당하는 멤버를 찾을 수 없습니다.");
+        if ((accountLockInfo == null)) {
+            createAccountLockInfo(memberService.getMemberByIdOrThrowLoginFaild(memberId));
+        } else {
+            incrementFailCountAndLock(request, accountLockInfo);
         }
+        throw new LoginFaliedException();
     }
 
     public void incrementFailCountAndLock(HttpServletRequest request, AccountLockInfo accountLockInfo) {
