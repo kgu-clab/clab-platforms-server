@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,6 +42,7 @@ import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
 import page.clab.api.global.util.SwaggerUtil;
 
+import java.io.IOException;
 import java.util.List;
 
 @Configuration
@@ -132,33 +134,49 @@ public class SecurityConfig {
                 .cors(cors ->
                         cors.configurationSource(corsConfigurationSource())
                 )
-                .authorizeRequests(authorizeRequests ->
-                        authorizeRequests
-                                .requestMatchers(SwaggerUtil.getSwaggerPatterns()).hasRole(role)
-                                .requestMatchers(PERMIT_ALL).permitAll()
-                                .requestMatchers(HttpMethod.GET, PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
-                                .requestMatchers(HttpMethod.POST, PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
-                                .anyRequest().authenticated()
-                )
+                .authorizeRequests(this::configureRequests)
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository, whitelistService), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAccessMonitorService, slackService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(
+                        new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository, whitelistService),
+                        UsernamePasswordAuthenticationFilter.class
+                )
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAccessMonitorService, slackService, blacklistIpRepository),
+                        UsernamePasswordAuthenticationFilter.class
+                )
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer
-                                .authenticationEntryPoint((request, response, authException) -> {
-                                    String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-                                    apiLogging(request, response, clientIpAddress, "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.");
-                                    redisIpAccessMonitorService.registerLoginAttempt(request, clientIpAddress);
-                                    ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
-                                })
-                                .accessDeniedHandler((request, response, accessDeniedException) -> {
-                                    String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-                                    apiLogging(request, response, clientIpAddress, "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.");
-                                    redisIpAccessMonitorService.registerLoginAttempt(request, clientIpAddress);
-                                    ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN);
-                                })
+                                .authenticationEntryPoint((request, response, authException) ->
+                                        handleAuthenticationEntryPoint(request, response)
+                                )
+                                .accessDeniedHandler((request, response, accessDeniedException) ->
+                                        handleAccessDenied(request, response)
+                                )
                 );
         return http.build();
+    }
+
+    private ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry configureRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequests) {
+        return authorizeRequests
+                .requestMatchers(SwaggerUtil.getSwaggerPatterns()).hasRole(role)
+                .requestMatchers(PERMIT_ALL).permitAll()
+                .requestMatchers(HttpMethod.GET, PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
+                .requestMatchers(HttpMethod.POST, PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
+                .anyRequest().authenticated();
+    }
+
+    private void handleAuthenticationEntryPoint(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        apiLogging(request, response, clientIpAddress, "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.");
+        redisIpAccessMonitorService.registerLoginAttempt(request, clientIpAddress);
+        ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
+    }
+
+    private void handleAccessDenied(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        apiLogging(request, response, clientIpAddress, "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.");
+        redisIpAccessMonitorService.registerLoginAttempt(request, clientIpAddress);
+        ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN);
     }
 
     @Bean
