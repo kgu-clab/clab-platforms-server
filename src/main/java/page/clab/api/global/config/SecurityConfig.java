@@ -36,9 +36,9 @@ import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
 import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
-import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
+import page.clab.api.global.util.ResponseUtil;
 import page.clab.api.global.util.SwaggerUtil;
 
 import java.util.List;
@@ -149,23 +149,13 @@ public class SecurityConfig {
                                     String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
                                     apiLogging(request, response, clientIpAddress, "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.");
                                     redisIpAccessMonitorService.registerLoginAttempt(request, clientIpAddress);
-                                    ResponseModel responseModel = ResponseModel.builder()
-                                            .success(false)
-                                            .build();
-                                    response.getWriter().write(responseModel.toJson());
-                                    response.setContentType("application/json");
-                                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                    ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
                                 })
                                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                                     String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
                                     apiLogging(request, response, clientIpAddress, "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.");
                                     redisIpAccessMonitorService.registerLoginAttempt(request, clientIpAddress);
-                                    ResponseModel responseModel = ResponseModel.builder()
-                                            .success(false)
-                                            .build();
-                                    response.getWriter().write(responseModel.toJson());
-                                    response.setContentType("application/json");
-                                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                                    ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN);
                                 })
                 );
         return http.build();

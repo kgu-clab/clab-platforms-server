@@ -13,8 +13,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.application.WhitelistService;
-import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.util.HttpReqResUtil;
+import page.clab.api.global.util.ResponseUtil;
 import page.clab.api.global.util.SwaggerUtil;
 
 import java.io.IOException;
@@ -54,35 +54,25 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
         List<String> whitelistIps = whitelistService.loadWhitelistIps();
         if (!whitelistIps.contains(clientIpAddress) && !whitelistIps.contains("*")) {
             log.info("[{}] : 화이트리스트에 등록되지 않은 IP입니다.", clientIpAddress);
-            ResponseModel responseModel = ResponseModel.builder()
-                    .success(false)
-                    .build();
-            response.getWriter().write(responseModel.toJson());
-            response.setContentType("application/json");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
         if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAccessMonitorService.isBlocked(clientIpAddress)) {
             log.info("[{}] : 정책에 의해 차단된 IP입니다.", clientIpAddress);
-            ResponseModel responseModel = ResponseModel.builder()
-                    .success(false)
-                    .build();
-            response.getWriter().write(responseModel.toJson());
-            response.setContentType("application/json");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader == null || !authorizationHeader.startsWith("Basic ")) {
             response.setHeader("WWW-Authenticate", "Basic realm=\"Please enter your username and password\"");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+            ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
         String base64Credentials = authorizationHeader.substring("Basic ".length());
         String credentials = new String(Base64.getDecoder().decode(base64Credentials));
         String[] values = credentials.split(":", 2);
         if (values.length < 2) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid basic authentication token");
+            ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
         String username = values[0];
@@ -90,7 +80,7 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
         Authentication authentication = getAuthenticationManager().authenticate(authRequest);
         if (authentication == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid username or password");
+            ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);

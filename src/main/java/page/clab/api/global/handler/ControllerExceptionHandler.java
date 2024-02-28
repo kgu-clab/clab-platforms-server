@@ -35,9 +35,7 @@ import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.book.exception.OverdueException;
-import page.clab.api.global.exception.DecryptionException;
 import page.clab.api.domain.login.exception.DuplicateLoginException;
-import page.clab.api.global.exception.EncryptionException;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
@@ -52,11 +50,14 @@ import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException
 import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
+import page.clab.api.global.exception.DecryptionException;
+import page.clab.api.global.exception.EncryptionException;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
 import page.clab.api.global.exception.SecretKeyCreationException;
+import page.clab.api.global.util.ResponseUtil;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -94,7 +95,7 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel badRequestException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        return makeExceptionResponseModel(false, null);
+        return ResponseUtil.createErrorResponse(false, null);
     }
 
     @ExceptionHandler({
@@ -109,7 +110,7 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel unAuthorizeException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        return makeExceptionResponseModel(false, null);
+        return ResponseUtil.createErrorResponse(false, null);
     }
 
     @ExceptionHandler({
@@ -119,7 +120,7 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel deniedException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        return makeExceptionResponseModel(false, null);
+        return ResponseUtil.createErrorResponse(false, null);
     }
 
     @ExceptionHandler({
@@ -132,7 +133,7 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel notFoundException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_OK);
-        return makeExceptionResponseModel(true, new ArrayList<>());
+        return ResponseUtil.createErrorResponse(true, new ArrayList<>());
     }
 
     @ExceptionHandler({
@@ -149,7 +150,7 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel conflictException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_CONFLICT);
-        return makeExceptionResponseModel(false, null);
+        return ResponseUtil.createErrorResponse(false, null);
     }
 
     @ExceptionHandler({
@@ -171,7 +172,7 @@ public class ControllerExceptionHandler {
         slackService.sendServerErrorNotification(request, e);
         log.warn(e.getMessage());
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        return makeExceptionResponseModel(false, null);
+        return ResponseUtil.createErrorResponse(false, null);
     }
 
     @ExceptionHandler({
@@ -190,18 +191,11 @@ public class ControllerExceptionHandler {
 
         log.info("Validation error: {}", errorList);
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        return makeExceptionResponseModel(false, null);
+        return ResponseUtil.createErrorResponse(false, null);
     }
 
     private String getMessage(String code) {
         return messageSource.getMessage(code, null, Locale.getDefault());
-    }
-
-    private ResponseModel makeExceptionResponseModel(boolean success, Object message) {
-        return ResponseModel.builder()
-                .success(success)
-                .data(message)
-                .build();
     }
 
 }
