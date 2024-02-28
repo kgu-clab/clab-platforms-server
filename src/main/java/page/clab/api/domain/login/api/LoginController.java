@@ -1,8 +1,10 @@
 package page.clab.api.domain.login.api;
 
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.login.application.LoginService;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
+import page.clab.api.domain.login.dto.response.LoginHeader;
 import page.clab.api.domain.login.dto.response.TokenInfo;
+import page.clab.api.domain.login.dto.response.TwoFactorAuthenticationHeader;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -36,15 +40,16 @@ public class LoginController {
     @PostMapping("")
     public ResponseModel login(
             HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse,
             @Valid @RequestBody LoginRequestDto loginRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, MemberLockedException, LoginFaliedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
+        LoginHeader headerData = loginService.login(httpServletRequest, loginRequestDto);
+        httpServletResponse.setHeader("X-Clab-Auth", headerData.toJson());
         ResponseModel responseModel = ResponseModel.builder().build();
-        String secretKey = loginService.login(httpServletRequest, loginRequestDto);
-        responseModel.addData(secretKey);
         return responseModel;
     }
 
@@ -52,15 +57,16 @@ public class LoginController {
     @PostMapping("/authenticator")
     public ResponseModel authenticator(
             HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse,
             @Valid @RequestBody TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, LoginFaliedException, MemberLockedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
+        TwoFactorAuthenticationHeader headerData = loginService.authenticator(httpServletRequest, twoFactorAuthenticationRequestDto);
+        httpServletResponse.setHeader("X-Clab-Auth", headerData.toJson());
         ResponseModel responseModel = ResponseModel.builder().build();
-        TokenInfo tokenInfo = loginService.authenticator(httpServletRequest, twoFactorAuthenticationRequestDto);
-        responseModel.addData(tokenInfo);
         return responseModel;
     }
 
