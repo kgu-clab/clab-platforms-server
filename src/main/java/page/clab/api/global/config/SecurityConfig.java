@@ -26,9 +26,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.domain.login.application.RedisTokenService;
 import page.clab.api.global.auth.application.CustomUserDetailsService;
@@ -68,6 +66,8 @@ public class SecurityConfig {
 
     private final WhitelistService whitelistService;
 
+    private final CorsConfigurationSource corsConfigurationSource;
+
     @Value("${security.account.swagger.username}")
     private String username;
 
@@ -76,21 +76,6 @@ public class SecurityConfig {
 
     @Value("${security.account.swagger.role}")
     private String role;
-
-    @Value("${security.cors.allowed-origins}")
-    private String[] corsAllowedOrigins;
-
-    @Value("${security.cors.allowed-methods}")
-    private String[] corsAllowedMethods;
-
-    @Value("${security.cors.allowed-headers}")
-    private String[] corsAllowedHeaders;
-
-    @Value("${security.cors.allow-credentials}")
-    private boolean corsAllowCredentials;
-
-    @Value("${security.cors.configuration-path}")
-    private String corsConfigurationPath;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -101,7 +86,7 @@ public class SecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .cors(cors ->
-                        cors.configurationSource(corsConfigurationSource())
+                        cors.configurationSource(corsConfigurationSource)
                 )
                 .authorizeRequests(this::configureRequests)
                 .authenticationProvider(authenticationProvider())
@@ -177,23 +162,6 @@ public class SecurityConfig {
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-
-        corsConfiguration.setAllowedOriginPatterns(
-                List.of(corsAllowedOrigins)
-        );
-        corsConfiguration.setAllowedMethods(List.of(corsAllowedMethods));
-        corsConfiguration.setAllowedHeaders(List.of(corsAllowedHeaders));
-        corsConfiguration.setAllowCredentials(corsAllowCredentials);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration(corsConfigurationPath, corsConfiguration);
-
-        return source;
     }
 
     private void apiLogging(HttpServletRequest request, HttpServletResponse response, String clientIpAddress, String message) {
