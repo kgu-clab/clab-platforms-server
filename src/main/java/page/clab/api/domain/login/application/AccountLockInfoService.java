@@ -112,10 +112,14 @@ public class AccountLockInfoService {
 
     public void updateAccountLockInfo(HttpServletRequest request, String memberId) throws LoginFaliedException {
         AccountLockInfo accountLockInfo = getAccountLockInfoByMemberId(memberId);
-        if ((accountLockInfo == null)) {
-            createAccountLockInfo(memberService.getMemberByIdOrThrow(memberId));
-        } else {
-            incrementFailCountAndLock(request, accountLockInfo);
+        try {
+            if ((accountLockInfo == null)) {
+                createAccountLockInfo(memberService.getMemberByIdOrThrow(memberId));
+            } else {
+                incrementFailCountAndLock(request, accountLockInfo);
+            }
+        } catch (NotFoundException e){
+            throw new LoginFaliedException();
         }
         throw new LoginFaliedException();
     }

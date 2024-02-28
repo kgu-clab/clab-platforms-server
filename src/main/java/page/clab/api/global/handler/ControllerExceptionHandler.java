@@ -103,7 +103,6 @@ public class ControllerExceptionHandler {
             UnAuthorizeException.class,
             AccessDeniedException.class,
             LoginFaliedException.class,
-            UsernameNotFoundException.class,
             MemberLockedException.class,
             BadCredentialsException.class,
             TokenValidateException.class,
