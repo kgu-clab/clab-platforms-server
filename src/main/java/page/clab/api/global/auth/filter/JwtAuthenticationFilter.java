@@ -15,6 +15,8 @@ import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.domain.login.application.RedisTokenService;
 import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
+import page.clab.api.global.auth.exception.TokenMisuseException;
+import page.clab.api.global.auth.exception.TokenNotFoundException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
@@ -67,12 +69,12 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         if (token != null && jwtTokenProvider.validateToken(token)) {
             RedisToken redisToken = (jwtTokenProvider.isRefreshToken(token)) ? redisTokenService.getRedisTokenByRefreshToken(token) : redisTokenService.getRedisTokenByAccessToken(token);
             if (redisToken == null) {
-                throw new SecurityException("존재하지 않는 토큰입니다.");
+                throw new TokenNotFoundException("존재하지 않는 토큰입니다.");
             }
             if (!redisToken.getIp().equals(clientIpAddress)) {
                 redisTokenService.deleteRedisTokenByAccessToken(token);
                 slackService.sendSecurityAlertNotification(request, SecurityAlertType.DUPLICATE_LOGIN, "토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
-                throw new SecurityException("[" + clientIpAddress + "] 토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
+                throw new TokenMisuseException("[" + clientIpAddress + "] 토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
             }
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);

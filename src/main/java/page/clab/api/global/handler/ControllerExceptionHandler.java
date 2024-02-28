@@ -43,6 +43,9 @@ import page.clab.api.domain.review.exception.AlreadyReviewedException;
 import page.clab.api.domain.sharedAccount.exception.SharedAccountInUseException;
 import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
 import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
+import page.clab.api.global.auth.exception.TokenForgeryException;
+import page.clab.api.global.auth.exception.TokenMisuseException;
+import page.clab.api.global.auth.exception.TokenNotFoundException;
 import page.clab.api.global.auth.exception.TokenValidateException;
 import page.clab.api.global.auth.exception.UnAuthorizeException;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -106,6 +109,9 @@ public class ControllerExceptionHandler {
             MemberLockedException.class,
             BadCredentialsException.class,
             TokenValidateException.class,
+            TokenNotFoundException.class,
+            TokenMisuseException.class,
+            TokenForgeryException.class,
             MessagingException.class,
     })
     public ResponseModel unAuthorizeException(HttpServletResponse response, Exception e){
