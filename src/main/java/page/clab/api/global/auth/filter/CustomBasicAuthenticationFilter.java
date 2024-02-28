@@ -16,6 +16,7 @@ import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.util.HttpReqResUtil;
+import page.clab.api.global.util.SwaggerUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,7 +25,6 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 @Slf4j
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
@@ -36,16 +36,6 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
     private final boolean whitelistEnabled;
 
     private final String whitelistPath;
-
-    private static final String[] SWAGGER_PATTERNS = {
-            "/v2/api-docs",
-            "/v3/api-docs",
-            "/swagger-resources",
-            "/swagger-resources/.*",
-            "/swagger-ui.html",
-            "/v3/api-docs/.*",
-            "/swagger-ui/.*"
-    };
 
     public CustomBasicAuthenticationFilter(
             AuthenticationManager authenticationManager,
@@ -65,7 +55,7 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         String path = request.getRequestURI();
-        if (!isSwaggerRequest(path)) {
+        if (!SwaggerUtil.isSwaggerRequest(path)) {
             chain.doFilter(request, response);
             return;
         }
@@ -116,15 +106,6 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         super.doFilterInternal(request, response, chain);
-    }
-
-    private boolean isSwaggerRequest(String path) {
-        for (String pattern : SWAGGER_PATTERNS) {
-            if (Pattern.compile(pattern).matcher(path).find()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private List<String> loadWhitelistIps() {
