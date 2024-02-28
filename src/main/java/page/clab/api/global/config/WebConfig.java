@@ -13,7 +13,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -40,15 +39,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${resource.file.url}")
     private String fileURL;
 
-    @Value("${security.cors.path-pattern}")
-    private String corsPathPattern;
-
-    @Value("${security.cors.allowed-origins}")
-    private String[] corsAllowedOrigins;
-
-    @Value("${security.cors.allowed-methods}")
-    private String[] corsAllowedMethods;
-
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         log.info("Resource UploadedFile Mapped : {} -> {}", fileURL, filePath);
@@ -66,13 +56,6 @@ public class WebConfig implements WebMvcConfigurer {
                         throw new FileNotFoundException("Resource not found: " + resourcePath);
                     }
                 });
-    }
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping(corsPathPattern)
-                .allowedOrigins(corsAllowedOrigins)
-                .allowedMethods(corsAllowedMethods);
     }
 
     @Bean

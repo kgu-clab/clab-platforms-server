@@ -19,6 +19,8 @@ import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.auth.exception.TokenForgeryException;
+import page.clab.api.global.auth.exception.TokenMisuseException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
@@ -102,13 +104,13 @@ public class LoginService {
         String id = authentication.getName();
         Member member = memberService.getMemberById(id);
         if (member == null) {
-            throw new SecurityException("존재하지 않는 회원입니다.");
+            throw new TokenForgeryException("존재하지 않는 회원에 대한 토큰입니다.");
         }
         RedisToken redisToken = redisTokenService.getRedisTokenByRefreshToken(token);
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         if (!redisToken.getIp().equals(clientIpAddress)) {
             redisTokenService.deleteRedisTokenByAccessToken(redisToken.getAccessToken());
-            throw new SecurityException("올바르지 않은 토큰 재발급 시도가 감지되어 토큰을 삭제하였습니다.");
+            throw new TokenMisuseException("[" + clientIpAddress + "] 토큰 발급 IP와 다른 IP에서 발급을 시도하여 토큰을 삭제하였습니다.");
         }
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
         redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), tokenInfo, redisToken.getIp());
