@@ -32,6 +32,7 @@ import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.domain.login.application.RedisTokenService;
 import page.clab.api.global.auth.application.CustomUserDetailsService;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
+import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
 import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
@@ -63,11 +64,7 @@ public class SecurityConfig {
 
     private final SlackService slackService;
 
-    @Value("${security.swagger.whitelist.enabled}")
-    private boolean whitelistEnabled;
-
-    @Value("${security.swagger.whitelist.path}")
-    private String whitelistPath;
+    private final WhitelistService whitelistService;
 
     @Value("${security.account.swagger.username}")
     private String username;
@@ -144,7 +141,7 @@ public class SecurityConfig {
                                 .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository, whitelistEnabled, whitelistPath), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository, whitelistService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAccessMonitorService, slackService, blacklistIpRepository), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer
