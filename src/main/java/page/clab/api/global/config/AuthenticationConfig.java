@@ -23,7 +23,7 @@ public class AuthenticationConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
 
-    private final OpenApiSecurityProperties openApiSecurityProperties;
+    private final OpenApiAccountProperties openApiAccountProperties;
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
@@ -32,9 +32,9 @@ public class AuthenticationConfig {
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails user = User.withUsername(openApiSecurityProperties.getUsername())
-                .password(passwordEncoder().encode(openApiSecurityProperties.getPassword()))
-                .roles(openApiSecurityProperties.getRole())
+        UserDetails user = User.withUsername(openApiAccountProperties.getUsername())
+                .password(passwordEncoder().encode(openApiAccountProperties.getPassword()))
+                .roles(openApiAccountProperties.getRole())
                 .build();
         return new InMemoryUserDetailsManager(user);
     }
