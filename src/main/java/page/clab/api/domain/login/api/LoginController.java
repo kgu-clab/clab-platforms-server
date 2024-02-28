@@ -1,11 +1,15 @@
 package page.clab.api.domain.login.api;
 
+
+import com.google.gson.JsonArray;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -36,32 +40,49 @@ public class LoginController {
     @PostMapping("")
     public ResponseModel login(
             HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse,
             @Valid @RequestBody LoginRequestDto loginRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, MemberLockedException, LoginFaliedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        ResponseModel responseModel = ResponseModel.builder().build();
+
         String secretKey = loginService.login(httpServletRequest, loginRequestDto);
-        responseModel.addData(secretKey);
-        return responseModel;
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("secretKey", secretKey);
+        jsonObject.put("status", 1200);
+        String jsonString = jsonObject.toString();
+
+        httpServletResponse.setHeader("X-Clab-Auth", jsonString);
+        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+
+        return ResponseModel.builder().build();
     }
 
     @Operation(summary = "TOTP 인증", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("/authenticator")
     public ResponseModel authenticator(
             HttpServletRequest httpServletRequest,
+            HttpServletResponse httpServletResponse,
             @Valid @RequestBody TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto,
             BindingResult result
     ) throws MethodArgumentNotValidException, LoginFaliedException, MemberLockedException {
         if (result.hasErrors()) {
             throw new MethodArgumentNotValidException(null, result);
         }
-        ResponseModel responseModel = ResponseModel.builder().build();
+
         TokenInfo tokenInfo = loginService.authenticator(httpServletRequest, twoFactorAuthenticationRequestDto);
-        responseModel.addData(tokenInfo);
-        return responseModel;
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("status", 1200);
+        jsonObject.put("accessToken", tokenInfo.getAccessToken());
+        jsonObject.put("refreshToken", tokenInfo.getRefreshToken());
+        String jsonString = jsonObject.toString();
+
+        httpServletResponse.setHeader("X-Clab-Auth", jsonString);
+        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+
+        return ResponseModel.builder().build();
     }
 
     @Operation(summary = "[S] TOTP 초기화", description = "ROLE_SUPER 권한이 필요함")
