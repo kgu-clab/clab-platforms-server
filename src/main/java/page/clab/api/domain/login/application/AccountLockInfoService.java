@@ -81,10 +81,10 @@ public class AccountLockInfoService {
         return new PagedResponseDto<>(banList.map(AccountLockInfoResponseDto::of));
     }
 
-    public void handleAccountLockInfo(String memberId) throws MemberLockedException {
+    public void handleAccountLockInfo(String memberId) throws MemberLockedException, LoginFaliedException {
         AccountLockInfo accountLockInfo = getAccountLockInfoByMemberId(memberId);
         if (accountLockInfo == null) {
-            Member member = memberService.getMemberByIdOrThrow(memberId);
+            Member member = memberService.getMemberByIdOrThrowLoginFaild(memberId);
             accountLockInfo = createAccountLockInfo(member);
         }
         if (isMemberLocked(accountLockInfo)) {
@@ -95,10 +95,7 @@ public class AccountLockInfoService {
     }
 
     public boolean isMemberLocked(AccountLockInfo accountLockInfo) {
-        if (accountLockInfo != null && accountLockInfo.getIsLock() && isLockedForDuration(accountLockInfo)) {
-            return true;
-        }
-        return false;
+        return accountLockInfo != null && accountLockInfo.getIsLock() && isLockedForDuration(accountLockInfo);
     }
 
     public boolean isLockedForDuration(AccountLockInfo accountLockInfo) {
@@ -116,7 +113,7 @@ public class AccountLockInfoService {
     public void updateAccountLockInfo(HttpServletRequest request, String memberId) throws LoginFaliedException {
         AccountLockInfo accountLockInfo = getAccountLockInfoByMemberId(memberId);
         if ((accountLockInfo == null)) {
-            createAccountLockInfo(memberService.getMemberByIdOrThrow(memberId));
+            createAccountLockInfo(memberService.getMemberByIdOrThrowLoginFaild(memberId));
         } else {
             incrementFailCountAndLock(request, accountLockInfo);
         }

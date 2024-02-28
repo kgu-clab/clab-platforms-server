@@ -14,16 +14,21 @@ import page.clab.api.domain.login.domain.LoginAttemptResult;
 import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
+import page.clab.api.domain.login.dto.response.LoginHeader;
 import page.clab.api.domain.login.dto.response.TokenInfo;
+import page.clab.api.domain.login.dto.response.TwoFactorAuthenticationHeader;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.auth.domain.ClabAuthResponseStatus;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +53,7 @@ public class LoginService {
     private final SlackService slackService;
 
     @Transactional
-    public String login(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFaliedException, MemberLockedException {
+    public LoginHeader login(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFaliedException, MemberLockedException {
         String id = loginRequestDto.getId();
         String password = loginRequestDto.getPassword();
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
@@ -58,16 +63,21 @@ public class LoginService {
             memberService.setLastLoginTime(id);
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.SUCCESS);
             if (!authenticatorService.isAuthenticatorExist(id)) {
-                return authenticatorService.generateSecretKey(id);
+                return LoginHeader.builder()
+                        .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
+                        .secretKey(authenticatorService.generateSecretKey(id))
+                        .build();
             }
         } catch (BadCredentialsException e) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
             accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
         }
-        return null;
+        return LoginHeader.builder()
+                .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
+                .build();
     }
 
-    public TokenInfo authenticator(HttpServletRequest httpServletRequest, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
+    public TwoFactorAuthenticationHeader authenticator(HttpServletRequest httpServletRequest, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
         String id = twoFactorAuthenticationRequestDto.getMemberId();
         String totp = twoFactorAuthenticationRequestDto.getTotp();
         accountLockInfoService.handleAccountLockInfo(id);
@@ -84,7 +94,11 @@ public class LoginService {
         if (memberService.isMemberSuperRole(loginMember)) {
             slackService.sendAdminLoginNotification(loginMember.getId(), loginMember.getRole());
         }
-        return tokenInfo;
+        return TwoFactorAuthenticationHeader.builder()
+                .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
+                .accessToken(tokenInfo.getAccessToken())
+                .refreshToken(tokenInfo.getRefreshToken())
+                .build();
     }
 
     public String resetAuthenticator(String memberId) {
