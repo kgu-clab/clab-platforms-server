@@ -113,26 +113,60 @@ public class SharedAccountUsageService {
         throw new SharedAccountUsageStateException("이용 중 취소/완료, 예약 취소만 가능합니다.");
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Transactional
+    @Scheduled(fixedRate = 60000) // 1분마다 실행
     public void updateSharedAccountUsageStatus() {
         LocalDateTime currentDateTime = LocalDateTime.now();
-        List<SharedAccountUsage> reservedSharedAccountUsages = sharedAccountUsageRepository
-                .findByStatusAndStartTimeBefore(SharedAccountUsageStatus.RESERVED, currentDateTime);
-        for (SharedAccountUsage reservedSharedAccountUsage : reservedSharedAccountUsages) {
-            reservedSharedAccountUsage.setStatus(SharedAccountUsageStatus.IN_USE);
-            reservedSharedAccountUsage.getSharedAccount().setInUse(true);
-            sharedAccountUsageRepository.save(reservedSharedAccountUsage);
-            sharedAccountService.save(reservedSharedAccountUsage.getSharedAccount());
-            log.info("{}: 공유 계정 이용 내역이 이용 중으로 변경되었습니다.", reservedSharedAccountUsage.getSharedAccount().getUsername());
-        }
-        List<SharedAccountUsage> inUseSharedAccountUsages = sharedAccountUsageRepository
+        updateOverdueReservedUsages(currentDateTime);
+        updateStartableReservedUsages(currentDateTime);
+        updateCompletedInUseUsages(currentDateTime);
+    }
+
+    private void updateOverdueReservedUsages(LocalDateTime currentDateTime) {
+        // 이미 종료 시간이 지난 예약된 상태의 사용 내역을 완료로 업데이트
+        List<SharedAccountUsage> overdueReservedUsages = sharedAccountUsageRepository
+                .findByStatusAndEndTimeBefore(SharedAccountUsageStatus.RESERVED, currentDateTime);
+        overdueReservedUsages.forEach(this::updateUsageStatusToCompleted);
+    }
+
+    private void updateStartableReservedUsages(LocalDateTime currentDateTime) {
+        // 현재 시간이 시작 시간과 종료 시간 사이인 예약된 상태의 사용 내역을 이용 중으로 업데이트
+        List<SharedAccountUsage> startableReservedUsages = sharedAccountUsageRepository
+                .findByStatusAndStartTimeBeforeAndEndTimeAfter(SharedAccountUsageStatus.RESERVED, currentDateTime, currentDateTime);
+        startableReservedUsages.forEach(this::updateUsageStatusToInUse);
+    }
+
+    private void updateCompletedInUseUsages(LocalDateTime currentDateTime) {
+        // 이용 중 상태이고, 현재 시간보다 종료 시간이 이전인 경우 완료로 업데이트
+        List<SharedAccountUsage> completedInUseUsages = sharedAccountUsageRepository
                 .findByStatusAndEndTimeBefore(SharedAccountUsageStatus.IN_USE, currentDateTime);
-        for (SharedAccountUsage inUseSharedAccountUsage : inUseSharedAccountUsages) {
-            inUseSharedAccountUsage.setStatus(SharedAccountUsageStatus.COMPLETED);
-            inUseSharedAccountUsage.getSharedAccount().setInUse(false);
-            sharedAccountUsageRepository.save(inUseSharedAccountUsage);
-            sharedAccountService.save(inUseSharedAccountUsage.getSharedAccount());
-            log.info("{}: 공유 계정 이용 내역이 완료로 변경되었습니다.", inUseSharedAccountUsage.getSharedAccount().getUsername());
+        completedInUseUsages.forEach(usage -> {
+            updateUsageStatusToCompleted(usage);
+            checkAndUpdateSharedAccountInUseStatus(usage.getSharedAccount());
+        });
+    }
+
+    private void updateUsageStatusToInUse(SharedAccountUsage usage) {
+        log.info("{}: 공유 계정 이용 내역을 이용 중으로 변경합니다.", usage.getSharedAccount().getUsername());
+        usage.setStatus(SharedAccountUsageStatus.IN_USE);
+        usage.getSharedAccount().setInUse(true);
+        sharedAccountUsageRepository.save(usage);
+    }
+
+    private void updateUsageStatusToCompleted(SharedAccountUsage usage) {
+        log.info("{}: 공유 계정 이용 내역을 완료로 변경합니다.", usage.getSharedAccount().getUsername());
+        usage.setStatus(SharedAccountUsageStatus.COMPLETED);
+        usage.getSharedAccount().setInUse(false);
+        sharedAccountUsageRepository.save(usage);
+    }
+
+    private void checkAndUpdateSharedAccountInUseStatus(SharedAccount sharedAccount) {
+        // 현재 시간을 기준으로 공유 계정이 다른 사용 내역에 의해 이용 중인지 확인
+        boolean isInUse = sharedAccountUsageRepository.existsBySharedAccountAndStatusAndEndTimeAfter(sharedAccount, SharedAccountUsageStatus.IN_USE, LocalDateTime.now());
+        // 다른 사용 내역에 의해 이용 중이면 isInUse 상태를 true로 유지
+        if (isInUse) {
+            sharedAccount.setInUse(true);
+            sharedAccountService.save(sharedAccount);
         }
     }
 
