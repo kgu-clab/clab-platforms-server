@@ -8,7 +8,7 @@ import java.io.IOException;
 public class ResponseUtil {
 
     public static void sendErrorResponse(HttpServletResponse response, int status) throws IOException {
-        ResponseModel responseModel = page.clab.api.global.common.dto.ResponseModel.builder()
+        ResponseModel responseModel = ResponseModel.builder()
                 .success(false)
                 .build();
         response.getWriter().write(responseModel.toJson());
