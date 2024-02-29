@@ -1,14 +1,6 @@
 package page.clab.api.global.common.file.application;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
-import jakarta.mail.Multipart;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,10 +15,18 @@ import page.clab.api.global.common.file.dao.UploadFileRepository;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
+import page.clab.api.global.common.file.exception.AssignmentFileUploadFailException;
 import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.FileSystemUtil;
+
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -144,7 +144,7 @@ public class FileService {
                 .build();
     }
 
-    public boolean isValidPathVariable(String path) throws PermissionDeniedException {
+    public boolean isValidPathVariable(String path) throws AssignmentFileUploadFailException {
         switch (path.split(Pattern.quote(File.separator))[0]) {
             case "assignment" : {
                 Long activityGroupId = Long.parseLong(path.split(Pattern.quote(File.separator))[1]);
@@ -152,13 +152,13 @@ public class FileService {
                 String memberId = path.split(Pattern.quote(File.separator))[3];
                 Member assignmentWriter = memberService.getMemberById(memberId);
                 if (!activityGroupRepository.existsById(activityGroupId)) {
-                    throw new NotFoundException("해당 활동은 존재하지 않습니다.");
+                    throw new AssignmentFileUploadFailException("해당 활동은 존재하지 않습니다.");
                 }
                 if (!groupMemberRepository.existsByMemberAndActivityGroupId(assignmentWriter, activityGroupId)) {
-                    throw new NotFoundException("해당 활동에 참여하고 있지 않은 멤버입니다.");
+                    throw new AssignmentFileUploadFailException("해당 활동에 참여하고 있지 않은 멤버입니다.");
                 }
                 if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
-                    throw new NotFoundException("해당 활동그룹 게시판이 존재하지 않습니다.");
+                    throw new AssignmentFileUploadFailException("해당 활동그룹 게시판이 존재하지 않습니다.");
                 }
                 return true;
             }
