@@ -7,10 +7,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,12 +21,15 @@ import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUsageRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(indexes = {@Index(name = "idx_shared_account_usage", columnList = "status, startTime, endTime")})
 public class SharedAccountUsage {
 
     @Id
