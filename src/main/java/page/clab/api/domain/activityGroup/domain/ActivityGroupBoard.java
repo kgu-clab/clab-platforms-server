@@ -88,7 +88,6 @@ public class ActivityGroupBoard {
     }
 
     public void update(ActivityGroupBoardUpdateRequestDto dto, FileService fileService) {
-        Optional.ofNullable(dto.getCategory()).ifPresent(this::setCategory);
         Optional.ofNullable(dto.getTitle()).ifPresent(this::setTitle);
         Optional.ofNullable(dto.getContent()).ifPresent(this::setContent);
         Optional.ofNullable(dto.getDueDateTime()).ifPresent(this::setDueDateTime);
