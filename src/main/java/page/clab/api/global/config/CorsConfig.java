@@ -37,6 +37,7 @@ public class CorsConfig {
         corsConfiguration.setAllowedMethods(List.of(corsAllowedMethods));
         corsConfiguration.setAllowedHeaders(List.of(corsAllowedHeaders));
         corsConfiguration.setAllowCredentials(corsAllowCredentials);
+        corsConfiguration.addExposedHeader("X-Clab-Auth");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration(corsConfigurationPath, corsConfiguration);
