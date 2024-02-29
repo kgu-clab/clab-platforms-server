@@ -123,6 +123,7 @@ public class SharedAccountUsageService {
             reservedSharedAccountUsage.getSharedAccount().setInUse(true);
             sharedAccountUsageRepository.save(reservedSharedAccountUsage);
             sharedAccountService.save(reservedSharedAccountUsage.getSharedAccount());
+            log.info("{}: 공유 계정 이용 내역이 이용 중으로 변경되었습니다.", reservedSharedAccountUsage.getSharedAccount().getUsername());
         }
         List<SharedAccountUsage> inUseSharedAccountUsages = sharedAccountUsageRepository
                 .findByStatusAndEndTimeBefore(SharedAccountUsageStatus.IN_USE, currentDateTime);
@@ -131,6 +132,7 @@ public class SharedAccountUsageService {
             inUseSharedAccountUsage.getSharedAccount().setInUse(false);
             sharedAccountUsageRepository.save(inUseSharedAccountUsage);
             sharedAccountService.save(inUseSharedAccountUsage.getSharedAccount());
+            log.info("{}: 공유 계정 이용 내역이 완료로 변경되었습니다.", inUseSharedAccountUsage.getSharedAccount().getUsername());
         }
     }
 
