@@ -92,18 +92,24 @@ public class SharedAccountUsageService {
         if (!(sharedAccountUsage.getMemberId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("공유 계정 이용 상태 변경 권한이 없습니다.");
         }
-        if (!sharedAccountUsage.getStatus().equals(SharedAccountUsageStatus.IN_USE)) {
-            throw new SharedAccountUsageStateException("이용 중인 공유 계정만 상태 변경이 가능합니다.");
+        if (SharedAccountUsageStatus.IN_USE.equals(sharedAccountUsage.getStatus())) {
+            if (SharedAccountUsageStatus.CANCELED.equals(status) || SharedAccountUsageStatus.COMPLETED.equals(status)) {
+                SharedAccount sharedAccount = sharedAccountUsage.getSharedAccount();
+                sharedAccount.setInUse(false);
+                sharedAccountUsage.setStatus(status);
+                sharedAccountService.save(sharedAccount);
+                sharedAccountUsageRepository.save(sharedAccountUsage);
+                return sharedAccount.getId();
+            }
+        } else if (SharedAccountUsageStatus.RESERVED.equals(sharedAccountUsage.getStatus())) {
+            if (SharedAccountUsageStatus.CANCELED.equals(status)) {
+                sharedAccountUsage.setStatus(status);
+                sharedAccountUsageRepository.save(sharedAccountUsage);
+                return sharedAccountUsage.getId();
+            }
+            throw new SharedAccountUsageStateException("예약된 공유 계정은 취소만 가능합니다.");
         }
-        if (!status.equals(SharedAccountUsageStatus.IN_USE)) {
-            SharedAccount sharedAccount = sharedAccountUsage.getSharedAccount();
-            sharedAccount.setInUse(false);
-            sharedAccountUsage.setStatus(status);
-            sharedAccountUsage.setEndTime(LocalDateTime.now());
-            sharedAccountService.save(sharedAccount);
-            return sharedAccountUsageRepository.save(sharedAccountUsage).getId();
-        }
-        return sharedAccountUsage.getId();
+        throw new SharedAccountUsageStateException("이용 중 취소/완료, 예약 취소만 가능합니다.");
     }
 
     @Scheduled(fixedRate = 60000)
