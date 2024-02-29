@@ -45,19 +45,24 @@ public class SharedAccountUsageService {
             LocalDateTime currentDateTime = LocalDateTime.now();
             LocalDateTime startTime = sharedAccountUsageRequestDto.getStartTime() != null ? sharedAccountUsageRequestDto.getStartTime() : currentDateTime;
             LocalDateTime endTime = sharedAccountUsageRequestDto.getEndTime();
+
             if (endTime.isBefore(currentDateTime)) {
                 throw new InvalidUsageTimeException("이용 종료 시간은 현재 시간 이후여야 합니다.");
             }
             if (endTime.isBefore(startTime)) {
                 throw new InvalidUsageTimeException("이용 종료 시간은 시작 시간 이후여야 합니다.");
             }
+
             String memberId = memberService.getCurrentMember().getId();
-            SharedAccountUsage sharedAccountUsage = new SharedAccountUsage();
-            sharedAccountUsage.setSharedAccount(sharedAccount);
-            sharedAccountUsage.setMemberId(memberId);
-            sharedAccountUsage.setStartTime(startTime);
-            sharedAccountUsage.setEndTime(endTime);
+            SharedAccountUsage sharedAccountUsage = SharedAccountUsage.builder()
+                    .sharedAccount(sharedAccount)
+                    .memberId(memberId)
+                    .startTime(startTime)
+                    .endTime(endTime)
+                    .build();
+
             validateSharedAccountUsage(sharedAccountId, startTime, endTime);
+
             if (!currentDateTime.isBefore(startTime) && currentDateTime.isBefore(endTime)) {
                 sharedAccountUsage.setStatus(SharedAccountUsageStatus.IN_USE);
                 sharedAccount.setInUse(true);
