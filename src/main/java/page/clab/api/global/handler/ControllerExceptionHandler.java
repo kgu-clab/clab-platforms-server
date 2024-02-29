@@ -40,6 +40,7 @@ import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
 import page.clab.api.domain.review.exception.AlreadyReviewedException;
+import page.clab.api.domain.sharedAccount.exception.InvalidUsageTimeException;
 import page.clab.api.domain.sharedAccount.exception.SharedAccountInUseException;
 import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
 import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
@@ -151,6 +152,7 @@ public class ControllerExceptionHandler {
             DuplicateAttendanceException.class,
             DuplicateAbsentExcuseException.class,
             DuplicateReportException.class,
+            InvalidUsageTimeException.class,
             SharedAccountInUseException.class,
             SharedAccountUsageStateException.class
     })

@@ -16,6 +16,7 @@ import page.clab.api.domain.sharedAccount.domain.SharedAccountUsage;
 import page.clab.api.domain.sharedAccount.domain.SharedAccountUsageStatus;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUsageRequestDto;
 import page.clab.api.domain.sharedAccount.dto.response.SharedAccountUsageResponseDto;
+import page.clab.api.domain.sharedAccount.exception.InvalidUsageTimeException;
 import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
@@ -44,10 +45,10 @@ public class SharedAccountUsageService {
         LocalDateTime startTime = sharedAccountUsageRequestDto.getStartTime();
         LocalDateTime endTime = sharedAccountUsageRequestDto.getEndTime();
         if (startTime.isBefore(currentDateTime)) {
-            throw new IllegalArgumentException("이용 시작 시간은 현재 시간 이후여야 합니다.");
+            throw new InvalidUsageTimeException("이용 시작 시간은 현재 시간 이후여야 합니다.");
         }
         if (endTime.isBefore(startTime)) {
-            throw new IllegalArgumentException("이용 종료 시간은 시작 시간 이후여야 합니다.");
+            throw new InvalidUsageTimeException("이용 종료 시간은 시작 시간 이후여야 합니다.");
         }
         try {
             String memberId = memberService.getCurrentMember().getId();
