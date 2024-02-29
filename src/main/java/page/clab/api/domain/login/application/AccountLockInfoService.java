@@ -1,9 +1,9 @@
 package page.clab.api.domain.login.application;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,6 +19,8 @@ import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.exception.NotFoundException;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -28,11 +30,15 @@ public class AccountLockInfoService {
 
     private final SlackService slackService;
 
+    private final RedisTokenService redisTokenService;
+
     private final AccountLockInfoRepository accountLockInfoRepository;
 
-    private static final int MAX_LOGIN_FAILURES = 5;
+    @Value("${security.login-attempt.max-failures}")
+    private int maxLoginFailures;
 
-    private static final int LOCK_DURATION_MINUTES = 5;
+    @Value("${security.login-attempt.lock-duration-minutes}")
+    private int lockDurationMinutes;
 
     public AccountLockInfo createAccountLockInfo(Member member) {
         AccountLockInfo accountLockInfo = AccountLockInfo.builder()
@@ -52,6 +58,7 @@ public class AccountLockInfoService {
         }
         accountLockInfo.setIsLock(true);
         accountLockInfo.setLockUntil(LocalDateTime.of(9999, 12, 31, 23, 59));
+        redisTokenService.deleteRedisTokenByMemberId(memberId);
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_BANNED, "ID: " + member.getId() + ", Name: " + member.getName());
         return accountLockInfoRepository.save(accountLockInfo).getId();
     }
@@ -74,10 +81,10 @@ public class AccountLockInfoService {
         return new PagedResponseDto<>(banList.map(AccountLockInfoResponseDto::of));
     }
 
-    public void handleAccountLockInfo(String memberId) throws MemberLockedException {
+    public void handleAccountLockInfo(String memberId) throws MemberLockedException, LoginFaliedException {
         AccountLockInfo accountLockInfo = getAccountLockInfoByMemberId(memberId);
         if (accountLockInfo == null) {
-            Member member = memberService.getMemberByIdOrThrow(memberId);
+            Member member = memberService.getMemberByIdOrThrowLoginFaild(memberId);
             accountLockInfo = createAccountLockInfo(member);
         }
         if (isMemberLocked(accountLockInfo)) {
@@ -88,10 +95,7 @@ public class AccountLockInfoService {
     }
 
     public boolean isMemberLocked(AccountLockInfo accountLockInfo) {
-        if (accountLockInfo != null && accountLockInfo.getIsLock() && isLockedForDuration(accountLockInfo)) {
-            return true;
-        }
-        return false;
+        return accountLockInfo != null && accountLockInfo.getIsLock() && isLockedForDuration(accountLockInfo);
     }
 
     public boolean isLockedForDuration(AccountLockInfo accountLockInfo) {
@@ -109,7 +113,7 @@ public class AccountLockInfoService {
     public void updateAccountLockInfo(HttpServletRequest request, String memberId) throws LoginFaliedException {
         AccountLockInfo accountLockInfo = getAccountLockInfoByMemberId(memberId);
         if ((accountLockInfo == null)) {
-            createAccountLockInfo(memberService.getMemberByIdOrThrow(memberId));
+            createAccountLockInfo(memberService.getMemberByIdOrThrowLoginFaild(memberId));
         } else {
             incrementFailCountAndLock(request, accountLockInfo);
         }
@@ -118,9 +122,9 @@ public class AccountLockInfoService {
 
     public void incrementFailCountAndLock(HttpServletRequest request, AccountLockInfo accountLockInfo) {
         accountLockInfo.setLoginFailCount(accountLockInfo.getLoginFailCount() + 1);
-        if (accountLockInfo.getLoginFailCount() >= MAX_LOGIN_FAILURES) {
+        if (accountLockInfo.getLoginFailCount() >= maxLoginFailures) {
             if (accountLockInfo.getIsLock().equals(false)) {
-                accountLockInfo.setLockUntil(LocalDateTime.now().plusMinutes(LOCK_DURATION_MINUTES));
+                accountLockInfo.setLockUntil(LocalDateTime.now().plusMinutes(lockDurationMinutes));
                 accountLockInfo.setIsLock(true);
                 slackService.sendSecurityAlertNotification(request, SecurityAlertType.REPEATED_LOGIN_FAILURES,
                         "[" + accountLockInfo.getMember().getId() + "/" + accountLockInfo.getMember().getName() + "]" + " 로그인 실패 횟수 초과로 계정이 잠겼습니다.");
@@ -131,7 +135,7 @@ public class AccountLockInfoService {
 
     public AccountLockInfo getAccountLockInfoByMemberIdOrThrow(String memberId) {
         return accountLockInfoRepository.findByMember_Id(memberId)
-                .orElseThrow(() -> new NotFoundException("해당 유저가 없습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
     }
 
     public AccountLockInfo getAccountLockInfoByMemberId(String memberId) {

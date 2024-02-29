@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.sharedAccount.application.SharedAccountService;
 import page.clab.api.domain.sharedAccount.application.SharedAccountUsageService;
+import page.clab.api.domain.sharedAccount.domain.SharedAccountUsageStatus;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountRequestDto;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUpdateRequestDto;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUsageRequestDto;
@@ -58,7 +59,7 @@ public class SharedAccountController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 공동 계정 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 공동 계정 조회(상태 포함)", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getSharedAccounts(
@@ -117,7 +118,7 @@ public class SharedAccountController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 공동 계정 이용 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 공동 계정 이용 내역 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/usage")
     public ResponseModel getSharedAccountUsages(
@@ -131,25 +132,14 @@ public class SharedAccountController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 공동 계정 이용 신청 취소", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 공동 계정 이용 상태 변경", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @PatchMapping("/usage/cancel/{usageId}")
-    public ResponseModel cancelSharedAccountUsage(
-            @PathVariable(name = "usageId") Long usageId
+    @PatchMapping("/usage/{usageId}")
+    public ResponseModel updateSharedAccountUsage(
+            @PathVariable(name = "usageId") Long usageId,
+            @RequestParam(name = "status") SharedAccountUsageStatus status
     ) throws PermissionDeniedException {
-        Long id = sharedAccountUsageService.cancelSharedAccountUsage(usageId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 공동 계정 이용 완료", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @PatchMapping("/usage/complete/{usageId}")
-    public ResponseModel completeSharedAccountUsage(
-            @PathVariable(name = "usageId") Long usageId
-    ) throws PermissionDeniedException {
-        Long id = sharedAccountUsageService.completeSharedAccountUsage(usageId);
+        Long id = sharedAccountUsageService.updateSharedAccountUsage(usageId, status);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
