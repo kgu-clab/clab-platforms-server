@@ -115,25 +115,23 @@ public class SharedAccountUsageService {
 
     @Scheduled(fixedRate = 60000)
     public void updateSharedAccountUsageStatus() {
-        LocalDateTime now = LocalDateTime.now();
-        List<SharedAccountUsage> completedSharedAccountUsages = sharedAccountUsageRepository
-                .findByStatusAndEndTimeBefore(SharedAccountUsageStatus.IN_USE, now);
-        completedSharedAccountUsages.forEach(sharedAccountUsage -> {
-            SharedAccount sharedAccount = sharedAccountUsage.getSharedAccount();
-            sharedAccount.setInUse(false);
-            sharedAccountUsage.setStatus(SharedAccountUsageStatus.COMPLETED);
-            sharedAccountService.save(sharedAccount);
-            sharedAccountUsageRepository.save(sharedAccountUsage);
-        });
+        LocalDateTime currentDateTime = LocalDateTime.now();
         List<SharedAccountUsage> reservedSharedAccountUsages = sharedAccountUsageRepository
-                .findByStatusAndEndTimeBefore(SharedAccountUsageStatus.RESERVED, now);
-        reservedSharedAccountUsages.forEach(sharedAccountUsage -> {
-            SharedAccount sharedAccount = sharedAccountUsage.getSharedAccount();
-            sharedAccount.setInUse(true);
-            sharedAccountUsage.setStatus(SharedAccountUsageStatus.IN_USE);
-            sharedAccountService.save(sharedAccount);
-            sharedAccountUsageRepository.save(sharedAccountUsage);
-        });
+                .findByStatusAndStartTimeBefore(SharedAccountUsageStatus.RESERVED, currentDateTime);
+        for (SharedAccountUsage reservedSharedAccountUsage : reservedSharedAccountUsages) {
+            reservedSharedAccountUsage.setStatus(SharedAccountUsageStatus.IN_USE);
+            reservedSharedAccountUsage.getSharedAccount().setInUse(true);
+            sharedAccountUsageRepository.save(reservedSharedAccountUsage);
+            sharedAccountService.save(reservedSharedAccountUsage.getSharedAccount());
+        }
+        List<SharedAccountUsage> inUseSharedAccountUsages = sharedAccountUsageRepository
+                .findByStatusAndEndTimeBefore(SharedAccountUsageStatus.IN_USE, currentDateTime);
+        for (SharedAccountUsage inUseSharedAccountUsage : inUseSharedAccountUsages) {
+            inUseSharedAccountUsage.setStatus(SharedAccountUsageStatus.COMPLETED);
+            inUseSharedAccountUsage.getSharedAccount().setInUse(false);
+            sharedAccountUsageRepository.save(inUseSharedAccountUsage);
+            sharedAccountService.save(inUseSharedAccountUsage.getSharedAccount());
+        }
     }
 
     public SharedAccountUsage getSharedAccountUsageByIdOrThrow(Long usageId) {
