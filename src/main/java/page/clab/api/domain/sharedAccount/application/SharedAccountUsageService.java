@@ -16,7 +16,6 @@ import page.clab.api.domain.sharedAccount.domain.SharedAccountUsage;
 import page.clab.api.domain.sharedAccount.domain.SharedAccountUsageStatus;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUsageRequestDto;
 import page.clab.api.domain.sharedAccount.dto.response.SharedAccountUsageResponseDto;
-import page.clab.api.domain.sharedAccount.exception.SharedAccountInUseException;
 import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
@@ -41,9 +40,6 @@ public class SharedAccountUsageService {
     public Long requestSharedAccountUsage(SharedAccountUsageRequestDto sharedAccountUsageRequestDto) throws CustomOptimisticLockingFailureException {
         Long sharedAccountId = sharedAccountUsageRequestDto.getSharedAccountId();
         SharedAccount sharedAccount = sharedAccountService.getSharedAccountByIdOrThrow(sharedAccountId);
-        if (sharedAccount.isInUse()) {
-            throw new SharedAccountInUseException("이미 이용 중인 계정입니다.");
-        }
         LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDateTime startTime = sharedAccountUsageRequestDto.getStartTime();
         LocalDateTime endTime = sharedAccountUsageRequestDto.getEndTime();
@@ -59,8 +55,24 @@ public class SharedAccountUsageService {
             sharedAccountUsage.setId(null);
             sharedAccountUsage.setSharedAccount(sharedAccount);
             sharedAccountUsage.setMemberId(memberId);
-            sharedAccountUsage.setStatus(SharedAccountUsageStatus.IN_USE);
-            sharedAccount.setInUse(true);
+            List<SharedAccountUsage> reservedSharedAccountUsages = sharedAccountUsageRepository
+                    .findBySharedAccountIdAndStatusAndStartTimeBeforeAndEndTimeAfter(
+                            sharedAccountId, SharedAccountUsageStatus.RESERVED, endTime, startTime);
+            if (!reservedSharedAccountUsages.isEmpty()) {
+                throw new SharedAccountUsageStateException("해당 시간대와 겹치는 예약 내역이 있습니다. 다른 시간대를 선택해주세요.");
+            }
+            List<SharedAccountUsage> inUseSharedAccountUsages = sharedAccountUsageRepository
+                    .findBySharedAccountIdAndStatusAndStartTimeBeforeAndEndTimeAfter(
+                            sharedAccountId, SharedAccountUsageStatus.IN_USE, endTime, startTime);
+            if (!inUseSharedAccountUsages.isEmpty()) {
+                throw new SharedAccountUsageStateException("해당 시간대에 이미 이용 중인 공유 계정이 있습니다. 다른 시간대를 선택해주세요.");
+            }
+            if (currentDateTime.isAfter(startTime) && currentDateTime.isBefore(endTime)) {
+                sharedAccountUsage.setStatus(SharedAccountUsageStatus.IN_USE);
+                sharedAccount.setInUse(true);
+            } else {
+                sharedAccountUsage.setStatus(SharedAccountUsageStatus.RESERVED);
+            }
             sharedAccountUsageRepository.save(sharedAccountUsage);
             return sharedAccountService.save(sharedAccount).getId();
         } catch (ObjectOptimisticLockingFailureException e) {
@@ -95,37 +107,31 @@ public class SharedAccountUsageService {
     }
 
     @Scheduled(fixedRate = 60000)
-    public void findAndUpdateCompletedStatus() {
-        List<SharedAccountUsage> inUseSharedAccountUsages = getSharedAccountUsageByStatusAndEndTimeBefore();
-        for (SharedAccountUsage sharedAccountUsage : inUseSharedAccountUsages) {
-            int retryCount = 0;
-            boolean isProcessingSuccessful = false;
-            while (retryCount < 3 && !isProcessingSuccessful) {
-                try {
-                    SharedAccount sharedAccount = sharedAccountUsage.getSharedAccount();
-                    sharedAccount.setInUse(false);
-                    sharedAccountUsage.setStatus(SharedAccountUsageStatus.COMPLETED);
-                    sharedAccountService.save(sharedAccount);
-                    sharedAccountUsageRepository.save(sharedAccountUsage);
-                    isProcessingSuccessful = true;
-                } catch (Exception e) {
-                    retryCount++;
-                }
-            }
-            if (!isProcessingSuccessful) {
-                log.error("공유 계정 이용 완료 처리에 실패했습니다. 공유 계정 이용 내역 ID: {}", sharedAccountUsage.getId());
-            }
-        }
+    public void updateSharedAccountUsageStatus() {
+        LocalDateTime now = LocalDateTime.now();
+        List<SharedAccountUsage> completedSharedAccountUsages = sharedAccountUsageRepository
+                .findByStatusAndEndTimeBefore(SharedAccountUsageStatus.IN_USE, now);
+        completedSharedAccountUsages.forEach(sharedAccountUsage -> {
+            SharedAccount sharedAccount = sharedAccountUsage.getSharedAccount();
+            sharedAccount.setInUse(false);
+            sharedAccountUsage.setStatus(SharedAccountUsageStatus.COMPLETED);
+            sharedAccountService.save(sharedAccount);
+            sharedAccountUsageRepository.save(sharedAccountUsage);
+        });
+        List<SharedAccountUsage> reservedSharedAccountUsages = sharedAccountUsageRepository
+                .findByStatusAndEndTimeBefore(SharedAccountUsageStatus.RESERVED, now);
+        reservedSharedAccountUsages.forEach(sharedAccountUsage -> {
+            SharedAccount sharedAccount = sharedAccountUsage.getSharedAccount();
+            sharedAccount.setInUse(true);
+            sharedAccountUsage.setStatus(SharedAccountUsageStatus.IN_USE);
+            sharedAccountService.save(sharedAccount);
+            sharedAccountUsageRepository.save(sharedAccountUsage);
+        });
     }
 
     public SharedAccountUsage getSharedAccountUsageByIdOrThrow(Long usageId) {
         return sharedAccountUsageRepository.findById(usageId)
                 .orElseThrow(() -> new NotFoundException("공유 계정 이용 내역을 찾을 수 없습니다."));
-    }
-
-    public List<SharedAccountUsage> getSharedAccountUsageByStatusAndEndTimeBefore() {
-        return sharedAccountUsageRepository
-                .findByStatusAndEndTimeBefore(SharedAccountUsageStatus.IN_USE, LocalDateTime.now());
     }
 
 }
