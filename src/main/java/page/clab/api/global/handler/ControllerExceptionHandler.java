@@ -50,6 +50,7 @@ import page.clab.api.global.auth.exception.TokenNotFoundException;
 import page.clab.api.global.auth.exception.TokenValidateException;
 import page.clab.api.global.auth.exception.UnAuthorizeException;
 import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.file.exception.AssignmentFileUploadFailException;
 import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
 import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.common.slack.application.SlackService;
@@ -141,6 +142,14 @@ public class ControllerExceptionHandler {
     public ResponseModel notFoundException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_OK);
         return ResponseUtil.createErrorResponse(true, new ArrayList<>());
+    }
+
+    @ExceptionHandler({
+            AssignmentFileUploadFailException.class
+    })
+    public ResponseModel notFoundException(HttpServletResponse response, AssignmentFileUploadFailException e) {
+        response.setStatus(HttpServletResponse.SC_OK);
+        return ResponseUtil.createErrorResponse(false, null);
     }
 
     @ExceptionHandler({

@@ -17,6 +17,7 @@ import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestD
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
+import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardUpdateResponseDto;
 import page.clab.api.domain.activityGroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
 import page.clab.api.domain.member.application.MemberService;
@@ -167,7 +168,7 @@ public class ActivityGroupBoardService {
         return getActivityGroupBoardById(assignmentBoard.get(0).getId());
     }
 
-    public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardUpdateRequestDto activityGroupBoardUpdateRequestDto) throws PermissionDeniedException {
+    public ActivityGroupBoardUpdateResponseDto updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardUpdateRequestDto activityGroupBoardUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
         if (!member.getId().equals(board.getMember().getId()) && !memberService.isMemberAdminRole(member)) {
@@ -175,7 +176,10 @@ public class ActivityGroupBoardService {
         }
         board.update(activityGroupBoardUpdateRequestDto, fileService);
         board.setUpdateTime(LocalDateTime.now());
-        return activityGroupBoardRepository.save(board).getId();
+        return ActivityGroupBoardUpdateResponseDto.builder()
+                .id(activityGroupBoardRepository.save(board).getId())
+                .parentId(board.getParent() != null ? board.getParent().getId() : null)
+                .build();
     }
 
     public Long deleteActivityGroupBoard(Long activityGroupBoardId) throws PermissionDeniedException {
