@@ -1,8 +1,6 @@
 package page.clab.api.domain.sharedAccount.application;
 
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,6 +22,9 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -73,39 +74,24 @@ public class SharedAccountUsageService {
     }
 
     @Transactional
-    public Long cancelSharedAccountUsage(Long usageId) throws PermissionDeniedException {
+    public Long updateSharedAccountUsage(Long usageId, SharedAccountUsageStatus status) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         SharedAccountUsage sharedAccountUsage = getSharedAccountUsageByIdOrThrow(usageId);
         if (!(sharedAccountUsage.getMemberId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("공유 계정 이용 취소 권한이 없습니다.");
+            throw new PermissionDeniedException("공유 계정 이용 상태 변경 권한이 없습니다.");
         }
         if (!sharedAccountUsage.getStatus().equals(SharedAccountUsageStatus.IN_USE)) {
-            throw new SharedAccountUsageStateException("이용 중인 공유 계정만 취소가 가능합니다.");
+            throw new SharedAccountUsageStateException("이용 중인 공유 계정만 상태 변경이 가능합니다.");
         }
-        SharedAccount sharedAccount = sharedAccountUsage.getSharedAccount();
-        sharedAccount.setInUse(false);
-        sharedAccountUsage.setStatus(SharedAccountUsageStatus.CANCELED);
-        sharedAccountUsageRepository.save(sharedAccountUsage);
-        return sharedAccountService.save(sharedAccount).getId();
-    }
-
-    @Transactional
-    public Long completeSharedAccountUsage(Long usageId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        SharedAccountUsage sharedAccountUsage = getSharedAccountUsageByIdOrThrow(usageId);
-        if (!(sharedAccountUsage.getMemberId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("공유 계정 이용 완료 권한이 없습니다.");
+        if (!status.equals(SharedAccountUsageStatus.IN_USE)) {
+            SharedAccount sharedAccount = sharedAccountUsage.getSharedAccount();
+            sharedAccount.setInUse(false);
+            sharedAccountUsage.setStatus(status);
+            sharedAccountUsage.setEndTime(LocalDateTime.now());
+            sharedAccountService.save(sharedAccount);
+            return sharedAccountUsageRepository.save(sharedAccountUsage).getId();
         }
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        if (sharedAccountUsage.getStatus().equals(SharedAccountUsageStatus.COMPLETED)) {
-            throw new SharedAccountUsageStateException("이미 완료된 공유 계정 이용 내역입니다.");
-        }
-        SharedAccount sharedAccount = sharedAccountUsage.getSharedAccount();
-        sharedAccount.setInUse(false);
-        sharedAccountUsage.setEndTime(currentDateTime);
-        sharedAccountUsage.setStatus(SharedAccountUsageStatus.COMPLETED);
-        sharedAccountUsageRepository.save(sharedAccountUsage);
-        return sharedAccountService.save(sharedAccount).getId();
+        return sharedAccountUsage.getId();
     }
 
     @Scheduled(fixedRate = 60000)
