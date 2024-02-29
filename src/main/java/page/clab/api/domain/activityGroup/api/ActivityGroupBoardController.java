@@ -22,6 +22,7 @@ import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestD
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
+import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardUpdateResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -141,9 +142,9 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId,
             @Valid @RequestBody ActivityGroupBoardUpdateRequestDto activityGroupBoardUpdateRequestDto
     ) throws PermissionDeniedException {
-        Long id = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, activityGroupBoardUpdateRequestDto);
+        ActivityGroupBoardUpdateResponseDto responseDto = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, activityGroupBoardUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
+        responseModel.addData(responseDto);
         return responseModel;
     }
 
