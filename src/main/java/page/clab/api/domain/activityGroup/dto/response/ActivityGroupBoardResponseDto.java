@@ -37,6 +37,8 @@ public class ActivityGroupBoardResponseDto {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime updateTime;
+
     public static ActivityGroupBoardResponseDto of(ActivityGroupBoard activityGroupBoard) {
         ActivityGroupBoardResponseDto activityGroupBoardResponseDto = ModelMapperUtil.getModelMapper().map(activityGroupBoard, ActivityGroupBoardResponseDto.class);
         activityGroupBoardResponseDto.setParentId(activityGroupBoard.getParent() != null ? activityGroupBoard.getParent().getId() : null);

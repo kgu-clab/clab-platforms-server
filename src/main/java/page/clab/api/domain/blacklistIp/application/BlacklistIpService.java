@@ -23,14 +23,14 @@ public class BlacklistIpService {
 
     private final BlacklistIpRepository blacklistIpRepository;
 
-    public Long addBlacklistedIp(HttpServletRequest request, String ipAddress) {
+    public String addBlacklistedIp(HttpServletRequest request, String ipAddress) {
         BlacklistIp blacklistIp = getBlacklistIpByIpAddress(ipAddress);
         if (blacklistIp != null) {
-            return blacklistIp.getId();
+            return blacklistIp.getIpAddress();
         }
         blacklistIp = BlacklistIp.builder().ipAddress(ipAddress).build();
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Added IP: " + ipAddress);
-        return blacklistIpRepository.save(blacklistIp).getId();
+        return blacklistIpRepository.save(blacklistIp).getIpAddress();
     }
 
     public PagedResponseDto<BlacklistIp> getBlacklistedIps(Pageable pageable) {
@@ -39,17 +39,16 @@ public class BlacklistIpService {
     }
 
     @Transactional
-    public Long deleteBlacklistedIp(HttpServletRequest request, String ipAddress) {
+    public String deleteBlacklistedIp(HttpServletRequest request, String ipAddress) {
         BlacklistIp blacklistIp = getBlacklistIpByIpAddressOrThrow(ipAddress);
         blacklistIpRepository.delete(blacklistIp);
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Deleted IP: " + ipAddress);
-        return blacklistIp.getId();
+        return blacklistIp.getIpAddress();
     }
 
     public void clearBlacklist(HttpServletRequest request) {
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Deleted IP: ALL");
         blacklistIpRepository.deleteAll();
-        log.info("서비스 접근 제한 IP 목록을 초기화하였습니다.");
     }
 
     private BlacklistIp getBlacklistIpByIpAddressOrThrow(String ipAddress) {

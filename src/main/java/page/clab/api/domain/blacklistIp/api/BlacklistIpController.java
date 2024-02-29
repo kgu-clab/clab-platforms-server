@@ -35,9 +35,9 @@ public class BlacklistIpController {
             HttpServletRequest request,
             @RequestParam(name = "ipAddress") String ipAddress
     ) {
-        Long id = blacklistIpService.addBlacklistedIp(request, ipAddress);
+        String addedIp = blacklistIpService.addBlacklistedIp(request, ipAddress);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
+        responseModel.addData(addedIp);
         return responseModel;
     }
 
@@ -62,16 +62,18 @@ public class BlacklistIpController {
             HttpServletRequest request,
             @RequestParam(name = "ipAddress") String ipAddress
     ) {
-        Long id = blacklistIpService.deleteBlacklistedIp(request, ipAddress);
+        String deletedIp = blacklistIpService.deleteBlacklistedIp(request, ipAddress);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
+        responseModel.addData(deletedIp);
         return responseModel;
     }
 
     @Operation(summary = "[S] 블랙리스트 IP 초기화", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("/clear")
-    public ResponseModel clearBlacklist(HttpServletRequest request) {
+    public ResponseModel clearBlacklist(
+            HttpServletRequest request
+    ) {
         blacklistIpService.clearBlacklist(request);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;

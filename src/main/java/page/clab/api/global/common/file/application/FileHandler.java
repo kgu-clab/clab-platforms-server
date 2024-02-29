@@ -1,6 +1,17 @@
 package page.clab.api.global.common.file.application;
 
 import com.google.common.base.Strings;
+import javax.imageio.ImageIO;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+import page.clab.api.global.common.file.domain.UploadedFile;
+import page.clab.api.global.common.file.exception.FileUploadFailException;
+import page.clab.api.global.util.ImageCompressionUtil;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -9,17 +20,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import javax.imageio.ImageIO;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-import page.clab.api.global.common.file.dao.UploadFileRepository;
-import page.clab.api.global.common.file.domain.UploadedFile;
-import page.clab.api.global.common.file.exception.FileUploadFailException;
-import page.clab.api.global.util.ImageCompressionUtil;
 
 @Component
 @Slf4j
@@ -29,16 +29,19 @@ public class FileHandler {
     @Value("${resource.file.path}")
     private String filePath;
 
+    @Value("${resource.file.image-quality}")
+    private float imageQuality;
+
     private final Set<String> disallowExtensions = new HashSet<>();
 
-    private final Set<String> imageExtensions = new HashSet<>();
+    private final Set<String> compressibleImageExtensions = new HashSet<>();
 
     public FileHandler(
             @Value("${resource.file.disallow-extension}") String[] disallowExtensions,
-            @Value("${resource.file.image-extension}") String[] imageExtensions
+            @Value("${resource.file.compressible-image-extension}") String[] compressibleImageExtensions
     ) {
-        Arrays.stream(disallowExtensions).forEach(this.disallowExtensions::add);
-        Arrays.stream(imageExtensions).forEach(this.imageExtensions::add);
+        this.disallowExtensions.addAll(Arrays.asList(disallowExtensions));
+        this.compressibleImageExtensions.addAll(Arrays.asList(compressibleImageExtensions));
     }
 
     public void init() {
@@ -116,8 +119,8 @@ public class FileHandler {
     private void save(File file, String savePath, String extension) throws FileUploadFailException {
         try {
             String os = System.getProperty("os.name").toLowerCase();
-            if (imageExtensions.contains(extension.toLowerCase())) {
-                ImageCompressionUtil.compressImage(savePath, 0.5f);
+            if (compressibleImageExtensions.contains(extension.toLowerCase())) {
+                ImageCompressionUtil.compressImage(savePath, imageQuality);
             }
             if (os.contains("win")) {
                 file.setReadable(true);

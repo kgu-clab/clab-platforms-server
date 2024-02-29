@@ -1,8 +1,6 @@
 package page.clab.api.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +13,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 import page.clab.api.global.handler.ApiLoggingInterceptor;
 import page.clab.api.global.util.HtmlCharacterEscapes;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 @Configuration
 @RequiredArgsConstructor
@@ -56,13 +56,6 @@ public class WebConfig implements WebMvcConfigurer {
                         throw new FileNotFoundException("Resource not found: " + resourcePath);
                     }
                 });
-    }
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("*")
-                .allowedOrigins("*")
-                .allowedMethods("*");
     }
 
     @Bean

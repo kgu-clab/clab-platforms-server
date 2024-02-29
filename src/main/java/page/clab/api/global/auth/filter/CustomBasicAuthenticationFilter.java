@@ -4,94 +4,105 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Base64;
-import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
-import page.clab.api.global.auth.application.RedisIpAttemptService;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
+import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.util.HttpReqResUtil;
+import page.clab.api.global.util.ResponseUtil;
+import page.clab.api.global.util.SwaggerUtil;
+
+import java.io.IOException;
+import java.util.Base64;
+import java.util.List;
 
 @Slf4j
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
-    private final RedisIpAttemptService redisIpAttemptService;
+    private final RedisIpAccessMonitorService redisIpAccessMonitorService;
 
     private final BlacklistIpRepository blacklistIpRepository;
 
-    private static final String[] SWAGGER_PATTERNS = {
-            "/v2/api-docs",
-            "/v3/api-docs",
-            "/swagger-resources",
-            "/swagger-resources/.*",
-            "/swagger-ui.html",
-            "/v3/api-docs/.*",
-            "/swagger-ui/.*"
-    };
+    private final WhitelistService whitelistService;
 
-    public CustomBasicAuthenticationFilter(AuthenticationManager authenticationManager, RedisIpAttemptService redisIpAttemptService, BlacklistIpRepository blacklistIpRepository) {
+    public CustomBasicAuthenticationFilter(
+            AuthenticationManager authenticationManager,
+            RedisIpAccessMonitorService redisIpAccessMonitorService,
+            BlacklistIpRepository blacklistIpRepository,
+            WhitelistService whitelistService
+    ) {
         super(authenticationManager);
-        this.redisIpAttemptService = redisIpAttemptService;
+        this.redisIpAccessMonitorService = redisIpAccessMonitorService;
         this.blacklistIpRepository = blacklistIpRepository;
+        this.whitelistService = whitelistService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         String path = request.getRequestURI();
-        if (!isSwaggerRequest(path)) {
+        if (!SwaggerUtil.isSwaggerRequest(path)) {
             chain.doFilter(request, response);
             return;
         }
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAttemptService.isBlocked(clientIpAddress)) {
-            log.info("[{}] : 서비스 이용이 제한된 IP입니다.", clientIpAddress);
-            ResponseModel responseModel = ResponseModel.builder()
-                    .success(false)
-                    .build();
-            response.getWriter().write(responseModel.toJson());
-            response.setContentType("application/json");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        if (!verifyIpAddressAccess(response)) {
             return;
         }
-        String authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Basic ")) {
-            response.setHeader("WWW-Authenticate", "Basic realm=\"Please enter your username and password\"");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+        if (!authenticateUserCredentials(request, response)) {
             return;
         }
-        String base64Credentials = authorizationHeader.substring("Basic ".length());
-        String credentials = new String(Base64.getDecoder().decode(base64Credentials));
-        String[] values = credentials.split(":", 2);
-        if (values.length < 2) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid basic authentication token");
-            return;
-        }
-        String username = values[0];
-        String password = values[1];
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
-        Authentication authentication = getAuthenticationManager().authenticate(authRequest);
-        if (authentication == null) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid username or password");
-            return;
-        }
-        SecurityContextHolder.getContext().setAuthentication(authentication);
         super.doFilterInternal(request, response, chain);
     }
 
-    private boolean isSwaggerRequest(String path) {
-        for (String pattern : SWAGGER_PATTERNS) {
-            if (Pattern.compile(pattern).matcher(path).find()) {
-                return true;
-            }
+    private boolean authenticateUserCredentials(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Basic ")) {
+            response.setHeader("WWW-Authenticate", "Basic realm=\"Please enter your username and password\"");
+            ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
         }
-        return false;
+        String[] credentials = decodeCredentials(authorizationHeader);
+        if (credentials.length < 2) {
+            ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST);
+            return false;
+        }
+        String username = credentials[0];
+        String password = credentials[1];
+        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+        Authentication authentication = getAuthenticationManager().authenticate(authRequest);
+        if (authentication == null) {
+            ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
+        }
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return true;
+    }
+
+    private boolean verifyIpAddressAccess(HttpServletResponse response) throws IOException {
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        List<String> whitelistIps = whitelistService.loadWhitelistIps();
+        if (!(whitelistIps.contains(clientIpAddress) || whitelistIps.contains("*")) ||
+                blacklistIpRepository.existsByIpAddress(clientIpAddress) ||
+                redisIpAccessMonitorService.isBlocked(clientIpAddress)
+        ) {
+            log.info("[{}] : 정책에 의해 차단된 IP입니다.", clientIpAddress);
+            ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
+            return false;
+        }
+        return true;
+    }
+
+    @NotNull
+    private static String[] decodeCredentials(String authorizationHeader) {
+        String base64Credentials = authorizationHeader.substring("Basic ".length());
+        String credentials = new String(Base64.getDecoder().decode(base64Credentials));
+        return credentials.split(":", 2);
     }
 
 }
