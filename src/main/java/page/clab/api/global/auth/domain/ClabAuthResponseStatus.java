@@ -8,9 +8,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ClabAuthResponseStatus {
 
-    AUTHENTICATION_SUCCESS("1" + HttpServletResponse.SC_OK, "인증 성공");
+    AUTHENTICATION_SUCCESS(Integer.parseInt("1" + HttpServletResponse.SC_OK), "인증 성공");
 
-    private final String httpStatus;
+    private final int httpStatus;
 
     private final String message;
 
