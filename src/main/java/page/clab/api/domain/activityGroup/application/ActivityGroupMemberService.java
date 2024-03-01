@@ -75,6 +75,11 @@ public class ActivityGroupMemberService {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         Member member = memberService.getCurrentMember();
         List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
+
+        List<GroupMember> acceptedGroupMembers = groupMembers.stream()
+                .filter(groupMember -> groupMember.getStatus().equals(GroupMemberStatus.ACCEPTED))
+                .toList();
+
         GroupMember leader = groupMembers.stream()
                 .filter(groupMember -> groupMember.getRole().equals(ActivityGroupRole.LEADER))
                 .findFirst()
@@ -89,9 +94,9 @@ public class ActivityGroupMemberService {
                 .toList();
 
         if (activityGroup.getCategory().equals(ActivityGroupCategory.STUDY)) {
-            return ActivityGroupStudyResponseDto.of(activityGroup, GroupMemberResponseDto.of(groupMembers), noticeAndWeeklyActivityBoards, isOwner);
+            return ActivityGroupStudyResponseDto.of(activityGroup, GroupMemberResponseDto.of(acceptedGroupMembers), noticeAndWeeklyActivityBoards, isOwner);
         } else if (activityGroup.getCategory().equals(ActivityGroupCategory.PROJECT)) {
-            return ActivityGroupProjectResponseDto.of(activityGroup, GroupMemberResponseDto.of(groupMembers), noticeAndWeeklyActivityBoards, isOwner);
+            return ActivityGroupProjectResponseDto.of(activityGroup, GroupMemberResponseDto.of(acceptedGroupMembers), noticeAndWeeklyActivityBoards, isOwner);
         } else {
             throw new InvalidCategoryException("해당 카테고리가 존재하지 않습니다.");
         }
