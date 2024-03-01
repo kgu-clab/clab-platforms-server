@@ -129,13 +129,13 @@ public class ActivityGroupAdminService {
         return activityGroup.getId();
     }
 
-    public PagedResponseDto<GroupMemberResponseDto> getApplyGroupMemberList(Long activityGroupId, GroupMemberStatus status, Pageable pageable) throws PermissionDeniedException {
+    public PagedResponseDto<GroupMemberResponseDto> getApplyGroupMemberList(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!isMemberGroupLeaderRole(activityGroup, member)) {
             throw new PermissionDeniedException("해당 활동의 멤버를 조회할 권한이 없습니다.");
         }
-        Page<GroupMember> groupMemberList = activityGroupMemberService.getGroupMemberByActivityGroupIdAndStatus(activityGroupId, status, pageable);
+        Page<GroupMember> groupMemberList = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId, pageable);
         return new PagedResponseDto<>(groupMemberList.map(GroupMemberResponseDto::of));
     }
 
