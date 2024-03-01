@@ -6,6 +6,8 @@ import com.slack.api.webhook.WebhookResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,10 @@ import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
+import java.lang.management.OperatingSystemMXBean;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -71,6 +77,27 @@ public class SlackService {
         return sendSlackMessage(message);
     }
 
+    @EventListener(ContextRefreshedEvent.class)
+    public void sendServerStartNotification() {
+        String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String osInfo = System.getProperty("os.name") + " " + System.getProperty("os.version");
+        String jdkVersion = System.getProperty("java.version");
+
+        OperatingSystemMXBean osbean = ManagementFactory.getOperatingSystemMXBean();
+        int availableProcessors = osbean.getAvailableProcessors();
+        double systemLoadAverage = osbean.getSystemLoadAverage();
+        double cpuUsage = ((systemLoadAverage / availableProcessors) * 100);
+
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
+        long usedMemory = heapMemoryUsage.getUsed() / (1024 * 1024);
+        long maxMemory = heapMemoryUsage.getMax() / (1024 * 1024);
+        double usagePercentage = ((double) usedMemory / maxMemory) * 100;
+
+        String message = String.format(":rocket: *Server Started*\n>*Server Time*: %s\n>*OS*: %s\n>*JDK Version*: %s\n>*CPU Usage*: %.2f%%\n>*Memory Usage*: %dMB / %dMB (%.2f%%)",
+                serverTime, osInfo, jdkVersion, cpuUsage, usedMemory, maxMemory, usagePercentage);
+        sendSlackMessage(message);
+    }
 
     private boolean sendSlackMessage(String message) {
         Payload payload = Payload.builder().text(message).build();
