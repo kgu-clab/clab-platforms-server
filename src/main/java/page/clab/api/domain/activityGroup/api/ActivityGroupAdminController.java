@@ -25,8 +25,7 @@ import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
-import page.clab.api.domain.activityGroup.dto.response.ApplyFormResponseDto;
-import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
+import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberWithApplyReasonResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -131,7 +130,7 @@ public class ActivityGroupAdminController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 활동 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[U] 활동 멤버 및 지원서 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "관리자 또는 리더만 조회 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/members")
@@ -141,27 +140,11 @@ public class ActivityGroupAdminController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<GroupMemberResponseDto> applyMemberList = activityGroupAdminService.getApplyGroupMemberList(activityGroupId, pageable);
+        PagedResponseDto<ActivityGroupMemberWithApplyReasonResponseDto> groupMembers = activityGroupAdminService.getGroupMembersWithApplyReason(activityGroupId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(applyMemberList);
+        responseModel.addData(groupMembers);
         return responseModel;
     }
-
-    @Operation(summary = "[U] 신청 멤버 지원서 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/apply-forms")
-    public ResponseModel getApplyFormList(
-            @RequestParam(name = "activityGroupId") Long activityGroupId,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) throws PermissionDeniedException {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ApplyFormResponseDto> applyMemberList = activityGroupAdminService.getApplyFormList(activityGroupId, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(applyMemberList);
-        return responseModel;
-    }
-
 
     @Operation(summary = "[U] 신청 멤버 상태 변경", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
