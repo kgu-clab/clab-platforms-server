@@ -23,6 +23,8 @@ public class AssignmentSubmissionWithFeedbackResponseDto {
 
     private Long parentId;
 
+    private String content;
+
     private List<UploadedFileResponseDto> files = new ArrayList<>();
 
     private LocalDateTime createdAt;
@@ -35,6 +37,7 @@ public class AssignmentSubmissionWithFeedbackResponseDto {
         return AssignmentSubmissionWithFeedbackResponseDto.builder()
                 .id(activityGroupBoard.getId())
                 .parentId(activityGroupBoard.getParent() != null ? activityGroupBoard.getParent().getId() : null)
+                .content(activityGroupBoard.getContent())
                 .files(activityGroupBoard.getUploadedFiles().stream().map(UploadedFileResponseDto::of).toList())
                 .createdAt(activityGroupBoard.getCreatedAt())
                 .updateTime(activityGroupBoard.getUpdateTime())
