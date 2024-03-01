@@ -21,7 +21,7 @@ public class SharedAccountUsageRequestDto {
     @Schema(description = "공유 계정 식별 아이디(계정 아이디 X)", example = "1", required = true)
     private Long sharedAccountId;
 
-    @Schema(description = "계정 이용 시작 시간", example = "2023-11-06T00:00:00", required = true)
+    @Schema(description = "계정 이용 시작 시간", example = "2023-11-06T00:00:00")
     private LocalDateTime startTime;
 
     @NotNull(message = "{notNull.sharedAccountUsage.endTime}}")

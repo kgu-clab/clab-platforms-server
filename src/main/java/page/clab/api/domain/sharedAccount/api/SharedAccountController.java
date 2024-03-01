@@ -102,7 +102,9 @@ public class SharedAccountController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 공동 계정 이용 신청", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 공동 계정 이용 신청", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "이미 사용 또는 예약으로 등록된 시간대는 신청 불가능<br>" +
+            "신청시에 계정 상태가 자동으로 바뀌므로 상태 변경은 별도로 안해도 됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/usage")
     public ResponseModel requestSharedAccountUsage(
@@ -132,7 +134,8 @@ public class SharedAccountController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 공동 계정 이용 상태 변경", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 공동 계정 이용 상태 변경", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "이용 중 취소/완료, 예약 취소만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/usage/{usageId}")
     public ResponseModel updateSharedAccountUsage(
