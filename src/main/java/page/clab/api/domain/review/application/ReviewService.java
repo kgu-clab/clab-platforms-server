@@ -57,11 +57,13 @@ public class ReviewService {
         review.setMember(member);
         Long id = reviewRepository.save(review).getId();
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(groupLeader.getMember().getId())
-                .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 리뷰를 등록하였습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
+        if (groupLeader != null) {
+            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                    .memberId(groupLeader.getMember().getId())
+                    .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 리뷰를 등록하였습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDto);
+        }
         return id;
     }
 

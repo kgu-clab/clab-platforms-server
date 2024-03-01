@@ -84,11 +84,13 @@ public class ActivityGroupAdminService {
         activityGroup.setStatus(activityGroupStatus);
         Long id = activityGroupRepository.save(activityGroup).getId();
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(groupLeader.getMember().getId())
-                .content("활동 그룹이 [" + activityGroupStatus.getDescription() + "] 상태로 변경되었습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
+        if (groupLeader != null) {
+            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                    .memberId(groupLeader.getMember().getId())
+                    .content("활동 그룹이 [" + activityGroupStatus.getDescription() + "] 상태로 변경되었습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDto);
+        }
         return id;
     }
 
@@ -101,11 +103,13 @@ public class ActivityGroupAdminService {
         activityGroupMemberService.deleteAll(groupMemberList);
         groupScheduleRepository.deleteAll(groupScheduleList);
         activityGroupRepository.delete(activityGroup);
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(groupLeader.getMember().getId())
-                .content("활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
+        if (groupLeader != null) {
+            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                    .memberId(groupLeader.getMember().getId())
+                    .content("활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDto);
+        }
         return activityGroup.getId();
     }
 

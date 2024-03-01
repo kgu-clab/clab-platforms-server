@@ -96,11 +96,13 @@ public class ActivityGroupBoardService {
                     });
         } else {
             GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
-            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                    .memberId(groupLeader.getMember().getId())
-                    .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDto);
+            if (groupLeader != null) {
+                NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                        .memberId(groupLeader.getMember().getId())
+                        .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.")
+                        .build();
+                notificationService.createNotification(notificationRequestDto);
+            }
         }
         return id;
     }
@@ -124,10 +126,12 @@ public class ActivityGroupBoardService {
         Member member = memberService.getCurrentMember();
         ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
         Long activityGroupId = parentBoard.getActivityGroup().getId();
+        GroupMember leader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
 
         if (!memberService.isMemberAdminRole(member) &&
                 !memberService.isMemberSuperRole(member) &&
-                !activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER).getMember().getId()
+                leader != null &&
+                !leader.getMember().getId()
                         .equals(member.getId())
         ) {
             if (parentBoard.getCategory().equals(ActivityGroupBoardCategory.ASSIGNMENT)) {
