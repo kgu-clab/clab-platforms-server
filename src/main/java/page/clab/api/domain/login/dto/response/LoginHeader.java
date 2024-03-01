@@ -15,7 +15,7 @@ import lombok.Setter;
 @Builder
 public class LoginHeader {
 
-    private String status;
+    private int status;
 
     private String secretKey;
 
