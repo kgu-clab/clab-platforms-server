@@ -30,6 +30,7 @@ import page.clab.api.domain.activityGroup.exception.DuplicateAttendanceException
 import page.clab.api.domain.activityGroup.exception.DuplicateReportException;
 import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
 import page.clab.api.domain.activityGroup.exception.InvalidParentBoardException;
+import page.clab.api.domain.activityGroup.exception.LeaderStatusChangeNotAllowedException;
 import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
@@ -95,6 +96,7 @@ public class ControllerExceptionHandler {
             MethodArgumentTypeMismatchException.class,
             IllegalAccessException.class,
             ActivityGroupNotProgressingException.class,
+            LeaderStatusChangeNotAllowedException.class,
             CloudStorageNotEnoughException.class,
             NotSubmitCategoryBoardException.class
     })
