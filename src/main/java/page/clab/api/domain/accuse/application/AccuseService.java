@@ -13,6 +13,7 @@ import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
+import page.clab.api.domain.accuse.exception.AccuseSearchArgumentLackException;
 import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.board.application.BoardService;
 import page.clab.api.domain.comment.application.CommentService;
@@ -69,8 +70,8 @@ public class AccuseService {
             id = save(accuse).getId();
         }
 
-        sendNotificationToAccuser(member.getId());
-        sendNotificationToSuperMembers(member.getName());
+        sendNotification("신고하신 내용이 접수되었습니다.", member.getId());
+        sendNotificationToSuperMembers(member.getName() + "님이 신고를 접수하였습니다. 확인해주세요.");
 
         return id;
     }
@@ -89,7 +90,7 @@ public class AccuseService {
         } else if (accuseStatus != null) {
             accuses = getAccuseByAccuseStatus(accuseStatus, pageable);
         } else {
-            throw new IllegalArgumentException("적어도 accuseType, accuseStatus 중 하나를 제공해야 합니다.");
+            throw new AccuseSearchArgumentLackException("적어도 accuseType, accuseStatus 중 하나를 제공해야 합니다.");
         }
         if (accuses.isEmpty()) {
             throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
@@ -101,11 +102,7 @@ public class AccuseService {
         Accuse accuse = getAccuseByIdOrThrow(accuseId);
         accuse.setAccuseStatus(accuseStatus);
         Long id = accuseRepository.save(accuse).getId();
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .content("신고 상태가 " + accuseStatus + "로 변경되었습니다.")
-                .memberId(accuse.getMember().getId())
-                .build();
-        notificationService.createNotification(notificationRequestDto);
+        sendNotification("신고 상태가 " + accuseStatus + "로 변경되었습니다.", accuse.getMember().getId());
         return id;
     }
 
@@ -122,18 +119,16 @@ public class AccuseService {
         throw new AccuseTargetTypeIncorrectException("신고 대상 유형이 올바르지 않습니다.");
     }
 
-    private void sendNotificationToAccuser(String accuserId) {
+    private void sendNotification(String content, String receiverId) {
         NotificationRequestDto notificationRequestDto
-                = makeNotificationRequestDto("신고하신 내용이 접수되었습니다.", accuserId);
+                = makeNotificationRequestDto(content, receiverId);
         notificationService.createNotification(notificationRequestDto);
     }
 
-    private void sendNotificationToSuperMembers(String accuserName) {
+    private void sendNotificationToSuperMembers(String content) {
         List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
         for (Member superMember : superMembers) {
-            NotificationRequestDto notificationRequestDto =
-                    makeNotificationRequestDto(accuserName + "님이 신고를 접수하였습니다. 확인해주세요.", superMember.getId());
-            notificationService.createNotification(notificationRequestDto);
+            sendNotification(content, superMember.getId());
         }
     }
 
