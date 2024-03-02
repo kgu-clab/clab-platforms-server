@@ -13,6 +13,7 @@ import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
+import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.board.application.BoardService;
 import page.clab.api.domain.comment.application.CommentService;
 import page.clab.api.domain.member.application.MemberService;
@@ -44,43 +45,33 @@ public class AccuseService {
 
     @Transactional
     public Long createAccuse(AccuseRequestDto accuseRequestDto) {
-        if (accuseRequestDto.getTargetType() == TargetType.BOARD) {
-            boardService.getBoardByIdOrThrow(accuseRequestDto.getTargetId());
-        } else if (accuseRequestDto.getTargetType() == TargetType.COMMENT) {
-            commentService.getCommentByIdOrThrow(accuseRequestDto.getTargetId());
-        } else if (accuseRequestDto.getTargetType() == TargetType.REVIEW) {
-            reviewService.getReviewByIdOrThrow(accuseRequestDto.getTargetId());
-        } else {
-            throw new IllegalArgumentException("신고 대상 유형이 올바르지 않습니다.");
+        TargetType accuseTargetType = accuseRequestDto.getTargetType();
+        Long accuseTargetId = accuseRequestDto.getTargetId();
+        try {
+            if (!isAccuseRequestValid(accuseTargetType, accuseTargetId)) {
+                throw new NotFoundException(accuseTargetType.getDescription() + " " + accuseTargetId + "을 찾을 수 없습니다.");
+            }
+        } catch (AccuseTargetTypeIncorrectException e) {
+            throw e;
         }
+
         Long id;
         Member member = memberService.getCurrentMember();
-        Accuse existingAccuse = getAccuseByMemberAndTargetTypeAndTargetId(member, accuseRequestDto);
+        Accuse existingAccuse = getAccuseByMemberAndTargetTypeAndTargetId(member, accuseTargetType, accuseTargetId);
         if (existingAccuse != null) {
             existingAccuse.setReason(accuseRequestDto.getReason());
-            id = accuseRepository.save(existingAccuse).getId();
+            id = save(existingAccuse).getId();
         } else {
             Accuse accuse = Accuse.of(accuseRequestDto);
             accuse.setId(null);
             accuse.setMember(member);
             accuse.setAccuseStatus(AccuseStatus.PENDING);
-            id = accuseRepository.save(accuse).getId();
+            id = save(accuse).getId();
         }
 
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .content("신고하신 내용이 접수되었습니다.")
-                .memberId(member.getId())
-                .build();
-        notificationService.createNotification(notificationRequestDto);
+        sendNotificationToAccuser(member.getId());
+        sendNotificationToSuperMembers(member.getName());
 
-        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
-        for (Member superMember : superMembers) {
-            NotificationRequestDto notificationRequestDtoForSuper = NotificationRequestDto.builder()
-                    .content(member.getName() + "님이 신고를 접수하였습니다. 확인해주세요.")
-                    .memberId(superMember.getId())
-                    .build();
-            notificationService.createNotification(notificationRequestDtoForSuper);
-        }
         return id;
     }
 
@@ -118,6 +109,41 @@ public class AccuseService {
         return id;
     }
 
+    private boolean isAccuseRequestValid (TargetType accuseTargetType, Long accuseTargetId) {
+        if (accuseTargetType == TargetType.BOARD) {
+            return boardService.isBoardExistById(accuseTargetId);
+        }
+        if (accuseTargetType == TargetType.COMMENT) {
+            return commentService.isCommentExistById(accuseTargetId);
+        }
+        if (accuseTargetType == TargetType.REVIEW) {
+            return reviewService.isReviewExistsById(accuseTargetId);
+        }
+        throw new AccuseTargetTypeIncorrectException("신고 대상 유형이 올바르지 않습니다.");
+    }
+
+    private void sendNotificationToAccuser(String accuserId) {
+        NotificationRequestDto notificationRequestDto
+                = makeNotificationRequestDto("신고하신 내용이 접수되었습니다.", accuserId);
+        notificationService.createNotification(notificationRequestDto);
+    }
+
+    private void sendNotificationToSuperMembers(String accuserName) {
+        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
+        for (Member superMember : superMembers) {
+            NotificationRequestDto notificationRequestDto =
+                    makeNotificationRequestDto(accuserName + "님이 신고를 접수하였습니다. 확인해주세요.", superMember.getId());
+            notificationService.createNotification(notificationRequestDto);
+        }
+    }
+
+    private NotificationRequestDto makeNotificationRequestDto(String content, String receiverId) {
+        return NotificationRequestDto.builder()
+                .content(content)
+                .memberId(receiverId)
+                .build();
+    }
+
     private Accuse getAccuseByIdOrThrow(Long accuseId) {
         return accuseRepository.findById(accuseId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 신고입니다."));
@@ -135,9 +161,13 @@ public class AccuseService {
         return accuseRepository.findAllByAccuseStatusOrderByCreatedAtDesc(accuseStatus, pageable);
     }
 
-    private Accuse getAccuseByMemberAndTargetTypeAndTargetId(Member member, AccuseRequestDto accuseRequestDto) {
-        return accuseRepository.findByMemberAndTargetTypeAndTargetId(member, accuseRequestDto.getTargetType(), accuseRequestDto.getTargetId())
+    private Accuse getAccuseByMemberAndTargetTypeAndTargetId(Member member, TargetType accuseTargetType, Long accuseTargetId) {
+        return accuseRepository.findByMemberAndTargetTypeAndTargetId(member, accuseTargetType, accuseTargetId)
                 .orElse(null);
+    }
+
+    private Accuse save(Accuse accuse) {
+        return accuseRepository.save(accuse);
     }
 
 }
