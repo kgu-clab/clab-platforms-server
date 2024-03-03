@@ -50,4 +50,11 @@ public class Notification {
         return notification;
     }
 
+    public static Notification of(String content, Member receiver) {
+        return Notification.builder()
+                .content(content)
+                .member(receiver)
+                .build();
+    }
+
 }

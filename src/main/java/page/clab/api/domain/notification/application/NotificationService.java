@@ -35,6 +35,11 @@ public class NotificationService {
         return notificationRepository.save(notification).getId();
     }
 
+    public Long createNotification(String content, Member receiver) {
+        Notification notification = Notification.of(content, receiver);
+        return notificationRepository.save(notification).getId();
+    }
+
     public PagedResponseDto<NotificationResponseDto> getNotifications(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Notification> notifications = getNotificationByMember(pageable, member);

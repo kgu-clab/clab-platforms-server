@@ -70,7 +70,7 @@ public class AccuseService {
             id = save(accuse).getId();
         }
 
-        sendNotification("신고하신 내용이 접수되었습니다.", member.getId());
+        sendNotification("신고하신 내용이 접수되었습니다.", member);
         sendNotificationToSuperMembers(member.getName() + "님이 신고를 접수하였습니다. 확인해주세요.");
 
         return id;
@@ -102,7 +102,7 @@ public class AccuseService {
         Accuse accuse = getAccuseByIdOrThrow(accuseId);
         accuse.setAccuseStatus(accuseStatus);
         Long id = accuseRepository.save(accuse).getId();
-        sendNotification("신고 상태가 " + accuseStatus + "로 변경되었습니다.", accuse.getMember().getId());
+        sendNotification("신고 상태가 " + accuseStatus + "로 변경되었습니다.", accuse.getMember());
         return id;
     }
 
@@ -119,24 +119,15 @@ public class AccuseService {
         throw new AccuseTargetTypeIncorrectException("신고 대상 유형이 올바르지 않습니다.");
     }
 
-    private void sendNotification(String content, String receiverId) {
-        NotificationRequestDto notificationRequestDto
-                = makeNotificationRequestDto(content, receiverId);
-        notificationService.createNotification(notificationRequestDto);
+    private void sendNotification(String content, Member receiver) {
+        notificationService.createNotification(content, receiver);
     }
 
     private void sendNotificationToSuperMembers(String content) {
         List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
         for (Member superMember : superMembers) {
-            sendNotification(content, superMember.getId());
+            sendNotification(content, superMember);
         }
-    }
-
-    private NotificationRequestDto makeNotificationRequestDto(String content, String receiverId) {
-        return NotificationRequestDto.builder()
-                .content(content)
-                .memberId(receiverId)
-                .build();
     }
 
     private Accuse getAccuseByIdOrThrow(Long accuseId) {
