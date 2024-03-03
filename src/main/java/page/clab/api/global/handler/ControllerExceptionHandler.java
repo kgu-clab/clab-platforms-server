@@ -36,6 +36,7 @@ import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.book.exception.OverdueException;
+import page.clab.api.domain.donation.exception.DonationSearchArgumentLackException;
 import page.clab.api.domain.login.exception.DuplicateLoginException;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
@@ -98,7 +99,8 @@ public class ControllerExceptionHandler {
             ActivityGroupNotProgressingException.class,
             LeaderStatusChangeNotAllowedException.class,
             CloudStorageNotEnoughException.class,
-            NotSubmitCategoryBoardException.class
+            NotSubmitCategoryBoardException.class,
+            DonationSearchArgumentLackException.class
     })
     public ResponseModel badRequestException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

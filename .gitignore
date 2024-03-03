@@ -10,6 +10,7 @@ gradle/
 !/src/main/resources/application.yml
 src/main/java/page/clab/api/global/auth/application/DataLoader.java
 src/main/java/page/clab/api/auth/service/DataLoader.java
+/config
 
 ### STS ###
 .apt_generated
