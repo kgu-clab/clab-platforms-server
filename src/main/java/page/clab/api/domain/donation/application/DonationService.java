@@ -9,6 +9,7 @@ import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.dto.request.DonationRequestDto;
 import page.clab.api.domain.donation.dto.request.DonationUpdateRequestDto;
 import page.clab.api.domain.donation.dto.response.DonationResponseDto;
+import page.clab.api.domain.donation.exception.DonationSearchArgumentLackException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -28,7 +29,7 @@ public class DonationService {
         Member member = memberService.getCurrentMember();
         Donation donation = Donation.of(donationRequestDto);
         donation.setDonor(member);
-        Long id = donationRepository.save(donation).getId();
+        Long id = save(donation).getId();
         return id;
     }
 
@@ -50,10 +51,10 @@ public class DonationService {
         } else if (name != null) {
             donations = getDonationByDonorNameOrThrow(name, pageable);
         } else {
-            throw new IllegalArgumentException("적어도 memberId 또는 name 중 하나를 제공해야 합니다.");
+            throw new DonationSearchArgumentLackException();
         }
         if (donations.isEmpty())
-            throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
+            throw new SearchResultNotExistException();
         return new PagedResponseDto<>(donations.map(DonationResponseDto::of));
     }
 
@@ -64,7 +65,7 @@ public class DonationService {
             throw new PermissionDeniedException("해당 후원 정보를 수정할 권한이 없습니다.");
         }
         donation.update(donationUpdateRequestDto);
-        return donationRepository.save(donation).getId();
+        return save(donation).getId();
     }
 
     public Long deleteDonation(Long donationId) throws PermissionDeniedException {
@@ -73,7 +74,7 @@ public class DonationService {
         if (!memberService.isMemberSuperRole(member)) {
             throw new PermissionDeniedException("해당 후원 정보를 삭제할 권한이 없습니다.");
         }
-        donationRepository.deleteById(donationId);
+        deleteById(donationId);
         return donation.getId();
     }
 
@@ -92,6 +93,14 @@ public class DonationService {
 
     private Page<Donation> getDonationByDonorNameOrThrow(String name, Pageable pageable) {
         return donationRepository.findByDonor_NameOrderByCreatedAtDesc(name, pageable);
+    }
+
+    private Donation save(Donation donation) {
+        return donationRepository.save(donation);
+    }
+
+    private void deleteById(Long donationId) {
+        donationRepository.deleteById(donationId);
     }
 
 }
