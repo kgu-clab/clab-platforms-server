@@ -46,17 +46,10 @@ public class ApplicationService {
         application.setIsPass(false);
         application.setUpdateTime(LocalDateTime.now());
         String id = applicationRepository.save(application).getStudentId();
-        List<Member> admins = memberService.getMembersByRole(Role.SUPER);
-        admins.addAll(memberService.getMembersByRole(Role.ADMIN));
-        admins.stream()
-                .forEach(admin -> {
-                    NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                            .memberId(admin.getId())
-                            .content(applicationRequestDto.getStudentId() + " " + applicationRequestDto.getName() + "님이 동아리에 지원하였습니다.")
-                            .build();
-                    notificationService.createNotification(notificationRequestDto);
-                });
+
+        sendNotificationToAdminMembers(applicationRequestDto.getStudentId() + " " + applicationRequestDto.getName() + "님이 동아리에 지원하였습니다.");
         slackService.sendApplicationNotification(request, applicationRequestDto);
+
         return id;
     }
 
@@ -110,6 +103,15 @@ public class ApplicationService {
         Application application = getApplicationByIdOrThrow(applicationId);
         applicationRepository.delete(application);
         return application.getStudentId();
+    }
+
+    private void sendNotificationToAdminMembers(String content) {
+        List<Member> admins = memberService.getMembersByRole(Role.SUPER);
+        admins.addAll(memberService.getMembersByRole(Role.ADMIN));
+        admins.stream()
+            .forEach(admin -> {
+                notificationService.createNotification(content, admin);
+            });
     }
 
     private Application getApplicationByIdOrThrow(String applicationId) {
