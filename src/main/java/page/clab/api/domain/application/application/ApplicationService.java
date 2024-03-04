@@ -73,7 +73,7 @@ public class ApplicationService {
         return ApplicationResponseDto.of(application);
     }
 
-    public String approveApplication(String applicationId) {
+    public String changeApplicationApproval(String applicationId) {
         Application application = getApplicationByIdOrThrow(applicationId);
         application.setIsPass(!application.getIsPass());
         application.setUpdateTime(LocalDateTime.now());
@@ -89,7 +89,7 @@ public class ApplicationService {
         }
     }
 
-    public ApplicationPassResponseDto getApplicationPass(String applicationId) {
+    public ApplicationPassResponseDto getApplicationIsPass(String applicationId) {
         Application application = getApplicationById(applicationId);
         if (application == null) {
             return ApplicationPassResponseDto.builder()

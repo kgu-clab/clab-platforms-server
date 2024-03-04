@@ -106,7 +106,7 @@ public class ApplicationController {
     public ResponseModel approveApplication(
             @PathVariable(name = "applicationId") String applicationId
     ) {
-        String id = applicationService.approveApplication(applicationId);
+        String id = applicationService.changeApplicationApproval(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -128,10 +128,10 @@ public class ApplicationController {
 
     @Operation(summary = "합격 여부 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/{applicationId}")
-    public ResponseModel getApplicationPass(
+    public ResponseModel getApplicationIsPass(
             @PathVariable(name = "applicationId") String applicationId
     ) {
-        ApplicationPassResponseDto applicationPassResponseDto = applicationService.getApplicationPass(applicationId);
+        ApplicationPassResponseDto applicationPassResponseDto = applicationService.getApplicationIsPass(applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applicationPassResponseDto);
         return responseModel;
