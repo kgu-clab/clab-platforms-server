@@ -45,16 +45,16 @@ public class ApplicationService {
         application.setContact(memberService.removeHyphensFromContact(application.getContact()));
         application.setIsPass(false);
         application.setUpdateTime(LocalDateTime.now());
-        String id = applicationRepository.save(application).getStudentId();
+        String applierId = save(application).getStudentId();
 
         sendNotificationToAdminMembers(applicationRequestDto.getStudentId() + " " + applicationRequestDto.getName() + "님이 동아리에 지원하였습니다.");
         slackService.sendApplicationNotification(request, applicationRequestDto);
 
-        return id;
+        return applierId;
     }
 
     public PagedResponseDto<ApplicationResponseDto> getApplications(Pageable pageable) {
-        Page<Application> applications = applicationRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<Application> applications = getAllApplicationByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(applications.map(ApplicationResponseDto::of));
     }
 
@@ -77,7 +77,7 @@ public class ApplicationService {
         Application application = getApplicationByIdOrThrow(applicationId);
         application.setIsPass(!application.getIsPass());
         application.setUpdateTime(LocalDateTime.now());
-        return applicationRepository.save(application).getStudentId();
+        return save(application).getStudentId();
     }
 
     public PagedResponseDto<ApplicationResponseDto> getApprovedApplications(Pageable pageable) {
@@ -101,7 +101,7 @@ public class ApplicationService {
 
     public String deleteApplication(String applicationId) {
         Application application = getApplicationByIdOrThrow(applicationId);
-        applicationRepository.delete(application);
+        delete(application);
         return application.getStudentId();
     }
 
@@ -130,6 +130,18 @@ public class ApplicationService {
 
     private Page<Application> getApplicationByIsPass(Pageable pageable) {
         return applicationRepository.findAllByIsPassOrderByCreatedAtDesc(true, pageable);
+    }
+
+    private Page<Application> getAllApplicationByOrderByCreatedAtDesc(Pageable pageable) {
+        return applicationRepository.findAllByOrderByCreatedAtDesc(pageable);
+    }
+
+    private Application save(Application application) {
+        return applicationRepository.save(application);
+    }
+
+    private void delete(Application application) {
+        applicationRepository.delete(application);
     }
 
 }
