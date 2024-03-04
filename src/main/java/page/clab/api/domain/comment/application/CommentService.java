@@ -151,6 +151,10 @@ public class CommentService {
         return commentGetMyResponseDto;
     }
 
+    public boolean isCommentExistById(Long id) {
+        return commentRepository.existsById(id);
+    }
+
     public Comment getCommentByIdOrThrow(Long id) {
         return commentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("댓글을 찾을 수 없습니다."));
