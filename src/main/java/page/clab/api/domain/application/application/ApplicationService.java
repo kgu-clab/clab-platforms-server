@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -66,11 +67,12 @@ public class ApplicationService {
     }
 
     public ApplicationResponseDto searchApplication(String applicationId) {
-        Application application = null;
-        if (applicationId != null) {
-            application = getApplicationByIdOrThrow(applicationId);
+        try{
+            Application application = getApplicationByIdOrThrow(applicationId);
+            return ApplicationResponseDto.of(application);
+        } catch (NotFoundException e) {
+            throw e;
         }
-        return ApplicationResponseDto.of(application);
     }
 
     public String changeApplicationApproval(String applicationId) {
@@ -84,9 +86,8 @@ public class ApplicationService {
         Page<Application> applications = getApplicationByIsPass(pageable);
         if (applications.isEmpty()) {
             throw new NotFoundException("승인된 지원자가 없습니다.");
-        } else {
-            return new PagedResponseDto<>(applications.map(ApplicationResponseDto::of));
         }
+        return new PagedResponseDto<>(applications.map(ApplicationResponseDto::of));
     }
 
     public ApplicationPassResponseDto getApplicationIsPass(String applicationId) {
