@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
+import page.clab.api.domain.accuse.exception.AccuseSearchArgumentLackException;
+import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotProgressingException;
 import page.clab.api.domain.activityGroup.exception.AlreadyAppliedException;
@@ -100,6 +102,8 @@ public class ControllerExceptionHandler {
             LeaderStatusChangeNotAllowedException.class,
             CloudStorageNotEnoughException.class,
             NotSubmitCategoryBoardException.class,
+            AccuseTargetTypeIncorrectException.class,
+            AccuseSearchArgumentLackException.class,
             DonationSearchArgumentLackException.class
     })
     public ResponseModel badRequestException(HttpServletResponse response, Exception e){
