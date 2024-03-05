@@ -97,7 +97,7 @@ public class BlogService {
     public Long deleteBlog(Long blogId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
-        if (!isMemberBlogWriter(member, blog) || memberService.isMemberAdminRole(member)) {
+        if (!(isMemberBlogWriter(member, blog) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("해당 게시글을 삭제할 권한이 없습니다.");
         }
         delete(blog);
