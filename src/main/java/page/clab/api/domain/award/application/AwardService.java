@@ -30,7 +30,7 @@ public class AwardService {
         Member member = memberService.getCurrentMember();
         Award award = Award.of(awardRequestDto);
         award.setMember(member);
-        return awardRepository.save(award).getId();
+        return save(award).getId();
     }
 
     public PagedResponseDto<AwardResponseDto> getMyAwards(Pageable pageable) {
@@ -60,7 +60,7 @@ public class AwardService {
             throw new PermissionDeniedException("해당 수상 이력을 수정할 권한이 없습니다.");
         }
         award.update(awardUpdateRequestDto);
-        return awardRepository.save(award).getId();
+        return save(award).getId();
     }
 
     public Long deleteAward(Long awardId) throws PermissionDeniedException {
@@ -69,7 +69,7 @@ public class AwardService {
         if (!(award.getMember().getId().equals(member.getId()) || memberService.isMemberSuperRole(member))) {
             throw new PermissionDeniedException("해당 수상 이력을 수정할 권한이 없습니다.");
         }
-        awardRepository.delete(award);
+        delete(award);
         return award.getId();
     }
 
@@ -86,6 +86,14 @@ public class AwardService {
         LocalDate startOfYear = LocalDate.of(year.intValue(), 1, 1);
         LocalDate endOfYear = LocalDate.of(year.intValue(), 12, 31);
         return awardRepository.findAllByAwardDateBetween(startOfYear, endOfYear, pageable);
+    }
+
+    private Award save(Award award) {
+        return awardRepository.save(award);
+    }
+
+    private void delete(Award award) {
+        awardRepository.delete(award);
     }
 
 }
