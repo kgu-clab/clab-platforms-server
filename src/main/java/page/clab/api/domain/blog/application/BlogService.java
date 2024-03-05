@@ -54,7 +54,7 @@ public class BlogService {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
         BlogDetailsResponseDto blogDetailsResponseDto = BlogDetailsResponseDto.of(blog);
-        blogDetailsResponseDto.setOwner(blog.getMember().equals(member));
+        blogDetailsResponseDto.setOwner(isMemberBlogWriter(member,blog));
         return blogDetailsResponseDto;
     }
 
