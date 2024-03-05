@@ -87,7 +87,7 @@ public class BlogService {
     public Long updateBlog(Long blogId, BlogUpdateRequestDto blogUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
-        if (!blog.getMember().equals(member)) {
+        if (!isMemberBlogWriter(member, blog)) {
             throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
         }
         blog.update(blogUpdateRequestDto);
@@ -97,7 +97,7 @@ public class BlogService {
     public Long deleteBlog(Long blogId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
-        if (!(blog.getMember().equals(member) || memberService.isMemberAdminRole(member))) {
+        if (!isMemberBlogWriter(member, blog) || memberService.isMemberAdminRole(member)) {
             throw new PermissionDeniedException("해당 게시글을 삭제할 권한이 없습니다.");
         }
         delete(blog);
@@ -119,6 +119,10 @@ public class BlogService {
 
     private void delete(Blog blog) {
         blogRepository.delete(blog);
+    }
+
+    private boolean isMemberBlogWriter(Member member, Blog blog) {
+        return blog.getMember().equals(member);
     }
 
 }
