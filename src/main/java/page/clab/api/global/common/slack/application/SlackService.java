@@ -23,6 +23,7 @@ import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
@@ -35,7 +36,7 @@ public class SlackService {
         this.webhookUrl = webhookUrl;
     }
 
-    public boolean sendServerErrorNotification(HttpServletRequest request, Exception e) {
+    public CompletableFuture<Boolean> sendServerErrorNotification(HttpServletRequest request, Exception e) {
         String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String requestUrl = request.getRequestURI();
@@ -48,7 +49,7 @@ public class SlackService {
         return sendSlackMessage(message);
     }
 
-    public boolean sendSecurityAlertNotification(HttpServletRequest request, SecurityAlertType alertType, String additionalMessage) {
+    public CompletableFuture<Boolean> sendSecurityAlertNotification(HttpServletRequest request, SecurityAlertType alertType, String additionalMessage) {
         String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String requestUrl = request.getRequestURI();
@@ -60,7 +61,7 @@ public class SlackService {
         return sendSlackMessage(message);
     }
 
-    public boolean sendAdminLoginNotification(String username, Role role) {
+    public CompletableFuture<Boolean> sendAdminLoginNotification(String username, Role role) {
         String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
 
@@ -69,7 +70,7 @@ public class SlackService {
         return sendSlackMessage(message);
     }
 
-    public boolean sendApplicationNotification(HttpServletRequest request, ApplicationRequestDto applicationRequestDto) {
+    public CompletableFuture<Boolean> sendApplicationNotification(HttpServletRequest request, ApplicationRequestDto applicationRequestDto) {
         String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String message = String.format(":sparkles: *New Application [%s] - %s*\n>*Type*: %s\n>*Student*: %s %s\n>*Grade*: %s\n>*Interests*: %s\n>*Github*: %s",
@@ -99,15 +100,17 @@ public class SlackService {
         sendSlackMessage(message);
     }
 
-    private boolean sendSlackMessage(String message) {
+    private CompletableFuture<Boolean> sendSlackMessage(String message) {
         Payload payload = Payload.builder().text(message).build();
-        try {
-            WebhookResponse response = slack.send(webhookUrl, payload);
-            return response.getCode() == 200;
-        } catch (IOException e) {
-            log.error("Error sending slack message: {}", e.getMessage(), e);
-            return false;
-        }
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                WebhookResponse response = slack.send(webhookUrl, payload);
+                return response.getCode() == 200;
+            } catch (IOException e) {
+                log.error("Error sending slack message: {}", e.getMessage(), e);
+                return false;
+            }
+        });
     }
 
 }
