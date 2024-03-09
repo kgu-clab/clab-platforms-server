@@ -6,6 +6,8 @@ import com.slack.api.webhook.WebhookResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -15,8 +17,13 @@ import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
+import java.lang.management.OperatingSystemMXBean;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
@@ -29,7 +36,7 @@ public class SlackService {
         this.webhookUrl = webhookUrl;
     }
 
-    public boolean sendServerErrorNotification(HttpServletRequest request, Exception e) {
+    public CompletableFuture<Boolean> sendServerErrorNotification(HttpServletRequest request, Exception e) {
         String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String requestUrl = request.getRequestURI();
@@ -42,7 +49,7 @@ public class SlackService {
         return sendSlackMessage(message);
     }
 
-    public boolean sendSecurityAlertNotification(HttpServletRequest request, SecurityAlertType alertType, String additionalMessage) {
+    public CompletableFuture<Boolean> sendSecurityAlertNotification(HttpServletRequest request, SecurityAlertType alertType, String additionalMessage) {
         String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String requestUrl = request.getRequestURI();
@@ -54,7 +61,7 @@ public class SlackService {
         return sendSlackMessage(message);
     }
 
-    public boolean sendAdminLoginNotification(String username, Role role) {
+    public CompletableFuture<Boolean> sendAdminLoginNotification(String username, Role role) {
         String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
 
@@ -63,7 +70,7 @@ public class SlackService {
         return sendSlackMessage(message);
     }
 
-    public boolean sendApplicationNotification(HttpServletRequest request, ApplicationRequestDto applicationRequestDto) {
+    public CompletableFuture<Boolean> sendApplicationNotification(HttpServletRequest request, ApplicationRequestDto applicationRequestDto) {
         String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String message = String.format(":sparkles: *New Application [%s] - %s*\n>*Type*: %s\n>*Student*: %s %s\n>*Grade*: %s\n>*Interests*: %s\n>*Github*: %s",
@@ -71,16 +78,39 @@ public class SlackService {
         return sendSlackMessage(message);
     }
 
+    @EventListener(ContextRefreshedEvent.class)
+    public void sendServerStartNotification() {
+        String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String osInfo = System.getProperty("os.name") + " " + System.getProperty("os.version");
+        String jdkVersion = System.getProperty("java.version");
 
-    private boolean sendSlackMessage(String message) {
+        OperatingSystemMXBean osbean = ManagementFactory.getOperatingSystemMXBean();
+        int availableProcessors = osbean.getAvailableProcessors();
+        double systemLoadAverage = osbean.getSystemLoadAverage();
+        double cpuUsage = ((systemLoadAverage / availableProcessors) * 100);
+
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
+        long usedMemory = heapMemoryUsage.getUsed() / (1024 * 1024);
+        long maxMemory = heapMemoryUsage.getMax() / (1024 * 1024);
+        double usagePercentage = ((double) usedMemory / maxMemory) * 100;
+
+        String message = String.format(":rocket: *Server Started*\n>*Server Time*: %s\n>*OS*: %s\n>*JDK Version*: %s\n>*CPU Usage*: %.2f%%\n>*Memory Usage*: %dMB / %dMB (%.2f%%)",
+                serverTime, osInfo, jdkVersion, cpuUsage, usedMemory, maxMemory, usagePercentage);
+        sendSlackMessage(message);
+    }
+
+    private CompletableFuture<Boolean> sendSlackMessage(String message) {
         Payload payload = Payload.builder().text(message).build();
-        try {
-            WebhookResponse response = slack.send(webhookUrl, payload);
-            return response.getCode() == 200;
-        } catch (IOException e) {
-            log.error("Error sending slack message: {}", e.getMessage(), e);
-            return false;
-        }
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                WebhookResponse response = slack.send(webhookUrl, payload);
+                return response.getCode() == 200;
+            } catch (IOException e) {
+                log.error("Error sending slack message: {}", e.getMessage(), e);
+                return false;
+            }
+        });
     }
 
 }

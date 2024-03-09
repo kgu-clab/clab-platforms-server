@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
+import page.clab.api.domain.accuse.exception.AccuseSearchArgumentLackException;
+import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotProgressingException;
 import page.clab.api.domain.activityGroup.exception.AlreadyAppliedException;
@@ -30,11 +32,14 @@ import page.clab.api.domain.activityGroup.exception.DuplicateAttendanceException
 import page.clab.api.domain.activityGroup.exception.DuplicateReportException;
 import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
 import page.clab.api.domain.activityGroup.exception.InvalidParentBoardException;
+import page.clab.api.domain.activityGroup.exception.LeaderStatusChangeNotAllowedException;
 import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
+import page.clab.api.domain.application.exception.NotApprovedApplicationException;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.book.exception.OverdueException;
+import page.clab.api.domain.donation.exception.DonationSearchArgumentLackException;
 import page.clab.api.domain.login.exception.DuplicateLoginException;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
@@ -50,6 +55,7 @@ import page.clab.api.global.auth.exception.TokenNotFoundException;
 import page.clab.api.global.auth.exception.TokenValidateException;
 import page.clab.api.global.auth.exception.UnAuthorizeException;
 import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.file.exception.AssignmentFileUploadFailException;
 import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
 import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.common.slack.application.SlackService;
@@ -94,8 +100,13 @@ public class ControllerExceptionHandler {
             MethodArgumentTypeMismatchException.class,
             IllegalAccessException.class,
             ActivityGroupNotProgressingException.class,
+            LeaderStatusChangeNotAllowedException.class,
             CloudStorageNotEnoughException.class,
-            NotSubmitCategoryBoardException.class
+            NotSubmitCategoryBoardException.class,
+            AccuseTargetTypeIncorrectException.class,
+            AccuseSearchArgumentLackException.class,
+            NotApprovedApplicationException.class,
+            DonationSearchArgumentLackException.class
     })
     public ResponseModel badRequestException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -141,6 +152,14 @@ public class ControllerExceptionHandler {
     public ResponseModel notFoundException(HttpServletResponse response, Exception e){
         response.setStatus(HttpServletResponse.SC_OK);
         return ResponseUtil.createErrorResponse(true, new ArrayList<>());
+    }
+
+    @ExceptionHandler({
+            AssignmentFileUploadFailException.class
+    })
+    public ResponseModel notFoundException(HttpServletResponse response, AssignmentFileUploadFailException e) {
+        response.setStatus(HttpServletResponse.SC_OK);
+        return ResponseUtil.createErrorResponse(false, null);
     }
 
     @ExceptionHandler({
