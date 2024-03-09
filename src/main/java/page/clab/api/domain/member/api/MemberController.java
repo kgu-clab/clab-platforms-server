@@ -32,6 +32,8 @@ import page.clab.api.global.common.file.dto.response.FileInfo;
 import page.clab.api.global.common.verificationCode.dto.request.VerificationCodeRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
@@ -52,6 +54,31 @@ public class MemberController {
             throw new MethodArgumentNotValidException(null, result);
         }
         String id = memberService.createMember(memberRequestDto);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(id);
+        return responseModel;
+    }
+
+    @Operation(summary = "[S] 모집 단위별 합격자 멤버 통합 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    @PostMapping("/{recruitmentId}")
+    public ResponseModel createMembersByRecruitmentId(
+            @PathVariable(name = "recruitmentId") Long recruitmentId
+    ) {
+        List<String> ids = memberService.createMembersByRecruitmentId(recruitmentId);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(ids);
+        return responseModel;
+    }
+
+    @Operation(summary = "[S] 모집 단위별 합격자 멤버 개별 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    @PostMapping("/{recruitmentId}/{memberId}")
+    public ResponseModel createMemberByRecruitmentId(
+            @PathVariable(name = "recruitmentId") Long recruitmentId,
+            @PathVariable(name = "memberId") String memberId
+    ) {
+        String id = memberService.createMemberByRecruitmentId(recruitmentId, memberId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
