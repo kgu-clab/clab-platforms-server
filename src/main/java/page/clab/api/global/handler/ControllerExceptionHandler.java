@@ -34,6 +34,7 @@ import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
 import page.clab.api.domain.activityGroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.activityGroup.exception.LeaderStatusChangeNotAllowedException;
 import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
+import page.clab.api.domain.application.exception.NotApprovedApplicationException;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
@@ -104,6 +105,7 @@ public class ControllerExceptionHandler {
             NotSubmitCategoryBoardException.class,
             AccuseTargetTypeIncorrectException.class,
             AccuseSearchArgumentLackException.class,
+            NotApprovedApplicationException.class,
             DonationSearchArgumentLackException.class
     })
     public ResponseModel badRequestException(HttpServletResponse response, Exception e){
