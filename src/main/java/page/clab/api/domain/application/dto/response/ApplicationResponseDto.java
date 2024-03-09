@@ -1,7 +1,5 @@
 package page.clab.api.domain.application.dto.response;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +9,9 @@ import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.domain.ApplicationType;
 import page.clab.api.global.util.ModelMapperUtil;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,6 +20,8 @@ import page.clab.api.global.util.ModelMapperUtil;
 public class ApplicationResponseDto {
 
     private String studentId;
+
+    private Long recruitmentId;
 
     private String name;
 
