@@ -21,6 +21,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
@@ -135,6 +136,15 @@ public class Member implements UserDetails {
 
     public static Member of(MemberRequestDto memberRequestDto) {
         Member member = ModelMapperUtil.getModelMapper().map(memberRequestDto, Member.class);
+        member.setRole(Role.USER);
+        return member;
+    }
+
+    public static Member of(Application application) {
+        Member member = ModelMapperUtil.getModelMapper().map(application, Member.class);
+        member.setId(application.getStudentId());
+        member.setPassword(null);
+        member.setStudentStatus(StudentStatus.CURRENT);
         member.setRole(Role.USER);
         return member;
     }

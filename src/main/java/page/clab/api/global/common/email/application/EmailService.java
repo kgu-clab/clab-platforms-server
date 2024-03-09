@@ -3,13 +3,6 @@ package page.clab.api.global.common.email.application;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeUtility;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -28,6 +21,14 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.common.email.dto.request.EmailDto;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
 @RequiredArgsConstructor
@@ -86,6 +87,15 @@ public class EmailService {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    public void broadcastEmailToApprovedMember(Member member, EmailDto emailDto) {
+        try {
+            String emailContent = generateEmailContent(emailDto, member.getName());
+            sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, null, emailDto.getEmailTemplateType());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private List<File> convertMultipartFiles(List<MultipartFile> multipartFiles) {
