@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.application.dao.ApplicationRepository;
 import page.clab.api.domain.application.domain.Application;
+import page.clab.api.domain.application.domain.ApplicationId;
 import page.clab.api.domain.application.domain.QApplication;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.application.dto.response.ApplicationPassResponseDto;
@@ -104,15 +105,15 @@ public class ApplicationService {
         return new PagedResponseDto<>(responseDtos, pageable, total);
     }
 
-    public String approveApplication(String applicationId) {
-        Application application = getApplicationByIdOrThrow(applicationId);
+    public String approveApplication(Long recruitmentId, String applicationId) {
+        Application application = getApplicationByIdOrThrow(applicationId, recruitmentId);
         application.setIsPass(!application.getIsPass());
         application.setUpdateTime(LocalDateTime.now());
         return applicationRepository.save(application).getStudentId();
     }
 
-    public ApplicationPassResponseDto getApplicationPass(String applicationId) {
-        Application application = getApplicationById(applicationId);
+    public ApplicationPassResponseDto getApplicationPass(Long recruitmentId, String applicationId) {
+        Application application = getApplicationById(applicationId, recruitmentId);
         if (application == null) {
             return ApplicationPassResponseDto.builder()
                     .isPass(false)
@@ -121,19 +122,21 @@ public class ApplicationService {
         return ApplicationPassResponseDto.of(application);
     }
 
-    public String deleteApplication(String applicationId) {
-        Application application = getApplicationByIdOrThrow(applicationId);
+    public String deleteApplication(Long recruitmentId, String applicationId) {
+        Application application = getApplicationByIdOrThrow(applicationId, recruitmentId);
         applicationRepository.delete(application);
         return application.getStudentId();
     }
 
-    private Application getApplicationByIdOrThrow(String applicationId) {
-        return applicationRepository.findById(applicationId)
+    private Application getApplicationByIdOrThrow(String applicationId, Long recruitmentId) {
+        ApplicationId id = new ApplicationId(applicationId, recruitmentId);
+        return applicationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당 지원자가 없습니다."));
     }
 
-    private Application getApplicationById(String applicationId) {
-        return applicationRepository.findById(applicationId)
+    private Application getApplicationById(String applicationId, Long recruitmentId) {
+        ApplicationId id = new ApplicationId(applicationId, recruitmentId);
+        return applicationRepository.findById(id)
                 .orElse(null);
     }
 

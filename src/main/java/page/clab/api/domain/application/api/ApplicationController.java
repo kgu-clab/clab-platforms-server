@@ -71,25 +71,27 @@ public class ApplicationController {
         return responseModel;
     }
 
-    @Operation(summary = "[S] 지원 승인/취소", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[S] 지원 합격/취소", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "승인/취소 상태가 반전됨")
     @Secured({"ROLE_SUPER"})
-    @PatchMapping("/{applicationId}")
+    @PatchMapping("/{recruitmentId}/{applicationId}")
     public ResponseModel approveApplication(
+            @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "applicationId") String applicationId
-    ) {
-        String id = applicationService.approveApplication(applicationId);
+            ) {
+        String id = applicationService.approveApplication(recruitmentId, applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "합격 여부 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @GetMapping("/{applicationId}")
+    @GetMapping("/{recruitmentId}/{applicationId}")
     public ResponseModel getApplicationPass(
+            @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "applicationId") String applicationId
     ) {
-        ApplicationPassResponseDto applicationPassResponseDto = applicationService.getApplicationPass(applicationId);
+        ApplicationPassResponseDto applicationPassResponseDto = applicationService.getApplicationPass(recruitmentId, applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applicationPassResponseDto);
         return responseModel;
@@ -97,11 +99,12 @@ public class ApplicationController {
 
     @Operation(summary = "[S] 지원서 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
-    @DeleteMapping("/{applicationId}")
+    @DeleteMapping("/{recruitmentId}/{applicationId}")
     public ResponseModel deleteApplication(
+            @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "applicationId") String applicationId
     ) {
-        String id = applicationService.deleteApplication(applicationId);
+        String id = applicationService.deleteApplication(recruitmentId, applicationId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
