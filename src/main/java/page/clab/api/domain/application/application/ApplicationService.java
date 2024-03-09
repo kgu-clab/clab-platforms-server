@@ -21,7 +21,6 @@ import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.domain.Role;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.domain.recruitment.application.RecruitmentService;
 import page.clab.api.domain.recruitment.domain.Recruitment;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -57,16 +56,7 @@ public class ApplicationService {
         application.setIsPass(false);
         application.setUpdateTime(LocalDateTime.now());
         String id = applicationRepository.save(application).getStudentId();
-        List<Member> admins = memberService.getMembersByRole(Role.SUPER);
-        admins.addAll(memberService.getMembersByRole(Role.ADMIN));
-        admins.stream()
-                .forEach(admin -> {
-                    NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                            .memberId(admin.getId())
-                            .content(applicationRequestDto.getStudentId() + " " + applicationRequestDto.getName() + "님이 동아리에 지원하였습니다.")
-                            .build();
-                    notificationService.createNotification(notificationRequestDto);
-                });
+        sendNotificationToAdminMembers(applicationRequestDto.getStudentId() + " " + applicationRequestDto.getName() + "님이 동아리에 지원하였습니다.");
         slackService.sendApplicationNotification(request, applicationRequestDto);
         return id;
     }
@@ -138,6 +128,15 @@ public class ApplicationService {
         ApplicationId id = new ApplicationId(applicationId, recruitmentId);
         return applicationRepository.findById(id)
                 .orElse(null);
+    }
+
+    private void sendNotificationToAdminMembers(String content) {
+        List<Member> admins = memberService.getMembersByRole(Role.SUPER);
+        admins.addAll(memberService.getMembersByRole(Role.ADMIN));
+        admins
+                .forEach(admin -> {
+                    notificationService.createNotification(content, admin);
+                });
     }
 
 }
