@@ -16,6 +16,8 @@ import page.clab.api.global.util.ModelMapperUtil;
 @Builder
 public class ApplicationPassResponseDto {
 
+    private Long recruitmentId;
+
     private String name;
 
     private ApplicationType applicationType;
