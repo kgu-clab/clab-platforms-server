@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -35,6 +36,9 @@ public class LoginController {
 
     private final LoginService loginService;
 
+    @Value("${security.auth.header}")
+    private String authHeader;
+
     @Operation(summary = "멤버 로그인", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("")
     public ResponseModel login(
@@ -47,7 +51,7 @@ public class LoginController {
             throw new MethodArgumentNotValidException(null, result);
         }
         LoginHeader headerData = loginService.login(httpServletRequest, loginRequestDto);
-        httpServletResponse.setHeader("X-Clab-Auth", headerData.toJson());
+        httpServletResponse.setHeader(authHeader, headerData.toJson());
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
@@ -64,7 +68,7 @@ public class LoginController {
             throw new MethodArgumentNotValidException(null, result);
         }
         TokenHeader headerData = loginService.authenticator(httpServletRequest, twoFactorAuthenticationRequestDto);
-        httpServletResponse.setHeader("X-Clab-Auth", headerData.toJson());
+        httpServletResponse.setHeader(authHeader, headerData.toJson());
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
@@ -101,7 +105,7 @@ public class LoginController {
             HttpServletResponse httpServletResponse
     ) {
         TokenHeader headerData = loginService.reissue(httpServletRequest);
-        httpServletResponse.setHeader("X-Clab-Auth", headerData.toJson());
+        httpServletResponse.setHeader(authHeader, headerData.toJson());
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }

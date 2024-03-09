@@ -1,6 +1,5 @@
 package page.clab.api.domain.position.application;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +14,8 @@ import page.clab.api.domain.position.dto.response.PositionMyResponseDto;
 import page.clab.api.domain.position.dto.response.PositionResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

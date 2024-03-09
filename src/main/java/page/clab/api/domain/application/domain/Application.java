@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -30,12 +31,16 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@IdClass(ApplicationId.class)
 public class Application {
 
     @Id
     @Size(min = 9, max = 9, message = "{size.application.studentId}")
     @Pattern(regexp = "^[0-9]+$", message = "{pattern.application.studentId}")
     private String studentId;
+
+    @Id
+    private Long recruitmentId;
 
     @Column(nullable = false)
     @Size(min = 1, max = 10, message = "{size.application.name}")

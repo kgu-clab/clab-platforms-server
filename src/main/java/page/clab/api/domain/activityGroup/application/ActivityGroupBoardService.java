@@ -17,8 +17,10 @@ import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestD
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
+import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardUpdateResponseDto;
+import page.clab.api.domain.activityGroup.dto.response.AssignmentSubmissionWithFeedbackResponseDto;
+import page.clab.api.domain.activityGroup.dto.response.FeedbackResponseDto;
 import page.clab.api.domain.activityGroup.exception.InvalidParentBoardException;
-import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -94,11 +96,13 @@ public class ActivityGroupBoardService {
                     });
         } else {
             GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
-            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                    .memberId(groupLeader.getMember().getId())
-                    .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDto);
+            if (groupLeader != null) {
+                NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                        .memberId(groupLeader.getMember().getId())
+                        .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.")
+                        .build();
+                notificationService.createNotification(notificationRequestDto);
+            }
         }
         return id;
     }
@@ -122,10 +126,12 @@ public class ActivityGroupBoardService {
         Member member = memberService.getCurrentMember();
         ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
         Long activityGroupId = parentBoard.getActivityGroup().getId();
+        GroupMember leader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
 
         if (!memberService.isMemberAdminRole(member) &&
                 !memberService.isMemberSuperRole(member) &&
-                !activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER).getMember().getId()
+                leader != null &&
+                !leader.getMember().getId()
                         .equals(member.getId())
         ) {
             if (parentBoard.getCategory().equals(ActivityGroupBoardCategory.ASSIGNMENT)) {
@@ -138,36 +144,27 @@ public class ActivityGroupBoardService {
         return new PagedResponseDto<>(boardPage.map(ActivityGroupBoardChildResponseDto::of));
     }
 
-    public ActivityGroupBoardResponseDto getFeedbackCategoryBoardByParent(Long parentId) {
-        ActivityGroupBoard parentBoard = activityGroupBoardRepository.findById(parentId)
-                .orElseThrow(() -> new NotFoundException("부모 게시판이 존재하지 않습니다."));
-
-        if (!parentBoard.getCategory().equals(ActivityGroupBoardCategory.SUBMIT)) {
-            throw new NotSubmitCategoryBoardException("제출 카테고리 게시판이 아니기 때문에 피드백 카테고리 게시판을 찾을 수 없습니다.");
-        }
-
-        if (parentBoard.getChildren().size() != 1) {
-            throw new NotFoundException("피드백 카테고리 게시판이 없거나 유일하지 않습니다.");
-        }
-
-        Long childId = parentBoard.getChildren().getFirst().getId();
-        return getActivityGroupBoardById(childId);
-    }
-
-    public ActivityGroupBoardResponseDto getMyAssignmentBoard(Long parentId) {
-        Member member = memberService.getCurrentMember();
+    @Transactional
+    public List<AssignmentSubmissionWithFeedbackResponseDto> getMyAssignmentsWithFeedbacks(Long parentId) {
+        Member currentMember = memberService.getCurrentMember();
         ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
-        List<ActivityGroupBoard> childrenBoards = parentBoard.getChildren();
-        List<ActivityGroupBoard> assignmentBoard = childrenBoards.stream()
-                .filter(child -> child.getCategory() == ActivityGroupBoardCategory.SUBMIT && child.getMember().getId().equals(member.getId()))
-                .collect(Collectors.toList());
-        if (assignmentBoard.isEmpty()) {
-            throw new NotFoundException("제출한 과제가 없습니다.");
+        List<ActivityGroupBoard> mySubmissions = parentBoard.getChildren().stream()
+                .filter(child -> child.getCategory() == ActivityGroupBoardCategory.SUBMIT && child.getMember().equals(currentMember))
+                .toList();
+        List<AssignmentSubmissionWithFeedbackResponseDto> submissionsWithFeedbacks = new ArrayList<>();
+        for (ActivityGroupBoard submission : mySubmissions) {
+            AssignmentSubmissionWithFeedbackResponseDto submissionDto = AssignmentSubmissionWithFeedbackResponseDto.of(submission);
+            List<FeedbackResponseDto> feedbackDtos = submission.getChildren().stream()
+                    .filter(feedback -> feedback.getCategory() == ActivityGroupBoardCategory.FEEDBACK)
+                    .map(FeedbackResponseDto::of)
+                    .toList();
+            submissionDto.setFeedbacks(feedbackDtos);
+            submissionsWithFeedbacks.add(submissionDto);
         }
-        return getActivityGroupBoardById(assignmentBoard.get(0).getId());
+        return submissionsWithFeedbacks;
     }
 
-    public Long updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardUpdateRequestDto activityGroupBoardUpdateRequestDto) throws PermissionDeniedException {
+    public ActivityGroupBoardUpdateResponseDto updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardUpdateRequestDto activityGroupBoardUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
         if (!member.getId().equals(board.getMember().getId()) && !memberService.isMemberAdminRole(member)) {
@@ -175,7 +172,10 @@ public class ActivityGroupBoardService {
         }
         board.update(activityGroupBoardUpdateRequestDto, fileService);
         board.setUpdateTime(LocalDateTime.now());
-        return activityGroupBoardRepository.save(board).getId();
+        return ActivityGroupBoardUpdateResponseDto.builder()
+                .id(activityGroupBoardRepository.save(board).getId())
+                .parentId(board.getParent() != null ? board.getParent().getId() : null)
+                .build();
     }
 
     public Long deleteActivityGroupBoard(Long activityGroupBoardId) throws PermissionDeniedException {

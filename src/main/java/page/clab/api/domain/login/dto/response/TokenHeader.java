@@ -15,7 +15,7 @@ import lombok.Setter;
 @Builder
 public class TokenHeader {
 
-    private String status;
+    private int status;
 
     private String accessToken;
 

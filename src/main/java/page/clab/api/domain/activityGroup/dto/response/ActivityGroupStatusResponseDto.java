@@ -43,8 +43,10 @@ public class ActivityGroupStatusResponseDto {
 
     public static ActivityGroupStatusResponseDto of(ActivityGroup activityGroup, Member leader, Long participantCount, Long weeklyActivityCount) {
         ActivityGroupStatusResponseDto activityGroupResponseDto = ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupStatusResponseDto.class);
-        activityGroupResponseDto.setLeaderId(leader.getId());
-        activityGroupResponseDto.setLeaderName(leader.getName());
+        if (leader != null) {
+            activityGroupResponseDto.setLeaderId(leader.getId());
+            activityGroupResponseDto.setLeaderName(leader.getName());
+        }
         activityGroupResponseDto.setParticipantCount(participantCount);
         activityGroupResponseDto.setWeeklyActivityCount(weeklyActivityCount);
         return activityGroupResponseDto;

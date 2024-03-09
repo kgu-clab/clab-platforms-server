@@ -19,9 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OpenApiConfig {
 
-    @Value("${security.jwt.example-token}")
-    private String jwtToken;
-
     @Bean
     public OpenAPI openAPI(@Value("${springdoc.version}") String appVersion) {
         Info info = new Info().title("C-Lab Page").version(appVersion)
@@ -45,7 +42,6 @@ public class OpenApiConfig {
                                                 .scheme("bearer")
                                                 .bearerFormat("JWT")
                                                 .in(SecurityScheme.In.HEADER)
-                                                .description(jwtToken)
                                 )
                 )
                 .info(info);

@@ -75,6 +75,11 @@ public class ActivityGroupMemberService {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         Member member = memberService.getCurrentMember();
         List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
+
+        List<GroupMember> acceptedGroupMembers = groupMembers.stream()
+                .filter(groupMember -> groupMember.getStatus().equals(GroupMemberStatus.ACCEPTED))
+                .toList();
+
         GroupMember leader = groupMembers.stream()
                 .filter(groupMember -> groupMember.getRole().equals(ActivityGroupRole.LEADER))
                 .findFirst()
@@ -89,9 +94,9 @@ public class ActivityGroupMemberService {
                 .toList();
 
         if (activityGroup.getCategory().equals(ActivityGroupCategory.STUDY)) {
-            return ActivityGroupStudyResponseDto.of(activityGroup, GroupMemberResponseDto.of(groupMembers), noticeAndWeeklyActivityBoards, isOwner);
+            return ActivityGroupStudyResponseDto.of(activityGroup, GroupMemberResponseDto.of(acceptedGroupMembers), noticeAndWeeklyActivityBoards, isOwner);
         } else if (activityGroup.getCategory().equals(ActivityGroupCategory.PROJECT)) {
-            return ActivityGroupProjectResponseDto.of(activityGroup, GroupMemberResponseDto.of(groupMembers), noticeAndWeeklyActivityBoards, isOwner);
+            return ActivityGroupProjectResponseDto.of(activityGroup, GroupMemberResponseDto.of(acceptedGroupMembers), noticeAndWeeklyActivityBoards, isOwner);
         } else {
             throw new InvalidCategoryException("해당 카테고리가 존재하지 않습니다.");
         }
@@ -104,7 +109,8 @@ public class ActivityGroupMemberService {
                     Long participantCount = getGroupMemberByActivityGroupId(activityGroup.getId()).stream()
                             .filter(groupMember -> groupMember.getStatus().equals(GroupMemberStatus.ACCEPTED))
                             .count();
-                    Member leader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER).getMember();
+                    GroupMember groupleader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
+                    Member leader = groupleader != null ? groupleader.getMember() : null;
                     Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroup.getId(), ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
                     return ActivityGroupStatusResponseDto.of(activityGroup, leader, participantCount, weeklyActivityCount);
                 })
@@ -152,12 +158,13 @@ public class ActivityGroupMemberService {
         String subject = "[" + activityGroup.getName() + "] 활동 참가 신청이 들어왔습니다.";
         String content = member.getName() + "에게서 활동 참가 신청이 들어왔습니다.";
         emailService.sendEmailAsync(groupLeader.getMember().getEmail(), subject, content, null, EmailTemplateType.NORMAL);
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(groupLeader.getMember().getId())
-                .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 활동 참가 신청을 하였습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
-
+        if (groupLeader != null) {
+            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
+                    .memberId(groupLeader.getMember().getId())
+                    .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 활동 참가 신청을 하였습니다.")
+                    .build();
+            notificationService.createNotification(notificationRequestDto);
+        }
         return activityGroup.getId();
     }
 
@@ -202,7 +209,7 @@ public class ActivityGroupMemberService {
 
     public GroupMember getGroupMemberByActivityGroupIdAndRole(Long activityGroupId, ActivityGroupRole role) {
         return groupMemberRepository.findByActivityGroupIdAndRole(activityGroupId, role)
-                .orElseThrow(() -> new NotFoundException("해당 활동의 리더가 존재하지 않습니다."));
+                .orElse(null);
     }
 
     public List<GroupMember> getGroupMemberByMember(Member member){

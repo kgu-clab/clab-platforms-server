@@ -27,6 +27,9 @@ public class CorsConfig {
     @Value("${security.cors.configuration-path}")
     private String corsConfigurationPath;
 
+    @Value("${security.auth.header}")
+    private String authHeader;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -37,6 +40,7 @@ public class CorsConfig {
         corsConfiguration.setAllowedMethods(List.of(corsAllowedMethods));
         corsConfiguration.setAllowedHeaders(List.of(corsAllowedHeaders));
         corsConfiguration.setAllowCredentials(corsAllowCredentials);
+        corsConfiguration.addExposedHeader(authHeader);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration(corsConfigurationPath, corsConfiguration);
