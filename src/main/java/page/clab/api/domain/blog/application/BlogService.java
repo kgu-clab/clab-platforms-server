@@ -42,11 +42,11 @@ public class BlogService {
         Member member = memberService.getCurrentMember();
         Blog blog = Blog.of(blogRequestDto);
         blog.setMember(member);
-        return blogRepository.save(blog).getId();
+        return save(blog).getId();
     }
 
     public PagedResponseDto<BlogResponseDto> getBlogs(Pageable pageable) {
-        Page<Blog> blogs = blogRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<Blog> blogs = getAllBlogsByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(blogs.map(BlogResponseDto::of));
     }
 
@@ -54,7 +54,7 @@ public class BlogService {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
         BlogDetailsResponseDto blogDetailsResponseDto = BlogDetailsResponseDto.of(blog);
-        blogDetailsResponseDto.setOwner(blog.getMember().equals(member));
+        blogDetailsResponseDto.setOwner(isMemberBlogWriter(member,blog));
         return blogDetailsResponseDto;
     }
 
@@ -87,26 +87,42 @@ public class BlogService {
     public Long updateBlog(Long blogId, BlogUpdateRequestDto blogUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
-        if (!blog.getMember().equals(member)) {
+        if (!isMemberBlogWriter(member, blog)) {
             throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
         }
         blog.update(blogUpdateRequestDto);
-        return blogRepository.save(blog).getId();
+        return save(blog).getId();
     }
 
     public Long deleteBlog(Long blogId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
-        if (!(blog.getMember().equals(member) || memberService.isMemberAdminRole(member))) {
+        if (!(isMemberBlogWriter(member, blog) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("해당 게시글을 삭제할 권한이 없습니다.");
         }
-        blogRepository.delete(blog);
+        delete(blog);
         return blog.getId();
     }
 
     private Blog getBlogByIdOrThrow(Long blogId) {
         return blogRepository.findById(blogId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 게시글입니다."));
+    }
+
+    private Blog save(Blog blog) {
+        return blogRepository.save(blog);
+    }
+
+    private Page<Blog> getAllBlogsByOrderByCreatedAtDesc(Pageable pageable) {
+        return blogRepository.findAllByOrderByCreatedAtDesc(pageable);
+    }
+
+    private void delete(Blog blog) {
+        blogRepository.delete(blog);
+    }
+
+    private boolean isMemberBlogWriter(Member member, Blog blog) {
+        return blog.getMember().equals(member);
     }
 
 }
