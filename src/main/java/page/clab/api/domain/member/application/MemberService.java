@@ -2,6 +2,7 @@ package page.clab.api.domain.member.application;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import page.clab.api.domain.application.dao.ApplicationRepository;
+import page.clab.api.domain.application.domain.Application;
+import page.clab.api.domain.application.exception.NotApprovedApplicationException;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.member.dao.MemberRepository;
 import page.clab.api.domain.member.domain.Member;
@@ -23,7 +27,9 @@ import page.clab.api.domain.member.dto.response.MemberBirthdayResponseDto;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
 import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.position.dao.PositionRepository;
+import page.clab.api.domain.position.domain.Position;
+import page.clab.api.domain.position.domain.PositionType;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.email.application.EmailService;
@@ -47,10 +53,12 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -59,7 +67,9 @@ public class MemberService {
 
     private final VerificationCodeService verificationCodeService;
 
-    private NotificationService notificationService;
+    private final ApplicationRepository applicationRepository;
+
+    private final PositionRepository positionRepository;
 
     private EmailService emailService;
 
@@ -67,11 +77,11 @@ public class MemberService {
     private String filePath;
 
     @Autowired
-    public void setNotificationService(@Lazy NotificationService notificationService, @Lazy EmailService emailService) {
-        this.notificationService = notificationService;
+    public void setNotificationService(@Lazy EmailService emailService) {
         this.emailService = emailService;
     }
 
+    @Transactional
     public String createMember(MemberRequestDto memberRequestDto) {
         if (memberRepository.findById(memberRequestDto.getId()).isPresent())
             throw new AssociatedAccountExistsException("이미 사용 중인 아이디입니다.");
@@ -82,7 +92,31 @@ public class MemberService {
         Member member = Member.of(memberRequestDto);
         member.setContact(removeHyphensFromContact(member.getContact()));
         member.setPassword(passwordEncoder.encode(member.getPassword()));
+        createPositionByMember(member);
         return memberRepository.save(member).getId();
+    }
+
+    @Transactional
+    public List<String> createMembersByRecruitmentId(Long recruitmentId) {
+        List<Application> applications = applicationRepository.findByRecruitmentIdAndIsPass(recruitmentId, true);
+        return applications.stream()
+                .map(application -> {
+                    Member member = createMemberByApplication(application);
+                    createPositionByMember(member);
+                    return member.getId();
+                })
+                .toList();
+    }
+
+    @Transactional
+    public String createMemberByRecruitmentId(Long recruitmentId, String memberId) {
+        Application application = applicationRepository.findByRecruitmentIdAndStudentId(recruitmentId, memberId);
+        if (!application.getIsPass()) {
+            throw new NotApprovedApplicationException("승인되지 않은 지원서입니다.");
+        }
+        Member member = createMemberByApplication(application);
+        createPositionByMember(member);
+        return member.getId();
     }
 
     public List<MemberResponseDto> getMembers() {
@@ -248,10 +282,6 @@ public class MemberService {
                 .orElse(null);
     }
 
-    public boolean isMemberExist(String memberId) {
-        return memberRepository.existsById(memberId);
-    }
-
     public Member getMemberByIdOrThrow(String memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
@@ -284,7 +314,7 @@ public class MemberService {
         return memberRepository.findAllByRole(role);
     }
 
-    public Member getMemberByEmail(String email){
+    public Member getMemberByEmail(String email) {
         return (Member)memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("해당 이메일을 사용하는 멤버가 없습니다."));
     }
@@ -298,6 +328,47 @@ public class MemberService {
         byte[] codeBytes = new byte[9];
         secureRandom.nextBytes(codeBytes);
         return Base64.encodeBase64URLSafeString(codeBytes);
+    }
+
+    private Member createMemberByApplication(Application application) {
+        Member member = Member.of(application);
+        Member existingMember = memberRepository.findById(member.getId()).orElse(null);
+        if (existingMember != null) {
+            return existingMember;
+        }
+        String password = generateVerificationCode();
+        member.setPassword(passwordEncoder.encode(password));
+        CompletableFuture.runAsync(() -> {
+            try {
+                emailService.broadcastEmailToApprovedMember(
+                        member,
+                        new EmailDto(
+                                List.of(member.getEmail()),
+                                "C-Lab 계정 발급 안내",
+                                "C-Lab 계정 발급 안내 메일입니다.\n" +
+                                        "ID: " + member.getId() + "\n" +
+                                        "Password: " + password + "\n",
+                                EmailTemplateType.NORMAL
+                        )
+                );
+            } catch (Exception e) {
+                log.error("이메일 전송 실패: {}", e.getMessage());
+            }
+        });
+        memberRepository.save(member);
+        return member;
+    }
+
+    public void createPositionByMember(Member member) {
+        if (positionRepository.findByMemberAndYearAndPositionType(member, String.valueOf(LocalDate.now().getYear()), PositionType.MEMBER).isPresent()) {
+            return;
+        }
+        Position position = Position.builder()
+                .member(member)
+                .positionType(PositionType.MEMBER)
+                .year(String.valueOf(LocalDate.now().getYear()))
+                .build();
+        positionRepository.save(position);
     }
 
 }
