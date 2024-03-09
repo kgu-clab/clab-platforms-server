@@ -62,7 +62,7 @@ public class RecruitmentService {
         return recruitment.getId();
     }
 
-    private Recruitment getRecruitmentByIdOrThrow(Long recruitmentId) {
+    public Recruitment getRecruitmentByIdOrThrow(Long recruitmentId) {
         return recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(() -> new NotFoundException("해당 모집 공고가 존재하지 않습니다."));
     }

@@ -32,6 +32,10 @@ public class ApplicationRequestDto {
     @Schema(description = "학번", example = "202312000", required = true)
     private String studentId;
 
+    @NotNull(message = "{notNull.application.recruitmentId}")
+    @Schema(description = "모집 일정 ID", example = "1", required = true)
+    private Long recruitmentId;
+
     @NotNull(message = "{notNull.application.name}")
     @Size(min = 1, max = 10, message = "{size.application.name}")
     @Schema(description = "이름", example = "홍길동", required = true)
