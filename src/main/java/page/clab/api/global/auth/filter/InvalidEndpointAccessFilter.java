@@ -29,13 +29,16 @@ public class InvalidEndpointAccessFilter extends GenericFilterBean {
 
     private final SlackService slackService;
 
+    private final String fileURL;
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String path = httpRequest.getRequestURI();
+        boolean isUploadedFileAccess = path.startsWith(fileURL);
         boolean isSuspicious = SuspiciousPatterns.getSuspiciousPatterns().stream().anyMatch(pattern -> pattern.matcher(path).matches());
 
-        if (isSuspicious) {
+        if (!isUploadedFileAccess && isSuspicious) {
             logAndRespondToSuspiciousAccess(httpRequest, (HttpServletResponse) response);
         } else {
             chain.doFilter(request, response);
