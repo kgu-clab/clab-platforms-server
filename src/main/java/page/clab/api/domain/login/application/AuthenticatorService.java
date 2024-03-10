@@ -17,13 +17,15 @@ public class AuthenticatorService {
 
     private final AuthenticatorRepository authenticatorRepository;
 
+    private final EncryptionUtil encryptionUtil;
+
     public String generateSecretKey(String memberId) {
         GoogleAuthenticator gAuth = new GoogleAuthenticator();
         GoogleAuthenticatorKey key = gAuth.createCredentials();
         String secretKey = key.getKey();
         Authenticator authenticator = Authenticator.builder()
                 .memberId(memberId)
-                .secretKey(EncryptionUtil.encrypt(secretKey))
+                .secretKey(encryptionUtil.encrypt(secretKey))
                 .build();
         authenticatorRepository.save(authenticator);
         return secretKey;
@@ -36,7 +38,7 @@ public class AuthenticatorService {
     public boolean validateTotp(String memberId, String totp) {
         GoogleAuthenticator gAuth = new GoogleAuthenticator();
         Authenticator authenticator = getAuthenticatorByIdOrThrow(memberId);
-        String secretKey = EncryptionUtil.decrypt(authenticator.getSecretKey());
+        String secretKey = encryptionUtil.decrypt(authenticator.getSecretKey());
         return gAuth.authorize(secretKey, Integer.parseInt(totp));
     }
 
