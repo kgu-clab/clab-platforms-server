@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -61,6 +62,9 @@ public class SecurityConfig {
 
     private final OpenApiPatternsProperties OpenApiPatternsProperties;
 
+    @Value("${resource.file.url}")
+    String fileURL;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         AuthenticationManager authenticationManager = authenticationConfig.authenticationManager();
@@ -79,7 +83,7 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new InvalidEndpointAccessFilter(blacklistIpRepository, slackService),
+                        new InvalidEndpointAccessFilter(blacklistIpRepository, slackService, fileURL),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
