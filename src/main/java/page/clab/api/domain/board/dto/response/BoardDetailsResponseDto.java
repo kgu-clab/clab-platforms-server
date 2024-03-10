@@ -25,7 +25,7 @@ public class BoardDetailsResponseDto {
 
     private String writer;
 
-    private Long roleLevel;
+    private Long writerRoleLevel;
 
     private String memberImageUrl;
 
@@ -47,7 +47,7 @@ public class BoardDetailsResponseDto {
     public static BoardDetailsResponseDto of(Board board) {
         BoardDetailsResponseDto boardResponseDto = ModelMapperUtil.getModelMapper().map(board, BoardDetailsResponseDto.class);
 
-        boardResponseDto.setRoleLevel(board.getMember().getRole().toLong());
+        boardResponseDto.setWriterRoleLevel(board.getMember().getRole().toLong());
 
         if(board.isWantAnonymous()){
             boardResponseDto.setWriter(board.getNickName());
