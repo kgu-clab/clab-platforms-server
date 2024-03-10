@@ -1,9 +1,6 @@
 package page.clab.api.domain.board.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +9,10 @@ import lombok.Setter;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,6 +24,8 @@ public class BoardDetailsResponseDto {
     private Long id;
 
     private String writer;
+
+    private Long writerRoleLevel;
 
     private String memberImageUrl;
 
@@ -43,6 +46,8 @@ public class BoardDetailsResponseDto {
 
     public static BoardDetailsResponseDto of(Board board) {
         BoardDetailsResponseDto boardResponseDto = ModelMapperUtil.getModelMapper().map(board, BoardDetailsResponseDto.class);
+
+        boardResponseDto.setWriterRoleLevel(board.getMember().getRole().toLong());
 
         if(board.isWantAnonymous()){
             boardResponseDto.setWriter(board.getNickName());
