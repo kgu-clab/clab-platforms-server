@@ -92,8 +92,9 @@ public class MemberService {
         Member member = Member.of(memberRequestDto);
         member.setContact(removeHyphensFromContact(member.getContact()));
         member.setPassword(passwordEncoder.encode(member.getPassword()));
+        String id = memberRepository.save(member).getId();
         createPositionByMember(member);
-        return memberRepository.save(member).getId();
+        return id;
     }
 
     @Transactional
