@@ -1,16 +1,14 @@
 package page.clab.api.domain.board.dto.response;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -20,6 +18,8 @@ import page.clab.api.global.util.ModelMapperUtil;
 public class BoardCategoryResponseDto {
 
     private Long id;
+
+    private String category;
 
     private String writer;
 
