@@ -181,13 +181,13 @@ public class MemberService {
         String code = generateVerificationCode();
         verificationCodeService.saveVerificationCode(member.getId(), code);
         emailService.broadcastEmail(
-            new EmailDto(
-                List.of(member.getEmail()),
-                "C-Lab 비밀번호 재발급 인증 안내",
-                "C-Lab 비밀번호 재발급 인증 안내 메일입니다.\n" +
-                        "인증번호는 " + code + "입니다.\n",
-                    EmailTemplateType.NORMAL
-            ), null
+                new EmailDto(
+                        List.of(member.getEmail()),
+                        "C-Lab 비밀번호 재발급 인증 안내",
+                        "C-Lab 비밀번호 재발급 인증 안내 메일입니다.\n" +
+                                "인증번호는 " + code + "입니다.\n",
+                        EmailTemplateType.NORMAL
+                ), null
         );
     }
 
@@ -346,9 +346,13 @@ public class MemberService {
                         new EmailDto(
                                 List.of(member.getEmail()),
                                 "C-Lab 계정 발급 안내",
-                                "C-Lab 계정 발급 안내 메일입니다.\n" +
+                                "정식으로 C-Lab의 일원이 된 것을 축하드립니다.\n" +
+                                        "C-Lab과 함께하는 동안 불타는 열정으로 모든 원하는 목표를 이루어 내시기를 바라고,\n" +
+                                        "훗날, 당신의 합류가 C-Lab에겐 최고의 행운이었다고 기억되기를 희망합니다.\n\n" +
+                                        "로그인을 위해 아래의 계정 정보를 확인해주세요.\n" +
                                         "ID: " + member.getId() + "\n" +
-                                        "Password: " + password + "\n",
+                                        "Password: " + password + "\n" +
+                                        "로그인 후 비밀번호를 변경해주세요.",
                                 EmailTemplateType.NORMAL
                         )
                 );
