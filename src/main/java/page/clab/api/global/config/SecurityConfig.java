@@ -24,6 +24,7 @@ import page.clab.api.domain.login.application.RedisTokenService;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
+import page.clab.api.global.auth.filter.InvalidEndpointAccessFilter;
 import page.clab.api.global.auth.filter.IpAuthenticationFilter;
 import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
@@ -75,6 +76,10 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationConfig.authenticationProvider())
                 .addFilterBefore(
                         new IpAuthenticationFilter(),
+                        UsernamePasswordAuthenticationFilter.class
+                )
+                .addFilterBefore(
+                        new InvalidEndpointAccessFilter(blacklistIpRepository, slackService),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
