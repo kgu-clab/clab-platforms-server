@@ -91,9 +91,14 @@ public class MemberService {
             throw new AssociatedAccountExistsException("이미 사용 중인 이메일입니다.");
         Member member = Member.of(memberRequestDto);
         member.setContact(removeHyphensFromContact(member.getContact()));
-        member.setPassword(passwordEncoder.encode(member.getPassword()));
+        if (member.getPassword().isEmpty()) {
+            setRandomPasswordAndSendEmail(member);
+        } else {
+            member.setPassword(passwordEncoder.encode(member.getPassword()));
+        }
+        String id = memberRepository.save(member).getId();
         createPositionByMember(member);
-        return memberRepository.save(member).getId();
+        return id;
     }
 
     @Transactional
@@ -336,6 +341,12 @@ public class MemberService {
         if (existingMember != null) {
             return existingMember;
         }
+        setRandomPasswordAndSendEmail(member);
+        memberRepository.save(member);
+        return member;
+    }
+
+    private void setRandomPasswordAndSendEmail(Member member) {
         String password = generateVerificationCode();
         member.setPassword(passwordEncoder.encode(password));
         CompletableFuture.runAsync(() -> {
@@ -345,9 +356,13 @@ public class MemberService {
                         new EmailDto(
                                 List.of(member.getEmail()),
                                 "C-Lab 계정 발급 안내",
-                                "C-Lab 계정 발급 안내 메일입니다.\n" +
+                                "정식으로 C-Lab의 일원이 된 것을 축하드립니다.\n" +
+                                        "C-Lab과 함께하는 동안 불타는 열정으로 모든 원하는 목표를 이루어 내시기를 바라고,\n" +
+                                        "훗날, 당신의 합류가 C-Lab에겐 최고의 행운이었다고 기억되기를 희망합니다.\n\n" +
+                                        "로그인을 위해 아래의 계정 정보를 확인해주세요.\n" +
                                         "ID: " + member.getId() + "\n" +
-                                        "Password: " + password + "\n",
+                                        "Password: " + password + "\n" +
+                                        "로그인 후 비밀번호를 변경해주세요.",
                                 EmailTemplateType.NORMAL
                         )
                 );
@@ -355,8 +370,6 @@ public class MemberService {
                 log.error("이메일 전송 실패: {}", e.getMessage());
             }
         });
-        memberRepository.save(member);
-        return member;
     }
 
     public void createPositionByMember(Member member) {
