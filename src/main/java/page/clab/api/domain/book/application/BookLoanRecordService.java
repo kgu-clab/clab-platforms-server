@@ -61,7 +61,7 @@ public class BookLoanRecordService {
                     .book(book)
                     .borrower(borrower)
                     .borrowedAt(LocalDateTime.now())
-                    .loanExtensionDate(LocalDateTime.now().plusWeeks(1))
+                    .dueDate(LocalDateTime.now().plusWeeks(1))
                     .loanExtensionCount(0L)
                     .build();
             Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
@@ -87,7 +87,7 @@ public class BookLoanRecordService {
         }
         BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndBorrowerAndReturnedAtIsNull(book, borrower);
         LocalDateTime currentDate = LocalDateTime.now();
-        LocalDateTime extensionDate = bookLoanRecord.getLoanExtensionDate();
+        LocalDateTime extensionDate = bookLoanRecord.getDueDate();
         if (currentDate.isAfter(extensionDate)) {
             handleOverdueAndSuspension(borrower, ChronoUnit.DAYS.between(extensionDate, currentDate));
         }
@@ -114,7 +114,7 @@ public class BookLoanRecordService {
         Member borrower = memberService.getMemberByIdOrThrow(borrowerId);
         BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndBorrowerAndReturnedAtIsNull(book, borrower);
         LocalDateTime currentDate = LocalDateTime.now();
-        LocalDateTime extensionDate = bookLoanRecord.getLoanExtensionDate();
+        LocalDateTime extensionDate = bookLoanRecord.getDueDate();
         Long loanExtensionCount = bookLoanRecord.getLoanExtensionCount();
         if (borrower.getLoanSuspensionDate() != null && currentDate.isBefore(borrower.getLoanSuspensionDate())) {
             throw new LoanSuspensionException("대출 정지 중입니다. 연장할 수 없습니다.");
@@ -125,7 +125,7 @@ public class BookLoanRecordService {
         if (loanExtensionCount >= 2) {
             throw new OverdueException("대출 연장 횟수를 초과했습니다.");
         }
-        bookLoanRecord.setLoanExtensionDate(extensionDate.plusWeeks(2));
+        bookLoanRecord.setDueDate(extensionDate.plusWeeks(2));
         bookLoanRecord.setLoanExtensionCount(loanExtensionCount + 1);
         Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
 
