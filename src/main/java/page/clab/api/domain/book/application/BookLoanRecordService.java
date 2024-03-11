@@ -137,58 +137,23 @@ public class BookLoanRecordService {
         return id;
     }
 
+    public PagedResponseDto<BookLoanRecordResponseDto> getBookLoanRecordsByCondition(Long bookId, String borrowerId, Boolean isReturned, Pageable pageable) {
+        Page<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordRepository.getBookLoanRecordsByCondition(bookId, borrowerId, isReturned, pageable);
+        if (bookLoanRecords.isEmpty()) {
+            throw new SearchResultNotExistException("조건에 해당하는 도서 대출 내역이 없습니다.");
+        }
+        return new PagedResponseDto<>(bookLoanRecords);
+    }
+
     private void handleOverdueAndSuspension(Member member, long overdueDays) {
         LocalDateTime suspensionEndDate = LocalDateTime.now().plusDays(overdueDays * 7);
         member.setLoanSuspensionDate(suspensionEndDate);
         memberService.saveMember(member);
     }
 
-    public PagedResponseDto<BookLoanRecordResponseDto> getBookLoanRecords(Pageable pageable) {
-        Page<BookLoanRecord> bookLoanRecords = bookLoanRecordRepository.findAllByOrderByBorrowedAtDesc(pageable);
-        return new PagedResponseDto<>(bookLoanRecords.map(BookLoanRecordResponseDto::of));
-    }
-
-    public PagedResponseDto<BookLoanRecordResponseDto> searchBookLoanRecord(Long bookId, String borrowerId, Pageable pageable) {
-        Page<BookLoanRecord> bookLoanRecords;
-        if (bookId != null && borrowerId != null) {
-            bookLoanRecords = getBookLoanRecordByBookIdAndBorrowerId(bookId, borrowerId, pageable);
-        } else if (bookId != null) {
-            bookLoanRecords = getBookLoanRecordByBookId(bookId, pageable);
-        } else if (borrowerId != null) {
-            bookLoanRecords = getBookLoanRecordByBorrowerId(borrowerId, pageable);
-        } else {
-            throw new IllegalArgumentException("적어도 bookId 또는 borrowerId 중 하나를 제공해야 합니다.");
-        }
-        if (bookLoanRecords.isEmpty()) {
-            throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
-        }
-        return new PagedResponseDto<>(bookLoanRecords.map(BookLoanRecordResponseDto::of));
-    }
-
-    public PagedResponseDto<BookLoanRecordResponseDto> getUnreturnedBooks(Pageable pageable) {
-        Page<BookLoanRecord> unreturnedBookLoanRecords = getBookLoanRecordByReturnedAtIsNull(pageable);
-        return new PagedResponseDto<>(unreturnedBookLoanRecords.map(BookLoanRecordResponseDto::of));
-    }
-
     public BookLoanRecord getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(Book book) {
         return bookLoanRecordRepository.findByBookAndReturnedAtIsNull(book)
                 .orElseThrow(() -> new NotFoundException("해당 도서 대출 기록이 없습니다."));
-    }
-
-    private Page<BookLoanRecord> getBookLoanRecordByBookId(Long bookId, Pageable pageable) {
-        return bookLoanRecordRepository.findByBook_IdOrderByBorrowedAtDesc(bookId, pageable);
-    }
-
-    private Page<BookLoanRecord> getBookLoanRecordByBorrowerId(String borrowerId, Pageable pageable) {
-        return bookLoanRecordRepository.findByBorrower_IdOrderByBorrowedAtDesc(borrowerId, pageable);
-    }
-
-    private Page<BookLoanRecord> getBookLoanRecordByBookIdAndBorrowerId(Long bookId, String borrowerId, Pageable pageable) {
-        return bookLoanRecordRepository.findByBook_IdAndBorrower_IdOrderByBorrowedAtDesc(bookId, borrowerId, pageable);
-    }
-
-    private Page<BookLoanRecord> getBookLoanRecordByReturnedAtIsNull(Pageable pageable) {
-        return bookLoanRecordRepository.findByReturnedAtIsNullOrderByBorrowedAtDesc(pageable);
     }
 
 }
