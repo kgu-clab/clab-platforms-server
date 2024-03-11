@@ -25,9 +25,9 @@ public class BookLoanRecordResponseDto {
 
     private LocalDateTime returnedAt;
 
-    private Long loanExtensionCount;
+    private LocalDateTime dueDate;
 
-    private LocalDateTime loanExtensionDate;
+    private Long loanExtensionCount;
 
     public static BookLoanRecordResponseDto of(BookLoanRecord bookLoanRecord) {
         BookLoanRecordResponseDto bookLoanRecordResponseDto = ModelMapperUtil.getModelMapper()

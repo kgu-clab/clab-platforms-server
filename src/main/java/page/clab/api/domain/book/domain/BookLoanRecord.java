@@ -41,8 +41,8 @@ public class BookLoanRecord {
 
     private LocalDateTime returnedAt;
 
-    private Long loanExtensionCount;
+    private LocalDateTime dueDate;
 
-    private LocalDateTime loanExtensionDate;
+    private Long loanExtensionCount;
 
 }
