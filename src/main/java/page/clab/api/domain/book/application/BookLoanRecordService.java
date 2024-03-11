@@ -61,6 +61,8 @@ public class BookLoanRecordService {
                     .book(book)
                     .borrower(borrower)
                     .borrowedAt(LocalDateTime.now())
+                    .loanExtensionDate(LocalDateTime.now().plusWeeks(1))
+                    .loanExtensionCount(0L)
                     .build();
             Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
             NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
@@ -85,18 +87,9 @@ public class BookLoanRecordService {
         }
         BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndBorrowerAndReturnedAtIsNull(book, borrower);
         LocalDateTime currentDate = LocalDateTime.now();
-        LocalDateTime borrowedDate = bookLoanRecord.getBorrowedAt();
         LocalDateTime extensionDate = bookLoanRecord.getLoanExtensionDate();
-        if (bookLoanRecord.getLoanExtensionDate() == null) {
-            long overdueDays = ChronoUnit.DAYS.between(borrowedDate, currentDate);
-            if (overdueDays > 21) {
-                handleOverdueAndSuspension(borrower, overdueDays);
-            }
-        } else {
-            long overdueDays = ChronoUnit.DAYS.between(extensionDate, currentDate);
-            if (overdueDays > 14) {
-                handleOverdueAndSuspension(borrower, overdueDays);
-            }
+        if (currentDate.isAfter(extensionDate)) {
+            handleOverdueAndSuspension(borrower, ChronoUnit.DAYS.between(extensionDate, currentDate));
         }
         book.setBorrower(null);
         bookRepository.save(book);
@@ -119,28 +112,21 @@ public class BookLoanRecordService {
             throw new InvalidBorrowerException("대출한 도서와 회원 정보가 일치하지 않습니다.");
         }
         Member borrower = memberService.getMemberByIdOrThrow(borrowerId);
-        if (borrower.getLoanSuspensionDate() != null && LocalDateTime.now().isBefore(borrower.getLoanSuspensionDate())) {
-            throw new LoanSuspensionException("대출 정지 중입니다. 연장할 수 없습니다.");
-        }
         BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndBorrowerAndReturnedAtIsNull(book, borrower);
         LocalDateTime currentDate = LocalDateTime.now();
-        LocalDateTime borrowedDate = bookLoanRecord.getBorrowedAt();
-        long overdueDays = ChronoUnit.DAYS.between(borrowedDate, currentDate);
-        if (bookLoanRecord.getLoanExtensionDate() == null) {
-            if (overdueDays <= 21) {
-                LocalDateTime extensionDate = borrowedDate.plusWeeks(3);
-                bookLoanRecord.setLoanExtensionDate(extensionDate);
-            } else {
-                throw new OverdueException("대출 연장이 불가능합니다.");
-            }
-        } else {
-            if (overdueDays <= 35) {
-                LocalDateTime extensionDate = borrowedDate.plusWeeks(5);
-                bookLoanRecord.setLoanExtensionDate(extensionDate);
-            } else {
-                throw new OverdueException("대출 연장이 불가능합니다.");
-            }
+        LocalDateTime extensionDate = bookLoanRecord.getLoanExtensionDate();
+        Long loanExtensionCount = bookLoanRecord.getLoanExtensionCount();
+        if (borrower.getLoanSuspensionDate() != null && currentDate.isBefore(borrower.getLoanSuspensionDate())) {
+            throw new LoanSuspensionException("대출 정지 중입니다. 연장할 수 없습니다.");
         }
+        if (currentDate.isAfter(extensionDate)) {
+            throw new LoanSuspensionException("연체 중인 도서는 연장할 수 없습니다.");
+        }
+        if (loanExtensionCount >= 2) {
+            throw new OverdueException("대출 연장 횟수를 초과했습니다.");
+        }
+        bookLoanRecord.setLoanExtensionDate(extensionDate.plusWeeks(2));
+        bookLoanRecord.setLoanExtensionCount(loanExtensionCount + 1);
         Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
 
         NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
