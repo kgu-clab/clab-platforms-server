@@ -34,7 +34,7 @@ public class BookLoanRecordController {
 
     @Operation(summary = "[U] 도서 대출", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping("/borrow")
+    @PostMapping("")
     public ResponseModel borrowBook(
             @Valid @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto,
             BindingResult result
