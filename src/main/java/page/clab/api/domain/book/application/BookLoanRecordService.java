@@ -1,8 +1,6 @@
 package page.clab.api.domain.book.application;
 
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +25,9 @@ import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.SearchResultNotExistException;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 @Service
 @RequiredArgsConstructor
 public class BookLoanRecordService {
@@ -45,7 +46,7 @@ public class BookLoanRecordService {
     public Long borrowBook(BookLoanRecordRequestDto bookLoanRecordRequestDto) throws CustomOptimisticLockingFailureException {
         try {
             Long bookId = bookLoanRecordRequestDto.getBookId();
-            String borrowerId = bookLoanRecordRequestDto.getBorrowerId();
+            String borrowerId = memberService.getCurrentMember().getId();
             Book book = bookService.getBookByIdOrThrow(bookId);
             if (book.getBorrower() != null) {
                 throw new BookAlreadyBorrowedException("이미 대출 중인 도서입니다.");
@@ -76,7 +77,7 @@ public class BookLoanRecordService {
     @Transactional
     public Long returnBook(BookLoanRecordRequestDto bookLoanRecordRequestDto) {
         Long bookId = bookLoanRecordRequestDto.getBookId();
-        String borrowerId = bookLoanRecordRequestDto.getBorrowerId();
+        String borrowerId = memberService.getCurrentMember().getId();
         Book book = bookService.getBookByIdOrThrow(bookId);
         Member borrower = memberService.getMemberByIdOrThrow(borrowerId);
         if (book.getBorrower() == null || !book.getBorrower().getId().equals(borrowerId)) {
@@ -112,7 +113,7 @@ public class BookLoanRecordService {
     @Transactional
     public Long extendBookLoan(BookLoanRecordRequestDto bookLoanRecordRequestDto) {
         Long bookId = bookLoanRecordRequestDto.getBookId();
-        String borrowerId = bookLoanRecordRequestDto.getBorrowerId();
+        String borrowerId = memberService.getCurrentMember().getId();
         Book book = bookService.getBookByIdOrThrow(bookId);
         if (book.getBorrower() == null || !book.getBorrower().getId().equals(borrowerId)) {
             throw new InvalidBorrowerException("대출한 도서와 회원 정보가 일치하지 않습니다.");
