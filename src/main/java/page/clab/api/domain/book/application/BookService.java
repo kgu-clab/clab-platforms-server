@@ -6,28 +6,33 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import page.clab.api.domain.book.dao.BookLoanRecordRepository;
 import page.clab.api.domain.book.dao.BookRepository;
 import page.clab.api.domain.book.domain.Book;
+import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class BookService {
 
     private final BookRepository bookRepository;
+
+    private final BookLoanRecordRepository bookLoanRecordRepository;
 
     private final EntityManager entityManager;
 
@@ -37,13 +42,15 @@ public class BookService {
     }
 
     public PagedResponseDto<BookResponseDto> getBooks(Pageable pageable) {
-        Page<Book> books = bookRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(books.map(BookResponseDto::of));
+        List<Book> books = bookRepository.findAllByOrderByCreatedAtDesc();
+        return getBookResponseDtoPagedResponseDto(pageable, books);
     }
 
     public BookResponseDto getBookDetails(Long bookId) {
         Book book = getBookByIdOrThrow(bookId);
-        return BookResponseDto.of(book);
+        BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNull(book);
+        LocalDateTime dueDate = bookLoanRecord != null ? bookLoanRecord.getDueDate() : null;
+        return BookResponseDto.of(book, dueDate);
     }
 
     public PagedResponseDto<BookResponseDto> searchBook(String keyword, Pageable pageable) {
@@ -67,10 +74,19 @@ public class BookService {
         List<Book> books = query.getResultList();
         Set<Book> uniqueBooks = new LinkedHashSet<>(books);
         List<Book> distinctBooks = new ArrayList<>(uniqueBooks);
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), distinctBooks.size());
-        Page<Book> bookPage = new PageImpl<>(distinctBooks.subList(start, end), pageable, distinctBooks.size());
-        return new PagedResponseDto<>(bookPage.map(BookResponseDto::of));
+        return getBookResponseDtoPagedResponseDto(pageable, distinctBooks);
+    }
+
+    @NotNull
+    private PagedResponseDto<BookResponseDto> getBookResponseDtoPagedResponseDto(Pageable pageable, List<Book> books) {
+        List<BookResponseDto> bookResponseDtos = books.stream()
+                .map(book -> {
+                    BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNull(book);
+                    LocalDateTime dueDate = bookLoanRecord != null ? bookLoanRecord.getDueDate() : null;
+                    return BookResponseDto.of(book, dueDate);
+                })
+                .toList();
+        return new PagedResponseDto<>(bookResponseDtos, pageable, books.size());
     }
 
     public Long updateBookInfo(Long bookId, BookUpdateRequestDto bookUpdateRequestDto) {
@@ -88,6 +104,11 @@ public class BookService {
     public Book getBookByIdOrThrow(Long bookId) {
         return bookRepository.findById(bookId)
                 .orElseThrow(() -> new NotFoundException("해당 도서가 없습니다."));
+    }
+
+    public BookLoanRecord getBookLoanRecordByBookAndReturnedAtIsNull(Book book) {
+        return bookLoanRecordRepository.findByBookAndReturnedAtIsNull(book)
+                .orElse(null);
     }
 
 }

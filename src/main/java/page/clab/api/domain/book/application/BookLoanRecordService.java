@@ -85,7 +85,7 @@ public class BookLoanRecordService {
         if (book.getBorrower() == null || !book.getBorrower().getId().equals(borrowerId)) {
             throw new InvalidBorrowerException("대출한 도서와 회원 정보가 일치하지 않습니다.");
         }
-        BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndBorrowerAndReturnedAtIsNull(book, borrower);
+        BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(book);
         LocalDateTime currentDate = LocalDateTime.now();
         LocalDateTime extensionDate = bookLoanRecord.getDueDate();
         if (currentDate.isAfter(extensionDate)) {
@@ -112,7 +112,7 @@ public class BookLoanRecordService {
             throw new InvalidBorrowerException("대출한 도서와 회원 정보가 일치하지 않습니다.");
         }
         Member borrower = memberService.getMemberByIdOrThrow(borrowerId);
-        BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndBorrowerAndReturnedAtIsNull(book, borrower);
+        BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(book);
         LocalDateTime currentDate = LocalDateTime.now();
         LocalDateTime extensionDate = bookLoanRecord.getDueDate();
         Long loanExtensionCount = bookLoanRecord.getLoanExtensionCount();
@@ -170,8 +170,8 @@ public class BookLoanRecordService {
         return new PagedResponseDto<>(unreturnedBookLoanRecords.map(BookLoanRecordResponseDto::of));
     }
 
-    public BookLoanRecord getBookLoanRecordByBookAndBorrowerAndReturnedAtIsNull(Book book, Member borrower) {
-        return bookLoanRecordRepository.findByBookAndBorrowerAndReturnedAtIsNull(book, borrower)
+    public BookLoanRecord getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(Book book) {
+        return bookLoanRecordRepository.findByBookAndReturnedAtIsNull(book)
                 .orElseThrow(() -> new NotFoundException("해당 도서 대출 기록이 없습니다."));
     }
 
