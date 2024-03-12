@@ -115,7 +115,7 @@ public class MemberService {
 
     @Transactional
     public String createMemberByRecruitmentId(Long recruitmentId, String memberId) {
-        Application application = applicationRepository.findByRecruitmentIdAndStudentId(recruitmentId, memberId);
+        Application application = getApplicationByRecruitmentIdAndStudentIdOrThrow(recruitmentId, memberId);
         if (!application.getIsPass()) {
             throw new NotApprovedApplicationException("승인되지 않은 지원서입니다.");
         }
@@ -290,6 +290,11 @@ public class MemberService {
     public Member getMemberByIdOrThrow(String memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
+    }
+
+    private Application getApplicationByRecruitmentIdAndStudentIdOrThrow(Long recruitmentId, String memberId) {
+        return applicationRepository.findByRecruitmentIdAndStudentId(recruitmentId, memberId)
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 지원서입니다."));
     }
 
     public Member getMemberByIdOrThrowLoginFaild(String memberId) throws LoginFaliedException {

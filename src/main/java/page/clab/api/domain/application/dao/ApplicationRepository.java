@@ -7,6 +7,7 @@ import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.domain.ApplicationId;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ApplicationRepository extends JpaRepository<Application, ApplicationId> {
 
@@ -14,6 +15,6 @@ public interface ApplicationRepository extends JpaRepository<Application, Applic
 
     List<Application> findByRecruitmentIdAndIsPass(Long recruitmentId, Boolean isPass);
 
-    Application findByRecruitmentIdAndStudentId(Long recruitmentId, String studentId);
+    Optional<Application> findByRecruitmentIdAndStudentId(Long recruitmentId, String studentId);
 
 }
