@@ -389,4 +389,7 @@ public class MemberService {
         positionRepository.save(position);
     }
 
+    public List<Member> getMembersByRoleIn(List<Role> list) {
+        return memberRepository.findAllByRoleIn(list);
+    }
 }
