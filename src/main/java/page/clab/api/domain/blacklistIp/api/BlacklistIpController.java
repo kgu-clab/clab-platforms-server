@@ -11,11 +11,13 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.blacklistIp.application.BlacklistIpService;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
+import page.clab.api.domain.blacklistIp.dto.request.BlacklistIpRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
@@ -33,9 +35,9 @@ public class BlacklistIpController {
     @PostMapping("")
     public ResponseModel addBlacklistedIp(
             HttpServletRequest request,
-            @RequestParam(name = "ipAddress") String ipAddress
+            @RequestBody BlacklistIpRequestDto blacklistIpRequestDto
     ) {
-        String addedIp = blacklistIpService.addBlacklistedIp(request, ipAddress);
+        String addedIp = blacklistIpService.addBlacklistedIp(request, blacklistIpRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(addedIp);
         return responseModel;

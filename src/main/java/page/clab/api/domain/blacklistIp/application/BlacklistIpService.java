@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
+import page.clab.api.domain.blacklistIp.dto.request.BlacklistIpRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
@@ -23,12 +24,17 @@ public class BlacklistIpService {
 
     private final BlacklistIpRepository blacklistIpRepository;
 
-    public String addBlacklistedIp(HttpServletRequest request, String ipAddress) {
+    public String addBlacklistedIp(HttpServletRequest request, BlacklistIpRequestDto blacklistIpRequestDto) {
+        String ipAddress = blacklistIpRequestDto.getIpAddress();
+        String reason = blacklistIpRequestDto.getReason();
         BlacklistIp blacklistIp = getBlacklistIpByIpAddress(ipAddress);
         if (blacklistIp != null) {
             return blacklistIp.getIpAddress();
         }
-        blacklistIp = BlacklistIp.builder().ipAddress(ipAddress).build();
+        blacklistIp = BlacklistIp.builder()
+                .ipAddress(ipAddress)
+                .reason(reason)
+                .build();
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Added IP: " + ipAddress);
         return blacklistIpRepository.save(blacklistIp).getIpAddress();
     }
