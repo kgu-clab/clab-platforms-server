@@ -49,7 +49,7 @@ public class WorkExperience {
     @ManyToOne
     private Member member;
 
-    public static WorkExperience of(WorkExperienceRequestDto workExperienceRequestDto) {
+    public static WorkExperience of(WorkExperienceRequestDto workExperienceRequestDto, Member member) {
         return ModelMapperUtil.getModelMapper().map(workExperienceRequestDto, WorkExperience.class);
     }
 
