@@ -1,9 +1,6 @@
 package page.clab.api.domain.board.application;
 
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,13 +17,15 @@ import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.RandomNicknameUtil;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,11 +60,10 @@ public class BoardService {
         board.setLikes(0L);
         Long id = boardRepository.save(board).getId();
         if (memberService.isMemberAdminRole(member) && boardRequestDto.getCategory().equals("공지사항")) {
-            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                    .memberId(member.getId())
-                    .content("[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDto);
+            notificationService.sendNotificationToMember(
+                    member,
+                    "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다."
+            );
         }
         return id;
     }

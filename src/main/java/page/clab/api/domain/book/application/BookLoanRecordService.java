@@ -19,7 +19,6 @@ import page.clab.api.domain.book.exception.OverdueException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.NotFoundException;
@@ -65,11 +64,10 @@ public class BookLoanRecordService {
                     .loanExtensionCount(0L)
                     .build();
             Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
-            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                    .memberId(borrowerId)
-                    .content("[" + book.getTitle() + "] 도서 대출이 완료되었습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDto);
+            notificationService.sendNotificationToMember(
+                    borrowerId,
+                    "[" + book.getTitle() + "] 도서 대출이 완료되었습니다."
+            );
             return id;
         } catch (ObjectOptimisticLockingFailureException e) {
             throw new CustomOptimisticLockingFailureException("도서 대출에 실패했습니다. 다시 시도해주세요.");
@@ -95,11 +93,10 @@ public class BookLoanRecordService {
         bookRepository.save(book);
         bookLoanRecord.setReturnedAt(currentDate);
         Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(borrowerId)
-                .content("[" + book.getTitle() + "] 도서 반납이 완료되었습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
+        notificationService.sendNotificationToMember(
+                borrowerId,
+                "[" + book.getTitle() + "] 도서 반납이 완료되었습니다."
+        );
         return id;
     }
 
@@ -129,11 +126,10 @@ public class BookLoanRecordService {
         bookLoanRecord.setLoanExtensionCount(loanExtensionCount + 1);
         Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
 
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(borrowerId)
-                .content("[" + book.getTitle() + "] 도서 대출 연장이 완료되었습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
+        notificationService.sendNotificationToMember(
+                borrowerId,
+                "[" + book.getTitle() + "] 도서 대출 연장이 완료되었습니다."
+        );
         return id;
     }
 

@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.domain.Role;
 import page.clab.api.domain.membershipFee.dao.MembershipFeeRepository;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
@@ -17,9 +16,6 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,9 +31,7 @@ public class MembershipFeeService {
         Member member = memberService.getCurrentMember();
         MembershipFee membershipFee = MembershipFee.of(membershipFeeRequestDto);
         membershipFee.setApplicant(member);
-        List<Member> admins = memberService.getMembersByRoleIn(Arrays.asList(Role.ADMIN, Role.SUPER));
-        admins
-                .forEach(admin -> notificationService.createNotification("새로운 회비 내역이 등록되었습니다.", admin));
+        notificationService.sendNotificationToAdmins("새로운 회비 내역이 등록되었습니다.");
         return membershipFeeRepository.save(membershipFee).getId();
     }
 

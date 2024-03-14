@@ -389,7 +389,18 @@ public class MemberService {
         positionRepository.save(position);
     }
 
-    public List<Member> getMembersByRoleIn(List<Role> list) {
-        return memberRepository.findAllByRoleIn(list);
+    public List<Member> getAdmins() {
+        return memberRepository.findAll()
+                .stream()
+                .filter(member -> member.getRole().equals(Role.ADMIN) || member.getRole().equals(Role.SUPER))
+                .toList();
     }
+
+    public List<Member> getSuperAdmins() {
+        return memberRepository.findAll()
+                .stream()
+                .filter(member -> member.getRole().equals(Role.SUPER))
+                .toList();
+    }
+
 }

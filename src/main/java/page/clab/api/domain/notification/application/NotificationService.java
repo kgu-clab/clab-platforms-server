@@ -16,6 +16,8 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
@@ -35,11 +37,6 @@ public class NotificationService {
         return notificationRepository.save(notification).getId();
     }
 
-    public Long createNotification(String content, Member receiver) {
-        Notification notification = Notification.of(content, receiver);
-        return notificationRepository.save(notification).getId();
-    }
-
     public PagedResponseDto<NotificationResponseDto> getNotifications(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Notification> notifications = getNotificationByMember(pageable, member);
@@ -54,6 +51,38 @@ public class NotificationService {
         }
         notificationRepository.delete(notification);
         return notification.getId();
+    }
+
+    public void sendNotificationToAllMembers(String content) {
+        List<Notification> notifications = memberService.findAll().stream()
+                .map(member -> Notification.of(member, content))
+                .toList();
+        notificationRepository.saveAll(notifications);
+    }
+
+    public void sendNotificationToMember(Member member, String content) {
+        Notification notification = Notification.of(member, content);
+        notificationRepository.save(notification);
+    }
+
+    public void sendNotificationToMember(String memberId, String content) {
+        Member member = memberService.getMemberByIdOrThrow(memberId);
+        Notification notification = Notification.of(member, content);
+        notificationRepository.save(notification);
+    }
+
+    public void sendNotificationToAdmins(String content) {
+        List<Notification> notifications = memberService.getAdmins().stream()
+                .map(member -> Notification.of(member, content))
+                .toList();
+        notificationRepository.saveAll(notifications);
+    }
+
+    public void sendNotificationToSuperAdmins(String content) {
+        List<Notification> notifications = memberService.getSuperAdmins().stream()
+                .map(member -> Notification.of(member, content))
+                .toList();
+        notificationRepository.saveAll(notifications);
     }
 
     private Notification getNotificationByIdOrThrow(Long notificationId) {

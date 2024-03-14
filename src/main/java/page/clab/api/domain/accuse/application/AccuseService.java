@@ -1,7 +1,6 @@
 package page.clab.api.domain.accuse.application;
 
 import jakarta.transaction.Transactional;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -19,9 +18,7 @@ import page.clab.api.domain.board.application.BoardService;
 import page.clab.api.domain.comment.application.CommentService;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.domain.Role;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.domain.review.application.ReviewService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
@@ -70,8 +67,8 @@ public class AccuseService {
             id = save(accuse).getId();
         }
 
-        sendNotification("신고하신 내용이 접수되었습니다.", member);
-        sendNotificationToSuperMembers(member.getName() + "님이 신고를 접수하였습니다. 확인해주세요.");
+        notificationService.sendNotificationToMember(member, "신고하신 내용이 접수되었습니다.");
+        notificationService.sendNotificationToSuperAdmins(member.getName() + "님이 신고를 접수하였습니다. 확인해주세요.");
 
         return id;
     }
@@ -98,11 +95,12 @@ public class AccuseService {
         return new PagedResponseDto<>(accuses.map(AccuseResponseDto::of));
     }
 
+    @Transactional
     public Long updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) {
         Accuse accuse = getAccuseByIdOrThrow(accuseId);
         accuse.setAccuseStatus(accuseStatus);
         Long id = accuseRepository.save(accuse).getId();
-        sendNotification("신고 상태가 " + accuseStatus + "로 변경되었습니다.", accuse.getMember());
+        notificationService.sendNotificationToMember(accuse.getMember(), "신고 상태가 " + accuseStatus.getDescription() + "로 변경되었습니다.");
         return id;
     }
 
@@ -117,17 +115,6 @@ public class AccuseService {
             return reviewService.isReviewExistsById(accuseTargetId);
         }
         throw new AccuseTargetTypeIncorrectException("신고 대상 유형이 올바르지 않습니다.");
-    }
-
-    private void sendNotification(String content, Member receiver) {
-        notificationService.createNotification(content, receiver);
-    }
-
-    private void sendNotificationToSuperMembers(String content) {
-        List<Member> superMembers = memberService.getMembersByRole(Role.SUPER);
-        for (Member superMember : superMembers) {
-            sendNotification(content, superMember);
-        }
     }
 
     private Accuse getAccuseByIdOrThrow(Long accuseId) {

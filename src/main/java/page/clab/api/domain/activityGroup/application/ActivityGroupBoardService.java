@@ -24,7 +24,6 @@ import page.clab.api.domain.activityGroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
@@ -87,21 +86,19 @@ public class ActivityGroupBoardService {
             groupMembers
                     .forEach(gMember -> {
                         if (!Objects.equals(gMember.getMember().getId(), member.getId())) {
-                            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                                    .memberId(gMember.getMember().getId())
-                                    .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.")
-                                    .build();
-                            notificationService.createNotification(notificationRequestDto);
+                            notificationService.sendNotificationToMember(
+                                    gMember.getMember(),
+                                    "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다."
+                            );
                         }
                     });
         } else {
             GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
             if (groupLeader != null) {
-                NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                        .memberId(groupLeader.getMember().getId())
-                        .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.")
-                        .build();
-                notificationService.createNotification(notificationRequestDto);
+                notificationService.sendNotificationToMember(
+                        groupLeader.getMember(),
+                        "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다."
+                );
             }
         }
         return id;

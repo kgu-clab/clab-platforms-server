@@ -20,7 +20,6 @@ import page.clab.api.domain.comment.dto.response.CommentGetMyResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -69,12 +68,10 @@ public class CommentService {
         if(commentRequestDto.isWantAnonymous()){
             writer = nickname;
         }
-
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(board.getMember().getId())
-                .content("[" + board.getTitle() + "] " + writer + "님이 게시글에 댓글을 남겼습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
+        notificationService.sendNotificationToMember(
+                board.getMember(),
+                "[" + board.getTitle() + "] " + writer + "님이 게시글에 댓글을 남겼습니다."
+        );
         return id;
     }
 
