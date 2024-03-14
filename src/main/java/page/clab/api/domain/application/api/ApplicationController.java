@@ -57,7 +57,7 @@ public class ApplicationController {
             "모집 일정 ID, 지원자 ID, 합격 여부 기준 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/conditions")
-    public ResponseModel getApplicationsByCondition(
+    public ResponseModel getApplicationsByConditions(
             @RequestParam(name = "recruitmentId", required = false) String recruitmentId,
             @RequestParam(name = "studentId", required = false) String studentId,
             @RequestParam(name = "isPass", required = false) Boolean isPass,
@@ -65,7 +65,7 @@ public class ApplicationController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ApplicationResponseDto> applications = applicationService.getApplicationsByCondition(recruitmentId, studentId, isPass, pageable);
+        PagedResponseDto<ApplicationResponseDto> applications = applicationService.getApplicationsByConditions(recruitmentId, studentId, isPass, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applications);
         return responseModel;

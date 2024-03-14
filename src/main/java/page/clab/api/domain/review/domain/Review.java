@@ -59,6 +59,14 @@ public class Review {
         return ModelMapperUtil.getModelMapper().map(reviewRequestDto, Review.class);
     }
 
+    public static Review of(ReviewRequestDto reviewRequestDto, Member member, ActivityGroup activityGroup) {
+        Review review = ModelMapperUtil.getModelMapper().map(reviewRequestDto, Review.class);
+        review.setMember(member);
+        review.setActivityGroup(activityGroup);
+        review.setIsPublic(false);
+        return review;
+    }
+
     public void update(ReviewUpdateRequestDto reviewUpdateRequestDto) {
         Optional.ofNullable(reviewUpdateRequestDto.getContent()).ifPresent(this::setContent);
     }
