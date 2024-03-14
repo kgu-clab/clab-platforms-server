@@ -1,6 +1,5 @@
 package page.clab.api.domain.book.application;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Pageable;
@@ -25,8 +24,6 @@ public class BookService {
     private final BookRepository bookRepository;
 
     private final BookLoanRecordRepository bookLoanRecordRepository;
-
-    private final EntityManager entityManager;
 
     public Long createBook(BookRequestDto bookRequestDto) {
         Book book = Book.of(bookRequestDto);
