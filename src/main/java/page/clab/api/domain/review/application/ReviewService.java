@@ -15,7 +15,6 @@ import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedExce
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.domain.review.dao.ReviewRepository;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.domain.review.dto.request.ReviewRequestDto;
@@ -58,11 +57,10 @@ public class ReviewService {
         Long id = reviewRepository.save(review).getId();
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         if (groupLeader != null) {
-            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                    .memberId(groupLeader.getMember().getId())
-                    .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 리뷰를 등록하였습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDto);
+            notificationService.sendNotificationToMember(
+                    groupLeader.getMember().getId(),
+                    "[" + activityGroup.getName() + "] " + member.getName() + "님이 리뷰를 등록하였습니다."
+            );
         }
         return id;
     }
