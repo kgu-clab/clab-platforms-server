@@ -10,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +19,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -70,6 +71,18 @@ public class Schedule {
                 .detail(scheduleRequestDto.getDetail())
                 .startDateTime(scheduleRequestDto.getStartDateTime())
                 .endDateTime(scheduleRequestDto.getEndDateTime())
+                .build();
+    }
+
+    public static Schedule of(ScheduleRequestDto scheduleRequestDto, Member member, ActivityGroup activityGroup) {
+        return Schedule.builder()
+                .scheduleType(scheduleRequestDto.getScheduleType())
+                .title(scheduleRequestDto.getTitle())
+                .detail(scheduleRequestDto.getDetail())
+                .startDateTime(scheduleRequestDto.getStartDateTime())
+                .endDateTime(scheduleRequestDto.getEndDateTime())
+                .scheduleWriter(member)
+                .activityGroup(activityGroup)
                 .build();
     }
 

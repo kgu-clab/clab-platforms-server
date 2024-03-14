@@ -61,17 +61,9 @@ public class ScheduleService {
             }
         }
 
-        Schedule schedule = Schedule.of(scheduleRequestDto);
+        Schedule schedule = Schedule.of(scheduleRequestDto, member, activityGroup);
         schedule.setId(null);
-        schedule.setScheduleWriter(member);
-
-        if (scheduleRequestDto.getActivityGroupId() != null) {
-            schedule.setActivityGroup(activityGroup);
-        }
-
-        Long id = save(schedule).getId();
-
-        return id;
+        return save(schedule).getId();
     }
 
     public PagedResponseDto<ScheduleResponseDto> getSchedules(LocalDateTime startDateTime, LocalDateTime endDateTime, Pageable pageable) {
