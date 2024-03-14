@@ -6,7 +6,7 @@ import page.clab.api.domain.book.domain.BookLoanRecord;
 
 import java.util.Optional;
 
-public interface BookLoanRecordRepository extends JpaRepository<BookLoanRecord, Long>, QBookLoanRecordRepository {
+public interface BookLoanRecordRepository extends JpaRepository<BookLoanRecord, Long>, BookLoanRecordRepositoryCustom {
 
     Optional<BookLoanRecord> findByBookAndReturnedAtIsNull(Book book);
 
