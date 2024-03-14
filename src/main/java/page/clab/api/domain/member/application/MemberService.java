@@ -73,12 +73,7 @@ public class MemberService {
 
     @Transactional
     public String createMember(MemberRequestDto memberRequestDto) {
-        if (memberRepository.findById(memberRequestDto.getId()).isPresent())
-            throw new AssociatedAccountExistsException("이미 사용 중인 아이디입니다.");
-        if (memberRepository.findByContact(memberRequestDto.getContact()).isPresent())
-            throw new AssociatedAccountExistsException("이미 사용 중인 연락처입니다.");
-        if (memberRepository.findByEmail(memberRequestDto.getEmail()).isPresent())
-            throw new AssociatedAccountExistsException("이미 사용 중인 이메일입니다.");
+        checkMemberUniqueness(memberRequestDto);
         Member member = Member.of(memberRequestDto);
         member.setContact(removeHyphensFromContact(member.getContact()));
         if (member.getPassword().isEmpty()) {
@@ -287,6 +282,15 @@ public class MemberService {
                 log.error("이메일 전송 실패: {}", e.getMessage());
             }
         });
+    }
+
+    private void checkMemberUniqueness(MemberRequestDto memberRequestDto) {
+        if (memberRepository.findById(memberRequestDto.getId()).isPresent())
+            throw new AssociatedAccountExistsException("이미 사용 중인 아이디입니다.");
+        if (memberRepository.findByContact(memberRequestDto.getContact()).isPresent())
+            throw new AssociatedAccountExistsException("이미 사용 중인 연락처입니다.");
+        if (memberRepository.findByEmail(memberRequestDto.getEmail()).isPresent())
+            throw new AssociatedAccountExistsException("이미 사용 중인 이메일입니다.");
     }
 
     public void createPositionByMember(Member member) {
