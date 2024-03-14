@@ -36,7 +36,6 @@ import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.email.application.EmailService;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
@@ -159,11 +158,10 @@ public class ActivityGroupMemberService {
         String content = member.getName() + "에게서 활동 참가 신청이 들어왔습니다.";
         emailService.sendEmailAsync(groupLeader.getMember().getEmail(), subject, content, null, EmailTemplateType.NORMAL);
         if (groupLeader != null) {
-            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                    .memberId(groupLeader.getMember().getId())
-                    .content("[" + activityGroup.getName() + "] " + member.getName() + "님이 활동 참가 신청을 하였습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDto);
+            notificationService.sendNotificationToMember(
+                    groupLeader.getMember(),
+                    "[" + activityGroup.getName() + "] " + member.getName() + "님이 활동 참가 신청을 하였습니다."
+            );
         }
         return activityGroup.getId();
     }

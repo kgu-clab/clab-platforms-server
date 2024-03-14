@@ -23,6 +23,4 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 
     Page<Member> findAllByNameOrderByCreatedAtDesc(String name, Pageable pageable);
 
-    List<Member> findAllByRoleIn(List<Role> role);
-
 }

@@ -24,7 +24,6 @@ import page.clab.api.domain.activityGroup.exception.LeaderStatusChangeNotAllowed
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -61,11 +60,10 @@ public class ActivityGroupAdminService {
         groupLeader.setRole(ActivityGroupRole.LEADER);
         groupLeader.setStatus(GroupMemberStatus.ACCEPTED);
         activityGroupMemberService.save(groupLeader);
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(member.getId())
-                .content("활동 그룹 생성이 완료되었습니다. 활동 승인이 완료되면 활동 그룹을 이용할 수 있습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
+        notificationService.sendNotificationToMember(
+                member,
+                "활동 그룹 생성이 완료되었습니다. 활동 승인이 완료되면 활동 그룹을 이용할 수 있습니다."
+        );
         return id;
     }
 
@@ -85,11 +83,10 @@ public class ActivityGroupAdminService {
         Long id = activityGroupRepository.save(activityGroup).getId();
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
         if (groupLeader != null) {
-            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                    .memberId(groupLeader.getMember().getId())
-                    .content("활동 그룹이 [" + activityGroupStatus.getDescription() + "] 상태로 변경되었습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDto);
+            notificationService.sendNotificationToMember(
+                    groupLeader.getMember(),
+                    "활동 그룹이 [" + activityGroupStatus.getDescription() + "] 상태로 변경되었습니다."
+            );
         }
         return id;
     }
@@ -104,11 +101,10 @@ public class ActivityGroupAdminService {
         groupScheduleRepository.deleteAll(groupScheduleList);
         activityGroupRepository.delete(activityGroup);
         if (groupLeader != null) {
-            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                    .memberId(groupLeader.getMember().getId())
-                    .content("활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDto);
+            notificationService.sendNotificationToMember(
+                    groupLeader.getMember(),
+                    "활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다."
+            );
         }
         return activityGroup.getId();
     }
@@ -182,11 +178,10 @@ public class ActivityGroupAdminService {
         }
         String id = activityGroupMemberService.save(groupMember).getMember().getId();
 
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(memberId)
-                .content("활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
+        notificationService.sendNotificationToMember(
+                member,
+                "활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다."
+        );
         return id;
     }
 

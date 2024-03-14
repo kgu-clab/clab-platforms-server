@@ -8,7 +8,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +16,8 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -50,10 +51,10 @@ public class Notification {
         return notification;
     }
 
-    public static Notification of(String content, Member receiver) {
+    public static Notification of(Member receiver, String content) {
         return Notification.builder()
-                .content(content)
                 .member(receiver)
+                .content(content)
                 .build();
     }
 
