@@ -12,7 +12,7 @@ import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
 
 import java.util.List;
 
-public class BookLoanRecordRepositoryImpl implements QBookLoanRecordRepository {
+public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
