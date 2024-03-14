@@ -67,7 +67,7 @@ public class MemberService {
     private EmailService emailService;
 
     @Autowired
-    public void setNotificationService(@Lazy EmailService emailService) {
+    public void setEmailService(@Lazy EmailService emailService) {
         this.emailService = emailService;
     }
 
