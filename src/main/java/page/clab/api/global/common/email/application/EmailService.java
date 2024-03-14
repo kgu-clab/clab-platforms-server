@@ -89,12 +89,55 @@ public class EmailService {
         });
     }
 
-    public void broadcastEmailToApprovedMember(Member member, EmailDto emailDto) {
+    public void broadcastEmailToApprovedMember(Member member, String password) {
+        String subject = "C-Lab 계정 발급 안내";
+        String content = String.format(
+                "정식으로 C-Lab의 일원이 된 것을 축하드립니다.\n" +
+                        "C-Lab과 함께하는 동안 불타는 열정으로 모든 원하는 목표를 이루어 내시기를 바라고,\n" +
+                        "훗날, 당신의 합류가 C-Lab에겐 최고의 행운이었다고 기억되기를 희망합니다.\n\n" +
+                        "로그인을 위해 아래의 계정 정보를 확인해주세요.\n" +
+                        "ID: %s\n" +
+                        "Password: [여기에 비밀번호 또는 비밀번호 관련 안내를 삽입]\n" +
+                        "로그인 후 비밀번호를 변경해주세요.",
+                member.getId(),
+                password
+        );
+
+        EmailDto emailDto = EmailDto.builder()
+                .to(List.of(member.getEmail()))
+                .subject(subject)
+                .content(content)
+                .emailTemplateType(EmailTemplateType.NORMAL)
+                .build();
+
         try {
             String emailContent = generateEmailContent(emailDto, member.getName());
             sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, null, emailDto.getEmailTemplateType());
         } catch (MessagingException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void sendPasswordResetEmail(Member member, String code) {
+        String subject = "C-Lab 비밀번호 재발급 인증 안내";
+        String content = String.format(
+                "C-Lab 비밀번호 재발급 인증 안내 메일입니다.\n" +
+                        "인증번호는 %s입니다.\n" +
+                        "해당 인증번호를 비밀번호 재설정 페이지에 입력하여 비밀번호를 재설정해주세요.",
+                code
+        );
+
+        EmailDto emailDto = EmailDto.builder()
+                .to(List.of(member.getEmail()))
+                .subject(subject)
+                .content(content)
+                .emailTemplateType(EmailTemplateType.NORMAL)
+                .build();
+
+        try {
+            broadcastEmail(emailDto, null);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send password reset email", e);
         }
     }
 
