@@ -85,7 +85,7 @@ public class BookLoanRecordController {
             "도서 ID, 대출자 ID, 대출 가능 여부 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/conditions")
-    public ResponseModel getBookLoanRecordsByCondition(
+    public ResponseModel getBookLoanRecordsByConditions(
             @RequestParam(name = "bookId", required = false) Long bookId,
             @RequestParam(name = "borrowerId", required = false) String borrowerId,
             @RequestParam(name = "isReturned", required = false) Boolean isReturned,
@@ -93,7 +93,7 @@ public class BookLoanRecordController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.getBookLoanRecordsByCondition(bookId, borrowerId, isReturned, pageable);
+        PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.getBookLoanRecordsByConditions(bookId, borrowerId, isReturned, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(bookLoanRecords);
         return responseModel;

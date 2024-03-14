@@ -62,7 +62,7 @@ public class ApplicationService {
         return id;
     }
 
-    public PagedResponseDto<ApplicationResponseDto> getApplicationsByCondition(String recruitmentId, String studentId, Boolean isPass, Pageable pageable) {
+    public PagedResponseDto<ApplicationResponseDto> getApplicationsByConditions(String recruitmentId, String studentId, Boolean isPass, Pageable pageable) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
         QApplication application = QApplication.application;
 

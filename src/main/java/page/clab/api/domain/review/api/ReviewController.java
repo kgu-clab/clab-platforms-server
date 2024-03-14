@@ -97,8 +97,8 @@ public class ReviewController {
     @Operation(summary = "[U] 리뷰 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "멤버 ID, 이름을 기준으로 검색")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/search")
-    public ResponseModel searchReview(
+    @GetMapping("/conditions")
+    public ResponseModel getReviewByConditions(
             @RequestParam(required = false) String memberId,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Long activityGroupId,
@@ -107,7 +107,8 @@ public class ReviewController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.searchReview(memberId, name, activityGroupId, activityGroupCategory, pageable);
+        PagedResponseDto<ReviewResponseDto> reviewResponseDtos =
+                reviewService.getReviewByConditions(memberId, name, activityGroupId, activityGroupCategory, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(reviewResponseDtos);
         return responseModel;

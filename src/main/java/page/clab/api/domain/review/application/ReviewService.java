@@ -43,17 +43,9 @@ public class ReviewService {
     public Long createReview(ReviewRequestDto reviewRequestDto) {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(reviewRequestDto.getActivityGroupId());
-        if (!(activityGroup.getStatus() == ActivityGroupStatus.END)) {
-            throw new ActivityGroupNotFinishedException("활동이 종료된 활동 그룹만 리뷰를 작성할 수 있습니다.");
-        }
-        if (isExistsByMemberAndActivityGroup(member, activityGroup)) {
-            throw new AlreadyReviewedException("이미 리뷰를 작성한 활동 그룹입니다.");
-        }
-        Review review = Review.of(reviewRequestDto);
+        validateReviewCreationPermission(activityGroup, member);
+        Review review = Review.of(reviewRequestDto, member, activityGroup);
         review.setId(null);
-        review.setActivityGroup(activityGroup);
-        review.setIsPublic(false);
-        review.setMember(member);
         Long id = reviewRepository.save(review).getId();
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         if (groupLeader != null) {
@@ -83,7 +75,7 @@ public class ReviewService {
         return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, member.getId())));
     }
 
-    public PagedResponseDto<ReviewResponseDto> searchReview(String memberId, String name, Long activityGroupId, String activityGroupCategory, Pageable pageable) {
+    public PagedResponseDto<ReviewResponseDto> getReviewByConditions(String memberId, String name, Long activityGroupId, String activityGroupCategory, Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Review> reviews;
         if (memberId != null) {
@@ -127,6 +119,15 @@ public class ReviewService {
         Review review = getReviewByIdOrThrow(reviewId);
         review.setIsPublic(!review.getIsPublic());
         return reviewRepository.save(review).getId();
+    }
+
+    private void validateReviewCreationPermission(ActivityGroup activityGroup, Member member) {
+        if (!(activityGroup.getStatus() == ActivityGroupStatus.END)) {
+            throw new ActivityGroupNotFinishedException("활동이 종료된 활동 그룹만 리뷰를 작성할 수 있습니다.");
+        }
+        if (isExistsByMemberAndActivityGroup(member, activityGroup)) {
+            throw new AlreadyReviewedException("이미 리뷰를 작성한 활동 그룹입니다.");
+        }
     }
 
     private boolean isExistsByMemberAndActivityGroup(Member member, ActivityGroup activityGroup) {

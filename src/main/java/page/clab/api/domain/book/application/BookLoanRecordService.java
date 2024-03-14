@@ -133,7 +133,7 @@ public class BookLoanRecordService {
         return id;
     }
 
-    public PagedResponseDto<BookLoanRecordResponseDto> getBookLoanRecordsByCondition(Long bookId, String borrowerId, Boolean isReturned, Pageable pageable) {
+    public PagedResponseDto<BookLoanRecordResponseDto> getBookLoanRecordsByConditions(Long bookId, String borrowerId, Boolean isReturned, Pageable pageable) {
         Page<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordRepository.getBookLoanRecordsByCondition(bookId, borrowerId, isReturned, pageable);
         if (bookLoanRecords.isEmpty()) {
             throw new SearchResultNotExistException("조건에 해당하는 도서 대출 내역이 없습니다.");
