@@ -1,11 +1,6 @@
 package page.clab.api.domain.book.application;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Pageable;
@@ -21,10 +16,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -54,27 +46,8 @@ public class BookService {
     }
 
     public PagedResponseDto<BookResponseDto> searchBook(String keyword, Pageable pageable) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Book> criteriaQuery = criteriaBuilder.createQuery(Book.class);
-        Root<Book> root = criteriaQuery.from(Book.class);
-        List<Predicate> predicates = new ArrayList<>();
-        if (keyword != null && !keyword.isEmpty()) {
-            String keywordLowerCase = "%" + keyword.toLowerCase() + "%";
-            predicates.add(criteriaBuilder.or(
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("category")), keywordLowerCase),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), keywordLowerCase),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("author")), keywordLowerCase),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("publisher")), keywordLowerCase),
-                    criteriaBuilder.equal(criteriaBuilder.lower(root.get("borrower").get("id")), keyword.toLowerCase())
-            ));
-        }
-        criteriaQuery.select(root).where(predicates.toArray(new Predicate[0]));
-        criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createdAt")));
-        TypedQuery<Book> query = entityManager.createQuery(criteriaQuery);
-        List<Book> books = query.getResultList();
-        Set<Book> uniqueBooks = new LinkedHashSet<>(books);
-        List<Book> distinctBooks = new ArrayList<>(uniqueBooks);
-        return getBookResponseDtoPagedResponseDto(pageable, distinctBooks);
+        List<Book> books = bookRepository.searchBook(keyword);
+        return getBookResponseDtoPagedResponseDto(pageable, books);
     }
 
     @NotNull
