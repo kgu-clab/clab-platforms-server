@@ -43,53 +43,65 @@ public class ScheduleService {
 
     public Long createSchedule(ScheduleRequestDto scheduleRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        ScheduleType scheduleType = scheduleRequestDto.getScheduleType();
-        boolean isMemberAdminRole = memberService.isMemberAdminRole(member);
-        ActivityGroup activityGroup = null;
-
-        if (!isMemberAdminRole && scheduleType.equals(ScheduleType.ALL)) {
-            throw new PermissionDeniedException("동아리 공통 일정은 ADMIN 이상의 권한만 추가할 수 있습니다.");
-        }
-
-        if (!scheduleType.equals(ScheduleType.ALL)) {
-            Long activityGroupId = Optional.ofNullable(scheduleRequestDto.getActivityGroupId())
-                    .orElseThrow(() -> new NullPointerException("스터디 또는 프로젝트 일정은 그룹 id를 입력해야 합니다."));
-            activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
-            GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
-            if (groupMember != null && !isMemberAdminRole && !member.getId().equals(groupMember.getMember().getId())) {
-                throw new PermissionDeniedException("해당 스터디 또는 프로젝트의 LEADER, 관리자만 그룹 일정을 추가할 수 있습니다.");
-            }
-        }
-
+        validateScheduleCreationPermission(scheduleRequestDto, member);
+        ActivityGroup activityGroup = resolveActivityGroupForSchedule(scheduleRequestDto, member);
         Schedule schedule = Schedule.of(scheduleRequestDto, member, activityGroup);
-        schedule.setId(null);
-        return save(schedule).getId();
+        return scheduleRepository.save(schedule).getId();
     }
 
-    public PagedResponseDto<ScheduleResponseDto> getSchedules(LocalDateTime startDateTime, LocalDateTime endDateTime, Pageable pageable) {
+    public PagedResponseDto<ScheduleResponseDto> getSchedulesWithinDateRange(LocalDateTime startDateTime, LocalDateTime endDateTime, Pageable pageable) {
         Member member = memberService.getCurrentMember();
-
-        List<Schedule> mySchedules = getSchedules(startDateTime, endDateTime, member);
+        List<Schedule> mySchedules = getSchedulesWithinDateRange(startDateTime, endDateTime, member);
         Page<Schedule> myPagedSchedules = new PageImpl<>(mySchedules, pageable, mySchedules.size());
-
         return new PagedResponseDto<>(myPagedSchedules.map(ScheduleResponseDto::of));
     }
 
     public PagedResponseDto<ScheduleResponseDto> getActivitySchedules(LocalDateTime startDateTime, LocalDateTime endDateTime, Pageable pageable) {
         Member member = memberService.getCurrentMember();
-
-        List<Schedule> mySchedules = getSchedules(startDateTime, endDateTime, member);
-
-        List<Schedule> myActivitySchedules = mySchedules.stream()
-                .filter(schedule -> isActivitySchedule(schedule))
-                .collect(Collectors.toList());
-
-        Page<Schedule> myPagedActivitySchedules = new PageImpl<>(myActivitySchedules, pageable, myActivitySchedules.size());
-
+        List<Schedule> schedules = getSchedulesWithinDateRange(startDateTime, endDateTime, member).stream()
+                .filter(this::isActivitySchedule)
+                .toList();
+        Page<Schedule> myPagedActivitySchedules = new PageImpl<>(schedules, pageable, schedules.size());
         return new PagedResponseDto<>(myPagedActivitySchedules.map(ScheduleResponseDto::of));
     }
 
-    public List<Schedule> getSchedules(LocalDateTime startDateTime, LocalDateTime endDateTime, Member member) {
+    public Long deleteSchedule(Long scheduleId) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
+        Schedule schedule = getScheduleById(scheduleId);
+        validateScheduleDeletionPermission(member, schedule);
+        scheduleRepository.delete(schedule);
+        return schedule.getId();
+    }
+
+    private void validateScheduleCreationPermission(ScheduleRequestDto scheduleRequestDto, Member member) throws PermissionDeniedException {
+        if (scheduleRequestDto.getScheduleType().equals(ScheduleType.ALL) && !memberService.isMemberAdminRole(member)) {
+            throw new PermissionDeniedException("동아리 공통 일정은 ADMIN 이상의 권한만 추가할 수 있습니다.");
+        }
+    }
+
+    private ActivityGroup resolveActivityGroupForSchedule(ScheduleRequestDto scheduleRequestDto, Member member) throws PermissionDeniedException {
+        ScheduleType scheduleType = scheduleRequestDto.getScheduleType();
+        ActivityGroup activityGroup = null;
+        if (!scheduleType.equals(ScheduleType.ALL)) {
+            Long activityGroupId = Optional.ofNullable(scheduleRequestDto.getActivityGroupId())
+                    .orElseThrow(() -> new NullPointerException("스터디 또는 프로젝트 일정은 그룹 id를 입력해야 합니다."));
+            activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+            validateMemberIsGroupLeaderOrAdmin(member, activityGroup);
+        }
+        return activityGroup;
+    }
+
+    private void validateMemberIsGroupLeaderOrAdmin(Member member, ActivityGroup activityGroup) throws PermissionDeniedException {
+        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
+        if (groupMember != null &&
+                !memberService.isMemberAdminRole(member) &&
+                !member.getId().equals(groupMember.getMember().getId())
+        ) {
+            throw new PermissionDeniedException("해당 스터디 또는 프로젝트의 LEADER, 관리자만 그룹 일정을 추가할 수 있습니다.");
+        }
+    }
+
+    public List<Schedule> getSchedulesWithinDateRange(LocalDateTime startDateTime, LocalDateTime endDateTime, Member member) {
         List<GroupMember> groupMemberList = activityGroupMemberService.getGroupMemberByMember(member)
                 .stream()
                 .distinct()
@@ -103,55 +115,15 @@ public class ScheduleService {
         List<Schedule> validDateSchedules = getScheduleByDateBetween(startDateTime, endDateTime)
                 .stream()
                 .sorted(Comparator.comparing(Schedule::getStartDateTime))
-                .collect(Collectors.toList());
+                .toList();
 
-        List<Schedule> mySchedules = validDateSchedules.stream()
+        return validDateSchedules.stream()
                 .filter(schedule -> isValid(schedule, activityGroupIdList))
                 .collect(Collectors.toList());
-
-        return mySchedules;
-    }
-
-    private boolean isActivitySchedule(Schedule schedule) {
-        if(schedule.getScheduleType() == ScheduleType.ALL) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isValid(Schedule schedule, List<Long> activityGroupIdList) {
-        if (schedule.getScheduleType() == ScheduleType.ALL) {
-            return true;
-        }
-
-        Long activityGroupId = schedule.getActivityGroup().getId();
-
-        if (activityGroupIdList.contains(activityGroupId)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public Long deleteSchedule(Long scheduleId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        Schedule schedule = getScheduleById(scheduleId);
-
-        if (!(member.getId().equals(schedule.getScheduleWriter().getId()) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("해당 일정을 삭제할 권한이 없습니다.");
-        }
-
-        deleteSchedule(schedule);
-
-        return schedule.getId();
     }
 
     public List<Schedule> getScheduleByDateBetween(LocalDateTime startDateTime, LocalDateTime endDateTime){
         return scheduleRepository.findAllByStartDateTimeBetween(startDateTime, endDateTime);
-    }
-
-    public Schedule save(Schedule schedule){
-        return scheduleRepository.save(schedule);
     }
 
     public Schedule getScheduleById(Long scheduleId){
@@ -159,8 +131,22 @@ public class ScheduleService {
                 .orElseThrow(() -> new NotFoundException("일정이 존재하지 않습니다."));
     }
 
-    public void deleteSchedule(Schedule schedule){
-        scheduleRepository.delete(schedule);
+    private void validateScheduleDeletionPermission(Member member, Schedule schedule) throws PermissionDeniedException {
+        if (!(member.getId().equals(schedule.getScheduleWriter().getId()) || memberService.isMemberAdminRole(member))) {
+            throw new PermissionDeniedException("해당 일정을 삭제할 권한이 없습니다.");
+        }
+    }
+
+    private boolean isActivitySchedule(Schedule schedule) {
+        return schedule.getScheduleType() != ScheduleType.ALL;
+    }
+
+    private boolean isValid(Schedule schedule, List<Long> activityGroupIdList) {
+        if (schedule.getScheduleType() == ScheduleType.ALL) {
+            return true;
+        }
+        Long activityGroupId = schedule.getActivityGroup().getId();
+        return activityGroupIdList.contains(activityGroupId);
     }
 
 }
