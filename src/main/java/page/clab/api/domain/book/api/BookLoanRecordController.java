@@ -84,7 +84,7 @@ public class BookLoanRecordController {
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
             "도서 ID, 대출자 ID, 대출 가능 여부 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/condition")
+    @GetMapping("/conditions")
     public ResponseModel getBookLoanRecordsByCondition(
             @RequestParam(name = "bookId", required = false) Long bookId,
             @RequestParam(name = "borrowerId", required = false) String borrowerId,

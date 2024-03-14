@@ -56,7 +56,7 @@ public class ApplicationController {
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
             "모집 일정 ID, 지원자 ID, 합격 여부 기준 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/condition")
+    @GetMapping("/conditions")
     public ResponseModel getApplicationsByCondition(
             @RequestParam(name = "recruitmentId", required = false) String recruitmentId,
             @RequestParam(name = "studentId", required = false) String studentId,

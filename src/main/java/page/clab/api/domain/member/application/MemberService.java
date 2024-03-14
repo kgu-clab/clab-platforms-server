@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,7 +21,6 @@ import page.clab.api.domain.member.domain.Role;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
 import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
-import page.clab.api.domain.member.dto.response.CloudUsageInfo;
 import page.clab.api.domain.member.dto.response.MemberBirthdayResponseDto;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
@@ -33,7 +31,6 @@ import page.clab.api.domain.position.domain.PositionType;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.email.application.EmailService;
-import page.clab.api.global.common.file.dto.response.FileInfo;
 import page.clab.api.global.common.verificationCode.application.VerificationCodeService;
 import page.clab.api.global.common.verificationCode.domain.VerificationCode;
 import page.clab.api.global.common.verificationCode.dto.request.VerificationCodeRequestDto;
@@ -41,9 +38,7 @@ import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
-import page.clab.api.global.util.FileSystemUtil;
 
-import java.io.File;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -70,9 +65,6 @@ public class MemberService {
     private final PositionRepository positionRepository;
 
     private EmailService emailService;
-
-    @Value("${resource.file.path}")
-    private String filePath;
 
     @Autowired
     public void setNotificationService(@Lazy EmailService emailService) {
@@ -197,58 +189,6 @@ public class MemberService {
         member.setPassword(newPassword);
         memberRepository.save(member);
         verificationCodeService.deleteVerificationCode(verificationCodeRequestDto.getVerificationCode());
-    }
-
-    public PagedResponseDto<CloudUsageInfo> getAllCloudUsages(Pageable pageable) {
-        Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(members.map(member -> {
-            try {
-                return getCloudUsageByMemberId(member.getId());
-            } catch (PermissionDeniedException e) {
-                throw new RuntimeException(e);
-            }
-        }));
-    }
-
-    public CloudUsageInfo getCloudUsageByMemberId(String memberId) throws PermissionDeniedException {
-        Member currentMember = getCurrentMember();
-        if (!(memberId.equals(currentMember.getId()) || isMemberSuperRole(currentMember))) {
-            throw new PermissionDeniedException("본인 또는 관리자만 접근 가능합니다.");
-        }
-        Member member = getMemberByIdOrThrow(memberId);
-        File directory = new File(filePath + "/members/" + memberId);
-        long usage = FileSystemUtil.calculateDirectorySize(directory);
-        if (usage == -1) {
-            throw new NotFoundException("올바르지 않은 접근입니다.");
-        }
-        CloudUsageInfo cloudUsageInfo = CloudUsageInfo.builder()
-                .memberId(memberId)
-                .usage(usage)
-                .build();
-        return cloudUsageInfo;
-    }
-
-    public PagedResponseDto<FileInfo> getFilesInMemberDirectory(String memberId, Pageable pageable) {
-        Member currentMember = getCurrentMember();
-        Member member = getMemberByIdOrThrow(memberId);
-        if (!(currentMember.getId().equals(memberId) || isMemberSuperRole(member))) {
-            return null;
-        }
-        File directory = new File(filePath + "/members/" + memberId);
-        File[] files = FileSystemUtil.getFilesInDirectory(directory).toArray(new File[0]);
-        if (files.length == 0) {
-            return null;
-        }
-        int totalFiles = files.length;
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), totalFiles);
-        if (start >= totalFiles) {
-            return null;
-        }
-        Page<FileInfo> fileInfoPage = new PageImpl<>(Arrays.stream(files)
-                .map(FileInfo::of)
-                .collect(Collectors.toList()).subList(start, end), pageable, totalFiles);
-        return new PagedResponseDto<>(fileInfoPage);
     }
 
     public MyProfileResponseDto getMyProfile() {
