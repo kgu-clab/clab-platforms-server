@@ -77,22 +77,15 @@ public class LoginService {
     }
 
     public TokenHeader authenticator(HttpServletRequest httpServletRequest, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
-        String id = twoFactorAuthenticationRequestDto.getMemberId();
+        String memberId = twoFactorAuthenticationRequestDto.getMemberId();
+        Member loginMember = memberService.getMemberById(memberId);
         String totp = twoFactorAuthenticationRequestDto.getTotp();
-        accountLockInfoService.handleAccountLockInfo(id);
-        if (!authenticatorService.isAuthenticatorValid(id, totp)) {
-            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
-            accountLockInfoService.handleLoginFailure(httpServletRequest, id);
-            throw new LoginFaliedException("잘못된 인증번호입니다.");
-        }
-        loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.TOTP);
-        TokenInfo tokenInfo = jwtTokenProvider.generateToken(id, memberService.getMemberById(id).getRole());
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        redisTokenService.saveRedisToken(id, memberService.getMemberById(id).getRole(), tokenInfo, clientIpAddress);
-        Member loginMember = memberService.getMemberById(id);
-        if (memberService.isMemberSuperRole(loginMember)) {
-            slackService.sendAdminLoginNotification(loginMember.getId(), loginMember.getRole());
-        }
+
+        accountLockInfoService.handleAccountLockInfo(memberId);
+        verifyTwoFactorAuthentication(memberId, totp, httpServletRequest);
+
+        TokenInfo tokenInfo = generateAndSaveToken(loginMember);
+        sendAdminLoginNotification(loginMember);
         return constructTokenHeader(tokenInfo);
     }
 
@@ -118,6 +111,28 @@ public class LoginService {
         TokenInfo newTokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
         redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
         return constructTokenHeader(newTokenInfo);
+    }
+
+    private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest httpServletRequest) throws MemberLockedException, LoginFaliedException {
+        if (!authenticatorService.isAuthenticatorValid(memberId, totp)) {
+            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, memberId, LoginAttemptResult.FAILURE);
+            accountLockInfoService.handleLoginFailure(httpServletRequest, memberId);
+            throw new LoginFaliedException("잘못된 인증번호입니다.");
+        }
+        loginAttemptLogService.createLoginAttemptLog(httpServletRequest, memberId, LoginAttemptResult.TOTP);
+    }
+
+    private TokenInfo generateAndSaveToken(Member member) {
+        TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getId(), member.getRole());
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        redisTokenService.saveRedisToken(member.getId(), member.getRole(), tokenInfo, clientIpAddress);
+        return tokenInfo;
+    }
+
+    private void sendAdminLoginNotification(Member loginMember) {
+        if (memberService.isMemberSuperRole(loginMember)) {
+            slackService.sendAdminLoginNotification(loginMember.getId(), loginMember.getRole());
+        }
     }
 
     private void validateMemberExistence(Authentication authentication) {
