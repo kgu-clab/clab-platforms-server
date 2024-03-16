@@ -16,7 +16,6 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,10 +37,7 @@ public class PositionService {
 
     public PagedResponseDto<PositionResponseDto> getPositionsByConditions(String year, PositionType positionType, Pageable pageable) {
         Page<Position> positions = positionRepository.findByConditions(year, positionType, pageable);
-        List<PositionResponseDto> positionResponseDtos = positions.getContent().stream()
-                .map(PositionResponseDto::of)
-                .collect(Collectors.toList());
-        return new PagedResponseDto<>(positionResponseDtos, pageable, positionResponseDtos.size());
+        return new PagedResponseDto<>(positions.map(PositionResponseDto::of));
     }
 
     public PositionMyResponseDto getMyPositionsByYear(String year) {

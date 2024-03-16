@@ -7,7 +7,6 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -116,10 +115,7 @@ public class MemberService {
 
     public PagedResponseDto<MemberBirthdayResponseDto> getBirthdaysThisMonth(int month, Pageable pageable) {
         Page<Member> birthdayMembers = memberRepository.findBirthdaysThisMonth(month, pageable);
-        List<MemberBirthdayResponseDto> birthdayResponseDtos = birthdayMembers.getContent().stream()
-                .map(MemberBirthdayResponseDto::of)
-                .collect(Collectors.toList());
-        return new PagedResponseDto<>(new PageImpl<>(birthdayResponseDtos, pageable, birthdayResponseDtos.size()));
+        return new PagedResponseDto<>(birthdayMembers.map(MemberBirthdayResponseDto::of));
     }
 
     public String updateMemberInfo(String memberId, MemberUpdateRequestDto memberUpdateRequestDto) throws PermissionDeniedException {

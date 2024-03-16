@@ -34,10 +34,7 @@ public class NewsService {
 
     public PagedResponseDto<NewsResponseDto> getNewsByConditions(String category, String title, Pageable pageable) {
         Page<News> newsPage = newsRepository.findByConditions(title, category, pageable);
-        List<NewsResponseDto> newsResponseDtos = newsPage.getContent().stream()
-                .map(NewsResponseDto::of)
-                .collect(Collectors.toList());
-        return new PagedResponseDto<>(newsResponseDtos, pageable, newsResponseDtos.size());
+        return new PagedResponseDto<>(newsPage.map(NewsResponseDto::of));
     }
 
     public NewsDetailsResponseDto getNewsDetails(Long newsId) {

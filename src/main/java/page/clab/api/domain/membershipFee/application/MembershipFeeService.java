@@ -16,8 +16,6 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class MembershipFeeService {
@@ -37,10 +35,7 @@ public class MembershipFeeService {
 
     public PagedResponseDto<MembershipFeeResponseDto> getMembershipFeesByConditions(String memberId, String memberName, String category, Pageable pageable) {
         Page<MembershipFee> membershipFeesPage = membershipFeeRepository.findByConditions(memberId, memberName, category, pageable);
-        List<MembershipFeeResponseDto> dtos = membershipFeesPage.getContent().stream()
-                .map(MembershipFeeResponseDto::of)
-                .toList();
-        return new PagedResponseDto<>(dtos, pageable, dtos.size());
+        return new PagedResponseDto<>(membershipFeesPage.map(MembershipFeeResponseDto::of));
     }
 
     public Long updateMembershipFee(Long membershipFeeId, MembershipFeeUpdateRequestDto membershipFeeUpdateRequestDto) throws PermissionDeniedException {
