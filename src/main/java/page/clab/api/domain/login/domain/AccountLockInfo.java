@@ -61,16 +61,20 @@ public class AccountLockInfo {
     }
 
     public boolean isCurrentlyLocked() {
-        if (isLock != null && isLock) {
-            return lockUntil.isAfter(LocalDateTime.now());
-        }
-        return false;
+        updateLockStatus();
+        return isLock != null && isLock;
     }
 
     public void unlockAccount() {
         this.isLock = false;
         this.loginFailCount = 0L;
         this.lockUntil = null;
+    }
+
+    private void updateLockStatus() {
+        if (isLock != null && isLock && lockUntil.isBefore(LocalDateTime.now())) {
+            unlockAccount();
+        }
     }
 
 }
