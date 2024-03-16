@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import page.clab.api.domain.login.dao.AccountLockInfoRepository;
 import page.clab.api.domain.login.domain.AccountLockInfo;
 import page.clab.api.domain.login.dto.response.AccountLockInfoResponseDto;
-import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
@@ -68,13 +67,23 @@ public class AccountLockInfoService {
         return new PagedResponseDto<>(banList.map(AccountLockInfoResponseDto::of));
     }
 
-    public void handleAccountLockInfo(String memberId) throws MemberLockedException, LoginFaliedException {
-        Member member = memberService.getMemberByIdOrThrowLoginFailed(memberId);
-        AccountLockInfo accountLockInfo = ensureAccountLockInfo(member);
-        if (isAccountLocked(accountLockInfo)) {
-            throw new MemberLockedException();
+    public void handleAccountLockInfo(String memberId) throws MemberLockedException {
+        AccountLockInfo accountLockInfo = ensureAccountLockInfoForMemberId(memberId);
+        validateAccountLockStatus(accountLockInfo);
+        accountLockInfo.unlockAccount();
+        accountLockInfoRepository.save(accountLockInfo);
+    }
+
+    public void handleLoginFailure(HttpServletRequest request, String memberId) throws MemberLockedException {
+        AccountLockInfo accountLockInfo = ensureAccountLockInfoForMemberId(memberId);
+        validateAccountLockStatus(accountLockInfo);
+        accountLockInfo.incrementLoginFailCount();
+        if (accountLockInfo.shouldBeLocked(maxLoginFailures)) {
+            accountLockInfo.lockAccount(lockDurationMinutes);
+            slackService.sendSecurityAlertNotification(request, SecurityAlertType.REPEATED_LOGIN_FAILURES,
+                    "[" + accountLockInfo.getMember().getId() + "/" + accountLockInfo.getMember().getName() + "]" + " 로그인 실패 횟수 초과로 계정이 잠겼습니다.");
         }
-        resetAccountLockInfo(accountLockInfo);
+        accountLockInfoRepository.save(accountLockInfo);
     }
 
     private AccountLockInfo ensureAccountLockInfo(Member member) {
@@ -82,27 +91,15 @@ public class AccountLockInfoService {
                 .orElseGet(() -> createAccountLockInfo(member));
     }
 
-    private boolean isAccountLocked(AccountLockInfo accountLockInfo) {
-        return accountLockInfo.getIsLock() && accountLockInfo.getLockUntil().isAfter(LocalDateTime.now());
-    }
-
-    public void resetAccountLockInfo(AccountLockInfo accountLockInfo) {
-        accountLockInfo.setLoginFailCount(0L);
-        accountLockInfo.setIsLock(false);
-        accountLockInfo.setLockUntil(null);
-        accountLockInfoRepository.save(accountLockInfo);
-    }
-
-    public void handleLoginFailure(HttpServletRequest request, String memberId) {
+    private AccountLockInfo ensureAccountLockInfoForMemberId(String memberId) {
         Member member = memberService.getMemberById(memberId);
-        AccountLockInfo accountLockInfo = ensureAccountLockInfo(member);
-        accountLockInfo.incrementLoginFailCount();
-        if (accountLockInfo.shouldBeLocked(maxLoginFailures)) {
-            accountLockInfo.lockAccount(LocalDateTime.now().plusMinutes(lockDurationMinutes));
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.REPEATED_LOGIN_FAILURES,
-                    "[" + accountLockInfo.getMember().getId() + "/" + accountLockInfo.getMember().getName() + "]" + " 로그인 실패 횟수 초과로 계정이 잠겼습니다.");
+        return ensureAccountLockInfo(member);
+    }
+
+    private void validateAccountLockStatus(AccountLockInfo accountLockInfo) throws MemberLockedException {
+        if (accountLockInfo.isCurrentlyLocked()) {
+            throw new MemberLockedException();
         }
-        accountLockInfoRepository.save(accountLockInfo);
     }
 
 }
