@@ -45,22 +45,24 @@ public class MembershipFeeService {
 
     public Long updateMembershipFee(Long membershipFeeId, MembershipFeeUpdateRequestDto membershipFeeUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        MembershipFee membershipFee = getMembershipFeeByIdOrThrow(membershipFeeId);
-        if (!(membershipFee.getApplicant().equals(member) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException();
-        }
+        MembershipFee membershipFee = validateAndGetMembershipFeeForUpdate(membershipFeeId, member);
         membershipFee.update(membershipFeeUpdateRequestDto);
         return membershipFeeRepository.save(membershipFee).getId();
     }
 
     public Long deleteMembershipFee(Long membershipFeeId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
+        MembershipFee membershipFee = validateAndGetMembershipFeeForUpdate(membershipFeeId, member);
+        membershipFeeRepository.delete(membershipFee);
+        return membershipFee.getId();
+    }
+
+    private MembershipFee validateAndGetMembershipFeeForUpdate(Long membershipFeeId, Member member) throws PermissionDeniedException {
         MembershipFee membershipFee = getMembershipFeeByIdOrThrow(membershipFeeId);
         if (!(membershipFee.getApplicant().equals(member) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException();
         }
-        membershipFeeRepository.delete(membershipFee);
-        return membershipFee.getId();
+        return membershipFee;
     }
 
     private MembershipFee getMembershipFeeByIdOrThrow(Long membershipFeeId) {
