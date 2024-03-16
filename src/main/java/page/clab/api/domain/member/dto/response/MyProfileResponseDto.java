@@ -38,7 +38,9 @@ public class MyProfileResponseDto {
     private LocalDateTime createdAt;
 
     public static MyProfileResponseDto of(Member member) {
-        return ModelMapperUtil.getModelMapper().map(member, MyProfileResponseDto.class);
+        MyProfileResponseDto myProfileResponseDto = ModelMapperUtil.getModelMapper().map(member, MyProfileResponseDto.class);
+        myProfileResponseDto.setRoleLevel(member.getRole().toLong());
+        return myProfileResponseDto;
     }
 
 }
