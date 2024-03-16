@@ -43,7 +43,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -82,30 +81,21 @@ public class MemberService {
     public List<String> createMembersByRecruitmentId(Long recruitmentId) {
         List<Application> applications = applicationRepository.findByRecruitmentIdAndIsPass(recruitmentId, true);
         return applications.stream()
-                .map(application -> {
-                    Member member = createMemberByApplication(application);
-                    createPositionByMember(member);
-                    return member.getId();
-                })
+                .map(this::createMemberFromApplication)
                 .toList();
     }
 
     @Transactional
     public String createMemberByRecruitmentId(Long recruitmentId, String memberId) {
         Application application = getApplicationByRecruitmentIdAndStudentIdOrThrow(recruitmentId, memberId);
-        if (!application.getIsPass()) {
-            throw new NotApprovedApplicationException("승인되지 않은 지원서입니다.");
-        }
-        Member member = createMemberByApplication(application);
-        createPositionByMember(member);
-        return member.getId();
+        return createMemberFromApplication(application);
     }
 
     public List<MemberResponseDto> getMembers() {
         List<Member> members = memberRepository.findAll();
         return members.stream()
                 .map(MemberResponseDto::of)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public PagedResponseDto<MemberResponseDto> getMembersByConditions(String id, String name, Pageable pageable) {
@@ -231,6 +221,15 @@ public class MemberService {
         byte[] codeBytes = new byte[9];
         secureRandom.nextBytes(codeBytes);
         return Base64.encodeBase64URLSafeString(codeBytes);
+    }
+
+    private String createMemberFromApplication(Application application) {
+        if (!application.getIsPass()) {
+            throw new NotApprovedApplicationException("승인되지 않은 지원서입니다.");
+        }
+        Member member = createMemberByApplication(application);
+        createPositionByMember(member);
+        return member.getId();
     }
 
     private Member createMemberByApplication(Application application) {
