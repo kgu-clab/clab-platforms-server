@@ -30,8 +30,7 @@ public class MembershipFeeService {
 
     public Long createMembershipFee(MembershipFeeRequestDto membershipFeeRequestDto) {
         Member member = memberService.getCurrentMember();
-        MembershipFee membershipFee = MembershipFee.of(membershipFeeRequestDto);
-        membershipFee.setApplicant(member);
+        MembershipFee membershipFee = MembershipFee.of(membershipFeeRequestDto, member);
         notificationService.sendNotificationToAdmins("새로운 회비 내역이 등록되었습니다.");
         return membershipFeeRepository.save(membershipFee).getId();
     }
