@@ -52,28 +52,10 @@ public class LoginService {
 
     @Transactional
     public LoginHeader login(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFaliedException, MemberLockedException {
-        String id = loginRequestDto.getId();
-        String password = loginRequestDto.getPassword();
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
-        try {
-            loginAuthenticationManager.authenticate(authenticationToken);
-            accountLockInfoService.handleAccountLockInfo(id);
-            memberService.setLastLoginTime(id);
-            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.SUCCESS);
-            if (!authenticatorService.isAuthenticatorExist(id)) {
-                return LoginHeader.builder()
-                        .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
-                        .secretKey(authenticatorService.generateSecretKey(id))
-                        .build();
-            }
-        } catch (BadCredentialsException e) {
-            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
-            accountLockInfoService.handleLoginFailure(httpServletRequest, id);
-            throw new LoginFaliedException();
-        }
-        return LoginHeader.builder()
-                .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
-                .build();
+        authenticateAndCheckStatus(httpServletRequest, loginRequestDto);
+        updateLastLoginTime(loginRequestDto.getId());
+        logLoginAttempt(httpServletRequest, loginRequestDto.getId(), true);
+        return generateLoginHeader(loginRequestDto.getId());
     }
 
     public TokenHeader authenticator(HttpServletRequest httpServletRequest, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
@@ -111,6 +93,36 @@ public class LoginService {
         TokenInfo newTokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
         redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
         return constructTokenHeader(newTokenInfo);
+    }
+
+    private void authenticateAndCheckStatus(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFaliedException, MemberLockedException {
+        try {
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(loginRequestDto.getId(), loginRequestDto.getPassword());
+            loginAuthenticationManager.authenticate(authenticationToken);
+            accountLockInfoService.handleAccountLockInfo(loginRequestDto.getId());
+        } catch (BadCredentialsException e) {
+            logLoginAttempt(httpServletRequest, loginRequestDto.getId(), false);
+            accountLockInfoService.handleLoginFailure(httpServletRequest, loginRequestDto.getId());
+            throw new LoginFaliedException();
+        }
+    }
+
+    private void updateLastLoginTime(String memberId) {
+        memberService.setLastLoginTime(memberId);
+    }
+
+    private void logLoginAttempt(HttpServletRequest request, String memberId, boolean isSuccess) {
+        LoginAttemptResult result = isSuccess ? LoginAttemptResult.SUCCESS : LoginAttemptResult.FAILURE;
+        loginAttemptLogService.createLoginAttemptLog(request, memberId, result);
+    }
+
+    private LoginHeader generateLoginHeader(String memberId) {
+        if (!authenticatorService.isAuthenticatorExist(memberId)) {
+            String secretKey = authenticatorService.generateSecretKey(memberId);
+            return new LoginHeader(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus(), secretKey);
+        }
+        return new LoginHeader(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus(), null);
     }
 
     private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest httpServletRequest) throws MemberLockedException, LoginFaliedException {
