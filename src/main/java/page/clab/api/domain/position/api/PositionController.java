@@ -52,18 +52,18 @@ public class PositionController {
     }
 
     @Operation(summary = "[U] 연도/직책별 목록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "연도와 직책을 선택하여 조회할 수 있음<br>" +
-            "연도와 직책을 선택하지 않으면 전체 목록을 조회함")
+            "2개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
+            "연도, 직책 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel searchPositions(
+    public ResponseModel getPositionsByConditions(
             @RequestParam(name = "year", required = false) String year,
             @RequestParam(name = "positionType", required = false) PositionType positionType,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<PositionResponseDto> positions = positionService.searchPositions(year, positionType, pageable);
+        PagedResponseDto<PositionResponseDto> positions = positionService.getPositionsByConditions(year, positionType, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(positions);
         return responseModel;
