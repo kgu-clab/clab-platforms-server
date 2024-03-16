@@ -52,15 +52,19 @@ public class NewsController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 뉴스 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 뉴스 목록 조회(제목, 카테고리 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "2개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
+            "제목, 카테고리 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getNews(
+    public ResponseModel getNewsByConditions(
+            @RequestParam(name = "title", required = false) String title,
+            @RequestParam(name = "category", required = false) String category,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<NewsResponseDto> news = newsService.getNews(pageable);
+        PagedResponseDto<NewsResponseDto> news = newsService.getNewsByConditions(title, category, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(news);
         return responseModel;
@@ -73,23 +77,6 @@ public class NewsController {
             @PathVariable(name = "newsId") Long newsId
     ) {
         NewsDetailsResponseDto news = newsService.getNewsDetails(newsId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(news);
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 뉴스 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "카테고리, 제목을 기준으로 검색")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/search")
-    public ResponseModel searchNews(
-            @RequestParam(name = "category", required = false) String category,
-            @RequestParam(name = "title", required = false) String title,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<NewsResponseDto> news = newsService.searchNews(category, title, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(news);
         return responseModel;
