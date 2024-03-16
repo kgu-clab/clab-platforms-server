@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import page.clab.api.domain.login.dao.AccountLockInfoRepository;
 import page.clab.api.domain.login.domain.AccountLockInfo;
 import page.clab.api.domain.login.dto.response.AccountLockInfoResponseDto;
+import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
@@ -67,14 +68,14 @@ public class AccountLockInfoService {
         return new PagedResponseDto<>(banList.map(AccountLockInfoResponseDto::of));
     }
 
-    public void handleAccountLockInfo(String memberId) throws MemberLockedException {
+    public void handleAccountLockInfo(String memberId) throws MemberLockedException, LoginFaliedException {
         AccountLockInfo accountLockInfo = ensureAccountLockInfoForMemberId(memberId);
         validateAccountLockStatus(accountLockInfo);
         accountLockInfo.unlockAccount();
         accountLockInfoRepository.save(accountLockInfo);
     }
 
-    public void handleLoginFailure(HttpServletRequest request, String memberId) throws MemberLockedException {
+    public void handleLoginFailure(HttpServletRequest request, String memberId) throws MemberLockedException, LoginFaliedException {
         AccountLockInfo accountLockInfo = ensureAccountLockInfoForMemberId(memberId);
         validateAccountLockStatus(accountLockInfo);
         accountLockInfo.incrementLoginFailCount();
@@ -91,8 +92,8 @@ public class AccountLockInfoService {
                 .orElseGet(() -> createAccountLockInfo(member));
     }
 
-    private AccountLockInfo ensureAccountLockInfoForMemberId(String memberId) {
-        Member member = memberService.getMemberById(memberId);
+    private AccountLockInfo ensureAccountLockInfoForMemberId(String memberId) throws LoginFaliedException {
+        Member member = memberService.getMemberByIdOrThrowLoginFailed(memberId);
         return ensureAccountLockInfo(member);
     }
 
