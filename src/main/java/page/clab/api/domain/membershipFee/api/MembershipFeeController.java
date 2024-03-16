@@ -52,31 +52,20 @@ public class MembershipFeeController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 회비 정보 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 회비 정보 조회(멤버 ID, 멤버 이름, 카테고리 기준)", description = "ROLE_USER 이상의 권한이 필요함<br> " +
+            "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
+            "멤버 ID, 멤버 이름, 카테고리 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getMembershipFees(
+    public ResponseModel getMembershipFeesByConditions(
+            @RequestParam(name = "memberId", required = false) String memberId,
+            @RequestParam(name = "memberName", required = false) String memberName,
+            @RequestParam(name = "category", required = false) String category,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<MembershipFeeResponseDto> MembershipFees = membershipFeeService.getMembershipFees(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(MembershipFees);
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 회비 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "카테고리를 기준으로 검색")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/search")
-    public ResponseModel getMembershipFee(
-            @RequestParam String category,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<MembershipFeeResponseDto> MembershipFees = membershipFeeService.searchMembershipFee(category, pageable);
+        PagedResponseDto<MembershipFeeResponseDto> MembershipFees = membershipFeeService.getMembershipFeesByConditions(memberId, memberName, category, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(MembershipFees);
         return responseModel;
