@@ -17,6 +17,7 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
@@ -46,9 +47,7 @@ public class NotificationService {
     public Long deleteNotification(Long notificationId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Notification notification = getNotificationByIdOrThrow(notificationId);
-        if (!member.equals(notification.getMember())) {
-            throw new PermissionDeniedException();
-        }
+        validateNotificationOwnership(member, notification);
         notificationRepository.delete(notification);
         return notification.getId();
     }
@@ -72,14 +71,21 @@ public class NotificationService {
     }
 
     public void sendNotificationToAdmins(String content) {
-        List<Notification> notifications = memberService.getAdmins().stream()
-                .map(member -> Notification.of(member, content))
-                .toList();
-        notificationRepository.saveAll(notifications);
+        sendNotificationToSpecificRole(memberService::getAdmins, content);
     }
 
     public void sendNotificationToSuperAdmins(String content) {
-        List<Notification> notifications = memberService.getSuperAdmins().stream()
+        sendNotificationToSpecificRole(memberService::getSuperAdmins, content);
+    }
+
+    private void validateNotificationOwnership(Member member, Notification notification) throws PermissionDeniedException {
+        if (!member.equals(notification.getMember())) {
+            throw new PermissionDeniedException();
+        }
+    }
+
+    private void sendNotificationToSpecificRole(Supplier<List<Member>> memberSupplier, String content) {
+        List<Notification> notifications = memberSupplier.get().stream()
                 .map(member -> Notification.of(member, content))
                 .toList();
         notificationRepository.saveAll(notifications);
