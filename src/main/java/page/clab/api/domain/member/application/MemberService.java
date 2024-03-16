@@ -76,11 +76,7 @@ public class MemberService {
         checkMemberUniqueness(memberRequestDto);
         Member member = Member.of(memberRequestDto);
         member.setContact(removeHyphensFromContact(member.getContact()));
-        if (member.getPassword().isEmpty()) {
-            setRandomPasswordAndSendEmail(member);
-        } else {
-            member.setPassword(passwordEncoder.encode(member.getPassword()));
-        }
+        setupMemberPassword(member);
         String id = memberRepository.save(member).getId();
         createPositionByMember(member);
         return id;
@@ -222,7 +218,7 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 지원서입니다."));
     }
 
-    public Member getMemberByIdOrThrowLoginFaild(String memberId) throws LoginFaliedException {
+    public Member getMemberByIdOrThrowLoginFailed(String memberId) throws LoginFaliedException {
         return memberRepository.findById(memberId)
                 .orElseThrow(LoginFaliedException::new);
     }
@@ -252,6 +248,14 @@ public class MemberService {
 
     public List<Member> findAll() {
         return memberRepository.findAll();
+    }
+
+    private void setupMemberPassword(Member member) {
+        if (member.getPassword().isEmpty()) {
+            setRandomPasswordAndSendEmail(member);
+        } else {
+            member.setPassword(passwordEncoder.encode(member.getPassword()));
+        }
     }
 
     public String generateVerificationCode() {

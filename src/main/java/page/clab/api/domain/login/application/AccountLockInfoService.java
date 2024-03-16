@@ -84,7 +84,7 @@ public class AccountLockInfoService {
     public void handleAccountLockInfo(String memberId) throws MemberLockedException, LoginFaliedException {
         AccountLockInfo accountLockInfo = getAccountLockInfoByMemberId(memberId);
         if (accountLockInfo == null) {
-            Member member = memberService.getMemberByIdOrThrowLoginFaild(memberId);
+            Member member = memberService.getMemberByIdOrThrowLoginFailed(memberId);
             accountLockInfo = createAccountLockInfo(member);
         }
         if (isMemberLocked(accountLockInfo)) {
@@ -113,7 +113,7 @@ public class AccountLockInfoService {
     public void updateAccountLockInfo(HttpServletRequest request, String memberId) throws LoginFaliedException {
         AccountLockInfo accountLockInfo = getAccountLockInfoByMemberId(memberId);
         if ((accountLockInfo == null)) {
-            createAccountLockInfo(memberService.getMemberByIdOrThrowLoginFaild(memberId));
+            createAccountLockInfo(memberService.getMemberByIdOrThrowLoginFailed(memberId));
         } else {
             incrementFailCountAndLock(request, accountLockInfo);
         }
