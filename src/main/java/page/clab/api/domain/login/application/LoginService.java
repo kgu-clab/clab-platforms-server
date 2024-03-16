@@ -69,6 +69,7 @@ public class LoginService {
         } catch (BadCredentialsException e) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
             accountLockInfoService.handleLoginFailure(httpServletRequest, id);
+            throw new LoginFaliedException();
         }
         return LoginHeader.builder()
                 .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
