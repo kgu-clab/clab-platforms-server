@@ -133,9 +133,7 @@ public class MemberService {
 
     public MyProfileResponseDto getMyProfile() {
         Member currentMember = getCurrentMember();
-        MyProfileResponseDto myProfileResponseDto = MyProfileResponseDto.of(currentMember);
-        myProfileResponseDto.setRoleLevel(currentMember.getRole().toLong());
-        return myProfileResponseDto;
+        return MyProfileResponseDto.of(currentMember);
     }
 
     public void setLastLoginTime(String memberId) {
