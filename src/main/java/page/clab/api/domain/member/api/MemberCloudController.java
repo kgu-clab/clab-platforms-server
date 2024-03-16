@@ -28,8 +28,7 @@ public class MemberCloudController {
 
     private final MemberCloudService memberCloudService;
 
-    @Operation(summary = "[S] 모든 멤버의 클라우드 사용량 조회", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
-            "usage 단위: byte")
+    @Operation(summary = "[S] 모든 멤버의 클라우드 사용량 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getAllCloudUsages(
@@ -44,8 +43,7 @@ public class MemberCloudController {
     }
 
     @Operation(summary = "[U] 멤버의 클라우드 사용량 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "본인 외의 정보는 ROLE_SUPER만 가능<br>" +
-            "usage 단위: byte")
+            "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{memberId}")
     public ResponseModel getCloudUsageByMemberId(
