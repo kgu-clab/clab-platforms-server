@@ -82,17 +82,29 @@ public class MemberController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 모든 멤버 정보 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Operation(summary = "[A] 멤버 정보 조회(멤버 ID, 이름 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getMembers(
+    public ResponseModel getMembersByConditions(
+            @RequestParam(name = "id", required = false) String id,
+            @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<MemberResponseDto> members = memberService.getMembers(pageable);
+        PagedResponseDto<MemberResponseDto> members = memberService.getMembersByConditions(id, name, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(members);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 내 프로필 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/my-profile")
+    public ResponseModel getMyProfile(){
+        MyProfileResponseDto memberResponseDto = memberService.getMyProfile();
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(memberResponseDto);
         return responseModel;
     }
 
@@ -108,23 +120,6 @@ public class MemberController {
         PagedResponseDto<MemberBirthdayResponseDto> birthdayMembers = memberService.getBirthdaysThisMonth(month, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(birthdayMembers);
-        return responseModel;
-    }
-
-    @Operation(summary = "[A] 멤버 검색", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
-            "멤버 ID, 이름, 상태를 기준으로 검색")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/search")
-    public ResponseModel searchMember(
-            @RequestParam(required = false) String memberId,
-            @RequestParam(required = false) String name,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<MemberResponseDto> members = memberService.searchMember(memberId, name, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(members);
         return responseModel;
     }
 
@@ -171,16 +166,6 @@ public class MemberController {
         }
         memberService.verifyResetMemberPassword(verificationCodeRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 내 프로필 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/my-profile")
-    public ResponseModel getMyProfile(){
-        MyProfileResponseDto memberResponseDto = memberService.getMyProfile();
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(memberResponseDto);
         return responseModel;
     }
 

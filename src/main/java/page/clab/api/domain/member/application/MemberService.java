@@ -37,12 +37,10 @@ import page.clab.api.global.common.verificationCode.dto.request.VerificationCode
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.exception.SearchResultNotExistException;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -112,8 +110,8 @@ public class MemberService {
                 .collect(Collectors.toList());
     }
 
-    public PagedResponseDto<MemberResponseDto> getMembers(Pageable pageable) {
-        Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
+    public PagedResponseDto<MemberResponseDto> getMembersByConditions(String id, String name, Pageable pageable) {
+        Page<Member> members = memberRepository.findByConditions(id, name, pageable);
         return new PagedResponseDto<>(members.map(MemberResponseDto::of));
     }
 
@@ -128,22 +126,6 @@ public class MemberService {
         int end = Math.min((start + pageable.getPageSize()), birthdayMembers.size());
         Page<Member> birthdayMembersPage = new PageImpl<>(birthdayMembers.subList(start, end), pageable, birthdayMembers.size());
         return new PagedResponseDto<>(birthdayMembersPage.map(MemberBirthdayResponseDto::of));
-    }
-
-    public PagedResponseDto<MemberResponseDto> searchMember(String memberId, String name, Pageable pageable) {
-        Page<Member> members;
-        if (memberId != null) {
-            Member member = getMemberByIdOrThrow(memberId);
-            members = new PageImpl<>(Arrays.asList(member), pageable, 1);
-        } else if (name != null) {
-            members = getMemberByName(name, pageable);
-        } else {
-            throw new IllegalArgumentException("적어도 memberId, name 중 하나를 제공해야 합니다.");
-        }
-        if (members.isEmpty()) {
-            throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
-        }
-        return new PagedResponseDto<>(members.map(MemberResponseDto::of));
     }
 
     public String updateMemberInfo(String memberId, MemberUpdateRequestDto memberUpdateRequestDto) throws PermissionDeniedException {
@@ -221,10 +203,6 @@ public class MemberService {
     public Member getMemberByIdOrThrowLoginFailed(String memberId) throws LoginFaliedException {
         return memberRepository.findById(memberId)
                 .orElseThrow(LoginFaliedException::new);
-    }
-
-    public Page<Member> getMemberByName(String name, Pageable pageable) {
-        return memberRepository.findAllByNameOrderByCreatedAtDesc(name, pageable);
     }
 
     public Member saveMember(Member updatedMember) {
