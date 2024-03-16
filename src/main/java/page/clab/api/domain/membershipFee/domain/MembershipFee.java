@@ -55,8 +55,10 @@ public class MembershipFee {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static MembershipFee of(MembershipFeeRequestDto membershipFeeRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(membershipFeeRequestDto, MembershipFee.class);
+    public static MembershipFee of(MembershipFeeRequestDto membershipFeeRequestDto, Member member) {
+        MembershipFee membershipFee = ModelMapperUtil.getModelMapper().map(membershipFeeRequestDto, MembershipFee.class);
+        membershipFee.setApplicant(member);
+        return membershipFee;
     }
 
     public void update(MembershipFeeUpdateRequestDto membershipFeeUpdateRequestDto) {
