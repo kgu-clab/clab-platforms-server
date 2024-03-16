@@ -47,5 +47,18 @@ public class AccountLockInfo {
         this.lockUntil = null;
     }
 
+    public void incrementLoginFailCount() {
+        this.loginFailCount += 1;
+    }
+
+    public boolean shouldBeLocked(int maxLoginFailures) {
+        return this.loginFailCount >= maxLoginFailures;
+    }
+
+    public void lockAccount(LocalDateTime unlockTime) {
+        this.isLock = true;
+        this.lockUntil = unlockTime;
+    }
+
 }
 

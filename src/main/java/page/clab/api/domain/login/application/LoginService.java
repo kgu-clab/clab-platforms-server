@@ -68,7 +68,7 @@ public class LoginService {
             }
         } catch (BadCredentialsException e) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
-            accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
+            accountLockInfoService.handleLoginFailure(httpServletRequest, id);
         }
         return LoginHeader.builder()
                 .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
@@ -81,7 +81,7 @@ public class LoginService {
         accountLockInfoService.handleAccountLockInfo(id);
         if (!authenticatorService.isAuthenticatorValid(id, totp)) {
             loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
-            accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
+            accountLockInfoService.handleLoginFailure(httpServletRequest, id);
             throw new LoginFaliedException("잘못된 인증번호입니다.");
         }
         loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.TOTP);

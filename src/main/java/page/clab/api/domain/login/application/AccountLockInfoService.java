@@ -93,31 +93,16 @@ public class AccountLockInfoService {
         accountLockInfoRepository.save(accountLockInfo);
     }
 
-    public void updateAccountLockInfo(HttpServletRequest request, String memberId) throws LoginFaliedException {
-        AccountLockInfo accountLockInfo = getAccountLockInfoByMemberId(memberId);
-        if ((accountLockInfo == null)) {
-            createAccountLockInfo(memberService.getMemberByIdOrThrowLoginFailed(memberId));
-        } else {
-            incrementFailCountAndLock(request, accountLockInfo);
-        }
-        throw new LoginFaliedException();
-    }
-
-    public void incrementFailCountAndLock(HttpServletRequest request, AccountLockInfo accountLockInfo) {
-        accountLockInfo.setLoginFailCount(accountLockInfo.getLoginFailCount() + 1);
-        if (accountLockInfo.getLoginFailCount() >= maxLoginFailures) {
-            if (accountLockInfo.getIsLock().equals(false)) {
-                accountLockInfo.setLockUntil(LocalDateTime.now().plusMinutes(lockDurationMinutes));
-                accountLockInfo.setIsLock(true);
-                slackService.sendSecurityAlertNotification(request, SecurityAlertType.REPEATED_LOGIN_FAILURES,
-                        "[" + accountLockInfo.getMember().getId() + "/" + accountLockInfo.getMember().getName() + "]" + " 로그인 실패 횟수 초과로 계정이 잠겼습니다.");
-            }
+    public void handleLoginFailure(HttpServletRequest request, String memberId) {
+        Member member = memberService.getMemberById(memberId);
+        AccountLockInfo accountLockInfo = ensureAccountLockInfo(member);
+        accountLockInfo.incrementLoginFailCount();
+        if (accountLockInfo.shouldBeLocked(maxLoginFailures)) {
+            accountLockInfo.lockAccount(LocalDateTime.now().plusMinutes(lockDurationMinutes));
+            slackService.sendSecurityAlertNotification(request, SecurityAlertType.REPEATED_LOGIN_FAILURES,
+                    "[" + accountLockInfo.getMember().getId() + "/" + accountLockInfo.getMember().getName() + "]" + " 로그인 실패 횟수 초과로 계정이 잠겼습니다.");
         }
         accountLockInfoRepository.save(accountLockInfo);
-    }
-
-    public AccountLockInfo getAccountLockInfoByMemberId(String memberId) {
-        return accountLockInfoRepository.findByMember_Id(memberId).orElse(null);
     }
 
 }
