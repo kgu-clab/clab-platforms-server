@@ -3,7 +3,6 @@ package page.clab.api.domain.recruitment.application;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.recruitment.dao.RecruitmentRepository;
 import page.clab.api.domain.recruitment.domain.Recruitment;
@@ -18,8 +17,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class RecruitmentService {
-
-    private final MemberService memberService;
 
     private final NotificationService notificationService;
 
