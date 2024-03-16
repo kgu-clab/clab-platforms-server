@@ -12,8 +12,6 @@ import page.clab.api.domain.product.dto.response.ProductResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -27,10 +25,7 @@ public class ProductService {
 
     public PagedResponseDto<ProductResponseDto> getProductsByConditions(String productName, Pageable pageable) {
         Page<Product> products = productRepository.findByConditions(productName, pageable);
-        List<ProductResponseDto> productResponseDtos = products.getContent().stream()
-                .map(ProductResponseDto::of)
-                .toList();
-        return new PagedResponseDto<>(productResponseDtos, pageable, products.getSize());
+        return new PagedResponseDto<>(products.map(ProductResponseDto::of));
     }
 
     public Long updateProduct(Long productId, ProductUpdateRequestDto productUpdateRequestDto) {

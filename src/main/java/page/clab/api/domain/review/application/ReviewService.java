@@ -25,8 +25,6 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -60,11 +58,8 @@ public class ReviewService {
 
     public PagedResponseDto<ReviewResponseDto> getReviewsByConditions(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        Page<Review> page = reviewRepository.findReviewsByConditions(memberId, memberName, activityId, isPublic, pageable);
-        List<ReviewResponseDto> reviewResponseDtos = page.getContent().stream()
-                .map(review -> ReviewResponseDto.of(review, member.getId()))
-                .toList();
-        return new PagedResponseDto<>(reviewResponseDtos, pageable, reviewResponseDtos.size());
+        Page<Review> reviews = reviewRepository.findReviewsByConditions(memberId, memberName, activityId, isPublic, pageable);
+        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, member.getId())));
     }
 
     public Long updateReview(Long reviewId, ReviewUpdateRequestDto reviewUpdateRequestDto) throws PermissionDeniedException {
