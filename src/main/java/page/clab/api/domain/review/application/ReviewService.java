@@ -76,7 +76,7 @@ public class ReviewService {
     public Long updateReview(Long reviewId, ReviewUpdateRequestDto reviewUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Review review = getReviewByIdOrThrow(reviewId);
-        if (!member.getId().equals(review.getMember().getId())) {
+        if (!(member.getId().equals(review.getMember().getId()) || memberService.isMemberAdminRole(member))) {
             throw new PermissionDeniedException("해당 리뷰를 수정할 권한이 없습니다.");
         }
         review.update(reviewUpdateRequestDto);
@@ -91,12 +91,6 @@ public class ReviewService {
         }
         reviewRepository.delete(review);
         return review.getId();
-    }
-
-    public Long publicReview(Long reviewId) {
-        Review review = getReviewByIdOrThrow(reviewId);
-        review.setIsPublic(!review.getIsPublic());
-        return reviewRepository.save(review).getId();
     }
 
     private void validateReviewCreationPermission(ActivityGroup activityGroup, Member member) {

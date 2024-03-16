@@ -115,17 +115,4 @@ public class ReviewController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 리뷰 공개/비공개", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
-            "공개/비공개가 반전됨")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @PatchMapping("/public/{reviewId}")
-    public ResponseModel publicReview(
-            @PathVariable(name = "reviewId") Long reviewId
-    ) {
-        Long id = reviewService.publicReview(reviewId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
-    }
-
 }

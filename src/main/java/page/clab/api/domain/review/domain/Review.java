@@ -69,6 +69,7 @@ public class Review {
 
     public void update(ReviewUpdateRequestDto reviewUpdateRequestDto) {
         Optional.ofNullable(reviewUpdateRequestDto.getContent()).ifPresent(this::setContent);
+        Optional.ofNullable(reviewUpdateRequestDto.getIsPublic()).ifPresent(this::setIsPublic);
     }
 
 }
