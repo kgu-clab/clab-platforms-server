@@ -48,13 +48,7 @@ public class ReviewService {
         Review review = Review.of(reviewRequestDto, member, activityGroup);
         review.setId(null);
         Long id = reviewRepository.save(review).getId();
-        GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
-        if (groupLeader != null) {
-            notificationService.sendNotificationToMember(
-                    groupLeader.getMember().getId(),
-                    "[" + activityGroup.getName() + "] " + member.getName() + "님이 리뷰를 등록하였습니다."
-            );
-        }
+        notifyGroupLeaderOfNewReview(activityGroup, member);
         return id;
     }
 
@@ -75,20 +69,14 @@ public class ReviewService {
 
     public Long updateReview(Long reviewId, ReviewUpdateRequestDto reviewUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        Review review = getReviewByIdOrThrow(reviewId);
-        if (!(member.getId().equals(review.getMember().getId()) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("해당 리뷰를 수정할 권한이 없습니다.");
-        }
+        Review review = validateAndGetReviewForUpdate(reviewId, member);
         review.update(reviewUpdateRequestDto);
         return reviewRepository.save(review).getId();
     }
 
     public Long deleteReview(Long reviewId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        Review review = getReviewByIdOrThrow(reviewId);
-        if (!(member.getId().equals(review.getMember().getId()) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("해당 리뷰를 삭제할 권한이 없습니다.");
-        }
+        Review review = validateAndGetReviewForUpdate(reviewId, member);
         reviewRepository.delete(review);
         return review.getId();
     }
@@ -99,6 +87,24 @@ public class ReviewService {
         }
         if (isExistsByMemberAndActivityGroup(member, activityGroup)) {
             throw new AlreadyReviewedException("이미 리뷰를 작성한 활동 그룹입니다.");
+        }
+    }
+
+    private Review validateAndGetReviewForUpdate(Long reviewId, Member member) throws PermissionDeniedException {
+        Review review = getReviewByIdOrThrow(reviewId);
+        if (!(member.getId().equals(review.getMember().getId()) || memberService.isMemberAdminRole(member))) {
+            throw new PermissionDeniedException("해당 리뷰를 수정할 권한이 없습니다.");
+        }
+        return review;
+    }
+
+    private void notifyGroupLeaderOfNewReview(ActivityGroup activityGroup, Member member) {
+        GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
+        if (groupLeader != null) {
+            notificationService.sendNotificationToMember(
+                    groupLeader.getMember().getId(),
+                    "[" + activityGroup.getName() + "] " + member.getName() + "님이 리뷰를 등록하였습니다."
+            );
         }
     }
 
