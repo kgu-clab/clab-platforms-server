@@ -41,7 +41,6 @@ import page.clab.api.global.exception.PermissionDeniedException;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -116,16 +115,11 @@ public class MemberService {
     }
 
     public PagedResponseDto<MemberBirthdayResponseDto> getBirthdaysThisMonth(int month, Pageable pageable) {
-        LocalDate currentMonth = LocalDate.now().withMonth(month);
-        List<Member> members = memberRepository.findAll();
-        List<Member> birthdayMembers = members.stream()
-                .filter(member -> member.getBirth().getMonth() == currentMonth.getMonth())
+        Page<Member> birthdayMembers = memberRepository.findBirthdaysThisMonth(month, pageable);
+        List<MemberBirthdayResponseDto> birthdayResponseDtos = birthdayMembers.getContent().stream()
+                .map(MemberBirthdayResponseDto::of)
                 .collect(Collectors.toList());
-        birthdayMembers.sort(Comparator.comparing(member -> member.getBirth().getDayOfMonth()));
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), birthdayMembers.size());
-        Page<Member> birthdayMembersPage = new PageImpl<>(birthdayMembers.subList(start, end), pageable, birthdayMembers.size());
-        return new PagedResponseDto<>(birthdayMembersPage.map(MemberBirthdayResponseDto::of));
+        return new PagedResponseDto<>(new PageImpl<>(birthdayResponseDtos, pageable, birthdayResponseDtos.size()));
     }
 
     public String updateMemberInfo(String memberId, MemberUpdateRequestDto memberUpdateRequestDto) throws PermissionDeniedException {

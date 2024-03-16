@@ -8,4 +8,6 @@ public interface MemberRepositoryCustom {
 
     Page<Member> findByConditions(String id, String name, Pageable pageable);
 
+    Page<Member> findBirthdaysThisMonth(int month, Pageable pageable);
+
 }
