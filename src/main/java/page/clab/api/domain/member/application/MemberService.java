@@ -111,20 +111,14 @@ public class MemberService {
     public String updateMemberInfo(String memberId, MemberUpdateRequestDto memberUpdateRequestDto) throws PermissionDeniedException {
         Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
-        if (!(member.getId().equals(currentMember.getId()) || isMemberSuperRole(currentMember))) {
-            throw new PermissionDeniedException("멤버 수정 권한이 부족합니다.");
-        }
+        validateMemberUpdatePermission(member, currentMember);
         member.update(memberUpdateRequestDto, passwordEncoder);
         return memberRepository.save(member).getId();
     }
 
     @Transactional
     public void requestResetMemberPassword(MemberResetPasswordRequestDto memberResetPasswordRequestDto) {
-        Member member = getMemberByIdOrThrow(memberResetPasswordRequestDto.getId());
-        if (!(Objects.equals(member.getName(), memberResetPasswordRequestDto.getName())
-                && Objects.equals(member.getEmail(), memberResetPasswordRequestDto.getEmail()))) {
-            throw new InvalidInformationException("올바르지 않은 정보입니다.");
-        }
+        Member member = validateResetPasswordRequest(memberResetPasswordRequestDto);
         String code = generateVerificationCode();
         verificationCodeService.saveVerificationCode(member.getId(), code);
         emailService.sendPasswordResetEmail(member, code);
@@ -132,16 +126,9 @@ public class MemberService {
 
     @Transactional
     public void verifyResetMemberPassword(VerificationCodeRequestDto verificationCodeRequestDto) {
-        String memberId = verificationCodeRequestDto.getMemberId();
-        Member member = getMemberByIdOrThrow(memberId);
-        VerificationCode verificationCode = verificationCodeService.getVerificationCode(verificationCodeRequestDto.getVerificationCode());
-        if (!verificationCode.getId().equals(memberId)) {
-            throw new InvalidInformationException("올바르지 않은 인증 요청입니다.");
-        }
-        String newPassword = passwordEncoder.encode(verificationCode.getVerificationCode());
-        member.setPassword(newPassword);
-        memberRepository.save(member);
-        verificationCodeService.deleteVerificationCode(verificationCodeRequestDto.getVerificationCode());
+        Member member = getMemberByIdOrThrow(verificationCodeRequestDto.getMemberId());
+        VerificationCode verificationCode = verificationCodeService.validateVerificationCode(verificationCodeRequestDto, member);
+        updateMemberPasswordWithVerificationCode(verificationCode, member);
     }
 
     public MyProfileResponseDto getMyProfile() {
@@ -274,6 +261,28 @@ public class MemberService {
                 .year(String.valueOf(LocalDate.now().getYear()))
                 .build();
         positionRepository.save(position);
+    }
+
+    private void validateMemberUpdatePermission(Member member, Member currentMember) throws PermissionDeniedException {
+        if (!(member.getId().equals(currentMember.getId()) || isMemberSuperRole(currentMember))) {
+            throw new PermissionDeniedException("멤버 수정 권한이 부족합니다.");
+        }
+    }
+
+    private Member validateResetPasswordRequest(MemberResetPasswordRequestDto memberResetPasswordRequestDto) {
+        Member member = getMemberByIdOrThrow(memberResetPasswordRequestDto.getId());
+        if (!(Objects.equals(member.getName(), memberResetPasswordRequestDto.getName())
+                && Objects.equals(member.getEmail(), memberResetPasswordRequestDto.getEmail()))) {
+            throw new InvalidInformationException("올바르지 않은 정보입니다.");
+        }
+        return member;
+    }
+
+    private void updateMemberPasswordWithVerificationCode(VerificationCode verificationCode, Member member) {
+        String newPassword = passwordEncoder.encode(verificationCode.getVerificationCode());
+        member.setPassword(newPassword);
+        memberRepository.save(member);
+        verificationCodeService.deleteVerificationCode(verificationCode.getVerificationCode());
     }
 
     public List<Member> getAdmins() {
