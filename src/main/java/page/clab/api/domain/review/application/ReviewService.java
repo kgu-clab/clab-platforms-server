@@ -24,7 +24,8 @@ import page.clab.api.domain.review.exception.AlreadyReviewedException;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.exception.SearchResultNotExistException;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -57,42 +58,19 @@ public class ReviewService {
         return id;
     }
 
-    public PagedResponseDto<ReviewResponseDto> getReviews(Pageable pageable) {
-        Member member = memberService.getCurrentMember();
-        Page<Review> reviews = reviewRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, member.getId())));
-    }
-
     public PagedResponseDto<ReviewResponseDto> getMyReviews(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Review> reviews = getReviewByMember(pageable, member);
         return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, member.getId())));
     }
 
-    public PagedResponseDto<ReviewResponseDto> getPublicReview(Pageable pageable) {
+    public PagedResponseDto<ReviewResponseDto> getReviewsByConditions(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        Page<Review> reviews = getReviewByIsPublic(pageable);
-        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, member.getId())));
-    }
-
-    public PagedResponseDto<ReviewResponseDto> getReviewByConditions(String memberId, String name, Long activityGroupId, String activityGroupCategory, Pageable pageable) {
-        Member member = memberService.getCurrentMember();
-        Page<Review> reviews;
-        if (memberId != null) {
-            reviews = getReviewByMemberId(memberId, pageable);
-        } else if (name != null) {
-            reviews = getReviewByMemberName(name, pageable);
-        } else if (activityGroupId != null) {
-            reviews = getReviewByActivityGroupId(activityGroupId, pageable);
-        } else if (activityGroupCategory != null) {
-            reviews = getReviewByActivityGroupCategory(activityGroupCategory, pageable);
-        } else {
-            throw new IllegalArgumentException("적어도 memberId, name 중 하나를 제공해야 합니다.");
-        }
-        if (reviews.isEmpty()) {
-            throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
-        }
-        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, member.getId())));
+        Page<Review> page = reviewRepository.findReviewsByConditions(memberId, memberName, activityId, isPublic, pageable);
+        List<ReviewResponseDto> reviewResponseDtos = page.getContent().stream()
+                .map(review -> ReviewResponseDto.of(review, member.getId()))
+                .toList();
+        return new PagedResponseDto<>(reviewResponseDtos, pageable, reviewResponseDtos.size());
     }
 
     public Long updateReview(Long reviewId, ReviewUpdateRequestDto reviewUpdateRequestDto) throws PermissionDeniedException {
@@ -145,26 +123,6 @@ public class ReviewService {
 
     private Page<Review> getReviewByMember(Pageable pageable, Member member) {
         return reviewRepository.findAllByMemberOrderByCreatedAtDesc(member, pageable);
-    }
-
-    private Page<Review> getReviewByIsPublic(Pageable pageable) {
-        return reviewRepository.findAllByIsPublicOrderByCreatedAtDesc(true, pageable);
-    }
-
-    private Page<Review> getReviewByMemberId(String memberId, Pageable pageable) {
-        return reviewRepository.findAllByMember_IdOrderByCreatedAtDesc(memberId, pageable);
-    }
-
-    private Page<Review> getReviewByMemberName(String name, Pageable pageable) {
-        return reviewRepository.findAllByMember_NameOrderByCreatedAtDesc(name, pageable);
-    }
-
-    private Page<Review> getReviewByActivityGroupId(Long activityGroupId, Pageable pageable) {
-        return reviewRepository.findAllByActivityGroup_IdOrderByCreatedAtDesc(activityGroupId, pageable);
-    }
-
-    private Page<Review> getReviewByActivityGroupCategory(String activityGroupCategory, Pageable pageable) {
-        return reviewRepository.findAllByActivityGroup_CategoryOrderByCreatedAtDesc(activityGroupCategory, pageable);
     }
 
 }

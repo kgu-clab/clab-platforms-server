@@ -52,15 +52,21 @@ public class ReviewController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 리뷰 목록", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 리뷰 목록 조회(멤버 ID, 멤버 이름, 활동 ID, 공개 여부 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "4개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
+            "멤버 ID, 멤버 이름, 활동 ID, 공개 여부 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getReviews(
+    public ResponseModel getReviewsByConditions(
+            @RequestParam(name = "memberId", required = false) String memberId,
+            @RequestParam(name = "memberName", required = false) String memberName,
+            @RequestParam(name = "activityId", required = false) Long activityId,
+            @RequestParam(name = "isPublic", required = false) Boolean isPublic,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.getReviews(pageable);
+        PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.getReviewsByConditions(memberId, memberName, activityId, isPublic, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(reviewResponseDtos);
         return responseModel;
@@ -68,47 +74,13 @@ public class ReviewController {
 
     @Operation(summary = "[U] 나의 리뷰 목록", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/my-reviews")
+    @GetMapping("/my")
     public ResponseModel getMyReviews(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.getMyReviews(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(reviewResponseDtos);
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 공개 리뷰 목록", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/public-reviews")
-    public ResponseModel getPublicReview(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.getPublicReview(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(reviewResponseDtos);
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 리뷰 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "멤버 ID, 이름을 기준으로 검색")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/conditions")
-    public ResponseModel getReviewByConditions(
-            @RequestParam(required = false) String memberId,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) Long activityGroupId,
-            @RequestParam(required = false) String activityGroupCategory,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ReviewResponseDto> reviewResponseDtos =
-                reviewService.getReviewByConditions(memberId, name, activityGroupId, activityGroupCategory, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(reviewResponseDtos);
         return responseModel;
