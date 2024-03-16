@@ -93,11 +93,7 @@ public class LoginService {
         if (memberService.isMemberSuperRole(loginMember)) {
             slackService.sendAdminLoginNotification(loginMember.getId(), loginMember.getRole());
         }
-        return TokenHeader.builder()
-                .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
-                .accessToken(tokenInfo.getAccessToken())
-                .refreshToken(tokenInfo.getRefreshToken())
-                .build();
+        return constructTokenHeader(tokenInfo);
     }
 
     public String resetAuthenticator(String memberId) {
@@ -112,25 +108,39 @@ public class LoginService {
 
     @Transactional
     public TokenHeader reissue(HttpServletRequest request) {
-        String token = jwtTokenProvider.resolveToken(request);
-        Authentication authentication = jwtTokenProvider.getAuthentication(token);
+        String refreshToken = jwtTokenProvider.resolveToken(request);
+        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+        RedisToken redisToken = redisTokenService.getRedisTokenByRefreshToken(refreshToken);
+
+        validateMemberExistence(authentication);
+        validateToken(redisToken);
+
+        TokenInfo newTokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
+        redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
+        return constructTokenHeader(newTokenInfo);
+    }
+
+    private void validateMemberExistence(Authentication authentication) {
         String id = authentication.getName();
         Member member = memberService.getMemberById(id);
         if (member == null) {
             throw new TokenForgeryException("존재하지 않는 회원에 대한 토큰입니다.");
         }
-        RedisToken redisToken = redisTokenService.getRedisTokenByRefreshToken(token);
+    }
+
+    private void validateToken(RedisToken redisToken) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         if (!redisToken.getIp().equals(clientIpAddress)) {
             redisTokenService.deleteRedisTokenByAccessToken(redisToken.getAccessToken());
             throw new TokenMisuseException("[" + clientIpAddress + "] 토큰 발급 IP와 다른 IP에서 발급을 시도하여 토큰을 삭제하였습니다.");
         }
-        TokenInfo tokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
-        redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), tokenInfo, redisToken.getIp());
+    }
+
+    private TokenHeader constructTokenHeader(TokenInfo newTokenInfo) {
         return TokenHeader.builder()
                 .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
-                .accessToken(tokenInfo.getAccessToken())
-                .refreshToken(tokenInfo.getRefreshToken())
+                .accessToken(newTokenInfo.getAccessToken())
+                .refreshToken(newTokenInfo.getRefreshToken())
                 .build();
     }
 
