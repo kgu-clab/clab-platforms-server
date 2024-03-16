@@ -17,7 +17,6 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
-import page.clab.api.global.exception.NotFoundException;
 
 import java.time.LocalDateTime;
 
@@ -41,23 +40,15 @@ public class AccountLockInfoService {
     private int lockDurationMinutes;
 
     public AccountLockInfo createAccountLockInfo(Member member) {
-        AccountLockInfo accountLockInfo = AccountLockInfo.builder()
-                .member(member)
-                .loginFailCount(0L)
-                .isLock(false)
-                .build();
+        AccountLockInfo accountLockInfo = new AccountLockInfo(null, member, 0L, false, null);
         accountLockInfoRepository.save(accountLockInfo);
         return accountLockInfo;
     }
 
     public Long banMemberById(HttpServletRequest request, String memberId) {
         Member member = memberService.getMemberById(memberId);
-        AccountLockInfo accountLockInfo = getAccountLockInfoByMemberId(memberId);
-        if (accountLockInfo == null) {
-            accountLockInfo = createAccountLockInfo(member);
-        }
-        accountLockInfo.setIsLock(true);
-        accountLockInfo.setLockUntil(LocalDateTime.of(9999, 12, 31, 23, 59));
+        AccountLockInfo accountLockInfo = ensureAccountLockInfo(member);
+        accountLockInfo.banPermanently();
         redisTokenService.deleteRedisTokenByMemberId(memberId);
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_BANNED, "ID: " + member.getId() + ", Name: " + member.getName());
         return accountLockInfoRepository.save(accountLockInfo).getId();
@@ -65,14 +56,10 @@ public class AccountLockInfoService {
 
     public Long unbanMemberById(HttpServletRequest request, String memberId) {
         Member member = memberService.getMemberById(memberId);
-        AccountLockInfo accountLockInfo = getAccountLockInfoByMemberIdOrThrow(memberId);
-        if (accountLockInfo != null) {
-            accountLockInfo.setIsLock(false);
-            accountLockInfo.setLockUntil(null);
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_UNBANNED, "ID: " + member.getId() + ", Name: " + member.getName());
-            return accountLockInfoRepository.save(accountLockInfo).getId();
-        }
-        return null;
+        AccountLockInfo accountLockInfo = ensureAccountLockInfo(member);
+        accountLockInfo.unban();
+        slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_UNBANNED, "ID: " + member.getId() + ", Name: " + member.getName());
+        return accountLockInfoRepository.save(accountLockInfo).getId();
     }
 
     public PagedResponseDto<AccountLockInfoResponseDto> getBanList(Pageable pageable) {
@@ -92,6 +79,11 @@ public class AccountLockInfoService {
         }
         resetAccountLockInfo(accountLockInfo);
         accountLockInfoRepository.save(accountLockInfo);
+    }
+
+    private AccountLockInfo ensureAccountLockInfo(Member member) {
+        return accountLockInfoRepository.findByMember(member)
+                .orElseGet(() -> createAccountLockInfo(member));
     }
 
     public boolean isMemberLocked(AccountLockInfo accountLockInfo) {
@@ -131,11 +123,6 @@ public class AccountLockInfoService {
             }
         }
         accountLockInfoRepository.save(accountLockInfo);
-    }
-
-    public AccountLockInfo getAccountLockInfoByMemberIdOrThrow(String memberId) {
-        return accountLockInfoRepository.findByMember_Id(memberId)
-                .orElseThrow(() -> new NotFoundException("해당 멤버가 없습니다."));
     }
 
     public AccountLockInfo getAccountLockInfoByMemberId(String memberId) {
