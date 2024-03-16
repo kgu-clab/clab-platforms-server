@@ -28,13 +28,7 @@ public class NewsService {
 
     public Long createNews(NewsRequestDto newsRequestDto) {
         News news = News.of(newsRequestDto);
-        List<String> fileUrls = newsRequestDto.getFileUrlList();
-        if (fileUrls != null) {
-            List<UploadedFile> uploadFileList = fileUrls.stream()
-                    .map(fileService::getUploadedFileByUrl)
-                    .collect(Collectors.toList());
-            news.setUploadedFiles(uploadFileList);
-        }
+        attachUploadedFiles(newsRequestDto, news);
         return newsRepository.save(news).getId();
     }
 
@@ -61,6 +55,16 @@ public class NewsService {
         News news = getNewsByIdOrThrow(newsId);
         newsRepository.delete(news);
         return news.getId();
+    }
+
+    private void attachUploadedFiles(NewsRequestDto newsRequestDto, News news) {
+        List<String> fileUrls = newsRequestDto.getFileUrlList();
+        if (fileUrls != null) {
+            List<UploadedFile> uploadFileList = fileUrls.stream()
+                    .map(fileService::getUploadedFileByUrl)
+                    .collect(Collectors.toList());
+            news.setUploadedFiles(uploadFileList);
+        }
     }
 
     public News getNewsByIdOrThrow(Long newsId) {
