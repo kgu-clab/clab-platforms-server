@@ -51,31 +51,17 @@ public class ProductController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 서비스 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 서비스 조회", description = "ROLE_USER 이상의 권한이 필요함<br> " +
+            "서비스명을 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getProducts(
+    public ResponseModel getProductsByConditions(
+            @RequestParam(required = false) String productName,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ProductResponseDto> productResponseDtos = productService.getProducts(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(productResponseDtos);
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 서비스 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "서비스명을 기준으로 검색")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/search")
-    public ResponseModel searchProduct(
-            @RequestParam String productName,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ProductResponseDto> productResponseDtos = productService.searchProduct(productName, pageable);
+        PagedResponseDto<ProductResponseDto> productResponseDtos = productService.getProductsByConditions(productName, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(productResponseDtos);
         return responseModel;
