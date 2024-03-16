@@ -69,16 +69,12 @@ public class AccountLockInfoService {
     }
 
     public void handleAccountLockInfo(String memberId) throws MemberLockedException, LoginFaliedException {
-        AccountLockInfo accountLockInfo = getAccountLockInfoByMemberId(memberId);
-        if (accountLockInfo == null) {
-            Member member = memberService.getMemberByIdOrThrowLoginFailed(memberId);
-            accountLockInfo = createAccountLockInfo(member);
-        }
-        if (isMemberLocked(accountLockInfo)) {
+        Member member = memberService.getMemberByIdOrThrowLoginFailed(memberId);
+        AccountLockInfo accountLockInfo = ensureAccountLockInfo(member);
+        if (isAccountLocked(accountLockInfo)) {
             throw new MemberLockedException();
         }
         resetAccountLockInfo(accountLockInfo);
-        accountLockInfoRepository.save(accountLockInfo);
     }
 
     private AccountLockInfo ensureAccountLockInfo(Member member) {
@@ -86,20 +82,15 @@ public class AccountLockInfoService {
                 .orElseGet(() -> createAccountLockInfo(member));
     }
 
-    public boolean isMemberLocked(AccountLockInfo accountLockInfo) {
-        return accountLockInfo != null && accountLockInfo.getIsLock() && isLockedForDuration(accountLockInfo);
-    }
-
-    public boolean isLockedForDuration(AccountLockInfo accountLockInfo) {
-        LocalDateTime unlockTime = accountLockInfo.getLockUntil();
-        return LocalDateTime.now().isBefore(unlockTime);
+    private boolean isAccountLocked(AccountLockInfo accountLockInfo) {
+        return accountLockInfo.getIsLock() && accountLockInfo.getLockUntil().isAfter(LocalDateTime.now());
     }
 
     public void resetAccountLockInfo(AccountLockInfo accountLockInfo) {
-        if (accountLockInfo != null) {
-            accountLockInfo.setLoginFailCount(0L);
-            accountLockInfo.setIsLock(false);
-        }
+        accountLockInfo.setLoginFailCount(0L);
+        accountLockInfo.setIsLock(false);
+        accountLockInfo.setLockUntil(null);
+        accountLockInfoRepository.save(accountLockInfo);
     }
 
     public void updateAccountLockInfo(HttpServletRequest request, String memberId) throws LoginFaliedException {
