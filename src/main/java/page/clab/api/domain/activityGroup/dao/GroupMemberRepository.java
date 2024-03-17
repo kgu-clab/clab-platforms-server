@@ -3,6 +3,7 @@ package page.clab.api.domain.activityGroup.dao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
@@ -15,9 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupMemberId> {
-
-    Optional<GroupMember> findByMember(Member member);
+public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupMemberId>, GroupMemberRepositoryCustom, QuerydslPredicateExecutor<GroupMember> {
 
     List<GroupMember> findAllByMember(Member member);
 
