@@ -97,7 +97,7 @@ public class EmailService {
                         "훗날, 당신의 합류가 C-Lab에겐 최고의 행운이었다고 기억되기를 희망합니다.\n\n" +
                         "로그인을 위해 아래의 계정 정보를 확인해주세요.\n" +
                         "ID: %s\n" +
-                        "Password: [여기에 비밀번호 또는 비밀번호 관련 안내를 삽입]\n" +
+                        "Password: %s\n" +
                         "로그인 후 비밀번호를 변경해주세요.",
                 member.getId(),
                 password
