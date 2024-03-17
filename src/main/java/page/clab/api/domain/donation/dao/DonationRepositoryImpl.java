@@ -2,10 +2,11 @@ package page.clab.api.domain.donation.dao;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.domain.QDonation;
 import page.clab.api.domain.member.domain.QMember;
@@ -13,13 +14,11 @@ import page.clab.api.domain.member.domain.QMember;
 import java.time.LocalDate;
 import java.util.List;
 
+@Repository
+@RequiredArgsConstructor
 public class DonationRepositoryImpl implements DonationRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
-    public DonationRepositoryImpl(EntityManager entityManager) {
-        this.queryFactory = new JPAQueryFactory(entityManager);
-    }
 
     @Override
     public Page<Donation> findByConditions(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable) {

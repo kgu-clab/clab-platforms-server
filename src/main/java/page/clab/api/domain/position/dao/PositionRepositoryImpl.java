@@ -2,23 +2,22 @@ package page.clab.api.domain.position.dao;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
 import page.clab.api.domain.position.domain.QPosition;
 
 import java.util.List;
 
+@Repository
+@RequiredArgsConstructor
 public class PositionRepositoryImpl implements PositionRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
-    public PositionRepositoryImpl(EntityManager entityManager) {
-        this.queryFactory = new JPAQueryFactory(entityManager);
-    }
 
     @Override
     public Page<Position> findByConditions(String year, PositionType positionType, Pageable pageable) {

@@ -2,10 +2,11 @@ package page.clab.api.domain.award.dao;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 import page.clab.api.domain.award.domain.Award;
 import page.clab.api.domain.award.domain.QAward;
 import page.clab.api.domain.member.domain.QMember;
@@ -13,13 +14,11 @@ import page.clab.api.domain.member.domain.QMember;
 import java.time.LocalDate;
 import java.util.List;
 
+@Repository
+@RequiredArgsConstructor
 public class AwardRepositoryImpl implements AwardRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
-    public AwardRepositoryImpl(EntityManager entityManager) {
-        this.queryFactory = new JPAQueryFactory(entityManager);
-    }
 
     @Override
     public Page<Award> findByConditions(String memberId, Long year, Pageable pageable) {

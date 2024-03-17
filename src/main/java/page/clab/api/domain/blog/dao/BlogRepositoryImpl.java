@@ -2,23 +2,22 @@ package page.clab.api.domain.blog.dao;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 import page.clab.api.domain.blog.domain.Blog;
 import page.clab.api.domain.blog.domain.QBlog;
 import page.clab.api.domain.member.domain.QMember;
 
 import java.util.List;
 
+@Repository
+@RequiredArgsConstructor
 public class BlogRepositoryImpl implements BlogRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
-    public BlogRepositoryImpl(EntityManager entityManager) {
-        this.queryFactory = new JPAQueryFactory(entityManager);
-    }
 
     @Override
     public Page<Blog> findByConditions(String title, String memberName, Pageable pageable) {

@@ -2,22 +2,21 @@ package page.clab.api.domain.news.dao;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 import page.clab.api.domain.news.domain.News;
 import page.clab.api.domain.news.domain.QNews;
 
 import java.util.List;
 
+@Repository
+@RequiredArgsConstructor
 public class NewsRepositoryImpl implements NewsRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
-    public NewsRepositoryImpl(EntityManager entityManager) {
-        this.queryFactory = new JPAQueryFactory(entityManager);
-    }
 
     @Override
     public Page<News> findByConditions(String title, String category, Pageable pageable) {
