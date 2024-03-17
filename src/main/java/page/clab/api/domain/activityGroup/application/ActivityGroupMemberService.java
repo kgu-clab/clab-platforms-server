@@ -1,6 +1,5 @@
 package page.clab.api.domain.activityGroup.application;
 
-import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +29,6 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStatusResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
-import page.clab.api.domain.activityGroup.exception.ActivityGroupNotProgressingException;
 import page.clab.api.domain.activityGroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
 import page.clab.api.domain.member.application.MemberService;
@@ -111,27 +109,22 @@ public class ActivityGroupMemberService {
     }
 
     @Transactional
-    public Long applyActivityGroup(Long activityGroupId, ApplyFormRequestDto formRequestDto) throws MessagingException {
-        Member member = memberService.getCurrentMember();
+    public Long applyActivityGroup(Long activityGroupId, ApplyFormRequestDto formRequestDto) {
+        Member currentMember = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroup.isProgressing()) {
-            throw new ActivityGroupNotProgressingException("해당 활동은 진행중인 활동이 아닙니다.");
-        }
-        if (isGroupMember(activityGroup, member)) {
+        activityGroup.validateForApplication();
+        if (isGroupMember(activityGroup, currentMember)) {
             throw new AlreadyAppliedException("해당 활동에 신청한 내역이 존재합니다.");
         }
-
-        ApplyForm form = ApplyForm.create(formRequestDto, activityGroup, member);
+        ApplyForm form = ApplyForm.create(formRequestDto, activityGroup, currentMember);
         applyFormRepository.save(form);
-
-        GroupMember groupMember = GroupMember.create(member, activityGroup, ActivityGroupRole.MEMBER, GroupMemberStatus.WAITING);
+        GroupMember groupMember = GroupMember.create(currentMember, activityGroup, ActivityGroupRole.MEMBER, GroupMemberStatus.WAITING);
         groupMemberRepository.save(groupMember);
-
         GroupMember groupLeader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         if (groupLeader != null) {
             notificationService.sendNotificationToMember(
                     groupLeader.getMember(),
-                    "[" + activityGroup.getName() + "] " + member.getName() + "님이 활동 참가 신청을 하였습니다."
+                    "[" + activityGroup.getName() + "] " + currentMember.getName() + "님이 활동 참가 신청을 하였습니다."
             );
         }
         return activityGroup.getId();
@@ -145,10 +138,6 @@ public class ActivityGroupMemberService {
     public GroupMember getGroupMemberByActivityGroupAndMemberOrThrow(ActivityGroup activityGroup, Member member) {
         return groupMemberRepository.findByActivityGroupAndMember(activityGroup, member)
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 활동에 참여하지 않았습니다."));
-    }
-
-    public List<ActivityGroup> getActivityGroupByStatus(ActivityGroupStatus status) {
-        return activityGroupRepository.findAllByStatusOrderByCreatedAtDesc(status);
     }
 
     private Page<ActivityGroup> getActivityGroupByCategory(ActivityGroupCategory category, Pageable pageable) {

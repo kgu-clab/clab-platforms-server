@@ -18,6 +18,7 @@ import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
+import page.clab.api.domain.activityGroup.exception.ActivityGroupNotProgressingException;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
@@ -117,6 +118,12 @@ public class ActivityGroup {
 
     public boolean isProject() {
         return this.category.equals(ActivityGroupCategory.PROJECT);
+    }
+
+    public void validateForApplication() {
+        if (!this.isProgressing()) {
+            throw new ActivityGroupNotProgressingException("해당 활동은 진행중인 활동이 아닙니다.");
+        }
     }
 
 }
