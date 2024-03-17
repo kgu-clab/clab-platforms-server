@@ -50,7 +50,7 @@ public class ApplicationService {
         return new PagedResponseDto<>(applications.map(ApplicationResponseDto::of));
     }
 
-    public String approveApplication(Long recruitmentId, String studentId) {
+    public String toggleApprovalStatus(Long recruitmentId, String studentId) {
         Application application = getApplicationByIdOrThrow(studentId, recruitmentId);
         application.toggleApprovalStatus();
         return applicationRepository.save(application).getStudentId();
