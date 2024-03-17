@@ -62,8 +62,7 @@ public class ApplicationService {
 
     public String approveApplication(Long recruitmentId, String studentId) {
         Application application = getApplicationByIdOrThrow(studentId, recruitmentId);
-        application.setIsPass(!application.getIsPass());
-        application.setUpdateTime(LocalDateTime.now());
+        application.toggleApprovalStatus();
         return applicationRepository.save(application).getStudentId();
     }
 
