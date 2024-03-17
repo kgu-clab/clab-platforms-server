@@ -15,7 +15,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -72,16 +71,12 @@ import page.clab.api.global.util.ResponseUtil;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice(basePackages = "page.clab.api")
 @RequiredArgsConstructor
 @Slf4j
-public class ControllerExceptionHandler {
+public class GlobalExceptionHandler {
 
     private final SlackService slackService;
 
@@ -207,22 +202,19 @@ public class ControllerExceptionHandler {
     })
     public ResponseModel handleValidationException(HttpServletResponse response, MethodArgumentNotValidException ex) {
         BindingResult result = ex.getBindingResult();
-        List<Map<String, String>> errorList = new ArrayList<>();
+        StringBuilder logMessage = new StringBuilder("Validation errors: ");
 
-        for (FieldError fieldError : result.getFieldErrors()) {
-            Map<String, String> error = new HashMap<>();
-            error.put("fieldName", fieldError.getField());
-            error.put("message", getMessage(fieldError.getDefaultMessage()));
-            errorList.add(error);
-        }
+        result.getFieldErrors().forEach(fieldError -> {
+            logMessage.append("[");
+            logMessage.append(fieldError.getField());
+            logMessage.append(": ");
+            logMessage.append(fieldError.getDefaultMessage());
+            logMessage.append("] ");
+        });
+        log.info(logMessage.toString());;
 
-        log.info("Validation error: {}", errorList);
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return ResponseUtil.createErrorResponse(false, null);
-    }
-
-    private String getMessage(String code) {
-        return messageSource.getMessage(code, null, Locale.getDefault());
     }
 
 }
