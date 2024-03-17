@@ -8,12 +8,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupBoardRepository;
+import page.clab.api.domain.activityGroup.dao.ActivityGroupDetailsRepository;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activityGroup.dao.ApplyFormRepository;
 import page.clab.api.domain.activityGroup.dao.GroupMemberRepository;
 import page.clab.api.domain.activityGroup.dao.GroupScheduleRepository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
-import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
@@ -22,9 +22,9 @@ import page.clab.api.domain.activityGroup.domain.ApplyForm;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activityGroup.domain.GroupSchedule;
+import page.clab.api.domain.activityGroup.dto.param.ActivityGroupDetails;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupProjectResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStatusResponseDto;
@@ -60,36 +60,24 @@ public class ActivityGroupMemberService {
 
     private final ApplyFormRepository applyFormRepository;
 
+    private final ActivityGroupDetailsRepository activityGroupDetailsRepository;
+
     public PagedResponseDto<ActivityGroupResponseDto> getActivityGroups(Pageable pageable) {
         Page<ActivityGroup> activityGroupList = activityGroupRepository.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
     }
 
     public Object getActivityGroup(Long activityGroupId) {
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        Member member = memberService.getCurrentMember();
-        List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
+        ActivityGroupDetails details = activityGroupDetailsRepository.fetchActivityGroupDetails(activityGroupId);
+        Member currentMember = memberService.getCurrentMember();
 
-        List<GroupMember> acceptedGroupMembers = groupMembers.stream()
-                .filter(GroupMember::isAccepted)
-                .toList();
+        boolean isOwner = details.getGroupMembers().stream()
+                .anyMatch(groupMember -> groupMember.isOwnerAndLeader(currentMember));
 
-        GroupMember leader = groupMembers.stream()
-                .filter(GroupMember::isLeader)
-                .findFirst()
-                .orElse(null);
-
-        List<ActivityGroupBoard> activityGroupBoards = activityGroupBoardRepository.findAllByActivityGroupIdOrderByCreatedAtDesc(activityGroupId);
-        List<ActivityGroupBoardCategory> categories = List.of(ActivityGroupBoardCategory.NOTICE, ActivityGroupBoardCategory.WEEKLY_ACTIVITY, ActivityGroupBoardCategory.ASSIGNMENT);
-        List<ActivityGroupBoardResponseDto> noticeAndWeeklyActivityBoards = activityGroupBoards.stream()
-                .filter(activityGroupBoard -> categories.contains(activityGroupBoard.getCategory()))
-                .map(ActivityGroupBoardResponseDto::of)
-                .toList();
-
-        if (activityGroup.isStudy()) {
-            return ActivityGroupStudyResponseDto.of(activityGroup, GroupMemberResponseDto.of(acceptedGroupMembers), noticeAndWeeklyActivityBoards, leader.isOwner(member));
-        } else if (activityGroup.isProject()) {
-            return ActivityGroupProjectResponseDto.of(activityGroup, GroupMemberResponseDto.of(acceptedGroupMembers), noticeAndWeeklyActivityBoards, leader.isOwner(member));
+        if (details.getActivityGroup().isStudy()) {
+            return ActivityGroupStudyResponseDto.create(details.getActivityGroup(), details.getGroupMembers(), details.getActivityGroupBoards(), isOwner);
+        } else if (details.getActivityGroup().isProject()) {
+            return ActivityGroupProjectResponseDto.create(details.getActivityGroup(), details.getGroupMembers(), details.getActivityGroupBoards(), isOwner);
         } else {
             throw new InvalidCategoryException("해당 카테고리가 존재하지 않습니다.");
         }
