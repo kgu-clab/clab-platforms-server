@@ -1,6 +1,7 @@
 package page.clab.api.domain.activityPhoto.application;
 
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,10 +27,7 @@ public class ActivityPhotoService {
     private final FileService fileService;
 
     public Long createActivityPhoto(ActivityPhotoRequestDto dto) {
-        List<UploadedFile> uploadedFiles = dto.getFileUrlList() != null ?
-                dto.getFileUrlList().stream()
-                        .map(fileService::getUploadedFileByUrl)
-                        .collect(Collectors.toList()) : Collections.emptyList();
+        List<UploadedFile> uploadedFiles = prepareUploadedFiles(dto.getFileUrlList());
         ActivityPhoto activityPhoto = ActivityPhoto.create(dto, uploadedFiles);
         return activityPhotoRepository.save(activityPhoto).getId();
     }
@@ -54,6 +52,14 @@ public class ActivityPhotoService {
     public ActivityPhoto getActivityPhotoByIdOrThrow(Long activityPhotoId) {
         return activityPhotoRepository.findById(activityPhotoId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 활동 사진입니다."));
+    }
+
+    @NotNull
+    private List<UploadedFile> prepareUploadedFiles(List<String> fileUrls) {
+        if (fileUrls == null) return new ArrayList<>();
+        return fileUrls.stream()
+                .map(fileService::getUploadedFileByUrl)
+                .collect(Collectors.toList());
     }
 
 }
