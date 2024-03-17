@@ -3,7 +3,6 @@ package page.clab.api.domain.activityGroup.api;
 import com.google.zxing.WriterException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +23,8 @@ import page.clab.api.domain.activityGroup.exception.DuplicateAbsentExcuseExcepti
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/attendance")
@@ -52,7 +53,7 @@ public class AttendanceController {
     public ResponseModel checkInAttendance(
             @RequestBody AttendanceRequestDto attendanceRequestDto
     ) throws IllegalAccessException {
-        String id = attendanceService.checkMemberAttendance(attendanceRequestDto);
+        Long id = attendanceService.checkMemberAttendance(attendanceRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
