@@ -107,4 +107,8 @@ public class Board {
         }
     }
 
+    public boolean isOwner(Member member) {
+        return this.member.equals(member);
+    }
+
 }
