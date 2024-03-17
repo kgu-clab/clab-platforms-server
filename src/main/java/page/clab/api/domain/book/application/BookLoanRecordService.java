@@ -12,7 +12,6 @@ import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
-import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.book.exception.OverdueException;
@@ -41,45 +40,31 @@ public class BookLoanRecordService {
     private final BookLoanRecordRepository bookLoanRecordRepository;
 
     @Transactional
-    public Long borrowBook(BookLoanRecordRequestDto bookLoanRecordRequestDto) throws CustomOptimisticLockingFailureException {
+    public Long borrowBook(BookLoanRecordRequestDto dto) throws CustomOptimisticLockingFailureException {
         try {
-            Long bookId = bookLoanRecordRequestDto.getBookId();
-            String borrowerId = memberService.getCurrentMember().getId();
-            Book book = bookService.getBookByIdOrThrow(bookId);
-            if (book.getBorrower() != null) {
-                throw new BookAlreadyBorrowedException("이미 대출 중인 도서입니다.");
-            }
-            Member borrower = memberService.getMemberByIdOrThrow(borrowerId);
-            if (borrower.getLoanSuspensionDate() != null && LocalDateTime.now().isBefore(borrower.getLoanSuspensionDate())) {
-                throw new LoanSuspensionException("대출 정지 중입니다. 대출 정지일까지는 책을 대출할 수 없습니다.");
-            }
-            book.setBorrower(borrower);
+            Member borrower = memberService.getCurrentMember();
+            borrower.checkLoanSuspension();
+
+            Book book = bookService.getBookByIdOrThrow(dto.getBookId());
+            book.borrowTo(borrower);
             bookRepository.save(book);
-            BookLoanRecord bookLoanRecord = BookLoanRecord.builder()
-                    .book(book)
-                    .borrower(borrower)
-                    .borrowedAt(LocalDateTime.now())
-                    .dueDate(LocalDateTime.now().plusWeeks(1))
-                    .loanExtensionCount(0L)
-                    .build();
-            Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
+
+            BookLoanRecord bookLoanRecord = BookLoanRecord.create(book, borrower);
             notificationService.sendNotificationToMember(
-                    borrowerId,
+                    borrower.getId(),
                     "[" + book.getTitle() + "] 도서 대출이 완료되었습니다."
             );
-            return id;
+            return bookLoanRecordRepository.save(bookLoanRecord).getId();
         } catch (ObjectOptimisticLockingFailureException e) {
             throw new CustomOptimisticLockingFailureException("도서 대출에 실패했습니다. 다시 시도해주세요.");
         }
     }
 
     @Transactional
-    public Long returnBook(BookLoanRecordRequestDto bookLoanRecordRequestDto) {
-        Long bookId = bookLoanRecordRequestDto.getBookId();
-        String borrowerId = memberService.getCurrentMember().getId();
-        Book book = bookService.getBookByIdOrThrow(bookId);
-        Member borrower = memberService.getMemberByIdOrThrow(borrowerId);
-        if (book.getBorrower() == null || !book.getBorrower().getId().equals(borrowerId)) {
+    public Long returnBook(BookLoanRecordRequestDto dto) {
+        Member borrower = memberService.getCurrentMember();
+        Book book = bookService.getBookByIdOrThrow(dto.getBookId());
+        if (book.getBorrower() == null || !book.getBorrower().getId().equals(borrower.getId())) {
             throw new InvalidBorrowerException("대출한 도서와 회원 정보가 일치하지 않습니다.");
         }
         BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(book);
@@ -93,7 +78,7 @@ public class BookLoanRecordService {
         bookLoanRecord.setReturnedAt(currentDate);
         Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
         notificationService.sendNotificationToMember(
-                borrowerId,
+                borrower.getId(),
                 "[" + book.getTitle() + "] 도서 반납이 완료되었습니다."
         );
         return id;

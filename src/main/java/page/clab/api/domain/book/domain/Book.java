@@ -16,6 +16,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
+import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.util.ModelMapperUtil;
 
@@ -69,6 +70,13 @@ public class Book {
         Optional.ofNullable(bookUpdateRequestDto.getAuthor()).ifPresent(this::setAuthor);
         Optional.ofNullable(bookUpdateRequestDto.getPublisher()).ifPresent(this::setPublisher);
         Optional.ofNullable(bookUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
+    }
+
+    public void borrowTo(Member borrower) {
+        if (this.borrower != null) {
+            throw new BookAlreadyBorrowedException("이미 대출 중인 도서입니다.");
+        }
+        this.borrower = borrower;
     }
 
 }

@@ -45,4 +45,14 @@ public class BookLoanRecord {
 
     private Long loanExtensionCount;
 
+    public static BookLoanRecord create(Book book, Member borrower) {
+        return BookLoanRecord.builder()
+                .book(book)
+                .borrower(borrower)
+                .borrowedAt(LocalDateTime.now())
+                .dueDate(LocalDateTime.now().plusWeeks(1))
+                .loanExtensionCount(0L)
+                .build();
+    }
+
 }

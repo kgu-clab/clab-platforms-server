@@ -22,6 +22,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import page.clab.api.domain.application.domain.Application;
+import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
 import page.clab.api.global.util.ModelMapperUtil;
@@ -161,6 +162,12 @@ public class Member implements UserDetails {
         Optional.ofNullable(memberUpdateRequestDto.getGithubUrl()).ifPresent(this::setGithubUrl);
         Optional.ofNullable(memberUpdateRequestDto.getStudentStatus()).ifPresent(this::setStudentStatus);
         Optional.ofNullable(memberUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
+    }
+
+    public void checkLoanSuspension() {
+        if (loanSuspensionDate != null && LocalDateTime.now().isBefore(loanSuspensionDate)) {
+            throw new LoanSuspensionException("대출 정지 중입니다. 대출 정지일까지는 책을 대출할 수 없습니다.");
+        }
     }
 
 }
