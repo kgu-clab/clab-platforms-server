@@ -51,8 +51,10 @@ public class Donation {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static Donation of(DonationRequestDto donationRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(donationRequestDto, Donation.class);
+    public static Donation of(DonationRequestDto donationRequestDto, Member member) {
+        Donation donation = ModelMapperUtil.getModelMapper().map(donationRequestDto, Donation.class);
+        donation.setDonor(member);
+        return donation;
     }
 
     public void update(DonationUpdateRequestDto donationUpdateRequestDto) {
