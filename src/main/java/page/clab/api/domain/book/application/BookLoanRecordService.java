@@ -12,17 +12,12 @@ import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
-import page.clab.api.domain.book.exception.InvalidBorrowerException;
-import page.clab.api.domain.book.exception.LoanSuspensionException;
-import page.clab.api.domain.book.exception.OverdueException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.NotFoundException;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -77,36 +72,19 @@ public class BookLoanRecordService {
     }
 
     @Transactional
-    public Long extendBookLoan(BookLoanRecordRequestDto bookLoanRecordRequestDto) {
-        Long bookId = bookLoanRecordRequestDto.getBookId();
-        String borrowerId = memberService.getCurrentMember().getId();
-        Book book = bookService.getBookByIdOrThrow(bookId);
-        if (book.getBorrower() == null || !book.getBorrower().getId().equals(borrowerId)) {
-            throw new InvalidBorrowerException("대출한 도서와 회원 정보가 일치하지 않습니다.");
-        }
-        Member borrower = memberService.getMemberByIdOrThrow(borrowerId);
+    public Long extendBookLoan(BookLoanRecordRequestDto dto) {
+        Member currentMember = memberService.getCurrentMember();
+        Book book = bookService.getBookByIdOrThrow(dto.getBookId());
+
+        book.validateCurrentBorrower(currentMember);
         BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(book);
-        LocalDateTime currentDate = LocalDateTime.now();
-        LocalDateTime extensionDate = bookLoanRecord.getDueDate();
-        Long loanExtensionCount = bookLoanRecord.getLoanExtensionCount();
-        if (borrower.getLoanSuspensionDate() != null && currentDate.isBefore(borrower.getLoanSuspensionDate())) {
-            throw new LoanSuspensionException("대출 정지 중입니다. 연장할 수 없습니다.");
-        }
-        if (currentDate.isAfter(extensionDate)) {
-            throw new LoanSuspensionException("연체 중인 도서는 연장할 수 없습니다.");
-        }
-        if (loanExtensionCount >= 2) {
-            throw new OverdueException("대출 연장 횟수를 초과했습니다.");
-        }
-        bookLoanRecord.setDueDate(extensionDate.plusWeeks(2));
-        bookLoanRecord.setLoanExtensionCount(loanExtensionCount + 1);
-        Long id = bookLoanRecordRepository.save(bookLoanRecord).getId();
+        bookLoanRecord.extendLoan();
 
         notificationService.sendNotificationToMember(
-                borrowerId,
+                currentMember.getId(),
                 "[" + book.getTitle() + "] 도서 대출 연장이 완료되었습니다."
         );
-        return id;
+        return bookLoanRecordRepository.save(bookLoanRecord).getId();
     }
 
     public PagedResponseDto<BookLoanRecordResponseDto> getBookLoanRecordsByConditions(Long bookId, String borrowerId, Boolean isReturned, Pageable pageable) {

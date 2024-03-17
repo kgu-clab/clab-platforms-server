@@ -12,6 +12,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.book.exception.LoanSuspensionException;
+import page.clab.api.domain.book.exception.OverdueException;
 import page.clab.api.domain.member.domain.Member;
 
 import java.time.LocalDateTime;
@@ -69,6 +71,24 @@ public class BookLoanRecord {
 
     private boolean isOverdue(LocalDateTime returnedAt) {
         return returnedAt.isAfter(this.dueDate);
+    }
+
+    public void extendLoan() {
+        final long MAX_EXTENSIONS = 2;
+        LocalDateTime now = LocalDateTime.now();
+
+        if (this.borrower.getLoanSuspensionDate() != null && now.isBefore(this.borrower.getLoanSuspensionDate())) {
+            throw new LoanSuspensionException("대출 정지 중입니다. 연장할 수 없습니다.");
+        }
+        if (now.isAfter(this.dueDate)) {
+            throw new LoanSuspensionException("연체 중인 도서는 연장할 수 없습니다.");
+        }
+        if (this.loanExtensionCount >= MAX_EXTENSIONS) {
+            throw new OverdueException("대출 연장 횟수를 초과했습니다.");
+        }
+
+        this.dueDate = this.dueDate.plusWeeks(2);
+        this.loanExtensionCount += 1;
     }
 
 }
