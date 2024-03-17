@@ -34,39 +34,39 @@ public class NotificationService {
 
     public Long createNotification(NotificationRequestDto notificationRequestDto) {
         Member member = memberService.getMemberByIdOrThrow(notificationRequestDto.getMemberId());
-        Notification notification = Notification.of(notificationRequestDto);
+        Notification notification = Notification.create(notificationRequestDto, member);
         return notificationRepository.save(notification).getId();
     }
 
     public PagedResponseDto<NotificationResponseDto> getNotifications(Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        Page<Notification> notifications = getNotificationByMember(pageable, member);
+        Page<Notification> notifications = getNotificationByMember(member, pageable);
         return new PagedResponseDto<>(notifications.map(NotificationResponseDto::of));
     }
 
     public Long deleteNotification(Long notificationId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Notification notification = getNotificationByIdOrThrow(notificationId);
-        validateNotificationOwnership(member, notification);
+        notification.validateAccessPermission(member);
         notificationRepository.delete(notification);
         return notification.getId();
     }
 
     public void sendNotificationToAllMembers(String content) {
         List<Notification> notifications = memberService.findAll().stream()
-                .map(member -> Notification.of(member, content))
+                .map(member -> Notification.create(member, content))
                 .toList();
         notificationRepository.saveAll(notifications);
     }
 
     public void sendNotificationToMember(Member member, String content) {
-        Notification notification = Notification.of(member, content);
+        Notification notification = Notification.create(member, content);
         notificationRepository.save(notification);
     }
 
     public void sendNotificationToMember(String memberId, String content) {
         Member member = memberService.getMemberByIdOrThrow(memberId);
-        Notification notification = Notification.of(member, content);
+        Notification notification = Notification.create(member, content);
         notificationRepository.save(notification);
     }
 
@@ -78,15 +78,9 @@ public class NotificationService {
         sendNotificationToSpecificRole(memberService::getSuperAdmins, content);
     }
 
-    private void validateNotificationOwnership(Member member, Notification notification) throws PermissionDeniedException {
-        if (!member.equals(notification.getMember())) {
-            throw new PermissionDeniedException();
-        }
-    }
-
     private void sendNotificationToSpecificRole(Supplier<List<Member>> memberSupplier, String content) {
         List<Notification> notifications = memberSupplier.get().stream()
-                .map(member -> Notification.of(member, content))
+                .map(member -> Notification.create(member, content))
                 .toList();
         notificationRepository.saveAll(notifications);
     }
@@ -96,7 +90,7 @@ public class NotificationService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 알림입니다."));
     }
 
-    private Page<Notification> getNotificationByMember(Pageable pageable, Member member) {
+    private Page<Notification> getNotificationByMember(Member member, Pageable pageable) {
         return notificationRepository.findByMemberOrderByCreatedAtDesc(member, pageable);
     }
 
