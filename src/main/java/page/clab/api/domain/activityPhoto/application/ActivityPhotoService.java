@@ -39,9 +39,9 @@ public class ActivityPhotoService {
         return new PagedResponseDto<>(activityPhotos.map(ActivityPhotoResponseDto::of));
     }
 
-    public Long updateActivityPhoto(Long activityPhotoId) {
+    public Long togglePublicStatus(Long activityPhotoId) {
         ActivityPhoto activityPhoto = getActivityPhotoByIdOrThrow(activityPhotoId);
-        activityPhoto.setIsPublic(!activityPhoto.getIsPublic());
+        activityPhoto.togglePublicStatus();
         return activityPhotoRepository.save(activityPhoto).getId();
     }
 
