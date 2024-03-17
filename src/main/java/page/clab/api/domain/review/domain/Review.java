@@ -19,6 +19,7 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.review.dto.request.ReviewRequestDto;
 import page.clab.api.domain.review.dto.request.ReviewUpdateRequestDto;
+import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
@@ -55,12 +56,9 @@ public class Review {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static Review of(ReviewRequestDto reviewRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(reviewRequestDto, Review.class);
-    }
-
-    public static Review of(ReviewRequestDto reviewRequestDto, Member member, ActivityGroup activityGroup) {
+    public static Review create(ReviewRequestDto reviewRequestDto, Member member, ActivityGroup activityGroup) {
         Review review = ModelMapperUtil.getModelMapper().map(reviewRequestDto, Review.class);
+        review.setId(null);
         review.setMember(member);
         review.setActivityGroup(activityGroup);
         review.setIsPublic(false);
@@ -70,6 +68,16 @@ public class Review {
     public void update(ReviewUpdateRequestDto reviewUpdateRequestDto) {
         Optional.ofNullable(reviewUpdateRequestDto.getContent()).ifPresent(this::setContent);
         Optional.ofNullable(reviewUpdateRequestDto.getIsPublic()).ifPresent(this::setIsPublic);
+    }
+
+    public boolean isOwner(Member member) {
+        return this.member.isSameMember(member);
+    }
+
+    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isAdminRole()) {
+            throw new PermissionDeniedException("해당 후기를 수정/삭제할 권한이 없습니다.");
+        }
     }
 
 }

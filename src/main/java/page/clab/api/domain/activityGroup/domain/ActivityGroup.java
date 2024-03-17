@@ -92,4 +92,16 @@ public class ActivityGroup {
         Optional.ofNullable(dto.getGithubUrl()).ifPresent(this::setGithubUrl);
     }
 
+    public boolean isWaiting() {
+        return this.status == ActivityGroupStatus.WAITING;
+    }
+
+    public boolean isProgressing() {
+        return this.status == ActivityGroupStatus.PROGRESSING;
+    }
+
+    public boolean isEnded() {
+        return this.status == ActivityGroupStatus.END;
+    }
+
 }

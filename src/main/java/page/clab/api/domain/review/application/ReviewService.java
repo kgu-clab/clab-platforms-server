@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
-import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
 import page.clab.api.domain.member.application.MemberService;
@@ -39,58 +38,50 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
 
     @Transactional
-    public Long createReview(ReviewRequestDto reviewRequestDto) {
-        Member member = memberService.getCurrentMember();
-        ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(reviewRequestDto.getActivityGroupId());
-        validateReviewCreationPermission(activityGroup, member);
-        Review review = Review.of(reviewRequestDto, member, activityGroup);
-        review.setId(null);
-        Long id = reviewRepository.save(review).getId();
-        notifyGroupLeaderOfNewReview(activityGroup, member);
-        return id;
+    public Long createReview(ReviewRequestDto dto) {
+        Member currentMember = memberService.getCurrentMember();
+        ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(dto.getActivityGroupId());
+        validateReviewCreationPermission(activityGroup, currentMember);
+        Review review = Review.create(dto, currentMember, activityGroup);
+        notifyGroupLeaderOfNewReview(activityGroup, currentMember);
+        return reviewRepository.save(review).getId();
     }
 
     public PagedResponseDto<ReviewResponseDto> getMyReviews(Pageable pageable) {
-        Member member = memberService.getCurrentMember();
-        Page<Review> reviews = getReviewByMember(pageable, member);
-        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, member.getId())));
+        Member currentMember = memberService.getCurrentMember();
+        Page<Review> reviews = getReviewByMember(currentMember, pageable);
+        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, currentMember)));
     }
 
     public PagedResponseDto<ReviewResponseDto> getReviewsByConditions(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable) {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Page<Review> reviews = reviewRepository.findByConditions(memberId, memberName, activityId, isPublic, pageable);
-        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, member.getId())));
+        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, currentMember)));
     }
 
-    public Long updateReview(Long reviewId, ReviewUpdateRequestDto reviewUpdateRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        Review review = validateAndGetReviewForUpdate(reviewId, member);
-        review.update(reviewUpdateRequestDto);
+    public Long updateReview(Long reviewId, ReviewUpdateRequestDto dto) throws PermissionDeniedException {
+        Member currentMember = memberService.getCurrentMember();
+        Review review = getReviewByIdOrThrow(reviewId);
+        review.validateAccessPermission(currentMember);
+        review.update(dto);
         return reviewRepository.save(review).getId();
     }
 
     public Long deleteReview(Long reviewId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        Review review = validateAndGetReviewForUpdate(reviewId, member);
+        Member currentMember = memberService.getCurrentMember();
+        Review review = getReviewByIdOrThrow(reviewId);
+        review.validateAccessPermission(currentMember);
         reviewRepository.delete(review);
-        return review.getId();
+        return reviewId;
     }
 
     private void validateReviewCreationPermission(ActivityGroup activityGroup, Member member) {
-        if (!(activityGroup.getStatus() == ActivityGroupStatus.END)) {
+        if (!activityGroup.isEnded()) {
             throw new ActivityGroupNotFinishedException("활동이 종료된 활동 그룹만 리뷰를 작성할 수 있습니다.");
         }
         if (isExistsByMemberAndActivityGroup(member, activityGroup)) {
             throw new AlreadyReviewedException("이미 리뷰를 작성한 활동 그룹입니다.");
         }
-    }
-
-    private Review validateAndGetReviewForUpdate(Long reviewId, Member member) throws PermissionDeniedException {
-        Review review = getReviewByIdOrThrow(reviewId);
-        if (!(member.getId().equals(review.getMember().getId()) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("해당 리뷰를 수정할 권한이 없습니다.");
-        }
-        return review;
     }
 
     private void notifyGroupLeaderOfNewReview(ActivityGroup activityGroup, Member member) {
@@ -116,7 +107,7 @@ public class ReviewService {
                 .orElseThrow(() -> new NotFoundException("해당 리뷰가 없습니다."));
     }
 
-    private Page<Review> getReviewByMember(Pageable pageable, Member member) {
+    private Page<Review> getReviewByMember(Member member, Pageable pageable) {
         return reviewRepository.findAllByMemberOrderByCreatedAtDesc(member, pageable);
     }
 
