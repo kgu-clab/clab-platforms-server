@@ -75,7 +75,7 @@ public class Comment {
     @Column(name = "want_anonymous", nullable = false)
     private boolean wantAnonymous;
 
-    private Long Likes;
+    private Long likes;
 
     public static Comment of(CommentRequestDto commentRequestDto, Board board, Member member, Comment parent) {
         Comment comment = ModelMapperUtil.getModelMapper().map(commentRequestDto, Comment.class);
@@ -96,6 +96,21 @@ public class Comment {
     public void addChildComment(Comment child) {
         this.children.add(child);
         child.setParent(this);
+    }
+
+    public boolean isOwnedBy(Member member) {
+        return this.getWriter().equals(member);
+    }
+
+    public void addLike() {
+        this.likes += 1;
+    }
+
+    // 좋아요 제거
+    public void removeLike() {
+        if (this.likes > 0) {
+            this.likes -= 1;
+        }
     }
 
 }

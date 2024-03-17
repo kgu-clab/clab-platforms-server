@@ -88,17 +88,18 @@ public class CommentService {
         return comment.getId();
     }
 
+    @Transactional
     public Long updateLikes(Long commentId) {
         Member member = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
         CommentLike commentLike = commentLikeRepository.findByCommentIdAndMemberId(comment.getId(), member.getId());
 
         if (commentLike != null) {
-            comment.setLikes(Math.min(comment.getLikes() - 1, 0));
+            comment.removeLike();
             commentLikeRepository.delete(commentLike);
         }
         else {
-            comment.setLikes(comment.getLikes() + 1);
+            comment.addLike();
             CommentLike newCommentLike= CommentLike.builder()
                     .memberId(member.getId())
                     .commentId(comment.getId())
@@ -138,8 +139,8 @@ public class CommentService {
     }
 
     private void validateCommentUpdatePermission(Comment comment, Member member) throws PermissionDeniedException {
-        if (!(comment.getWriter().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("댓글 작성자만 수정할 수 있습니다.");
+        if (!(comment.isOwnedBy(member) || memberService.isMemberAdminRole(member))) {
+            throw new PermissionDeniedException("댓글 작성자 또는 관리자만 수정할 수 있습니다.");
         }
     }
 
