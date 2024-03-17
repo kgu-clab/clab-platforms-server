@@ -45,8 +45,11 @@ public class ApplyForm {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public static ApplyForm of(ApplyFormRequestDto applyFormRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(applyFormRequestDto, ApplyForm.class);
+    public static ApplyForm create(ApplyFormRequestDto applyFormRequestDto, ActivityGroup activityGroup, Member member) {
+        ApplyForm applyForm = ModelMapperUtil.getModelMapper().map(applyFormRequestDto, ApplyForm.class);
+        applyForm.setActivityGroup(activityGroup);
+        applyForm.setMember(member);
+        return applyForm;
     }
 
 }

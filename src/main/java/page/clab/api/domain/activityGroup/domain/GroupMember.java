@@ -54,6 +54,10 @@ public class GroupMember {
         return role.equals(ActivityGroupRole.LEADER);
     }
 
+    public boolean isOwner(Member member) {
+        return member != null && this.member.isSameMember(member);
+    }
+
     public boolean isSameRole(ActivityGroupRole role) {
         return this.role == role;
     }
@@ -64,6 +68,10 @@ public class GroupMember {
 
     public boolean isSameRoleAndActivityGroup(ActivityGroupRole role, ActivityGroup activityGroup) {
         return isSameRole(role) && isSameActivityGroup(activityGroup);
+    }
+
+    public boolean isAccepted() {
+        return status.equals(GroupMemberStatus.ACCEPTED);
     }
 
     public void updateRole(ActivityGroupRole role) {

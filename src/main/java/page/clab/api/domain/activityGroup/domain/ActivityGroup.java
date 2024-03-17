@@ -111,4 +111,12 @@ public class ActivityGroup {
         this.status = status;
     }
 
+    public boolean isStudy() {
+        return this.category.equals(ActivityGroupCategory.STUDY);
+    }
+
+    public boolean isProject() {
+        return this.category.equals(ActivityGroupCategory.PROJECT);
+    }
+
 }
