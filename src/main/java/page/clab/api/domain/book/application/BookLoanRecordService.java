@@ -22,7 +22,6 @@ import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.SearchResultNotExistException;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -134,10 +133,7 @@ public class BookLoanRecordService {
     }
 
     public PagedResponseDto<BookLoanRecordResponseDto> getBookLoanRecordsByConditions(Long bookId, String borrowerId, Boolean isReturned, Pageable pageable) {
-        Page<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordRepository.getBookLoanRecordsByCondition(bookId, borrowerId, isReturned, pageable);
-        if (bookLoanRecords.isEmpty()) {
-            throw new SearchResultNotExistException("조건에 해당하는 도서 대출 내역이 없습니다.");
-        }
+        Page<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordRepository.findByConditions(bookId, borrowerId, isReturned, pageable);
         return new PagedResponseDto<>(bookLoanRecords);
     }
 
