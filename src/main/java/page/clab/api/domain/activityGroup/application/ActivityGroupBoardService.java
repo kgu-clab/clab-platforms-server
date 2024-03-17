@@ -125,8 +125,7 @@ public class ActivityGroupBoardService {
         Long activityGroupId = parentBoard.getActivityGroup().getId();
         GroupMember leader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
 
-        if (!memberService.isMemberAdminRole(member) &&
-                !memberService.isMemberSuperRole(member) &&
+        if (!member.isAdminRole() &&
                 leader != null &&
                 !leader.getMember().getId()
                         .equals(member.getId())
@@ -164,7 +163,7 @@ public class ActivityGroupBoardService {
     public ActivityGroupBoardUpdateResponseDto updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardUpdateRequestDto activityGroupBoardUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        if (!member.getId().equals(board.getMember().getId()) && !memberService.isMemberAdminRole(member)) {
+        if (!member.getId().equals(board.getMember().getId()) && !member.isAdminRole()) {
             throw new PermissionDeniedException("활동 그룹 게시판 작성자 또는 운영진만 수정할 수 있습니다.");
         }
         board.update(activityGroupBoardUpdateRequestDto, fileService);
@@ -179,10 +178,7 @@ public class ActivityGroupBoardService {
         Member member = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
 
-        if (!member.getId().equals(board.getMember().getId()) &&
-                !memberService.isMemberAdminRole(member) &&
-                !memberService.isMemberSuperRole(member)
-        ) {
+        if (!member.getId().equals(board.getMember().getId()) && !member.isAdminRole()) {
             throw new PermissionDeniedException("활동 그룹 게시판 작성자 또는 운영진만 삭제할 수 있습니다.");
         }
 
