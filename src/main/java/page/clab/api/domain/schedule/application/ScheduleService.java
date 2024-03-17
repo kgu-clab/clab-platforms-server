@@ -43,7 +43,6 @@ public class ScheduleService {
 
     public Long createSchedule(ScheduleRequestDto scheduleRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        validateScheduleCreationPermission(scheduleRequestDto, member);
         ActivityGroup activityGroup = resolveActivityGroupForSchedule(scheduleRequestDto, member);
         Schedule schedule = Schedule.create(scheduleRequestDto, member, activityGroup);
         return scheduleRepository.save(schedule).getId();
@@ -68,15 +67,9 @@ public class ScheduleService {
     public Long deleteSchedule(Long scheduleId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Schedule schedule = getScheduleById(scheduleId);
-        validateScheduleDeletionPermission(member, schedule);
+        schedule.validateAccessPermission(member);
         scheduleRepository.delete(schedule);
         return schedule.getId();
-    }
-
-    private void validateScheduleCreationPermission(ScheduleRequestDto scheduleRequestDto, Member member) throws PermissionDeniedException {
-        if (scheduleRequestDto.getScheduleType().equals(ScheduleType.ALL) && !memberService.isMemberAdminRole(member)) {
-            throw new PermissionDeniedException("동아리 공통 일정은 ADMIN 이상의 권한만 추가할 수 있습니다.");
-        }
     }
 
     private ActivityGroup resolveActivityGroupForSchedule(ScheduleRequestDto scheduleRequestDto, Member member) throws PermissionDeniedException {
@@ -93,10 +86,7 @@ public class ScheduleService {
 
     private void validateMemberIsGroupLeaderOrAdmin(Member member, ActivityGroup activityGroup) throws PermissionDeniedException {
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
-        if (groupMember != null &&
-                !memberService.isMemberAdminRole(member) &&
-                !member.getId().equals(groupMember.getMember().getId())
-        ) {
+        if (groupMember != null && !member.isAdminRole() && !member.isSameMember(groupMember.getMember())) {
             throw new PermissionDeniedException("해당 스터디 또는 프로젝트의 LEADER, 관리자만 그룹 일정을 추가할 수 있습니다.");
         }
     }
@@ -131,18 +121,12 @@ public class ScheduleService {
                 .orElseThrow(() -> new NotFoundException("일정이 존재하지 않습니다."));
     }
 
-    private void validateScheduleDeletionPermission(Member member, Schedule schedule) throws PermissionDeniedException {
-        if (!(member.getId().equals(schedule.getScheduleWriter().getId()) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("해당 일정을 삭제할 권한이 없습니다.");
-        }
-    }
-
     private boolean isActivitySchedule(Schedule schedule) {
         return schedule.getScheduleType() != ScheduleType.ALL;
     }
 
     private boolean isValid(Schedule schedule, List<Long> activityGroupIdList) {
-        if (schedule.getScheduleType() == ScheduleType.ALL) {
+        if (!schedule.isActivitySchedule()) {
             return true;
         }
         Long activityGroupId = schedule.getActivityGroup().getId();
