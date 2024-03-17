@@ -17,6 +17,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
+import page.clab.api.domain.book.exception.InvalidBorrowerException;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.util.ModelMapperUtil;
 
@@ -77,6 +78,13 @@ public class Book {
             throw new BookAlreadyBorrowedException("이미 대출 중인 도서입니다.");
         }
         this.borrower = borrower;
+    }
+
+    public void returnBook(Member currentMember) {
+        if (this.borrower == null || !this.borrower.equals(currentMember)) {
+            throw new InvalidBorrowerException("대출한 도서와 회원 정보가 일치하지 않습니다.");
+        }
+        this.borrower = null;
     }
 
 }

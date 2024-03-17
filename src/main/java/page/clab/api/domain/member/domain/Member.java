@@ -170,4 +170,14 @@ public class Member implements UserDetails {
         }
     }
 
+    public void handleOverdueAndSuspension(long overdueDays) {
+        if (overdueDays > 0) {
+            LocalDateTime currentDate = LocalDateTime.now();
+            if (loanSuspensionDate == null || loanSuspensionDate.isBefore(currentDate)) {
+                loanSuspensionDate = LocalDateTime.now().plusDays(overdueDays * 7);;
+            } else {
+                loanSuspensionDate = loanSuspensionDate.plusDays(overdueDays * 7);
+            }
+        }
+    }
 }
