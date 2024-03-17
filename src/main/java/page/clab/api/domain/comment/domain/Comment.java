@@ -77,7 +77,7 @@ public class Comment {
 
     private Long likes;
 
-    public static Comment of(CommentRequestDto commentRequestDto, Board board, Member member, Comment parent) {
+    public static Comment create(CommentRequestDto commentRequestDto, Board board, Member member, Comment parent) {
         Comment comment = ModelMapperUtil.getModelMapper().map(commentRequestDto, Comment.class);
         comment.setBoard(board);
         comment.setWriter(member);
@@ -96,6 +96,10 @@ public class Comment {
     public void addChildComment(Comment child) {
         this.children.add(child);
         child.setParent(this);
+    }
+
+    public String getWriterName() {
+        return this.wantAnonymous ? this.nickname : this.writer.getName();
     }
 
     public boolean isOwnedBy(Member member) {
