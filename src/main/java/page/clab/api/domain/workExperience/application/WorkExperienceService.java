@@ -31,26 +31,28 @@ public class WorkExperienceService {
 
     public PagedResponseDto<WorkExperienceResponseDto> getMyWorkExperience(Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMember_IdOrderByStartDateDesc(member.getId(), pageable);
+        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMemberOrderByStartDateDesc(member, pageable);
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::of));
     }
 
-    public PagedResponseDto<WorkExperienceResponseDto> searchWorkExperience(String memberId, Pageable pageable) {
+    public PagedResponseDto<WorkExperienceResponseDto> getWorkExperiencesByConditions(String memberId, Pageable pageable) {
         Member member = memberService.getMemberByIdOrThrow(memberId);
-        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMember_IdOrderByStartDateDesc(member.getId(), pageable);
+        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMemberOrderByStartDateDesc(member, pageable);
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::of));
     }
 
     public Long updateWorkExperience(Long workExperienceId, WorkExperienceUpdateRequestDto workExperienceUpdateRequestDto) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
-        validateWorkExperience(workExperience, "해당 경력사항을 수정할 권한이 없습니다.");
+        workExperience.validateAccessPermission(member);
         workExperience.update(workExperienceUpdateRequestDto);
         return workExperienceRepository.save(workExperience).getId();
     }
 
     public Long deleteWorkExperience(Long workExperienceId) throws PermissionDeniedException {
+        Member member = memberService.getCurrentMember();
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
-        validateWorkExperience(workExperience, "해당 경력사항을 삭제할 권한이 없습니다.");
+        workExperience.validateAccessPermission(member);
         workExperienceRepository.deleteById(workExperienceId);
         return workExperience.getId();
     }
@@ -58,13 +60,6 @@ public class WorkExperienceService {
     private WorkExperience getWorkExperienceByIdOrThrow(Long workExperienceId) {
         return workExperienceRepository.findById(workExperienceId)
                 .orElseThrow(() -> new NotFoundException("해당 경력사항이 존재하지 않습니다."));
-    }
-
-    private void validateWorkExperience(WorkExperience workExperience, String message) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        if (!(workExperience.getMember().getId().equals(member.getId()) || memberService.isMemberSuperRole(member))) {
-            throw new PermissionDeniedException(message);
-        }
     }
 
 }

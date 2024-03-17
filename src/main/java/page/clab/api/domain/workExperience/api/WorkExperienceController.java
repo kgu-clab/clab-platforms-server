@@ -71,13 +71,13 @@ public class WorkExperienceController {
             "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
-    public ResponseModel searchWorkExperience(
+    public ResponseModel getWorkExperiencesByConditions(
             @RequestParam String memberId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<WorkExperienceResponseDto> workExperienceResponseDtos = workExperienceService.searchWorkExperience(memberId, pageable);
+        PagedResponseDto<WorkExperienceResponseDto> workExperienceResponseDtos = workExperienceService.getWorkExperiencesByConditions(memberId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(workExperienceResponseDtos);
         return responseModel;
