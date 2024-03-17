@@ -81,10 +81,14 @@ public class Book {
     }
 
     public void returnBook(Member currentMember) {
+        validateCurrentBorrower(currentMember);
+        this.borrower = null;
+    }
+
+    public void validateCurrentBorrower(Member currentMember) {
         if (this.borrower == null || !this.borrower.equals(currentMember)) {
             throw new InvalidBorrowerException("대출한 도서와 회원 정보가 일치하지 않습니다.");
         }
-        this.borrower = null;
     }
 
 }
