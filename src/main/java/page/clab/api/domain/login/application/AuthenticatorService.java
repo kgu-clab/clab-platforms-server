@@ -52,9 +52,7 @@ public class AuthenticatorService {
     }
 
     private void saveAuthenticator(String memberId, String secretKey) {
-        Authenticator authenticator = new Authenticator();
-        authenticator.setMemberId(memberId);
-        authenticator.setSecretKey(EncryptionUtil.encrypt(secretKey));
+        Authenticator authenticator = Authenticator.create(memberId, EncryptionUtil.encrypt(secretKey));
         authenticatorRepository.save(authenticator);
     }
 
