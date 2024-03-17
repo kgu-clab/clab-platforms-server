@@ -67,4 +67,8 @@ public class SharedAccount {
         Optional.ofNullable(sharedAccountUpdateRequestDto.getPlatformUrl()).ifPresent(this::setPlatformUrl);
     }
 
+    public void updateStatus(boolean isInUse) {
+        this.isInUse = isInUse;
+    }
+
 }

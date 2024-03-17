@@ -67,29 +67,13 @@ public class SharedAccountUsageService {
 
     @Transactional
     public Long updateSharedAccountUsage(Long usageId, SharedAccountUsageStatus status) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         SharedAccountUsage sharedAccountUsage = getSharedAccountUsageByIdOrThrow(usageId);
-        if (!(sharedAccountUsage.getMemberId().equals(member.getId()) || member.isAdminRole())) {
-            throw new PermissionDeniedException("공유 계정 이용 상태 변경 권한이 없습니다.");
-        }
-        if (SharedAccountUsageStatus.IN_USE.equals(sharedAccountUsage.getStatus())) {
-            if (SharedAccountUsageStatus.CANCELED.equals(status) || SharedAccountUsageStatus.COMPLETED.equals(status)) {
-                SharedAccount sharedAccount = sharedAccountUsage.getSharedAccount();
-                sharedAccount.setInUse(false);
-                sharedAccountUsage.setStatus(status);
-                sharedAccountService.save(sharedAccount);
-                sharedAccountUsageRepository.save(sharedAccountUsage);
-                return sharedAccount.getId();
-            }
-        } else if (SharedAccountUsageStatus.RESERVED.equals(sharedAccountUsage.getStatus())) {
-            if (SharedAccountUsageStatus.CANCELED.equals(status)) {
-                sharedAccountUsage.setStatus(status);
-                sharedAccountUsageRepository.save(sharedAccountUsage);
-                return sharedAccountUsage.getId();
-            }
-            throw new SharedAccountUsageStateException("예약된 공유 계정은 취소만 가능합니다.");
-        }
-        throw new SharedAccountUsageStateException("이용 중 취소/완료, 예약 취소만 가능합니다.");
+        sharedAccountUsage.updateStatus(status, currentMember);
+        sharedAccountUsageRepository.save(sharedAccountUsage);
+        sharedAccountUsage.getSharedAccount().updateStatus(false);
+        sharedAccountService.save(sharedAccountUsage.getSharedAccount());
+        return sharedAccountUsage.getSharedAccount().getId();
     }
 
     @Transactional
