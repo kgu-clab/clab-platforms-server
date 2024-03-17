@@ -16,8 +16,6 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
-import java.time.LocalDate;
-
 @Service
 @RequiredArgsConstructor
 public class AwardService {
@@ -33,23 +31,15 @@ public class AwardService {
         return save(award).getId();
     }
 
-    public PagedResponseDto<AwardResponseDto> getMyAwards(Pageable pageable) {
-        Member member = memberService.getCurrentMember();
-        Page<Award> awards = getAwardByMember(pageable, member);
+    @Transactional
+    public PagedResponseDto<AwardResponseDto> getAwardsByConditions(String memberId, Long year, Pageable pageable) {
+        Page<Award> awards = awardRepository.findByConditions(memberId, year, pageable);
         return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
     }
 
-    @Transactional
-    public PagedResponseDto<AwardResponseDto> searchAwards(String memberId, Long year, Pageable pageable) {
-        Page<Award> awards = null;
-        if (memberId != null) {
-            Member member = memberService.getMemberByIdOrThrow(memberId);
-            awards = getAwardByMember(pageable, member);
-        } else if (year != null) {
-            awards = getAwardByYear(pageable, year);
-        } else {
-            throw new NotFoundException("적어도 학번 혹은 연도 중 하나는 입력해야 합니다.");
-        }
+    public PagedResponseDto<AwardResponseDto> getMyAwards(Pageable pageable) {
+        Member member = memberService.getCurrentMember();
+        Page<Award> awards = getAwardByMember(pageable, member);
         return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
     }
 
@@ -88,12 +78,6 @@ public class AwardService {
 
     private Page<Award> getAwardByMember(Pageable pageable, Member member) {
         return awardRepository.findAllByMemberOrderByAwardDateDesc(member, pageable);
-    }
-
-    private Page<Award> getAwardByYear(Pageable pageable, Long year){
-        LocalDate startOfYear = LocalDate.of(year.intValue(), 1, 1);
-        LocalDate endOfYear = LocalDate.of(year.intValue(), 12, 31);
-        return awardRepository.findAllByAwardDateBetween(startOfYear, endOfYear, pageable);
     }
 
     private Award save(Award award) {

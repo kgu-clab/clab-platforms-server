@@ -52,32 +52,33 @@ public class AwardController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 나의 수상 이력 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 수상 이력 조회(학번, 연도 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "2개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
+            "학번, 연도 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getMyAwards(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.getMyAwards(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(awardResponseDtos);
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 수상 이력 검색", description = "ROLE_USER 이상의 권한이 필요함" +
-            "학번, 연도를 기준으로 검색")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/search")
-    public ResponseModel searchAwards(
+    public ResponseModel getAwardsByConditions(
             @RequestParam(name = "memberId", required = false) String memberId,
             @RequestParam(name = "year", required = false) Long year,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.searchAwards(memberId, year, pageable);
+        PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.getAwardsByConditions(memberId, year, pageable);
+        ResponseModel responseModel = ResponseModel.builder().build();
+        responseModel.addData(awardResponseDtos);
+        return responseModel;
+    }
+
+    @Operation(summary = "[U] 나의 수상 이력 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/my")
+    public ResponseModel getMyAwards(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.getMyAwards(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(awardResponseDtos);
         return responseModel;
