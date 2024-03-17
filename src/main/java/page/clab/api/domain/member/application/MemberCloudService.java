@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.dao.MemberRepository;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.domain.Role;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -36,11 +35,12 @@ public class MemberCloudService {
     }
 
     public CloudUsageInfo getCloudUsageByMemberId(String memberId) throws PermissionDeniedException {
-        Member member = validateMemberExistence(memberId);
-        validateMemberCloudUsageAccess(member);
-        File directory = getMemberDirectory(member.getId());
+        Member currentMember = getCurrentMember();
+        Member targetMember = validateMemberExistence(memberId);
+        targetMember.validateAccessPermissionForCloud(currentMember);
+        File directory = getMemberDirectory(targetMember.getId());
         long usage = FileSystemUtil.calculateDirectorySize(directory);
-        return new CloudUsageInfo(member.getId(), usage);
+        return new CloudUsageInfo(targetMember.getId(), usage);
     }
 
     public PagedResponseDto<FileInfo> getFilesInMemberDirectory(String memberId, Pageable pageable) {
@@ -63,13 +63,6 @@ public class MemberCloudService {
 
     private File getMemberDirectory(String memberId) {
         return new File(filePath + "/members/" + memberId);
-    }
-
-    private void validateMemberCloudUsageAccess(Member member) throws PermissionDeniedException {
-        Member currentMember = getCurrentMember();
-        if (!(currentMember.getId().equals(member.getId()) || currentMember.getRole().equals(Role.SUPER))) {
-            throw new PermissionDeniedException("해당 멤버의 클라우드 사용량을 조회할 수 없습니다.");
-        }
     }
 
     private Member getCurrentMember() {
