@@ -21,16 +21,12 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
     }
 
     @Override
-    public Page<BookLoanRecordResponseDto> getBookLoanRecordsByCondition(Long bookId, String borrowerId, Boolean isReturned, Pageable pageable) {
+    public Page<BookLoanRecordResponseDto> findByConditions(Long bookId, String borrowerId, Boolean isReturned, Pageable pageable) {
         QBookLoanRecord bookLoanRecord = QBookLoanRecord.bookLoanRecord;
 
         BooleanBuilder builder = new BooleanBuilder();
-        if (bookId != null) {
-            builder.and(bookLoanRecord.book.id.eq(bookId));
-        }
-        if (borrowerId != null && !borrowerId.trim().isEmpty()) {
-            builder.and(bookLoanRecord.borrower.id.eq(borrowerId));
-        }
+        if (bookId != null) builder.and(bookLoanRecord.book.id.eq(bookId));
+        if (borrowerId != null && !borrowerId.trim().isEmpty()) builder.and(bookLoanRecord.borrower.id.eq(borrowerId));
         if (isReturned != null) {
             if (isReturned) {
                 builder.and(bookLoanRecord.returnedAt.isNotNull());

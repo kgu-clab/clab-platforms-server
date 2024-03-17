@@ -6,6 +6,6 @@ import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
 
 public interface BookLoanRecordRepositoryCustom {
 
-    Page<BookLoanRecordResponseDto> getBookLoanRecordsByCondition(Long bookId, String borrowerId, Boolean isReturned, Pageable pageable);
+    Page<BookLoanRecordResponseDto> findByConditions(Long bookId, String borrowerId, Boolean isReturned, Pageable pageable);
 
 }
