@@ -2,7 +2,6 @@ package page.clab.api.domain.application.application;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -14,7 +13,6 @@ import page.clab.api.domain.application.domain.ApplicationId;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.application.dto.response.ApplicationPassResponseDto;
 import page.clab.api.domain.application.dto.response.ApplicationResponseDto;
-import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.recruitment.application.RecruitmentService;
 import page.clab.api.domain.recruitment.domain.Recruitment;
@@ -22,14 +20,10 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.exception.NotFoundException;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ApplicationService {
-
-    private final MemberService memberService;
 
     private final RecruitmentService recruitmentService;
 
@@ -40,19 +34,15 @@ public class ApplicationService {
     private final ApplicationRepository applicationRepository;
 
     @Transactional
-    public String createApplication(HttpServletRequest request, @Valid ApplicationRequestDto applicationRequestDto) {
-        Application application = Application.of(applicationRequestDto);
+    public String createApplication(HttpServletRequest request, ApplicationRequestDto applicationRequestDto) {
         Recruitment recruitment = recruitmentService.getRecruitmentByIdOrThrow(applicationRequestDto.getRecruitmentId());
-        application.setContact(memberService.removeHyphensFromContact(application.getContact()));
-        application.setIsPass(false);
-        application.setUpdateTime(LocalDateTime.now());
-        String id = applicationRepository.save(application).getStudentId();
+        Application application = Application.create(applicationRequestDto);
         notificationService.sendNotificationToAdmins(
                 applicationRequestDto.getStudentId() + " " +
                         applicationRequestDto.getName() + "님이 동아리에 지원하였습니다."
         );
         slackService.sendApplicationNotification(request, applicationRequestDto);
-        return id;
+        return applicationRepository.save(application).getStudentId();
     }
 
     public PagedResponseDto<ApplicationResponseDto> getApplicationsByConditions(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable) {
