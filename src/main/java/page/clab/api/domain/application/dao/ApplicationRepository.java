@@ -3,13 +3,14 @@ package page.clab.api.domain.application.dao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.domain.ApplicationId;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface ApplicationRepository extends JpaRepository<Application, ApplicationId> {
+public interface ApplicationRepository extends JpaRepository<Application, ApplicationId>, ApplicationRepositoryCustom, QuerydslPredicateExecutor<Application> {
 
     Page<Application> findAllByOrderByCreatedAtDesc(Pageable pageable);
 

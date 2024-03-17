@@ -58,7 +58,7 @@ public class ApplicationController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/conditions")
     public ResponseModel getApplicationsByConditions(
-            @RequestParam(name = "recruitmentId", required = false) String recruitmentId,
+            @RequestParam(name = "recruitmentId", required = false) Long recruitmentId,
             @RequestParam(name = "studentId", required = false) String studentId,
             @RequestParam(name = "isPass", required = false) Boolean isPass,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -74,24 +74,24 @@ public class ApplicationController {
     @Operation(summary = "[S] 지원 합격/취소", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "승인/취소 상태가 반전됨")
     @Secured({"ROLE_SUPER"})
-    @PatchMapping("/{recruitmentId}/{applicationId}")
+    @PatchMapping("/{recruitmentId}/{studentId}")
     public ResponseModel approveApplication(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
-            @PathVariable(name = "applicationId") String applicationId
+            @PathVariable(name = "studentId") String studentId
             ) {
-        String id = applicationService.approveApplication(recruitmentId, applicationId);
+        String id = applicationService.approveApplication(recruitmentId, studentId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
     }
 
     @Operation(summary = "합격 여부 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @GetMapping("/{recruitmentId}/{applicationId}")
+    @GetMapping("/{recruitmentId}/{studentId}")
     public ResponseModel getApplicationPass(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
-            @PathVariable(name = "applicationId") String applicationId
+            @PathVariable(name = "studentId") String studentId
     ) {
-        ApplicationPassResponseDto applicationPassResponseDto = applicationService.getApplicationPass(recruitmentId, applicationId);
+        ApplicationPassResponseDto applicationPassResponseDto = applicationService.getApplicationPass(recruitmentId, studentId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(applicationPassResponseDto);
         return responseModel;
@@ -99,12 +99,12 @@ public class ApplicationController {
 
     @Operation(summary = "[S] 지원서 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
-    @DeleteMapping("/{recruitmentId}/{applicationId}")
+    @DeleteMapping("/{recruitmentId}/{studentId}")
     public ResponseModel deleteApplication(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
-            @PathVariable(name = "applicationId") String applicationId
+            @PathVariable(name = "studentId") String studentId
     ) {
-        String id = applicationService.deleteApplication(recruitmentId, applicationId);
+        String id = applicationService.deleteApplication(recruitmentId, studentId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
