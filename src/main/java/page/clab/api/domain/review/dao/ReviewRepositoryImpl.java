@@ -20,7 +20,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
     }
 
     @Override
-    public Page<Review> findReviewsByConditions(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable) {
+    public Page<Review> findByConditions(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable) {
         QReview qReview = QReview.review;
         BooleanBuilder builder = new BooleanBuilder();
 
