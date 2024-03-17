@@ -24,7 +24,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 @RestController
 @RequestMapping("/blacklists")
 @RequiredArgsConstructor
-@Tag(name = "Blacklist", description = "블랙리스트")
+@Tag(name = "Blacklist IP", description = "블랙리스트 IP")
 @Slf4j
 public class BlacklistIpController {
 

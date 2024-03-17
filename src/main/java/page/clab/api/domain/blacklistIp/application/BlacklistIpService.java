@@ -24,19 +24,16 @@ public class BlacklistIpService {
 
     private final BlacklistIpRepository blacklistIpRepository;
 
-    public String addBlacklistedIp(HttpServletRequest request, BlacklistIpRequestDto blacklistIpRequestDto) {
-        String ipAddress = blacklistIpRequestDto.getIpAddress();
-        String reason = blacklistIpRequestDto.getReason();
-        BlacklistIp blacklistIp = getBlacklistIpByIpAddress(ipAddress);
-        if (blacklistIp != null) {
-            return blacklistIp.getIpAddress();
-        }
-        blacklistIp = BlacklistIp.builder()
-                .ipAddress(ipAddress)
-                .reason(reason)
-                .build();
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Added IP: " + ipAddress);
-        return blacklistIpRepository.save(blacklistIp).getIpAddress();
+    public String addBlacklistedIp(HttpServletRequest request, BlacklistIpRequestDto dto) {
+        String ipAddress = dto.getIpAddress();
+        return blacklistIpRepository.findByIpAddress(ipAddress)
+                .map(BlacklistIp::getIpAddress)
+                .orElseGet(() -> {
+                    BlacklistIp blacklistIp = BlacklistIp.create(ipAddress, dto.getReason());
+                    blacklistIpRepository.save(blacklistIp);
+                    slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Added IP: " + ipAddress);
+                    return ipAddress;
+                });
     }
 
     public PagedResponseDto<BlacklistIp> getBlacklistedIps(Pageable pageable) {
@@ -53,18 +50,13 @@ public class BlacklistIpService {
     }
 
     public void clearBlacklist(HttpServletRequest request) {
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Deleted IP: ALL");
         blacklistIpRepository.deleteAll();
+        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Deleted IP: ALL");
     }
 
     private BlacklistIp getBlacklistIpByIpAddressOrThrow(String ipAddress) {
         return blacklistIpRepository.findByIpAddress(ipAddress).
                 orElseThrow(() -> new NotFoundException("해당 IP 주소를 찾을 수 없습니다."));
-    }
-
-    private BlacklistIp getBlacklistIpByIpAddress(String ipAddress) {
-        return blacklistIpRepository.findByIpAddress(ipAddress)
-                .orElse(null);
     }
 
 }
