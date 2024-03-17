@@ -25,6 +25,7 @@ import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
+import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
@@ -178,6 +179,22 @@ public class Member implements UserDetails {
 
     public boolean isSameMember(String memberId) {
         return id.equals(memberId);
+    }
+
+    public boolean isOwner(Member member) {
+        return this.isSameMember(member);
+    }
+
+    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isAdminRole()) {
+            throw new PermissionDeniedException("해당 멤버를 수정/삭제할 권한이 없습니다.");
+        }
+    }
+
+    public void validateAccessPermissionForCloud(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isSuperAdminRole()) {
+            throw new PermissionDeniedException("해당 멤버의 클라우드 사용량을 조회할 수 없습니다.");
+        }
     }
 
     public void checkLoanSuspension() {
