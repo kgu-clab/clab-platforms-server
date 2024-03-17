@@ -27,7 +27,7 @@ public class NewsService {
     private final FileService fileService;
 
     public Long createNews(NewsRequestDto newsRequestDto) {
-        News news = News.of(newsRequestDto);
+        News news = News.create(newsRequestDto);
         attachUploadedFiles(newsRequestDto, news);
         return newsRepository.save(news).getId();
     }
@@ -39,7 +39,7 @@ public class NewsService {
 
     public NewsDetailsResponseDto getNewsDetails(Long newsId) {
         News news = getNewsByIdOrThrow(newsId);
-        return NewsDetailsResponseDto.of(news);
+        return NewsDetailsResponseDto.create(news);
     }
 
     public Long updateNews(Long newsId, NewsUpdateRequestDto newsUpdateRequestDto) {
