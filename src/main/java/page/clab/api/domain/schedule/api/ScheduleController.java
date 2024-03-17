@@ -6,7 +6,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +22,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/schedule")
@@ -49,14 +48,14 @@ public class ScheduleController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getSchedulesWithinDateRange(
-            @RequestParam(name = "startDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDateTime,
-            @RequestParam(name = "endDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDateTime,
+            @RequestParam(name = "startDate") LocalDate startDate,
+            @RequestParam(name = "endDate") LocalDate endDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ScheduleResponseDto> scheduleResponseDtos
-                = scheduleService.getSchedulesWithinDateRange(startDateTime, endDateTime, pageable);
+                = scheduleService.getSchedulesWithinDateRange(startDate, endDate, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(scheduleResponseDtos);
         return responseModel;
@@ -66,14 +65,14 @@ public class ScheduleController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/activity")
     public ResponseModel getActivitySchedules(
-            @RequestParam(name = "startDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDateTime,
-            @RequestParam(name = "endDateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDateTime,
+            @RequestParam(name = "startDate") LocalDate startDate,
+            @RequestParam(name = "endDate") LocalDate endDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ScheduleResponseDto> scheduleResponseDtos
-                = scheduleService.getActivitySchedules(startDateTime, endDateTime, pageable);
+                = scheduleService.getActivitySchedules(startDate, endDate, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(scheduleResponseDtos);
         return responseModel;

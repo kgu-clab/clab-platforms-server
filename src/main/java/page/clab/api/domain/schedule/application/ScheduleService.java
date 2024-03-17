@@ -21,7 +21,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -44,15 +44,15 @@ public class ScheduleService {
         return scheduleRepository.save(schedule).getId();
     }
 
-    public PagedResponseDto<ScheduleResponseDto> getSchedulesWithinDateRange(LocalDateTime startDateTime, LocalDateTime endDateTime, Pageable pageable) {
+    public PagedResponseDto<ScheduleResponseDto> getSchedulesWithinDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        Page<Schedule> schedules = scheduleRepository.findByDateRangeAndMember(startDateTime, endDateTime, member, pageable);
+        Page<Schedule> schedules = scheduleRepository.findByDateRangeAndMember(startDate, endDate, member, pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::of));
     }
 
-    public PagedResponseDto<ScheduleResponseDto> getActivitySchedules(LocalDateTime startDateTime, LocalDateTime endDateTime, Pageable pageable) {
+    public PagedResponseDto<ScheduleResponseDto> getActivitySchedules(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        Page<Schedule> schedules = scheduleRepository.findActivitySchedulesByDateRangeAndMember(startDateTime, endDateTime, member, pageable);
+        Page<Schedule> schedules = scheduleRepository.findActivitySchedulesByDateRangeAndMember(startDate, endDate, member, pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::of));
     }
 
