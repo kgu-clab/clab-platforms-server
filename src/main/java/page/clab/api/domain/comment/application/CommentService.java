@@ -43,18 +43,9 @@ public class CommentService {
 
     @Transactional
     public Long createComment(Long parentId, Long boardId, CommentRequestDto commentRequestDto) {
-        Member currentMember = memberService.getCurrentMember();
-        Board board = boardService.getBoardByIdOrThrow(boardId);
-        Comment parent = parentId != null ? getCommentByIdOrThrow(parentId) : null;
-        Comment comment = Comment.of(commentRequestDto, board, currentMember, parent);
-        if (parent != null) {
-            parent.addChildComment(comment);
-        }
-        notificationService.sendNotificationToMember(
-                board.getMember(),
-                "[" + board.getTitle() + "] " + comment.getWriter() + "님이 게시글에 댓글을 남겼습니다."
-        );
-        return commentRepository.save(comment).getId();
+        Comment comment = createAndStoreComment(parentId, boardId, commentRequestDto);
+        sendNotificationForNewComment(comment);
+        return comment.getId();
     }
 
     public PagedResponseDto<CommentGetAllResponseDto> getComments(Long boardId, Pageable pageable) {
@@ -133,6 +124,28 @@ public class CommentService {
 
     private Page<Comment> getCommentByWriter(Member member, Pageable pageable) {
         return commentRepository.findAllByWriterOrderByCreatedAtDesc(member, pageable);
+    }
+
+    private Comment createAndStoreComment(Long parentId, Long boardId, CommentRequestDto commentRequestDto) {
+        Member currentMember = memberService.getCurrentMember();
+        Board board = boardService.getBoardByIdOrThrow(boardId);
+        Comment parent = findParentComment(parentId);
+        Comment comment = Comment.create(commentRequestDto, board, currentMember, parent);
+        if (parent != null) {
+            parent.addChildComment(comment);
+        }
+        return commentRepository.save(comment);
+    }
+
+    private Comment findParentComment(Long parentId) {
+        return parentId != null ? getCommentByIdOrThrow(parentId) : null;
+    }
+
+    private void sendNotificationForNewComment(Comment comment) {
+        Board board = comment.getBoard();
+        Member boardOwner = board.getMember();
+        String notificationMessage = String.format("[%s] %s님이 게시글에 댓글을 남겼습니다.", board.getTitle(), comment.getWriterName());
+        notificationService.sendNotificationToMember(boardOwner, notificationMessage);
     }
 
     private void validateCommentUpdatePermission(Comment comment, Member member) throws PermissionDeniedException {
