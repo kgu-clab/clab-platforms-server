@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -43,12 +41,8 @@ public class CommentController {
     public ResponseModel createComment(
             @RequestParam(name = "parentId", required = false) Long parentId,
             @PathVariable(name = "boardId") Long boardId,
-            @Valid @RequestBody CommentRequestDto commentRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody CommentRequestDto commentRequestDto
+    ) {
         Long id = commentService.createComment(parentId, boardId, commentRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -89,12 +83,8 @@ public class CommentController {
     @PatchMapping("/{commentId}")
     public ResponseModel updateComment(
             @PathVariable(name = "commentId") Long commentId,
-            @Valid @RequestBody CommentUpdateRequestDto commentUpdateRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException, PermissionDeniedException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody CommentUpdateRequestDto commentUpdateRequestDto
+    ) throws PermissionDeniedException {
         Long id = commentService.updateComment(commentId, commentUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);

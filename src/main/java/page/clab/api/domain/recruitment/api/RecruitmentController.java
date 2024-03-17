@@ -6,8 +6,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -37,12 +35,8 @@ public class RecruitmentController {
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createRecruitment(
-            @Valid @RequestBody RecruitmentRequestDto recruitmentRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody RecruitmentRequestDto recruitmentRequestDto
+    ) {
         Long id = recruitmentService.createRecruitment(recruitmentRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -64,12 +58,8 @@ public class RecruitmentController {
     @PatchMapping("/{recruitmentId}")
     public ResponseModel updateRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
-            @Valid @RequestBody RecruitmentUpdateRequestDto recruitmentUpdateRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody RecruitmentUpdateRequestDto recruitmentUpdateRequestDto
+    ) {
         Long id = recruitmentService.updateRecruitment(recruitmentId, recruitmentUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);

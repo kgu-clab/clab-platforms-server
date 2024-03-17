@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,12 +43,8 @@ public class MemberController {
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createMember(
-            @Valid @RequestBody MemberRequestDto memberRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody MemberRequestDto memberRequestDto
+    ) {
         String id = memberService.createMember(memberRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -129,12 +123,8 @@ public class MemberController {
     @PatchMapping("/{memberId}")
     public ResponseModel updateMemberInfoByMember(
             @PathVariable(name = "memberId") String memberId,
-            @Valid @RequestBody MemberUpdateRequestDto memberUpdateRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException, PermissionDeniedException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody MemberUpdateRequestDto memberUpdateRequestDto
+    ) throws PermissionDeniedException {
         String id = memberService.updateMemberInfo(memberId, memberUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -144,12 +134,8 @@ public class MemberController {
     @Operation(summary = "멤버 비밀번호 재발급 요청", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/password-reset-requests")
     public ResponseModel requestResetMemberPassword(
-            @Valid @RequestBody MemberResetPasswordRequestDto memberResetPasswordRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody MemberResetPasswordRequestDto memberResetPasswordRequestDto
+    ) {
         memberService.requestResetMemberPassword(memberResetPasswordRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
@@ -158,12 +144,8 @@ public class MemberController {
     @Operation(summary = "멤버 비밀번호 재발급 인증", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/password-reset-verifications")
     public ResponseModel verifyResetMemberPassword(
-            @Valid @RequestBody VerificationCodeRequestDto verificationCodeRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody VerificationCodeRequestDto verificationCodeRequestDto
+    ) {
         memberService.verifyResetMemberPassword(verificationCodeRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
