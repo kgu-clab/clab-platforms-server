@@ -113,7 +113,7 @@ public class Board {
     }
 
     public void checkPermission(Member member) throws PermissionDeniedException {
-        if (!isOwner(member) && !member.isMemberAdminRole()) {
+        if (!isOwner(member) && !member.isAdminRole()) {
             throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
         }
     }

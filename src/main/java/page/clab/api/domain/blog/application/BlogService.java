@@ -26,8 +26,7 @@ public class BlogService {
 
     public Long createBlog(BlogRequestDto blogRequestDto) {
         Member member = memberService.getCurrentMember();
-        Blog blog = Blog.of(blogRequestDto);
-        blog.setMember(member);
+        Blog blog = Blog.create(blogRequestDto, member);
         return blogRepository.save(blog).getId();
     }
 
@@ -39,17 +38,14 @@ public class BlogService {
     public BlogDetailsResponseDto getBlogDetails(Long blogId) {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
-        BlogDetailsResponseDto blogDetailsResponseDto = BlogDetailsResponseDto.of(blog);
-        blogDetailsResponseDto.setOwner(isMemberBlogWriter(member,blog));
-        return blogDetailsResponseDto;
+        boolean isOwner = blog.isOwner(member);
+        return BlogDetailsResponseDto.create(blog, isOwner);
     }
 
     public Long updateBlog(Long blogId, BlogUpdateRequestDto blogUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
-        if (!isMemberBlogWriter(member, blog)) {
-            throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
-        }
+        blog.validateAccessPermission(member);
         blog.update(blogUpdateRequestDto);
         return blogRepository.save(blog).getId();
     }
@@ -57,9 +53,7 @@ public class BlogService {
     public Long deleteBlog(Long blogId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
-        if (!(isMemberBlogWriter(member, blog) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("해당 게시글을 삭제할 권한이 없습니다.");
-        }
+        blog.validateAccessPermission(member);
         blogRepository.delete(blog);
         return blog.getId();
     }
@@ -67,10 +61,6 @@ public class BlogService {
     private Blog getBlogByIdOrThrow(Long blogId) {
         return blogRepository.findById(blogId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 게시글입니다."));
-    }
-
-    private boolean isMemberBlogWriter(Member member, Blog blog) {
-        return blog.getMember().equals(member);
     }
 
 }
