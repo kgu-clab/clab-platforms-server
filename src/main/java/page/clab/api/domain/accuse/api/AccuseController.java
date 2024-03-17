@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,12 +37,8 @@ public class AccuseController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createAccuse(
-            @Valid @RequestBody AccuseRequestDto accuseRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody AccuseRequestDto accuseRequestDto
+    ) {
         Long id = accuseService.createAccuse(accuseRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);

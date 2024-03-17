@@ -3,6 +3,7 @@ package page.clab.api.domain.blacklistIp.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +36,7 @@ public class BlacklistIpController {
     @PostMapping("")
     public ResponseModel addBlacklistedIp(
             HttpServletRequest request,
-            @RequestBody BlacklistIpRequestDto blacklistIpRequestDto
+            @Valid @RequestBody BlacklistIpRequestDto blacklistIpRequestDto
     ) {
         String addedIp = blacklistIpService.addBlacklistedIp(request, blacklistIpRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();

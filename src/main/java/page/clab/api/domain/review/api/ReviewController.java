@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,12 +38,8 @@ public class ReviewController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createReview(
-            @Valid @RequestBody ReviewRequestDto reviewRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody ReviewRequestDto reviewRequestDto
+    ) {
         Long id = reviewService.createReview(reviewRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -91,12 +85,8 @@ public class ReviewController {
     @PatchMapping("/{reviewId}")
     public ResponseModel updateReview(
             @PathVariable(name = "reviewId") Long reviewId,
-            @Valid @RequestBody ReviewUpdateRequestDto reviewUpdateRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException, PermissionDeniedException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody ReviewUpdateRequestDto reviewUpdateRequestDto
+    ) throws PermissionDeniedException {
         Long id = reviewService.updateReview(reviewId, reviewUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);

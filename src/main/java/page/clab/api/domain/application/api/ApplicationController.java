@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,12 +38,8 @@ public class ApplicationController {
     @PostMapping("")
     public ResponseModel createApplication(
             HttpServletRequest request,
-            @Valid @RequestBody ApplicationRequestDto applicationRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody ApplicationRequestDto applicationRequestDto
+    ) {
         String id = applicationService.createApplication(request, applicationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -78,7 +72,7 @@ public class ApplicationController {
     public ResponseModel toggleApprovalStatus(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "studentId") String studentId
-            ) {
+    ) {
         String id = applicationService.toggleApprovalStatus(recruitmentId, studentId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
