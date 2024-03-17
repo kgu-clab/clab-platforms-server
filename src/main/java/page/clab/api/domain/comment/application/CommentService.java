@@ -42,8 +42,8 @@ public class CommentService {
     private final NotificationService notificationService;
 
     @Transactional
-    public Long createComment(Long parentId, Long boardId, CommentRequestDto commentRequestDto) {
-        Comment comment = createAndStoreComment(parentId, boardId, commentRequestDto);
+    public Long createComment(Long parentId, Long boardId, CommentRequestDto dto) {
+        Comment comment = createAndStoreComment(parentId, boardId, dto);
         sendNotificationForNewComment(comment);
         return comment.getId();
     }
@@ -63,16 +63,18 @@ public class CommentService {
         return new PagedResponseDto<>(commentDtos);
     }
 
-    public Long updateComment(Long commentId, CommentUpdateRequestDto commentUpdateRequestDto) throws PermissionDeniedException {
+    public Long updateComment(Long commentId, CommentUpdateRequestDto dto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
-        Comment comment = validateCommentAccess(commentId, currentMember);
-        comment.update(commentUpdateRequestDto);
+        Comment comment = getCommentByIdOrThrow(commentId);
+        comment.validateAccessPermission(currentMember);
+        comment.update(dto);
         return commentRepository.save(comment).getId();
     }
 
     public Long deleteComment(Long commentId) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
-        Comment comment = validateCommentAccess(commentId, currentMember);
+        Comment comment = getCommentByIdOrThrow(commentId);
+        comment.validateAccessPermission(currentMember);
         commentRepository.delete(comment);
         return comment.getId();
     }
@@ -110,11 +112,11 @@ public class CommentService {
         return commentRepository.findAllByWriterOrderByCreatedAtDesc(member, pageable);
     }
 
-    private Comment createAndStoreComment(Long parentId, Long boardId, CommentRequestDto commentRequestDto) {
+    private Comment createAndStoreComment(Long parentId, Long boardId, CommentRequestDto dto) {
         Member currentMember = memberService.getCurrentMember();
         Board board = boardService.getBoardByIdOrThrow(boardId);
         Comment parent = findParentComment(parentId);
-        Comment comment = Comment.create(commentRequestDto, board, currentMember, parent);
+        Comment comment = Comment.create(dto, board, currentMember, parent);
         if (parent != null) {
             parent.addChildComment(comment);
         }
@@ -130,14 +132,6 @@ public class CommentService {
         Member boardOwner = board.getMember();
         String notificationMessage = String.format("[%s] %s님이 게시글에 댓글을 남겼습니다.", board.getTitle(), comment.getWriterName());
         notificationService.sendNotificationToMember(boardOwner, notificationMessage);
-    }
-
-    private Comment validateCommentAccess(Long commentId, Member member) throws PermissionDeniedException {
-        Comment comment = getCommentByIdOrThrow(commentId);
-        if (!comment.isOwnedBy(member) && !member.isAdminRole()) {
-            throw new PermissionDeniedException("댓글 작성자 또는 관리자만 수정/삭제할 수 있습니다.");
-        }
-        return comment;
     }
 
     private CommentGetAllResponseDto toCommentGetAllResponseDto(Comment comment, Member currentMember) {
