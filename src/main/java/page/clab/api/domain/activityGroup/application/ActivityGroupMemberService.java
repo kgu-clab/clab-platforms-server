@@ -84,19 +84,15 @@ public class ActivityGroupMemberService {
     }
 
     public PagedResponseDto<ActivityGroupStatusResponseDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus, Pageable pageable) {
-        List<ActivityGroup> activityGroupList = getActivityGroupByStatus(activityGroupStatus);
-        List<ActivityGroupStatusResponseDto> activityGroupStatusResponseDtos = activityGroupList.stream()
-                .map(activityGroup -> {
-                    Long participantCount = getGroupMemberByActivityGroupId(activityGroup.getId()).stream()
-                            .filter(GroupMember::isAccepted)
-                            .count();
-                    GroupMember groupLeader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
-                    Member leader = groupLeader != null ? groupLeader.getMember() : null;
-                    Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroup.getId(), ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
-                    return ActivityGroupStatusResponseDto.of(activityGroup, leader, participantCount, weeklyActivityCount);
-                })
-                .toList();
-        return new PagedResponseDto<>(activityGroupStatusResponseDtos, pageable, activityGroupStatusResponseDtos.size());
+        List<ActivityGroup> activityGroups = activityGroupRepository.findActivityGroupsByStatus(activityGroupStatus);
+        List<ActivityGroupStatusResponseDto> dtos = activityGroups.stream().map(activityGroup -> {
+            Long participantCount = groupMemberRepository.countAcceptedMembersByActivityGroupId(activityGroup.getId());
+            GroupMember leader = groupMemberRepository.findLeaderByActivityGroupId(activityGroup.getId());
+            Member leaderMember = leader != null ? leader.getMember() : null;
+            Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroup.getId(), ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
+            return ActivityGroupStatusResponseDto.create(activityGroup, leaderMember, participantCount, weeklyActivityCount);
+        }).toList();
+        return new PagedResponseDto<>(dtos, pageable, dtos.size());
     }
 
     public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByCategory(ActivityGroupCategory category, Pageable pageable) {
