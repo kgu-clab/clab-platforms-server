@@ -13,6 +13,7 @@ import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,15 +25,12 @@ public class ActivityPhotoService {
 
     private final FileService fileService;
 
-    public Long createActivityPhoto(ActivityPhotoRequestDto activityPhotoRequestDto) {
-        ActivityPhoto activityPhoto = ActivityPhoto.of(activityPhotoRequestDto);
-        List<String> fileUrls = activityPhotoRequestDto.getFileUrlList();
-        if (fileUrls != null) {
-            List<UploadedFile> uploadFileList =  fileUrls.stream()
-                    .map(fileService::getUploadedFileByUrl)
-                    .collect(Collectors.toList());
-            activityPhoto.setUploadedFiles(uploadFileList);
-        }
+    public Long createActivityPhoto(ActivityPhotoRequestDto dto) {
+        List<UploadedFile> uploadedFiles = dto.getFileUrlList() != null ?
+                dto.getFileUrlList().stream()
+                        .map(fileService::getUploadedFileByUrl)
+                        .collect(Collectors.toList()) : Collections.emptyList();
+        ActivityPhoto activityPhoto = ActivityPhoto.create(dto, uploadedFiles);
         return activityPhotoRepository.save(activityPhoto).getId();
     }
 
