@@ -43,32 +43,19 @@ public class AccuseService {
     public Long createAccuse(AccuseRequestDto accuseRequestDto) {
         TargetType accuseTargetType = accuseRequestDto.getTargetType();
         Long accuseTargetId = accuseRequestDto.getTargetId();
-        try {
-            if (!isAccuseRequestValid(accuseTargetType, accuseTargetId)) {
-                throw new NotFoundException(accuseTargetType.getDescription() + " " + accuseTargetId + "을 찾을 수 없습니다.");
-            }
-        } catch (AccuseTargetTypeIncorrectException e) {
-            throw e;
+
+        if (!isAccuseRequestValid(accuseTargetType, accuseTargetId)) {
+            throw new NotFoundException(accuseTargetType.getDescription() + " " + accuseTargetId + "을 찾을 수 없습니다.");
         }
 
-        Long id;
         Member member = memberService.getCurrentMember();
-        Accuse existingAccuse = getAccuseByMemberAndTargetTypeAndTargetId(member, accuseTargetType, accuseTargetId);
-        if (existingAccuse != null) {
-            existingAccuse.setReason(accuseRequestDto.getReason());
-            id = accuseRepository.save(existingAccuse).getId();
-        } else {
-            Accuse accuse = Accuse.of(accuseRequestDto);
-            accuse.setId(null);
-            accuse.setMember(member);
-            accuse.setAccuseStatus(AccuseStatus.PENDING);
-            id = accuseRepository.save(accuse).getId();
-        }
+        Accuse accuse = accuseRepository.findByMemberAndTargetTypeAndTargetId(member, accuseTargetType, accuseTargetId)
+                            .orElseGet(() -> Accuse.create(accuseRequestDto, member));
+        accuse.updateReason(accuseRequestDto.getReason());
 
         notificationService.sendNotificationToMember(member, "신고하신 내용이 접수되었습니다.");
         notificationService.sendNotificationToSuperAdmins(member.getName() + "님이 신고를 접수하였습니다. 확인해주세요.");
-
-        return id;
+        return accuseRepository.save(accuse).getId();
     }
 
     public PagedResponseDto<AccuseResponseDto> getAccusesByConditions(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable) {
@@ -79,10 +66,9 @@ public class AccuseService {
     @Transactional
     public Long updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) {
         Accuse accuse = getAccuseByIdOrThrow(accuseId);
-        accuse.setAccuseStatus(accuseStatus);
-        Long id = accuseRepository.save(accuse).getId();
+        accuse.updateStatus(accuseStatus);
         notificationService.sendNotificationToMember(accuse.getMember(), "신고 상태가 " + accuseStatus.getDescription() + "로 변경되었습니다.");
-        return id;
+        return accuseRepository.save(accuse).getId();
     }
 
     private boolean isAccuseRequestValid(TargetType accuseTargetType, Long accuseTargetId) {
@@ -101,11 +87,6 @@ public class AccuseService {
     private Accuse getAccuseByIdOrThrow(Long accuseId) {
         return accuseRepository.findById(accuseId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 신고입니다."));
-    }
-
-    private Accuse getAccuseByMemberAndTargetTypeAndTargetId(Member member, TargetType accuseTargetType, Long accuseTargetId) {
-        return accuseRepository.findByMemberAndTargetTypeAndTargetId(member, accuseTargetType, accuseTargetId)
-                .orElse(null);
     }
 
 }
