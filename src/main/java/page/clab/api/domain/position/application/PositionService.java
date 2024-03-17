@@ -27,12 +27,12 @@ public class PositionService {
 
     public Long createPosition(PositionRequestDto positionRequestDto) {
         Member member = memberService.getMemberByIdOrThrow(positionRequestDto.getMemberId());
-        Position position = getPositionByMemberAndYearAndPositionType(positionRequestDto, member);
-        if (position == null) {
-            position = Position.of(positionRequestDto);
-            return positionRepository.save(position).getId();
-        }
-        return position.getId();
+        return positionRepository.findByMemberAndYearAndPositionType(member, positionRequestDto.getYear(), positionRequestDto.getPositionType())
+                .map(Position::getId)
+                .orElseGet(() -> {
+                    Position position = Position.of(positionRequestDto);
+                    return positionRepository.save(position).getId();
+                });
     }
 
     public PagedResponseDto<PositionResponseDto> getPositionsByConditions(String year, PositionType positionType, Pageable pageable) {
@@ -55,10 +55,6 @@ public class PositionService {
     private Position getPositionsByIdOrThrow(Long positionId) {
         return positionRepository.findById(positionId)
                 .orElseThrow(() -> new NotFoundException("해당 운영진이 존재하지 않습니다."));
-    }
-
-    private Position getPositionByMemberAndYearAndPositionType(PositionRequestDto positionRequestDto, Member member) {
-        return positionRepository.findByMemberAndYearAndPositionType(member, positionRequestDto.getYear(), positionRequestDto.getPositionType()).orElse(null);
     }
 
     private List<Position> getPositionsByMemberAndYear(Member member, String year) {
