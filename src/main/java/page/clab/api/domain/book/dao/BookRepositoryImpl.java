@@ -1,10 +1,11 @@
 package page.clab.api.domain.book.dao;
 
-import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import page.clab.api.domain.book.domain.Book;
-import static page.clab.api.domain.book.domain.QBook.book;
+import page.clab.api.domain.book.domain.QBook;
+import page.clab.api.domain.member.domain.QMember;
 
 import java.util.List;
 
@@ -17,24 +18,22 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
     }
 
     @Override
-    public List<Book> searchBook(String keyword) {
-        return queryFactory
-                .selectFrom(book)
-                .where(keywordContainsIgnoreCase(keyword))
+    public List<Book> findByConditions(String title, String category, String publisher, String borrowerId, String borrowerName) {
+        QBook book = QBook.book;
+        QMember borrower = QMember.member;
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (title != null) builder.and(book.title.containsIgnoreCase(title));
+        if (category != null) builder.and(book.category.eq(category));
+        if (publisher != null) builder.and(book.publisher.containsIgnoreCase(publisher));
+        if (borrowerId != null) builder.and(borrower.id.eq(borrowerId));
+        if (borrowerName != null) builder.and(borrower.name.eq(borrowerName));
+
+        return queryFactory.selectFrom(book)
+                .leftJoin(book.borrower, borrower).fetchJoin()
+                .where(builder)
                 .orderBy(book.createdAt.desc())
                 .fetch();
-    }
-
-    private BooleanExpression keywordContainsIgnoreCase(String keyword) {
-        if (keyword == null || keyword.trim().isEmpty()) {
-            return null;
-        }
-        String keywordLowerCase = "%" + keyword.toLowerCase() + "%";
-        return book.category.toLowerCase().like(keywordLowerCase)
-                .or(book.title.toLowerCase().like(keywordLowerCase))
-                .or(book.author.toLowerCase().like(keywordLowerCase))
-                .or(book.publisher.toLowerCase().like(keywordLowerCase))
-                .or(book.borrower.id.equalsIgnoreCase(keyword));
     }
 
 }
