@@ -7,9 +7,6 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
-import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
-
-import java.util.List;
 
 @Repository
 public interface ActivityGroupRepository extends JpaRepository<ActivityGroup, Long>, ActivityGroupRepositoryCustom, QuerydslPredicateExecutor<ActivityGroup> {
@@ -17,7 +14,5 @@ public interface ActivityGroupRepository extends JpaRepository<ActivityGroup, Lo
     Page<ActivityGroup> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     Page<ActivityGroup> findAllByCategoryOrderByCreatedAtDesc(ActivityGroupCategory category, Pageable pageable);
-
-    List<ActivityGroup> findAllByStatusOrderByCreatedAtDesc(ActivityGroupStatus status);
 
 }
