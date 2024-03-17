@@ -60,21 +60,6 @@ public class SharedAccountUsageService {
         }
     }
 
-    private void validateSharedAccountUsage(Long sharedAccountId, LocalDateTime startTime, LocalDateTime endTime) throws SharedAccountUsageStateException {
-        List<SharedAccountUsage> reservedUsages = sharedAccountUsageRepository
-                .findBySharedAccountIdAndStatusAndStartTimeBeforeAndEndTimeAfter(
-                        sharedAccountId, SharedAccountUsageStatus.RESERVED, endTime, startTime);
-        if (!reservedUsages.isEmpty()) {
-            throw new SharedAccountUsageStateException("해당 시간대와 겹치는 예약 내역이 있습니다. 다른 시간대를 선택해주세요.");
-        }
-        List<SharedAccountUsage> inUseUsages = sharedAccountUsageRepository
-                .findBySharedAccountIdAndStatusAndStartTimeBeforeAndEndTimeAfter(
-                        sharedAccountId, SharedAccountUsageStatus.IN_USE, endTime, startTime);
-        if (!inUseUsages.isEmpty()) {
-            throw new SharedAccountUsageStateException("해당 시간대에 이미 이용 중인 공유 계정이 있습니다. 다른 시간대를 선택해주세요.");
-        }
-    }
-
     public PagedResponseDto<SharedAccountUsageResponseDto> getSharedAccountUsages(Pageable pageable) {
         Page<SharedAccountUsage> sharedAccountUsages = sharedAccountUsageRepository.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(sharedAccountUsages.map(SharedAccountUsageResponseDto::of));
@@ -167,6 +152,29 @@ public class SharedAccountUsageService {
     public SharedAccountUsage getSharedAccountUsageByIdOrThrow(Long usageId) {
         return sharedAccountUsageRepository.findById(usageId)
                 .orElseThrow(() -> new NotFoundException("공유 계정 이용 내역을 찾을 수 없습니다."));
+    }
+
+    private void validateSharedAccountUsage(Long sharedAccountId, LocalDateTime startTime, LocalDateTime endTime) throws SharedAccountUsageStateException {
+        validateReservedUsages(sharedAccountId, startTime, endTime);
+        validateInUseUsages(sharedAccountId, startTime, endTime);
+    }
+
+    private void validateInUseUsages(Long sharedAccountId, LocalDateTime startTime, LocalDateTime endTime) {
+        List<SharedAccountUsage> inUseUsages = sharedAccountUsageRepository
+                .findBySharedAccountIdAndStatusAndStartTimeBeforeAndEndTimeAfter(
+                        sharedAccountId, SharedAccountUsageStatus.IN_USE, endTime, startTime);
+        if (!inUseUsages.isEmpty()) {
+            throw new SharedAccountUsageStateException("해당 시간대에 이미 이용 중인 공유 계정이 있습니다. 다른 시간대를 선택해주세요.");
+        }
+    }
+
+    private void validateReservedUsages(Long sharedAccountId, LocalDateTime startTime, LocalDateTime endTime) {
+        List<SharedAccountUsage> reservedUsages = sharedAccountUsageRepository
+                .findBySharedAccountIdAndStatusAndStartTimeBeforeAndEndTimeAfter(
+                        sharedAccountId, SharedAccountUsageStatus.RESERVED, endTime, startTime);
+        if (!reservedUsages.isEmpty()) {
+            throw new SharedAccountUsageStateException("해당 시간대와 겹치는 예약 내역이 있습니다. 다른 시간대를 선택해주세요.");
+        }
     }
 
 }
