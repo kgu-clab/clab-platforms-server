@@ -41,19 +41,16 @@ public class CommentService {
 
     @Transactional
     public Long createComment(Long parentId, Long boardId, CommentRequestDto commentRequestDto) {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Board board = boardService.getBoardByIdOrThrow(boardId);
-        Comment comment = Comment.of(commentRequestDto, board, member);
-        if (parentId != null) {
-            Comment parentComment = getCommentByIdOrThrow(parentId);
-            comment.setParent(parentComment);
-            parentComment.getChildren().add(comment);
-            commentRepository.save(parentComment);
+        Comment parent = parentId != null ? getCommentByIdOrThrow(parentId) : null;
+        Comment comment = Comment.of(commentRequestDto, board, currentMember, parent);
+        if (parent != null) {
+            parent.addChildComment(comment);
         }
-        String writer = commentRequestDto.isWantAnonymous() ? comment.getNickname() : member.getName();
         notificationService.sendNotificationToMember(
                 board.getMember(),
-                "[" + board.getTitle() + "] " + writer + "님이 게시글에 댓글을 남겼습니다."
+                "[" + board.getTitle() + "] " + comment.getWriter() + "님이 게시글에 댓글을 남겼습니다."
         );
         return commentRepository.save(comment).getId();
     }
