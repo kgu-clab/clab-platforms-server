@@ -15,6 +15,7 @@ import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Getter
@@ -53,6 +54,21 @@ public class BookLoanRecord {
                 .dueDate(LocalDateTime.now().plusWeeks(1))
                 .loanExtensionCount(0L)
                 .build();
+    }
+
+    public void markAsReturned() {
+        if (this.returnedAt != null) {
+            throw new IllegalStateException("이미 반납된 도서입니다.");
+        }
+        this.returnedAt = LocalDateTime.now();
+        if (isOverdue(returnedAt)) {
+            long overdueDays = ChronoUnit.DAYS.between(this.dueDate, this.returnedAt);
+            this.borrower.handleOverdueAndSuspension(overdueDays);
+        }
+    }
+
+    private boolean isOverdue(LocalDateTime returnedAt) {
+        return returnedAt.isAfter(this.dueDate);
     }
 
 }
