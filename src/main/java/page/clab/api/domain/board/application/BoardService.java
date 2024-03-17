@@ -66,10 +66,9 @@ public class BoardService {
     public BoardDetailsResponseDto getBoardDetails(Long boardId) {
         Member member = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
-        BoardDetailsResponseDto boardDetailsResponseDto = BoardDetailsResponseDto.of(board);
-        boardDetailsResponseDto.setHasLikeByMe(boardLikeRepository.existsByBoardIdAndMemberId(board.getId(), member.getId()));
-        boardDetailsResponseDto.setOwner(board.getMember().getId().equals(member.getId()));
-        return boardDetailsResponseDto;
+        boolean hasLikeByMe = checkLikeStatus(board, member);
+        boolean isOwner = board.isOwner(member);
+        return BoardDetailsResponseDto.create(board, hasLikeByMe, isOwner);
     }
 
     public PagedResponseDto<BoardCategoryResponseDto> getMyBoards(Pageable pageable) {
@@ -143,6 +142,10 @@ public class BoardService {
         return fileUrls.stream()
                 .map(fileService::getUploadedFileByUrl)
                 .collect(Collectors.toList());
+    }
+
+    private boolean checkLikeStatus(Board board, Member member) {
+        return boardLikeRepository.existsByBoardIdAndMemberId(board.getId(), member.getId());
     }
 
 }
