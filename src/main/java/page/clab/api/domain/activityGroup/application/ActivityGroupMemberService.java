@@ -37,12 +37,9 @@ import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.email.application.EmailService;
-import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.exception.NotFoundException;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -50,8 +47,6 @@ import java.util.Objects;
 public class ActivityGroupMemberService {
 
     private final MemberService memberService;
-
-    private final EmailService emailService;
 
     private final NotificationService notificationService;
 
@@ -76,14 +71,13 @@ public class ActivityGroupMemberService {
         List<GroupMember> groupMembers = getGroupMemberByActivityGroupId(activityGroupId);
 
         List<GroupMember> acceptedGroupMembers = groupMembers.stream()
-                .filter(groupMember -> groupMember.getStatus().equals(GroupMemberStatus.ACCEPTED))
+                .filter(GroupMember::isAccepted)
                 .toList();
 
         GroupMember leader = groupMembers.stream()
-                .filter(groupMember -> groupMember.getRole().equals(ActivityGroupRole.LEADER))
+                .filter(GroupMember::isLeader)
                 .findFirst()
                 .orElse(null);
-        boolean isOwner = Objects.nonNull(leader) && leader.getMember().getId().equals(member.getId());
 
         List<ActivityGroupBoard> activityGroupBoards = activityGroupBoardRepository.findAllByActivityGroupIdOrderByCreatedAtDesc(activityGroupId);
         List<ActivityGroupBoardCategory> categories = List.of(ActivityGroupBoardCategory.NOTICE, ActivityGroupBoardCategory.WEEKLY_ACTIVITY, ActivityGroupBoardCategory.ASSIGNMENT);
@@ -92,10 +86,10 @@ public class ActivityGroupMemberService {
                 .map(ActivityGroupBoardResponseDto::of)
                 .toList();
 
-        if (activityGroup.getCategory().equals(ActivityGroupCategory.STUDY)) {
-            return ActivityGroupStudyResponseDto.of(activityGroup, GroupMemberResponseDto.of(acceptedGroupMembers), noticeAndWeeklyActivityBoards, isOwner);
-        } else if (activityGroup.getCategory().equals(ActivityGroupCategory.PROJECT)) {
-            return ActivityGroupProjectResponseDto.of(activityGroup, GroupMemberResponseDto.of(acceptedGroupMembers), noticeAndWeeklyActivityBoards, isOwner);
+        if (activityGroup.isStudy()) {
+            return ActivityGroupStudyResponseDto.of(activityGroup, GroupMemberResponseDto.of(acceptedGroupMembers), noticeAndWeeklyActivityBoards, leader.isOwner(member));
+        } else if (activityGroup.isProject()) {
+            return ActivityGroupProjectResponseDto.of(activityGroup, GroupMemberResponseDto.of(acceptedGroupMembers), noticeAndWeeklyActivityBoards, leader.isOwner(member));
         } else {
             throw new InvalidCategoryException("해당 카테고리가 존재하지 않습니다.");
         }
@@ -106,10 +100,10 @@ public class ActivityGroupMemberService {
         List<ActivityGroupStatusResponseDto> activityGroupStatusResponseDtos = activityGroupList.stream()
                 .map(activityGroup -> {
                     Long participantCount = getGroupMemberByActivityGroupId(activityGroup.getId()).stream()
-                            .filter(groupMember -> groupMember.getStatus().equals(GroupMemberStatus.ACCEPTED))
+                            .filter(GroupMember::isAccepted)
                             .count();
-                    GroupMember groupleader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
-                    Member leader = groupleader != null ? groupleader.getMember() : null;
+                    GroupMember groupLeader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
+                    Member leader = groupLeader != null ? groupLeader.getMember() : null;
                     Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroup.getId(), ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
                     return ActivityGroupStatusResponseDto.of(activityGroup, leader, participantCount, weeklyActivityCount);
                 })
@@ -136,25 +130,20 @@ public class ActivityGroupMemberService {
     public Long applyActivityGroup(Long activityGroupId, ApplyFormRequestDto formRequestDto) throws MessagingException {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroup.getStatus().equals(ActivityGroupStatus.PROGRESSING)) {
+        if (!activityGroup.isProgressing()) {
             throw new ActivityGroupNotProgressingException("해당 활동은 진행중인 활동이 아닙니다.");
         }
         if (isGroupMember(activityGroup, member)) {
             throw new AlreadyAppliedException("해당 활동에 신청한 내역이 존재합니다.");
         }
 
-        ApplyForm form = ApplyForm.of(formRequestDto);
-        form.setActivityGroup(activityGroup);
-        form.setMember(member);
+        ApplyForm form = ApplyForm.create(formRequestDto, activityGroup, member);
         applyFormRepository.save(form);
 
         GroupMember groupMember = GroupMember.create(member, activityGroup, ActivityGroupRole.MEMBER, GroupMemberStatus.WAITING);
         groupMemberRepository.save(groupMember);
 
         GroupMember groupLeader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
-        String subject = "[" + activityGroup.getName() + "] 활동 참가 신청이 들어왔습니다.";
-        String content = member.getName() + "에게서 활동 참가 신청이 들어왔습니다.";
-        emailService.sendEmailAsync(groupLeader.getMember().getEmail(), subject, content, null, EmailTemplateType.NORMAL);
         if (groupLeader != null) {
             notificationService.sendNotificationToMember(
                     groupLeader.getMember(),
@@ -196,11 +185,6 @@ public class ActivityGroupMemberService {
 
     public Page<GroupMember> getGroupMemberByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status, Pageable pageable) {
         return groupMemberRepository.findAllByActivityGroupIdAndStatusOrderByMember_IdAsc(activityGroupId, status, pageable);
-    }
-
-    public GroupMember getGroupMemberByMemberOrThrow(Member member) {
-        return groupMemberRepository.findByMember(member)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 멤버입니다."));
     }
 
     public GroupMember getGroupMemberByActivityGroupIdAndRole(Long activityGroupId, ActivityGroupRole role) {

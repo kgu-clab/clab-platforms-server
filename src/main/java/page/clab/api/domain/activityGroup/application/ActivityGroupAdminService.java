@@ -179,11 +179,6 @@ public class ActivityGroupAdminService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 활동입니다."));
     }
 
-    public boolean isActivityGroupProgressing(Long activityGroupId){
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        return activityGroup.isProgressing();
-    }
-
     public boolean isMemberGroupLeaderRole(ActivityGroup activityGroup, Member member) {
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
         return groupMember.isLeader() && member.isAdminRole();
