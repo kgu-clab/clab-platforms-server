@@ -41,7 +41,7 @@ public class ActivityGroupStatusResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static ActivityGroupStatusResponseDto of(ActivityGroup activityGroup, Member leader, Long participantCount, Long weeklyActivityCount) {
+    public static ActivityGroupStatusResponseDto create(ActivityGroup activityGroup, Member leader, Long participantCount, Long weeklyActivityCount) {
         ActivityGroupStatusResponseDto activityGroupResponseDto = ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupStatusResponseDto.class);
         if (leader != null) {
             activityGroupResponseDto.setLeaderId(leader.getId());

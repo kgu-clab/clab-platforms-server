@@ -42,4 +42,5 @@ public class ActivityGroupDetailsRepositoryImpl implements ActivityGroupDetailsR
 
         return new ActivityGroupDetails(foundActivityGroup, groupMembers, boards);
     }
+
 }
