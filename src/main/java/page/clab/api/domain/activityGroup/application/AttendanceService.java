@@ -54,9 +54,11 @@ public class AttendanceService {
 
     private final AbsentRepository absentRepository;
 
-    private static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final GoogleAuthenticator googleAuthenticator;
 
-    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public String generateAttendanceQRCode(Long activityGroupId) throws IOException, WriterException, PermissionDeniedException, IllegalAccessException {
         Member member = memberService.getCurrentMember();
@@ -73,8 +75,7 @@ public class AttendanceService {
 
         String nowDateTime = getCurrentTimestamp();
 
-        GoogleAuthenticator gAuth = new GoogleAuthenticator();
-        GoogleAuthenticatorKey key = gAuth.createCredentials();
+        GoogleAuthenticatorKey key = googleAuthenticator.createCredentials();
         String secretKey = key.getKey();
         RedisQRKey redisQRKey = RedisQRKey.builder().QRCodeKey(secretKey).build();
         redisQRKeyRepository.save(redisQRKey);
@@ -87,7 +88,7 @@ public class AttendanceService {
                 .activityDate(LocalDate.parse(nowDateTime.split(" ")[0], dateFormatter))
                 .build();
 
-        save(attendance);
+        attendanceRepository.save(attendance);
 
         byte[] QRCodeImage = QRCodeUtil.encodeQRCode(url);
 
@@ -128,7 +129,7 @@ public class AttendanceService {
                 .activityDate(enterTime.toLocalDate())
                 .build();
 
-        Member attendancedMember = save(attendance).getMember();
+        Member attendancedMember = attendanceRepository.save(attendance).getMember();
 
         return attendancedMember.getId() + " " + attendancedMember.getName() + " "  + "출석체크 성공";
     }
@@ -210,7 +211,7 @@ public class AttendanceService {
                 .reason(reason)
                 .build();
 
-        return save(absent).getId();
+        return absentRepository.save(absent).getId();
     }
 
     public PagedResponseDto<AbsentResponseDto> getActivityGroupAbsentExcuses(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
@@ -227,7 +228,7 @@ public class AttendanceService {
         return new PagedResponseDto<>(absents.map(AbsentResponseDto::of));
     }
 
-    private static String getCurrentTimestamp() {
+    private String getCurrentTimestamp() {
         LocalDateTime now = LocalDateTime.now();
         return now.format(dateTimeFormatter);
     }
@@ -240,16 +241,9 @@ public class AttendanceService {
         return attendanceRepository.findAllByActivityGroupOrderByActivityDateAscMemberAsc(activityGroup, pageable);
     }
 
-    public Attendance save(Attendance attendance){
-        return attendanceRepository.save(attendance);
-    }
-
     public boolean hasAttendanceHistory(ActivityGroup activityGroup, Member member, LocalDate activityDate){
         Attendance attendanceHistory = attendanceRepository.findByActivityGroupAndMemberAndActivityDate(activityGroup, member, activityDate);
-
-        if(attendanceHistory == null)
-            return false;
-        return true;
+        return attendanceHistory != null;
     }
 
     public boolean isActivityExistedAt(ActivityGroup activityGroup, LocalDate date){
@@ -258,14 +252,7 @@ public class AttendanceService {
 
     public boolean hasAbsentExcuseHistory(ActivityGroup activityGroup, Member absentee, LocalDate absentDate){
         Absent absentHistory = absentRepository.findByActivityGroupAndAbsenteeAndAbsentDate(activityGroup, absentee, absentDate);
-
-        if(absentHistory == null)
-            return false;
-        return true;
-    }
-
-    public Absent save(Absent absent){
-        return absentRepository.save(absent);
+        return absentHistory != null;
     }
 
 }
