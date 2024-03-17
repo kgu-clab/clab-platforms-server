@@ -154,7 +154,7 @@ public class LoginService {
 
     private void validateToken(RedisToken redisToken) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        if (!redisToken.getIp().equals(clientIpAddress)) {
+        if (!redisToken.isSameIp(clientIpAddress)) {
             redisTokenService.deleteRedisTokenByAccessToken(redisToken.getAccessToken());
             throw new TokenMisuseException("[" + clientIpAddress + "] 토큰 발급 IP와 다른 IP에서 발급을 시도하여 토큰을 삭제하였습니다.");
         }
