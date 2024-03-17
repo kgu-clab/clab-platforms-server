@@ -1,7 +1,5 @@
 package page.clab.api.domain.activityPhoto.application;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +12,9 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,13 +36,8 @@ public class ActivityPhotoService {
         return activityPhotoRepository.save(activityPhoto).getId();
     }
 
-    public PagedResponseDto<ActivityPhotoResponseDto> getActivityPhotos(Pageable pageable) {
-        Page<ActivityPhoto> activityPhotos = activityPhotoRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(activityPhotos.map(ActivityPhotoResponseDto::of));
-    }
-
-    public PagedResponseDto<ActivityPhotoResponseDto> getPublicActivityPhotos(Pageable pageable) {
-        Page<ActivityPhoto> activityPhotos = getActivityPhotoByIsPublicTrue(pageable);
+    public PagedResponseDto<ActivityPhotoResponseDto> getActivityPhotosByConditions(Boolean isPublic, Pageable pageable) {
+        Page<ActivityPhoto> activityPhotos = activityPhotoRepository.findByConditions(isPublic, pageable);
         return new PagedResponseDto<>(activityPhotos.map(ActivityPhotoResponseDto::of));
     }
 
@@ -60,14 +56,6 @@ public class ActivityPhotoService {
     public ActivityPhoto getActivityPhotoByIdOrThrow(Long activityPhotoId) {
         return activityPhotoRepository.findById(activityPhotoId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 활동 사진입니다."));
-    }
-
-    public boolean isActivityPhotoExist(Long activityPhotoId) {
-        return activityPhotoRepository.existsById(activityPhotoId);
-    }
-
-    private Page<ActivityPhoto> getActivityPhotoByIsPublicTrue(Pageable pageable) {
-        return activityPhotoRepository.findAllByIsPublicTrueOrderByCreatedAtDesc(pageable);
     }
 
 }

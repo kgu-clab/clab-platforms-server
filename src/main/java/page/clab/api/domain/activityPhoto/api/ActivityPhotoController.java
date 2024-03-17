@@ -50,27 +50,16 @@ public class ActivityPhotoController {
         return responseModel;
     }
 
-    @Operation(summary = "활동 사진 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Operation(summary = "활동 사진 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br> " +
+            "공개 여부를 입력하지 않으면 전체 조회됨")
     @GetMapping("")
-    public ResponseModel getActivityPhotos(
+    public ResponseModel getActivityPhotosByConditions(
+            @RequestParam(name = "isPublic", required = false) Boolean isPublic,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ActivityPhotoResponseDto> activityPhotos = activityPhotoService.getActivityPhotos(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(activityPhotos);
-        return responseModel;
-    }
-
-    @Operation(summary = "공개된 활동 사진 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @GetMapping("/public")
-    public ResponseModel getPublicActivityPhotos(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ActivityPhotoResponseDto> activityPhotos = activityPhotoService.getPublicActivityPhotos(pageable);
+        PagedResponseDto<ActivityPhotoResponseDto> activityPhotos = activityPhotoService.getActivityPhotosByConditions(isPublic, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityPhotos);
         return responseModel;
