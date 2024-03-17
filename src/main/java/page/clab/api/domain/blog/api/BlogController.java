@@ -53,15 +53,19 @@ public class BlogController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 블로그 포스트 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 블로그 포스트 조회(제목, 작성자명 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "2개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
+            "제목, 작성자명 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getBlogs(
+    public ResponseModel getBlogsByConditions(
+            @RequestParam(name = "title", required = false) String title,
+            @RequestParam(name = "memberName", required = false) String memberName,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BlogResponseDto> blogs = blogService.getBlogs(pageable);
+        PagedResponseDto<BlogResponseDto> blogs = blogService.getBlogsByConditions(title, memberName, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(blogs);
         return responseModel;
@@ -76,22 +80,6 @@ public class BlogController {
         BlogDetailsResponseDto blog = blogService.getBlogDetails(blogId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(blog);
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 블로그 포스트 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "검색어에는 제목, 부제목, 내용, 작성자명가 포함됨")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/search")
-    public ResponseModel searchBlog(
-            @RequestParam(name = "keyword") String keyword,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BlogResponseDto> blogs = blogService.searchBlog(keyword, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(blogs);
         return responseModel;
     }
 
