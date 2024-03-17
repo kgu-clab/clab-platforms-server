@@ -25,6 +25,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.RandomNicknameUtil;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -102,24 +103,19 @@ public class BoardService {
         return boardRepository.save(board).getId();
     }
 
-    public Long updateLikes(Long boardId) {
-        Member member = memberService.getCurrentMember();
+    @Transactional
+    public Long toggleLikeStatus(Long boardId) {
+        Member currentMember = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
-        BoardLike boardLike = boardLikeRepository.findByBoardIdAndMemberId(board.getId(), member.getId());
-
-        if (boardLike != null) {
-            board.setLikes(Math.min(board.getLikes() - 1, 0));
-            boardLikeRepository.delete(boardLike);
+        Optional<BoardLike> boardLikeOpt = boardLikeRepository.findByBoardIdAndMemberId(board.getId(), currentMember.getId());
+        if (boardLikeOpt.isPresent()) {
+            board.decrementLikes();
+            boardLikeRepository.delete(boardLikeOpt.get());
+        } else {
+            board.incrementLikes();
+            BoardLike newBoardLike = new BoardLike(currentMember.getId(), board.getId());
+            boardLikeRepository.save(newBoardLike);
         }
-        else {
-            board.setLikes(board.getLikes() + 1);
-            BoardLike newBoardLike = BoardLike.builder()
-                    .memberId(member.getId())
-                    .boardId(board.getId())
-                    .build();
-           boardLikeRepository.save(newBoardLike);
-        }
-
         return board.getLikes();
     }
 

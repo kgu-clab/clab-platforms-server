@@ -144,7 +144,7 @@ public class BoardController {
     public ResponseModel updateLikes(
             @PathVariable(name = "boardId") Long boardId
     ) {
-        Long id = boardService.updateLikes(boardId);
+        Long id = boardService.toggleLikeStatus(boardId);
         ResponseModel responseModel= ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
