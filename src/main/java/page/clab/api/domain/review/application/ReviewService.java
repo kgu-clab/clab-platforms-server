@@ -58,7 +58,7 @@ public class ReviewService {
 
     public PagedResponseDto<ReviewResponseDto> getReviewsByConditions(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        Page<Review> reviews = reviewRepository.findReviewsByConditions(memberId, memberName, activityId, isPublic, pageable);
+        Page<Review> reviews = reviewRepository.findByConditions(memberId, memberName, activityId, isPublic, pageable);
         return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, member.getId())));
     }
 
