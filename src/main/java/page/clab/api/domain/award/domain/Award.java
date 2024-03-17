@@ -52,8 +52,10 @@ public class Award {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public static Award of(AwardRequestDto awardRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(awardRequestDto, Award.class);
+    public static Award create(AwardRequestDto awardRequestDto, Member member) {
+        Award award = ModelMapperUtil.getModelMapper().map(awardRequestDto, Award.class);
+        award.setMember(member);
+        return award;
     }
 
     public void update(AwardUpdateRequestDto awardUpdateRequestDto) {
