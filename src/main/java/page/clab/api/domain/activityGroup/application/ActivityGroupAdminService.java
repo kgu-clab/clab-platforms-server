@@ -52,19 +52,15 @@ public class ActivityGroupAdminService {
     @Transactional
     public Long createActivityGroup(ActivityGroupRequestDto activityGroupRequestDto) {
         Member member = memberService.getCurrentMember();
-        ActivityGroup activityGroup = ActivityGroup.of(activityGroupRequestDto);
-        activityGroup.setStatus(ActivityGroupStatus.WAITING);
-        activityGroup.setProgress(0L);
-        Long id = activityGroupRepository.save(activityGroup).getId();
-        GroupMember groupLeader = GroupMember.of(member, activityGroup);
-        groupLeader.setRole(ActivityGroupRole.LEADER);
-        groupLeader.setStatus(GroupMemberStatus.ACCEPTED);
+        ActivityGroup activityGroup = ActivityGroup.create(activityGroupRequestDto);
+        activityGroupRepository.save(activityGroup);
+        GroupMember groupLeader = GroupMember.create(member, activityGroup, ActivityGroupRole.LEADER, GroupMemberStatus.ACCEPTED);
         activityGroupMemberService.save(groupLeader);
         notificationService.sendNotificationToMember(
                 member,
                 "활동 그룹 생성이 완료되었습니다. 활동 승인이 완료되면 활동 그룹을 이용할 수 있습니다."
         );
-        return id;
+        return activityGroup.getId();
     }
 
     public Long updateActivityGroup(Long activityGroupId, ActivityGroupUpdateRequestDto activityGroupUpdateRequestDto) throws PermissionDeniedException {
