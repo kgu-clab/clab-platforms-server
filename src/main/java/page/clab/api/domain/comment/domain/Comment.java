@@ -77,12 +77,13 @@ public class Comment {
 
     private Long Likes;
 
-    public static Comment of(CommentRequestDto commentRequestDto, Board board, Member member) {
+    public static Comment of(CommentRequestDto commentRequestDto, Board board, Member member, Comment parent) {
         Comment comment = ModelMapperUtil.getModelMapper().map(commentRequestDto, Comment.class);
         comment.setBoard(board);
         comment.setWriter(member);
         comment.setNickname(RandomNicknameUtil.makeRandomNickname());
         comment.setLikes(0L);
+        comment.parent = parent;
         return comment;
     }
 
@@ -90,6 +91,11 @@ public class Comment {
         Optional.ofNullable(commentUpdateRequestDto.getContent()).ifPresent(this::setContent);
         Optional.of(commentUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
         this.setUpdateTime(LocalDateTime.now());
+    }
+
+    public void addChildComment(Comment child) {
+        this.children.add(child);
+        child.setParent(this);
     }
 
 }
