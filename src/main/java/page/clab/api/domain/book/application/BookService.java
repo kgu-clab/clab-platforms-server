@@ -30,9 +30,9 @@ public class BookService {
         return bookRepository.save(book).getId();
     }
 
-    public PagedResponseDto<BookResponseDto> getBooks(Pageable pageable) {
-        List<Book> books = bookRepository.findAllByOrderByCreatedAtDesc();
-        return getBookResponseDtoPagedResponseDto(pageable, books);
+    public PagedResponseDto<BookResponseDto> getBooksByConditions(String title, String category, String publisher, String borrowerId, String borrowerName, Pageable pageable) {
+        List<Book> books = bookRepository.findByConditions(title, category, publisher, borrowerId, borrowerName);
+        return getBookResponseDtoPagedResponseDto(books, pageable);
     }
 
     public BookResponseDto getBookDetails(Long bookId) {
@@ -42,13 +42,8 @@ public class BookService {
         return BookResponseDto.of(book, dueDate);
     }
 
-    public PagedResponseDto<BookResponseDto> searchBook(String keyword, Pageable pageable) {
-        List<Book> books = bookRepository.searchBook(keyword);
-        return getBookResponseDtoPagedResponseDto(pageable, books);
-    }
-
     @NotNull
-    private PagedResponseDto<BookResponseDto> getBookResponseDtoPagedResponseDto(Pageable pageable, List<Book> books) {
+    private PagedResponseDto<BookResponseDto> getBookResponseDtoPagedResponseDto(List<Book> books, Pageable pageable) {
         List<BookResponseDto> bookResponseDtos = books.stream()
                 .map(book -> {
                     BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNull(book);
