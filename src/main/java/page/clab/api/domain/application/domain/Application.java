@@ -99,4 +99,9 @@ public class Application {
         return ModelMapperUtil.getModelMapper().map(applicationRequestDto, Application.class);
     }
 
+    public void toggleApprovalStatus() {
+        this.isPass = !this.isPass;
+        this.setUpdateTime(LocalDateTime.now());
+    }
+
 }
