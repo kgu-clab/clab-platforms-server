@@ -1,7 +1,6 @@
 package page.clab.api.domain.login.application;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,14 +23,7 @@ public class LoginAttemptLogService {
     public void createLoginAttemptLog(HttpServletRequest httpServletRequest, String memberId, LoginAttemptResult loginAttemptResult) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         GeoIpInfo geoIpInfo = GeoIpUtil.getInfoByIp(clientIpAddress);
-        LoginAttemptLog loginAttemptLog = LoginAttemptLog.builder()
-                .memberId(memberId)
-                .userAgent(httpServletRequest.getHeader("User-Agent"))
-                .ipAddress(clientIpAddress)
-                .location(geoIpInfo.getLocation())
-                .loginAttemptResult(loginAttemptResult)
-                .loginAttemptTime(LocalDateTime.now())
-                .build();
+        LoginAttemptLog loginAttemptLog = LoginAttemptLog.create(memberId, httpServletRequest, clientIpAddress, geoIpInfo, loginAttemptResult);
         loginAttemptLogRepository.save(loginAttemptLog);
     }
 

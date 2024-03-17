@@ -6,12 +6,14 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import java.time.LocalDateTime;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -37,5 +39,16 @@ public class LoginAttemptLog {
     private LoginAttemptResult loginAttemptResult;
 
     private LocalDateTime loginAttemptTime;
+
+    public static LoginAttemptLog create(String memberId, HttpServletRequest httpServletRequest, String ipAddress, GeoIpInfo geoIpInfo, LoginAttemptResult loginAttemptResult) {
+        return LoginAttemptLog.builder()
+                .memberId(memberId)
+                .userAgent(httpServletRequest.getHeader("User-Agent"))
+                .ipAddress(ipAddress)
+                .location(geoIpInfo.getLocation())
+                .loginAttemptResult(loginAttemptResult)
+                .loginAttemptTime(LocalDateTime.now())
+                .build();
+    }
 
 }
