@@ -75,11 +75,11 @@ public class ApplicationController {
             "승인/취소 상태가 반전됨")
     @Secured({"ROLE_SUPER"})
     @PatchMapping("/{recruitmentId}/{studentId}")
-    public ResponseModel approveApplication(
+    public ResponseModel toggleApprovalStatus(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "studentId") String studentId
             ) {
-        String id = applicationService.approveApplication(recruitmentId, studentId);
+        String id = applicationService.toggleApprovalStatus(recruitmentId, studentId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

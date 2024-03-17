@@ -141,7 +141,7 @@ public class BoardController {
     @PostMapping("/likes/{boardId}")
     @Operation(summary = "[U] 커뮤니티 게시글 좋아요 누르기/취소하기", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel updateLikes(
+    public ResponseModel toggleLikeStatus(
             @PathVariable(name = "boardId") Long boardId
     ) {
         Long id = boardService.toggleLikeStatus(boardId);
