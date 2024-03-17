@@ -45,7 +45,7 @@ public class ScheduleService {
         Member member = memberService.getCurrentMember();
         validateScheduleCreationPermission(scheduleRequestDto, member);
         ActivityGroup activityGroup = resolveActivityGroupForSchedule(scheduleRequestDto, member);
-        Schedule schedule = Schedule.of(scheduleRequestDto, member, activityGroup);
+        Schedule schedule = Schedule.create(scheduleRequestDto, member, activityGroup);
         return scheduleRepository.save(schedule).getId();
     }
 
@@ -126,7 +126,7 @@ public class ScheduleService {
         return scheduleRepository.findAllByStartDateTimeBetween(startDateTime, endDateTime);
     }
 
-    public Schedule getScheduleById(Long scheduleId){
+    public Schedule getScheduleById(Long scheduleId) {
         return scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new NotFoundException("일정이 존재하지 않습니다."));
     }
