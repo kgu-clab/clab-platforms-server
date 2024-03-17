@@ -44,4 +44,8 @@ public class RedisToken {
                 .build();
     }
 
+    public boolean isSameIp(String ip) {
+        return this.ip.equals(ip);
+    }
+
 }
