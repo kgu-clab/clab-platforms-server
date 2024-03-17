@@ -75,8 +75,11 @@ public class ActivityGroup {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static ActivityGroup of(ActivityGroupRequestDto activityGroupRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(activityGroupRequestDto, ActivityGroup.class);
+    public static ActivityGroup create(ActivityGroupRequestDto activityGroupRequestDto) {
+        ActivityGroup activityGroup = ModelMapperUtil.getModelMapper().map(activityGroupRequestDto, ActivityGroup.class);
+        activityGroup.setStatus(ActivityGroupStatus.WAITING);
+        activityGroup.setProgress(0L);
+        return activityGroup;
     }
 
     public void update(ActivityGroupUpdateRequestDto dto) {

@@ -43,14 +43,16 @@ public class GroupMember {
     @Enumerated(EnumType.STRING)
     private GroupMemberStatus status;
 
-    public static GroupMember of(GroupMemberResponseDto groupMemberResponseDto) {
+    public static GroupMember create(GroupMemberResponseDto groupMemberResponseDto) {
         return ModelMapperUtil.getModelMapper().map(groupMemberResponseDto, GroupMember.class);
     }
 
-    public static GroupMember of(Member member, ActivityGroup activityGroup) {
+    public static GroupMember create(Member member, ActivityGroup activityGroup, ActivityGroupRole role, GroupMemberStatus status) {
         return GroupMember.builder()
                 .member(member)
                 .activityGroup(activityGroup)
+                .role(role)
+                .status(status)
                 .build();
     }
 

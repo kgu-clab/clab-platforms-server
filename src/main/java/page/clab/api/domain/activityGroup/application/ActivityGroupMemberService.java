@@ -148,9 +148,7 @@ public class ActivityGroupMemberService {
         form.setMember(member);
         applyFormRepository.save(form);
 
-        GroupMember groupMember = GroupMember.of(member, activityGroup);
-        groupMember.setRole(ActivityGroupRole.MEMBER);
-        groupMember.setStatus(GroupMemberStatus.WAITING);
+        GroupMember groupMember = GroupMember.create(member, activityGroup, ActivityGroupRole.MEMBER, GroupMemberStatus.WAITING);
         groupMemberRepository.save(groupMember);
 
         GroupMember groupLeader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
