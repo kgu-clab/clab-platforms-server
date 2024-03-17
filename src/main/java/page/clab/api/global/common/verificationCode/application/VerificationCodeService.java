@@ -1,6 +1,7 @@
 package page.clab.api.global.common.verificationCode.application;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.verificationCode.dao.VerificationCodeRepository;
@@ -8,6 +9,8 @@ import page.clab.api.global.common.verificationCode.domain.VerificationCode;
 import page.clab.api.global.common.verificationCode.dto.request.VerificationCodeRequestDto;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
+
+import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +42,13 @@ public class VerificationCodeService {
             throw new InvalidInformationException("올바르지 않은 인증 요청입니다.");
         }
         return verificationCode;
+    }
+
+    public String generateVerificationCode() {
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] codeBytes = new byte[9];
+        secureRandom.nextBytes(codeBytes);
+        return Base64.encodeBase64URLSafeString(codeBytes);
     }
 
 }

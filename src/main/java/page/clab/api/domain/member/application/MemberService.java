@@ -3,7 +3,6 @@ package page.clab.api.domain.member.application;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -36,7 +35,6 @@ import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
-import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -116,7 +114,7 @@ public class MemberService {
     @Transactional
     public void requestResetMemberPassword(MemberResetPasswordRequestDto memberResetPasswordRequestDto) {
         Member member = validateResetPasswordRequest(memberResetPasswordRequestDto);
-        String code = generateVerificationCode();
+        String code = verificationCodeService.generateVerificationCode();
         verificationCodeService.saveVerificationCode(member.getId(), code);
         emailService.sendPasswordResetEmail(member, code);
     }
@@ -176,13 +174,6 @@ public class MemberService {
         }
     }
 
-    public String generateVerificationCode() {
-        SecureRandom secureRandom = new SecureRandom();
-        byte[] codeBytes = new byte[9];
-        secureRandom.nextBytes(codeBytes);
-        return Base64.encodeBase64URLSafeString(codeBytes);
-    }
-
     private String createMemberFromApplication(Application application) {
         if (!application.getIsPass()) {
             throw new NotApprovedApplicationException("승인되지 않은 지원서입니다.");
@@ -204,7 +195,7 @@ public class MemberService {
     }
 
     private void setRandomPasswordAndSendEmail(Member member) {
-        String password = generateVerificationCode();
+        String password = verificationCodeService.generateVerificationCode();
         member.updatePassword(password, passwordEncoder);
         CompletableFuture.runAsync(() -> {
             try {
