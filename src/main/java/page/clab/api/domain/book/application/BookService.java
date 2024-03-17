@@ -37,21 +37,7 @@ public class BookService {
 
     public BookResponseDto getBookDetails(Long bookId) {
         Book book = getBookByIdOrThrow(bookId);
-        BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNull(book);
-        LocalDateTime dueDate = bookLoanRecord != null ? bookLoanRecord.getDueDate() : null;
-        return BookResponseDto.of(book, dueDate);
-    }
-
-    @NotNull
-    private PagedResponseDto<BookResponseDto> getBookResponseDtoPagedResponseDto(List<Book> books, Pageable pageable) {
-        List<BookResponseDto> bookResponseDtos = books.stream()
-                .map(book -> {
-                    BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNull(book);
-                    LocalDateTime dueDate = bookLoanRecord != null ? bookLoanRecord.getDueDate() : null;
-                    return BookResponseDto.of(book, dueDate);
-                })
-                .toList();
-        return new PagedResponseDto<>(bookResponseDtos, pageable, books.size());
+        return mapToBookResponseDto(book);
     }
 
     public Long updateBookInfo(Long bookId, BookUpdateRequestDto bookUpdateRequestDto) {
@@ -74,6 +60,21 @@ public class BookService {
     public BookLoanRecord getBookLoanRecordByBookAndReturnedAtIsNull(Book book) {
         return bookLoanRecordRepository.findByBookAndReturnedAtIsNull(book)
                 .orElse(null);
+    }
+
+    @NotNull
+    private PagedResponseDto<BookResponseDto> getBookResponseDtoPagedResponseDto(List<Book> books, Pageable pageable) {
+        List<BookResponseDto> bookResponseDtos = books.stream()
+                .map(this::mapToBookResponseDto)
+                .toList();
+        return new PagedResponseDto<>(bookResponseDtos, pageable, books.size());
+    }
+
+    @NotNull
+    private BookResponseDto mapToBookResponseDto(Book book) {
+        BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNull(book);
+        LocalDateTime dueDate = bookLoanRecord != null ? bookLoanRecord.getDueDate() : null;
+        return BookResponseDto.of(book, dueDate);
     }
 
 }
