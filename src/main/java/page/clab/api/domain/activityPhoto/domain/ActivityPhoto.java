@@ -59,4 +59,8 @@ public class ActivityPhoto {
         return activityPhoto;
     }
 
+    public void togglePublicStatus() {
+        this.isPublic = !this.isPublic;
+    }
+
 }

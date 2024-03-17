@@ -71,7 +71,7 @@ public class ActivityPhotoController {
     public ResponseModel updateActivityPhoto(
             @PathVariable(name = "activityPhotoId") Long activityPhotoId
     ) {
-        Long id = activityPhotoService.updateActivityPhoto(activityPhotoId);
+        Long id = activityPhotoService.togglePublicStatus(activityPhotoId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
