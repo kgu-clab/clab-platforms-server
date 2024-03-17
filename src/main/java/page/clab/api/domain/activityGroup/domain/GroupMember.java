@@ -55,7 +55,7 @@ public class GroupMember {
     }
 
     public boolean isOwner(Member member) {
-        return member != null && this.member.isSameMember(member);
+        return this.member.isSameMember(member);
     }
 
     public boolean isSameRole(ActivityGroupRole role) {
@@ -68,6 +68,10 @@ public class GroupMember {
 
     public boolean isSameRoleAndActivityGroup(ActivityGroupRole role, ActivityGroup activityGroup) {
         return isSameRole(role) && isSameActivityGroup(activityGroup);
+    }
+
+    public boolean isOwnerAndLeader(Member member) {
+        return isOwner(member) && isLeader();
     }
 
     public boolean isAccepted() {
