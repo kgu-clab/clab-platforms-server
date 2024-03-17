@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.jobPosting.application.JobPostingService;
+import page.clab.api.domain.jobPosting.domain.CareerLevel;
+import page.clab.api.domain.jobPosting.domain.EmploymentType;
 import page.clab.api.domain.jobPosting.dto.request.JobPostingRequestDto;
 import page.clab.api.domain.jobPosting.dto.request.JobPostingUpdateRequestDto;
 import page.clab.api.domain.jobPosting.dto.response.JobPostingDetailsResponseDto;
@@ -51,15 +53,21 @@ public class JobPostingController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 채용 공고 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 채용 공고 목록 조회(공고명, 기업명, 경력, 근로 조건 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "4개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
+            "공고명, 기업명, 경력, 근로 조건 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getJobPostings(
+    public ResponseModel getJobPostingsByConditions(
+            @RequestParam(name = "title", required = false) String title,
+            @RequestParam(name = "companyName", required = false) String companyName,
+            @RequestParam(name = "careerLevel", required = false) CareerLevel careerLevel,
+            @RequestParam(name = "employmentType", required = false) EmploymentType employmentType,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<JobPostingResponseDto> jobPostings = jobPostingService.getJobPostings(pageable);
+        PagedResponseDto<JobPostingResponseDto> jobPostings = jobPostingService.getJobPostingsByConditions(title, companyName, careerLevel, employmentType, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(jobPostings);
         return responseModel;
@@ -74,22 +82,6 @@ public class JobPostingController {
         JobPostingDetailsResponseDto jobPosting = jobPostingService.getJobPosting(jobPostingId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(jobPosting);
-        return responseModel;
-    }
-
-    @Operation(summary = "[A] 채용 공고 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "공고명, 기업명을 기준으로 검색")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/search")
-    public ResponseModel searchJobPostings(
-            @RequestParam(name = "keyword") String keyword,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<JobPostingResponseDto> jobPostings = jobPostingService.searchJobPostings(keyword, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(jobPostings);
         return responseModel;
     }
 
