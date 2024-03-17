@@ -119,7 +119,7 @@ public class CommentController {
     public ResponseModel updateLikes(
             @PathVariable(name = "commentId") Long commentId
     ) {
-        Long id = commentService.updateLikes(commentId);
+        Long id = commentService.toggleLikeStatus(commentId);
         ResponseModel responseModel= ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

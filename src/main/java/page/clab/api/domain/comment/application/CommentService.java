@@ -91,7 +91,7 @@ public class CommentService {
     }
 
     @Transactional
-    public Long updateLikes(Long commentId) {
+    public Long toggleLikeStatus(Long commentId) {
         Member currentMember = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
         Optional<CommentLike> commentLikeOpt = commentLikeRepository.findByCommentIdAndMemberId(comment.getId(), currentMember.getId());
