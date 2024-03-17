@@ -16,7 +16,6 @@ import page.clab.api.domain.sharedAccount.domain.SharedAccountUsage;
 import page.clab.api.domain.sharedAccount.domain.SharedAccountUsageStatus;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUsageRequestDto;
 import page.clab.api.domain.sharedAccount.dto.response.SharedAccountUsageResponseDto;
-import page.clab.api.domain.sharedAccount.exception.InvalidUsageTimeException;
 import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
@@ -42,35 +41,17 @@ public class SharedAccountUsageService {
         try {
             Long sharedAccountId = sharedAccountUsageRequestDto.getSharedAccountId();
             SharedAccount sharedAccount = sharedAccountService.getSharedAccountByIdOrThrow(sharedAccountId);
-            LocalDateTime currentDateTime = LocalDateTime.now();
-            LocalDateTime startTime = sharedAccountUsageRequestDto.getStartTime() != null ? sharedAccountUsageRequestDto.getStartTime() : currentDateTime;
+            LocalDateTime currentTime = LocalDateTime.now();
+            LocalDateTime startTime = sharedAccountUsageRequestDto.getStartTime() != null ? sharedAccountUsageRequestDto.getStartTime() : currentTime;
             LocalDateTime endTime = sharedAccountUsageRequestDto.getEndTime();
 
-            if (endTime.isBefore(currentDateTime)) {
-                throw new InvalidUsageTimeException("이용 종료 시간은 현재 시간 이후여야 합니다.");
-            }
-            if (endTime.isBefore(startTime)) {
-                throw new InvalidUsageTimeException("이용 종료 시간은 시작 시간 이후여야 합니다.");
-            }
-
             String memberId = memberService.getCurrentMember().getId();
-            SharedAccountUsage sharedAccountUsage = SharedAccountUsage.builder()
-                    .sharedAccount(sharedAccount)
-                    .memberId(memberId)
-                    .startTime(startTime)
-                    .endTime(endTime)
-                    .build();
+            SharedAccountUsage sharedAccountUsage = SharedAccountUsage.create(sharedAccount, memberId, startTime, endTime);
 
+            sharedAccountUsage.validateUsageTimes(currentTime);
             validateSharedAccountUsage(sharedAccountId, startTime, endTime);
+            sharedAccountUsage.determineStatus(currentTime);
 
-            if (!currentDateTime.isBefore(startTime) && currentDateTime.isBefore(endTime)) {
-                sharedAccountUsage.setStatus(SharedAccountUsageStatus.IN_USE);
-                sharedAccount.setInUse(true);
-            } else if (currentDateTime.isAfter(endTime)) {
-                sharedAccountUsage.setStatus(SharedAccountUsageStatus.COMPLETED);
-            } else if (currentDateTime.isBefore(startTime)) {
-                sharedAccountUsage.setStatus(SharedAccountUsageStatus.RESERVED);
-            }
             sharedAccountUsageRepository.save(sharedAccountUsage);
             sharedAccountService.save(sharedAccount);
             return sharedAccountUsage.getId();
