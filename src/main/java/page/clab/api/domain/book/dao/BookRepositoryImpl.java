@@ -2,20 +2,19 @@ package page.clab.api.domain.book.dao;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.QBook;
 import page.clab.api.domain.member.domain.QMember;
 
 import java.util.List;
 
+@Repository
+@RequiredArgsConstructor
 public class BookRepositoryImpl implements BookRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
-    public BookRepositoryImpl(EntityManager entityManager) {
-        this.queryFactory = new JPAQueryFactory(entityManager);
-    }
 
     @Override
     public List<Book> findByConditions(String title, String category, String publisher, String borrowerId, String borrowerName) {

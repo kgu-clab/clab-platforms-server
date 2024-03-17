@@ -2,10 +2,11 @@ package page.clab.api.domain.jobPosting.dao;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
@@ -13,13 +14,11 @@ import page.clab.api.domain.jobPosting.domain.QJobPosting;
 
 import java.util.List;
 
+@Repository
+@RequiredArgsConstructor
 public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
-    public JobPostingRepositoryImpl(EntityManager em) {
-        this.queryFactory = new JPAQueryFactory(em);
-    }
 
     @Override
     public Page<JobPosting> findByConditions(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable) {

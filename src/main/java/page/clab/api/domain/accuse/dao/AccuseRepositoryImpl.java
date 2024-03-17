@@ -2,8 +2,7 @@ package page.clab.api.domain.accuse.dao;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -16,14 +15,10 @@ import page.clab.api.domain.accuse.domain.TargetType;
 import java.util.List;
 
 @Repository
+@RequiredArgsConstructor
 public class AccuseRepositoryImpl implements AccuseRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
-    @Autowired
-    public AccuseRepositoryImpl(EntityManager entityManager) {
-        this.queryFactory = new JPAQueryFactory(entityManager);
-    }
 
     @Override
     public Page<Accuse> findByConditions(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable) {

@@ -2,23 +2,22 @@ package page.clab.api.domain.membershipFee.dao;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 import page.clab.api.domain.member.domain.QMember;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.domain.QMembershipFee;
 
 import java.util.List;
 
+@Repository
+@RequiredArgsConstructor
 public class MembershipFeeRepositoryImpl implements MembershipFeeRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
-    public MembershipFeeRepositoryImpl(EntityManager entityManager) {
-        this.queryFactory = new JPAQueryFactory(entityManager);
-    }
 
     @Override
     public Page<MembershipFee> findByConditions(String memberId, String memberName, String category, Pageable pageable) {

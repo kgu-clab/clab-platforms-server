@@ -2,22 +2,21 @@ package page.clab.api.domain.activityPhoto.dao;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.domain.activityPhoto.domain.QActivityPhoto;
 
 import java.util.List;
 
+@Repository
+@RequiredArgsConstructor
 public class ActivityPhotoRepositoryImpl implements ActivityPhotoRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
-    public ActivityPhotoRepositoryImpl(EntityManager entityManager) {
-        this.queryFactory = new JPAQueryFactory(entityManager);
-    }
 
     @Override
     public Page<ActivityPhoto> findByConditions(Boolean isPublic, Pageable pageable) {
