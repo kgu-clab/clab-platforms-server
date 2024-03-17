@@ -53,8 +53,9 @@ public class LoginService {
     @Transactional
     public LoginHeader login(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFaliedException, MemberLockedException {
         authenticateAndCheckStatus(httpServletRequest, loginRequestDto);
-        updateLastLoginTime(loginRequestDto.getId());
         logLoginAttempt(httpServletRequest, loginRequestDto.getId(), true);
+        Member member = memberService.getMemberByIdOrThrow(loginRequestDto.getId());
+        member.updateLastLoginTime();
         return generateLoginHeader(loginRequestDto.getId());
     }
 
@@ -108,10 +109,6 @@ public class LoginService {
         }
     }
 
-    private void updateLastLoginTime(String memberId) {
-        memberService.setLastLoginTime(memberId);
-    }
-
     private void logLoginAttempt(HttpServletRequest request, String memberId, boolean isSuccess) {
         LoginAttemptResult result = isSuccess ? LoginAttemptResult.SUCCESS : LoginAttemptResult.FAILURE;
         loginAttemptLogService.createLoginAttemptLog(request, memberId, result);
@@ -142,7 +139,7 @@ public class LoginService {
     }
 
     private void sendAdminLoginNotification(Member loginMember) {
-        if (memberService.isMemberSuperRole(loginMember)) {
+        if (loginMember.isSuperAdminRole()) {
             slackService.sendAdminLoginNotification(loginMember.getId(), loginMember.getRole());
         }
     }

@@ -138,6 +138,7 @@ public class Member implements UserDetails {
 
     public static Member of(MemberRequestDto memberRequestDto) {
         Member member = ModelMapperUtil.getModelMapper().map(memberRequestDto, Member.class);
+        member.setContact(member.removeHyphensFromContact(member.getContact()));
         member.setRole(Role.USER);
         return member;
     }
@@ -186,15 +187,27 @@ public class Member implements UserDetails {
     }
 
     public void validateAccessPermission(Member member) throws PermissionDeniedException {
-        if (!isOwner(member) && !member.isAdminRole()) {
+        if (!isOwner(member) && !member.isSuperAdminRole()) {
             throw new PermissionDeniedException("해당 멤버를 수정/삭제할 권한이 없습니다.");
         }
     }
 
     public void validateAccessPermissionForCloud(Member member) throws PermissionDeniedException {
         if (!isOwner(member) && !member.isSuperAdminRole()) {
-            throw new PermissionDeniedException("해당 멤버의 클라우드 사용량을 조회할 수 없습니다.");
+            throw new PermissionDeniedException("해당 멤버의 클라우드 사용량을 조회할 권한이 없습니다.");
         }
+    }
+
+    public String removeHyphensFromContact(String contact) {
+        return contact.replaceAll("-", "");
+    }
+
+    public void updatePassword(String password, PasswordEncoder passwordEncoder) {
+        setPassword(passwordEncoder.encode(password));
+    }
+
+    public void updateLastLoginTime() {
+        lastLoginTime = LocalDateTime.now();
     }
 
     public void checkLoanSuspension() {

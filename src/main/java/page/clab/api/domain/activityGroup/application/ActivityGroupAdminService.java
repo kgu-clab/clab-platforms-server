@@ -135,7 +135,7 @@ public class ActivityGroupAdminService {
     public PagedResponseDto<ActivityGroupMemberWithApplyReasonResponseDto> getGroupMembersWithApplyReason(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!(isMemberGroupLeaderRole(activityGroup, currentMember) || memberService.isMemberAdminRole(currentMember))) {
+        if (!(isMemberGroupLeaderRole(activityGroup, currentMember) || currentMember.isAdminRole())) {
             throw new PermissionDeniedException("해당 활동의 멤버를 조회할 권한이 없습니다.");
         }
         List<ApplyForm> applyForms = applyFormRepository.findAllByActivityGroup(activityGroup);
@@ -197,7 +197,7 @@ public class ActivityGroupAdminService {
 
     public boolean isMemberGroupLeaderRole(ActivityGroup activityGroup, Member member) {
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
-        return groupMember.getRole() == ActivityGroupRole.LEADER && memberService.isMemberAdminRole(member);
+        return groupMember.getRole() == ActivityGroupRole.LEADER && member.isAdminRole();
     }
 
     public boolean isMemberHasRoleInActivityGroup(Member member, ActivityGroupRole role, Long activityGroupId){

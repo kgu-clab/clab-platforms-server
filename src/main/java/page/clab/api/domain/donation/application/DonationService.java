@@ -68,7 +68,7 @@ public class DonationService {
     }
 
     private void validateDonationUpdatePermission(Member member) throws PermissionDeniedException {
-        if (!memberService.isMemberSuperRole(member)) {
+        if (!member.isSuperAdminRole()) {
             throw new PermissionDeniedException("해당 후원 정보를 수정할 권한이 없습니다.");
         }
     }

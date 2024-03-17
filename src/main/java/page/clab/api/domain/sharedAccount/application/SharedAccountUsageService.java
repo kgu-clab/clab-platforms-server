@@ -103,7 +103,7 @@ public class SharedAccountUsageService {
     public Long updateSharedAccountUsage(Long usageId, SharedAccountUsageStatus status) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         SharedAccountUsage sharedAccountUsage = getSharedAccountUsageByIdOrThrow(usageId);
-        if (!(sharedAccountUsage.getMemberId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
+        if (!(sharedAccountUsage.getMemberId().equals(member.getId()) || member.isAdminRole())) {
             throw new PermissionDeniedException("공유 계정 이용 상태 변경 권한이 없습니다.");
         }
         if (SharedAccountUsageStatus.IN_USE.equals(sharedAccountUsage.getStatus())) {

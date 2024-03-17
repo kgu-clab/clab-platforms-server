@@ -178,7 +178,7 @@ public class FileService {
         if (uploadedFile == null || !storedFile.exists()) {
             throw new NotFoundException("존재하지 않는 파일입니다.");
         }
-        if (!(uploadedFile.getUploader().getId().equals(member.getId()) || memberService.isMemberSuperRole(member))) {
+        if (!(uploadedFile.getUploader().getId().equals(member.getId()) || member.isSuperAdminRole())) {
             throw new PermissionDeniedException("해당 파일을 삭제할 권한이 없습니다.");
         }
         if (!storedFile.delete()) {

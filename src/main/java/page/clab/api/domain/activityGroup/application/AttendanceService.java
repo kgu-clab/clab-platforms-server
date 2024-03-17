@@ -3,11 +3,6 @@ package page.clab.api.domain.activityGroup.application;
 import com.google.zxing.WriterException;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
-import java.io.File;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -35,6 +30,12 @@ import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.QRCodeUtil;
+
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -153,7 +154,7 @@ public class AttendanceService {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
 
-        if (!memberService.isMemberAdminRole(member) || !activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
+        if (!member.isAdminRole() || !activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
             throw new PermissionDeniedException("그룹의 출석기록을 조회할 권한이 없습니다.");
         }
 
@@ -215,7 +216,7 @@ public class AttendanceService {
     public PagedResponseDto<AbsentResponseDto> getActivityGroupAbsentExcuses(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
 
         Member member = memberService.getCurrentMember();
-        if (!memberService.isMemberAdminRole(member) &&
+        if (!member.isAdminRole() &&
             !activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
             throw new PermissionDeniedException("해당 그룹의 불참사유서를 열람할 권한이 부족합니다.");
         }

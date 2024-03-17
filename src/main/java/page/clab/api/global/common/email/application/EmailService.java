@@ -123,7 +123,8 @@ public class EmailService {
         String content = String.format(
                 "C-Lab 비밀번호 재발급 인증 안내 메일입니다.\n" +
                         "인증번호는 %s입니다.\n" +
-                        "해당 인증번호를 비밀번호 재설정 페이지에 입력하여 비밀번호를 재설정해주세요.",
+                        "해당 인증번호를 비밀번호 재설정 페이지에 입력해주세요.\n" +
+                        "재설정시 비밀번호는 인증번호로 대체됩니다.",
                 code
         );
 
@@ -137,7 +138,7 @@ public class EmailService {
         try {
             broadcastEmail(emailDto, null);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to send password reset email", e);
+            throw new RuntimeException("비밀번호 재발급 인증 메일 발송에 실패했습니다.", e);
         }
     }
 

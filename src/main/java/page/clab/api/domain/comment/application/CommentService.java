@@ -134,7 +134,7 @@ public class CommentService {
 
     private Comment validateCommentAccess(Long commentId, Member member) throws PermissionDeniedException {
         Comment comment = getCommentByIdOrThrow(commentId);
-        if (!comment.isOwnedBy(member) && !memberService.isMemberAdminRole(member)) {
+        if (!comment.isOwnedBy(member) && !member.isAdminRole()) {
             throw new PermissionDeniedException("댓글 작성자 또는 관리자만 수정/삭제할 수 있습니다.");
         }
         return comment;

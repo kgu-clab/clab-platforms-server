@@ -16,7 +16,6 @@ import page.clab.api.domain.application.exception.NotApprovedApplicationExceptio
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.member.dao.MemberRepository;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.domain.Role;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
 import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
@@ -39,7 +38,6 @@ import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -70,11 +68,10 @@ public class MemberService {
     public String createMember(MemberRequestDto memberRequestDto) {
         checkMemberUniqueness(memberRequestDto);
         Member member = Member.of(memberRequestDto);
-        member.setContact(removeHyphensFromContact(member.getContact()));
         setupMemberPassword(member);
-        String id = memberRepository.save(member).getId();
+        memberRepository.save(member);
         createPositionByMember(member);
-        return id;
+        return member.getId();
     }
 
     @Transactional
@@ -111,7 +108,7 @@ public class MemberService {
     public String updateMemberInfo(String memberId, MemberUpdateRequestDto memberUpdateRequestDto) throws PermissionDeniedException {
         Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
-        validateMemberUpdatePermission(member, currentMember);
+        member.validateAccessPermission(currentMember);
         member.update(memberUpdateRequestDto, passwordEncoder);
         return memberRepository.save(member).getId();
     }
@@ -128,26 +125,12 @@ public class MemberService {
     public void verifyResetMemberPassword(VerificationCodeRequestDto verificationCodeRequestDto) {
         Member member = getMemberByIdOrThrow(verificationCodeRequestDto.getMemberId());
         VerificationCode verificationCode = verificationCodeService.validateVerificationCode(verificationCodeRequestDto, member);
-        updateMemberPasswordWithVerificationCode(verificationCode, member);
+        updateMemberPasswordWithVerificationCode(verificationCode.getVerificationCode(), member);
     }
 
     public MyProfileResponseDto getMyProfile() {
         Member currentMember = getCurrentMember();
         return MyProfileResponseDto.of(currentMember);
-    }
-
-    public void setLastLoginTime(String memberId) {
-        Member member = getMemberByIdOrThrow(memberId);
-        member.setLastLoginTime(LocalDateTime.now());
-        memberRepository.save(member);
-    }
-
-    public boolean isMemberAdminRole(Member member) {
-        return (member.getRole().equals(Role.ADMIN) || member.getRole().equals(Role.SUPER));
-    }
-
-    public boolean isMemberSuperRole(Member member) {
-        return member.getRole().equals(Role.SUPER);
     }
 
     public Member getMemberById(String memberId) {
@@ -170,14 +153,6 @@ public class MemberService {
                 .orElseThrow(LoginFaliedException::new);
     }
 
-    public Member saveMember(Member updatedMember) {
-        return memberRepository.save(updatedMember);
-    }
-
-    public String removeHyphensFromContact(String contact) {
-        return contact.replaceAll("-", "");
-    }
-
     public Member getCurrentMember() {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
         return memberRepository.findById(memberId)
@@ -197,7 +172,7 @@ public class MemberService {
         if (member.getPassword().isEmpty()) {
             setRandomPasswordAndSendEmail(member);
         } else {
-            member.setPassword(passwordEncoder.encode(member.getPassword()));
+            member.updatePassword(member.getPassword(), passwordEncoder);
         }
     }
 
@@ -230,7 +205,7 @@ public class MemberService {
 
     private void setRandomPasswordAndSendEmail(Member member) {
         String password = generateVerificationCode();
-        member.setPassword(passwordEncoder.encode(password));
+        member.updatePassword(password, passwordEncoder);
         CompletableFuture.runAsync(() -> {
             try {
                 emailService.broadcastEmailToApprovedMember(member, password);
@@ -261,12 +236,6 @@ public class MemberService {
         positionRepository.save(position);
     }
 
-    private void validateMemberUpdatePermission(Member member, Member currentMember) throws PermissionDeniedException {
-        if (!(member.getId().equals(currentMember.getId()) || isMemberSuperRole(currentMember))) {
-            throw new PermissionDeniedException("멤버 수정 권한이 부족합니다.");
-        }
-    }
-
     private Member validateResetPasswordRequest(MemberResetPasswordRequestDto memberResetPasswordRequestDto) {
         Member member = getMemberByIdOrThrow(memberResetPasswordRequestDto.getId());
         if (!(Objects.equals(member.getName(), memberResetPasswordRequestDto.getName())
@@ -276,24 +245,22 @@ public class MemberService {
         return member;
     }
 
-    private void updateMemberPasswordWithVerificationCode(VerificationCode verificationCode, Member member) {
-        String newPassword = passwordEncoder.encode(verificationCode.getVerificationCode());
-        member.setPassword(newPassword);
-        memberRepository.save(member);
-        verificationCodeService.deleteVerificationCode(verificationCode.getVerificationCode());
+    private void updateMemberPasswordWithVerificationCode(String verificationCode, Member member) {
+        member.updatePassword(verificationCode, passwordEncoder);
+        verificationCodeService.deleteVerificationCode(verificationCode);
     }
 
     public List<Member> getAdmins() {
         return memberRepository.findAll()
                 .stream()
-                .filter(member -> member.getRole().equals(Role.ADMIN) || member.getRole().equals(Role.SUPER))
+                .filter(Member::isAdminRole)
                 .toList();
     }
 
     public List<Member> getSuperAdmins() {
         return memberRepository.findAll()
                 .stream()
-                .filter(member -> member.getRole().equals(Role.SUPER))
+                .filter(Member::isSuperAdminRole)
                 .toList();
     }
 
