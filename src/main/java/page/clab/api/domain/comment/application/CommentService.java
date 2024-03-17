@@ -23,9 +23,6 @@ import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.RandomNicknameUtil;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -42,37 +39,23 @@ public class CommentService {
 
     private final NotificationService notificationService;
 
-    private final RandomNicknameUtil randomNicknameUtil;
-
     @Transactional
     public Long createComment(Long parentId, Long boardId, CommentRequestDto commentRequestDto) {
         Member member = memberService.getCurrentMember();
         Board board = boardService.getBoardByIdOrThrow(boardId);
-        Comment comment = Comment.of(commentRequestDto);
-        comment.setBoard(board);
-        comment.setWriter(member);
-        String nickname = randomNicknameUtil.makeRandomNickname();
-        comment.setNickname(nickname);
-        comment.setCreatedAt(LocalDateTime.now());
-        comment.setWantAnonymous(commentRequestDto.isWantAnonymous());
-        comment.setLikes(0L);
+        Comment comment = Comment.of(commentRequestDto, board, member);
         if (parentId != null) {
             Comment parentComment = getCommentByIdOrThrow(parentId);
             comment.setParent(parentComment);
             parentComment.getChildren().add(comment);
             commentRepository.save(parentComment);
         }
-        Long id = commentRepository.save(comment).getId();
-
-        String writer = member.getName();
-        if(commentRequestDto.isWantAnonymous()){
-            writer = nickname;
-        }
+        String writer = commentRequestDto.isWantAnonymous() ? comment.getNickname() : member.getName();
         notificationService.sendNotificationToMember(
                 board.getMember(),
                 "[" + board.getTitle() + "] " + writer + "님이 게시글에 댓글을 남겼습니다."
         );
-        return id;
+        return commentRepository.save(comment).getId();
     }
 
     public PagedResponseDto<CommentGetAllResponseDto> getComments(Long boardId, Pageable pageable) {
@@ -95,9 +78,7 @@ public class CommentService {
     public Long updateComment(Long commentId, CommentUpdateRequestDto commentUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
-        if (!(comment.getWriter().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("댓글 작성자만 수정할 수 있습니다.");
-        }
+        validateCommentUpdatePermission(comment, member);
         comment.update(commentUpdateRequestDto);
         return commentRepository.save(comment).getId();
     }
@@ -105,9 +86,7 @@ public class CommentService {
     public Long deleteComment(Long commentId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
-        if (!(comment.getWriter().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("댓글 작성자만 삭제할 수 있습니다.");
-        }
+        validateCommentUpdatePermission(comment, member);
         commentRepository.delete(comment);
         return comment.getId();
     }
@@ -133,19 +112,15 @@ public class CommentService {
         return comment.getLikes();
     }
 
-    public CommentGetAllResponseDto setHasLikeByMeAtCommentGetAllResponseDto(CommentGetAllResponseDto commentGetAllResponseDto, Member member) {
-        Comment comment = commentRepository.findById(commentGetAllResponseDto.getId())
-                .orElseThrow(() -> new NotFoundException("댓글이 존재하지 않습니다."));
+    public void setHasLikeByMeAtCommentGetAllResponseDto(CommentGetAllResponseDto commentGetAllResponseDto, Member member) {
+        Comment comment = getCommentByIdOrThrow(commentGetAllResponseDto.getId());
         commentGetAllResponseDto.setHasLikeByMe(commentLikeRepository.existsByCommentIdAndMemberId(comment.getId(), member.getId()));
         commentGetAllResponseDto.getChildren().forEach(dto -> setHasLikeByMeAtCommentGetAllResponseDto(dto, member));
-        return commentGetAllResponseDto;
     }
 
-    public CommentGetMyResponseDto setHasLikeByMeAtCommentGetMyResponseDto(CommentGetMyResponseDto commentGetMyResponseDto, Member member) {
-        Comment comment = commentRepository.findById(commentGetMyResponseDto.getId())
-                .orElseThrow(() -> new NotFoundException("댓글이 존재하지 않습니다."));
+    public void setHasLikeByMeAtCommentGetMyResponseDto(CommentGetMyResponseDto commentGetMyResponseDto, Member member) {
+        Comment comment = getCommentByIdOrThrow(commentGetMyResponseDto.getId());
         commentGetMyResponseDto.setHasLikeByMe(commentLikeRepository.existsByCommentIdAndMemberId(comment.getId(), member.getId()));
-        return commentGetMyResponseDto;
     }
 
     public boolean isCommentExistById(Long id) {
@@ -163,6 +138,12 @@ public class CommentService {
 
     private Page<Comment> getCommentByWriter(Member member, Pageable pageable) {
         return commentRepository.findAllByWriterOrderByCreatedAtDesc(member, pageable);
+    }
+
+    private void validateCommentUpdatePermission(Comment comment, Member member) throws PermissionDeniedException {
+        if (!(comment.getWriter().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
+            throw new PermissionDeniedException("댓글 작성자만 수정할 수 있습니다.");
+        }
     }
 
 }
