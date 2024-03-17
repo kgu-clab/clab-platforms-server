@@ -3,7 +3,6 @@ package page.clab.api.domain.schedule.application;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.activityGroup.application.ActivityGroupAdminService;
@@ -23,10 +22,7 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -50,18 +46,14 @@ public class ScheduleService {
 
     public PagedResponseDto<ScheduleResponseDto> getSchedulesWithinDateRange(LocalDateTime startDateTime, LocalDateTime endDateTime, Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        List<Schedule> mySchedules = getSchedulesWithinDateRange(startDateTime, endDateTime, member);
-        Page<Schedule> myPagedSchedules = new PageImpl<>(mySchedules, pageable, mySchedules.size());
-        return new PagedResponseDto<>(myPagedSchedules.map(ScheduleResponseDto::of));
+        Page<Schedule> schedules = scheduleRepository.findByDateRangeAndMember(startDateTime, endDateTime, member, pageable);
+        return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::of));
     }
 
     public PagedResponseDto<ScheduleResponseDto> getActivitySchedules(LocalDateTime startDateTime, LocalDateTime endDateTime, Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        List<Schedule> schedules = getSchedulesWithinDateRange(startDateTime, endDateTime, member).stream()
-                .filter(this::isActivitySchedule)
-                .toList();
-        Page<Schedule> myPagedActivitySchedules = new PageImpl<>(schedules, pageable, schedules.size());
-        return new PagedResponseDto<>(myPagedActivitySchedules.map(ScheduleResponseDto::of));
+        Page<Schedule> schedules = scheduleRepository.findActivitySchedulesByDateRangeAndMember(startDateTime, endDateTime, member, pageable);
+        return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::of));
     }
 
     public Long deleteSchedule(Long scheduleId) throws PermissionDeniedException {
@@ -91,46 +83,9 @@ public class ScheduleService {
         }
     }
 
-    public List<Schedule> getSchedulesWithinDateRange(LocalDateTime startDateTime, LocalDateTime endDateTime, Member member) {
-        List<GroupMember> groupMemberList = activityGroupMemberService.getGroupMemberByMember(member)
-                .stream()
-                .distinct()
-                .toList();
-
-        List<Long> activityGroupIdList = groupMemberList.stream()
-                .map(GroupMember::getActivityGroup)
-                .map(ActivityGroup::getId)
-                .collect(Collectors.toList());
-
-        List<Schedule> validDateSchedules = getScheduleByDateBetween(startDateTime, endDateTime)
-                .stream()
-                .sorted(Comparator.comparing(Schedule::getStartDateTime))
-                .toList();
-
-        return validDateSchedules.stream()
-                .filter(schedule -> isValid(schedule, activityGroupIdList))
-                .collect(Collectors.toList());
-    }
-
-    public List<Schedule> getScheduleByDateBetween(LocalDateTime startDateTime, LocalDateTime endDateTime){
-        return scheduleRepository.findAllByStartDateTimeBetween(startDateTime, endDateTime);
-    }
-
     public Schedule getScheduleById(Long scheduleId) {
         return scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new NotFoundException("일정이 존재하지 않습니다."));
-    }
-
-    private boolean isActivitySchedule(Schedule schedule) {
-        return schedule.getScheduleType() != ScheduleType.ALL;
-    }
-
-    private boolean isValid(Schedule schedule, List<Long> activityGroupIdList) {
-        if (!schedule.isActivitySchedule()) {
-            return true;
-        }
-        Long activityGroupId = schedule.getActivityGroup().getId();
-        return activityGroupIdList.contains(activityGroupId);
     }
 
 }
