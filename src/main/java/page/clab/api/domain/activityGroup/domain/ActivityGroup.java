@@ -96,15 +96,19 @@ public class ActivityGroup {
     }
 
     public boolean isWaiting() {
-        return this.status == ActivityGroupStatus.WAITING;
+        return this.status.equals(ActivityGroupStatus.WAITING);
     }
 
     public boolean isProgressing() {
-        return this.status == ActivityGroupStatus.PROGRESSING;
+        return this.status.equals(ActivityGroupStatus.PROGRESSING);
     }
 
     public boolean isEnded() {
-        return this.status == ActivityGroupStatus.END;
+        return this.status.equals(ActivityGroupStatus.END);
+    }
+
+    public void updateStatus(ActivityGroupStatus status) {
+        this.status = status;
     }
 
 }

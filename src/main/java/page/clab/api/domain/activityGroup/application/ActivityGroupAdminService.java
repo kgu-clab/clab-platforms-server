@@ -30,7 +30,6 @@ import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -73,18 +72,18 @@ public class ActivityGroupAdminService {
         return activityGroupRepository.save(activityGroup).getId();
     }
 
-    public Long manageActivityGroup(Long activityGroupId, ActivityGroupStatus activityGroupStatus) {
+    public Long manageActivityGroup(Long activityGroupId, ActivityGroupStatus status) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        activityGroup.setStatus(activityGroupStatus);
-        Long id = activityGroupRepository.save(activityGroup).getId();
+        activityGroup.updateStatus(status);
+        activityGroupRepository.save(activityGroup);
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
         if (groupLeader != null) {
             notificationService.sendNotificationToMember(
                     groupLeader.getMember(),
-                    "활동 그룹이 [" + activityGroupStatus.getDescription() + "] 상태로 변경되었습니다."
+                    "활동 그룹이 [" + status.getDescription() + "] 상태로 변경되었습니다."
             );
         }
-        return id;
+        return activityGroup.getId();
     }
 
     @Transactional
@@ -142,15 +141,9 @@ public class ActivityGroupAdminService {
                 ));
         Page<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId, pageable);
         List<ActivityGroupMemberWithApplyReasonResponseDto> dtos = groupMembers.getContent().stream()
-                .map(member -> {
-                    String applyReason = memberIdToApplyReasonMap.getOrDefault(member.getMember().getId(), "");
-                    return ActivityGroupMemberWithApplyReasonResponseDto.builder()
-                            .memberId(member.getMember().getId())
-                            .memberName(member.getMember().getName())
-                            .role(member.getRole().toString())
-                            .status(member.getStatus())
-                            .applyReason(applyReason)
-                            .build();
+                .map(groupMember -> {
+                    String applyReason = memberIdToApplyReasonMap.getOrDefault(groupMember.getMember().getId(), "");
+                    return ActivityGroupMemberWithApplyReasonResponseDto.create(groupMember, applyReason);
                 }).toList();
         return new PagedResponseDto<>(new PageImpl<>(dtos, pageable, groupMembers.getTotalElements()));
     }
@@ -166,19 +159,19 @@ public class ActivityGroupAdminService {
         if (groupMember.getRole() == ActivityGroupRole.LEADER) {
             throw new LeaderStatusChangeNotAllowedException("리더의 상태는 변경할 수 없습니다.");
         }
-        groupMember.setStatus(status);
+        groupMember.updateStatus(status);
         if (status == GroupMemberStatus.ACCEPTED) {
-            groupMember.setRole(ActivityGroupRole.MEMBER);
+            groupMember.updateRole(ActivityGroupRole.MEMBER);
         } else {
-            groupMember.setRole(null);
+            groupMember.updateRole(null);
         }
-        String id = activityGroupMemberService.save(groupMember).getMember().getId();
+        activityGroupMemberService.save(groupMember);
 
         notificationService.sendNotificationToMember(
                 member,
                 "활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다."
         );
-        return id;
+        return groupMember.getMember().getId();
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
@@ -188,12 +181,12 @@ public class ActivityGroupAdminService {
 
     public boolean isActivityGroupProgressing(Long activityGroupId){
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        return activityGroup.getStatus() == ActivityGroupStatus.PROGRESSING;
+        return activityGroup.isProgressing();
     }
 
     public boolean isMemberGroupLeaderRole(ActivityGroup activityGroup, Member member) {
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
-        return groupMember.getRole() == ActivityGroupRole.LEADER && member.isAdminRole();
+        return groupMember.isLeader() && member.isAdminRole();
     }
 
     public boolean isMemberHasRoleInActivityGroup(Member member, ActivityGroupRole role, Long activityGroupId){
@@ -201,9 +194,7 @@ public class ActivityGroupAdminService {
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(activityGroupId);
 
         return groupMemberList.stream()
-                .anyMatch(groupMember ->
-                        Objects.equals(groupMember.getActivityGroup().getId(), activityGroup.getId()) &&
-                        groupMember.getRole() == role);
+                .anyMatch(groupMember -> groupMember.isSameRoleAndActivityGroup(role, activityGroup));
     }
 
 }
