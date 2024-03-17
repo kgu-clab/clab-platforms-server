@@ -197,4 +197,15 @@ public class ActivityGroupAdminService {
                 .anyMatch(groupMember -> groupMember.isSameRoleAndActivityGroup(role, activityGroup));
     }
 
+    public ActivityGroup validateAndGetActivityGroupForReporting(Long activityGroupId, Member member) throws PermissionDeniedException, IllegalAccessException {
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        if (!isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
+            throw new PermissionDeniedException("해당 그룹의 리더만 보고서를 작성할 수 있습니다.");
+        }
+        if (!activityGroup.isProgressing()) {
+            throw new IllegalAccessException("활동이 진행 중인 그룹이 아닙니다. 차시 보고서를 작성할 수 없습니다.");
+        }
+        return activityGroup;
+    }
+
 }
