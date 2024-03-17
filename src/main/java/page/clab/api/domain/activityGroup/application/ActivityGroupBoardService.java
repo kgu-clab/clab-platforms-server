@@ -3,6 +3,7 @@ package page.clab.api.domain.activityGroup.application;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +34,6 @@ import page.clab.api.global.exception.PermissionDeniedException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,54 +54,23 @@ public class ActivityGroupBoardService {
     private final FileService fileService;
 
     @Transactional
-    public Long createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto activityGroupBoardRequestDto) throws PermissionDeniedException {
+    public Long createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto dto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
         if (!activityGroupMemberService.isGroupMember(activityGroup, member)) {
             throw new PermissionDeniedException("활동 그룹 멤버만 게시글을 등록할 수 있습니다.");
         }
-        ActivityGroupBoard board = ActivityGroupBoard.of(activityGroupBoardRequestDto);
-        validateParentBoard(activityGroupBoardRequestDto.getCategory(), parentId);
-        board.setMember(member);
-        board.setActivityGroup(activityGroup);
+        validateParentBoard(dto.getCategory(), parentId);
+        List<UploadedFile> uploadedFiles = prepareUploadedFiles(dto.getFileUrls());
+        ActivityGroupBoard parentBoard = parentId != null ? getActivityGroupBoardByIdOrThrow(parentId) : null;
+        ActivityGroupBoard board = ActivityGroupBoard.create(dto, member, activityGroup, parentBoard, uploadedFiles);
         if (parentId != null) {
-            ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
-            board.setParent(parentBoard);
             parentBoard.getChildren().add(board);
             activityGroupBoardRepository.save(parentBoard);
         }
-
-        List<String> fileUrls = activityGroupBoardRequestDto.getFileUrls();
-        if (fileUrls != null) {
-            List<UploadedFile> uploadFileList =  fileUrls.stream()
-                    .map(fileService::getUploadedFileByUrl)
-                    .collect(Collectors.toList());
-            board.setUploadedFiles(uploadFileList);
-        }
-        Long id = activityGroupBoardRepository.save(board).getId();
-
-        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
-        if (groupMember.getRole() == ActivityGroupRole.LEADER) {
-            List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
-            groupMembers
-                    .forEach(gMember -> {
-                        if (!Objects.equals(gMember.getMember().getId(), member.getId())) {
-                            notificationService.sendNotificationToMember(
-                                    gMember.getMember(),
-                                    "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다."
-                            );
-                        }
-                    });
-        } else {
-            GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
-            if (groupLeader != null) {
-                notificationService.sendNotificationToMember(
-                        groupLeader.getMember(),
-                        "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다."
-                );
-            }
-        }
-        return id;
+        activityGroupBoardRepository.save(board);
+        notifyMembersAboutNewBoard(activityGroupId, activityGroup, member);
+        return board.getId();
     }
 
     public PagedResponseDto<ActivityGroupBoardResponseDto> getAllActivityGroupBoard(Pageable pageable) {
@@ -233,6 +202,38 @@ public class ActivityGroupBoardService {
             }
         } else if (parentId != null) {
             throw new InvalidParentBoardException("공지사항과 주차별활동의 부모 게시판은 존재할 수 없습니다.");
+        }
+    }
+
+    @NotNull
+    private List<UploadedFile> prepareUploadedFiles(List<String> fileUrls) {
+        if (fileUrls == null) return new ArrayList<>();
+        return fileUrls.stream()
+                .map(fileService::getUploadedFileByUrl)
+                .collect(Collectors.toList());
+    }
+
+    private void notifyMembersAboutNewBoard(Long activityGroupId, ActivityGroup activityGroup, Member member) {
+        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
+        if (groupMember.isLeader()) {
+            List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
+            groupMembers
+                    .forEach(gMember -> {
+                        if (!gMember.isOwner(member)) {
+                            notificationService.sendNotificationToMember(
+                                    gMember.getMember(),
+                                    "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다."
+                            );
+                        }
+                    });
+        } else {
+            GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
+            if (groupLeader != null) {
+                notificationService.sendNotificationToMember(
+                        groupLeader.getMember(),
+                        "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다."
+                );
+            }
         }
     }
 

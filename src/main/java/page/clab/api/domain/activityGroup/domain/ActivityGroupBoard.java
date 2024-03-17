@@ -83,9 +83,15 @@ public class ActivityGroupBoard {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static ActivityGroupBoard of(ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(activityGroupBoardRequestDto, ActivityGroupBoard.class);
+    public static ActivityGroupBoard create(ActivityGroupBoardRequestDto dto, Member member, ActivityGroup activityGroup, ActivityGroupBoard parent, List<UploadedFile> uploadedFiles) {
+        ActivityGroupBoard activityGroupBoard = ModelMapperUtil.getModelMapper().map(dto, ActivityGroupBoard.class);
+        activityGroupBoard.setMember(member);
+        activityGroupBoard.setActivityGroup(activityGroup);
+        activityGroupBoard.setParent(parent);
+        activityGroupBoard.setUploadedFiles(uploadedFiles);
+        return activityGroupBoard;
     }
+
 
     public void update(ActivityGroupBoardUpdateRequestDto dto, FileService fileService) {
         Optional.ofNullable(dto.getTitle()).ifPresent(this::setTitle);
