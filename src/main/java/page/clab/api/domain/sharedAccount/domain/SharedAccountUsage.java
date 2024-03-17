@@ -18,7 +18,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.sharedAccount.exception.InvalidUsageTimeException;
+import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.time.LocalDateTime;
 
@@ -67,6 +70,16 @@ public class SharedAccountUsage {
                 .build();
     }
 
+    public boolean isOwner(Member member) {
+        return this.memberId.equals(member.getId());
+    }
+
+    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isAdminRole()) {
+            throw new PermissionDeniedException("공유 계정 이용 상태 변경 권한이 없습니다.");
+        }
+    }
+
     public void validateUsageTimes(LocalDateTime currentTime) {
         if (this.endTime.isBefore(currentTime)) {
             throw new InvalidUsageTimeException("이용 종료 시간은 현재 시간 이후여야 합니다.");
@@ -87,5 +100,40 @@ public class SharedAccountUsage {
         }
     }
 
+    public void updateStatus(SharedAccountUsageStatus newStatus, Member currentMember) throws PermissionDeniedException {
+        validateAccessPermission(currentMember);
+        switch (newStatus) {
+            case CANCELED:
+                cancelUsage(currentMember);
+                break;
+            case COMPLETED:
+                completeUsage(currentMember);
+                break;
+            default:
+                throw new SharedAccountUsageStateException("지원하지 않는 상태 업데이트입니다.");
+        }
+    }
+
+    private void cancelUsage(Member currentMember) {
+        if (!isInUsableState()) {
+            throw new SharedAccountUsageStateException("IN_USE 또는 RESERVED 상태에서만 취소할 수 있습니다.");
+        }
+        setStatus(SharedAccountUsageStatus.CANCELED);
+        if (SharedAccountUsageStatus.IN_USE.equals(status)) {
+            sharedAccount.setInUse(false);
+        }
+    }
+
+    private void completeUsage(Member currentMember) {
+        if (!SharedAccountUsageStatus.IN_USE.equals(status)) {
+            throw new SharedAccountUsageStateException("IN_USE 상태에서만 완료할 수 있습니다.");
+        }
+        setStatus(SharedAccountUsageStatus.COMPLETED);
+        sharedAccount.setInUse(false);
+    }
+
+    private boolean isInUsableState() {
+        return SharedAccountUsageStatus.IN_USE.equals(status) || SharedAccountUsageStatus.RESERVED.equals(status);
+    }
 
 }
