@@ -20,6 +20,7 @@ import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
 import page.clab.api.global.util.RandomNicknameUtil;
 
@@ -102,8 +103,14 @@ public class Comment {
         return this.wantAnonymous ? this.nickname : this.writer.getName();
     }
 
-    public boolean isOwnedBy(Member member) {
-        return this.getWriter().equals(member);
+    public boolean isOwner(Member member) {
+        return this.writer.isSameMember(member);
+    }
+
+    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isAdminRole()) {
+            throw new PermissionDeniedException("해당 댓글을 수정/삭제할 권한이 없습니다.");
+        }
     }
 
     public void incrementLikes() {
