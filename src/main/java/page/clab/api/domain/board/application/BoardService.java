@@ -86,9 +86,7 @@ public class BoardService {
     public Long updateBoard(Long boardId, BoardUpdateRequestDto boardUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
-        if (!board.getMember().getId().equals(member.getId())) {
-            throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
-        }
+        board.checkPermission(member);
         board.update(boardUpdateRequestDto);
         return boardRepository.save(board).getId();
     }
@@ -110,11 +108,9 @@ public class BoardService {
     }
 
     public Long deleteBoard(Long boardId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
-        if (!(board.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
-        }
+        board.checkPermission(currentMember);
         boardRepository.delete(board);
         return board.getId();
     }

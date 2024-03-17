@@ -21,6 +21,7 @@ import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.domain.Role;
 import page.clab.api.global.common.file.domain.UploadedFile;
+import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
 import page.clab.api.global.util.RandomNicknameUtil;
 
@@ -109,6 +110,12 @@ public class Board {
 
     public boolean isOwner(Member member) {
         return this.member.equals(member);
+    }
+
+    public void checkPermission(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isMemberAdminRole()) {
+            throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
+        }
     }
 
 }

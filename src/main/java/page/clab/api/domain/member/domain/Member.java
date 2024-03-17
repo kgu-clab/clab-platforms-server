@@ -164,6 +164,14 @@ public class Member implements UserDetails {
         Optional.ofNullable(memberUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
     }
 
+    public boolean isMemberAdminRole() {
+        return role.equals(Role.ADMIN) || role.equals(Role.SUPER);
+    }
+
+    public boolean isMemberSuperAdminRole() {
+        return role.equals(Role.SUPER);
+    }
+
     public void checkLoanSuspension() {
         if (loanSuspensionDate != null && LocalDateTime.now().isBefore(loanSuspensionDate)) {
             throw new LoanSuspensionException("대출 정지 중입니다. 대출 정지일까지는 책을 대출할 수 없습니다.");
@@ -180,4 +188,5 @@ public class Member implements UserDetails {
             }
         }
     }
+
 }
