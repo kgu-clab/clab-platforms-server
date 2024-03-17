@@ -109,7 +109,7 @@ public class Board {
     }
 
     public boolean isOwner(Member member) {
-        return this.member.equals(member);
+        return this.member.isSameMember(member);
     }
 
     public void checkPermission(Member member) throws PermissionDeniedException {

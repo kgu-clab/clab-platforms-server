@@ -69,7 +69,7 @@ public class Blog {
     }
 
     public boolean isOwner(Member member) {
-        return this.member.equals(member);
+        return this.member.isSameMember(member);
     }
 
     public void validateAccessPermission(Member member) throws PermissionDeniedException {
