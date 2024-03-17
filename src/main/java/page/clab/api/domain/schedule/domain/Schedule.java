@@ -19,6 +19,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
+import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
 
@@ -64,26 +65,18 @@ public class Schedule {
     @JoinColumn(name = "activityGroup")
     private ActivityGroup activityGroup;
 
-    public static Schedule of(ScheduleRequestDto scheduleRequestDto) {
-        return Schedule.builder()
-                .scheduleType(scheduleRequestDto.getScheduleType())
-                .title(scheduleRequestDto.getTitle())
-                .detail(scheduleRequestDto.getDetail())
-                .startDateTime(scheduleRequestDto.getStartDateTime())
-                .endDateTime(scheduleRequestDto.getEndDateTime())
-                .build();
+    public static Schedule create(ScheduleRequestDto scheduleRequestDto) {
+        Schedule schedule = ModelMapperUtil.getModelMapper().map(scheduleRequestDto, Schedule.class);
+        schedule.setId(null);
+        return schedule;
     }
 
-    public static Schedule of(ScheduleRequestDto scheduleRequestDto, Member member, ActivityGroup activityGroup) {
-        return Schedule.builder()
-                .scheduleType(scheduleRequestDto.getScheduleType())
-                .title(scheduleRequestDto.getTitle())
-                .detail(scheduleRequestDto.getDetail())
-                .startDateTime(scheduleRequestDto.getStartDateTime())
-                .endDateTime(scheduleRequestDto.getEndDateTime())
-                .scheduleWriter(member)
-                .activityGroup(activityGroup)
-                .build();
+    public static Schedule create(ScheduleRequestDto scheduleRequestDto, Member member, ActivityGroup activityGroup) {
+        Schedule schedule = ModelMapperUtil.getModelMapper().map(scheduleRequestDto, Schedule.class);
+        schedule.setId(null);
+        schedule.setScheduleWriter(member);
+        schedule.setActivityGroup(activityGroup);
+        return schedule;
     }
 
 }
