@@ -104,7 +104,7 @@ public class AccuseService {
         return id;
     }
 
-    private boolean isAccuseRequestValid (TargetType accuseTargetType, Long accuseTargetId) {
+    private boolean isAccuseRequestValid(TargetType accuseTargetType, Long accuseTargetId) {
         if (accuseTargetType == TargetType.BOARD) {
             return boardService.isBoardExistById(accuseTargetId);
         }

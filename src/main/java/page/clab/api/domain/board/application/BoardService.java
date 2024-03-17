@@ -39,8 +39,6 @@ public class BoardService {
 
     private final BoardLikeRepository boardLikeRepository;
 
-    private final RandomNicknameUtil randomNicknameUtil;
-
     private final FileService fileService;
 
     @Transactional
@@ -55,7 +53,7 @@ public class BoardService {
             board.setUploadedFiles(uploadFileList);
         }
         board.setMember(member);
-        board.setNickName(randomNicknameUtil.makeRandomNickname());
+        board.setNickName(RandomNicknameUtil.makeRandomNickname());
         board.setWantAnonymous(boardRequestDto.isWantAnonymous());
         board.setLikes(0L);
         Long id = boardRepository.save(board).getId();

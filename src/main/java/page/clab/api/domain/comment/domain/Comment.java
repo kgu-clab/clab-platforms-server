@@ -21,6 +21,7 @@ import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.global.util.RandomNicknameUtil;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -76,8 +77,13 @@ public class Comment {
 
     private Long Likes;
 
-    public static Comment of(CommentRequestDto commentRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(commentRequestDto, Comment.class);
+    public static Comment of(CommentRequestDto commentRequestDto, Board board, Member member) {
+        Comment comment = ModelMapperUtil.getModelMapper().map(commentRequestDto, Comment.class);
+        comment.setBoard(board);
+        comment.setWriter(member);
+        comment.setNickname(RandomNicknameUtil.makeRandomNickname());
+        comment.setLikes(0L);
+        return comment;
     }
 
     public void update(CommentUpdateRequestDto commentUpdateRequestDto) {
