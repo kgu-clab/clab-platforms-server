@@ -102,14 +102,14 @@ public class Comment {
         return this.getWriter().equals(member);
     }
 
-    public void addLike() {
-        this.likes += 1;
+    public void incrementLikes() {
+        this.likes++;
     }
 
     // 좋아요 제거
-    public void removeLike() {
+    public void decrementLikes() {
         if (this.likes > 0) {
-            this.likes -= 1;
+            this.likes--;
         }
     }
 
