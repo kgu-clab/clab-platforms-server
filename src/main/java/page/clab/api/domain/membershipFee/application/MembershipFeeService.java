@@ -28,7 +28,7 @@ public class MembershipFeeService {
 
     public Long createMembershipFee(MembershipFeeRequestDto membershipFeeRequestDto) {
         Member member = memberService.getCurrentMember();
-        MembershipFee membershipFee = MembershipFee.of(membershipFeeRequestDto, member);
+            MembershipFee membershipFee = MembershipFee.create(membershipFeeRequestDto, member);
         notificationService.sendNotificationToAdmins("새로운 회비 내역이 등록되었습니다.");
         return membershipFeeRepository.save(membershipFee).getId();
     }
@@ -40,24 +40,18 @@ public class MembershipFeeService {
 
     public Long updateMembershipFee(Long membershipFeeId, MembershipFeeUpdateRequestDto membershipFeeUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        MembershipFee membershipFee = validateAndGetMembershipFeeForUpdate(membershipFeeId, member);
+        MembershipFee membershipFee = getMembershipFeeByIdOrThrow(membershipFeeId);
+        membershipFee.validateAccessPermission(member);
         membershipFee.update(membershipFeeUpdateRequestDto);
         return membershipFeeRepository.save(membershipFee).getId();
     }
 
     public Long deleteMembershipFee(Long membershipFeeId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
-        MembershipFee membershipFee = validateAndGetMembershipFeeForUpdate(membershipFeeId, member);
+        MembershipFee membershipFee = getMembershipFeeByIdOrThrow(membershipFeeId);
+        membershipFee.validateAccessPermission(member);
         membershipFeeRepository.delete(membershipFee);
         return membershipFee.getId();
-    }
-
-    private MembershipFee validateAndGetMembershipFeeForUpdate(Long membershipFeeId, Member member) throws PermissionDeniedException {
-        MembershipFee membershipFee = getMembershipFeeByIdOrThrow(membershipFeeId);
-        if (!(membershipFee.getApplicant().equals(member) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException();
-        }
-        return membershipFee;
     }
 
     private MembershipFee getMembershipFeeByIdOrThrow(Long membershipFeeId) {
