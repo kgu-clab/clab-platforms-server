@@ -18,8 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUsageRequestDto;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.domain.sharedAccount.exception.InvalidUsageTimeException;
 
 import java.time.LocalDateTime;
 
@@ -59,8 +58,34 @@ public class SharedAccountUsage {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public static SharedAccountUsage of(SharedAccountUsageRequestDto sharedAccountUsageRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(sharedAccountUsageRequestDto, SharedAccountUsage.class);
+    public static SharedAccountUsage create(SharedAccount sharedAccount, String memberId, LocalDateTime startTime, LocalDateTime endTime) {
+        return SharedAccountUsage.builder()
+                .sharedAccount(sharedAccount)
+                .memberId(memberId)
+                .startTime(startTime)
+                .endTime(endTime)
+                .build();
     }
+
+    public void validateUsageTimes(LocalDateTime currentTime) {
+        if (this.endTime.isBefore(currentTime)) {
+            throw new InvalidUsageTimeException("이용 종료 시간은 현재 시간 이후여야 합니다.");
+        }
+        if (this.endTime.isBefore(this.startTime)) {
+            throw new InvalidUsageTimeException("이용 종료 시간은 시작 시간 이후여야 합니다.");
+        }
+    }
+
+    public void determineStatus(LocalDateTime currentTime) {
+        if (!currentTime.isBefore(startTime) && currentTime.isBefore(endTime)) {
+            this.status = SharedAccountUsageStatus.IN_USE;
+            this.sharedAccount.setInUse(true);
+        } else if (currentTime.isAfter(endTime)) {
+            this.status = SharedAccountUsageStatus.COMPLETED;
+        } else if (currentTime.isBefore(startTime)) {
+            this.status = SharedAccountUsageStatus.RESERVED;
+        }
+    }
+
 
 }
