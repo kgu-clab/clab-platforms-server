@@ -89,7 +89,6 @@ public class Board {
         this.likes++;
     }
 
-    // 좋아요 제거
     public void decrementLikes() {
         if (this.likes > 0) {
             this.likes--;
