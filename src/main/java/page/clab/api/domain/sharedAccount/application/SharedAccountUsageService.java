@@ -3,6 +3,7 @@ package page.clab.api.domain.sharedAccount.application;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -40,20 +41,7 @@ public class SharedAccountUsageService {
     public Long requestSharedAccountUsage(SharedAccountUsageRequestDto sharedAccountUsageRequestDto) throws CustomOptimisticLockingFailureException {
         try {
             Long sharedAccountId = sharedAccountUsageRequestDto.getSharedAccountId();
-            SharedAccount sharedAccount = sharedAccountService.getSharedAccountByIdOrThrow(sharedAccountId);
-            LocalDateTime currentTime = LocalDateTime.now();
-            LocalDateTime startTime = sharedAccountUsageRequestDto.getStartTime() != null ? sharedAccountUsageRequestDto.getStartTime() : currentTime;
-            LocalDateTime endTime = sharedAccountUsageRequestDto.getEndTime();
-
-            String memberId = memberService.getCurrentMember().getId();
-            SharedAccountUsage sharedAccountUsage = SharedAccountUsage.create(sharedAccount, memberId, startTime, endTime);
-
-            sharedAccountUsage.validateUsageTimes(currentTime);
-            validateSharedAccountUsage(sharedAccountId, startTime, endTime);
-            sharedAccountUsage.determineStatus(currentTime);
-
-            sharedAccountUsageRepository.save(sharedAccountUsage);
-            sharedAccountService.save(sharedAccount);
+            SharedAccountUsage sharedAccountUsage = prepareSharedAccountUsage(sharedAccountUsageRequestDto, sharedAccountId);
             return sharedAccountUsage.getId();
         } catch (ObjectOptimisticLockingFailureException e) {
             throw new CustomOptimisticLockingFailureException("공유 계정 이용 요청에 실패했습니다. 다시 시도해주세요.");
@@ -67,12 +55,8 @@ public class SharedAccountUsageService {
 
     @Transactional
     public Long updateSharedAccountUsage(Long usageId, SharedAccountUsageStatus status) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
         SharedAccountUsage sharedAccountUsage = getSharedAccountUsageByIdOrThrow(usageId);
-        sharedAccountUsage.updateStatus(status, currentMember);
-        sharedAccountUsageRepository.save(sharedAccountUsage);
-        sharedAccountUsage.getSharedAccount().updateStatus(false);
-        sharedAccountService.save(sharedAccountUsage.getSharedAccount());
+        updateUsageStatus(sharedAccountUsage, status);
         return sharedAccountUsage.getSharedAccount().getId();
     }
 
@@ -138,6 +122,25 @@ public class SharedAccountUsageService {
                 .orElseThrow(() -> new NotFoundException("공유 계정 이용 내역을 찾을 수 없습니다."));
     }
 
+    @NotNull
+    private SharedAccountUsage prepareSharedAccountUsage(SharedAccountUsageRequestDto sharedAccountUsageRequestDto, Long sharedAccountId) {
+        SharedAccount sharedAccount = sharedAccountService.getSharedAccountByIdOrThrow(sharedAccountId);
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime startTime = sharedAccountUsageRequestDto.getStartTime() != null ? sharedAccountUsageRequestDto.getStartTime() : currentTime;
+        LocalDateTime endTime = sharedAccountUsageRequestDto.getEndTime();
+
+        String memberId = memberService.getCurrentMember().getId();
+        SharedAccountUsage sharedAccountUsage = SharedAccountUsage.create(sharedAccount, memberId, startTime, endTime);
+
+        sharedAccountUsage.validateUsageTimes(currentTime);
+        validateSharedAccountUsage(sharedAccountId, startTime, endTime);
+        sharedAccountUsage.determineStatus(currentTime);
+
+        sharedAccountUsageRepository.save(sharedAccountUsage);
+        sharedAccountService.save(sharedAccount);
+        return sharedAccountUsage;
+    }
+
     private void validateSharedAccountUsage(Long sharedAccountId, LocalDateTime startTime, LocalDateTime endTime) throws SharedAccountUsageStateException {
         validateReservedUsages(sharedAccountId, startTime, endTime);
         validateInUseUsages(sharedAccountId, startTime, endTime);
@@ -159,6 +162,14 @@ public class SharedAccountUsageService {
         if (!reservedUsages.isEmpty()) {
             throw new SharedAccountUsageStateException("해당 시간대와 겹치는 예약 내역이 있습니다. 다른 시간대를 선택해주세요.");
         }
+    }
+
+    private void updateUsageStatus(SharedAccountUsage sharedAccountUsage, SharedAccountUsageStatus status) throws PermissionDeniedException {
+        Member currentMember = memberService.getCurrentMember();
+        sharedAccountUsage.updateStatus(status, currentMember);
+        sharedAccountUsageRepository.save(sharedAccountUsage);
+        sharedAccountUsage.getSharedAccount().updateStatus(false);
+        sharedAccountService.save(sharedAccountUsage.getSharedAccount());
     }
 
 }
