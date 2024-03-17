@@ -12,7 +12,6 @@ import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
-import page.clab.api.domain.accuse.exception.AccuseSearchArgumentLackException;
 import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.board.application.BoardService;
 import page.clab.api.domain.comment.application.CommentService;
@@ -22,7 +21,6 @@ import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.review.application.ReviewService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.SearchResultNotExistException;
 
 @Service
 @RequiredArgsConstructor
@@ -58,13 +56,13 @@ public class AccuseService {
         Accuse existingAccuse = getAccuseByMemberAndTargetTypeAndTargetId(member, accuseTargetType, accuseTargetId);
         if (existingAccuse != null) {
             existingAccuse.setReason(accuseRequestDto.getReason());
-            id = save(existingAccuse).getId();
+            id = accuseRepository.save(existingAccuse).getId();
         } else {
             Accuse accuse = Accuse.of(accuseRequestDto);
             accuse.setId(null);
             accuse.setMember(member);
             accuse.setAccuseStatus(AccuseStatus.PENDING);
-            id = save(accuse).getId();
+            id = accuseRepository.save(accuse).getId();
         }
 
         notificationService.sendNotificationToMember(member, "신고하신 내용이 접수되었습니다.");
@@ -73,25 +71,8 @@ public class AccuseService {
         return id;
     }
 
-    public PagedResponseDto<AccuseResponseDto> getAccuses(Pageable pageable) {
-        Page<Accuse> accuses = accuseRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(accuses.map(AccuseResponseDto::of));
-    }
-
-    public PagedResponseDto<AccuseResponseDto> searchAccuse(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable) {
-        Page<Accuse> accuses;
-        if (targetType != null && accuseStatus != null) {
-            accuses = getAccuseByTargetTypeAndAccuseStatus(targetType, accuseStatus, pageable);
-        } else if (targetType != null) {
-            accuses = getAccuseByTargetType(targetType, pageable);
-        } else if (accuseStatus != null) {
-            accuses = getAccuseByAccuseStatus(accuseStatus, pageable);
-        } else {
-            throw new AccuseSearchArgumentLackException("적어도 accuseType, accuseStatus 중 하나를 제공해야 합니다.");
-        }
-        if (accuses.isEmpty()) {
-            throw new SearchResultNotExistException("검색 결과가 존재하지 않습니다.");
-        }
+    public PagedResponseDto<AccuseResponseDto> getAccusesByConditions(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable) {
+        Page<Accuse> accuses = accuseRepository.findByConditions(targetType, accuseStatus, pageable);
         return new PagedResponseDto<>(accuses.map(AccuseResponseDto::of));
     }
 
@@ -122,25 +103,9 @@ public class AccuseService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 신고입니다."));
     }
 
-    private Page<Accuse> getAccuseByTargetType(TargetType targetType, Pageable pageable) {
-        return accuseRepository.findAllByTargetTypeOrderByCreatedAtDesc(targetType, pageable);
-    }
-
-    private Page<Accuse> getAccuseByTargetTypeAndAccuseStatus(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable) {
-        return accuseRepository.findAllByTargetTypeAndAccuseStatusOrderByCreatedAtDesc(targetType, accuseStatus, pageable);
-    }
-
-    private Page<Accuse> getAccuseByAccuseStatus(AccuseStatus accuseStatus, Pageable pageable) {
-        return accuseRepository.findAllByAccuseStatusOrderByCreatedAtDesc(accuseStatus, pageable);
-    }
-
     private Accuse getAccuseByMemberAndTargetTypeAndTargetId(Member member, TargetType accuseTargetType, Long accuseTargetId) {
         return accuseRepository.findByMemberAndTargetTypeAndTargetId(member, accuseTargetType, accuseTargetId)
                 .orElse(null);
-    }
-
-    private Accuse save(Accuse accuse) {
-        return accuseRepository.save(accuse);
     }
 
 }

@@ -51,31 +51,19 @@ public class AccuseController {
         return responseModel;
     }
 
-    @Operation(summary = "[A] 신고 내역 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Operation(summary = "[A] 신고 내역 조회(신고 대상, 처리 상태 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
+            "2개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
+            "신고 대상, 처리 상태 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getAccuses(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccuses(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(accuses);
-        return responseModel;
-    }
-
-    @Operation(summary = "[A] 유형/상태별 신고 내역 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/search")
-    public ResponseModel searchAccuse(
+    public ResponseModel getAccusesByConditions(
             @RequestParam(name = "targetType", required = false) TargetType targetType,
             @RequestParam(name = "accuseStatus", required = false) AccuseStatus accuseStatus,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AccuseResponseDto> accuses = accuseService.searchAccuse(targetType, accuseStatus, pageable);
+        PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccusesByConditions(targetType, accuseStatus, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(accuses);
         return responseModel;
