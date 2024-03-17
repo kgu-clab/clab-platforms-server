@@ -26,9 +26,8 @@ public class AwardService {
 
     public Long createAward(AwardRequestDto awardRequestDto) {
         Member member = memberService.getCurrentMember();
-        Award award = Award.of(awardRequestDto);
-        award.setMember(member);
-        return save(award).getId();
+        Award award = Award.create(awardRequestDto, member);
+        return awardRepository.save(award).getId();
     }
 
     @Transactional
@@ -50,7 +49,7 @@ public class AwardService {
             throw new PermissionDeniedException("해당 수상 이력을 수정할 권한이 없습니다.");
         }
         award.update(awardUpdateRequestDto);
-        return save(award).getId();
+        return awardRepository.save(award).getId();
     }
 
     public Long deleteAward(Long awardId) throws PermissionDeniedException {
@@ -59,7 +58,7 @@ public class AwardService {
         if (!isMemberHasAuthorityToManipulate(member, award)) {
             throw new PermissionDeniedException("해당 수상 이력을 삭제할 권한이 없습니다.");
         }
-        delete(award);
+        awardRepository.delete(award);
         return award.getId();
     }
 
@@ -78,14 +77,6 @@ public class AwardService {
 
     private Page<Award> getAwardByMember(Pageable pageable, Member member) {
         return awardRepository.findAllByMemberOrderByAwardDateDesc(member, pageable);
-    }
-
-    private Award save(Award award) {
-        return awardRepository.save(award);
-    }
-
-    private void delete(Award award) {
-        awardRepository.delete(award);
     }
 
 }
