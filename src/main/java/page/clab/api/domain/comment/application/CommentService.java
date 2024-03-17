@@ -48,35 +48,31 @@ public class CommentService {
         return comment.getId();
     }
 
-    public PagedResponseDto<CommentGetAllResponseDto> getComments(Long boardId, Pageable pageable) {
-        Member member = memberService.getCurrentMember();
+    public PagedResponseDto<CommentGetAllResponseDto> getAllComments(Long boardId, Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByBoardIdAndParentIsNull(boardId, pageable);
         comments.forEach(comment -> Hibernate.initialize(comment.getChildren()));
-        Page<CommentGetAllResponseDto> pagedResponseDto = comments.map(dto -> CommentGetAllResponseDto.of(dto, member.getId()));
-        pagedResponseDto.forEach(dto -> setHasLikeByMeAtCommentGetAllResponseDto(dto, member));
-        return new PagedResponseDto<>(pagedResponseDto);
+        Page<CommentGetAllResponseDto> commentDtos = comments.map(comment -> toCommentGetAllResponseDto(comment, currentMember));
+        return new PagedResponseDto<>(commentDtos);
     }
 
     public PagedResponseDto<CommentGetMyResponseDto> getMyComments(Pageable pageable) {
-        Member member = memberService.getCurrentMember();
-        Page<Comment> comments = getCommentByWriter(member, pageable);
-        Page<CommentGetMyResponseDto> pagedResponseDto = comments.map(CommentGetMyResponseDto::of);
-        pagedResponseDto.forEach(dto -> setHasLikeByMeAtCommentGetMyResponseDto(dto, member));
-        return new PagedResponseDto<>(comments.map(CommentGetMyResponseDto::of));
+        Member currentMember = memberService.getCurrentMember();
+        Page<Comment> comments = getCommentByWriter(currentMember, pageable);
+        Page<CommentGetMyResponseDto> commentDtos = comments.map(comment -> toCommentGetMyResponseDto(comment, currentMember));
+        return new PagedResponseDto<>(commentDtos);
     }
 
     public Long updateComment(Long commentId, CommentUpdateRequestDto commentUpdateRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        Comment comment = getCommentByIdOrThrow(commentId);
-        validateCommentUpdatePermission(comment, member);
+        Member currentMember = memberService.getCurrentMember();
+        Comment comment = validateCommentAccess(commentId, currentMember);
         comment.update(commentUpdateRequestDto);
         return commentRepository.save(comment).getId();
     }
 
     public Long deleteComment(Long commentId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        Comment comment = getCommentByIdOrThrow(commentId);
-        validateCommentUpdatePermission(comment, member);
+        Member currentMember = memberService.getCurrentMember();
+        Comment comment = validateCommentAccess(commentId, currentMember);
         commentRepository.delete(comment);
         return comment.getId();
     }
@@ -96,17 +92,6 @@ public class CommentService {
             commentLikeRepository.save(newLike);
         }
         return comment.getLikes();
-    }
-
-    public void setHasLikeByMeAtCommentGetAllResponseDto(CommentGetAllResponseDto commentGetAllResponseDto, Member member) {
-        Comment comment = getCommentByIdOrThrow(commentGetAllResponseDto.getId());
-        commentGetAllResponseDto.setHasLikeByMe(commentLikeRepository.existsByCommentIdAndMemberId(comment.getId(), member.getId()));
-        commentGetAllResponseDto.getChildren().forEach(dto -> setHasLikeByMeAtCommentGetAllResponseDto(dto, member));
-    }
-
-    public void setHasLikeByMeAtCommentGetMyResponseDto(CommentGetMyResponseDto commentGetMyResponseDto, Member member) {
-        Comment comment = getCommentByIdOrThrow(commentGetMyResponseDto.getId());
-        commentGetMyResponseDto.setHasLikeByMe(commentLikeRepository.existsByCommentIdAndMemberId(comment.getId(), member.getId()));
     }
 
     public boolean isCommentExistById(Long id) {
@@ -148,10 +133,34 @@ public class CommentService {
         notificationService.sendNotificationToMember(boardOwner, notificationMessage);
     }
 
-    private void validateCommentUpdatePermission(Comment comment, Member member) throws PermissionDeniedException {
-        if (!(comment.isOwnedBy(member) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("댓글 작성자 또는 관리자만 수정할 수 있습니다.");
+    private Comment validateCommentAccess(Long commentId, Member member) throws PermissionDeniedException {
+        Comment comment = getCommentByIdOrThrow(commentId);
+        if (!comment.isOwnedBy(member) && !memberService.isMemberAdminRole(member)) {
+            throw new PermissionDeniedException("댓글 작성자 또는 관리자만 수정/삭제할 수 있습니다.");
         }
+        return comment;
+    }
+
+    private CommentGetAllResponseDto toCommentGetAllResponseDto(Comment comment, Member currentMember) {
+        CommentGetAllResponseDto dto = CommentGetAllResponseDto.of(comment, currentMember.getId());
+        dto.setHasLikeByMe(checkLikeStatus(comment.getId(), currentMember.getId()));
+        dto.getChildren().forEach(childDto -> setLikeStatusForChildren(childDto, currentMember));
+        return dto;
+    }
+
+    private boolean checkLikeStatus(Long commentId, String memberId) {
+        return commentLikeRepository.existsByCommentIdAndMemberId(commentId, memberId);
+    }
+
+    private void setLikeStatusForChildren(CommentGetAllResponseDto dto, Member member) {
+        dto.setHasLikeByMe(checkLikeStatus(dto.getId(), member.getId()));
+        dto.getChildren().forEach(childDto -> setLikeStatusForChildren(childDto, member));
+    }
+
+    private CommentGetMyResponseDto toCommentGetMyResponseDto(Comment comment, Member currentMember) {
+        CommentGetMyResponseDto dto = CommentGetMyResponseDto.of(comment);
+        dto.setHasLikeByMe(checkLikeStatus(comment.getId(), currentMember.getId()));
+        return dto;
     }
 
 }

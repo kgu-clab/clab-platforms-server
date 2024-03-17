@@ -55,7 +55,7 @@ public class CommentController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 댓글 리스트 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 댓글 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{boardId}")
     public ResponseModel getComments(
@@ -64,7 +64,7 @@ public class CommentController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<CommentGetAllResponseDto> comments = commentService.getComments(boardId, pageable);
+        PagedResponseDto<CommentGetAllResponseDto> comments = commentService.getAllComments(boardId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(comments);
         return responseModel;
