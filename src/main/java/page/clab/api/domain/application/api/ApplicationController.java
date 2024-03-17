@@ -54,7 +54,7 @@ public class ApplicationController {
 
     @Operation(summary = "[A] 지원자 목록 조회(모집 일정 ID, 지원자 ID, 합격 여부 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
-            "모집 일정 ID, 지원자 ID, 합격 여부 기준 중 하나라도 입력하지 않으면 전체 조회됨")
+            "모집 일정 ID, 지원자 ID, 합격 여부 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/conditions")
     public ResponseModel getApplicationsByConditions(
