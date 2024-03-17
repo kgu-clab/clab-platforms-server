@@ -25,9 +25,8 @@ public class RecruitmentService {
     @Transactional
     public Long createRecruitment(RecruitmentRequestDto recruitmentRequestDto) {
         Recruitment recruitment = Recruitment.of(recruitmentRequestDto);
-        Long id = recruitmentRepository.save(recruitment).getId();
         notificationService.sendNotificationToAllMembers("새로운 모집 공고가 등록되었습니다.");
-        return id;
+        return recruitmentRepository.save(recruitment).getId();
     }
 
     public List<RecruitmentResponseDto> getRecentRecruitments() {
