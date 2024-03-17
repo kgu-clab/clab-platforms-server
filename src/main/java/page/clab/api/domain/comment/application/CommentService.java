@@ -24,6 +24,8 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -90,23 +92,18 @@ public class CommentService {
 
     @Transactional
     public Long updateLikes(Long commentId) {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
-        CommentLike commentLike = commentLikeRepository.findByCommentIdAndMemberId(comment.getId(), member.getId());
-
-        if (commentLike != null) {
-            comment.removeLike();
-            commentLikeRepository.delete(commentLike);
+        Optional<CommentLike> commentLikeOpt = commentLikeRepository.findByCommentIdAndMemberId(comment.getId(), currentMember.getId());
+        if (commentLikeOpt.isPresent()) {
+            comment.decrementLikes();
+            commentLikeRepository.delete(commentLikeOpt.get());
         }
         else {
-            comment.addLike();
-            CommentLike newCommentLike= CommentLike.builder()
-                    .memberId(member.getId())
-                    .commentId(comment.getId())
-                    .build();
-            commentLikeRepository.save(newCommentLike);
+            comment.incrementLikes();
+            CommentLike newLike = new CommentLike(currentMember.getId(), comment.getId());
+            commentLikeRepository.save(newLike);
         }
-
         return comment.getLikes();
     }
 
