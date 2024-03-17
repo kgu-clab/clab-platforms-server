@@ -22,13 +22,14 @@ public class JobPostingService {
     private final JobPostingRepository jobPostingRepository;
 
     public Long createJobPosting(JobPostingRequestDto jobPostingRequestDto) {
-        JobPosting jobPosting = JobPosting.of(jobPostingRequestDto);
-        JobPosting existingJobPosting = getJobPostingByJobPostingUrl(jobPostingRequestDto);
-        if (existingJobPosting != null) {
-            jobPosting.setId(existingJobPosting.getId());
-            jobPosting.setCreatedAt(existingJobPosting.getCreatedAt());
-        }
+        JobPosting jobPosting = jobPostingRepository.findByJobPostingUrl(jobPostingRequestDto.getJobPostingUrl())
+                .map(existingJobPosting -> updateExistingJobPosting(existingJobPosting, jobPostingRequestDto))
+                .orElseGet(() -> JobPosting.of(jobPostingRequestDto));
         return jobPostingRepository.save(jobPosting).getId();
+    }
+
+    private JobPosting updateExistingJobPosting(JobPosting existingJobPosting, JobPostingRequestDto jobPostingRequestDto) {
+        return existingJobPosting.updateFromRequestDto(jobPostingRequestDto);
     }
 
     public PagedResponseDto<JobPostingResponseDto> getJobPostingsByConditions(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable) {
@@ -56,10 +57,6 @@ public class JobPostingService {
     public JobPosting getJobPostingByIdOrThrow(Long jobPostingId) {
         return jobPostingRepository.findById(jobPostingId)
                     .orElseThrow(() -> new NotFoundException("존재하지 않는 채용 공고입니다."));
-    }
-
-    public JobPosting getJobPostingByJobPostingUrl(JobPostingRequestDto jobPostingRequestDto) {
-        return jobPostingRepository.findByJobPostingUrl(jobPostingRequestDto.getJobPostingUrl()).orElse(null);
     }
 
 }
