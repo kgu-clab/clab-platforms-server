@@ -164,11 +164,11 @@ public class Member implements UserDetails {
         Optional.ofNullable(memberUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
     }
 
-    public boolean isMemberAdminRole() {
+    public boolean isAdminRole() {
         return role.equals(Role.ADMIN) || role.equals(Role.SUPER);
     }
 
-    public boolean isMemberSuperAdminRole() {
+    public boolean isSuperAdminRole() {
         return role.equals(Role.SUPER);
     }
 
