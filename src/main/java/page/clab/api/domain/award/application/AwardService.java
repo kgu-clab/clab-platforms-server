@@ -45,9 +45,7 @@ public class AwardService {
     public Long updateAward(Long awardId, AwardUpdateRequestDto awardUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
-        if (!isMemberHasAuthorityToManipulate(member, award)) {
-            throw new PermissionDeniedException("해당 수상 이력을 수정할 권한이 없습니다.");
-        }
+        award.validateAccessPermission(member);
         award.update(awardUpdateRequestDto);
         return awardRepository.save(award).getId();
     }
@@ -55,19 +53,9 @@ public class AwardService {
     public Long deleteAward(Long awardId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
-        if (!isMemberHasAuthorityToManipulate(member, award)) {
-            throw new PermissionDeniedException("해당 수상 이력을 삭제할 권한이 없습니다.");
-        }
+        award.validateAccessPermission(member);
         awardRepository.delete(award);
         return award.getId();
-    }
-
-    private boolean isMemberAwardee(Member member, Award award) {
-        return award.getMember().getId().equals(member.getId());
-    }
-
-    private boolean isMemberHasAuthorityToManipulate(Member member, Award award) {
-        return (isMemberAwardee(member, award) || memberService.isMemberSuperRole(member));
     }
 
     private Award getAwardByIdOrThrow(Long awardId) {
