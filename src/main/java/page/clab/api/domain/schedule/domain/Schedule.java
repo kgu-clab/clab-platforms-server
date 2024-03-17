@@ -78,17 +78,13 @@ public class Schedule {
     }
 
     public boolean isOwner(Member member) {
-        return this.scheduleWriter.equals(member);
+        return this.scheduleWriter.isSameMember(member);
     }
 
     public void validateAccessPermission(Member member) throws PermissionDeniedException {
         if (!isOwner(member) && !member.isAdminRole()) {
             throw new PermissionDeniedException("해당 일정을 수정/삭제할 권한이 없습니다.");
         }
-    }
-
-    public boolean isActivitySchedule() {
-        return this.scheduleType != ScheduleType.ALL;
     }
 
 }
