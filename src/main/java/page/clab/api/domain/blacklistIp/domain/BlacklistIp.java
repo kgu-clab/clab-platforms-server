@@ -24,7 +24,7 @@ public class BlacklistIp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String ipAddress;
 
     private String reason;
@@ -32,5 +32,14 @@ public class BlacklistIp {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    private BlacklistIp(String ipAddress, String reason) {
+        this.ipAddress = ipAddress;
+        this.reason = reason;
+    }
+
+    public static BlacklistIp create(String ipAddress, String reason) {
+        return new BlacklistIp(ipAddress, reason);
+    }
 
 }
