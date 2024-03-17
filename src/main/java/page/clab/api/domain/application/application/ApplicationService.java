@@ -57,13 +57,12 @@ public class ApplicationService {
     }
 
     public ApplicationPassResponseDto getApplicationPass(Long recruitmentId, String studentId) {
-        Application application = getApplicationById(studentId, recruitmentId);
-        if (application == null) {
-            return ApplicationPassResponseDto.builder()
-                    .isPass(false)
-                    .build();
-        }
-        return ApplicationPassResponseDto.of(application);
+        ApplicationId id = new ApplicationId(studentId, recruitmentId);
+        return applicationRepository.findById(id)
+                .map(ApplicationPassResponseDto::of)
+                .orElseGet(() -> ApplicationPassResponseDto.builder()
+                        .isPass(false)
+                        .build());
     }
 
     public String deleteApplication(Long recruitmentId, String studentId) {
@@ -76,12 +75,6 @@ public class ApplicationService {
         ApplicationId id = new ApplicationId(studentId, recruitmentId);
         return applicationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당 지원자가 없습니다."));
-    }
-
-    private Application getApplicationById(String studentId, Long recruitmentId) {
-        ApplicationId id = new ApplicationId(studentId, recruitmentId);
-        return applicationRepository.findById(id)
-                .orElse(null);
     }
 
 }
