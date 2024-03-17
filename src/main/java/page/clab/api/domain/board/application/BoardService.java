@@ -2,6 +2,7 @@ package page.clab.api.domain.board.application;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,8 @@ import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.RandomNicknameUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,28 +44,18 @@ public class BoardService {
     private final FileService fileService;
 
     @Transactional
-    public Long createBoard(BoardRequestDto boardRequestDto) {
+    public Long createBoard(BoardRequestDto dto) {
         Member member = memberService.getCurrentMember();
-        Board board = Board.of(boardRequestDto);
-        List<String> fileUrls = boardRequestDto.getFileUrlList();
-        if (fileUrls != null) {
-            List<UploadedFile> uploadFileList =  fileUrls.stream()
-                    .map(fileService::getUploadedFileByUrl)
-                    .collect(Collectors.toList());
-            board.setUploadedFiles(uploadFileList);
-        }
-        board.setMember(member);
-        board.setNickName(RandomNicknameUtil.makeRandomNickname());
-        board.setWantAnonymous(boardRequestDto.isWantAnonymous());
-        board.setLikes(0L);
-        Long id = boardRepository.save(board).getId();
-        if (memberService.isMemberAdminRole(member) && boardRequestDto.getCategory().equals("공지사항")) {
+        List<UploadedFile> uploadedFiles = prepareUploadedFiles(dto.getFileUrlList());
+        Board board = Board.create(dto, member, uploadedFiles);
+
+        if (board.shouldNotifyForNewBoard()) {
             notificationService.sendNotificationToMember(
                     member,
                     "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다."
             );
         }
-        return id;
+        return boardRepository.save(board).getId();
     }
 
     public PagedResponseDto<BoardListResponseDto> getBoards(Pageable pageable) {
@@ -144,6 +135,14 @@ public class BoardService {
 
     private Page<Board> getBoardByCategory(String category, Pageable pageable) {
         return boardRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
+    }
+
+    @NotNull
+    private List<UploadedFile> prepareUploadedFiles(List<String> fileUrls) {
+        if (fileUrls == null) return new ArrayList<>();
+        return fileUrls.stream()
+                .map(fileService::getUploadedFileByUrl)
+                .collect(Collectors.toList());
     }
 
 }
