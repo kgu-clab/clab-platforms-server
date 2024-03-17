@@ -85,8 +85,7 @@ public class CommentService {
         if (commentLikeOpt.isPresent()) {
             comment.decrementLikes();
             commentLikeRepository.delete(commentLikeOpt.get());
-        }
-        else {
+        } else {
             comment.incrementLikes();
             CommentLike newLike = new CommentLike(currentMember.getId(), comment.getId());
             commentLikeRepository.save(newLike);
