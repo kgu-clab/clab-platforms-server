@@ -172,6 +172,14 @@ public class Member implements UserDetails {
         return role.equals(Role.SUPER);
     }
 
+    public boolean isSameMember(Member member) {
+        return id.equals(member.getId());
+    }
+
+    public boolean isSameMember(String memberId) {
+        return id.equals(memberId);
+    }
+
     public void checkLoanSuspension() {
         if (loanSuspensionDate != null && LocalDateTime.now().isBefore(loanSuspensionDate)) {
             throw new LoanSuspensionException("대출 정지 중입니다. 대출 정지일까지는 책을 대출할 수 없습니다.");
