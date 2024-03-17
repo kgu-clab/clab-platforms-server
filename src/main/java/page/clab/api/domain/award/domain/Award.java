@@ -16,6 +16,7 @@ import lombok.Setter;
 import page.clab.api.domain.award.dto.request.AwardRequestDto;
 import page.clab.api.domain.award.dto.request.AwardUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
@@ -63,6 +64,16 @@ public class Award {
         Optional.ofNullable(awardUpdateRequestDto.getOrganizer()).ifPresent(this::setOrganizer);
         Optional.ofNullable(awardUpdateRequestDto.getAwardName()).ifPresent(this::setAwardName);
         Optional.ofNullable(awardUpdateRequestDto.getAwardDate()).ifPresent(this::setAwardDate);
+    }
+
+    public boolean isOwner(Member member) {
+        return this.member.equals(member);
+    }
+
+    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isAdminRole()) {
+            throw new PermissionDeniedException("해당 게시글을 수정/삭제할 권한이 없습니다.");
+        }
     }
 
 }
