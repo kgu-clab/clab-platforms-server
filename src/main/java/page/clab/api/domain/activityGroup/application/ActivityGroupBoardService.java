@@ -31,7 +31,6 @@ import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -105,44 +104,31 @@ public class ActivityGroupBoardService {
     public List<AssignmentSubmissionWithFeedbackResponseDto> getMyAssignmentsWithFeedbacks(Long parentId) {
         Member currentMember = memberService.getCurrentMember();
         ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
-        List<ActivityGroupBoard> mySubmissions = parentBoard.getChildren().stream()
-                .filter(child -> child.getCategory() == ActivityGroupBoardCategory.SUBMIT && child.getMember().equals(currentMember))
+        List<ActivityGroupBoard> mySubmissions = activityGroupBoardRepository.findMySubmissionsWithFeedbacks(parentId, currentMember.getId());
+        return mySubmissions.stream()
+                .map(submission -> {
+                    List<FeedbackResponseDto> feedbackDtos = submission.getChildren().stream()
+                            .filter(ActivityGroupBoard::isFeedback)
+                            .map(FeedbackResponseDto::of)
+                            .collect(Collectors.toList());
+                    return AssignmentSubmissionWithFeedbackResponseDto.of(submission, feedbackDtos);
+                })
                 .toList();
-        List<AssignmentSubmissionWithFeedbackResponseDto> submissionsWithFeedbacks = new ArrayList<>();
-        for (ActivityGroupBoard submission : mySubmissions) {
-            AssignmentSubmissionWithFeedbackResponseDto submissionDto = AssignmentSubmissionWithFeedbackResponseDto.of(submission);
-            List<FeedbackResponseDto> feedbackDtos = submission.getChildren().stream()
-                    .filter(feedback -> feedback.getCategory() == ActivityGroupBoardCategory.FEEDBACK)
-                    .map(FeedbackResponseDto::of)
-                    .toList();
-            submissionDto.setFeedbacks(feedbackDtos);
-            submissionsWithFeedbacks.add(submissionDto);
-        }
-        return submissionsWithFeedbacks;
     }
 
     public ActivityGroupBoardUpdateResponseDto updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardUpdateRequestDto activityGroupBoardUpdateRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        if (!member.getId().equals(board.getMember().getId()) && !member.isAdminRole()) {
-            throw new PermissionDeniedException("활동 그룹 게시판 작성자 또는 운영진만 수정할 수 있습니다.");
-        }
+        board.validateAccessPermission(currentMember);
         board.update(activityGroupBoardUpdateRequestDto, fileService);
-        board.setUpdateTime(LocalDateTime.now());
-        return ActivityGroupBoardUpdateResponseDto.builder()
-                .id(activityGroupBoardRepository.save(board).getId())
-                .parentId(board.getParent() != null ? board.getParent().getId() : null)
-                .build();
+        ActivityGroupBoard savedBoard = activityGroupBoardRepository.save(board);
+        return ActivityGroupBoardUpdateResponseDto.create(savedBoard);
     }
 
     public Long deleteActivityGroupBoard(Long activityGroupBoardId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-
-        if (!member.getId().equals(board.getMember().getId()) && !member.isAdminRole()) {
-            throw new PermissionDeniedException("활동 그룹 게시판 작성자 또는 운영진만 삭제할 수 있습니다.");
-        }
-
+        board.validateAccessPermission(member);
         activityGroupBoardRepository.delete(board);
         return board.getId();
     }

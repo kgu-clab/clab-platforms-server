@@ -105,14 +105,33 @@ public class ActivityGroupBoard {
                             .collect(Collectors.toList());
                     setUploadedFiles(uploadedFiles);
                 });
+        this.updateTime = LocalDateTime.now();
     }
 
     public void addChild(ActivityGroupBoard child) {
         this.children.add(child);
     }
 
+    public boolean isOwner(Member member) {
+        return this.member.isSameMember(member);
+    }
+
+    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isAdminRole()) {
+            throw new PermissionDeniedException("해당 활동 그룹 게시판을 수정/삭제할 권한이 없습니다.");
+        }
+    }
+
     public boolean isAssignment() {
         return this.category.equals(ActivityGroupBoardCategory.ASSIGNMENT);
+    }
+
+    public boolean isSubmit() {
+        return this.category.equals(ActivityGroupBoardCategory.SUBMIT);
+    }
+
+    public boolean isFeedback() {
+        return this.category.equals(ActivityGroupBoardCategory.FEEDBACK);
     }
 
     public void validateAccessPermission(Member member, GroupMember leader) throws PermissionDeniedException {
