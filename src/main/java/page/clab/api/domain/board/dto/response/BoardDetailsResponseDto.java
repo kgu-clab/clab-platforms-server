@@ -25,6 +25,8 @@ public class BoardDetailsResponseDto {
 
     private String writer;
 
+    private Long writerRoleLevel;
+
     private String memberImageUrl;
 
     private String title;
