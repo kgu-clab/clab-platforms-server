@@ -7,7 +7,6 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.verificationCode.dao.VerificationCodeRepository;
 import page.clab.api.global.common.verificationCode.domain.VerificationCode;
 import page.clab.api.global.common.verificationCode.dto.request.VerificationCodeRequestDto;
-import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 
 import java.security.SecureRandom;
@@ -24,10 +23,7 @@ public class VerificationCodeService {
     }
     
     public void saveVerificationCode(String memberId, String verificationCode) {
-        VerificationCode code = VerificationCode.builder()
-                .id(memberId)
-                .verificationCode(verificationCode)
-                .build();
+        VerificationCode code = VerificationCode.create(memberId, verificationCode);
         verificationCodeRepository.save(code);
     }
 
@@ -38,9 +34,7 @@ public class VerificationCodeService {
 
     public VerificationCode validateVerificationCode(VerificationCodeRequestDto verificationCodeRequestDto, Member member) {
         VerificationCode verificationCode = getVerificationCode(verificationCodeRequestDto.getVerificationCode());
-        if (!verificationCode.getId().equals(member.getId())) {
-            throw new InvalidInformationException("올바르지 않은 인증 요청입니다.");
-        }
+        verificationCode.validateRequest(member.getId());
         return verificationCode;
     }
 
