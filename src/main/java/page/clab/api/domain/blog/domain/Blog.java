@@ -17,6 +17,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.blog.dto.request.BlogRequestDto;
 import page.clab.api.domain.blog.dto.request.BlogUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
@@ -54,8 +55,10 @@ public class Blog {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    public static Blog of(BlogRequestDto blogRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(blogRequestDto, Blog.class);
+    public static Blog create(BlogRequestDto blogRequestDto, Member member) {
+        Blog blog = ModelMapperUtil.getModelMapper().map(blogRequestDto, Blog.class);
+        blog.setMember(member);
+        return blog;
     }
 
     public void update(BlogUpdateRequestDto blogUpdateRequestDto) {
@@ -63,6 +66,16 @@ public class Blog {
         Optional.ofNullable(blogUpdateRequestDto.getSubTitle()).ifPresent(this::setSubTitle);
         Optional.ofNullable(blogUpdateRequestDto.getContent()).ifPresent(this::setContent);
         Optional.ofNullable(blogUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
+    }
+
+    public boolean isOwner(Member member) {
+        return this.member.isSameMember(member);
+    }
+
+    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isAdminRole()) {
+            throw new PermissionDeniedException("해당 게시글을 수정/삭제할 권한이 없습니다.");
+        }
     }
 
 }

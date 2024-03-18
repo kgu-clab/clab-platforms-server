@@ -18,27 +18,13 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-
     public Long createProduct(ProductRequestDto productRequestDto) {
         Product product = Product.of(productRequestDto);
         return productRepository.save(product).getId();
     }
 
-    public PagedResponseDto<ProductResponseDto> getProducts(Pageable pageable) {
-        Page<Product> products = productRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(products.map(ProductResponseDto::of));
-    }
-
-    public PagedResponseDto<ProductResponseDto> searchProduct(String productName, Pageable pageable) {
-        Page<Product> products;
-        if (productName != null) {
-            products = getProductByNameContaining(productName, pageable);
-        } else {
-            throw new IllegalArgumentException("검색어를 입력해주세요.");
-        }
-        if (products.isEmpty()) {
-            throw new NotFoundException("검색 결과가 없습니다.");
-        }
+    public PagedResponseDto<ProductResponseDto> getProductsByConditions(String productName, Pageable pageable) {
+        Page<Product> products = productRepository.findByConditions(productName, pageable);
         return new PagedResponseDto<>(products.map(ProductResponseDto::of));
     }
 
@@ -57,10 +43,6 @@ public class ProductService {
     private Product getProductByIdOrThrow(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("해당 서비스가 존재하지 않습니다."));
-    }
-
-    private Page<Product> getProductByNameContaining(String productName, Pageable pageable) {
-        return productRepository.findAllByNameContainingOrderByCreatedAtDesc(productName, pageable);
     }
 
 }

@@ -16,8 +16,6 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
-import java.time.LocalDate;
-
 @Service
 @RequiredArgsConstructor
 public class AwardService {
@@ -28,9 +26,14 @@ public class AwardService {
 
     public Long createAward(AwardRequestDto awardRequestDto) {
         Member member = memberService.getCurrentMember();
-        Award award = Award.of(awardRequestDto);
-        award.setMember(member);
-        return save(award).getId();
+        Award award = Award.create(awardRequestDto, member);
+        return awardRepository.save(award).getId();
+    }
+
+    @Transactional
+    public PagedResponseDto<AwardResponseDto> getAwardsByConditions(String memberId, Long year, Pageable pageable) {
+        Page<Award> awards = awardRepository.findByConditions(memberId, year, pageable);
+        return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
     }
 
     public PagedResponseDto<AwardResponseDto> getMyAwards(Pageable pageable) {
@@ -39,46 +42,20 @@ public class AwardService {
         return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
     }
 
-    @Transactional
-    public PagedResponseDto<AwardResponseDto> searchAwards(String memberId, Long year, Pageable pageable) {
-        Page<Award> awards = null;
-        if (memberId != null) {
-            Member member = memberService.getMemberByIdOrThrow(memberId);
-            awards = getAwardByMember(pageable, member);
-        } else if (year != null) {
-            awards = getAwardByYear(pageable, year);
-        } else {
-            throw new NotFoundException("적어도 학번 혹은 연도 중 하나는 입력해야 합니다.");
-        }
-        return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
-    }
-
     public Long updateAward(Long awardId, AwardUpdateRequestDto awardUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
-        if (!isMemberHasAuthorityToManipulate(member, award)) {
-            throw new PermissionDeniedException("해당 수상 이력을 수정할 권한이 없습니다.");
-        }
+        award.validateAccessPermission(member);
         award.update(awardUpdateRequestDto);
-        return save(award).getId();
+        return awardRepository.save(award).getId();
     }
 
     public Long deleteAward(Long awardId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
-        if (!isMemberHasAuthorityToManipulate(member, award)) {
-            throw new PermissionDeniedException("해당 수상 이력을 삭제할 권한이 없습니다.");
-        }
-        delete(award);
+        award.validateAccessPermission(member);
+        awardRepository.delete(award);
         return award.getId();
-    }
-
-    private boolean isMemberAwardee(Member member, Award award) {
-        return award.getMember().getId().equals(member.getId());
-    }
-
-    private boolean isMemberHasAuthorityToManipulate(Member member, Award award) {
-        return (isMemberAwardee(member, award) || memberService.isMemberSuperRole(member));
     }
 
     private Award getAwardByIdOrThrow(Long awardId) {
@@ -88,20 +65,6 @@ public class AwardService {
 
     private Page<Award> getAwardByMember(Pageable pageable, Member member) {
         return awardRepository.findAllByMemberOrderByAwardDateDesc(member, pageable);
-    }
-
-    private Page<Award> getAwardByYear(Pageable pageable, Long year){
-        LocalDate startOfYear = LocalDate.of(year.intValue(), 1, 1);
-        LocalDate endOfYear = LocalDate.of(year.intValue(), 12, 31);
-        return awardRepository.findAllByAwardDateBetween(startOfYear, endOfYear, pageable);
-    }
-
-    private Award save(Award award) {
-        return awardRepository.save(award);
-    }
-
-    private void delete(Award award) {
-        awardRepository.delete(award);
     }
 
 }

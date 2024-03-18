@@ -1,10 +1,8 @@
 package page.clab.api.domain.board.application;
 
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,13 +18,16 @@ import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.RandomNicknameUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,34 +41,21 @@ public class BoardService {
 
     private final BoardLikeRepository boardLikeRepository;
 
-    private final RandomNicknameUtil randomNicknameUtil;
-
     private final FileService fileService;
 
     @Transactional
-    public Long createBoard(BoardRequestDto boardRequestDto) {
+    public Long createBoard(BoardRequestDto dto) {
         Member member = memberService.getCurrentMember();
-        Board board = Board.of(boardRequestDto);
-        List<String> fileUrls = boardRequestDto.getFileUrlList();
-        if (fileUrls != null) {
-            List<UploadedFile> uploadFileList =  fileUrls.stream()
-                    .map(fileService::getUploadedFileByUrl)
-                    .collect(Collectors.toList());
-            board.setUploadedFiles(uploadFileList);
+        List<UploadedFile> uploadedFiles = prepareUploadedFiles(dto.getFileUrlList());
+        Board board = Board.create(dto, member, uploadedFiles);
+
+        if (board.shouldNotifyForNewBoard()) {
+            notificationService.sendNotificationToMember(
+                    member,
+                    "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다."
+            );
         }
-        board.setMember(member);
-        board.setNickName(randomNicknameUtil.makeRandomNickname());
-        board.setWantAnonymous(boardRequestDto.isWantAnonymous());
-        board.setLikes(0L);
-        Long id = boardRepository.save(board).getId();
-        if (memberService.isMemberAdminRole(member) && boardRequestDto.getCategory().equals("공지사항")) {
-            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                    .memberId(member.getId())
-                    .content("[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDto);
-        }
-        return id;
+        return boardRepository.save(board).getId();
     }
 
     public PagedResponseDto<BoardListResponseDto> getBoards(Pageable pageable) {
@@ -78,10 +66,9 @@ public class BoardService {
     public BoardDetailsResponseDto getBoardDetails(Long boardId) {
         Member member = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
-        BoardDetailsResponseDto boardDetailsResponseDto = BoardDetailsResponseDto.of(board);
-        boardDetailsResponseDto.setHasLikeByMe(boardLikeRepository.existsByBoardIdAndMemberId(board.getId(), member.getId()));
-        boardDetailsResponseDto.setOwner(board.getMember().getId().equals(member.getId()));
-        return boardDetailsResponseDto;
+        boolean hasLikeByMe = checkLikeStatus(board, member);
+        boolean isOwner = board.isOwner(member);
+        return BoardDetailsResponseDto.create(board, hasLikeByMe, isOwner);
     }
 
     public PagedResponseDto<BoardCategoryResponseDto> getMyBoards(Pageable pageable) {
@@ -99,40 +86,31 @@ public class BoardService {
     public Long updateBoard(Long boardId, BoardUpdateRequestDto boardUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
-        if (!board.getMember().getId().equals(member.getId())) {
-            throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
-        }
+        board.checkPermission(member);
         board.update(boardUpdateRequestDto);
         return boardRepository.save(board).getId();
     }
 
-    public Long updateLikes(Long boardId) {
-        Member member = memberService.getCurrentMember();
+    @Transactional
+    public Long toggleLikeStatus(Long boardId) {
+        Member currentMember = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
-        BoardLike boardLike = boardLikeRepository.findByBoardIdAndMemberId(board.getId(), member.getId());
-
-        if (boardLike != null) {
-            board.setLikes(Math.min(board.getLikes() - 1, 0));
-            boardLikeRepository.delete(boardLike);
+        Optional<BoardLike> boardLikeOpt = boardLikeRepository.findByBoardIdAndMemberId(board.getId(), currentMember.getId());
+        if (boardLikeOpt.isPresent()) {
+            board.decrementLikes();
+            boardLikeRepository.delete(boardLikeOpt.get());
+        } else {
+            board.incrementLikes();
+            BoardLike newBoardLike = new BoardLike(currentMember.getId(), board.getId());
+            boardLikeRepository.save(newBoardLike);
         }
-        else {
-            board.setLikes(board.getLikes() + 1);
-            BoardLike newBoardLike = BoardLike.builder()
-                    .memberId(member.getId())
-                    .boardId(board.getId())
-                    .build();
-           boardLikeRepository.save(newBoardLike);
-        }
-
         return board.getLikes();
     }
 
     public Long deleteBoard(Long boardId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
-        if (!(board.getMember().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
-        }
+        board.checkPermission(currentMember);
         boardRepository.delete(board);
         return board.getId();
     }
@@ -152,6 +130,18 @@ public class BoardService {
 
     private Page<Board> getBoardByCategory(String category, Pageable pageable) {
         return boardRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
+    }
+
+    @NotNull
+    private List<UploadedFile> prepareUploadedFiles(List<String> fileUrls) {
+        if (fileUrls == null) return new ArrayList<>();
+        return fileUrls.stream()
+                .map(fileService::getUploadedFileByUrl)
+                .collect(Collectors.toList());
+    }
+
+    private boolean checkLikeStatus(Board board, Member member) {
+        return boardLikeRepository.existsByBoardIdAndMemberId(board.getId(), member.getId());
     }
 
 }

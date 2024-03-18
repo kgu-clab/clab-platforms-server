@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -39,43 +37,25 @@ public class ProductController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createProduct(
-            @Valid @RequestBody ProductRequestDto productRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody ProductRequestDto productRequestDto
+    ) {
         Long id = productService.createProduct(productRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
     }
 
-    @Operation(summary = "[U] 서비스 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 서비스 조회", description = "ROLE_USER 이상의 권한이 필요함<br> " +
+            "서비스명을 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getProducts(
+    public ResponseModel getProductsByConditions(
+            @RequestParam(required = false) String productName,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ProductResponseDto> productResponseDtos = productService.getProducts(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(productResponseDtos);
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 서비스 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "서비스명을 기준으로 검색")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/search")
-    public ResponseModel searchProduct(
-            @RequestParam String productName,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ProductResponseDto> productResponseDtos = productService.searchProduct(productName, pageable);
+        PagedResponseDto<ProductResponseDto> productResponseDtos = productService.getProductsByConditions(productName, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(productResponseDtos);
         return responseModel;
@@ -86,12 +66,8 @@ public class ProductController {
     @PatchMapping("/{productId}")
     public ResponseModel updateProduct(
             @PathVariable(name = "productId") Long productId,
-            @Valid @RequestBody ProductUpdateRequestDto productUpdateRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody ProductUpdateRequestDto productUpdateRequestDto
+    ) {
         Long id = productService.updateProduct(productId, productUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);

@@ -8,7 +8,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +16,9 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
+import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -42,19 +44,28 @@ public class Notification {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static Notification of(NotificationRequestDto notificationRequestDto) {
-        Notification notification = Notification.builder()
+    public static Notification create(NotificationRequestDto notificationRequestDto, Member member) {
+        return Notification.builder()
                 .content(notificationRequestDto.getContent())
-                .member(Member.builder().id(notificationRequestDto.getMemberId()).build())
+                .member(member)
                 .build();
-        return notification;
     }
 
-    public static Notification of(String content, Member receiver) {
+    public static Notification create(Member member, String content) {
         return Notification.builder()
                 .content(content)
-                .member(receiver)
+                .member(member)
                 .build();
+    }
+
+    public boolean isOwner(Member member) {
+        return this.member.isSameMember(member);
+    }
+
+    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+        if (!isOwner(member)) {
+            throw new PermissionDeniedException("해당 알림을 수정/삭제할 권한이 없습니다.");
+        }
     }
 
 }

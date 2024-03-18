@@ -1,19 +1,20 @@
 package page.clab.api.global.util;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Arrays;
 import java.util.List;
-import org.springframework.stereotype.Component;
 
 @Component
 public class RandomNicknameUtil {
 
-    private final int ADJECTIVE_SIZE = 15;
+    private static final int ADJECTIVE_SIZE = 15;
 
-    private final int COLOR_SIZE = 15;
+    private static final int COLOR_SIZE = 15;
 
-    private final int NOUN_SIZE = 25;
+    private static final int NOUN_SIZE = 25;
 
-    public String makeRandomNickname(){
+    public static String makeRandomNickname(){
         List<String> adjectiveArray = Arrays.asList(
                 "행복한", "기쁜", "배고픈", "졸린", "신난",
                 "잠자는", "코딩하는", "밥먹는", "책읽는", "알바하는",

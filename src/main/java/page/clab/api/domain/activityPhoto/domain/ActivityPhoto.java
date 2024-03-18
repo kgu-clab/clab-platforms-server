@@ -8,10 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +17,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityPhoto.dto.request.ActivityPhotoRequestDto;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -51,10 +52,15 @@ public class ActivityPhoto {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public static ActivityPhoto of(ActivityPhotoRequestDto activityPhotoRequestDto) {
+    public static ActivityPhoto create(ActivityPhotoRequestDto activityPhotoRequestDto, List<UploadedFile> uploadedFiles) {
         ActivityPhoto activityPhoto = ModelMapperUtil.getModelMapper().map(activityPhotoRequestDto, ActivityPhoto.class);
+        activityPhoto.uploadedFiles = uploadedFiles;
         activityPhoto.isPublic = false;
         return activityPhoto;
+    }
+
+    public void togglePublicStatus() {
+        this.isPublic = !this.isPublic;
     }
 
 }

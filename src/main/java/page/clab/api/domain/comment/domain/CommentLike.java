@@ -29,4 +29,9 @@ public class CommentLike {
 
     private Long commentId;
 
+    public CommentLike(String memberId, Long commentId) {
+        this.memberId = memberId;
+        this.commentId = commentId;
+    }
+
 }

@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -38,39 +36,24 @@ public class ActivityPhotoController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createActivityPhoto(
-            @Valid @RequestBody ActivityPhotoRequestDto activityPhotoRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody ActivityPhotoRequestDto activityPhotoRequestDto
+    ) {
         Long id = activityPhotoService.createActivityPhoto(activityPhotoRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
     }
 
-    @Operation(summary = "활동 사진 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Operation(summary = "활동 사진 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br> " +
+            "공개 여부를 입력하지 않으면 전체 조회됨")
     @GetMapping("")
-    public ResponseModel getActivityPhotos(
+    public ResponseModel getActivityPhotosByConditions(
+            @RequestParam(name = "isPublic", required = false) Boolean isPublic,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ActivityPhotoResponseDto> activityPhotos = activityPhotoService.getActivityPhotos(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(activityPhotos);
-        return responseModel;
-    }
-
-    @Operation(summary = "공개된 활동 사진 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
-    @GetMapping("/public")
-    public ResponseModel getPublicActivityPhotos(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ActivityPhotoResponseDto> activityPhotos = activityPhotoService.getPublicActivityPhotos(pageable);
+        PagedResponseDto<ActivityPhotoResponseDto> activityPhotos = activityPhotoService.getActivityPhotosByConditions(isPublic, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(activityPhotos);
         return responseModel;
@@ -79,10 +62,10 @@ public class ActivityPhotoController {
     @Operation(summary = "활동 사진 고정/해제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{activityPhotoId}")
-    public ResponseModel updateActivityPhoto(
+    public ResponseModel togglePublicStatus(
             @PathVariable(name = "activityPhotoId") Long activityPhotoId
     ) {
-        Long id = activityPhotoService.updateActivityPhoto(activityPhotoId);
+        Long id = activityPhotoService.togglePublicStatus(activityPhotoId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

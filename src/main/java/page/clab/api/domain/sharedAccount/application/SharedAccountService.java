@@ -19,8 +19,7 @@ public class SharedAccountService {
     private final SharedAccountRepository sharedAccountRepository;
 
     public Long createSharedAccount(SharedAccountRequestDto sharedAccountRequestDto) {
-        SharedAccount sharedAccount = SharedAccount.of(sharedAccountRequestDto);
-        sharedAccount.setInUse(false);
+        SharedAccount sharedAccount = SharedAccount.create(sharedAccountRequestDto);
         return sharedAccountRepository.save(sharedAccount).getId();
     }
 

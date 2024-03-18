@@ -1,9 +1,6 @@
 package page.clab.api.domain.comment.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +9,10 @@ import lombok.Setter;
 import lombok.ToString;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -26,6 +27,8 @@ public class CommentGetAllResponseDto {
     private String writer;
 
     private String writerImageUrl;
+
+    private Long writerRoleLevel;
 
     private String content;
 
@@ -42,6 +45,8 @@ public class CommentGetAllResponseDto {
 
     public static CommentGetAllResponseDto of(Comment comment, String currentMemberId) {
         CommentGetAllResponseDto commentGetAllResponseDto = ModelMapperUtil.getModelMapper().map(comment, CommentGetAllResponseDto.class);
+
+        commentGetAllResponseDto.setWriterRoleLevel(comment.getWriter().getRole().toLong());
 
         if(comment.isWantAnonymous()){
             commentGetAllResponseDto.setWriter(comment.getNickname());

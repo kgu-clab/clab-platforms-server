@@ -20,7 +20,9 @@ import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.global.util.RandomNicknameUtil;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -74,16 +76,51 @@ public class Comment {
     @Column(name = "want_anonymous", nullable = false)
     private boolean wantAnonymous;
 
-    private Long Likes;
+    private Long likes;
 
-    public static Comment of(CommentRequestDto commentRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(commentRequestDto, Comment.class);
+    public static Comment create(CommentRequestDto commentRequestDto, Board board, Member member, Comment parent) {
+        Comment comment = ModelMapperUtil.getModelMapper().map(commentRequestDto, Comment.class);
+        comment.setBoard(board);
+        comment.setWriter(member);
+        comment.setNickname(RandomNicknameUtil.makeRandomNickname());
+        comment.setLikes(0L);
+        comment.parent = parent;
+        return comment;
     }
 
     public void update(CommentUpdateRequestDto commentUpdateRequestDto) {
         Optional.ofNullable(commentUpdateRequestDto.getContent()).ifPresent(this::setContent);
         Optional.of(commentUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
         this.setUpdateTime(LocalDateTime.now());
+    }
+
+    public void addChildComment(Comment child) {
+        this.children.add(child);
+        child.setParent(this);
+    }
+
+    public String getWriterName() {
+        return this.wantAnonymous ? this.nickname : this.writer.getName();
+    }
+
+    public boolean isOwner(Member member) {
+        return this.writer.isSameMember(member);
+    }
+
+    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isAdminRole()) {
+            throw new PermissionDeniedException("해당 댓글을 수정/삭제할 권한이 없습니다.");
+        }
+    }
+
+    public void incrementLikes() {
+        this.likes++;
+    }
+
+    public void decrementLikes() {
+        if (this.likes > 0) {
+            this.likes--;
+        }
     }
 
 }

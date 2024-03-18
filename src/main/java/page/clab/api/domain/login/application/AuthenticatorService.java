@@ -17,38 +17,43 @@ public class AuthenticatorService {
 
     private final AuthenticatorRepository authenticatorRepository;
 
+    private final GoogleAuthenticator googleAuthenticator;
+
     public String generateSecretKey(String memberId) {
-        GoogleAuthenticator gAuth = new GoogleAuthenticator();
-        GoogleAuthenticatorKey key = gAuth.createCredentials();
+        GoogleAuthenticatorKey key = googleAuthenticator.createCredentials();
         String secretKey = key.getKey();
-        Authenticator authenticator = Authenticator.builder()
-                .memberId(memberId)
-                .secretKey(EncryptionUtil.encrypt(secretKey))
-                .build();
-        authenticatorRepository.save(authenticator);
+        saveAuthenticator(memberId, secretKey);
         return secretKey;
     }
 
     public boolean isAuthenticatorValid(String memberId, String totp) {
-        return isAuthenticatorExist(memberId) && validateTotp(memberId, totp);
+        Authenticator authenticator = getAuthenticatorById(memberId);
+        return authenticator != null && validateTotp(authenticator, totp);
     }
 
-    public boolean validateTotp(String memberId, String totp) {
-        GoogleAuthenticator gAuth = new GoogleAuthenticator();
-        Authenticator authenticator = getAuthenticatorByIdOrThrow(memberId);
+    private boolean validateTotp(Authenticator authenticator, String totp) {
         String secretKey = EncryptionUtil.decrypt(authenticator.getSecretKey());
-        return gAuth.authorize(secretKey, Integer.parseInt(totp));
+        return googleAuthenticator.authorize(secretKey, Integer.parseInt(totp));
     }
 
     public String resetAuthenticator(String memberId) {
         Authenticator authenticator = getAuthenticatorByIdOrThrow(memberId);
-        authenticatorRepository.deleteById(memberId);
-        return authenticator.getMemberId();
+        authenticatorRepository.delete(authenticator);
+        return memberId;
+    }
+
+    private Authenticator getAuthenticatorById(String memberId) {
+        return authenticatorRepository.findById(memberId).orElse(null);
     }
 
     public Authenticator getAuthenticatorByIdOrThrow(String memberId) {
         return authenticatorRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("해당 멤버의 Authenticator가 존재하지 않습니다."));
+    }
+
+    private void saveAuthenticator(String memberId, String secretKey) {
+        Authenticator authenticator = Authenticator.create(memberId, EncryptionUtil.encrypt(secretKey));
+        authenticatorRepository.save(authenticator);
     }
 
     public boolean isAuthenticatorExist(String memberId) {

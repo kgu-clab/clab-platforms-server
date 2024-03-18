@@ -3,6 +3,7 @@ package page.clab.api.domain.blacklistIp.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -11,18 +12,20 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.blacklistIp.application.BlacklistIpService;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
+import page.clab.api.domain.blacklistIp.dto.request.BlacklistIpRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
 @RequestMapping("/blacklists")
 @RequiredArgsConstructor
-@Tag(name = "Blacklist", description = "블랙리스트")
+@Tag(name = "Blacklist IP", description = "블랙리스트 IP")
 @Slf4j
 public class BlacklistIpController {
 
@@ -33,9 +36,9 @@ public class BlacklistIpController {
     @PostMapping("")
     public ResponseModel addBlacklistedIp(
             HttpServletRequest request,
-            @RequestParam(name = "ipAddress") String ipAddress
+            @Valid @RequestBody BlacklistIpRequestDto blacklistIpRequestDto
     ) {
-        String addedIp = blacklistIpService.addBlacklistedIp(request, ipAddress);
+        String addedIp = blacklistIpService.addBlacklistedIp(request, blacklistIpRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(addedIp);
         return responseModel;

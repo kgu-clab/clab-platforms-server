@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -43,19 +41,15 @@ public class CommentController {
     public ResponseModel createComment(
             @RequestParam(name = "parentId", required = false) Long parentId,
             @PathVariable(name = "boardId") Long boardId,
-            @Valid @RequestBody CommentRequestDto commentRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody CommentRequestDto commentRequestDto
+    ) {
         Long id = commentService.createComment(parentId, boardId, commentRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
     }
 
-    @Operation(summary = "[U] 댓글 리스트 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 댓글 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{boardId}")
     public ResponseModel getComments(
@@ -64,7 +58,7 @@ public class CommentController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<CommentGetAllResponseDto> comments = commentService.getComments(boardId, pageable);
+        PagedResponseDto<CommentGetAllResponseDto> comments = commentService.getAllComments(boardId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(comments);
         return responseModel;
@@ -89,12 +83,8 @@ public class CommentController {
     @PatchMapping("/{commentId}")
     public ResponseModel updateComment(
             @PathVariable(name = "commentId") Long commentId,
-            @Valid @RequestBody CommentUpdateRequestDto commentUpdateRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException, PermissionDeniedException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody CommentUpdateRequestDto commentUpdateRequestDto
+    ) throws PermissionDeniedException {
         Long id = commentService.updateComment(commentId, commentUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -116,10 +106,10 @@ public class CommentController {
     @PostMapping("/likes/{commentId}")
     @Operation(summary = "[U] 댓글 좋아요 누르기/취소하기", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel updateLikes(
+    public ResponseModel toggleLikeStatus(
             @PathVariable(name = "commentId") Long commentId
     ) {
-        Long id = commentService.updateLikes(commentId);
+        Long id = commentService.toggleLikeStatus(commentId);
         ResponseModel responseModel= ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
