@@ -65,7 +65,7 @@ public class ActivityGroupBoardService {
         ActivityGroupBoard parentBoard = parentId != null ? getActivityGroupBoardByIdOrThrow(parentId) : null;
         ActivityGroupBoard board = ActivityGroupBoard.create(dto, member, activityGroup, parentBoard, uploadedFiles);
         if (parentId != null) {
-            parentBoard.getChildren().add(board);
+            parentBoard.addChild(board);
             activityGroupBoardRepository.save(parentBoard);
         }
         activityGroupBoardRepository.save(board);
@@ -89,24 +89,16 @@ public class ActivityGroupBoardService {
     }
 
     public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
         Long activityGroupId = parentBoard.getActivityGroup().getId();
+
         GroupMember leader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
+        parentBoard.validateAccessPermission(currentMember, leader);
 
-        if (!member.isAdminRole() &&
-                leader != null &&
-                !leader.getMember().getId()
-                        .equals(member.getId())
-        ) {
-            if (parentBoard.getCategory().equals(ActivityGroupBoardCategory.ASSIGNMENT)) {
-                throw new PermissionDeniedException("제출 카테고리 게시물 전체는 그룹의 리더 또는 관리자만 열람할 수 있습니다.");
-            }
-        }
-
-        List<ActivityGroupBoard> boardList = getChildBoards(parentId);
-        Page<ActivityGroupBoard> boardPage = new PageImpl<>(boardList, pageable, boardList.size());
-        return new PagedResponseDto<>(boardPage.map(ActivityGroupBoardChildResponseDto::of));
+        List<ActivityGroupBoard> childBoards = getChildBoards(parentId);
+        Page<ActivityGroupBoard> boards = new PageImpl<>(childBoards, pageable, childBoards.size());
+        return new PagedResponseDto<>(boards.map(ActivityGroupBoardChildResponseDto::of));
     }
 
     @Transactional
