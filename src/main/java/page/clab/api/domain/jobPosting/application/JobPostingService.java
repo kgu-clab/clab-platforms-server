@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.jobPosting.dao.JobPostingRepository;
 import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
@@ -32,11 +33,13 @@ public class JobPostingService {
         return existingJobPosting.updateFromRequestDto(jobPostingRequestDto);
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<JobPostingResponseDto> getJobPostingsByConditions(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable) {
         Page<JobPosting> jobPostings = jobPostingRepository.findByConditions(title, companyName, careerLevel, employmentType, pageable);
         return new PagedResponseDto<>(jobPostings.map(JobPostingResponseDto::of));
     }
 
+    @Transactional(readOnly = true)
     public JobPostingDetailsResponseDto getJobPosting(Long jobPostingId) {
         JobPosting jobPosting = getJobPostingByIdOrThrow(jobPostingId);
         return JobPostingDetailsResponseDto.of(jobPosting);

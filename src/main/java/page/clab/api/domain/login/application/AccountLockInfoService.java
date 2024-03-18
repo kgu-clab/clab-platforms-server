@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.login.dao.AccountLockInfoRepository;
 import page.clab.api.domain.login.domain.AccountLockInfo;
 import page.clab.api.domain.login.dto.response.AccountLockInfoResponseDto;
@@ -62,6 +63,7 @@ public class AccountLockInfoService {
         return accountLockInfoRepository.save(accountLockInfo).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<AccountLockInfoResponseDto> getBanList(Pageable pageable) {
         LocalDateTime banDate = LocalDateTime.of(9999, 12, 31, 23, 59);
         Page<AccountLockInfo> banList = accountLockInfoRepository.findByLockUntil(banDate, pageable);

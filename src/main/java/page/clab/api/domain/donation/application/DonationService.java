@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.donation.dao.DonationRepository;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.dto.request.DonationRequestDto;
@@ -31,11 +32,13 @@ public class DonationService {
         return donationRepository.save(donation).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<DonationResponseDto> getDonationsByConditions(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Page<Donation> donations = donationRepository.findByConditions(memberId, name, startDate, endDate, pageable);
         return new PagedResponseDto<>(donations.map(DonationResponseDto::of));
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<DonationResponseDto> getMyDonations(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Donation> donations = getDonationsByDonor(member, pageable);

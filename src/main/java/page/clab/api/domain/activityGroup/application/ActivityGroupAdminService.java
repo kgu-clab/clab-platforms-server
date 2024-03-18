@@ -1,11 +1,11 @@
 package page.clab.api.domain.activityGroup.application;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activityGroup.dao.ApplyFormRepository;
 import page.clab.api.domain.activityGroup.dao.GroupScheduleRepository;
@@ -126,6 +126,7 @@ public class ActivityGroupAdminService {
         return activityGroup.getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupMemberWithApplyReasonResponseDto> getGroupMembersWithApplyReason(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);

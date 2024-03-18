@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.workExperience.dao.WorkExperienceRepository;
@@ -29,12 +30,14 @@ public class WorkExperienceService {
         return workExperienceRepository.save(workExperience).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<WorkExperienceResponseDto> getMyWorkExperience(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMemberOrderByStartDateDesc(member, pageable);
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::of));
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<WorkExperienceResponseDto> getWorkExperiencesByConditions(String memberId, Pageable pageable) {
         Member member = memberService.getMemberByIdOrThrow(memberId);
         Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMemberOrderByStartDateDesc(member, pageable);

@@ -1,12 +1,12 @@
 package page.clab.api.domain.application.application;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.application.dao.ApplicationRepository;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.domain.ApplicationId;
@@ -45,6 +45,7 @@ public class ApplicationService {
         return applicationRepository.save(application).getStudentId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ApplicationResponseDto> getApplicationsByConditions(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable) {
         Page<Application> applications = applicationRepository.findByConditions(recruitmentId, studentId, isPass, pageable);
         return new PagedResponseDto<>(applications.map(ApplicationResponseDto::of));
@@ -56,6 +57,7 @@ public class ApplicationService {
         return applicationRepository.save(application).getStudentId();
     }
 
+    @Transactional(readOnly = true)
     public ApplicationPassResponseDto getApplicationPass(Long recruitmentId, String studentId) {
         ApplicationId id = new ApplicationId(studentId, recruitmentId);
         return applicationRepository.findById(id)

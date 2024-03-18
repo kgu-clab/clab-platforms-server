@@ -1,11 +1,11 @@
 package page.clab.api.domain.activityGroup.application;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupDetailsRepository;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupRepository;
@@ -60,11 +60,13 @@ public class ActivityGroupMemberService {
 
     private final ActivityGroupDetailsRepository activityGroupDetailsRepository;
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupResponseDto> getActivityGroups(Pageable pageable) {
         Page<ActivityGroup> activityGroupList = activityGroupRepository.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
     }
 
+    @Transactional(readOnly = true)
     public Object getActivityGroup(Long activityGroupId) {
         ActivityGroupDetails details = activityGroupDetailsRepository.fetchActivityGroupDetails(activityGroupId);
         Member currentMember = memberService.getCurrentMember();
@@ -81,6 +83,7 @@ public class ActivityGroupMemberService {
         }
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupStatusResponseDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus, Pageable pageable) {
         List<ActivityGroup> activityGroups = activityGroupRepository.findActivityGroupsByStatus(activityGroupStatus);
         List<ActivityGroupStatusResponseDto> dtos = activityGroups.stream().map(activityGroup -> {
@@ -93,16 +96,19 @@ public class ActivityGroupMemberService {
         return new PagedResponseDto<>(dtos, pageable, dtos.size());
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByCategory(ActivityGroupCategory category, Pageable pageable) {
         Page<ActivityGroup> activityGroupList = getActivityGroupByCategory(category, pageable);
         return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<GroupScheduleDto> getGroupSchedules(Long activityGroupId, Pageable pageable) {
         Page<GroupSchedule> groupSchedules = getGroupScheduleByActivityGroupId(activityGroupId, pageable);
         return new PagedResponseDto<>(groupSchedules.map(GroupScheduleDto::of));
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<GroupMemberResponseDto> getActivityGroupMembers(Long activityGroupId, Pageable pageable) {
         Page<GroupMember> groupMembers = getGroupMemberByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.ACCEPTED, pageable);
         return new PagedResponseDto<>(groupMembers.map(GroupMemberResponseDto::of));

@@ -1,11 +1,11 @@
 package page.clab.api.domain.book.application;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.book.dao.BookLoanRecordRepository;
 import page.clab.api.domain.book.dao.BookRepository;
 import page.clab.api.domain.book.domain.Book;
@@ -87,6 +87,7 @@ public class BookLoanRecordService {
         return bookLoanRecordRepository.save(bookLoanRecord).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<BookLoanRecordResponseDto> getBookLoanRecordsByConditions(Long bookId, String borrowerId, Boolean isReturned, Pageable pageable) {
         Page<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordRepository.findByConditions(bookId, borrowerId, isReturned, pageable);
         return new PagedResponseDto<>(bookLoanRecords);

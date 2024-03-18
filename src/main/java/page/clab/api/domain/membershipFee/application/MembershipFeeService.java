@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.membershipFee.dao.MembershipFeeRepository;
@@ -33,6 +34,7 @@ public class MembershipFeeService {
         return membershipFeeRepository.save(membershipFee).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<MembershipFeeResponseDto> getMembershipFeesByConditions(String memberId, String memberName, String category, Pageable pageable) {
         Page<MembershipFee> membershipFeesPage = membershipFeeRepository.findByConditions(memberId, memberName, category, pageable);
         return new PagedResponseDto<>(membershipFeesPage.map(MembershipFeeResponseDto::of));

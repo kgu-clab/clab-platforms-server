@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activityGroup.application.ActivityGroupAdminService;
 import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
@@ -44,12 +45,14 @@ public class ScheduleService {
         return scheduleRepository.save(schedule).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> getSchedulesWithinDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Schedule> schedules = scheduleRepository.findByDateRangeAndMember(startDate, endDate, member, pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::of));
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> getActivitySchedules(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Schedule> schedules = scheduleRepository.findActivitySchedulesByDateRangeAndMember(startDate, endDate, member, pageable);

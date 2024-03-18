@@ -1,6 +1,5 @@
 package page.clab.api.domain.member.application;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.application.dao.ApplicationRepository;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.exception.NotApprovedApplicationException;
@@ -93,11 +93,19 @@ public class MemberService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<MemberResponseDto> getMembersByConditions(String id, String name, Pageable pageable) {
         Page<Member> members = memberRepository.findByConditions(id, name, pageable);
         return new PagedResponseDto<>(members.map(MemberResponseDto::of));
     }
 
+    @Transactional(readOnly = true)
+    public MyProfileResponseDto getMyProfile() {
+        Member currentMember = getCurrentMember();
+        return MyProfileResponseDto.of(currentMember);
+    }
+
+    @Transactional(readOnly = true)
     public PagedResponseDto<MemberBirthdayResponseDto> getBirthdaysThisMonth(int month, Pageable pageable) {
         Page<Member> birthdayMembers = memberRepository.findBirthdaysThisMonth(month, pageable);
         return new PagedResponseDto<>(birthdayMembers.map(MemberBirthdayResponseDto::of));
@@ -124,11 +132,6 @@ public class MemberService {
         Member member = getMemberByIdOrThrow(verificationCodeRequestDto.getMemberId());
         VerificationCode verificationCode = verificationCodeService.validateVerificationCode(verificationCodeRequestDto, member);
         updateMemberPasswordWithVerificationCode(verificationCode.getVerificationCode(), member);
-    }
-
-    public MyProfileResponseDto getMyProfile() {
-        Member currentMember = getCurrentMember();
-        return MyProfileResponseDto.of(currentMember);
     }
 
     public Member getMemberById(String memberId) {

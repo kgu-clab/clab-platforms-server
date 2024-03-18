@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupReportRepository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupReport;
@@ -37,12 +38,14 @@ public class ActivityGroupReportService {
         return activityGroupReportRepository.save(report).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupReportResponseDto> getReports(Long activityGroupId, Pageable pageable){
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
         Page<ActivityGroupReport> reports = activityGroupReportRepository.findAllByActivityGroup(activityGroup, pageable);
         return new PagedResponseDto<>(reports.map(ActivityGroupReportResponseDto::of));
     }
 
+    @Transactional(readOnly = true)
     public ActivityGroupReportResponseDto searchReport(Long activityGroupId, Long turn){
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
         ActivityGroupReport report = activityGroupReportRepository.findByActivityGroupAndTurn(activityGroup, turn);

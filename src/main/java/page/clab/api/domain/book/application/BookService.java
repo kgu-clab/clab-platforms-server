@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.book.dao.BookLoanRecordRepository;
 import page.clab.api.domain.book.dao.BookRepository;
 import page.clab.api.domain.book.domain.Book;
@@ -30,11 +31,13 @@ public class BookService {
         return bookRepository.save(book).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<BookResponseDto> getBooksByConditions(String title, String category, String publisher, String borrowerId, String borrowerName, Pageable pageable) {
         List<Book> books = bookRepository.findByConditions(title, category, publisher, borrowerId, borrowerName);
         return getBookResponseDtoPagedResponseDto(books, pageable);
     }
 
+    @Transactional(readOnly = true)
     public BookResponseDto getBookDetails(Long bookId) {
         Book book = getBookByIdOrThrow(bookId);
         return mapToBookResponseDto(book);

@@ -2,7 +2,6 @@ package page.clab.api.domain.activityGroup.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -126,7 +125,7 @@ public class ActivityGroupMemberController {
     public ResponseModel applyActivityGroup(
             @RequestParam Long activityGroupId,
             @Valid @RequestBody ApplyFormRequestDto formRequestDto
-    ) throws MessagingException {
+    ) {
         Long id = activityGroupMemberService.applyActivityGroup(activityGroupId, formRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);

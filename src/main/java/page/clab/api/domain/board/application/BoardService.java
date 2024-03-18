@@ -1,11 +1,11 @@
 package page.clab.api.domain.board.application;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.dao.BoardLikeRepository;
 import page.clab.api.domain.board.dao.BoardRepository;
 import page.clab.api.domain.board.domain.Board;
@@ -58,11 +58,13 @@ public class BoardService {
         return boardRepository.save(board).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<BoardListResponseDto> getBoards(Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(boards.map(BoardListResponseDto::of));
     }
 
+    @Transactional(readOnly = true)
     public BoardDetailsResponseDto getBoardDetails(Long boardId) {
         Member member = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
@@ -71,12 +73,14 @@ public class BoardService {
         return BoardDetailsResponseDto.create(board, hasLikeByMe, isOwner);
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<BoardCategoryResponseDto> getMyBoards(Pageable pageable) {
         Member member = memberService.getCurrentMember();
         Page<Board> boards = getBoardByMember(pageable, member);
         return new PagedResponseDto<>(boards.map(BoardCategoryResponseDto::of));
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<BoardCategoryResponseDto> getBoardsByCategory(String category, Pageable pageable) {
         Page<Board> boards;
         boards = getBoardByCategory(category, pageable);
