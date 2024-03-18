@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 
+import java.util.List;
+
 @Repository
 public interface ActivityGroupBoardRepository extends JpaRepository<ActivityGroupBoard, Long>, ActivityGroupBoardRepositoryCustom, QuerydslPredicateExecutor<ActivityGroupBoard> {
 
@@ -16,5 +18,7 @@ public interface ActivityGroupBoardRepository extends JpaRepository<ActivityGrou
     Page<ActivityGroupBoard> findAllByActivityGroup_IdAndCategoryOrderByCreatedAtDesc(Long activityGroupId, ActivityGroupBoardCategory category, Pageable pageable);
 
     Long countByActivityGroupIdAndCategory(Long id, ActivityGroupBoardCategory category);
+
+    List<ActivityGroupBoard> findAllChildrenByParentId(Long activityGroupBoardId);
 
 }
