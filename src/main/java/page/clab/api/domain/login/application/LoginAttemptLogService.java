@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.login.dao.LoginAttemptLogRepository;
 import page.clab.api.domain.login.domain.GeoIpInfo;
 import page.clab.api.domain.login.domain.LoginAttemptLog;
@@ -27,6 +28,7 @@ public class LoginAttemptLogService {
         loginAttemptLogRepository.save(loginAttemptLog);
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<LoginAttemptLogResponseDto> getLoginAttemptLogs(String memberId, Pageable pageable) {
         Page<LoginAttemptLog> loginAttemptLogs = getLoginAttemptByMemberId(pageable, memberId);
         return new PagedResponseDto<>(loginAttemptLogs.map(LoginAttemptLogResponseDto::of));

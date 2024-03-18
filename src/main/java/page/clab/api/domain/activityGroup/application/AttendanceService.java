@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activityGroup.dao.AbsentRepository;
 import page.clab.api.domain.activityGroup.dao.AttendanceRepository;
 import page.clab.api.domain.activityGroup.domain.Absent;
@@ -86,6 +87,7 @@ public class AttendanceService {
         return attendanceRepository.save(attendance).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<AttendanceResponseDto> getMyAttendances(Long activityGroupId, Pageable pageable) throws IllegalAccessException {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = validateGroupAndMemberForAttendance(activityGroupId, member);
@@ -93,6 +95,7 @@ public class AttendanceService {
         return new PagedResponseDto<>(attendances.map(AttendanceResponseDto::of));
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<AttendanceResponseDto> getGroupAttendances(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupWithValidPermissions(activityGroupId, member);
@@ -108,6 +111,7 @@ public class AttendanceService {
         return absentRepository.save(absent).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<AbsentResponseDto> getActivityGroupAbsentExcuses(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupWithPermissionCheck(activityGroupId, member);

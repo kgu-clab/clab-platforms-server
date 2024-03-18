@@ -1,11 +1,11 @@
 package page.clab.api.domain.review.application;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
@@ -47,15 +47,17 @@ public class ReviewService {
         return reviewRepository.save(review).getId();
     }
 
-    public PagedResponseDto<ReviewResponseDto> getMyReviews(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
-        Page<Review> reviews = getReviewByMember(currentMember, pageable);
-        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, currentMember)));
-    }
-
+    @Transactional(readOnly = true)
     public PagedResponseDto<ReviewResponseDto> getReviewsByConditions(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Review> reviews = reviewRepository.findByConditions(memberId, memberName, activityId, isPublic, pageable);
+        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, currentMember)));
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<ReviewResponseDto> getMyReviews(Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
+        Page<Review> reviews = getReviewByMember(currentMember, pageable);
         return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, currentMember)));
     }
 

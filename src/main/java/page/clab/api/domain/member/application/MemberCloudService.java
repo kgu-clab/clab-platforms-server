@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.dao.MemberRepository;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
@@ -29,11 +30,13 @@ public class MemberCloudService {
     @Value("${resource.file.path}")
     private String filePath;
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<CloudUsageInfo> getAllCloudUsages(Pageable pageable) {
         Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(members.map(this::getCloudUsageForMember).getContent(), pageable, members.getSize());
     }
 
+    @Transactional(readOnly = true)
     public CloudUsageInfo getCloudUsageByMemberId(String memberId) throws PermissionDeniedException {
         Member currentMember = getCurrentMember();
         Member targetMember = validateMemberExistence(memberId);
@@ -43,6 +46,7 @@ public class MemberCloudService {
         return new CloudUsageInfo(targetMember.getId(), usage);
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<FileInfo> getFilesInMemberDirectory(String memberId, Pageable pageable) {
         validateMemberExistence(memberId);
         File directory = getMemberDirectory(memberId);

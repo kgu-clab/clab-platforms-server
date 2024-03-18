@@ -1,8 +1,8 @@
 package page.clab.api.domain.recruitment.application;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.recruitment.dao.RecruitmentRepository;
 import page.clab.api.domain.recruitment.domain.Recruitment;
@@ -29,6 +29,7 @@ public class RecruitmentService {
         return recruitmentRepository.save(recruitment).getId();
     }
 
+    @Transactional(readOnly = true)
     public List<RecruitmentResponseDto> getRecentRecruitments() {
         List<Recruitment> recruitments = recruitmentRepository.findTop5ByOrderByCreatedAtDesc();
         return recruitments.stream()

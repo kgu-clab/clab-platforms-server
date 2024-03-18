@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.sharedAccount.dao.SharedAccountRepository;
 import page.clab.api.domain.sharedAccount.domain.SharedAccount;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountRequestDto;
@@ -23,6 +24,7 @@ public class SharedAccountService {
         return sharedAccountRepository.save(sharedAccount).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<SharedAccountResponseDto> getSharedAccounts(Pageable pageable) {
         Page<SharedAccount> sharedAccounts = sharedAccountRepository.findAllByOrderByIdAsc(pageable);
         return new PagedResponseDto<>(sharedAccounts.map(SharedAccountResponseDto::of));

@@ -1,12 +1,12 @@
 package page.clab.api.domain.comment.application;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.application.BoardService;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.dao.CommentLikeRepository;
@@ -48,6 +48,7 @@ public class CommentService {
         return comment.getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<CommentGetAllResponseDto> getAllComments(Long boardId, Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByBoardIdAndParentIsNull(boardId, pageable);
@@ -56,6 +57,7 @@ public class CommentService {
         return new PagedResponseDto<>(commentDtos);
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<CommentGetMyResponseDto> getMyComments(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByWriter(currentMember, pageable);

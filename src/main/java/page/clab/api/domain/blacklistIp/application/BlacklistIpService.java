@@ -1,12 +1,12 @@
 package page.clab.api.domain.blacklistIp.application;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
 import page.clab.api.domain.blacklistIp.dto.request.BlacklistIpRequestDto;
@@ -36,6 +36,7 @@ public class BlacklistIpService {
                 });
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<BlacklistIp> getBlacklistedIps(Pageable pageable) {
         Page<BlacklistIp> blacklistedIps = blacklistIpRepository.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(blacklistedIps);

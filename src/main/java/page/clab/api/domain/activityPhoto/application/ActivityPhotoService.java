@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activityPhoto.dao.ActivityPhotoRepository;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.domain.activityPhoto.dto.request.ActivityPhotoRequestDto;
@@ -32,6 +33,7 @@ public class ActivityPhotoService {
         return activityPhotoRepository.save(activityPhoto).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ActivityPhotoResponseDto> getActivityPhotosByConditions(Boolean isPublic, Pageable pageable) {
         Page<ActivityPhoto> activityPhotos = activityPhotoRepository.findByConditions(isPublic, pageable);
         return new PagedResponseDto<>(activityPhotos.map(ActivityPhotoResponseDto::of));
