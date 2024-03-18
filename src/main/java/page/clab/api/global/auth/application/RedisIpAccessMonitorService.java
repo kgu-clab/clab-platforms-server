@@ -11,7 +11,6 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -27,22 +26,18 @@ public class RedisIpAccessMonitorService {
     @Value("${security.ip-attempt.max-attempts}")
     private int maxAttempts;
 
-    public void registerLoginAttempt(HttpServletRequest request, String ipAddress) {
-        RedisIpAccessMonitor existingAttempt = redisIpAccessMonitorRepository.findById(ipAddress).orElse(null);
-        if (existingAttempt != null) {
-            existingAttempt.setAttempts(existingAttempt.getAttempts() + 1);
-            existingAttempt.setLastAttempt(LocalDateTime.now());
-        } else {
-            existingAttempt = RedisIpAccessMonitor.builder()
-                    .ipAddress(ipAddress)
-                    .attempts(1)
-                    .lastAttempt(LocalDateTime.now())
-                    .build();
-        }
-        if (existingAttempt.getAttempts() >= maxAttempts) {
+    public void registerIpAccessMonitor(HttpServletRequest request, String ipAddress) {
+        RedisIpAccessMonitor redisIpAccessMonitor = redisIpAccessMonitorRepository.findById(ipAddress)
+                .map(attempt -> {
+                    attempt.increaseAttempts();
+                    attempt.updateLastAttempt();
+                    return attempt;
+                })
+                .orElseGet(() -> RedisIpAccessMonitor.create(ipAddress));
+        if (redisIpAccessMonitor.isBlocked(maxAttempts)) {
             slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS_IP_BLOCKED, "Blocked IP: " + ipAddress);
         }
-        redisIpAccessMonitorRepository.save(existingAttempt);
+        redisIpAccessMonitorRepository.save(redisIpAccessMonitor);
     }
 
     public boolean isBlocked(String ipAddress) {
@@ -55,7 +50,7 @@ public class RedisIpAccessMonitorService {
                 .stream(redisIpAccessMonitorRepository.findAll().spliterator(), false)
                 .toList();
         List<RedisIpAccessMonitor> filteredMonitors = allMonitors.stream()
-                .filter(monitor -> monitor.getAttempts() >= maxAttempts)
+                .filter(monitor -> monitor.isBlocked(maxAttempts))
                 .sorted(Comparator.comparing(RedisIpAccessMonitor::getLastAttempt).reversed())
                 .toList();
         return new PagedResponseDto<>(filteredMonitors, pageable, filteredMonitors.size());
@@ -64,17 +59,17 @@ public class RedisIpAccessMonitorService {
 
     public String deleteAbnormalAccessIp(HttpServletRequest request, String ipAddress) {
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS_IP_DELETED, "Deleted IP: " + ipAddress);
-        return redisIpAccessMonitorRepository.findById(ipAddress)
-                .map(redisIpAccessMonitor -> {
-                    redisIpAccessMonitorRepository.delete(redisIpAccessMonitor);
-                    return redisIpAccessMonitor.getIpAddress();
-                })
-                .orElse(null);
+        redisIpAccessMonitorRepository.findById(ipAddress)
+                .ifPresent(monitor -> {
+                    redisIpAccessMonitorRepository.delete(monitor);
+                    slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS_IP_DELETED, "Deleted IP: " + ipAddress);
+                });
+        return ipAddress;
     }
 
     public void clearAbnormalAccessIps(HttpServletRequest request) {
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS_IP_DELETED, "Deleted IP: ALL");
         redisIpAccessMonitorRepository.deleteAll();
+        slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS_IP_DELETED, "Deleted IP: ALL");
     }
 
 }

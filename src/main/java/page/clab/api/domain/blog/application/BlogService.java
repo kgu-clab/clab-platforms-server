@@ -1,14 +1,7 @@
 package page.clab.api.domain.blog.application;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.blog.dao.BlogRepository;
@@ -23,11 +16,6 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 @Service
 @RequiredArgsConstructor
 public class BlogService {
@@ -36,93 +24,43 @@ public class BlogService {
 
     private final BlogRepository blogRepository;
 
-    private final EntityManager entityManager;
-
     public Long createBlog(BlogRequestDto blogRequestDto) {
         Member member = memberService.getCurrentMember();
-        Blog blog = Blog.of(blogRequestDto);
-        blog.setMember(member);
-        return save(blog).getId();
+        Blog blog = Blog.create(blogRequestDto, member);
+        return blogRepository.save(blog).getId();
     }
 
-    public PagedResponseDto<BlogResponseDto> getBlogs(Pageable pageable) {
-        Page<Blog> blogs = getAllBlogsByOrderByCreatedAtDesc(pageable);
+    public PagedResponseDto<BlogResponseDto> getBlogsByConditions(String title, String memberName, Pageable pageable) {
+        Page<Blog> blogs = blogRepository.findByConditions(title, memberName, pageable);
         return new PagedResponseDto<>(blogs.map(BlogResponseDto::of));
     }
 
     public BlogDetailsResponseDto getBlogDetails(Long blogId) {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
-        BlogDetailsResponseDto blogDetailsResponseDto = BlogDetailsResponseDto.of(blog);
-        blogDetailsResponseDto.setOwner(isMemberBlogWriter(member,blog));
-        return blogDetailsResponseDto;
-    }
-
-    public PagedResponseDto<BlogResponseDto> searchBlog(String keyword, Pageable pageable) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Blog> criteriaQuery = criteriaBuilder.createQuery(Blog.class);
-        Root<Blog> root = criteriaQuery.from(Blog.class);
-        List<Predicate> predicates = new ArrayList<>();
-        if (keyword != null && !keyword.isEmpty()) {
-            String keywordLowerCase = "%" + keyword.toLowerCase() + "%";
-            predicates.add(criteriaBuilder.or(
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), keywordLowerCase),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("subTitle")), keywordLowerCase),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("content")), keywordLowerCase),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("member").get("name")), keywordLowerCase)
-            ));
-        }
-        criteriaQuery.select(root).where(predicates.toArray(new Predicate[0]));
-        criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createdAt")));
-        TypedQuery<Blog> query = entityManager.createQuery(criteriaQuery);
-        List<Blog> blogs = query.getResultList();
-        Set<Blog> uniqueBlogs = new LinkedHashSet<>(blogs);
-        List<Blog> distinctBlogs = new ArrayList<>(uniqueBlogs);
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), uniqueBlogs.size());
-        Page<Blog> blogPage = new PageImpl<>(distinctBlogs.subList(start, end), pageable, distinctBlogs.size());
-        return new PagedResponseDto<>(blogPage.map(BlogResponseDto::of));
+        boolean isOwner = blog.isOwner(member);
+        return BlogDetailsResponseDto.create(blog, isOwner);
     }
 
     public Long updateBlog(Long blogId, BlogUpdateRequestDto blogUpdateRequestDto) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
-        if (!isMemberBlogWriter(member, blog)) {
-            throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
-        }
+        blog.validateAccessPermission(member);
         blog.update(blogUpdateRequestDto);
-        return save(blog).getId();
+        return blogRepository.save(blog).getId();
     }
 
     public Long deleteBlog(Long blogId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
-        if (!(isMemberBlogWriter(member, blog) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("해당 게시글을 삭제할 권한이 없습니다.");
-        }
-        delete(blog);
+        blog.validateAccessPermission(member);
+        blogRepository.delete(blog);
         return blog.getId();
     }
 
     private Blog getBlogByIdOrThrow(Long blogId) {
         return blogRepository.findById(blogId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 게시글입니다."));
-    }
-
-    private Blog save(Blog blog) {
-        return blogRepository.save(blog);
-    }
-
-    private Page<Blog> getAllBlogsByOrderByCreatedAtDesc(Pageable pageable) {
-        return blogRepository.findAllByOrderByCreatedAtDesc(pageable);
-    }
-
-    private void delete(Blog blog) {
-        blogRepository.delete(blog);
-    }
-
-    private boolean isMemberBlogWriter(Member member, Blog blog) {
-        return blog.getMember().equals(member);
     }
 
 }

@@ -17,6 +17,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeUpdateRequestDto;
+import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
@@ -55,8 +56,10 @@ public class MembershipFee {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static MembershipFee of(MembershipFeeRequestDto membershipFeeRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(membershipFeeRequestDto, MembershipFee.class);
+    public static MembershipFee create(MembershipFeeRequestDto membershipFeeRequestDto, Member member) {
+        MembershipFee membershipFee = ModelMapperUtil.getModelMapper().map(membershipFeeRequestDto, MembershipFee.class);
+        membershipFee.setApplicant(member);
+        return membershipFee;
     }
 
     public void update(MembershipFeeUpdateRequestDto membershipFeeUpdateRequestDto) {
@@ -64,6 +67,16 @@ public class MembershipFee {
         Optional.ofNullable(membershipFeeUpdateRequestDto.getAmount()).ifPresent(this::setAmount);
         Optional.ofNullable(membershipFeeUpdateRequestDto.getContent()).ifPresent(this::setContent);
         Optional.ofNullable(membershipFeeUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
+    }
+
+    public boolean isOwner(Member member) {
+        return this.applicant.isSameMember(member);
+    }
+
+    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isAdminRole()) {
+            throw new PermissionDeniedException("해당 회비를 수정/삭제할 권한이 없습니다.");
+        }
     }
 
 }

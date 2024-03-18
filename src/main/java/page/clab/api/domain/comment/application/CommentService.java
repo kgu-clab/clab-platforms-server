@@ -20,13 +20,11 @@ import page.clab.api.domain.comment.dto.response.CommentGetMyResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.RandomNicknameUtil;
 
-import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,112 +41,58 @@ public class CommentService {
 
     private final NotificationService notificationService;
 
-    private final RandomNicknameUtil randomNicknameUtil;
-
     @Transactional
-    public Long createComment(Long parentId, Long boardId, CommentRequestDto commentRequestDto) {
-        Member member = memberService.getCurrentMember();
-        Board board = boardService.getBoardByIdOrThrow(boardId);
-        Comment comment = Comment.of(commentRequestDto);
-        comment.setBoard(board);
-        comment.setWriter(member);
-        String nickname = randomNicknameUtil.makeRandomNickname();
-        comment.setNickname(nickname);
-        comment.setCreatedAt(LocalDateTime.now());
-        comment.setWantAnonymous(commentRequestDto.isWantAnonymous());
-        comment.setLikes(0L);
-        if (parentId != null) {
-            Comment parentComment = getCommentByIdOrThrow(parentId);
-            comment.setParent(parentComment);
-            parentComment.getChildren().add(comment);
-            commentRepository.save(parentComment);
-        }
-        Long id = commentRepository.save(comment).getId();
-
-        String writer = member.getName();
-        if(commentRequestDto.isWantAnonymous()){
-            writer = nickname;
-        }
-
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(board.getMember().getId())
-                .content("[" + board.getTitle() + "] " + writer + "님이 게시글에 댓글을 남겼습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
-        return id;
+    public Long createComment(Long parentId, Long boardId, CommentRequestDto dto) {
+        Comment comment = createAndStoreComment(parentId, boardId, dto);
+        sendNotificationForNewComment(comment);
+        return comment.getId();
     }
 
-    public PagedResponseDto<CommentGetAllResponseDto> getComments(Long boardId, Pageable pageable) {
-        Member member = memberService.getCurrentMember();
+    public PagedResponseDto<CommentGetAllResponseDto> getAllComments(Long boardId, Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByBoardIdAndParentIsNull(boardId, pageable);
         comments.forEach(comment -> Hibernate.initialize(comment.getChildren()));
-        Page<CommentGetAllResponseDto> pagedResponseDto = comments.map(dto -> CommentGetAllResponseDto.of(dto, member.getId()));
-        pagedResponseDto.forEach(dto -> setHasLikeByMeAtCommentGetAllResponseDto(dto, member));
-        return new PagedResponseDto<>(pagedResponseDto);
+        Page<CommentGetAllResponseDto> commentDtos = comments.map(comment -> toCommentGetAllResponseDto(comment, currentMember));
+        return new PagedResponseDto<>(commentDtos);
     }
 
     public PagedResponseDto<CommentGetMyResponseDto> getMyComments(Pageable pageable) {
-        Member member = memberService.getCurrentMember();
-        Page<Comment> comments = getCommentByWriter(member, pageable);
-        Page<CommentGetMyResponseDto> pagedResponseDto = comments.map(CommentGetMyResponseDto::of);
-        pagedResponseDto.forEach(dto -> setHasLikeByMeAtCommentGetMyResponseDto(dto, member));
-        return new PagedResponseDto<>(comments.map(CommentGetMyResponseDto::of));
+        Member currentMember = memberService.getCurrentMember();
+        Page<Comment> comments = getCommentByWriter(currentMember, pageable);
+        Page<CommentGetMyResponseDto> commentDtos = comments.map(comment -> toCommentGetMyResponseDto(comment, currentMember));
+        return new PagedResponseDto<>(commentDtos);
     }
 
-    public Long updateComment(Long commentId, CommentUpdateRequestDto commentUpdateRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+    public Long updateComment(Long commentId, CommentUpdateRequestDto dto) throws PermissionDeniedException {
+        Member currentMember = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
-        if (!(comment.getWriter().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("댓글 작성자만 수정할 수 있습니다.");
-        }
-        comment.update(commentUpdateRequestDto);
+        comment.validateAccessPermission(currentMember);
+        comment.update(dto);
         return commentRepository.save(comment).getId();
     }
 
     public Long deleteComment(Long commentId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
-        if (!(comment.getWriter().getId().equals(member.getId()) || memberService.isMemberAdminRole(member))) {
-            throw new PermissionDeniedException("댓글 작성자만 삭제할 수 있습니다.");
-        }
+        comment.validateAccessPermission(currentMember);
         commentRepository.delete(comment);
         return comment.getId();
     }
 
-    public Long updateLikes(Long commentId) {
-        Member member = memberService.getCurrentMember();
+    @Transactional
+    public Long toggleLikeStatus(Long commentId) {
+        Member currentMember = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
-        CommentLike commentLike = commentLikeRepository.findByCommentIdAndMemberId(comment.getId(), member.getId());
-
-        if (commentLike != null) {
-            comment.setLikes(Math.min(comment.getLikes() - 1, 0));
-            commentLikeRepository.delete(commentLike);
+        Optional<CommentLike> commentLikeOpt = commentLikeRepository.findByCommentIdAndMemberId(comment.getId(), currentMember.getId());
+        if (commentLikeOpt.isPresent()) {
+            comment.decrementLikes();
+            commentLikeRepository.delete(commentLikeOpt.get());
+        } else {
+            comment.incrementLikes();
+            CommentLike newLike = new CommentLike(currentMember.getId(), comment.getId());
+            commentLikeRepository.save(newLike);
         }
-        else {
-            comment.setLikes(comment.getLikes() + 1);
-            CommentLike newCommentLike= CommentLike.builder()
-                    .memberId(member.getId())
-                    .commentId(comment.getId())
-                    .build();
-            commentLikeRepository.save(newCommentLike);
-        }
-
         return comment.getLikes();
-    }
-
-    public CommentGetAllResponseDto setHasLikeByMeAtCommentGetAllResponseDto(CommentGetAllResponseDto commentGetAllResponseDto, Member member) {
-        Comment comment = commentRepository.findById(commentGetAllResponseDto.getId())
-                .orElseThrow(() -> new NotFoundException("댓글이 존재하지 않습니다."));
-        commentGetAllResponseDto.setHasLikeByMe(commentLikeRepository.existsByCommentIdAndMemberId(comment.getId(), member.getId()));
-        commentGetAllResponseDto.getChildren().forEach(dto -> setHasLikeByMeAtCommentGetAllResponseDto(dto, member));
-        return commentGetAllResponseDto;
-    }
-
-    public CommentGetMyResponseDto setHasLikeByMeAtCommentGetMyResponseDto(CommentGetMyResponseDto commentGetMyResponseDto, Member member) {
-        Comment comment = commentRepository.findById(commentGetMyResponseDto.getId())
-                .orElseThrow(() -> new NotFoundException("댓글이 존재하지 않습니다."));
-        commentGetMyResponseDto.setHasLikeByMe(commentLikeRepository.existsByCommentIdAndMemberId(comment.getId(), member.getId()));
-        return commentGetMyResponseDto;
     }
 
     public boolean isCommentExistById(Long id) {
@@ -166,6 +110,50 @@ public class CommentService {
 
     private Page<Comment> getCommentByWriter(Member member, Pageable pageable) {
         return commentRepository.findAllByWriterOrderByCreatedAtDesc(member, pageable);
+    }
+
+    private Comment createAndStoreComment(Long parentId, Long boardId, CommentRequestDto dto) {
+        Member currentMember = memberService.getCurrentMember();
+        Board board = boardService.getBoardByIdOrThrow(boardId);
+        Comment parent = findParentComment(parentId);
+        Comment comment = Comment.create(dto, board, currentMember, parent);
+        if (parent != null) {
+            parent.addChildComment(comment);
+        }
+        return commentRepository.save(comment);
+    }
+
+    private Comment findParentComment(Long parentId) {
+        return parentId != null ? getCommentByIdOrThrow(parentId) : null;
+    }
+
+    private void sendNotificationForNewComment(Comment comment) {
+        Board board = comment.getBoard();
+        Member boardOwner = board.getMember();
+        String notificationMessage = String.format("[%s] %s님이 게시글에 댓글을 남겼습니다.", board.getTitle(), comment.getWriterName());
+        notificationService.sendNotificationToMember(boardOwner, notificationMessage);
+    }
+
+    private CommentGetAllResponseDto toCommentGetAllResponseDto(Comment comment, Member currentMember) {
+        CommentGetAllResponseDto dto = CommentGetAllResponseDto.of(comment, currentMember.getId());
+        dto.setHasLikeByMe(checkLikeStatus(comment.getId(), currentMember.getId()));
+        dto.getChildren().forEach(childDto -> setLikeStatusForChildren(childDto, currentMember));
+        return dto;
+    }
+
+    private boolean checkLikeStatus(Long commentId, String memberId) {
+        return commentLikeRepository.existsByCommentIdAndMemberId(commentId, memberId);
+    }
+
+    private void setLikeStatusForChildren(CommentGetAllResponseDto dto, Member member) {
+        dto.setHasLikeByMe(checkLikeStatus(dto.getId(), member.getId()));
+        dto.getChildren().forEach(childDto -> setLikeStatusForChildren(childDto, member));
+    }
+
+    private CommentGetMyResponseDto toCommentGetMyResponseDto(Comment comment, Member currentMember) {
+        CommentGetMyResponseDto dto = CommentGetMyResponseDto.of(comment);
+        dto.setHasLikeByMe(checkLikeStatus(comment.getId(), currentMember.getId()));
+        return dto;
     }
 
 }

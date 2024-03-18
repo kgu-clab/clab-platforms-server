@@ -40,24 +40,21 @@ public class BoardDetailsResponseDto {
     private boolean hasLikeByMe;
 
     @JsonProperty("isOwner")
-    private boolean isOwner;
+    private Boolean isOwner;
 
     private LocalDateTime createdAt;
 
-    public static BoardDetailsResponseDto of(Board board) {
+    public static BoardDetailsResponseDto create(Board board, boolean hasLikeByMe, boolean isOwner) {
         BoardDetailsResponseDto boardResponseDto = ModelMapperUtil.getModelMapper().map(board, BoardDetailsResponseDto.class);
-
-        boardResponseDto.setWriterRoleLevel(board.getMember().getRole().toLong());
-
-        if(board.isWantAnonymous()){
+        if (board.isWantAnonymous()) {
             boardResponseDto.setWriter(board.getNickName());
             boardResponseDto.setMemberImageUrl(null);
-        }
-        else{
+        } else {
             boardResponseDto.setWriter(board.getMember().getName());
             boardResponseDto.setMemberImageUrl(board.getMember().getImageUrl());
         }
-
+        boardResponseDto.setHasLikeByMe(hasLikeByMe);
+        boardResponseDto.setIsOwner(isOwner);
         return boardResponseDto;
     }
 

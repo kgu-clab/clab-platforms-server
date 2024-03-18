@@ -22,8 +22,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import page.clab.api.domain.application.domain.Application;
+import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
+import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
@@ -136,6 +138,7 @@ public class Member implements UserDetails {
 
     public static Member of(MemberRequestDto memberRequestDto) {
         Member member = ModelMapperUtil.getModelMapper().map(memberRequestDto, Member.class);
+        member.setContact(member.removeHyphensFromContact(member.getContact()));
         member.setRole(Role.USER);
         return member;
     }
@@ -161,6 +164,67 @@ public class Member implements UserDetails {
         Optional.ofNullable(memberUpdateRequestDto.getGithubUrl()).ifPresent(this::setGithubUrl);
         Optional.ofNullable(memberUpdateRequestDto.getStudentStatus()).ifPresent(this::setStudentStatus);
         Optional.ofNullable(memberUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
+    }
+
+    public boolean isAdminRole() {
+        return role.equals(Role.ADMIN) || role.equals(Role.SUPER);
+    }
+
+    public boolean isSuperAdminRole() {
+        return role.equals(Role.SUPER);
+    }
+
+    public boolean isSameMember(Member member) {
+        return id.equals(member.getId());
+    }
+
+    public boolean isSameMember(String memberId) {
+        return id.equals(memberId);
+    }
+
+    public boolean isOwner(Member member) {
+        return this.isSameMember(member);
+    }
+
+    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isSuperAdminRole()) {
+            throw new PermissionDeniedException("해당 멤버를 수정/삭제할 권한이 없습니다.");
+        }
+    }
+
+    public void validateAccessPermissionForCloud(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isSuperAdminRole()) {
+            throw new PermissionDeniedException("해당 멤버의 클라우드 사용량을 조회할 권한이 없습니다.");
+        }
+    }
+
+    public String removeHyphensFromContact(String contact) {
+        return contact.replaceAll("-", "");
+    }
+
+    public void updatePassword(String password, PasswordEncoder passwordEncoder) {
+        setPassword(passwordEncoder.encode(password));
+    }
+
+    public void updateLastLoginTime() {
+        lastLoginTime = LocalDateTime.now();
+    }
+
+    public void checkLoanSuspension() {
+        if (loanSuspensionDate != null && LocalDateTime.now().isBefore(loanSuspensionDate)) {
+            throw new LoanSuspensionException("대출 정지 중입니다. 대출 정지일까지는 책을 대출할 수 없습니다.");
+        }
+    }
+
+    public void handleOverdueAndSuspension(long overdueDays) {
+        if (overdueDays > 0) {
+            LocalDateTime currentDate = LocalDateTime.now();
+            if (loanSuspensionDate == null || loanSuspensionDate.isBefore(currentDate)) {
+                loanSuspensionDate = LocalDateTime.now().plusDays(overdueDays * 7);;
+            } else {
+                loanSuspensionDate = loanSuspensionDate.plusDays(overdueDays * 7);
+            }
+        }
     }
 
 }

@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activityGroup.dao.GroupMemberRepository;
+import page.clab.api.domain.member.application.MemberCloudService;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.dao.UploadFileRepository;
@@ -38,6 +39,8 @@ public class FileService {
     private final FileHandler fileHandler;
 
     private final MemberService memberService;
+
+    private final MemberCloudService memberCloudService;
 
     private final ActivityGroupRepository activityGroupRepository;
 
@@ -108,7 +111,7 @@ public class FileService {
 
         if (!path.startsWith("membership-fee") && path.startsWith("members")) {
             String memberId = path.split(Pattern.quote(File.separator))[1];
-            double usage = memberService.getCloudUsageByMemberId(memberId).getUsage();
+            double usage = memberCloudService.getCloudUsageByMemberId(memberId).getUsage();
             if (multipartFile.getSize() + usage > FileSystemUtil.convertToBytes(maxFileSize)) {
                 throw new CloudStorageNotEnoughException("클라우드 저장 공간이 부족합니다.");
             }
@@ -175,7 +178,7 @@ public class FileService {
         if (uploadedFile == null || !storedFile.exists()) {
             throw new NotFoundException("존재하지 않는 파일입니다.");
         }
-        if (!(uploadedFile.getUploader().getId().equals(member.getId()) || memberService.isMemberSuperRole(member))) {
+        if (!(uploadedFile.getUploader().getId().equals(member.getId()) || member.isSuperAdminRole())) {
             throw new PermissionDeniedException("해당 파일을 삭제할 권한이 없습니다.");
         }
         if (!storedFile.delete()) {

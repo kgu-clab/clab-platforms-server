@@ -34,7 +34,7 @@ public class NewsDetailsResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static NewsDetailsResponseDto of(News news) {
+    public static NewsDetailsResponseDto create(News news) {
         return ModelMapperUtil.getModelMapper().map(news, NewsDetailsResponseDto.class);
     }
 

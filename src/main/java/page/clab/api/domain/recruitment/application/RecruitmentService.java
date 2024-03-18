@@ -3,10 +3,7 @@ package page.clab.api.domain.recruitment.application;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.domain.recruitment.dao.RecruitmentRepository;
 import page.clab.api.domain.recruitment.domain.Recruitment;
 import page.clab.api.domain.recruitment.dto.request.RecruitmentRequestDto;
@@ -21,8 +18,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RecruitmentService {
 
-    private final MemberService memberService;
-
     private final NotificationService notificationService;
 
     private final RecruitmentRepository recruitmentRepository;
@@ -30,17 +25,8 @@ public class RecruitmentService {
     @Transactional
     public Long createRecruitment(RecruitmentRequestDto recruitmentRequestDto) {
         Recruitment recruitment = Recruitment.of(recruitmentRequestDto);
-        Long id = recruitmentRepository.save(recruitment).getId();
-        List<Member> members = memberService.findAll();
-        members.stream()
-                .forEach(member -> {
-                    NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                            .memberId(member.getId())
-                            .content("새로운 모집 공고가 등록되었습니다.")
-                            .build();
-                    notificationService.createNotification(notificationRequestDto);
-                });
-        return id;
+        notificationService.sendNotificationToAllMembers("새로운 모집 공고가 등록되었습니다.");
+        return recruitmentRepository.save(recruitment).getId();
     }
 
     public List<RecruitmentResponseDto> getRecentRecruitments() {

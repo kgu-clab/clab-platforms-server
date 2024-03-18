@@ -118,14 +118,14 @@ public class SecurityConfig {
     private void handleAuthenticationEntryPoint(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         apiLogging(request, response, clientIpAddress, "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.");
-        redisIpAccessMonitorService.registerLoginAttempt(request, clientIpAddress);
+        redisIpAccessMonitorService.registerIpAccessMonitor(request, clientIpAddress);
         ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
     }
 
     private void handleAccessDenied(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         apiLogging(request, response, clientIpAddress, "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.");
-        redisIpAccessMonitorService.registerLoginAttempt(request, clientIpAddress);
+        redisIpAccessMonitorService.registerIpAccessMonitor(request, clientIpAddress);
         ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN);
     }
 

@@ -16,6 +16,9 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
@@ -31,29 +34,55 @@ public class NotificationService {
 
     public Long createNotification(NotificationRequestDto notificationRequestDto) {
         Member member = memberService.getMemberByIdOrThrow(notificationRequestDto.getMemberId());
-        Notification notification = Notification.of(notificationRequestDto);
-        return notificationRepository.save(notification).getId();
-    }
-
-    public Long createNotification(String content, Member receiver) {
-        Notification notification = Notification.of(content, receiver);
+        Notification notification = Notification.create(notificationRequestDto, member);
         return notificationRepository.save(notification).getId();
     }
 
     public PagedResponseDto<NotificationResponseDto> getNotifications(Pageable pageable) {
         Member member = memberService.getCurrentMember();
-        Page<Notification> notifications = getNotificationByMember(pageable, member);
+        Page<Notification> notifications = getNotificationByMember(member, pageable);
         return new PagedResponseDto<>(notifications.map(NotificationResponseDto::of));
     }
 
     public Long deleteNotification(Long notificationId) throws PermissionDeniedException {
         Member member = memberService.getCurrentMember();
         Notification notification = getNotificationByIdOrThrow(notificationId);
-        if (!member.equals(notification.getMember())) {
-            throw new PermissionDeniedException();
-        }
+        notification.validateAccessPermission(member);
         notificationRepository.delete(notification);
         return notification.getId();
+    }
+
+    public void sendNotificationToAllMembers(String content) {
+        List<Notification> notifications = memberService.findAll().stream()
+                .map(member -> Notification.create(member, content))
+                .toList();
+        notificationRepository.saveAll(notifications);
+    }
+
+    public void sendNotificationToMember(Member member, String content) {
+        Notification notification = Notification.create(member, content);
+        notificationRepository.save(notification);
+    }
+
+    public void sendNotificationToMember(String memberId, String content) {
+        Member member = memberService.getMemberByIdOrThrow(memberId);
+        Notification notification = Notification.create(member, content);
+        notificationRepository.save(notification);
+    }
+
+    public void sendNotificationToAdmins(String content) {
+        sendNotificationToSpecificRole(memberService::getAdmins, content);
+    }
+
+    public void sendNotificationToSuperAdmins(String content) {
+        sendNotificationToSpecificRole(memberService::getSuperAdmins, content);
+    }
+
+    private void sendNotificationToSpecificRole(Supplier<List<Member>> memberSupplier, String content) {
+        List<Notification> notifications = memberSupplier.get().stream()
+                .map(member -> Notification.create(member, content))
+                .toList();
+        notificationRepository.saveAll(notifications);
     }
 
     private Notification getNotificationByIdOrThrow(Long notificationId) {
@@ -61,7 +90,7 @@ public class NotificationService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 알림입니다."));
     }
 
-    private Page<Notification> getNotificationByMember(Pageable pageable, Member member) {
+    private Page<Notification> getNotificationByMember(Member member, Pageable pageable) {
         return notificationRepository.findByMemberOrderByCreatedAtDesc(member, pageable);
     }
 
