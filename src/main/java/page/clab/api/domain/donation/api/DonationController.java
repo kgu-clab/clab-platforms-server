@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,6 +25,8 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/donations")
 @RequiredArgsConstructor
@@ -40,27 +40,29 @@ public class DonationController {
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createDonation(
-            @Valid @RequestBody DonationRequestDto donationRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody DonationRequestDto donationRequestDto
+    ) {
         Long id = donationService.createDonation(donationRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
     }
 
-    @Operation(summary = "[U] 후원 정보", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 후원 목록 조회(멤버 ID, 멤버 이름, 기간 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
+            "멤버 ID, 멤버 이름, 기간 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getDonations(
+    public ResponseModel getDonationsByConditions(
+            @RequestParam(name = "memberId", required = false) String memberId,
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "startDate", required = false) LocalDate startDate,
+            @RequestParam(name = "endDate", required = false) LocalDate endDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<DonationResponseDto> donations = donationService.getDonations(pageable);
+        PagedResponseDto<DonationResponseDto> donations = donationService.getDonationsByConditions(memberId, name, startDate, endDate, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(donations);
         return responseModel;
@@ -80,34 +82,13 @@ public class DonationController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 후원 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "멤버 ID, 이름을 기준으로 검색")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/search")
-    public ResponseModel getDonation(
-            @RequestParam(name = "memberId", required = false) String memberId,
-            @RequestParam(name = "name", required = false) String name,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<DonationResponseDto> donations = donationService.searchDonation(memberId, name, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(donations);
-        return responseModel;
-    }
-
     @Operation(summary = "[S] 후원 정보 수정", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PatchMapping("/{donationId}")
     public ResponseModel updateDonation(
             @PathVariable(name = "donationId") Long donationId,
-            @Valid @RequestBody DonationUpdateRequestDto donationUpdateRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException, PermissionDeniedException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody DonationUpdateRequestDto donationUpdateRequestDto
+    ) throws PermissionDeniedException {
         Long id = donationService.updateDonation(donationId, donationUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);

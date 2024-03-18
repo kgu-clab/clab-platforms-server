@@ -25,13 +25,7 @@ public class RedisTokenService {
     }
 
     public void saveRedisToken(String memberId, Role role, TokenInfo tokenInfo, String ip) {
-        RedisToken redisToken = RedisToken.builder()
-                .id(memberId)
-                .role(role)
-                .ip(ip)
-                .accessToken(tokenInfo.getAccessToken())
-                .refreshToken(tokenInfo.getRefreshToken())
-                .build();
+        RedisToken redisToken = RedisToken.create(memberId, role, ip, tokenInfo);
         redisTokenRepository.save(redisToken);
     }
 

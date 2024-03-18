@@ -54,8 +54,10 @@ public class SharedAccount {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    public static SharedAccount of(SharedAccountRequestDto sharedAccountRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(sharedAccountRequestDto, SharedAccount.class);
+    public static SharedAccount create(SharedAccountRequestDto sharedAccountRequestDto) {
+        SharedAccount sharedAccount = ModelMapperUtil.getModelMapper().map(sharedAccountRequestDto, SharedAccount.class);
+        sharedAccount.setInUse(false);
+        return sharedAccount;
     }
 
     public void update(SharedAccountUpdateRequestDto sharedAccountUpdateRequestDto) {
@@ -63,6 +65,10 @@ public class SharedAccount {
         Optional.ofNullable(sharedAccountUpdateRequestDto.getPassword()).ifPresent(this::setPassword);
         Optional.ofNullable(sharedAccountUpdateRequestDto.getPlatformName()).ifPresent(this::setPlatformName);
         Optional.ofNullable(sharedAccountUpdateRequestDto.getPlatformUrl()).ifPresent(this::setPlatformUrl);
+    }
+
+    public void updateStatus(boolean isInUse) {
+        this.isInUse = isInUse;
     }
 
 }

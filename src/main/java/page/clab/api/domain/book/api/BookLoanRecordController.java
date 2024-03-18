@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,14 +32,10 @@ public class BookLoanRecordController {
 
     @Operation(summary = "[U] 도서 대출", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping("/borrow")
+    @PostMapping("")
     public ResponseModel borrowBook(
-            @Valid @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException, CustomOptimisticLockingFailureException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto
+    ) throws CustomOptimisticLockingFailureException {
         Long id = bookLoanRecordService.borrowBook(bookLoanRecordRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -52,12 +46,8 @@ public class BookLoanRecordController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/return")
     public ResponseModel returnBook(
-            @Valid @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto
+    ) {
         Long id = bookLoanRecordService.returnBook(bookLoanRecordRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -68,60 +58,30 @@ public class BookLoanRecordController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/extend")
     public ResponseModel extendBookLoan(
-            @Valid @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto
+    ) {
         Long id = bookLoanRecordService.extendBookLoan(bookLoanRecordRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
     }
 
-    @Operation(summary = "[U] 도서 대출 내역 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 도서 대출 내역 조회(도서 ID, 대출자 ID, 대출 가능 여부 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
+            "도서 ID, 대출자 ID, 대출 가능 여부 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("")
-    public ResponseModel getBookLoanRecords(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.getBookLoanRecords(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(bookLoanRecords);
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 도서 대출 내역 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "도서 ID, 대출자 ID를 기준으로 검색")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/search")
-    public ResponseModel searchBookLoanRecord(
+    @GetMapping("/conditions")
+    public ResponseModel getBookLoanRecordsByConditions(
             @RequestParam(name = "bookId", required = false) Long bookId,
             @RequestParam(name = "borrowerId", required = false) String borrowerId,
+            @RequestParam(name = "isReturned", required = false) Boolean isReturned,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.searchBookLoanRecord(bookId, borrowerId, pageable);
+        PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.getBookLoanRecordsByConditions(bookId, borrowerId, isReturned, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(bookLoanRecords);
-        return responseModel;
-    }
-
-    @Operation(summary = "[U] 대출 상태의 도서 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/unreturned")
-    public ResponseModel getUnreturnedBooks(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BookLoanRecordResponseDto> unreturnedBooks = bookLoanRecordService.getUnreturnedBooks(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(unreturnedBooks);
         return responseModel;
     }
 

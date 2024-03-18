@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -45,12 +43,8 @@ public class ActivityGroupAdminController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createActivityGroup(
-            @Valid @RequestBody ActivityGroupRequestDto activityGroupRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody ActivityGroupRequestDto activityGroupRequestDto
+    ) {
         Long id = activityGroupAdminService.createActivityGroup(activityGroupRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -62,12 +56,8 @@ public class ActivityGroupAdminController {
     @PatchMapping("/{activityGroupId}")
     public ResponseModel updateActivityGroup(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
-            @Valid @RequestBody ActivityGroupUpdateRequestDto activityGroupUpdateRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException, PermissionDeniedException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody ActivityGroupUpdateRequestDto activityGroupUpdateRequestDto
+    ) throws PermissionDeniedException {
         Long id = activityGroupAdminService.updateActivityGroup(activityGroupId, activityGroupUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -118,12 +108,8 @@ public class ActivityGroupAdminController {
     @PostMapping("/schedule")
     public ResponseModel addSchedule(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
-            @Valid @RequestBody List<GroupScheduleDto> groupScheduleDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException, PermissionDeniedException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody List<GroupScheduleDto> groupScheduleDto
+    ) throws PermissionDeniedException {
         Long id = activityGroupAdminService.addSchedule(activityGroupId, groupScheduleDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);

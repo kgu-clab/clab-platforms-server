@@ -1,12 +1,13 @@
 package page.clab.api.domain.book.dao;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import page.clab.api.domain.book.domain.Book;
 
-public interface BookRepository extends JpaRepository<Book, Long> {
+import java.util.List;
 
-    Page<Book> findAllByOrderByCreatedAtDesc(Pageable pageable);
+public interface BookRepository extends JpaRepository<Book, Long>, BookRepositoryCustom, QuerydslPredicateExecutor<Book> {
+
+    List<Book> findAllByOrderByCreatedAtDesc();
 
 }

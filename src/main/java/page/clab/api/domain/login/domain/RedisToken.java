@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
+import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.member.domain.Role;
 
 @Getter
@@ -32,5 +33,19 @@ public class RedisToken {
 
     @Indexed
     private String refreshToken;
+
+    public static RedisToken create(String id, Role role, String ip, TokenInfo tokenInfo) {
+        return RedisToken.builder()
+                .id(id)
+                .role(role)
+                .ip(ip)
+                .accessToken(tokenInfo.getAccessToken())
+                .refreshToken(tokenInfo.getRefreshToken())
+                .build();
+    }
+
+    public boolean isSameIp(String ip) {
+        return this.ip.equals(ip);
+    }
 
 }

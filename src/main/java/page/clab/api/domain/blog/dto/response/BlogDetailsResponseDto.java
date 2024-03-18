@@ -1,7 +1,6 @@
 package page.clab.api.domain.blog.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.blog.domain.Blog;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -32,14 +33,15 @@ public class BlogDetailsResponseDto {
     private String imageUrl;
 
     @JsonProperty("isOwner")
-    private boolean isOwner;
+    private Boolean isOwner;
 
     private LocalDateTime createdAt;
 
-    public static BlogDetailsResponseDto of(Blog blog) {
+    public static BlogDetailsResponseDto create(Blog blog, boolean isOwner) {
         BlogDetailsResponseDto blogResponseDto = ModelMapperUtil.getModelMapper().map(blog, BlogDetailsResponseDto.class);
         blogResponseDto.setMemberId(blog.getMember().getId());
         blogResponseDto.setName(blog.getMember().getName());
+        blogResponseDto.setIsOwner(isOwner);
         return blogResponseDto;
     }
 

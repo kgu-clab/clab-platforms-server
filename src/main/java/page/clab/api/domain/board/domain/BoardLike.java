@@ -29,4 +29,8 @@ public class BoardLike {
 
     private Long boardId;
 
+    public BoardLike(String memberId, Long boardId) {
+        this.memberId = memberId;
+        this.boardId = boardId;
+    }
 }

@@ -18,6 +18,7 @@ import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
+import page.clab.api.domain.activityGroup.exception.ActivityGroupNotProgressingException;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
@@ -75,8 +76,11 @@ public class ActivityGroup {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static ActivityGroup of(ActivityGroupRequestDto activityGroupRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(activityGroupRequestDto, ActivityGroup.class);
+    public static ActivityGroup create(ActivityGroupRequestDto activityGroupRequestDto) {
+        ActivityGroup activityGroup = ModelMapperUtil.getModelMapper().map(activityGroupRequestDto, ActivityGroup.class);
+        activityGroup.setStatus(ActivityGroupStatus.WAITING);
+        activityGroup.setProgress(0L);
+        return activityGroup;
     }
 
     public void update(ActivityGroupUpdateRequestDto dto) {
@@ -90,6 +94,36 @@ public class ActivityGroup {
         Optional.ofNullable(dto.getEndDate()).ifPresent(this::setEndDate);
         Optional.ofNullable(dto.getTechStack()).ifPresent(this::setTechStack);
         Optional.ofNullable(dto.getGithubUrl()).ifPresent(this::setGithubUrl);
+    }
+
+    public boolean isWaiting() {
+        return this.status.equals(ActivityGroupStatus.WAITING);
+    }
+
+    public boolean isProgressing() {
+        return this.status.equals(ActivityGroupStatus.PROGRESSING);
+    }
+
+    public boolean isEnded() {
+        return this.status.equals(ActivityGroupStatus.END);
+    }
+
+    public void updateStatus(ActivityGroupStatus status) {
+        this.status = status;
+    }
+
+    public boolean isStudy() {
+        return this.category.equals(ActivityGroupCategory.STUDY);
+    }
+
+    public boolean isProject() {
+        return this.category.equals(ActivityGroupCategory.PROJECT);
+    }
+
+    public void validateForApplication() {
+        if (!this.isProgressing()) {
+            throw new ActivityGroupNotProgressingException("해당 활동은 진행중인 활동이 아닙니다.");
+        }
     }
 
 }
