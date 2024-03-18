@@ -32,6 +32,7 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -139,18 +140,10 @@ public class ActivityGroupBoardService {
     }
 
     private List<ActivityGroupBoard> getChildBoards(Long activityGroupBoardId) {
-        List<ActivityGroupBoard> boardList = new ArrayList<>();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        if (board.getParent() == null || board.getChildren() != null) {
-            boardList.add(board);
-            for (ActivityGroupBoard child : board.getChildren()) {
-                boardList.addAll(getChildBoards(child.getId()));
-            }
-        } else {
-            boardList.add(board);
-        }
-        boardList.sort((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()));
-        return boardList;
+        List<ActivityGroupBoard> allChildren = activityGroupBoardRepository.findAllChildrenByParentId(activityGroupBoardId);
+        allChildren.sort(Comparator.comparing(ActivityGroupBoard::getCreatedAt).reversed());
+        return allChildren;
     }
 
     private void validateParentBoard(ActivityGroupBoardCategory category, Long parentId) throws InvalidParentBoardException {
