@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,12 +38,8 @@ public class WorkExperienceController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createWorkExperience(
-            @Valid @RequestBody WorkExperienceRequestDto workExperienceRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody WorkExperienceRequestDto workExperienceRequestDto
+    ) {
         Long id = workExperienceService.createWorkExperience(workExperienceRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -71,13 +65,13 @@ public class WorkExperienceController {
             "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/search")
-    public ResponseModel searchWorkExperience(
+    public ResponseModel getWorkExperiencesByConditions(
             @RequestParam String memberId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<WorkExperienceResponseDto> workExperienceResponseDtos = workExperienceService.searchWorkExperience(memberId, pageable);
+        PagedResponseDto<WorkExperienceResponseDto> workExperienceResponseDtos = workExperienceService.getWorkExperiencesByConditions(memberId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(workExperienceResponseDtos);
         return responseModel;
@@ -89,12 +83,8 @@ public class WorkExperienceController {
     @PatchMapping("/{workExperienceId}")
     public ResponseModel updateWorkExperience(
             @PathVariable(name = "workExperienceId") Long workExperienceId,
-            @Valid @RequestBody WorkExperienceUpdateRequestDto workExperienceUpdateRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException, PermissionDeniedException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody WorkExperienceUpdateRequestDto workExperienceUpdateRequestDto
+    ) throws PermissionDeniedException {
         Long id = workExperienceService.updateWorkExperience(workExperienceId, workExperienceUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);

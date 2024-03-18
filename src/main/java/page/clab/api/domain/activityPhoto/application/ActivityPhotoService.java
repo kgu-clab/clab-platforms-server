@@ -1,8 +1,7 @@
 package page.clab.api.domain.activityPhoto.application;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,6 +14,10 @@ import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ActivityPhotoService {
@@ -23,31 +26,20 @@ public class ActivityPhotoService {
 
     private final FileService fileService;
 
-    public Long createActivityPhoto(ActivityPhotoRequestDto activityPhotoRequestDto) {
-        ActivityPhoto activityPhoto = ActivityPhoto.of(activityPhotoRequestDto);
-        List<String> fileUrls = activityPhotoRequestDto.getFileUrlList();
-        if (fileUrls != null) {
-            List<UploadedFile> uploadFileList =  fileUrls.stream()
-                    .map(fileService::getUploadedFileByUrl)
-                    .collect(Collectors.toList());
-            activityPhoto.setUploadedFiles(uploadFileList);
-        }
+    public Long createActivityPhoto(ActivityPhotoRequestDto dto) {
+        List<UploadedFile> uploadedFiles = prepareUploadedFiles(dto.getFileUrlList());
+        ActivityPhoto activityPhoto = ActivityPhoto.create(dto, uploadedFiles);
         return activityPhotoRepository.save(activityPhoto).getId();
     }
 
-    public PagedResponseDto<ActivityPhotoResponseDto> getActivityPhotos(Pageable pageable) {
-        Page<ActivityPhoto> activityPhotos = activityPhotoRepository.findAllByOrderByCreatedAtDesc(pageable);
+    public PagedResponseDto<ActivityPhotoResponseDto> getActivityPhotosByConditions(Boolean isPublic, Pageable pageable) {
+        Page<ActivityPhoto> activityPhotos = activityPhotoRepository.findByConditions(isPublic, pageable);
         return new PagedResponseDto<>(activityPhotos.map(ActivityPhotoResponseDto::of));
     }
 
-    public PagedResponseDto<ActivityPhotoResponseDto> getPublicActivityPhotos(Pageable pageable) {
-        Page<ActivityPhoto> activityPhotos = getActivityPhotoByIsPublicTrue(pageable);
-        return new PagedResponseDto<>(activityPhotos.map(ActivityPhotoResponseDto::of));
-    }
-
-    public Long updateActivityPhoto(Long activityPhotoId) {
+    public Long togglePublicStatus(Long activityPhotoId) {
         ActivityPhoto activityPhoto = getActivityPhotoByIdOrThrow(activityPhotoId);
-        activityPhoto.setIsPublic(!activityPhoto.getIsPublic());
+        activityPhoto.togglePublicStatus();
         return activityPhotoRepository.save(activityPhoto).getId();
     }
 
@@ -62,12 +54,12 @@ public class ActivityPhotoService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 활동 사진입니다."));
     }
 
-    public boolean isActivityPhotoExist(Long activityPhotoId) {
-        return activityPhotoRepository.existsById(activityPhotoId);
-    }
-
-    private Page<ActivityPhoto> getActivityPhotoByIsPublicTrue(Pageable pageable) {
-        return activityPhotoRepository.findAllByIsPublicTrueOrderByCreatedAtDesc(pageable);
+    @NotNull
+    private List<UploadedFile> prepareUploadedFiles(List<String> fileUrls) {
+        if (fileUrls == null) return new ArrayList<>();
+        return fileUrls.stream()
+                .map(fileService::getUploadedFileByUrl)
+                .collect(Collectors.toList());
     }
 
 }

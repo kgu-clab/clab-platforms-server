@@ -1,9 +1,11 @@
 package page.clab.api.global.util;
 
+import org.springframework.stereotype.Component;
+
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import org.springframework.stereotype.Component;
 
 @Component
 public class FileSystemUtil {
@@ -37,9 +39,7 @@ public class FileSystemUtil {
         if (directory.isDirectory()) {
             File[] files = directory.listFiles();
             if (files != null) {
-                for (File file : files) {
-                    fileList.add(file);
-                }
+                fileList.addAll(Arrays.asList(files));
             }
         }
         return fileList;

@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -47,12 +45,8 @@ public class SharedAccountController {
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createSharedAccount(
-            @Valid @RequestBody SharedAccountRequestDto sharedAccountRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody SharedAccountRequestDto sharedAccountRequestDto
+    ) {
         Long id = sharedAccountService.createSharedAccount(sharedAccountRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -78,12 +72,8 @@ public class SharedAccountController {
     @PatchMapping("/{accountId}")
     public ResponseModel updateSharedAccount(
             @PathVariable(name = "accountId") Long accountId,
-            @Valid @RequestBody SharedAccountUpdateRequestDto sharedAccountUpdateRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody SharedAccountUpdateRequestDto sharedAccountUpdateRequestDto
+    ) {
         Long id = sharedAccountService.updateSharedAccount(accountId, sharedAccountUpdateRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
@@ -108,12 +98,8 @@ public class SharedAccountController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/usage")
     public ResponseModel requestSharedAccountUsage(
-            @Valid @RequestBody SharedAccountUsageRequestDto sharedAccountUsageRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException, CustomOptimisticLockingFailureException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody SharedAccountUsageRequestDto sharedAccountUsageRequestDto
+    ) throws CustomOptimisticLockingFailureException {
         Long id = sharedAccountUsageService.requestSharedAccountUsage(sharedAccountUsageRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);

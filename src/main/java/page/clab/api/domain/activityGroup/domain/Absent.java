@@ -7,7 +7,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +15,8 @@ import lombok.Setter;
 import lombok.ToString;
 import page.clab.api.domain.activityGroup.dto.request.AbsentRequestDto;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -45,8 +45,14 @@ public class Absent {
     @NotNull
     private String reason;
 
-    public static Absent of(AbsentRequestDto absentRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(absentRequestDto, Absent.class);
+    public static Absent create(Member absentee, ActivityGroup activityGroup, AbsentRequestDto absentRequestDto) {
+        return Absent.builder()
+                .id(null)
+                .absentee(absentee)
+                .activityGroup(activityGroup)
+                .absentDate(absentRequestDto.getAbsentDate())
+                .reason(absentRequestDto.getReason())
+                .build();
     }
 
 }

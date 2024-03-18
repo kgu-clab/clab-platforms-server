@@ -33,7 +33,7 @@ public class AssignmentSubmissionWithFeedbackResponseDto {
 
     private List<FeedbackResponseDto> feedbacks = new ArrayList<>();
 
-    public static AssignmentSubmissionWithFeedbackResponseDto of(ActivityGroupBoard activityGroupBoard) {
+    public static AssignmentSubmissionWithFeedbackResponseDto of(ActivityGroupBoard activityGroupBoard, List<FeedbackResponseDto> feedbackDtos) {
         return AssignmentSubmissionWithFeedbackResponseDto.builder()
                 .id(activityGroupBoard.getId())
                 .parentId(activityGroupBoard.getParent() != null ? activityGroupBoard.getParent().getId() : null)
@@ -41,6 +41,7 @@ public class AssignmentSubmissionWithFeedbackResponseDto {
                 .files(activityGroupBoard.getUploadedFiles().stream().map(UploadedFileResponseDto::of).toList())
                 .createdAt(activityGroupBoard.getCreatedAt())
                 .updateTime(activityGroupBoard.getUpdateTime())
+                .feedbacks(feedbackDtos)
                 .build();
     }
 

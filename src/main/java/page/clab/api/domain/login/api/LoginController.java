@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,12 +42,8 @@ public class LoginController {
     public ResponseModel login(
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse,
-            @Valid @RequestBody LoginRequestDto loginRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException, MemberLockedException, LoginFaliedException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody LoginRequestDto loginRequestDto
+    ) throws MemberLockedException, LoginFaliedException {
         LoginHeader headerData = loginService.login(httpServletRequest, loginRequestDto);
         httpServletResponse.setHeader(authHeader, headerData.toJson());
         ResponseModel responseModel = ResponseModel.builder().build();
@@ -61,12 +55,8 @@ public class LoginController {
     public ResponseModel authenticator(
             HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse,
-            @Valid @RequestBody TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException, LoginFaliedException, MemberLockedException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto
+    ) throws LoginFaliedException, MemberLockedException {
         TokenHeader headerData = loginService.authenticator(httpServletRequest, twoFactorAuthenticationRequestDto);
         httpServletResponse.setHeader(authHeader, headerData.toJson());
         ResponseModel responseModel = ResponseModel.builder().build();

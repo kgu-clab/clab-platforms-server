@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +19,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -58,6 +59,22 @@ public class Accuse {
 
     public static Accuse of(AccuseRequestDto accuseRequestDto) {
         return ModelMapperUtil.getModelMapper().map(accuseRequestDto, Accuse.class);
+    }
+
+    public static Accuse create(AccuseRequestDto accuseRequestDto, Member member) {
+        Accuse accuse = ModelMapperUtil.getModelMapper().map(accuseRequestDto, Accuse.class);
+        accuse.setId(null);
+        accuse.setMember(member);
+        accuse.setAccuseStatus(AccuseStatus.PENDING);
+        return accuse;
+    }
+
+    public void updateReason(String reason) {
+        this.reason = reason;
+    }
+
+    public void updateStatus(AccuseStatus newStatus) {
+        this.accuseStatus = newStatus;
     }
 
 }

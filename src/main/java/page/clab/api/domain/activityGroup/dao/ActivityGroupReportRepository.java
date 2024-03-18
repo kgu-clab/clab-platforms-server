@@ -14,4 +14,6 @@ public interface ActivityGroupReportRepository extends JpaRepository<ActivityGro
 
     Page<ActivityGroupReport> findAllByActivityGroup(ActivityGroup activityGroup, Pageable pageable);
 
+    boolean existsByActivityGroupAndTurn(ActivityGroup activityGroup, Long turn);
+
 }

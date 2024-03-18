@@ -9,8 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -127,12 +125,8 @@ public class ActivityGroupMemberController {
     @PostMapping("/apply")
     public ResponseModel applyActivityGroup(
             @RequestParam Long activityGroupId,
-            @Valid @RequestBody ApplyFormRequestDto formRequestDto,
-            BindingResult result
-    ) throws MethodArgumentNotValidException, MessagingException {
-        if (result.hasErrors()) {
-            throw new MethodArgumentNotValidException(null, result);
-        }
+            @Valid @RequestBody ApplyFormRequestDto formRequestDto
+    ) throws MessagingException {
         Long id = activityGroupMemberService.applyActivityGroup(activityGroupId, formRequestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);

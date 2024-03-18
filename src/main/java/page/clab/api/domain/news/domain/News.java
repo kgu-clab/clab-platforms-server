@@ -11,11 +11,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,9 +19,15 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.news.dto.request.NewsRequestDto;
-import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.domain.news.dto.request.NewsUpdateRequestDto;
+import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -71,7 +72,7 @@ public class News {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static News of(NewsRequestDto newsRequestDto) {
+    public static News create(NewsRequestDto newsRequestDto) {
         return ModelMapperUtil.getModelMapper().map(newsRequestDto, News.class);
     }
 

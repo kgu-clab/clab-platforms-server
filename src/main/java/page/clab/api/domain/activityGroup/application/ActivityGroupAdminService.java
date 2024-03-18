@@ -20,18 +20,15 @@ import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberWithApplyReasonResponseDto;
-import page.clab.api.domain.activityGroup.exception.LeaderStatusChangeNotAllowedException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,20 +50,15 @@ public class ActivityGroupAdminService {
     @Transactional
     public Long createActivityGroup(ActivityGroupRequestDto activityGroupRequestDto) {
         Member member = memberService.getCurrentMember();
-        ActivityGroup activityGroup = ActivityGroup.of(activityGroupRequestDto);
-        activityGroup.setStatus(ActivityGroupStatus.WAITING);
-        activityGroup.setProgress(0L);
-        Long id = activityGroupRepository.save(activityGroup).getId();
-        GroupMember groupLeader = GroupMember.of(member, activityGroup);
-        groupLeader.setRole(ActivityGroupRole.LEADER);
-        groupLeader.setStatus(GroupMemberStatus.ACCEPTED);
+        ActivityGroup activityGroup = ActivityGroup.create(activityGroupRequestDto);
+        activityGroupRepository.save(activityGroup);
+        GroupMember groupLeader = GroupMember.create(member, activityGroup, ActivityGroupRole.LEADER, GroupMemberStatus.ACCEPTED);
         activityGroupMemberService.save(groupLeader);
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(member.getId())
-                .content("활동 그룹 생성이 완료되었습니다. 활동 승인이 완료되면 활동 그룹을 이용할 수 있습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
-        return id;
+        notificationService.sendNotificationToMember(
+                member,
+                "활동 그룹 생성이 완료되었습니다. 활동 승인이 완료되면 활동 그룹을 이용할 수 있습니다."
+        );
+        return activityGroup.getId();
     }
 
     public Long updateActivityGroup(Long activityGroupId, ActivityGroupUpdateRequestDto activityGroupUpdateRequestDto) throws PermissionDeniedException {
@@ -79,19 +71,18 @@ public class ActivityGroupAdminService {
         return activityGroupRepository.save(activityGroup).getId();
     }
 
-    public Long manageActivityGroup(Long activityGroupId, ActivityGroupStatus activityGroupStatus) {
+    public Long manageActivityGroup(Long activityGroupId, ActivityGroupStatus status) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        activityGroup.setStatus(activityGroupStatus);
-        Long id = activityGroupRepository.save(activityGroup).getId();
+        activityGroup.updateStatus(status);
+        activityGroupRepository.save(activityGroup);
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
         if (groupLeader != null) {
-            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                    .memberId(groupLeader.getMember().getId())
-                    .content("활동 그룹이 [" + activityGroupStatus.getDescription() + "] 상태로 변경되었습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDto);
+            notificationService.sendNotificationToMember(
+                    groupLeader.getMember(),
+                    "활동 그룹이 [" + status.getDescription() + "] 상태로 변경되었습니다."
+            );
         }
-        return id;
+        return activityGroup.getId();
     }
 
     @Transactional
@@ -104,11 +95,10 @@ public class ActivityGroupAdminService {
         groupScheduleRepository.deleteAll(groupScheduleList);
         activityGroupRepository.delete(activityGroup);
         if (groupLeader != null) {
-            NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                    .memberId(groupLeader.getMember().getId())
-                    .content("활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다.")
-                    .build();
-            notificationService.createNotification(notificationRequestDto);
+            notificationService.sendNotificationToMember(
+                    groupLeader.getMember(),
+                    "활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다."
+            );
         }
         return activityGroup.getId();
     }
@@ -139,7 +129,7 @@ public class ActivityGroupAdminService {
     public PagedResponseDto<ActivityGroupMemberWithApplyReasonResponseDto> getGroupMembersWithApplyReason(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!(isMemberGroupLeaderRole(activityGroup, currentMember) || memberService.isMemberAdminRole(currentMember))) {
+        if (!(isMemberGroupLeaderRole(activityGroup, currentMember) || currentMember.isAdminRole())) {
             throw new PermissionDeniedException("해당 활동의 멤버를 조회할 권한이 없습니다.");
         }
         List<ApplyForm> applyForms = applyFormRepository.findAllByActivityGroup(activityGroup);
@@ -150,15 +140,9 @@ public class ActivityGroupAdminService {
                 ));
         Page<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId, pageable);
         List<ActivityGroupMemberWithApplyReasonResponseDto> dtos = groupMembers.getContent().stream()
-                .map(member -> {
-                    String applyReason = memberIdToApplyReasonMap.getOrDefault(member.getMember().getId(), "");
-                    return ActivityGroupMemberWithApplyReasonResponseDto.builder()
-                            .memberId(member.getMember().getId())
-                            .memberName(member.getMember().getName())
-                            .role(member.getRole().toString())
-                            .status(member.getStatus())
-                            .applyReason(applyReason)
-                            .build();
+                .map(groupMember -> {
+                    String applyReason = memberIdToApplyReasonMap.getOrDefault(groupMember.getMember().getId(), "");
+                    return ActivityGroupMemberWithApplyReasonResponseDto.create(groupMember, applyReason);
                 }).toList();
         return new PagedResponseDto<>(new PageImpl<>(dtos, pageable, groupMembers.getTotalElements()));
     }
@@ -171,23 +155,15 @@ public class ActivityGroupAdminService {
         }
         Member member = memberService.getMemberByIdOrThrow(memberId);
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
-        if (groupMember.getRole() == ActivityGroupRole.LEADER) {
-            throw new LeaderStatusChangeNotAllowedException("리더의 상태는 변경할 수 없습니다.");
-        }
-        groupMember.setStatus(status);
-        if (status == GroupMemberStatus.ACCEPTED) {
-            groupMember.setRole(ActivityGroupRole.MEMBER);
-        } else {
-            groupMember.setRole(null);
-        }
-        String id = activityGroupMemberService.save(groupMember).getMember().getId();
+        groupMember.validateAccessPermission();
+        groupMember.updateStatus(status);
+        activityGroupMemberService.save(groupMember);
 
-        NotificationRequestDto notificationRequestDto = NotificationRequestDto.builder()
-                .memberId(memberId)
-                .content("활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다.")
-                .build();
-        notificationService.createNotification(notificationRequestDto);
-        return id;
+        notificationService.sendNotificationToMember(
+                member,
+                "활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다."
+        );
+        return groupMember.getMember().getId();
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
@@ -195,14 +171,9 @@ public class ActivityGroupAdminService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 활동입니다."));
     }
 
-    public boolean isActivityGroupProgressing(Long activityGroupId){
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        return activityGroup.getStatus() == ActivityGroupStatus.PROGRESSING;
-    }
-
     public boolean isMemberGroupLeaderRole(ActivityGroup activityGroup, Member member) {
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
-        return groupMember.getRole() == ActivityGroupRole.LEADER && memberService.isMemberAdminRole(member);
+        return groupMember.isLeader() && member.isAdminRole();
     }
 
     public boolean isMemberHasRoleInActivityGroup(Member member, ActivityGroupRole role, Long activityGroupId){
@@ -210,9 +181,18 @@ public class ActivityGroupAdminService {
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(activityGroupId);
 
         return groupMemberList.stream()
-                .anyMatch(groupMember ->
-                        Objects.equals(groupMember.getActivityGroup().getId(), activityGroup.getId()) &&
-                        groupMember.getRole() == role);
+                .anyMatch(groupMember -> groupMember.isSameRoleAndActivityGroup(role, activityGroup));
+    }
+
+    public ActivityGroup validateAndGetActivityGroupForReporting(Long activityGroupId, Member member) throws PermissionDeniedException, IllegalAccessException {
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        if (!isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
+            throw new PermissionDeniedException("해당 그룹의 리더만 보고서를 작성할 수 있습니다.");
+        }
+        if (!activityGroup.isProgressing()) {
+            throw new IllegalAccessException("활동이 진행 중인 그룹이 아닙니다. 차시 보고서를 작성할 수 없습니다.");
+        }
+        return activityGroup;
     }
 
 }

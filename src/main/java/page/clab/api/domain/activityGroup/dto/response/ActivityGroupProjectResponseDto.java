@@ -7,8 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
+import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
@@ -53,10 +55,10 @@ public class ActivityGroupProjectResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static ActivityGroupProjectResponseDto of(ActivityGroup activityGroup, List<GroupMemberResponseDto> groupMembers, List<ActivityGroupBoardResponseDto> noticeAndWeeklyActivityBoards, boolean isOwner) {
+    public static ActivityGroupProjectResponseDto create(ActivityGroup activityGroup, List<GroupMember> groupMembers, List<ActivityGroupBoard> boards, boolean isOwner) {
         ActivityGroupProjectResponseDto activityGroupProjectResponseDto = ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupProjectResponseDto.class);
-        activityGroupProjectResponseDto.setGroupMembers(groupMembers);
-        activityGroupProjectResponseDto.setActivityGroupBoards(noticeAndWeeklyActivityBoards);
+        activityGroupProjectResponseDto.setGroupMembers(groupMembers.stream().map(GroupMemberResponseDto::of).toList());
+        activityGroupProjectResponseDto.setActivityGroupBoards(boards.stream().map(ActivityGroupBoardResponseDto::of).toList());
         activityGroupProjectResponseDto.setOwner(isOwner);
         return activityGroupProjectResponseDto;
     }

@@ -15,6 +15,7 @@ import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.workExperience.dto.request.WorkExperienceRequestDto;
 import page.clab.api.domain.workExperience.dto.request.WorkExperienceUpdateRequestDto;
+import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
@@ -49,8 +50,10 @@ public class WorkExperience {
     @ManyToOne
     private Member member;
 
-    public static WorkExperience of(WorkExperienceRequestDto workExperienceRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(workExperienceRequestDto, WorkExperience.class);
+    public static WorkExperience of(WorkExperienceRequestDto workExperienceRequestDto, Member member) {
+        WorkExperience workExperience = ModelMapperUtil.getModelMapper().map(workExperienceRequestDto, WorkExperience.class);
+        workExperience.setMember(member);
+        return workExperience;
     }
 
     public void update(WorkExperienceUpdateRequestDto workExperienceUpdateRequestDto) {
@@ -58,6 +61,16 @@ public class WorkExperience {
         Optional.ofNullable(workExperienceUpdateRequestDto.getPosition()).ifPresent(this::setPosition);
         Optional.ofNullable(workExperienceUpdateRequestDto.getStartDate()).ifPresent(this::setStartDate);
         Optional.ofNullable(workExperienceUpdateRequestDto.getEndDate()).ifPresent(this::setEndDate);
+    }
+
+    public boolean isOwner(Member member) {
+        return this.member.isSameMember(member);
+    }
+
+    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isSuperAdminRole()) {
+            throw new PermissionDeniedException("해당 경력사항을 수정/삭제할 권한이 없습니다.");
+        }
     }
 
 }

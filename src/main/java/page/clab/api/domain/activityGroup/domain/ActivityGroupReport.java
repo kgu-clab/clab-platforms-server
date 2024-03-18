@@ -52,9 +52,10 @@ public class ActivityGroupReport {
     @Column(name = "update_time")
     private LocalDateTime updateTime;
 
-    public static ActivityGroupReport of(ActivityGroupReportRequestDto reportRequestDto){
+    public static ActivityGroupReport create(Long turn, ActivityGroup activityGroup, ActivityGroupReportRequestDto reportRequestDto) {
         return ActivityGroupReport.builder()
-                .turn(reportRequestDto.getTurn())
+                .turn(turn)
+                .activityGroup(activityGroup)
                 .title(reportRequestDto.getTitle())
                 .content(reportRequestDto.getContent())
                 .build();

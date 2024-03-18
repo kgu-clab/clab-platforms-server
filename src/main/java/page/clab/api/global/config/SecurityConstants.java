@@ -14,7 +14,7 @@ public class SecurityConstants {
     };
 
     public static final String[] PERMIT_ALL_API_ENDPOINTS_GET = {
-            "/applications/{applicationId}",
+            "/applications/{studentId}",
             "/recruitments",
             "/news", "/news/**",
             "/blogs", "/blogs/**",

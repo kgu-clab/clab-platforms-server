@@ -52,51 +52,24 @@ public class LoginService {
 
     @Transactional
     public LoginHeader login(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFaliedException, MemberLockedException {
-        String id = loginRequestDto.getId();
-        String password = loginRequestDto.getPassword();
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(id, password);
-        try {
-            loginAuthenticationManager.authenticate(authenticationToken);
-            accountLockInfoService.handleAccountLockInfo(id);
-            memberService.setLastLoginTime(id);
-            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.SUCCESS);
-            if (!authenticatorService.isAuthenticatorExist(id)) {
-                return LoginHeader.builder()
-                        .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
-                        .secretKey(authenticatorService.generateSecretKey(id))
-                        .build();
-            }
-        } catch (BadCredentialsException e) {
-            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
-            accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
-        }
-        return LoginHeader.builder()
-                .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
-                .build();
+        authenticateAndCheckStatus(httpServletRequest, loginRequestDto);
+        logLoginAttempt(httpServletRequest, loginRequestDto.getId(), true);
+        Member member = memberService.getMemberByIdOrThrow(loginRequestDto.getId());
+        member.updateLastLoginTime();
+        return generateLoginHeader(loginRequestDto.getId());
     }
 
     public TokenHeader authenticator(HttpServletRequest httpServletRequest, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
-        String id = twoFactorAuthenticationRequestDto.getMemberId();
+        String memberId = twoFactorAuthenticationRequestDto.getMemberId();
+        Member loginMember = memberService.getMemberById(memberId);
         String totp = twoFactorAuthenticationRequestDto.getTotp();
-        accountLockInfoService.handleAccountLockInfo(id);
-        if (!authenticatorService.isAuthenticatorValid(id, totp)) {
-            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.FAILURE);
-            accountLockInfoService.updateAccountLockInfo(httpServletRequest, id);
-            throw new LoginFaliedException("잘못된 인증번호입니다.");
-        }
-        loginAttemptLogService.createLoginAttemptLog(httpServletRequest, id, LoginAttemptResult.TOTP);
-        TokenInfo tokenInfo = jwtTokenProvider.generateToken(id, memberService.getMemberById(id).getRole());
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        redisTokenService.saveRedisToken(id, memberService.getMemberById(id).getRole(), tokenInfo, clientIpAddress);
-        Member loginMember = memberService.getMemberById(id);
-        if (memberService.isMemberSuperRole(loginMember)) {
-            slackService.sendAdminLoginNotification(loginMember.getId(), loginMember.getRole());
-        }
-        return TokenHeader.builder()
-                .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
-                .accessToken(tokenInfo.getAccessToken())
-                .refreshToken(tokenInfo.getRefreshToken())
-                .build();
+
+        accountLockInfoService.handleAccountLockInfo(memberId);
+        verifyTwoFactorAuthentication(memberId, totp, httpServletRequest);
+
+        TokenInfo tokenInfo = generateAndSaveToken(loginMember);
+        sendAdminLoginNotification(loginMember);
+        return constructTokenHeader(tokenInfo);
     }
 
     public String resetAuthenticator(String memberId) {
@@ -111,25 +84,87 @@ public class LoginService {
 
     @Transactional
     public TokenHeader reissue(HttpServletRequest request) {
-        String token = jwtTokenProvider.resolveToken(request);
-        Authentication authentication = jwtTokenProvider.getAuthentication(token);
+        String refreshToken = jwtTokenProvider.resolveToken(request);
+        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+        RedisToken redisToken = redisTokenService.getRedisTokenByRefreshToken(refreshToken);
+
+        validateMemberExistence(authentication);
+        validateToken(redisToken);
+
+        TokenInfo newTokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
+        redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
+        return constructTokenHeader(newTokenInfo);
+    }
+
+    private void authenticateAndCheckStatus(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFaliedException, MemberLockedException {
+        try {
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(loginRequestDto.getId(), loginRequestDto.getPassword());
+            loginAuthenticationManager.authenticate(authenticationToken);
+            accountLockInfoService.handleAccountLockInfo(loginRequestDto.getId());
+        } catch (BadCredentialsException e) {
+            logLoginAttempt(httpServletRequest, loginRequestDto.getId(), false);
+            accountLockInfoService.handleLoginFailure(httpServletRequest, loginRequestDto.getId());
+            throw new LoginFaliedException();
+        }
+    }
+
+    private void logLoginAttempt(HttpServletRequest request, String memberId, boolean isSuccess) {
+        LoginAttemptResult result = isSuccess ? LoginAttemptResult.SUCCESS : LoginAttemptResult.FAILURE;
+        loginAttemptLogService.createLoginAttemptLog(request, memberId, result);
+    }
+
+    private LoginHeader generateLoginHeader(String memberId) {
+        if (!authenticatorService.isAuthenticatorExist(memberId)) {
+            String secretKey = authenticatorService.generateSecretKey(memberId);
+            return new LoginHeader(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus(), secretKey);
+        }
+        return new LoginHeader(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus(), null);
+    }
+
+    private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest httpServletRequest) throws MemberLockedException, LoginFaliedException {
+        if (!authenticatorService.isAuthenticatorValid(memberId, totp)) {
+            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, memberId, LoginAttemptResult.FAILURE);
+            accountLockInfoService.handleLoginFailure(httpServletRequest, memberId);
+            throw new LoginFaliedException("잘못된 인증번호입니다.");
+        }
+        loginAttemptLogService.createLoginAttemptLog(httpServletRequest, memberId, LoginAttemptResult.TOTP);
+    }
+
+    private TokenInfo generateAndSaveToken(Member member) {
+        TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getId(), member.getRole());
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        redisTokenService.saveRedisToken(member.getId(), member.getRole(), tokenInfo, clientIpAddress);
+        return tokenInfo;
+    }
+
+    private void sendAdminLoginNotification(Member loginMember) {
+        if (loginMember.isSuperAdminRole()) {
+            slackService.sendAdminLoginNotification(loginMember.getId(), loginMember.getRole());
+        }
+    }
+
+    private void validateMemberExistence(Authentication authentication) {
         String id = authentication.getName();
         Member member = memberService.getMemberById(id);
         if (member == null) {
             throw new TokenForgeryException("존재하지 않는 회원에 대한 토큰입니다.");
         }
-        RedisToken redisToken = redisTokenService.getRedisTokenByRefreshToken(token);
+    }
+
+    private void validateToken(RedisToken redisToken) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        if (!redisToken.getIp().equals(clientIpAddress)) {
+        if (!redisToken.isSameIp(clientIpAddress)) {
             redisTokenService.deleteRedisTokenByAccessToken(redisToken.getAccessToken());
             throw new TokenMisuseException("[" + clientIpAddress + "] 토큰 발급 IP와 다른 IP에서 발급을 시도하여 토큰을 삭제하였습니다.");
         }
-        TokenInfo tokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
-        redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), tokenInfo, redisToken.getIp());
+    }
+
+    private TokenHeader constructTokenHeader(TokenInfo newTokenInfo) {
         return TokenHeader.builder()
                 .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
-                .accessToken(tokenInfo.getAccessToken())
-                .refreshToken(tokenInfo.getRefreshToken())
+                .accessToken(newTokenInfo.getAccessToken())
+                .refreshToken(newTokenInfo.getRefreshToken())
                 .build();
     }
 

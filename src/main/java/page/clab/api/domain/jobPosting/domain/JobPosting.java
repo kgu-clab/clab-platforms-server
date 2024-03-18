@@ -71,4 +71,14 @@ public class JobPosting {
         Optional.ofNullable(jobPostingUpdateRequestDto.getJobPostingUrl()).ifPresent(this::setJobPostingUrl);
     }
 
+    public JobPosting updateFromRequestDto(JobPostingRequestDto jobPostingRequestDto) {
+        this.title = jobPostingRequestDto.getTitle();
+        this.careerLevel = jobPostingRequestDto.getCareerLevel();
+        this.employmentType = jobPostingRequestDto.getEmploymentType();
+        this.companyName = jobPostingRequestDto.getCompanyName();
+        this.recruitmentPeriod = jobPostingRequestDto.getRecruitmentPeriod();
+        this.jobPostingUrl = jobPostingRequestDto.getJobPostingUrl();
+        return this;
+    }
+
 }

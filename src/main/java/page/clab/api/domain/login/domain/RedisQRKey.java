@@ -21,4 +21,10 @@ public class RedisQRKey {
     @Column(name = "QRCode_key")
     private String QRCodeKey;
 
+    public static RedisQRKey create(String QRCodeKey) {
+        return RedisQRKey.builder()
+                .QRCodeKey(QRCodeKey)
+                .build();
+    }
+
 }

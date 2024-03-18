@@ -95,8 +95,21 @@ public class Application {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static Application of(ApplicationRequestDto applicationRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(applicationRequestDto, Application.class);
+    public static Application create(ApplicationRequestDto applicationRequestDto) {
+        Application application = ModelMapperUtil.getModelMapper().map(applicationRequestDto, Application.class);
+        application.setContact(removeHyphensFromContact(application.getContact()));
+        application.setIsPass(false);
+        application.setUpdateTime(LocalDateTime.now());
+        return application;
+    }
+
+    public static String removeHyphensFromContact(String contact) {
+        return contact.replaceAll("-", "");
+    }
+
+    public void toggleApprovalStatus() {
+        this.isPass = !this.isPass;
+        this.setUpdateTime(LocalDateTime.now());
     }
 
 }

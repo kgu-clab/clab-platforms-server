@@ -23,6 +23,7 @@ import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRe
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
+import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
@@ -83,9 +84,15 @@ public class ActivityGroupBoard {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    public static ActivityGroupBoard of(ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(activityGroupBoardRequestDto, ActivityGroupBoard.class);
+    public static ActivityGroupBoard create(ActivityGroupBoardRequestDto dto, Member member, ActivityGroup activityGroup, ActivityGroupBoard parent, List<UploadedFile> uploadedFiles) {
+        ActivityGroupBoard activityGroupBoard = ModelMapperUtil.getModelMapper().map(dto, ActivityGroupBoard.class);
+        activityGroupBoard.setMember(member);
+        activityGroupBoard.setActivityGroup(activityGroup);
+        activityGroupBoard.setParent(parent);
+        activityGroupBoard.setUploadedFiles(uploadedFiles);
+        return activityGroupBoard;
     }
+
 
     public void update(ActivityGroupBoardUpdateRequestDto dto, FileService fileService) {
         Optional.ofNullable(dto.getTitle()).ifPresent(this::setTitle);
@@ -98,6 +105,41 @@ public class ActivityGroupBoard {
                             .collect(Collectors.toList());
                     setUploadedFiles(uploadedFiles);
                 });
+        this.updateTime = LocalDateTime.now();
+    }
+
+    public void addChild(ActivityGroupBoard child) {
+        this.children.add(child);
+    }
+
+    public boolean isOwner(Member member) {
+        return this.member.isSameMember(member);
+    }
+
+    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isAdminRole()) {
+            throw new PermissionDeniedException("해당 활동 그룹 게시판을 수정/삭제할 권한이 없습니다.");
+        }
+    }
+
+    public boolean isAssignment() {
+        return this.category.equals(ActivityGroupBoardCategory.ASSIGNMENT);
+    }
+
+    public boolean isSubmit() {
+        return this.category.equals(ActivityGroupBoardCategory.SUBMIT);
+    }
+
+    public boolean isFeedback() {
+        return this.category.equals(ActivityGroupBoardCategory.FEEDBACK);
+    }
+
+    public void validateAccessPermission(Member member, GroupMember leader) throws PermissionDeniedException {
+        if (!member.isAdminRole() && leader != null && !leader.isOwner(member)) {
+            if (this.isAssignment()) {
+                throw new PermissionDeniedException("과제 게시판에 접근할 권한이 없습니다.");
+            }
+        }
     }
 
 }
