@@ -23,6 +23,7 @@ import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRe
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
+import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
@@ -104,6 +105,22 @@ public class ActivityGroupBoard {
                             .collect(Collectors.toList());
                     setUploadedFiles(uploadedFiles);
                 });
+    }
+
+    public void addChild(ActivityGroupBoard child) {
+        this.children.add(child);
+    }
+
+    public boolean isAssignment() {
+        return this.category.equals(ActivityGroupBoardCategory.ASSIGNMENT);
+    }
+
+    public void validateAccessPermission(Member member, GroupMember leader) throws PermissionDeniedException {
+        if (!member.isAdminRole() && leader != null && !leader.isOwner(member)) {
+            if (this.isAssignment()) {
+                throw new PermissionDeniedException("과제 게시판에 접근할 권한이 없습니다.");
+            }
+        }
     }
 
 }
