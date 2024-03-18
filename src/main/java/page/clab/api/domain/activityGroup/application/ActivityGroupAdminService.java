@@ -20,7 +20,6 @@ import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberWithApplyReasonResponseDto;
-import page.clab.api.domain.activityGroup.exception.LeaderStatusChangeNotAllowedException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -156,15 +155,8 @@ public class ActivityGroupAdminService {
         }
         Member member = memberService.getMemberByIdOrThrow(memberId);
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
-        if (groupMember.getRole() == ActivityGroupRole.LEADER) {
-            throw new LeaderStatusChangeNotAllowedException("리더의 상태는 변경할 수 없습니다.");
-        }
+        groupMember.validateAccessPermission();
         groupMember.updateStatus(status);
-        if (status == GroupMemberStatus.ACCEPTED) {
-            groupMember.updateRole(ActivityGroupRole.MEMBER);
-        } else {
-            groupMember.updateRole(null);
-        }
         activityGroupMemberService.save(groupMember);
 
         notificationService.sendNotificationToMember(

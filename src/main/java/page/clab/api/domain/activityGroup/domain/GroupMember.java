@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.activityGroup.exception.LeaderStatusChangeNotAllowedException;
 import page.clab.api.domain.member.domain.Member;
 
 @Entity
@@ -84,6 +85,17 @@ public class GroupMember {
 
     public void updateStatus(GroupMemberStatus status) {
         this.status = status;
+        if (this.isAccepted()) {
+            this.updateRole(ActivityGroupRole.MEMBER);
+        } else {
+            this.updateRole(null);
+        }
+    }
+
+    public void validateAccessPermission() {
+        if (this.isLeader()) {
+            throw new LeaderStatusChangeNotAllowedException("리더의 상태는 변경할 수 없습니다.");
+        }
     }
 
 }
