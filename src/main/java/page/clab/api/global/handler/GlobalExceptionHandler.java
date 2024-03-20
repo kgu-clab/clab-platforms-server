@@ -6,6 +6,7 @@ import com.maxmind.geoip2.exception.GeoIp2Exception;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -14,7 +15,6 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.TransactionSystemException;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -198,21 +198,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-            MethodArgumentNotValidException.class
+            MethodArgumentNotValidException.class,
+            ConstraintViolationException.class
     })
-    public ResponseModel handleValidationException(HttpServletResponse response, MethodArgumentNotValidException ex) {
-        BindingResult result = ex.getBindingResult();
-        StringBuilder logMessage = new StringBuilder("Validation errors: ");
-
-        result.getFieldErrors().forEach(fieldError -> {
-            logMessage.append("[");
-            logMessage.append(fieldError.getField());
-            logMessage.append(": ");
-            logMessage.append(fieldError.getDefaultMessage());
-            logMessage.append("] ");
-        });
-        log.info(logMessage.toString());;
-
+    public ResponseModel handleValidationException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return ResponseUtil.createErrorResponse(false, null);
     }
