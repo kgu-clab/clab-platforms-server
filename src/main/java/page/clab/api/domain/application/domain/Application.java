@@ -16,13 +16,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -31,7 +30,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @IdClass(ApplicationId.class)
-public class Application {
+public class Application extends BaseEntity {
 
     @Id
     @Size(min = 9, max = 9, message = "{size.application.studentId}")
@@ -87,18 +86,10 @@ public class Application {
     @Column(nullable = false)
     private Boolean isPass;
 
-    @CreationTimestamp
-    private LocalDateTime updatedAt;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
     public static Application create(ApplicationRequestDto applicationRequestDto) {
         Application application = ModelMapperUtil.getModelMapper().map(applicationRequestDto, Application.class);
         application.setContact(removeHyphensFromContact(application.getContact()));
         application.setIsPass(false);
-        application.updatedAt = LocalDateTime.now();
         return application;
     }
 
@@ -108,7 +99,6 @@ public class Application {
 
     public void toggleApprovalStatus() {
         this.isPass = !this.isPass;
-        this.setUpdatedAt(LocalDateTime.now());
     }
 
 }

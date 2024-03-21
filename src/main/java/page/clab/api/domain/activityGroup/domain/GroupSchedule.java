@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
+import page.clab.api.global.common.domain.BaseEntity;
 
 @Entity
 @Getter
@@ -21,7 +22,7 @@ import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupSchedule {
+public class GroupSchedule extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

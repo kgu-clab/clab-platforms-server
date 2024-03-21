@@ -12,10 +12,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.member.domain.Member;
-
-import java.time.LocalDateTime;
+import page.clab.api.global.common.domain.BaseEntity;
 
 @Entity
 @Getter
@@ -23,7 +21,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UploadedFile {
+public class UploadedFile extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,10 +51,6 @@ public class UploadedFile {
 
     @Column(nullable = false)
     private String category;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
 
     private Long storagePeriod;
 

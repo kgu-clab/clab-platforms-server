@@ -17,10 +17,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.sharedAccount.exception.InvalidUsageTimeException;
 import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.time.LocalDateTime;
@@ -32,7 +32,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(indexes = {@Index(name = "idx_shared_account_usage", columnList = "status, startTime, endTime")})
-public class SharedAccountUsage {
+public class SharedAccountUsage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,9 +57,6 @@ public class SharedAccountUsage {
 
     @Version
     private Long version;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
 
     public static SharedAccountUsage create(SharedAccount sharedAccount, String memberId, LocalDateTime startTime, LocalDateTime endTime) {
         return SharedAccountUsage.builder()

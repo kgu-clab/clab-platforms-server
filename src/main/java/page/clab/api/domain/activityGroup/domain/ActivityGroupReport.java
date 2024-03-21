@@ -12,11 +12,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportUpdateRequestDto;
+import page.clab.api.global.common.domain.BaseEntity;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
@@ -25,7 +24,7 @@ import java.util.Optional;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActivityGroupReport {
+public class ActivityGroupReport extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,12 +43,6 @@ public class ActivityGroupReport {
     @Column(nullable = false)
     private String content;
 
-    private LocalDateTime updatedAt;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
     public static ActivityGroupReport create(Long turn, ActivityGroup activityGroup, ActivityGroupReportRequestDto reportRequestDto) {
         return ActivityGroupReport.builder()
                 .turn(turn)
@@ -63,7 +56,6 @@ public class ActivityGroupReport {
         Optional.ofNullable(reportRequestDto.getTurn()).ifPresent(this::setTurn);
         Optional.ofNullable(reportRequestDto.getTitle()).ifPresent(this::setTitle);
         Optional.ofNullable(reportRequestDto.getContent()).ifPresent(this::setContent);
-        this.updatedAt = LocalDateTime.now();
     }
 
 }

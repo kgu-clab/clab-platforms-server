@@ -12,12 +12,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.util.ModelMapperUtil;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -25,7 +23,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApplyForm {
+public class ApplyForm extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,10 +39,6 @@ public class ApplyForm {
 
     @Column(nullable = false)
     private String applyReason;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
 
     public static ApplyForm create(ApplyFormRequestDto applyFormRequestDto, ActivityGroup activityGroup, Member member) {
         ApplyForm applyForm = ModelMapperUtil.getModelMapper().map(applyFormRequestDto, ApplyForm.class);

@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.exception.LeaderStatusChangeNotAllowedException;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.domain.BaseEntity;
 
 @Entity
 @Getter
@@ -23,7 +24,7 @@ import page.clab.api.domain.member.domain.Member;
 @AllArgsConstructor
 @NoArgsConstructor
 @IdClass(GroupMemberId.class)
-public class GroupMember {
+public class GroupMember extends BaseEntity {
 
     @Id
     @ManyToOne
