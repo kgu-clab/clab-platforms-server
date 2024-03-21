@@ -47,7 +47,7 @@ public class ApplicationResponseDto {
 
     private Boolean isPass;
 
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
     private LocalDateTime createdAt;
 

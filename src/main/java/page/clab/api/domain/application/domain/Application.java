@@ -88,16 +88,17 @@ public class Application {
     private Boolean isPass;
 
     @CreationTimestamp
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     public static Application create(ApplicationRequestDto applicationRequestDto) {
         Application application = ModelMapperUtil.getModelMapper().map(applicationRequestDto, Application.class);
         application.setContact(removeHyphensFromContact(application.getContact()));
         application.setIsPass(false);
+        application.updatedAt = LocalDateTime.now();
         return application;
     }
 
@@ -107,7 +108,7 @@ public class Application {
 
     public void toggleApprovalStatus() {
         this.isPass = !this.isPass;
-        this.setUpdateTime(LocalDateTime.now());
+        this.setUpdatedAt(LocalDateTime.now());
     }
 
 }

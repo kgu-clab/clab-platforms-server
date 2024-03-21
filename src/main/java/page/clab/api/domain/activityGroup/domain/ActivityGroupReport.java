@@ -44,7 +44,7 @@ public class ActivityGroupReport {
     @Column(nullable = false)
     private String content;
 
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -63,6 +63,7 @@ public class ActivityGroupReport {
         Optional.ofNullable(reportRequestDto.getTurn()).ifPresent(this::setTurn);
         Optional.ofNullable(reportRequestDto.getTitle()).ifPresent(this::setTitle);
         Optional.ofNullable(reportRequestDto.getContent()).ifPresent(this::setContent);
+        this.updatedAt = LocalDateTime.now();
     }
 
 }

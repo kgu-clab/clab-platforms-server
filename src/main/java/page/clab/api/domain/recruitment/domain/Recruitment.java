@@ -52,7 +52,7 @@ public class Recruitment {
     @Size(min = 1, message = "{size.recruitment.status}")
     private String status;
 
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
     @CreationTimestamp
     @Column(nullable = false)
@@ -68,7 +68,7 @@ public class Recruitment {
         Optional.ofNullable(recruitmentUpdateRequestDto.getApplicationType()).ifPresent(this::setApplicationType);
         Optional.ofNullable(recruitmentUpdateRequestDto.getTarget()).ifPresent(this::setTarget);
         Optional.ofNullable(recruitmentUpdateRequestDto.getStatus()).ifPresent(this::setStatus);
-        updateTime = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
 }

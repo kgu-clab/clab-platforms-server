@@ -76,7 +76,7 @@ public class ActivityGroupBoard {
 
     private LocalDateTime dueDateTime;
 
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -103,7 +103,7 @@ public class ActivityGroupBoard {
                             .collect(Collectors.toList());
                     setUploadedFiles(uploadedFiles);
                 });
-        this.updateTime = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void addChild(ActivityGroupBoard child) {

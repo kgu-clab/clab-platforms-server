@@ -65,7 +65,7 @@ public class Board {
     @JoinColumn(name = "board_files")
     private List<UploadedFile> uploadedFiles = new ArrayList<>();
 
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -91,7 +91,7 @@ public class Board {
         Optional.ofNullable(boardUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
         Optional.ofNullable(boardUpdateRequestDto.getContent()).ifPresent(this::setContent);
         Optional.of(boardUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
-        updateTime = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public boolean shouldNotifyForNewBoard() {

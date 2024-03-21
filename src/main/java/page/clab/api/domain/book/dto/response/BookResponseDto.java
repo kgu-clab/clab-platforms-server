@@ -37,7 +37,7 @@ public class BookResponseDto {
 
     private LocalDateTime createdAt;
 
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
     public static BookResponseDto of(Book book, LocalDateTime dueDate) {
         BookResponseDto bookResponseDto = ModelMapperUtil.getModelMapper().map(book, BookResponseDto.class);

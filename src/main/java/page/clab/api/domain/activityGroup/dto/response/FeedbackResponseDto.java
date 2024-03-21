@@ -27,7 +27,7 @@ public class FeedbackResponseDto {
 
     private LocalDateTime createdAt;
 
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
     public static FeedbackResponseDto of(ActivityGroupBoard activityGroupBoard) {
         return FeedbackResponseDto.builder()
@@ -35,7 +35,7 @@ public class FeedbackResponseDto {
                 .content(activityGroupBoard.getContent())
                 .files(activityGroupBoard.getUploadedFiles().stream().map(UploadedFileResponseDto::of).toList())
                 .createdAt(activityGroupBoard.getCreatedAt())
-                .updateTime(activityGroupBoard.getUpdateTime())
+                .updatedAt(activityGroupBoard.getUpdatedAt())
                 .build();
     }
 
