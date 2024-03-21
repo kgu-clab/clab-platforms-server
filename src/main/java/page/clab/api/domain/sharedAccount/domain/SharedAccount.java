@@ -52,6 +52,7 @@ public class SharedAccount {
     private boolean isInUse;
     
     @CreationTimestamp
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     public static SharedAccount create(SharedAccountRequestDto sharedAccountRequestDto) {

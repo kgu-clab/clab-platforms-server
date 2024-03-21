@@ -1,7 +1,6 @@
 package page.clab.api.domain.recruitment.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,11 +28,9 @@ public class RecruitmentUpdateRequestDto {
     @Schema(description = "구분", example = "CORE_TEAM")
     private ApplicationType applicationType;
 
-    @Size(min = 1, message = "{size.recruitment.target}")
     @Schema(description = "대상", example = "2~3학년")
     private String target;
 
-    @Size(min = 1, message = "{size.recruitment.status}")
     @Schema(description = "상태", example = "종료")
     private String status;
 

@@ -40,12 +40,13 @@ public class Blog {
     private Member member;
 
     @Column(nullable = false)
+    @Size(min = 1, max = 100, message = "{size.blog.title}")
     private String title;
 
     @Column(nullable = false)
     private String subTitle;
 
-    @Column(nullable = false, length = 10000)
+    @Column(nullable = false)
     @Size(min = 1, max = 10000, message = "{size.blog.content}")
     private String content;
 

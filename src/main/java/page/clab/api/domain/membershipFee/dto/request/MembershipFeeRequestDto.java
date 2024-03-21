@@ -2,7 +2,6 @@ package page.clab.api.domain.membershipFee.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +18,6 @@ import page.clab.api.global.util.ModelMapperUtil;
 public class MembershipFeeRequestDto {
 
     @NotNull(message = "{notNull.membershipFee.category}")
-    @Size(min = 1, message = "{size.membershipFee.category}")
     @Schema(description = "카테고리", example = "지출", required = true)
     private String category;
 
@@ -28,7 +26,6 @@ public class MembershipFeeRequestDto {
     private Long amount;
 
     @NotNull(message = "{notNull.membershipFee.content}")
-    @Size(min = 1, max = 1000, message = "{size.membershipFee.content}")
     @Schema(description = "내용", example = "2023-2 동아리 종강총회", required = true)
     private String content;
 

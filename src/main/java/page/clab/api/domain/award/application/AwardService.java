@@ -15,6 +15,7 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +23,14 @@ public class AwardService {
 
     private final MemberService memberService;
 
+    private final ValidationService validationService;
+
     private final AwardRepository awardRepository;
 
     public Long createAward(AwardRequestDto awardRequestDto) {
         Member member = memberService.getCurrentMember();
         Award award = Award.create(awardRequestDto, member);
+        validationService.checkValid(award);
         return awardRepository.save(award).getId();
     }
 
@@ -48,6 +52,7 @@ public class AwardService {
         Award award = getAwardByIdOrThrow(awardId);
         award.validateAccessPermission(member);
         award.update(awardUpdateRequestDto);
+        validationService.checkValid(award);
         return awardRepository.save(award).getId();
     }
 

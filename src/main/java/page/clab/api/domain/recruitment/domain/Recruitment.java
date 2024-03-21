@@ -55,6 +55,7 @@ public class Recruitment {
     private LocalDateTime updateTime;
 
     @CreationTimestamp
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     public static Recruitment of(RecruitmentRequestDto recruitmentRequestDto) {

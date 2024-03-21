@@ -19,6 +19,7 @@ import page.clab.api.domain.recruitment.domain.Recruitment;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +30,8 @@ public class ApplicationService {
 
     private final NotificationService notificationService;
 
+    private final ValidationService validationService;
+
     private final SlackService slackService;
 
     private final ApplicationRepository applicationRepository;
@@ -37,10 +40,10 @@ public class ApplicationService {
     public String createApplication(HttpServletRequest request, ApplicationRequestDto applicationRequestDto) {
         Recruitment recruitment = recruitmentService.getRecruitmentByIdOrThrow(applicationRequestDto.getRecruitmentId());
         Application application = Application.create(applicationRequestDto);
-        notificationService.sendNotificationToAdmins(
-                applicationRequestDto.getStudentId() + " " +
-                        applicationRequestDto.getName() + "님이 동아리에 지원하였습니다."
-        );
+        validationService.checkValid(application);
+
+        notificationService.sendNotificationToAdmins(applicationRequestDto.getStudentId() + " " +
+                        applicationRequestDto.getName() + "님이 동아리에 지원하였습니다.");
         slackService.sendApplicationNotification(request, applicationRequestDto);
         return applicationRepository.save(application).getStudentId();
     }

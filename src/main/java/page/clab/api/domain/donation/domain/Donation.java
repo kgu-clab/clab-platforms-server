@@ -43,12 +43,12 @@ public class Donation {
     @Min(value = 1, message = "{min.donation.amount}")
     private Double amount;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false)
     @Size(min = 1, max = 1000, message = "{size.donation.message}")
     private String message;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     public static Donation of(DonationRequestDto donationRequestDto, Member member) {

@@ -52,7 +52,7 @@ public class Comment {
     @Column(nullable = false)
     private String nickname;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false)
     @Size(min = 1, max = 1000, message = "{size.comment.content}")
     private String content;
 
@@ -70,10 +70,10 @@ public class Comment {
     private LocalDateTime updateTime;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "want_anonymous", nullable = false)
+    @Column(nullable = false)
     private boolean wantAnonymous;
 
     private Long likes;

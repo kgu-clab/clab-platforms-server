@@ -2,17 +2,16 @@ package page.clab.api.domain.activityGroup.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -29,12 +28,10 @@ public class ActivityGroupRequestDto {
     private String subject;
 
     @NotNull(message = "{notnull.activityGroup.name}")
-    @Size(min = 1, max = 30, message = "{size.activityGroup.name}")
     @Schema(description = "활동명", example = "2024-1 신입생 대상 C언어 스터디")
     private String name;
 
     @NotNull(message = "{notnull.activityGroup.content}")
-    @Size(min = 1, max = 1000, message = "{size.activityGroup.content}")
     @Schema(description = "활동 설명", example = "2024-1 신입생 대상 C언어 스터디")
     private String content;
 
@@ -53,7 +50,6 @@ public class ActivityGroupRequestDto {
     @Schema(description = "기술 스택", example = "Unreal Engine, C#")
     private String techStack;
 
-    @URL(message = "{url.activityGroup.githubUrl}")
     @Schema(description = "Github URL", example = "https://github.com/KGU-C-Lab")
     private String githubUrl;
 

@@ -9,12 +9,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.member.domain.Member;
@@ -28,7 +28,6 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class Accuse {
 
     @Id
@@ -46,7 +45,8 @@ public class Accuse {
     @Column(nullable = false)
     private Long targetId;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false)
+    @Size(min = 1, max = 1000, message = "{size.accuse.reason}")
     private String reason;
 
     @Column(nullable = false)
@@ -54,7 +54,7 @@ public class Accuse {
     private AccuseStatus accuseStatus;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     public static Accuse of(AccuseRequestDto accuseRequestDto) {

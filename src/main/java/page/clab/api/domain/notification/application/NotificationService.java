@@ -16,6 +16,7 @@ import page.clab.api.domain.notification.dto.response.NotificationResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -25,6 +26,8 @@ import java.util.function.Supplier;
 public class NotificationService {
 
     private MemberService memberService;
+
+    private final ValidationService validationService;
 
     private final NotificationRepository notificationRepository;
 
@@ -36,6 +39,7 @@ public class NotificationService {
     public Long createNotification(NotificationRequestDto notificationRequestDto) {
         Member member = memberService.getMemberByIdOrThrow(notificationRequestDto.getMemberId());
         Notification notification = Notification.create(notificationRequestDto, member);
+        validationService.checkValid(notification);
         return notificationRepository.save(notification).getId();
     }
 

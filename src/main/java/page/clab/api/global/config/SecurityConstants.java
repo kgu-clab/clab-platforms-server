@@ -18,7 +18,7 @@ public class SecurityConstants {
             "/recruitments",
             "/news", "/news/**",
             "/blogs", "/blogs/**",
-            "/executives", "/executives/**",
+            "/positions", "/positions/**",
             "/awards", "/awards/**",
             "/activity-group", "/activity-group/**",
             "/work-experiences", "/work-experiences/**",

@@ -14,7 +14,7 @@ public class RandomNicknameUtil {
 
     private static final int NOUN_SIZE = 25;
 
-    public static String makeRandomNickname(){
+    public static String makeRandomNickname() {
         List<String> adjectiveArray = Arrays.asList(
                 "행복한", "기쁜", "배고픈", "졸린", "신난",
                 "잠자는", "코딩하는", "밥먹는", "책읽는", "알바하는",

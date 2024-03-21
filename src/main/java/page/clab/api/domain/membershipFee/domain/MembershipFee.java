@@ -46,14 +46,14 @@ public class MembershipFee {
     @Column(nullable = false)
     private Long amount;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false)
     @Size(min = 1, max = 1000, message = "{size.membershipFee.content}")
     private String content;
 
     private String imageUrl;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     public static MembershipFee create(MembershipFeeRequestDto membershipFeeRequestDto, Member member) {

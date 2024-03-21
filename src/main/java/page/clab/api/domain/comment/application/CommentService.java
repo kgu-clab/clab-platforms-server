@@ -23,6 +23,7 @@ import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 import java.util.Optional;
 
@@ -31,15 +32,17 @@ import java.util.Optional;
 @Slf4j
 public class CommentService {
 
-    private final CommentRepository commentRepository;
-
-    private final CommentLikeRepository commentLikeRepository;
-
     private final BoardService boardService;
 
     private final MemberService memberService;
 
     private final NotificationService notificationService;
+
+    private final ValidationService validationService;
+
+    private final CommentRepository commentRepository;
+
+    private final CommentLikeRepository commentLikeRepository;
 
     @Transactional
     public Long createComment(Long parentId, Long boardId, CommentRequestDto dto) {
@@ -70,6 +73,7 @@ public class CommentService {
         Comment comment = getCommentByIdOrThrow(commentId);
         comment.validateAccessPermission(currentMember);
         comment.update(dto);
+        validationService.checkValid(comment);
         return commentRepository.save(comment).getId();
     }
 
@@ -122,6 +126,7 @@ public class CommentService {
         if (parent != null) {
             parent.addChildComment(comment);
         }
+        validationService.checkValid(comment);
         return commentRepository.save(comment);
     }
 

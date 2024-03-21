@@ -15,6 +15,7 @@ import page.clab.api.domain.workExperience.dto.response.WorkExperienceResponseDt
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +23,14 @@ public class WorkExperienceService {
 
     private final MemberService memberService;
 
+    private final ValidationService validationService;
+
     private final WorkExperienceRepository workExperienceRepository;
 
     public Long createWorkExperience(WorkExperienceRequestDto workExperienceRequestDto) {
         Member member = memberService.getCurrentMember();
         WorkExperience workExperience = WorkExperience.of(workExperienceRequestDto, member);
+        validationService.checkValid(workExperience);
         return workExperienceRepository.save(workExperience).getId();
     }
 
@@ -49,6 +53,7 @@ public class WorkExperienceService {
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
         workExperience.validateAccessPermission(member);
         workExperience.update(workExperienceUpdateRequestDto);
+        validationService.checkValid(workExperience);
         return workExperienceRepository.save(workExperience).getId();
     }
 

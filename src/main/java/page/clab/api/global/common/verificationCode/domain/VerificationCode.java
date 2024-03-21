@@ -2,6 +2,7 @@ package page.clab.api.global.common.verificationCode.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,10 +19,13 @@ import page.clab.api.global.exception.InvalidInformationException;
 public class VerificationCode {
 
     @Id
-    @Column(name = "member_id")
+    @Column(name = "member_id", nullable = false)
+    @Size(min = 9, max = 9, message = "{size.verificationCode.memberId}")
     private String id;
 
     @Indexed
+    @Size(min = 12, max = 12, message = "{size.verificationCode.verificationCode}")
+    @Column(nullable = false)
     private String verificationCode;
 
     public static VerificationCode create(String memberId, String verificationCode) {

@@ -7,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,7 +44,7 @@ public class Review {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @NotNull(message = "{notNull.review.content}")
+    @Column(nullable = false)
     @Size(min = 1, max = 1000, message = "{size.review.content}")
     private String content;
 
@@ -53,7 +52,7 @@ public class Review {
     private Boolean isPublic;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     public static Review create(ReviewRequestDto reviewRequestDto, Member member, ActivityGroup activityGroup) {

@@ -12,15 +12,19 @@ import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUpdateRequest
 import page.clab.api.domain.sharedAccount.dto.response.SharedAccountResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
 public class SharedAccountService {
 
+    private final ValidationService validationService;
+
     private final SharedAccountRepository sharedAccountRepository;
 
     public Long createSharedAccount(SharedAccountRequestDto sharedAccountRequestDto) {
         SharedAccount sharedAccount = SharedAccount.create(sharedAccountRequestDto);
+        validationService.checkValid(sharedAccount);
         return sharedAccountRepository.save(sharedAccount).getId();
     }
 
@@ -33,6 +37,7 @@ public class SharedAccountService {
     public Long updateSharedAccount(Long accountId, SharedAccountUpdateRequestDto sharedAccountUpdateRequestDto) {
         SharedAccount sharedAccount = getSharedAccountByIdOrThrow(accountId);
         sharedAccount.update(sharedAccountUpdateRequestDto);
+        validationService.checkValid(sharedAccount);
         return sharedAccountRepository.save(sharedAccount).getId();
     }
 

@@ -50,7 +50,8 @@ public class JobPosting {
 
     private String recruitmentPeriod;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false)
+    @Size(max = 1000, message = "{size.jobPosting.jobPostingUrl}")
     @URL(message = "{url.jobPosting.jobPostingUrl}")
     private String jobPostingUrl;
 

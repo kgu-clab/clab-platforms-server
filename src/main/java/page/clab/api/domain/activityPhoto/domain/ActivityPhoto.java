@@ -50,6 +50,7 @@ public class ActivityPhoto {
     private Boolean isPublic;
 
     @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     public static ActivityPhoto create(ActivityPhotoRequestDto activityPhotoRequestDto, List<UploadedFile> uploadedFiles) {

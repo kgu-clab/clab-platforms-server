@@ -2,7 +2,6 @@ package page.clab.api.domain.activityGroup.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +23,6 @@ public class ActivityGroupBoardRequestDto {
     @Schema(description = "카테고리", example = "NOTICE")
     private ActivityGroupBoardCategory category;
 
-    @Size(min = 1, max = 100, message = "{size.activityGroupBoard.title}")
     @Schema(description = "제목", example = "C언어 스터디 과제 제출 관련 공지")
     private String title;
 

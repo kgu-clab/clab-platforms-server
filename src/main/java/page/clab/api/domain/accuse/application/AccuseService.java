@@ -21,6 +21,7 @@ import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.review.application.ReviewService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +38,8 @@ public class AccuseService {
 
     private final NotificationService notificationService;
 
+    private final ValidationService validationService;
+
     private final AccuseRepository accuseRepository;
 
     @Transactional
@@ -52,6 +55,7 @@ public class AccuseService {
         Accuse accuse = accuseRepository.findByMemberAndTargetTypeAndTargetId(member, accuseTargetType, accuseTargetId)
                             .orElseGet(() -> Accuse.create(accuseRequestDto, member));
         accuse.updateReason(accuseRequestDto.getReason());
+        validationService.checkValid(accuse);
 
         notificationService.sendNotificationToMember(member, "신고하신 내용이 접수되었습니다.");
         notificationService.sendNotificationToSuperAdmins(member.getName() + "님이 신고를 접수하였습니다. 확인해주세요.");
@@ -68,6 +72,7 @@ public class AccuseService {
     public Long updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) {
         Accuse accuse = getAccuseByIdOrThrow(accuseId);
         accuse.updateStatus(accuseStatus);
+        validationService.checkValid(accuse);
         notificationService.sendNotificationToMember(accuse.getMember(), "신고 상태가 " + accuseStatus.getDescription() + "로 변경되었습니다.");
         return accuseRepository.save(accuse).getId();
     }

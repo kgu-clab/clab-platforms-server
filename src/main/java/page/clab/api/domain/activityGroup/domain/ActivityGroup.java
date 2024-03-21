@@ -73,7 +73,7 @@ public class ActivityGroup {
     private String githubUrl;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     public static ActivityGroup create(ActivityGroupRequestDto activityGroupRequestDto) {
