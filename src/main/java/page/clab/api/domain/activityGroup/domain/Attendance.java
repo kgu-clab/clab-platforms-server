@@ -38,11 +38,11 @@ public class  Attendance {
     @JoinColumn(name = "group_id")
     private ActivityGroup activityGroup;
 
-    @Column(name = "activity_date", nullable = false)
+    @Column(nullable = false)
     private LocalDate activityDate;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     public static Attendance create(Member member, ActivityGroup activityGroup, LocalDate activityDate) {

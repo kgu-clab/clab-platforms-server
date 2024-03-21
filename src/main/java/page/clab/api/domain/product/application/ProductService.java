@@ -12,15 +12,19 @@ import page.clab.api.domain.product.dto.request.ProductUpdateRequestDto;
 import page.clab.api.domain.product.dto.response.ProductResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 
+    private final ValidationService validationService;
+
     private final ProductRepository productRepository;
 
     public Long createProduct(ProductRequestDto productRequestDto) {
         Product product = Product.of(productRequestDto);
+        validationService.checkValid(product);
         return productRepository.save(product).getId();
     }
 
@@ -33,6 +37,7 @@ public class ProductService {
     public Long updateProduct(Long productId, ProductUpdateRequestDto productUpdateRequestDto) {
         Product product = getProductByIdOrThrow(productId);
         product.update(productUpdateRequestDto);
+        validationService.checkValid(product);
         return productRepository.save(product).getId();
     }
 

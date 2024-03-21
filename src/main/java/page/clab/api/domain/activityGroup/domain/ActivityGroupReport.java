@@ -7,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,25 +31,24 @@ public class ActivityGroupReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @Column(nullable = false)
     private Long turn;
 
     @ManyToOne
     @JoinColumn(name = "activity_group_id", nullable = false)
     private ActivityGroup activityGroup;
 
-    @NotNull
+    @Column(nullable = false)
     private String title;
 
-    @NotNull
+    @Column(nullable = false)
     private String content;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime updateAt;
 
-    @Column(name = "update_time")
-    private LocalDateTime updateTime;
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
     public static ActivityGroupReport create(Long turn, ActivityGroup activityGroup, ActivityGroupReportRequestDto reportRequestDto) {
         return ActivityGroupReport.builder()

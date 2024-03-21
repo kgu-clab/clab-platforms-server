@@ -30,6 +30,7 @@ import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -51,6 +52,8 @@ public class ActivityGroupBoardService {
 
     private final NotificationService notificationService;
 
+    private final ValidationService validationService;
+
     private final FileService fileService;
 
     @Transactional
@@ -60,15 +63,19 @@ public class ActivityGroupBoardService {
         if (!activityGroupMemberService.isGroupMember(activityGroup, member)) {
             throw new PermissionDeniedException("활동 그룹 멤버만 게시글을 등록할 수 있습니다.");
         }
+
         validateParentBoard(dto.getCategory(), parentId);
         List<UploadedFile> uploadedFiles = prepareUploadedFiles(dto.getFileUrls());
+
         ActivityGroupBoard parentBoard = parentId != null ? getActivityGroupBoardByIdOrThrow(parentId) : null;
         ActivityGroupBoard board = ActivityGroupBoard.create(dto, member, activityGroup, parentBoard, uploadedFiles);
+        validationService.checkValid(board);
         if (parentId != null) {
             parentBoard.addChild(board);
             activityGroupBoardRepository.save(parentBoard);
         }
         activityGroupBoardRepository.save(board);
+
         notifyMembersAboutNewBoard(activityGroupId, activityGroup, member);
         return board.getId();
     }
@@ -125,7 +132,9 @@ public class ActivityGroupBoardService {
         Member currentMember = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
         board.validateAccessPermission(currentMember);
+
         board.update(activityGroupBoardUpdateRequestDto, fileService);
+        validationService.checkValid(board);
         ActivityGroupBoard savedBoard = activityGroupBoardRepository.save(board);
         return ActivityGroupBoardUpdateResponseDto.create(savedBoard);
     }
@@ -151,13 +160,15 @@ public class ActivityGroupBoardService {
     }
 
     private void validateParentBoard(ActivityGroupBoardCategory category, Long parentId) throws InvalidParentBoardException {
-        if (!(category == ActivityGroupBoardCategory.ASSIGNMENT ||
-                category == ActivityGroupBoardCategory.SUBMIT ||
-                category == ActivityGroupBoardCategory.FEEDBACK) && parentId != null) {
-            throw new InvalidParentBoardException("공지사항과 주차별활동 게시물은 부모 게시판을 가질 수 없습니다.");
+        if ((category == ActivityGroupBoardCategory.NOTICE || category == ActivityGroupBoardCategory.WEEKLY_ACTIVITY)) {
+            if (parentId != null) {
+                throw new InvalidParentBoardException(category.getDescription() + " 게시물은 부모 게시판을 가질 수 없습니다.");
+            } else {
+                return;
+            }
         }
 
-        if (parentId == null) {
+        if ((category == ActivityGroupBoardCategory.ASSIGNMENT || category == ActivityGroupBoardCategory.SUBMIT || category == ActivityGroupBoardCategory.FEEDBACK) && parentId == null) {
             throw new InvalidParentBoardException(category.getDescription() + " 게시물은 부모 게시판이 필요합니다.");
         }
 
@@ -167,7 +178,7 @@ public class ActivityGroupBoardService {
             case ASSIGNMENT -> ActivityGroupBoardCategory.WEEKLY_ACTIVITY;
             case SUBMIT -> ActivityGroupBoardCategory.ASSIGNMENT;
             case FEEDBACK -> ActivityGroupBoardCategory.SUBMIT;
-            default -> null;
+            default -> throw new InvalidParentBoardException("유효하지 않은 카테고리입니다.");
         };
 
         if (parentBoard.getCategory() != expectedParentCategory) {
@@ -180,6 +191,7 @@ public class ActivityGroupBoardService {
             throw new InvalidParentBoardException(message);
         }
     }
+
 
     @NotNull
     private List<UploadedFile> prepareUploadedFiles(List<String> fileUrls) {

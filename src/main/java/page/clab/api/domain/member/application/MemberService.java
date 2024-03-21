@@ -34,6 +34,7 @@ import page.clab.api.global.common.verificationCode.dto.request.VerificationCode
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -45,17 +46,19 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class MemberService {
 
-    private final MemberRepository memberRepository;
-
-    private final PasswordEncoder passwordEncoder;
-
     private final VerificationCodeService verificationCodeService;
+
+    private final ValidationService validationService;
+
+    private EmailService emailService;
 
     private final ApplicationRepository applicationRepository;
 
     private final PositionRepository positionRepository;
 
-    private EmailService emailService;
+    private final MemberRepository memberRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public void setEmailService(@Lazy EmailService emailService) {
@@ -66,6 +69,7 @@ public class MemberService {
     public String createMember(MemberRequestDto memberRequestDto) {
         checkMemberUniqueness(memberRequestDto);
         Member member = Member.of(memberRequestDto);
+        validationService.checkValid(member);
         setupMemberPassword(member);
         memberRepository.save(member);
         createPositionByMember(member);
@@ -116,6 +120,7 @@ public class MemberService {
         Member member = getMemberByIdOrThrow(memberId);
         member.validateAccessPermission(currentMember);
         member.update(memberUpdateRequestDto, passwordEncoder);
+        validationService.checkValid(member);
         return memberRepository.save(member).getId();
     }
 
@@ -188,6 +193,7 @@ public class MemberService {
 
     private Member createMemberByApplication(Application application) {
         Member member = Member.of(application);
+        validationService.checkValid(member);
         Member existingMember = memberRepository.findById(member.getId()).orElse(null);
         if (existingMember != null) {
             return existingMember;

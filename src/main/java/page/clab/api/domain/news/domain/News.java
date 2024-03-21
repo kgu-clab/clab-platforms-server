@@ -50,7 +50,7 @@ public class News {
     @Size(min = 1, message = "{size.news.category}")
     private String category;
 
-    @Column(nullable = false, length = 10000)
+    @Column(nullable = false)
     @Size(min = 1, max = 10000, message = "{size.news.content}")
     private String content;
 
@@ -69,7 +69,7 @@ public class News {
     private LocalDate date;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     public static News create(NewsRequestDto newsRequestDto) {

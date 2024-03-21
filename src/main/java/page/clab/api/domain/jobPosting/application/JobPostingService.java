@@ -15,10 +15,13 @@ import page.clab.api.domain.jobPosting.dto.response.JobPostingDetailsResponseDto
 import page.clab.api.domain.jobPosting.dto.response.JobPostingResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
 public class JobPostingService {
+
+    private final ValidationService validationService;
 
     private final JobPostingRepository jobPostingRepository;
 
@@ -26,6 +29,7 @@ public class JobPostingService {
         JobPosting jobPosting = jobPostingRepository.findByJobPostingUrl(jobPostingRequestDto.getJobPostingUrl())
                 .map(existingJobPosting -> updateExistingJobPosting(existingJobPosting, jobPostingRequestDto))
                 .orElseGet(() -> JobPosting.of(jobPostingRequestDto));
+        validationService.checkValid(jobPosting);
         return jobPostingRepository.save(jobPosting).getId();
     }
 
@@ -48,6 +52,7 @@ public class JobPostingService {
     public Long updateJobPosting(Long jobPostingId, JobPostingUpdateRequestDto jobPostingUpdateRequestDto) {
         JobPosting jobPosting = getJobPostingByIdOrThrow(jobPostingId);
         jobPosting.update(jobPostingUpdateRequestDto);
+        validationService.checkValid(jobPosting);
         return jobPostingRepository.save(jobPosting).getId();
     }
 

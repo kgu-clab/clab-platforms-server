@@ -16,6 +16,7 @@ import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -25,11 +26,14 @@ public class MembershipFeeService {
 
     private final NotificationService notificationService;
 
+    private final ValidationService validationService;
+
     private final MembershipFeeRepository membershipFeeRepository;
 
     public Long createMembershipFee(MembershipFeeRequestDto membershipFeeRequestDto) {
         Member member = memberService.getCurrentMember();
-            MembershipFee membershipFee = MembershipFee.create(membershipFeeRequestDto, member);
+        MembershipFee membershipFee = MembershipFee.create(membershipFeeRequestDto, member);
+        validationService.checkValid(membershipFee);
         notificationService.sendNotificationToAdmins("새로운 회비 내역이 등록되었습니다.");
         return membershipFeeRepository.save(membershipFee).getId();
     }
@@ -45,6 +49,7 @@ public class MembershipFeeService {
         MembershipFee membershipFee = getMembershipFeeByIdOrThrow(membershipFeeId);
         membershipFee.validateAccessPermission(member);
         membershipFee.update(membershipFeeUpdateRequestDto);
+        validationService.checkValid(membershipFee);
         return membershipFeeRepository.save(membershipFee).getId();
     }
 

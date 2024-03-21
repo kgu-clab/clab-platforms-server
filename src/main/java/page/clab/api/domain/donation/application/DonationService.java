@@ -15,6 +15,7 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 import java.time.LocalDate;
 
@@ -24,11 +25,14 @@ public class DonationService {
 
     private final MemberService memberService;
 
+    private final ValidationService validationService;
+
     private final DonationRepository donationRepository;
 
     public Long createDonation(DonationRequestDto donationRequestDto) {
         Member member = memberService.getCurrentMember();
         Donation donation = Donation.of(donationRequestDto, member);
+        validationService.checkValid(donation);
         return donationRepository.save(donation).getId();
     }
 
@@ -50,6 +54,7 @@ public class DonationService {
         Donation donation = getDonationByIdOrThrow(donationId);
         validateDonationUpdatePermission(member);
         donation.update(donationUpdateRequestDto);
+        validationService.checkValid(donation);
         return donationRepository.save(donation).getId();
     }
 

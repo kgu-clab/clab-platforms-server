@@ -26,6 +26,7 @@ import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 import java.util.List;
 import java.util.Map;
@@ -39,25 +40,28 @@ public class ActivityGroupAdminService {
 
     private final ActivityGroupMemberService activityGroupMemberService;
 
+    private final NotificationService notificationService;
+
+    private final ValidationService validationService;
+
     private final ActivityGroupRepository activityGroupRepository;
 
     private final GroupScheduleRepository groupScheduleRepository;
 
     private final ApplyFormRepository applyFormRepository;
 
-    private final NotificationService notificationService;
-
     @Transactional
     public Long createActivityGroup(ActivityGroupRequestDto activityGroupRequestDto) {
         Member member = memberService.getCurrentMember();
         ActivityGroup activityGroup = ActivityGroup.create(activityGroupRequestDto);
+        validationService.checkValid(activityGroup);
         activityGroupRepository.save(activityGroup);
+
         GroupMember groupLeader = GroupMember.create(member, activityGroup, ActivityGroupRole.LEADER, GroupMemberStatus.ACCEPTED);
+        validationService.checkValid(groupLeader);
         activityGroupMemberService.save(groupLeader);
-        notificationService.sendNotificationToMember(
-                member,
-                "활동 그룹 생성이 완료되었습니다. 활동 승인이 완료되면 활동 그룹을 이용할 수 있습니다."
-        );
+
+        notificationService.sendNotificationToMember(member, "활동 그룹 생성이 완료되었습니다. 활동 승인이 완료되면 활동 그룹을 이용할 수 있습니다.");
         return activityGroup.getId();
     }
 
@@ -68,6 +72,7 @@ public class ActivityGroupAdminService {
             throw new PermissionDeniedException("해당 활동을 수정할 권한이 없습니다.");
         }
         activityGroup.update(activityGroupUpdateRequestDto);
+        validationService.checkValid(activityGroup);
         return activityGroupRepository.save(activityGroup).getId();
     }
 
@@ -75,12 +80,10 @@ public class ActivityGroupAdminService {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroup.updateStatus(status);
         activityGroupRepository.save(activityGroup);
+
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
         if (groupLeader != null) {
-            notificationService.sendNotificationToMember(
-                    groupLeader.getMember(),
-                    "활동 그룹이 [" + status.getDescription() + "] 상태로 변경되었습니다."
-            );
+            notificationService.sendNotificationToMember(groupLeader.getMember(), "활동 그룹이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
         }
         return activityGroup.getId();
     }
@@ -91,14 +94,13 @@ public class ActivityGroupAdminService {
         List<GroupSchedule> groupScheduleList = groupScheduleRepository.findAllByActivityGroupIdOrderByIdDesc(activityGroupId);
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
+
         activityGroupMemberService.deleteAll(groupMemberList);
         groupScheduleRepository.deleteAll(groupScheduleList);
         activityGroupRepository.delete(activityGroup);
+
         if (groupLeader != null) {
-            notificationService.sendNotificationToMember(
-                    groupLeader.getMember(),
-                    "활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다."
-            );
+            notificationService.sendNotificationToMember(groupLeader.getMember(), "활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다.");
         }
         return activityGroup.getId();
     }
@@ -110,6 +112,7 @@ public class ActivityGroupAdminService {
             throw new PermissionDeniedException("해당 활동을 수정할 권한이 없습니다.");
         }
         activityGroup.setProgress(progress);
+        validationService.checkValid(activityGroup);
         return activityGroupRepository.save(activityGroup).getId();
     }
 
@@ -120,9 +123,10 @@ public class ActivityGroupAdminService {
         if (!isMemberGroupLeaderRole(activityGroup, member)) {
             throw new PermissionDeniedException("해당 일정을 등록할 권한이 없습니다.");
         }
-        groupScheduleDto.stream()
+        List<GroupSchedule> groupSchedules = groupScheduleDto.stream()
                 .map(scheduleDto -> GroupSchedule.of(activityGroup, scheduleDto))
-                .forEach(groupScheduleRepository::save);
+                .toList();
+        groupScheduleRepository.saveAll(groupSchedules);
         return activityGroup.getId();
     }
 
@@ -133,18 +137,21 @@ public class ActivityGroupAdminService {
         if (!(isMemberGroupLeaderRole(activityGroup, currentMember) || currentMember.isAdminRole())) {
             throw new PermissionDeniedException("해당 활동의 멤버를 조회할 권한이 없습니다.");
         }
+
         List<ApplyForm> applyForms = applyFormRepository.findAllByActivityGroup(activityGroup);
         Map<String, String> memberIdToApplyReasonMap = applyForms.stream()
                 .collect(Collectors.toMap(
                         applyForm -> applyForm.getMember().getId(),
                         ApplyForm::getApplyReason
                 ));
+
         Page<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId, pageable);
         List<ActivityGroupMemberWithApplyReasonResponseDto> dtos = groupMembers.getContent().stream()
                 .map(groupMember -> {
                     String applyReason = memberIdToApplyReasonMap.getOrDefault(groupMember.getMember().getId(), "");
                     return ActivityGroupMemberWithApplyReasonResponseDto.create(groupMember, applyReason);
                 }).toList();
+
         return new PagedResponseDto<>(new PageImpl<>(dtos, pageable, groupMembers.getTotalElements()));
     }
 
@@ -154,16 +161,14 @@ public class ActivityGroupAdminService {
         if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
             throw new PermissionDeniedException("해당 활동의 신청 멤버를 조회할 권한이 없습니다.");
         }
+
         Member member = memberService.getMemberByIdOrThrow(memberId);
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
         groupMember.validateAccessPermission();
         groupMember.updateStatus(status);
         activityGroupMemberService.save(groupMember);
 
-        notificationService.sendNotificationToMember(
-                member,
-                "활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다."
-        );
+        notificationService.sendNotificationToMember(member, "활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
         return groupMember.getMember().getId();
     }
 

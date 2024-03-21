@@ -32,7 +32,7 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false)
     @Size(min = 1, max = 1000, message = "{size.notification.content}")
     private String content;
 
@@ -41,7 +41,7 @@ public class Notification {
     private Member member;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     public static Notification create(NotificationRequestDto notificationRequestDto, Member member) {

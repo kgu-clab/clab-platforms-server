@@ -43,6 +43,7 @@ public class ApplyForm {
     private String applyReason;
 
     @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     public static ApplyForm create(ApplyFormRequestDto applyFormRequestDto, ActivityGroup activityGroup, Member member) {

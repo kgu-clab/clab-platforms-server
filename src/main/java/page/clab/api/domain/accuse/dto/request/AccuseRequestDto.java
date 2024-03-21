@@ -2,7 +2,6 @@ package page.clab.api.domain.accuse.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +27,6 @@ public class AccuseRequestDto {
     private Long targetId;
 
     @NotNull(message = "{notNull.accuse.reason}")
-    @Size(min = 1, max = 1000, message = "{size.accuse.reason}")
     @Schema(description = "신고 사유", example = "부적절한 게시글입니다.", required = true)
     private String reason;
 

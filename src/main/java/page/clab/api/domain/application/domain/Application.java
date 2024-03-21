@@ -9,7 +9,6 @@ import jakarta.persistence.IdClass;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -85,7 +84,7 @@ public class Application {
     @Enumerated(EnumType.STRING)
     private ApplicationType applicationType;
 
-    @NotNull
+    @Column(nullable = false)
     private Boolean isPass;
 
     @CreationTimestamp
@@ -99,7 +98,6 @@ public class Application {
         Application application = ModelMapperUtil.getModelMapper().map(applicationRequestDto, Application.class);
         application.setContact(removeHyphensFromContact(application.getContact()));
         application.setIsPass(false);
-        application.setUpdateTime(LocalDateTime.now());
         return application;
     }
 

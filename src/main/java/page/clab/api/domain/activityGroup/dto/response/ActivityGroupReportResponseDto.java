@@ -1,12 +1,13 @@
 package page.clab.api.domain.activityGroup.dto.response;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupReport;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -37,7 +38,7 @@ public class ActivityGroupReportResponseDto {
                 .title(activityGroupReport.getTitle())
                 .content(activityGroupReport.getContent())
                 .createdAt(activityGroupReport.getCreatedAt())
-                .updatedAt(activityGroupReport.getUpdateTime())
+                .updatedAt(activityGroupReport.getUpdateAt())
                 .build();
     }
 

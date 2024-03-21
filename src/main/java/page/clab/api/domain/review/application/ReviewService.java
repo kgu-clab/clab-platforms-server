@@ -23,6 +23,7 @@ import page.clab.api.domain.review.exception.AlreadyReviewedException;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +36,8 @@ public class ReviewService {
 
     private final NotificationService notificationService;
 
+    private final ValidationService validationService;
+
     private final ReviewRepository reviewRepository;
 
     @Transactional
@@ -43,6 +46,7 @@ public class ReviewService {
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(dto.getActivityGroupId());
         validateReviewCreationPermission(activityGroup, currentMember);
         Review review = Review.create(dto, currentMember, activityGroup);
+        validationService.checkValid(review);
         notifyGroupLeaderOfNewReview(activityGroup, currentMember);
         return reviewRepository.save(review).getId();
     }
@@ -66,6 +70,7 @@ public class ReviewService {
         Review review = getReviewByIdOrThrow(reviewId);
         review.validateAccessPermission(currentMember);
         review.update(dto);
+        validationService.checkValid(review);
         return reviewRepository.save(review).getId();
     }
 

@@ -74,14 +74,12 @@ public class ActivityGroupBoard {
     @JoinColumn(name = "activity_group_board_files")
     private List<UploadedFile> uploadedFiles = new ArrayList<>();
 
-    @Column(name = "dueDate_time")
     private LocalDateTime dueDateTime;
 
-    @Column(name = "update_time")
     private LocalDateTime updateTime;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     public static ActivityGroupBoard create(ActivityGroupBoardRequestDto dto, Member member, ActivityGroup activityGroup, ActivityGroupBoard parent, List<UploadedFile> uploadedFiles) {

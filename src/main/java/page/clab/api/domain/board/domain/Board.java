@@ -47,7 +47,7 @@ public class Board {
     private Member member;
 
     @Column(nullable = false)
-    private String nickName;
+    private String nickname;
 
     @Column(nullable = false)
     @Size(min = 1, max = 50, message = "{size.board.category}")
@@ -57,7 +57,7 @@ public class Board {
     @Size(min = 1, max = 100, message = "{size.board.title}")
     private String title;
 
-    @Column(nullable = false, length = 10000)
+    @Column(nullable = false)
     @Size(min = 1, max = 10000, message = "{size.board.content}")
     private String content;
 
@@ -65,13 +65,13 @@ public class Board {
     @JoinColumn(name = "board_files")
     private List<UploadedFile> uploadedFiles = new ArrayList<>();
 
-    @Column(name = "update_time")
     private LocalDateTime updateTime;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
     private boolean wantAnonymous;
 
     private Long likes;
@@ -80,7 +80,7 @@ public class Board {
         Board board = ModelMapperUtil.getModelMapper().map(dto, Board.class);
         board.setMember(member);
         board.setUploadedFiles(uploadedFiles);
-        board.setNickName(RandomNicknameUtil.makeRandomNickname());
+        board.setNickname(RandomNicknameUtil.makeRandomNickname());
         board.setWantAnonymous(dto.isWantAnonymous());
         board.setLikes(0L);
         return board;

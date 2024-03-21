@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,22 +39,20 @@ public class Schedule {
     @Enumerated(EnumType.STRING)
     private ScheduleType scheduleType;
 
-    @NotNull
+    @Column(nullable = false)
     private String title;
 
-    @NotNull
+    @Column(nullable = false)
     private String detail;
 
-    @NotNull
-    @Column(name = "start_date_time")
+    @Column(nullable = false)
     private LocalDateTime startDateTime;
 
-    @NotNull
-    @Column(name = "end_date_time")
+    @Column(nullable = false)
     private LocalDateTime endDateTime;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne

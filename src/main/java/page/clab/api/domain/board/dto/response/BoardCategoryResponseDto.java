@@ -31,7 +31,7 @@ public class BoardCategoryResponseDto {
         BoardCategoryResponseDto boardCategoryResponseDto = ModelMapperUtil.getModelMapper().map(board, BoardCategoryResponseDto.class);
 
         if(board.isWantAnonymous()){
-            boardCategoryResponseDto.setWriter(board.getNickName());
+            boardCategoryResponseDto.setWriter(board.getNickname());
         }
         else{
             boardCategoryResponseDto.setWriter(board.getMember().getName());

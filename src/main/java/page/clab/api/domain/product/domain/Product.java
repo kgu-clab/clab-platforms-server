@@ -36,7 +36,7 @@ public class Product {
     @Size(min = 1, message = "{size.product.name}")
     private String name;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false)
     @Size(min = 1, max = 1000, message = "{size.product.description}")
     private String description;
 
@@ -44,6 +44,7 @@ public class Product {
     private String url;
 
     @CreationTimestamp
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     public static Product of(ProductRequestDto productRequestDto) {

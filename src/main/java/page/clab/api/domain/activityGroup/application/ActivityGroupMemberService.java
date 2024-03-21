@@ -86,13 +86,17 @@ public class ActivityGroupMemberService {
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupStatusResponseDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus, Pageable pageable) {
         List<ActivityGroup> activityGroups = activityGroupRepository.findActivityGroupsByStatus(activityGroupStatus);
+
         List<ActivityGroupStatusResponseDto> dtos = activityGroups.stream().map(activityGroup -> {
             Long participantCount = groupMemberRepository.countAcceptedMembersByActivityGroupId(activityGroup.getId());
             GroupMember leader = groupMemberRepository.findLeaderByActivityGroupId(activityGroup.getId());
+
             Member leaderMember = leader != null ? leader.getMember() : null;
             Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroup.getId(), ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
+
             return ActivityGroupStatusResponseDto.create(activityGroup, leaderMember, participantCount, weeklyActivityCount);
         }).toList();
+
         return new PagedResponseDto<>(dtos, pageable, dtos.size());
     }
 
@@ -122,16 +126,17 @@ public class ActivityGroupMemberService {
         if (isGroupMember(activityGroup, currentMember)) {
             throw new AlreadyAppliedException("해당 활동에 신청한 내역이 존재합니다.");
         }
+
         ApplyForm form = ApplyForm.create(formRequestDto, activityGroup, currentMember);
         applyFormRepository.save(form);
+
         GroupMember groupMember = GroupMember.create(currentMember, activityGroup, ActivityGroupRole.MEMBER, GroupMemberStatus.WAITING);
         groupMemberRepository.save(groupMember);
+
         GroupMember groupLeader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         if (groupLeader != null) {
-            notificationService.sendNotificationToMember(
-                    groupLeader.getMember(),
-                    "[" + activityGroup.getName() + "] " + currentMember.getName() + "님이 활동 참가 신청을 하였습니다."
-            );
+            notificationService.sendNotificationToMember(groupLeader.getMember(),
+                    "[" + activityGroup.getName() + "] " + currentMember.getName() + "님이 활동 참가 신청을 하였습니다.");
         }
         return activityGroup.getId();
     }

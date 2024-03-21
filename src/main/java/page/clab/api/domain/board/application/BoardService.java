@@ -23,6 +23,7 @@ import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,23 +38,22 @@ public class BoardService {
 
     private final NotificationService notificationService;
 
+    private final FileService fileService;
+
+    private final ValidationService validationService;
+
     private final BoardRepository boardRepository;
 
     private final BoardLikeRepository boardLikeRepository;
-
-    private final FileService fileService;
 
     @Transactional
     public Long createBoard(BoardRequestDto dto) {
         Member member = memberService.getCurrentMember();
         List<UploadedFile> uploadedFiles = prepareUploadedFiles(dto.getFileUrlList());
         Board board = Board.create(dto, member, uploadedFiles);
-
+        validationService.checkValid(board);
         if (board.shouldNotifyForNewBoard()) {
-            notificationService.sendNotificationToMember(
-                    member,
-                    "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다."
-            );
+            notificationService.sendNotificationToMember(member, "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.");
         }
         return boardRepository.save(board).getId();
     }
@@ -92,6 +92,7 @@ public class BoardService {
         Board board = getBoardByIdOrThrow(boardId);
         board.checkPermission(member);
         board.update(boardUpdateRequestDto);
+        validationService.checkValid(board);
         return boardRepository.save(board).getId();
     }
 

@@ -30,7 +30,7 @@ public class BlacklistIp {
     private String reason;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     private BlacklistIp(String ipAddress, String reason) {

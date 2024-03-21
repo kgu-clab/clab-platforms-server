@@ -2,13 +2,13 @@ package page.clab.api.domain.workExperience.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -18,12 +18,10 @@ import lombok.Setter;
 public class WorkExperienceRequestDto {
 
     @NotNull(message = "{notNull.workExperience.companyName}")
-    @Size(min = 1, message = "{size.workExperience.companyName}")
     @Schema(description = "회사명", example = "네이버 클라우드", required = true)
     private String companyName;
 
     @NotNull(message = "{notNull.workExperience.position}")
-    @Size(min = 1, message = "{size.workExperience.position}")
     @Schema(description = "직책", example = "인턴", required = true)
     private String position;
 

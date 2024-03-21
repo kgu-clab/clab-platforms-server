@@ -16,6 +16,7 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -23,11 +24,14 @@ public class BlogService {
 
     private final MemberService memberService;
 
+    private final ValidationService validationService;
+
     private final BlogRepository blogRepository;
 
     public Long createBlog(BlogRequestDto blogRequestDto) {
         Member member = memberService.getCurrentMember();
         Blog blog = Blog.create(blogRequestDto, member);
+        validationService.checkValid(blog);
         return blogRepository.save(blog).getId();
     }
 
@@ -50,6 +54,7 @@ public class BlogService {
         Blog blog = getBlogByIdOrThrow(blogId);
         blog.validateAccessPermission(member);
         blog.update(blogUpdateRequestDto);
+        validationService.checkValid(blog);
         return blogRepository.save(blog).getId();
     }
 

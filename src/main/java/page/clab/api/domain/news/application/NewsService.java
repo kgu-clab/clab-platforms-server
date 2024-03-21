@@ -15,6 +15,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.validation.ValidationService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,12 +24,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NewsService {
 
-    private final NewsRepository newsRepository;
-
     private final FileService fileService;
+
+    private final ValidationService validationService;
+
+    private final NewsRepository newsRepository;
 
     public Long createNews(NewsRequestDto newsRequestDto) {
         News news = News.create(newsRequestDto);
+        validationService.checkValid(news);
         attachUploadedFiles(newsRequestDto, news);
         return newsRepository.save(news).getId();
     }
@@ -48,6 +52,7 @@ public class NewsService {
     public Long updateNews(Long newsId, NewsUpdateRequestDto newsUpdateRequestDto) {
         News news = getNewsByIdOrThrow(newsId);
         news.update(newsUpdateRequestDto);
+        validationService.checkValid(news);
         return newsRepository.save(news).getId();
     }
 

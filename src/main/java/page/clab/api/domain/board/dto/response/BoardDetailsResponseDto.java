@@ -47,12 +47,13 @@ public class BoardDetailsResponseDto {
     public static BoardDetailsResponseDto create(Board board, boolean hasLikeByMe, boolean isOwner) {
         BoardDetailsResponseDto boardResponseDto = ModelMapperUtil.getModelMapper().map(board, BoardDetailsResponseDto.class);
         if (board.isWantAnonymous()) {
-            boardResponseDto.setWriter(board.getNickName());
+            boardResponseDto.setWriter(board.getNickname());
             boardResponseDto.setMemberImageUrl(null);
         } else {
             boardResponseDto.setWriter(board.getMember().getName());
             boardResponseDto.setMemberImageUrl(board.getMember().getImageUrl());
         }
+        boardResponseDto.setWriterRoleLevel(board.getMember().getRole().toLong());
         boardResponseDto.setHasLikeByMe(hasLikeByMe);
         boardResponseDto.setIsOwner(isOwner);
         return boardResponseDto;

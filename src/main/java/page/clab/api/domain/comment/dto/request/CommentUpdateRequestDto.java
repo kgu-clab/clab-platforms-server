@@ -1,7 +1,7 @@
 package page.clab.api.domain.comment.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,10 +18,11 @@ import page.clab.api.global.util.ModelMapperUtil;
 @Builder
 public class CommentUpdateRequestDto {
 
-    @Size(min = 1, max = 1000, message = "{size.comment.content}")
+    @NotNull(message = "{notNull.comment.content}")
     @Schema(description = "내용", example = "댓글 내용")
     private String content;
 
+    @NotNull(message = "{notNull.comment.wantAnonymous}")
     @Schema(description = "익명 사용 여부", example = "false")
     private boolean wantAnonymous;
 
