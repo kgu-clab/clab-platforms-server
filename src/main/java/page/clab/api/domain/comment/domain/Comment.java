@@ -66,8 +66,7 @@ public class Comment {
     @JsonIgnoreProperties("parent")
     private List<Comment> children = new ArrayList<>();
 
-    @Column(name = "update_time")
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -91,7 +90,7 @@ public class Comment {
     public void update(CommentUpdateRequestDto commentUpdateRequestDto) {
         Optional.ofNullable(commentUpdateRequestDto.getContent()).ifPresent(this::setContent);
         Optional.of(commentUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
-        this.setUpdateTime(LocalDateTime.now());
+        this.setUpdatedAt(LocalDateTime.now());
     }
 
     public void addChildComment(Comment child) {

@@ -29,7 +29,7 @@ public class AssignmentSubmissionWithFeedbackResponseDto {
 
     private LocalDateTime createdAt;
 
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
     private List<FeedbackResponseDto> feedbacks = new ArrayList<>();
 
@@ -40,7 +40,7 @@ public class AssignmentSubmissionWithFeedbackResponseDto {
                 .content(activityGroupBoard.getContent())
                 .files(activityGroupBoard.getUploadedFiles().stream().map(UploadedFileResponseDto::of).toList())
                 .createdAt(activityGroupBoard.getCreatedAt())
-                .updateTime(activityGroupBoard.getUpdateTime())
+                .updatedAt(activityGroupBoard.getUpdatedAt())
                 .feedbacks(feedbackDtos)
                 .build();
     }

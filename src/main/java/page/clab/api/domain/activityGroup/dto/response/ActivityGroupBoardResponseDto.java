@@ -37,7 +37,7 @@ public class ActivityGroupBoardResponseDto {
 
     private LocalDateTime createdAt;
 
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
     public static ActivityGroupBoardResponseDto of(ActivityGroupBoard activityGroupBoard) {
         ActivityGroupBoardResponseDto activityGroupBoardResponseDto = ModelMapperUtil.getModelMapper().map(activityGroupBoard, ActivityGroupBoardResponseDto.class);

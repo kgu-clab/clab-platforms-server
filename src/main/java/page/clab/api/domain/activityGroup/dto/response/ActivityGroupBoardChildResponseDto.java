@@ -30,7 +30,7 @@ public class ActivityGroupBoardChildResponseDto {
 
     private LocalDateTime dueDateTime;
 
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
     private LocalDateTime createdAt;
 
