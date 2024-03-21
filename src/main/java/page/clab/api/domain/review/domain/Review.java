@@ -13,15 +13,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.review.dto.request.ReviewRequestDto;
 import page.clab.api.domain.review.dto.request.ReviewUpdateRequestDto;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
@@ -30,7 +29,7 @@ import java.util.Optional;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Review {
+public class Review extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,10 +49,6 @@ public class Review {
 
     @Column(nullable = false)
     private Boolean isPublic;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
 
     public static Review create(ReviewRequestDto reviewRequestDto, Member member, ActivityGroup activityGroup) {
         Review review = ModelMapperUtil.getModelMapper().map(reviewRequestDto, Review.class);

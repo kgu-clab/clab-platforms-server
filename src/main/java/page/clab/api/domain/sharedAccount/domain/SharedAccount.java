@@ -11,13 +11,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountRequestDto;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUpdateRequestDto;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.util.ModelMapperUtil;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
@@ -26,7 +25,7 @@ import java.util.Optional;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SharedAccount {
+public class SharedAccount extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,10 +49,6 @@ public class SharedAccount {
 
     @Column(nullable = false)
     private boolean isInUse;
-    
-    @CreationTimestamp
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
 
     public static SharedAccount create(SharedAccountRequestDto sharedAccountRequestDto) {
         SharedAccount sharedAccount = ModelMapperUtil.getModelMapper().map(sharedAccountRequestDto, SharedAccount.class);

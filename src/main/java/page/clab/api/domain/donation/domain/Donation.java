@@ -14,13 +14,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.donation.dto.request.DonationRequestDto;
 import page.clab.api.domain.donation.dto.request.DonationUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.util.ModelMapperUtil;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
@@ -29,7 +28,7 @@ import java.util.Optional;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Donation {
+public class Donation extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,10 +45,6 @@ public class Donation {
     @Column(nullable = false)
     @Size(min = 1, max = 1000, message = "{size.donation.message}")
     private String message;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
 
     public static Donation of(DonationRequestDto donationRequestDto, Member member) {
         Donation donation = ModelMapperUtil.getModelMapper().map(donationRequestDto, Donation.class);

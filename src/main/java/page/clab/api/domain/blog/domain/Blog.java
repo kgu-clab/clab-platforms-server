@@ -13,14 +13,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.blog.dto.request.BlogRequestDto;
 import page.clab.api.domain.blog.dto.request.BlogUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
@@ -29,7 +28,7 @@ import java.util.Optional;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Blog {
+public class Blog extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,10 +50,6 @@ public class Blog {
     private String content;
 
     private String imageUrl;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
 
     public static Blog create(BlogRequestDto blogRequestDto, Member member) {
         Blog blog = ModelMapperUtil.getModelMapper().map(blogRequestDto, Blog.class);

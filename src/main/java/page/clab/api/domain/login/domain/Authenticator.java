@@ -5,11 +5,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import page.clab.api.global.common.domain.BaseEntity;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class Authenticator {
+public class Authenticator extends BaseEntity {
 
     @Id
     private String memberId;

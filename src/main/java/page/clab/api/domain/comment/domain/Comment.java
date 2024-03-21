@@ -15,16 +15,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
 import page.clab.api.global.util.RandomNicknameUtil;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +34,7 @@ import java.util.Optional;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Comment {
+public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,12 +65,6 @@ public class Comment {
     @JsonIgnoreProperties("parent")
     private List<Comment> children = new ArrayList<>();
 
-    private LocalDateTime updatedAt;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
     @Column(nullable = false)
     private boolean wantAnonymous;
 
@@ -90,7 +83,6 @@ public class Comment {
     public void update(CommentUpdateRequestDto commentUpdateRequestDto) {
         Optional.ofNullable(commentUpdateRequestDto.getContent()).ifPresent(this::setContent);
         Optional.of(commentUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
-        this.setUpdatedAt(LocalDateTime.now());
     }
 
     public void addChildComment(Comment child) {

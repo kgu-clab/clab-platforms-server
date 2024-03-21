@@ -15,12 +15,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.util.ModelMapperUtil;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -28,7 +26,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Accuse {
+public class Accuse extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,10 +50,6 @@ public class Accuse {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private AccuseStatus accuseStatus;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
 
     public static Accuse of(AccuseRequestDto accuseRequestDto) {
         return ModelMapperUtil.getModelMapper().map(accuseRequestDto, Accuse.class);

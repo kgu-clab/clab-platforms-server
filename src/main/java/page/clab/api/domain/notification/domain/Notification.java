@@ -13,12 +13,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -26,7 +24,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Notification {
+public class Notification extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,10 +37,6 @@ public class Notification {
     @ManyToOne()
     @JoinColumn(name = "member_id")
     private Member member;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
 
     public static Notification create(NotificationRequestDto notificationRequestDto, Member member) {
         return Notification.builder()

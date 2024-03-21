@@ -13,16 +13,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotProgressingException;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity(name = "activity_group")
@@ -31,7 +30,7 @@ import java.util.Optional;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActivityGroup {
+public class ActivityGroup extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,10 +70,6 @@ public class ActivityGroup {
 
     @URL(message = "{url.activityGroup.githubUrl}")
     private String githubUrl;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
 
     public static ActivityGroup create(ActivityGroupRequestDto activityGroupRequestDto) {
         ActivityGroup activityGroup = ModelMapperUtil.getModelMapper().map(activityGroupRequestDto, ActivityGroup.class);

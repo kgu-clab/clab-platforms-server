@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.position.dto.request.PositionRequestDto;
+import page.clab.api.global.common.domain.BaseEntity;
 
 @Entity
 @Getter
@@ -21,7 +22,7 @@ import page.clab.api.domain.position.dto.request.PositionRequestDto;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Position {
+public class Position extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

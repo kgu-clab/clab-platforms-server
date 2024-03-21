@@ -15,6 +15,7 @@ import lombok.Setter;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.book.exception.OverdueException;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -25,7 +26,7 @@ import java.time.temporal.ChronoUnit;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookLoanRecord {
+public class BookLoanRecord extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

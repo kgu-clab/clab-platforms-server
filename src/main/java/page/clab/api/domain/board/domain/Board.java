@@ -15,17 +15,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.domain.Role;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.ModelMapperUtil;
 import page.clab.api.global.util.RandomNicknameUtil;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +35,7 @@ import java.util.Optional;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Board {
+public class Board extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,12 +64,6 @@ public class Board {
     @JoinColumn(name = "board_files")
     private List<UploadedFile> uploadedFiles = new ArrayList<>();
 
-    private LocalDateTime updatedAt;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
     @Column(nullable = false)
     private boolean wantAnonymous;
 
@@ -91,7 +84,6 @@ public class Board {
         Optional.ofNullable(boardUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
         Optional.ofNullable(boardUpdateRequestDto.getContent()).ifPresent(this::setContent);
         Optional.of(boardUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
-        this.updatedAt = LocalDateTime.now();
     }
 
     public boolean shouldNotifyForNewBoard() {
