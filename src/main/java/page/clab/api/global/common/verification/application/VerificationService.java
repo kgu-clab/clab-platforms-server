@@ -1,12 +1,12 @@
-package page.clab.api.global.common.verificationCode.application;
+package page.clab.api.global.common.verification.application;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.global.common.verificationCode.dao.VerificationRepository;
-import page.clab.api.global.common.verificationCode.domain.Verification;
-import page.clab.api.global.common.verificationCode.dto.request.VerificationRequestDto;
+import page.clab.api.global.common.verification.dao.VerificationRepository;
+import page.clab.api.global.common.verification.domain.Verification;
+import page.clab.api.global.common.verification.dto.request.VerificationRequestDto;
 import page.clab.api.global.exception.NotFoundException;
 
 import java.security.SecureRandom;

@@ -25,7 +25,7 @@ import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
-import page.clab.api.global.common.verificationCode.dto.request.VerificationRequestDto;
+import page.clab.api.global.common.verification.dto.request.VerificationRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.util.List;

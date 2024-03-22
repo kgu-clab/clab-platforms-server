@@ -1,4 +1,4 @@
-package page.clab.api.global.common.verificationCode.domain;
+package page.clab.api.global.common.verification.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
