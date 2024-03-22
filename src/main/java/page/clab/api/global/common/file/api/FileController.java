@@ -2,9 +2,6 @@ package page.clab.api.global.common.file.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -23,6 +20,9 @@ import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/files")
@@ -66,7 +66,7 @@ public class FileController {
             @RequestParam(name = "multipartFile") MultipartFile multipartFile,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
-        UploadedFileResponseDto responseDto = fileService.saveProfileFile(multipartFile, storagePeriod);
+        UploadedFileResponseDto responseDto = fileService.saveFile(multipartFile, fileService.buildPath("profiles"), storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(responseDto);
         return responseModel;
@@ -92,7 +92,7 @@ public class FileController {
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
-        List<UploadedFileResponseDto> responseDtos = fileService.saveCloudFiles(multipartFiles, storagePeriod);
+        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, fileService.buildPath("members"), storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(responseDtos);
         return responseModel;
@@ -120,7 +120,7 @@ public class FileController {
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws PermissionDeniedException, IOException, NotFoundException {
-        List<UploadedFileResponseDto> responseDtos = fileService.saveAssignmentFiles(multipartFiles, activityGroupId, activityGroupBoardId, storagePeriod);
+        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, fileService.buildPath("assignment", activityGroupId, activityGroupBoardId), storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(responseDtos);
         return responseModel;

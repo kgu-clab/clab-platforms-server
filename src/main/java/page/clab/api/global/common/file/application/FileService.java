@@ -69,22 +69,14 @@ public class FileService {
         return url;
     }
 
-    public UploadedFileResponseDto saveProfileFile(MultipartFile multipartFile, long storagePeriod) throws PermissionDeniedException, IOException {
+    public String buildPath(String baseDirectory, Long... additionalSegments) {
         Member currentMember = memberService.getCurrentMember();
-        String path = "profiles" + File.separator + currentMember.getId();
-        return saveFile(multipartFile, path, storagePeriod);
-    }
-
-    public List<UploadedFileResponseDto> saveAssignmentFiles(List<MultipartFile> multipartFiles, Long activityGroupId, Long activityGroupBoardId, long storagePeriod) throws PermissionDeniedException, IOException {
-        Member currentMember = memberService.getCurrentMember();
-        String path = "assignment" + File.separator + activityGroupId + File.separator + activityGroupBoardId + File.separator + currentMember.getId();
-        return saveFiles(multipartFiles, path, storagePeriod);
-    }
-
-    public List<UploadedFileResponseDto> saveCloudFiles(List<MultipartFile> multipartFiles, long storagePeriod) throws PermissionDeniedException, IOException {
-        Member currentMember = memberService.getCurrentMember();
-        String path = "members" + File.separator + currentMember.getId();
-        return saveFiles(multipartFiles, path, storagePeriod);
+        StringBuilder pathBuilder = new StringBuilder(baseDirectory);
+        for (Long segment : additionalSegments) {
+            pathBuilder.append(File.separator).append(segment);
+        }
+        pathBuilder.append(File.separator).append(currentMember.getId());
+        return pathBuilder.toString();
     }
 
     public List<UploadedFileResponseDto> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws IOException, PermissionDeniedException {
@@ -150,7 +142,7 @@ public class FileService {
                     throw new AssignmentFileUploadFailException("해당 활동에 참여하고 있지 않은 멤버입니다.");
                 }
                 if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
-                    throw new AssignmentFileUploadFailException("해당 활동그룹 게시판이 존재하지 않습니다.");
+                    throw new AssignmentFileUploadFailException("해당 활동 그룹 게시판이 존재하지 않습니다.");
                 }
                 return true;
             }
