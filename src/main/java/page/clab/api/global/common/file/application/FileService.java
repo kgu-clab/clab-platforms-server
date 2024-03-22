@@ -80,9 +80,8 @@ public class FileService {
 
     public UploadedFileResponseDto saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws IOException, PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
-        if (!validatePathVariable(path)) {
-            throw new NotFoundException("업로드 요청 경로가 올바르지 않습니다.");
-        }
+
+        validatePathVariable(path);
         validateMemberCloudUsage(multipartFile, path);
         checkAndRemoveExistingFile(multipartFile, path);
 
@@ -97,20 +96,15 @@ public class FileService {
 
     public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
-        String url = deleteFileRequestDto.getUrl();
-        UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
+        UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(deleteFileRequestDto.getUrl());
         String filePath = uploadedFile.getSavedPath();
         File storedFile = new File(filePath);
-        if (uploadedFile == null || !storedFile.exists()) {
+        if (!storedFile.exists()) {
             throw new NotFoundException("존재하지 않는 파일입니다.");
         }
         uploadedFile.validateAccessPermission(currentMember);
-        if (!storedFile.delete()) {
-            log.info("파일 삭제 오류 : {}", filePath);
-        }
-        String deletedFileUrl = uploadedFile.getUrl();
-        deleteFileBySavedPath(filePath);
-        return deletedFileUrl;
+        fileHandler.deleteFile(uploadedFile.getSavedPath());
+        return uploadedFile.getUrl();
     }
 
     public String buildPath(String baseDirectory, Long... additionalSegments) {
@@ -123,7 +117,7 @@ public class FileService {
         return pathBuilder.toString();
     }
 
-    public boolean validatePathVariable(String path) throws AssignmentFileUploadFailException {
+    public void validatePathVariable(String path) throws AssignmentFileUploadFailException {
         if (path.split(Pattern.quote(File.separator))[0].equals("assignment")) {
             Long activityGroupId = Long.parseLong(path.split(Pattern.quote(File.separator))[1]);
             Long activityGroupBoardId = Long.parseLong(path.split(Pattern.quote(File.separator))[2]);
@@ -138,9 +132,7 @@ public class FileService {
             if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
                 throw new AssignmentFileUploadFailException("해당 활동 그룹 게시판이 존재하지 않습니다.");
             }
-            return true;
         }
-        return true;
     }
 
     private void validateMemberCloudUsage(MultipartFile multipartFile, String path) throws PermissionDeniedException {
@@ -156,20 +148,13 @@ public class FileService {
     private void checkAndRemoveExistingFile(MultipartFile multipartFile, String path) {
         UploadedFile existingUploadedFile = uploadedFileService.getUniqueUploadedFileByCategoryAndOriginalName(path, multipartFile.getOriginalFilename());
         if (existingUploadedFile != null) {
-            deleteFileBySavedPath(existingUploadedFile.getSavedPath());
+            fileHandler.deleteFile(existingUploadedFile.getSavedPath());
         }
         if (path.startsWith("profiles")) {
             UploadedFile profileFile = uploadedFileService.getUniqueUploadedFileByCategory(path);
             if (profileFile != null) {
-                deleteFileBySavedPath(profileFile.getSavedPath());
+                fileHandler.deleteFile(profileFile.getSavedPath());
             }
-        }
-    }
-
-    public void deleteFileBySavedPath(String savedPath) {
-        File existingFile = new File(savedPath);
-        if (existingFile != null) {
-            existingFile.delete();
         }
     }
 
