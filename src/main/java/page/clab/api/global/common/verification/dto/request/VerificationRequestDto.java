@@ -1,4 +1,4 @@
-package page.clab.api.global.common.verificationCode.dto.request;
+package page.clab.api.global.common.verification.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;

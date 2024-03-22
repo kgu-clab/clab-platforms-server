@@ -1,8 +1,8 @@
-package page.clab.api.global.common.verificationCode.dao;
+package page.clab.api.global.common.verification.dao;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import page.clab.api.global.common.verificationCode.domain.Verification;
+import page.clab.api.global.common.verification.domain.Verification;
 
 import java.util.Optional;
 
