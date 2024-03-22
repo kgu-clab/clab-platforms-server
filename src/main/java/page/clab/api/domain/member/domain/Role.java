@@ -14,7 +14,7 @@ public enum Role {
     private String key;
     private String description;
 
-    public Long toLong() {
+    public Long toRoleLevel() {
         switch (this) {
             case USER:
                 return 1L;

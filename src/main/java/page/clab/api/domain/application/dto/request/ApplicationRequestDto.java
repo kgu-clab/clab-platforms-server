@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.domain.ApplicationType;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.global.common.domain.Contact;
 
 import java.time.LocalDate;
 
@@ -71,8 +71,23 @@ public class ApplicationRequestDto {
     @Schema(description = "구분", example = "NORMAL", required = true)
     private ApplicationType applicationType;
 
-    public static ApplicationRequestDto of(Application application) {
-        return ModelMapperUtil.getModelMapper().map(application, ApplicationRequestDto.class);
+    public static Application toEntity(ApplicationRequestDto requestDto) {
+        return Application.builder()
+                .studentId(requestDto.getStudentId())
+                .recruitmentId(requestDto.getRecruitmentId())
+                .name(requestDto.getName())
+                .contact(Contact.of(requestDto.getContact()).getValue())
+                .email(requestDto.getEmail())
+                .department(requestDto.getDepartment())
+                .grade(requestDto.getGrade())
+                .birth(requestDto.getBirth())
+                .address(requestDto.getAddress())
+                .interests(requestDto.getInterests())
+                .otherActivities(requestDto.getOtherActivities())
+                .githubUrl(requestDto.getGithubUrl())
+                .applicationType(requestDto.getApplicationType())
+                .isPass(false)
+                .build();
     }
 
 }

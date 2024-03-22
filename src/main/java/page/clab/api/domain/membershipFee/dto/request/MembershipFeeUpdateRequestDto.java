@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.membershipFee.domain.MembershipFee;
-import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter
 @Setter
@@ -26,9 +24,5 @@ public class MembershipFeeUpdateRequestDto {
 
     @Schema(description = "증빙 사진", example = "https://images.chosun.com/resizer/mcbrEkwTr5YKQZ89QPO9hmdb0iE=/616x0/smart/cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/LPCZYYKZ4FFIJPDD344FSGCLCY.jpg")
     private String imageUrl;
-
-    public static MembershipFeeUpdateRequestDto of(MembershipFee membershipFee) {
-        return ModelMapperUtil.getModelMapper().map(membershipFee, MembershipFeeUpdateRequestDto.class);
-    }
 
 }

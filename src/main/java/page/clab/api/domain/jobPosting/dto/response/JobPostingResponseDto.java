@@ -1,13 +1,13 @@
 package page.clab.api.domain.jobPosting.dto.response;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
-import page.clab.api.global.util.ModelMapperUtil;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,13 +24,18 @@ public class JobPostingResponseDto {
 
     private String jobPostingUrl;
     
-    public static JobPostingResponseDto of(JobPosting jobPosting) {
-        return ModelMapperUtil.getModelMapper().map(jobPosting, JobPostingResponseDto.class);
+    public static JobPostingResponseDto toDto(JobPosting jobPosting) {
+        return JobPostingResponseDto.builder()
+                .id(jobPosting.getId())
+                .title(jobPosting.getTitle())
+                .recruitmentPeriod(jobPosting.getRecruitmentPeriod())
+                .jobPostingUrl(jobPosting.getJobPostingUrl())
+                .build();
     }
 
-    public static List<JobPostingResponseDto> of(List<JobPosting> jobPostingList) {
+    public static List<JobPostingResponseDto> toDto(List<JobPosting> jobPostingList) {
         return jobPostingList.stream()
-                .map(JobPostingResponseDto::of)
+                .map(JobPostingResponseDto::toDto)
                 .toList();
     }
 

@@ -39,9 +39,9 @@ public class JobPostingController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createJobPosting(
-            @Valid @RequestBody JobPostingRequestDto jobPostingRequestDto
+            @Valid @RequestBody JobPostingRequestDto requestDto
     ) {
-        Long id = jobPostingService.createJobPosting(jobPostingRequestDto);
+        Long id = jobPostingService.createJobPosting(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -84,9 +84,9 @@ public class JobPostingController {
     @PostMapping("/{jobPostingId}")
     public ResponseModel updateJobPosting(
             @PathVariable(name = "jobPostingId") Long jobPostingId,
-            @Valid @RequestBody JobPostingUpdateRequestDto jobPostingUpdateRequestDto
+            @Valid @RequestBody JobPostingUpdateRequestDto requestDto
     ) {
-        Long id = jobPostingService.updateJobPosting(jobPostingId, jobPostingUpdateRequestDto);
+        Long id = jobPostingService.updateJobPosting(jobPostingId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

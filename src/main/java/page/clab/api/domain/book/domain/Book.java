@@ -13,13 +13,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.util.Optional;
 
@@ -56,16 +54,12 @@ public class Book extends BaseEntity {
     @Version
     private Long version;
 
-    public static Book of(BookRequestDto bookRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(bookRequestDto, Book.class);
-    }
-
-    public void update(BookUpdateRequestDto bookUpdateRequestDto) {
-        Optional.ofNullable(bookUpdateRequestDto.getCategory()).ifPresent(this::setCategory);
-        Optional.ofNullable(bookUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
-        Optional.ofNullable(bookUpdateRequestDto.getAuthor()).ifPresent(this::setAuthor);
-        Optional.ofNullable(bookUpdateRequestDto.getPublisher()).ifPresent(this::setPublisher);
-        Optional.ofNullable(bookUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
+    public void update(BookUpdateRequestDto requestDto) {
+        Optional.ofNullable(requestDto.getCategory()).ifPresent(this::setCategory);
+        Optional.ofNullable(requestDto.getTitle()).ifPresent(this::setTitle);
+        Optional.ofNullable(requestDto.getAuthor()).ifPresent(this::setAuthor);
+        Optional.ofNullable(requestDto.getPublisher()).ifPresent(this::setPublisher);
+        Optional.ofNullable(requestDto.getImageUrl()).ifPresent(this::setImageUrl);
     }
 
     public void borrowTo(Member borrower) {

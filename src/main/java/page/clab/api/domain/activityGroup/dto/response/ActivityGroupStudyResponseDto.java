@@ -11,7 +11,6 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,12 +48,20 @@ public class ActivityGroupStudyResponseDto {
     private LocalDateTime createdAt;
 
     public static ActivityGroupStudyResponseDto create(ActivityGroup activityGroup, List<GroupMember> groupMembers, List<ActivityGroupBoard> boards, boolean isOwner) {
-
-        ActivityGroupStudyResponseDto activityGroupStudyResponseDto = ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupStudyResponseDto.class);
-        activityGroupStudyResponseDto.setGroupMembers(groupMembers.stream().map(GroupMemberResponseDto::of).toList());
-        activityGroupStudyResponseDto.setActivityGroupBoards(boards.stream().map(ActivityGroupBoardResponseDto::of).toList());
-        activityGroupStudyResponseDto.setOwner(isOwner);
-        return activityGroupStudyResponseDto;
+        return ActivityGroupStudyResponseDto.builder()
+                .id(activityGroup.getId())
+                .category(activityGroup.getCategory())
+                .subject(activityGroup.getSubject())
+                .name(activityGroup.getName())
+                .content(activityGroup.getContent())
+                .status(activityGroup.getStatus())
+                .imageUrl(activityGroup.getImageUrl())
+                .groupMembers(groupMembers.stream().map(GroupMemberResponseDto::toDto).toList())
+                .curriculum(activityGroup.getCurriculum())
+                .activityGroupBoards(boards.stream().map(ActivityGroupBoardResponseDto::toDto).toList())
+                .isOwner(isOwner)
+                .createdAt(activityGroup.getCreatedAt())
+                .build();
     }
 
 }

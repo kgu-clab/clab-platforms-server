@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
 
@@ -37,10 +36,19 @@ public class MyProfileResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static MyProfileResponseDto of(Member member) {
-        MyProfileResponseDto myProfileResponseDto = ModelMapperUtil.getModelMapper().map(member, MyProfileResponseDto.class);
-        myProfileResponseDto.setRoleLevel(member.getRole().toLong());
-        return myProfileResponseDto;
+    public static MyProfileResponseDto toDto(Member member) {
+        return MyProfileResponseDto.builder()
+                .name(member.getName())
+                .id(member.getId())
+                .interests(member.getInterests())
+                .contact(member.getContact())
+                .email(member.getEmail())
+                .address(member.getAddress())
+                .githubUrl(member.getGithubUrl())
+                .imageUrl(member.getImageUrl())
+                .roleLevel(member.getRole().toRoleLevel())
+                .createdAt(member.getCreatedAt())
+                .build();
     }
 
 }

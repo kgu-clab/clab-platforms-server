@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import page.clab.api.domain.activityGroup.dto.request.AbsentRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
 
@@ -45,15 +44,5 @@ public class Absent extends BaseEntity {
 
     @Column(nullable = false)
     private String reason;
-
-    public static Absent create(Member absentee, ActivityGroup activityGroup, AbsentRequestDto absentRequestDto) {
-        return Absent.builder()
-                .id(null)
-                .absentee(absentee)
-                .activityGroup(activityGroup)
-                .absentDate(absentRequestDto.getAbsentDate())
-                .reason(absentRequestDto.getReason())
-                .build();
-    }
 
 }

@@ -1,6 +1,5 @@
 package page.clab.api.domain.jobPosting.dto.response;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +8,8 @@ import lombok.Setter;
 import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
-import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -34,8 +34,17 @@ public class JobPostingDetailsResponseDto {
     
     private LocalDateTime createdAt;
 
-    public static JobPostingDetailsResponseDto of(JobPosting jobPosting) {
-        return ModelMapperUtil.getModelMapper().map(jobPosting, JobPostingDetailsResponseDto.class);
+    public static JobPostingDetailsResponseDto toDto(JobPosting jobPosting) {
+        return JobPostingDetailsResponseDto.builder()
+                .id(jobPosting.getId())
+                .title(jobPosting.getTitle())
+                .careerLevel(jobPosting.getCareerLevel())
+                .employmentType(jobPosting.getEmploymentType())
+                .companyName(jobPosting.getCompanyName())
+                .recruitmentPeriod(jobPosting.getRecruitmentPeriod())
+                .jobPostingUrl(jobPosting.getJobPostingUrl())
+                .createdAt(jobPosting.getCreatedAt())
+                .build();
     }
 
 }

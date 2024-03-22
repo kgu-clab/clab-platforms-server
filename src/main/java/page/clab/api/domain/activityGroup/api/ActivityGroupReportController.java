@@ -38,9 +38,9 @@ public class ActivityGroupReportController {
     @PostMapping("")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel writeReport(
-            @Valid @RequestBody ActivityGroupReportRequestDto reportRequestDto
+            @Valid @RequestBody ActivityGroupReportRequestDto requestDto
     ) throws PermissionDeniedException, IllegalAccessException {
-        Long id = activityGroupReportService.writeReport(reportRequestDto);
+        Long id = activityGroupReportService.writeReport(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -53,11 +53,11 @@ public class ActivityGroupReportController {
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
-    ){
+    ) {
         Pageable pageable = PageRequest.of(page,size);
-        PagedResponseDto<ActivityGroupReportResponseDto> reportResponseDtos = activityGroupReportService.getReports(activityGroupId, pageable);
+        PagedResponseDto<ActivityGroupReportResponseDto> reports = activityGroupReportService.getReports(activityGroupId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(reportResponseDtos);
+        responseModel.addData(reports);
         return responseModel;
     }
 
@@ -67,7 +67,7 @@ public class ActivityGroupReportController {
     public ResponseModel searchReport(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "turn") Long turn
-    ){
+    ) {
         ActivityGroupReportResponseDto report = activityGroupReportService.searchReport(activityGroupId, turn);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(report);
@@ -80,9 +80,9 @@ public class ActivityGroupReportController {
     public ResponseModel updateReport(
             @PathVariable(name = "reportId") Long reportId,
             @RequestParam(name = "activityGroupId") Long activityGroupId,
-            @Valid @RequestBody ActivityGroupReportUpdateRequestDto reportRequestDto
+            @Valid @RequestBody ActivityGroupReportUpdateRequestDto requestDto
     ) throws PermissionDeniedException, IllegalAccessException {
-        Long id = activityGroupReportService.updateReport(reportId, activityGroupId, reportRequestDto);
+        Long id = activityGroupReportService.updateReport(reportId, activityGroupId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

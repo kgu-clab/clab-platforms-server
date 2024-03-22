@@ -24,12 +24,12 @@ public class BlacklistIpService {
 
     private final BlacklistIpRepository blacklistIpRepository;
 
-    public String addBlacklistedIp(HttpServletRequest request, BlacklistIpRequestDto dto) {
-        String ipAddress = dto.getIpAddress();
+    public String addBlacklistedIp(HttpServletRequest request, BlacklistIpRequestDto requestDto) {
+        String ipAddress = requestDto.getIpAddress();
         return blacklistIpRepository.findByIpAddress(ipAddress)
                 .map(BlacklistIp::getIpAddress)
                 .orElseGet(() -> {
-                    BlacklistIp blacklistIp = BlacklistIp.create(ipAddress, dto.getReason());
+                    BlacklistIp blacklistIp = BlacklistIpRequestDto.toEntity(requestDto);
                     blacklistIpRepository.save(blacklistIp);
                     slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Added IP: " + ipAddress);
                     return ipAddress;

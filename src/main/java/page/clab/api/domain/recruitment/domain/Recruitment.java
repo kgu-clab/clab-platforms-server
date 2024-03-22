@@ -14,10 +14,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.application.domain.ApplicationType;
-import page.clab.api.domain.recruitment.dto.request.RecruitmentRequestDto;
 import page.clab.api.domain.recruitment.dto.request.RecruitmentUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -51,10 +49,6 @@ public class Recruitment extends BaseEntity {
     @Column(nullable = false)
     @Size(min = 1, message = "{size.recruitment.status}")
     private String status;
-
-    public static Recruitment of(RecruitmentRequestDto recruitmentRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(recruitmentRequestDto, Recruitment.class);
-    }
 
     public void update(RecruitmentUpdateRequestDto recruitmentUpdateRequestDto) {
         Optional.ofNullable(recruitmentUpdateRequestDto.getStartDate()).ifPresent(this::setStartDate);

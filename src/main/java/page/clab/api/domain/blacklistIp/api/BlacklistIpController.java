@@ -36,9 +36,9 @@ public class BlacklistIpController {
     @PostMapping("")
     public ResponseModel addBlacklistedIp(
             HttpServletRequest request,
-            @Valid @RequestBody BlacklistIpRequestDto blacklistIpRequestDto
+            @Valid @RequestBody BlacklistIpRequestDto requestDto
     ) {
-        String addedIp = blacklistIpService.addBlacklistedIp(request, blacklistIpRequestDto);
+        String addedIp = blacklistIpService.addBlacklistedIp(request, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(addedIp);
         return responseModel;

@@ -14,7 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -37,13 +36,6 @@ public class Notification extends BaseEntity {
     @ManyToOne()
     @JoinColumn(name = "member_id")
     private Member member;
-
-    public static Notification create(NotificationRequestDto notificationRequestDto, Member member) {
-        return Notification.builder()
-                .content(notificationRequestDto.getContent())
-                .member(member)
-                .build();
-    }
 
     public static Notification create(Member member, String content) {
         return Notification.builder()

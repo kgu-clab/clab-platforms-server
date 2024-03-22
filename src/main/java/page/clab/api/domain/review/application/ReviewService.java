@@ -41,11 +41,11 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
 
     @Transactional
-    public Long createReview(ReviewRequestDto dto) {
+    public Long createReview(ReviewRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
-        ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(dto.getActivityGroupId());
+        ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(requestDto.getActivityGroupId());
         validateReviewCreationPermission(activityGroup, currentMember);
-        Review review = Review.create(dto, currentMember, activityGroup);
+        Review review = ReviewRequestDto.toEntity(requestDto, currentMember, activityGroup);
         validationService.checkValid(review);
         notifyGroupLeaderOfNewReview(activityGroup, currentMember);
         return reviewRepository.save(review).getId();
@@ -55,21 +55,22 @@ public class ReviewService {
     public PagedResponseDto<ReviewResponseDto> getReviewsByConditions(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Review> reviews = reviewRepository.findByConditions(memberId, memberName, activityId, isPublic, pageable);
-        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, currentMember)));
+        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ReviewResponseDto> getMyReviews(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Review> reviews = getReviewByMember(currentMember, pageable);
-        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.of(review, currentMember)));
+        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));
     }
 
-    public Long updateReview(Long reviewId, ReviewUpdateRequestDto dto) throws PermissionDeniedException {
+    @Transactional
+    public Long updateReview(Long reviewId, ReviewUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         Review review = getReviewByIdOrThrow(reviewId);
         review.validateAccessPermission(currentMember);
-        review.update(dto);
+        review.update(requestDto);
         validationService.checkValid(review);
         return reviewRepository.save(review).getId();
     }
@@ -94,10 +95,7 @@ public class ReviewService {
     private void notifyGroupLeaderOfNewReview(ActivityGroup activityGroup, Member member) {
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         if (groupLeader != null) {
-            notificationService.sendNotificationToMember(
-                    groupLeader.getMember().getId(),
-                    "[" + activityGroup.getName() + "] " + member.getName() + "님이 리뷰를 등록하였습니다."
-            );
+            notificationService.sendNotificationToMember(groupLeader.getMember().getId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 리뷰를 등록하였습니다.");
         }
     }
 

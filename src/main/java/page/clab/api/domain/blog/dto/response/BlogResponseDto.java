@@ -1,13 +1,13 @@
 package page.clab.api.domain.blog.dto.response;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.blog.domain.Blog;
-import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -26,8 +26,14 @@ public class BlogResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static BlogResponseDto of(Blog blog) {
-        return ModelMapperUtil.getModelMapper().map(blog, BlogResponseDto.class);
+    public static BlogResponseDto toDto(Blog blog) {
+        return BlogResponseDto.builder()
+                .id(blog.getId())
+                .title(blog.getTitle())
+                .subTitle(blog.getSubTitle())
+                .imageUrl(blog.getImageUrl())
+                .createdAt(blog.getCreatedAt())
+                .build();
     }
 
 }

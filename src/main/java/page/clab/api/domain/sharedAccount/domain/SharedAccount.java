@@ -12,10 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
-import page.clab.api.domain.sharedAccount.dto.request.SharedAccountRequestDto;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.util.Optional;
 
@@ -50,12 +48,6 @@ public class SharedAccount extends BaseEntity {
     @Column(nullable = false)
     private boolean isInUse;
 
-    public static SharedAccount create(SharedAccountRequestDto sharedAccountRequestDto) {
-        SharedAccount sharedAccount = ModelMapperUtil.getModelMapper().map(sharedAccountRequestDto, SharedAccount.class);
-        sharedAccount.setInUse(false);
-        return sharedAccount;
-    }
-
     public void update(SharedAccountUpdateRequestDto sharedAccountUpdateRequestDto) {
         Optional.ofNullable(sharedAccountUpdateRequestDto.getUsername()).ifPresent(this::setUsername);
         Optional.ofNullable(sharedAccountUpdateRequestDto.getPassword()).ifPresent(this::setPassword);
@@ -63,7 +55,7 @@ public class SharedAccount extends BaseEntity {
         Optional.ofNullable(sharedAccountUpdateRequestDto.getPlatformUrl()).ifPresent(this::setPlatformUrl);
     }
 
-    public void updateStatus(boolean isInUse) {
+    public void updateIsInUse(boolean isInUse) {
         this.isInUse = isInUse;
     }
 

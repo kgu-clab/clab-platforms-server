@@ -14,11 +14,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.util.Optional;
 
@@ -50,12 +48,6 @@ public class MembershipFee extends BaseEntity {
     private String content;
 
     private String imageUrl;
-
-    public static MembershipFee create(MembershipFeeRequestDto membershipFeeRequestDto, Member member) {
-        MembershipFee membershipFee = ModelMapperUtil.getModelMapper().map(membershipFeeRequestDto, MembershipFee.class);
-        membershipFee.setApplicant(member);
-        return membershipFee;
-    }
 
     public void update(MembershipFeeUpdateRequestDto membershipFeeUpdateRequestDto) {
         Optional.ofNullable(membershipFeeUpdateRequestDto.getCategory()).ifPresent(this::setCategory);

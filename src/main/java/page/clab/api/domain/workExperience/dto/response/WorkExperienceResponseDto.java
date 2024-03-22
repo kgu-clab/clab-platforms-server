@@ -1,13 +1,13 @@
 package page.clab.api.domain.workExperience.dto.response;
 
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
-import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -26,8 +26,14 @@ public class WorkExperienceResponseDto {
 
     private LocalDate endDate;
 
-    public static WorkExperienceResponseDto of(WorkExperience workExperience) {
-        return ModelMapperUtil.getModelMapper().map(workExperience, WorkExperienceResponseDto.class);
+    public static WorkExperienceResponseDto toDto(WorkExperience workExperience) {
+        return WorkExperienceResponseDto.builder()
+                .id(workExperience.getId())
+                .companyName(workExperience.getCompanyName())
+                .position(workExperience.getPosition())
+                .startDate(workExperience.getStartDate())
+                .endDate(workExperience.getEndDate())
+                .build();
     }
 
 }

@@ -36,9 +36,9 @@ public class ActivityPhotoController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createActivityPhoto(
-            @Valid @RequestBody ActivityPhotoRequestDto activityPhotoRequestDto
+            @Valid @RequestBody ActivityPhotoRequestDto requestDto
     ) {
-        Long id = activityPhotoService.createActivityPhoto(activityPhotoRequestDto);
+        Long id = activityPhotoService.createActivityPhoto(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

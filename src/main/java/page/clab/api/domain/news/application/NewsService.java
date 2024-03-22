@@ -13,12 +13,8 @@ import page.clab.api.domain.news.dto.response.NewsDetailsResponseDto;
 import page.clab.api.domain.news.dto.response.NewsResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.FileService;
-import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.validation.ValidationService;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,28 +26,29 @@ public class NewsService {
 
     private final NewsRepository newsRepository;
 
-    public Long createNews(NewsRequestDto newsRequestDto) {
-        News news = News.create(newsRequestDto);
+    public Long createNews(NewsRequestDto requestDto) {
+        News news = NewsRequestDto.toEntity(requestDto);
         validationService.checkValid(news);
-        attachUploadedFiles(newsRequestDto, news);
+        news.setUploadedFiles(fileService.getUploadedFilesByUrls(requestDto.getFileUrlList()));
         return newsRepository.save(news).getId();
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<NewsResponseDto> getNewsByConditions(String category, String title, Pageable pageable) {
         Page<News> newsPage = newsRepository.findByConditions(title, category, pageable);
-        return new PagedResponseDto<>(newsPage.map(NewsResponseDto::of));
+        return new PagedResponseDto<>(newsPage.map(NewsResponseDto::toDto));
     }
 
     @Transactional(readOnly = true)
     public NewsDetailsResponseDto getNewsDetails(Long newsId) {
         News news = getNewsByIdOrThrow(newsId);
-        return NewsDetailsResponseDto.create(news);
+        return NewsDetailsResponseDto.toDto(news);
     }
 
-    public Long updateNews(Long newsId, NewsUpdateRequestDto newsUpdateRequestDto) {
+    @Transactional
+    public Long updateNews(Long newsId, NewsUpdateRequestDto requestDto) {
         News news = getNewsByIdOrThrow(newsId);
-        news.update(newsUpdateRequestDto);
+        news.update(requestDto);
         validationService.checkValid(news);
         return newsRepository.save(news).getId();
     }
@@ -60,16 +57,6 @@ public class NewsService {
         News news = getNewsByIdOrThrow(newsId);
         newsRepository.delete(news);
         return news.getId();
-    }
-
-    private void attachUploadedFiles(NewsRequestDto newsRequestDto, News news) {
-        List<String> fileUrls = newsRequestDto.getFileUrlList();
-        if (fileUrls != null) {
-            List<UploadedFile> uploadFileList = fileUrls.stream()
-                    .map(fileService::getUploadedFileByUrl)
-                    .collect(Collectors.toList());
-            news.setUploadedFiles(uploadFileList);
-        }
     }
 
     public News getNewsByIdOrThrow(Long newsId) {

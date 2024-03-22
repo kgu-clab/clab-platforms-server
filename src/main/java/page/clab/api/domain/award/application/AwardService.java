@@ -27,9 +27,9 @@ public class AwardService {
 
     private final AwardRepository awardRepository;
 
-    public Long createAward(AwardRequestDto awardRequestDto) {
-        Member member = memberService.getCurrentMember();
-        Award award = Award.create(awardRequestDto, member);
+    public Long createAward(AwardRequestDto requestDto) {
+        Member currentMember = memberService.getCurrentMember();
+        Award award = AwardRequestDto.toEntity(requestDto, currentMember);
         validationService.checkValid(award);
         return awardRepository.save(award).getId();
     }
@@ -37,29 +37,30 @@ public class AwardService {
     @Transactional(readOnly = true)
     public PagedResponseDto<AwardResponseDto> getAwardsByConditions(String memberId, Long year, Pageable pageable) {
         Page<Award> awards = awardRepository.findByConditions(memberId, year, pageable);
-        return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
+        return new PagedResponseDto<>(awards.map(AwardResponseDto::toDto));
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<AwardResponseDto> getMyAwards(Pageable pageable) {
-        Member member = memberService.getCurrentMember();
-        Page<Award> awards = getAwardByMember(pageable, member);
-        return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
+        Member currentMember = memberService.getCurrentMember();
+        Page<Award> awards = getAwardByMember(pageable, currentMember);
+        return new PagedResponseDto<>(awards.map(AwardResponseDto::toDto));
     }
 
-    public Long updateAward(Long awardId, AwardUpdateRequestDto awardUpdateRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+    @Transactional
+    public Long updateAward(Long awardId, AwardUpdateRequestDto requestDto) throws PermissionDeniedException {
+        Member currentMember = memberService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
-        award.validateAccessPermission(member);
-        award.update(awardUpdateRequestDto);
+        award.validateAccessPermission(currentMember);
+        award.update(requestDto);
         validationService.checkValid(award);
         return awardRepository.save(award).getId();
     }
 
     public Long deleteAward(Long awardId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
-        award.validateAccessPermission(member);
+        award.validateAccessPermission(currentMember);
         awardRepository.delete(award);
         return award.getId();
     }

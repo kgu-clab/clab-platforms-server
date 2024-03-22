@@ -89,7 +89,7 @@ public class GroupMember extends BaseEntity {
         if (this.isAccepted()) {
             this.updateRole(ActivityGroupRole.MEMBER);
         } else {
-            this.updateRole(null);
+            this.updateRole(ActivityGroupRole.NONE);
         }
     }
 

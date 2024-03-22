@@ -37,9 +37,9 @@ public class AccuseController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createAccuse(
-            @Valid @RequestBody AccuseRequestDto accuseRequestDto
+            @Valid @RequestBody AccuseRequestDto requestDto
     ) {
-        Long id = accuseService.createAccuse(accuseRequestDto);
+        Long id = accuseService.createAccuse(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -51,13 +51,13 @@ public class AccuseController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel getAccusesByConditions(
-            @RequestParam(name = "targetType", required = false) TargetType targetType,
-            @RequestParam(name = "accuseStatus", required = false) AccuseStatus accuseStatus,
+            @RequestParam(name = "targetType", required = false) TargetType type,
+            @RequestParam(name = "accuseStatus", required = false) AccuseStatus status,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccusesByConditions(targetType, accuseStatus, pageable);
+        PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccusesByConditions(type, status, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(accuses);
         return responseModel;
@@ -68,9 +68,9 @@ public class AccuseController {
     @PatchMapping("/{accuseId}")
     public ResponseModel updateAccuseStatus(
             @PathVariable(name = "accuseId") Long accuseId,
-            @RequestParam(name = "accuseStatus") AccuseStatus accuseStatus
+            @RequestParam(name = "accuseStatus") AccuseStatus status
     ) {
-        Long id = accuseService.updateAccuseStatus(accuseId, accuseStatus);
+        Long id = accuseService.updateAccuseStatus(accuseId, status);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

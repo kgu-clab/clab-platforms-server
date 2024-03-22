@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.domain.ApplicationType;
-import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter
 @Setter
@@ -24,8 +23,13 @@ public class ApplicationPassResponseDto {
 
     private Boolean isPass;
 
-    public static ApplicationPassResponseDto of(Application application) {
-        return ModelMapperUtil.getModelMapper().map(application, ApplicationPassResponseDto.class);
+    public static ApplicationPassResponseDto toDto(Application application) {
+        return ApplicationPassResponseDto.builder()
+                .recruitmentId(application.getRecruitmentId())
+                .name(application.getName())
+                .applicationType(application.getApplicationType())
+                .isPass(application.getIsPass())
+                .build();
     }
 
 }

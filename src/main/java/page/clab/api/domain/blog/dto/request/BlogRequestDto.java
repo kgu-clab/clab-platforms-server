@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.blog.domain.Blog;
+import page.clab.api.domain.member.domain.Member;
 
 @Getter
 @Setter
@@ -29,5 +31,15 @@ public class BlogRequestDto {
 
     @Schema(description = "이미지 URL", example = "https://www.clab.page/assets/logoWhite-fc1ef9a0.webp")
     private String imageUrl;
+
+    public static Blog toEntity(BlogRequestDto requestDto, Member member) {
+        return Blog.builder()
+                .member(member)
+                .title(requestDto.getTitle())
+                .subTitle(requestDto.getSubTitle())
+                .content(requestDto.getContent())
+                .imageUrl(requestDto.getImageUrl())
+                .build();
+    }
 
 }

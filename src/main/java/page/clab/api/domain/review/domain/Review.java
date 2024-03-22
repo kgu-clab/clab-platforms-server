@@ -15,11 +15,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.review.dto.request.ReviewRequestDto;
 import page.clab.api.domain.review.dto.request.ReviewUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.util.Optional;
 
@@ -50,18 +48,9 @@ public class Review extends BaseEntity {
     @Column(nullable = false)
     private Boolean isPublic;
 
-    public static Review create(ReviewRequestDto reviewRequestDto, Member member, ActivityGroup activityGroup) {
-        Review review = ModelMapperUtil.getModelMapper().map(reviewRequestDto, Review.class);
-        review.setId(null);
-        review.setMember(member);
-        review.setActivityGroup(activityGroup);
-        review.setIsPublic(false);
-        return review;
-    }
-
-    public void update(ReviewUpdateRequestDto reviewUpdateRequestDto) {
-        Optional.ofNullable(reviewUpdateRequestDto.getContent()).ifPresent(this::setContent);
-        Optional.ofNullable(reviewUpdateRequestDto.getIsPublic()).ifPresent(this::setIsPublic);
+    public void update(ReviewUpdateRequestDto requestDto) {
+        Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
+        Optional.ofNullable(requestDto.getIsPublic()).ifPresent(this::setIsPublic);
     }
 
     public boolean isOwner(Member member) {

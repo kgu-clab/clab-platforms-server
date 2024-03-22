@@ -7,8 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
-import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter
 @Setter
@@ -32,8 +32,14 @@ public class MembershipFeeRequestDto {
     @Schema(description = "증빙 사진", example = "https://images.chosun.com/resizer/mcbrEkwTr5YKQZ89QPO9hmdb0iE=/616x0/smart/cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/LPCZYYKZ4FFIJPDD344FSGCLCY.jpg")
     private String imageUrl;
 
-    public static MembershipFeeRequestDto of(MembershipFee membershipFee) {
-        return ModelMapperUtil.getModelMapper().map(membershipFee, MembershipFeeRequestDto.class);
+    public static MembershipFee toEntity(MembershipFeeRequestDto requestDto, Member member) {
+        return MembershipFee.builder()
+                .applicant(member)
+                .category(requestDto.getCategory())
+                .amount(requestDto.getAmount())
+                .content(requestDto.getContent())
+                .imageUrl(requestDto.getImageUrl())
+                .build();
     }
 
 }

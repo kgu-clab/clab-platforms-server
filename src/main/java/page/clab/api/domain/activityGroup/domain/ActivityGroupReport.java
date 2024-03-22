@@ -12,7 +12,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
 
@@ -42,15 +41,6 @@ public class ActivityGroupReport extends BaseEntity {
 
     @Column(nullable = false)
     private String content;
-
-    public static ActivityGroupReport create(Long turn, ActivityGroup activityGroup, ActivityGroupReportRequestDto reportRequestDto) {
-        return ActivityGroupReport.builder()
-                .turn(turn)
-                .activityGroup(activityGroup)
-                .title(reportRequestDto.getTitle())
-                .content(reportRequestDto.getContent())
-                .build();
-    }
 
     public void update(ActivityGroupReportUpdateRequestDto reportRequestDto) {
         Optional.ofNullable(reportRequestDto.getTurn()).ifPresent(this::setTurn);

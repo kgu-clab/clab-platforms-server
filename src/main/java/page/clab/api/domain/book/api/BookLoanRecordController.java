@@ -34,9 +34,9 @@ public class BookLoanRecordController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel borrowBook(
-            @Valid @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto
+            @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) throws CustomOptimisticLockingFailureException {
-        Long id = bookLoanRecordService.borrowBook(bookLoanRecordRequestDto);
+        Long id = bookLoanRecordService.borrowBook(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -46,9 +46,9 @@ public class BookLoanRecordController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/return")
     public ResponseModel returnBook(
-            @Valid @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto
+            @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) {
-        Long id = bookLoanRecordService.returnBook(bookLoanRecordRequestDto);
+        Long id = bookLoanRecordService.returnBook(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -58,9 +58,9 @@ public class BookLoanRecordController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/extend")
     public ResponseModel extendBookLoan(
-            @Valid @RequestBody BookLoanRecordRequestDto bookLoanRecordRequestDto
+            @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) {
-        Long id = bookLoanRecordService.extendBookLoan(bookLoanRecordRequestDto);
+        Long id = bookLoanRecordService.extendBookLoan(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

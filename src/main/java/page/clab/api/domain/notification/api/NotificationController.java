@@ -36,9 +36,9 @@ public class NotificationController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createNotification(
-            @Valid @RequestBody NotificationRequestDto notificationRequestDto
+            @Valid @RequestBody NotificationRequestDto requestDto
     ) {
-        Long id = notificationService.createNotification(notificationRequestDto);
+        Long id = notificationService.createNotification(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

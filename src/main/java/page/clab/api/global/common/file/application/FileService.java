@@ -24,7 +24,6 @@ import page.clab.api.global.util.FileSystemUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -58,7 +57,7 @@ public class FileService {
     private String maxFileSize;
 
     public String saveQRCodeImage(byte[] QRCodeImage, String path, long storagePeriod, String nowDateTime) throws IOException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         UploadedFile uploadedFile = new UploadedFile();
 
         String extension = "png";
@@ -69,27 +68,27 @@ public class FileService {
         uploadedFile.setOriginalFileName(originalFileName);
         uploadedFile.setStoragePeriod(storagePeriod);
         uploadedFile.setContentType("image/png");
-        uploadedFile.setUploader(member);
+        uploadedFile.setUploader(currentMember);
         uploadedFile.setUrl(url);
         uploadFileRepository.save(uploadedFile);
         return url;
     }
 
     public List<UploadedFileResponseDto> saveAssignmentFiles(List<MultipartFile> multipartFiles, Long activityGroupId, Long activityGroupBoardId, long storagePeriod) throws PermissionDeniedException, IOException {
-        Member member = memberService.getCurrentMember();
-        String path = "assignment" + File.separator + activityGroupId + File.separator+ activityGroupBoardId + File.separator + member.getId();
+        Member currentMember = memberService.getCurrentMember();
+        String path = "assignment" + File.separator + activityGroupId + File.separator+ activityGroupBoardId + File.separator + currentMember.getId();
         return saveFiles(multipartFiles, path, storagePeriod);
     }
 
     public UploadedFileResponseDto saveProfileFile(MultipartFile multipartFile, long storagePeriod) throws PermissionDeniedException, IOException {
-        Member member = memberService.getCurrentMember();
-        String path = "profiles" + File.separator + member.getId();
+        Member currentMember = memberService.getCurrentMember();
+        String path = "profiles" + File.separator + currentMember.getId();
         return saveFile(multipartFile, path, storagePeriod);
     }
 
     public List<UploadedFileResponseDto> saveCloudFiles(List<MultipartFile> multipartFiles, long storagePeriod) throws PermissionDeniedException, IOException {
-        Member member = memberService.getCurrentMember();
-        String path = "members" + File.separator + member.getId();
+        Member currentMember = memberService.getCurrentMember();
+        String path = "members" + File.separator + currentMember.getId();
         return saveFiles(multipartFiles, path, storagePeriod);
     }
 
@@ -103,7 +102,7 @@ public class FileService {
     }
 
     public UploadedFileResponseDto saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws IOException, PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
 
         if (!isValidPathVariable(path)) {
             throw new NotFoundException("파일 업로드 api 요청 pathVariable이 유효하지 않습니다.");
@@ -135,16 +134,11 @@ public class FileService {
         uploadedFile.setStoragePeriod(storagePeriod);
         uploadedFile.setFileSize(multipartFile.getSize());
         uploadedFile.setContentType(multipartFile.getContentType());
-        uploadedFile.setUploader(member);
+        uploadedFile.setUploader(currentMember);
         uploadedFile.setUrl(url);
         uploadFileRepository.save(uploadedFile);
 
-        return UploadedFileResponseDto.builder()
-                .fileUrl(url)
-                .originalFileName(uploadedFile.getOriginalFileName())
-                .createdAt(uploadedFile.getCreatedAt())
-                .storagePeriod(uploadedFile.getStoragePeriod())
-                .build();
+        return UploadedFileResponseDto.toDto(uploadedFile);
     }
 
     public boolean isValidPathVariable(String path) throws AssignmentFileUploadFailException {
@@ -170,7 +164,7 @@ public class FileService {
     }
 
     public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         String url = deleteFileRequestDto.getUrl();
         UploadedFile uploadedFile = getUploadedFileByUrl(url);
         String filePath = uploadedFile.getSavedPath();
@@ -178,7 +172,7 @@ public class FileService {
         if (uploadedFile == null || !storedFile.exists()) {
             throw new NotFoundException("존재하지 않는 파일입니다.");
         }
-        if (!(uploadedFile.getUploader().getId().equals(member.getId()) || member.isSuperAdminRole())) {
+        if (!(uploadedFile.getUploader().getId().equals(currentMember.getId()) || currentMember.isSuperAdminRole())) {
             throw new PermissionDeniedException("해당 파일을 삭제할 권한이 없습니다.");
         }
         if (!storedFile.delete()) {
@@ -189,21 +183,20 @@ public class FileService {
         return deletedFileUrl;
     }
 
-    public LocalDateTime getStorageDateTimeOfFile(String fileUrl) {
-        UploadedFile uploadedFile = getUploadedFileByUrl(fileUrl);
-        if (uploadedFile == null) {
-            throw new NotFoundException("파일이 존재하지 않습니다.");
-        }
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime createdDateTime = uploadedFile.getCreatedAt();
-        Long storagePeriod =  uploadedFile.getStoragePeriod();
-
-        return createdDateTime.plusDays(storagePeriod);
-    }
-
     public UploadedFile getUploadedFileByUrl(String url) {
         return uploadFileRepository.findByUrl(url)
                 .orElseThrow(() -> new NotFoundException("파일을 찾을 수 없습니다."));
+    }
+
+    public List<UploadedFile> getUploadedFilesByUrls(List<String> fileUrls) {
+        if (fileUrls == null || fileUrls.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<UploadedFile> uploadedFiles = uploadFileRepository.findAllByUrlIn(fileUrls);
+        if (uploadedFiles.size() != fileUrls.size()) {
+            throw new NotFoundException("서버에 업로드되지 않은 파일이 포함되어 있습니다.");
+        }
+        return uploadedFiles;
     }
 
     public UploadedFile getUniqueUploadedFileByCategoryAndOriginalName(String category, String originalName) {
@@ -219,10 +212,6 @@ public class FileService {
         if (existingFile != null) {
             existingFile.delete();
         }
-    }
-
-    public String getOriginalFileNameByUrl(String url) {
-        return getUploadedFileByUrl(url).getOriginalFileName();
     }
 
 }

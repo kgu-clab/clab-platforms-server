@@ -16,13 +16,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.ModelMapperUtil;
-import page.clab.api.global.util.RandomNicknameUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,16 +67,6 @@ public class Comment extends BaseEntity {
 
     private Long likes;
 
-    public static Comment create(CommentRequestDto commentRequestDto, Board board, Member member, Comment parent) {
-        Comment comment = ModelMapperUtil.getModelMapper().map(commentRequestDto, Comment.class);
-        comment.setBoard(board);
-        comment.setWriter(member);
-        comment.setNickname(RandomNicknameUtil.makeRandomNickname());
-        comment.setLikes(0L);
-        comment.parent = parent;
-        return comment;
-    }
-
     public void update(CommentUpdateRequestDto commentUpdateRequestDto) {
         Optional.ofNullable(commentUpdateRequestDto.getContent()).ifPresent(this::setContent);
         Optional.of(commentUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
@@ -96,6 +83,10 @@ public class Comment extends BaseEntity {
 
     public boolean isOwner(Member member) {
         return this.writer.isSameMember(member);
+    }
+
+    public boolean isOwner(String memberId) {
+        return this.writer.isSameMember(memberId);
     }
 
     public void validateAccessPermission(Member member) throws PermissionDeniedException {

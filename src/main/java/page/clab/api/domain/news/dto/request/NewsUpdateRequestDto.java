@@ -3,8 +3,6 @@ package page.clab.api.domain.news.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-import page.clab.api.domain.news.domain.News;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
 
@@ -29,9 +27,5 @@ public class NewsUpdateRequestDto {
 
     @Schema(description = "날짜", example = "2021-08-31")
     private LocalDate date;
-
-    public static NewsUpdateRequestDto of(News news) {
-        return ModelMapperUtil.getModelMapper().map(news, NewsUpdateRequestDto.class);
-    }
 
 }

@@ -22,8 +22,8 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public Long createProduct(ProductRequestDto productRequestDto) {
-        Product product = Product.of(productRequestDto);
+    public Long createProduct(ProductRequestDto requestDto) {
+        Product product = ProductRequestDto.toEntity(requestDto);
         validationService.checkValid(product);
         return productRepository.save(product).getId();
     }
@@ -31,12 +31,13 @@ public class ProductService {
     @Transactional(readOnly = true)
     public PagedResponseDto<ProductResponseDto> getProductsByConditions(String productName, Pageable pageable) {
         Page<Product> products = productRepository.findByConditions(productName, pageable);
-        return new PagedResponseDto<>(products.map(ProductResponseDto::of));
+        return new PagedResponseDto<>(products.map(ProductResponseDto::toDto));
     }
 
-    public Long updateProduct(Long productId, ProductUpdateRequestDto productUpdateRequestDto) {
+    @Transactional
+    public Long updateProduct(Long productId, ProductUpdateRequestDto requestDto) {
         Product product = getProductByIdOrThrow(productId);
-        product.update(productUpdateRequestDto);
+        product.update(requestDto);
         validationService.checkValid(product);
         return productRepository.save(product).getId();
     }

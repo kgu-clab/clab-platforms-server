@@ -43,49 +43,49 @@ public class AccuseService {
     private final AccuseRepository accuseRepository;
 
     @Transactional
-    public Long createAccuse(AccuseRequestDto accuseRequestDto) {
-        TargetType accuseTargetType = accuseRequestDto.getTargetType();
-        Long accuseTargetId = accuseRequestDto.getTargetId();
+    public Long createAccuse(AccuseRequestDto requestDto) {
+        TargetType type = requestDto.getTargetType();
+        Long accuseTargetId = requestDto.getTargetId();
 
-        if (!isAccuseRequestValid(accuseTargetType, accuseTargetId)) {
-            throw new NotFoundException(accuseTargetType.getDescription() + " " + accuseTargetId + "을 찾을 수 없습니다.");
+        if (!isAccuseRequestValid(type, accuseTargetId)) {
+            throw new NotFoundException(type.getDescription() + " " + accuseTargetId + "을 찾을 수 없습니다.");
         }
 
-        Member member = memberService.getCurrentMember();
-        Accuse accuse = accuseRepository.findByMemberAndTargetTypeAndTargetId(member, accuseTargetType, accuseTargetId)
-                            .orElseGet(() -> Accuse.create(accuseRequestDto, member));
-        accuse.updateReason(accuseRequestDto.getReason());
+        Member currentMember = memberService.getCurrentMember();
+        Accuse accuse = accuseRepository.findByMemberAndTargetTypeAndTargetId(currentMember, type, accuseTargetId)
+                            .orElseGet(() -> AccuseRequestDto.toEntity(requestDto, currentMember));
+        accuse.updateReason(requestDto.getReason());
         validationService.checkValid(accuse);
 
-        notificationService.sendNotificationToMember(member, "신고하신 내용이 접수되었습니다.");
-        notificationService.sendNotificationToSuperAdmins(member.getName() + "님이 신고를 접수하였습니다. 확인해주세요.");
+        notificationService.sendNotificationToMember(currentMember, "신고하신 내용이 접수되었습니다.");
+        notificationService.sendNotificationToSuperAdmins(currentMember.getName() + "님이 신고를 접수하였습니다. 확인해주세요.");
         return accuseRepository.save(accuse).getId();
     }
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<AccuseResponseDto> getAccusesByConditions(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable) {
-        Page<Accuse> accuses = accuseRepository.findByConditions(targetType, accuseStatus, pageable);
-        return new PagedResponseDto<>(accuses.map(AccuseResponseDto::of));
+    public PagedResponseDto<AccuseResponseDto> getAccusesByConditions(TargetType type, AccuseStatus status, Pageable pageable) {
+        Page<Accuse> accuses = accuseRepository.findByConditions(type, status, pageable);
+        return new PagedResponseDto<>(accuses.map(AccuseResponseDto::toDto));
     }
 
     @Transactional
-    public Long updateAccuseStatus(Long accuseId, AccuseStatus accuseStatus) {
+    public Long updateAccuseStatus(Long accuseId, AccuseStatus status) {
         Accuse accuse = getAccuseByIdOrThrow(accuseId);
-        accuse.updateStatus(accuseStatus);
+        accuse.updateStatus(status);
         validationService.checkValid(accuse);
-        notificationService.sendNotificationToMember(accuse.getMember(), "신고 상태가 " + accuseStatus.getDescription() + "로 변경되었습니다.");
+        notificationService.sendNotificationToMember(accuse.getMember(), "신고 상태가 " + status.getDescription() + "로 변경되었습니다.");
         return accuseRepository.save(accuse).getId();
     }
 
-    private boolean isAccuseRequestValid(TargetType accuseTargetType, Long accuseTargetId) {
-        if (accuseTargetType == TargetType.BOARD) {
-            return boardService.isBoardExistById(accuseTargetId);
+    private boolean isAccuseRequestValid(TargetType type, Long targetId) {
+        if (type == TargetType.BOARD) {
+            return boardService.isBoardExistById(targetId);
         }
-        if (accuseTargetType == TargetType.COMMENT) {
-            return commentService.isCommentExistById(accuseTargetId);
+        if (type == TargetType.COMMENT) {
+            return commentService.isCommentExistById(targetId);
         }
-        if (accuseTargetType == TargetType.REVIEW) {
-            return reviewService.isReviewExistsById(accuseTargetId);
+        if (type == TargetType.REVIEW) {
+            return reviewService.isReviewExistsById(targetId);
         }
         throw new AccuseTargetTypeIncorrectException("신고 대상 유형이 올바르지 않습니다.");
     }

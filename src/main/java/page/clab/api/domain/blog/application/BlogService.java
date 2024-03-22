@@ -28,9 +28,9 @@ public class BlogService {
 
     private final BlogRepository blogRepository;
 
-    public Long createBlog(BlogRequestDto blogRequestDto) {
-        Member member = memberService.getCurrentMember();
-        Blog blog = Blog.create(blogRequestDto, member);
+    public Long createBlog(BlogRequestDto requestDto) {
+        Member currentMember = memberService.getCurrentMember();
+        Blog blog = BlogRequestDto.toEntity(requestDto, currentMember);
         validationService.checkValid(blog);
         return blogRepository.save(blog).getId();
     }
@@ -38,30 +38,31 @@ public class BlogService {
     @Transactional(readOnly = true)
     public PagedResponseDto<BlogResponseDto> getBlogsByConditions(String title, String memberName, Pageable pageable) {
         Page<Blog> blogs = blogRepository.findByConditions(title, memberName, pageable);
-        return new PagedResponseDto<>(blogs.map(BlogResponseDto::of));
+        return new PagedResponseDto<>(blogs.map(BlogResponseDto::toDto));
     }
 
     @Transactional(readOnly = true)
     public BlogDetailsResponseDto getBlogDetails(Long blogId) {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
-        boolean isOwner = blog.isOwner(member);
-        return BlogDetailsResponseDto.create(blog, isOwner);
+        boolean isOwner = blog.isOwner(currentMember);
+        return BlogDetailsResponseDto.toDto(blog, isOwner);
     }
 
-    public Long updateBlog(Long blogId, BlogUpdateRequestDto blogUpdateRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+    @Transactional
+    public Long updateBlog(Long blogId, BlogUpdateRequestDto requestDto) throws PermissionDeniedException {
+        Member currentMember = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
-        blog.validateAccessPermission(member);
-        blog.update(blogUpdateRequestDto);
+        blog.validateAccessPermission(currentMember);
+        blog.update(requestDto);
         validationService.checkValid(blog);
         return blogRepository.save(blog).getId();
     }
 
     public Long deleteBlog(Long blogId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
-        blog.validateAccessPermission(member);
+        blog.validateAccessPermission(currentMember);
         blogRepository.delete(blog);
         return blog.getId();
     }

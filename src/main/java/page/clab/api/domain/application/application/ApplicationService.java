@@ -37,23 +37,24 @@ public class ApplicationService {
     private final ApplicationRepository applicationRepository;
 
     @Transactional
-    public String createApplication(HttpServletRequest request, ApplicationRequestDto applicationRequestDto) {
-        Recruitment recruitment = recruitmentService.getRecruitmentByIdOrThrow(applicationRequestDto.getRecruitmentId());
-        Application application = Application.create(applicationRequestDto);
+    public String createApplication(HttpServletRequest request, ApplicationRequestDto requestDto) {
+        Recruitment recruitment = recruitmentService.getRecruitmentByIdOrThrow(requestDto.getRecruitmentId());
+        Application application = ApplicationRequestDto.toEntity(requestDto);
         validationService.checkValid(application);
 
-        notificationService.sendNotificationToAdmins(applicationRequestDto.getStudentId() + " " +
-                        applicationRequestDto.getName() + "님이 동아리에 지원하였습니다.");
-        slackService.sendApplicationNotification(request, applicationRequestDto);
+        notificationService.sendNotificationToAdmins(requestDto.getStudentId() + " " +
+                        requestDto.getName() + "님이 동아리에 지원하였습니다.");
+        slackService.sendApplicationNotification(request, requestDto);
         return applicationRepository.save(application).getStudentId();
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ApplicationResponseDto> getApplicationsByConditions(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable) {
         Page<Application> applications = applicationRepository.findByConditions(recruitmentId, studentId, isPass, pageable);
-        return new PagedResponseDto<>(applications.map(ApplicationResponseDto::of));
+        return new PagedResponseDto<>(applications.map(ApplicationResponseDto::toDto));
     }
 
+    @Transactional
     public String toggleApprovalStatus(Long recruitmentId, String studentId) {
         Application application = getApplicationByIdOrThrow(studentId, recruitmentId);
         application.toggleApprovalStatus();
@@ -64,7 +65,7 @@ public class ApplicationService {
     public ApplicationPassResponseDto getApplicationPass(Long recruitmentId, String studentId) {
         ApplicationId id = new ApplicationId(studentId, recruitmentId);
         return applicationRepository.findById(id)
-                .map(ApplicationPassResponseDto::of)
+                .map(ApplicationPassResponseDto::toDto)
                 .orElseGet(() -> ApplicationPassResponseDto.builder()
                         .isPass(false)
                         .build());

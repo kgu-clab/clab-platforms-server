@@ -18,7 +18,7 @@ public class AccountLockInfoResponseDto {
 
     private String name;
 
-    public static AccountLockInfoResponseDto of(AccountLockInfo accountLockInfo) {
+    public static AccountLockInfoResponseDto toDto(AccountLockInfo accountLockInfo) {
         return AccountLockInfoResponseDto.builder()
                 .id(accountLockInfo.getMember().getId())
                 .name(accountLockInfo.getMember().getName())

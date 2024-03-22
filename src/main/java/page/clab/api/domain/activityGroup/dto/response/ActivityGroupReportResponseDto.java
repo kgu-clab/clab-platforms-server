@@ -30,15 +30,15 @@ public class ActivityGroupReportResponseDto {
 
     private LocalDateTime updatedAt;
 
-    public static ActivityGroupReportResponseDto of(ActivityGroupReport activityGroupReport) {
+    public static ActivityGroupReportResponseDto toDto(ActivityGroupReport report) {
         return ActivityGroupReportResponseDto.builder()
-                .activityGroupId(activityGroupReport.getActivityGroup().getId())
-                .activityGroupName(activityGroupReport.getActivityGroup().getName())
-                .turn(activityGroupReport.getTurn())
-                .title(activityGroupReport.getTitle())
-                .content(activityGroupReport.getContent())
-                .createdAt(activityGroupReport.getCreatedAt())
-                .updatedAt(activityGroupReport.getUpdatedAt())
+                .activityGroupId(report.getActivityGroup().getId())
+                .activityGroupName(report.getActivityGroup().getName())
+                .turn(report.getTurn())
+                .title(report.getTitle())
+                .content(report.getContent())
+                .createdAt(report.getCreatedAt())
+                .updatedAt(report.getUpdatedAt())
                 .build();
     }
 

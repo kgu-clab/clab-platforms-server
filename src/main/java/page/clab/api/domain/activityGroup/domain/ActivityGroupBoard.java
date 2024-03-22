@@ -17,20 +17,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -72,31 +69,15 @@ public class ActivityGroupBoard extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_group_board_files")
-    private List<UploadedFile> uploadedFiles = new ArrayList<>();
+    private List<UploadedFile> uploadedFiles;
 
     private LocalDateTime dueDateTime;
 
-    public static ActivityGroupBoard create(ActivityGroupBoardRequestDto dto, Member member, ActivityGroup activityGroup, ActivityGroupBoard parent, List<UploadedFile> uploadedFiles) {
-        ActivityGroupBoard activityGroupBoard = ModelMapperUtil.getModelMapper().map(dto, ActivityGroupBoard.class);
-        activityGroupBoard.setMember(member);
-        activityGroupBoard.setActivityGroup(activityGroup);
-        activityGroupBoard.setParent(parent);
-        activityGroupBoard.setUploadedFiles(uploadedFiles);
-        return activityGroupBoard;
-    }
-
-
-    public void update(ActivityGroupBoardUpdateRequestDto dto, FileService fileService) {
-        Optional.ofNullable(dto.getTitle()).ifPresent(this::setTitle);
-        Optional.ofNullable(dto.getContent()).ifPresent(this::setContent);
-        Optional.ofNullable(dto.getDueDateTime()).ifPresent(this::setDueDateTime);
-        Optional.ofNullable(dto.getFileUrls())
-                .ifPresent(urls -> {
-                    List<UploadedFile> uploadedFiles = urls.stream()
-                            .map(fileService::getUploadedFileByUrl)
-                            .collect(Collectors.toList());
-                    setUploadedFiles(uploadedFiles);
-                });
+    public void update(ActivityGroupBoardUpdateRequestDto requestDto, FileService fileService) {
+        Optional.ofNullable(requestDto.getTitle()).ifPresent(this::setTitle);
+        Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
+        Optional.ofNullable(requestDto.getDueDateTime()).ifPresent(this::setDueDateTime);
+        Optional.ofNullable(requestDto.getFileUrls()).ifPresent(urls -> { this.setUploadedFiles(fileService.getUploadedFilesByUrls(urls)); });
     }
 
     public void addChild(ActivityGroupBoard child) {

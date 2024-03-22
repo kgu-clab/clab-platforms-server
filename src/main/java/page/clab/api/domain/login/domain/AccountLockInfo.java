@@ -38,6 +38,15 @@ public class AccountLockInfo extends BaseEntity {
 
     private LocalDateTime lockUntil;
 
+    public static AccountLockInfo create(Member member) {
+        return AccountLockInfo.builder()
+                .member(member)
+                .loginFailCount(0L)
+                .isLock(false)
+                .lockUntil(null)
+                .build();
+    }
+
     public void banPermanently() {
         this.isLock = true;
         this.lockUntil = LocalDateTime.of(9999, 12, 31, 23, 59);

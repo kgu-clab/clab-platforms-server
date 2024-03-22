@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
 
 @Getter
@@ -27,5 +29,13 @@ public class PositionRequestDto {
     @NotNull(message = "{notNull.position.year}")
     @Schema(description = "연도", example = "2023", required = true)
     private String year;
+
+    public static Position toEntity(PositionRequestDto positionRequestDto) {
+        return Position.builder()
+                .member(Member.builder().id(positionRequestDto.getMemberId()).build())
+                .positionType(positionRequestDto.getPositionType())
+                .year(positionRequestDto.getYear())
+                .build();
+    }
 
 }

@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class VerificationCodeRequestDto {
+public class VerificationRequestDto {
 
     @NotNull(message = "{notNull.verificationCode.memberId}")
     @Schema(description = "학번", example = "202310000", required = true)

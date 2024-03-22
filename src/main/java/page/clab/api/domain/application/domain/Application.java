@@ -17,9 +17,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
-import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
+import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.domain.Role;
+import page.clab.api.domain.member.domain.StudentStatus;
 import page.clab.api.global.common.domain.BaseEntity;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
 
@@ -86,15 +87,21 @@ public class Application extends BaseEntity {
     @Column(nullable = false)
     private Boolean isPass;
 
-    public static Application create(ApplicationRequestDto applicationRequestDto) {
-        Application application = ModelMapperUtil.getModelMapper().map(applicationRequestDto, Application.class);
-        application.setContact(removeHyphensFromContact(application.getContact()));
-        application.setIsPass(false);
-        return application;
-    }
-
-    public static String removeHyphensFromContact(String contact) {
-        return contact.replaceAll("-", "");
+    public static Member toMember(Application application) {
+        return Member.builder()
+                .id(application.getStudentId())
+                .name(application.getName())
+                .contact(application.getContact())
+                .email(application.getEmail())
+                .department(application.getDepartment())
+                .grade(application.getGrade())
+                .birth(application.getBirth())
+                .address(application.getAddress())
+                .interests(application.getInterests())
+                .githubUrl(application.getGithubUrl())
+                .studentStatus(StudentStatus.CURRENT)
+                .role(Role.USER)
+                .build();
     }
 
     public void toggleApprovalStatus() {

@@ -43,9 +43,9 @@ public class ActivityGroupAdminController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createActivityGroup(
-            @Valid @RequestBody ActivityGroupRequestDto activityGroupRequestDto
+            @Valid @RequestBody ActivityGroupRequestDto requestDto
     ) {
-        Long id = activityGroupAdminService.createActivityGroup(activityGroupRequestDto);
+        Long id = activityGroupAdminService.createActivityGroup(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -56,9 +56,9 @@ public class ActivityGroupAdminController {
     @PatchMapping("/{activityGroupId}")
     public ResponseModel updateActivityGroup(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
-            @Valid @RequestBody ActivityGroupUpdateRequestDto activityGroupUpdateRequestDto
+            @Valid @RequestBody ActivityGroupUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = activityGroupAdminService.updateActivityGroup(activityGroupId, activityGroupUpdateRequestDto);
+        Long id = activityGroupAdminService.updateActivityGroup(activityGroupId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -69,9 +69,9 @@ public class ActivityGroupAdminController {
     @PatchMapping("manage/{activityGroupId}")
     public ResponseModel manageActivityGroupStatus(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
-            @RequestParam(name = "activityGroupStatus") ActivityGroupStatus activityGroupStatus
+            @RequestParam(name = "activityGroupStatus") ActivityGroupStatus status
     ) {
-        Long id = activityGroupAdminService.manageActivityGroup(activityGroupId, activityGroupStatus);
+        Long id = activityGroupAdminService.manageActivityGroup(activityGroupId, status);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -108,9 +108,9 @@ public class ActivityGroupAdminController {
     @PostMapping("/schedule")
     public ResponseModel addSchedule(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
-            @Valid @RequestBody List<GroupScheduleDto> groupScheduleDto
+            @Valid @RequestBody List<GroupScheduleDto> scheduleDtos
     ) throws PermissionDeniedException {
-        Long id = activityGroupAdminService.addSchedule(activityGroupId, groupScheduleDto);
+        Long id = activityGroupAdminService.addSchedule(activityGroupId, scheduleDtos);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

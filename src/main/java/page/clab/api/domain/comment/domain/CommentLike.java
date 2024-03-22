@@ -30,9 +30,11 @@ public class CommentLike extends BaseEntity {
 
     private Long commentId;
 
-    public CommentLike(String memberId, Long commentId) {
-        this.memberId = memberId;
-        this.commentId = commentId;
+    public static CommentLike create(String memberId, Long commentId) {
+        return CommentLike.builder()
+                .memberId(memberId)
+                .commentId(commentId)
+                .build();
     }
 
 }

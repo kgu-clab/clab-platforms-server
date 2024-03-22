@@ -8,7 +8,6 @@ import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
-import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter
 @Setter
@@ -33,15 +32,18 @@ public class PositionResponseDto {
 
     private String year;
 
-    public static PositionResponseDto of(Position position) {
-        PositionResponseDto positionResponseDto = ModelMapperUtil.getModelMapper().map(position, PositionResponseDto.class);
+    public static PositionResponseDto toDto(Position position) {
         Member member = position.getMember();
-        positionResponseDto.setName(member.getName());
-        positionResponseDto.setEmail(member.getEmail());
-        positionResponseDto.setImageUrl(member.getImageUrl());
-        positionResponseDto.setInterests(member.getInterests());
-        positionResponseDto.setGithubUrl(member.getGithubUrl());
-        return positionResponseDto;
+        return PositionResponseDto.builder()
+                .id(position.getId())
+                .name(member.getName())
+                .email(member.getEmail())
+                .imageUrl(member.getImageUrl())
+                .interests(member.getInterests())
+                .githubUrl(member.getGithubUrl())
+                .positionType(position.getPositionType())
+                .year(position.getYear())
+                .build();
     }
 
 }

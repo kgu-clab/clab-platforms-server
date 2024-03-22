@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
 
 import java.time.LocalDate;
 
@@ -53,8 +53,21 @@ public class ActivityGroupRequestDto {
     @Schema(description = "Github URL", example = "https://github.com/KGU-C-Lab")
     private String githubUrl;
 
-    public static ActivityGroupRequestDto of(ActivityGroup activityGroup) {
-        return ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupRequestDto.class);
+    public static ActivityGroup toEntity(ActivityGroupRequestDto requestDto) {
+        return ActivityGroup.builder()
+                .category(requestDto.getCategory())
+                .subject(requestDto.getSubject())
+                .name(requestDto.getName())
+                .content(requestDto.getContent())
+                .status(ActivityGroupStatus.WAITING)
+                .progress(0L)
+                .imageUrl(requestDto.getImageUrl())
+                .curriculum(requestDto.getCurriculum())
+                .startDate(requestDto.getStartDate())
+                .endDate(requestDto.getEndDate())
+                .techStack(requestDto.getTechStack())
+                .githubUrl(requestDto.getGithubUrl())
+                .build();
     }
 
 }
