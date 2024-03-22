@@ -1,10 +1,10 @@
 package page.clab.api.domain.award.application;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.award.dao.AwardRepository;
 import page.clab.api.domain.award.domain.Award;
 import page.clab.api.domain.award.dto.request.AwardRequestDto;
@@ -15,6 +15,7 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -22,38 +23,44 @@ public class AwardService {
 
     private final MemberService memberService;
 
+    private final ValidationService validationService;
+
     private final AwardRepository awardRepository;
 
-    public Long createAward(AwardRequestDto awardRequestDto) {
-        Member member = memberService.getCurrentMember();
-        Award award = Award.create(awardRequestDto, member);
+    public Long createAward(AwardRequestDto requestDto) {
+        Member currentMember = memberService.getCurrentMember();
+        Award award = AwardRequestDto.toEntity(requestDto, currentMember);
+        validationService.checkValid(award);
         return awardRepository.save(award).getId();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public PagedResponseDto<AwardResponseDto> getAwardsByConditions(String memberId, Long year, Pageable pageable) {
         Page<Award> awards = awardRepository.findByConditions(memberId, year, pageable);
-        return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
+        return new PagedResponseDto<>(awards.map(AwardResponseDto::toDto));
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<AwardResponseDto> getMyAwards(Pageable pageable) {
-        Member member = memberService.getCurrentMember();
-        Page<Award> awards = getAwardByMember(pageable, member);
-        return new PagedResponseDto<>(awards.map(AwardResponseDto::of));
+        Member currentMember = memberService.getCurrentMember();
+        Page<Award> awards = getAwardByMember(pageable, currentMember);
+        return new PagedResponseDto<>(awards.map(AwardResponseDto::toDto));
     }
 
-    public Long updateAward(Long awardId, AwardUpdateRequestDto awardUpdateRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+    @Transactional
+    public Long updateAward(Long awardId, AwardUpdateRequestDto requestDto) throws PermissionDeniedException {
+        Member currentMember = memberService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
-        award.validateAccessPermission(member);
-        award.update(awardUpdateRequestDto);
+        award.validateAccessPermission(currentMember);
+        award.update(requestDto);
+        validationService.checkValid(award);
         return awardRepository.save(award).getId();
     }
 
     public Long deleteAward(Long awardId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
-        award.validateAccessPermission(member);
+        award.validateAccessPermission(currentMember);
         awardRepository.delete(award);
         return award.getId();
     }

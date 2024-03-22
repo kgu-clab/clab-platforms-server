@@ -18,7 +18,7 @@ public class ActivityGroupBoardUpdateResponseDto {
 
     private Long parentId;
 
-    public static ActivityGroupBoardUpdateResponseDto create(ActivityGroupBoard board) {
+    public static ActivityGroupBoardUpdateResponseDto toDto(ActivityGroupBoard board) {
         return ActivityGroupBoardUpdateResponseDto.builder()
                 .id(board.getId())
                 .parentId(board.getParent() != null ? board.getParent().getId() : null)

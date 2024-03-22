@@ -16,15 +16,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
-import page.clab.api.domain.news.dto.request.NewsRequestDto;
 import page.clab.api.domain.news.dto.request.NewsUpdateRequestDto;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.domain.UploadedFile;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +33,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(indexes = {@Index(name = "idx_article_url", columnList = "articleUrl")})
-public class News {
+public class News extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,7 +47,7 @@ public class News {
     @Size(min = 1, message = "{size.news.category}")
     private String category;
 
-    @Column(nullable = false, length = 10000)
+    @Column(nullable = false)
     @Size(min = 1, max = 10000, message = "{size.news.content}")
     private String content;
 
@@ -63,18 +60,10 @@ public class News {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "news_files")
-    private List<UploadedFile> uploadedFiles = new ArrayList<>();
+    private List<UploadedFile> uploadedFiles;
 
     @Column(nullable = false)
     private LocalDate date;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    public static News create(NewsRequestDto newsRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(newsRequestDto, News.class);
-    }
 
     public void update(NewsUpdateRequestDto newsUpdateRequestDto) {
         Optional.ofNullable(newsUpdateRequestDto.getTitle()).ifPresent(this::setTitle);

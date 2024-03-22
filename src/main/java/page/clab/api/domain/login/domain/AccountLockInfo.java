@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDateTime;
 
@@ -21,7 +22,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountLockInfo {
+public class AccountLockInfo extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +37,15 @@ public class AccountLockInfo {
     private Boolean isLock;
 
     private LocalDateTime lockUntil;
+
+    public static AccountLockInfo create(Member member) {
+        return AccountLockInfo.builder()
+                .member(member)
+                .loginFailCount(0L)
+                .isLock(false)
+                .lockUntil(null)
+                .build();
+    }
 
     public void banPermanently() {
         this.isLock = true;

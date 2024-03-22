@@ -37,9 +37,9 @@ public class PositionController {
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createPosition(
-            @Valid @RequestBody PositionRequestDto positionRequestDto
+            @Valid @RequestBody PositionRequestDto requestDto
     ) {
-        Long id = positionService.createPosition(positionRequestDto);
+        Long id = positionService.createPosition(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

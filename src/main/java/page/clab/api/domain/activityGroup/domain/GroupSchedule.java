@@ -7,13 +7,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
+import page.clab.api.global.common.domain.BaseEntity;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -21,7 +22,7 @@ import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupSchedule {
+public class GroupSchedule extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,13 +37,5 @@ public class GroupSchedule {
 
     @Column(nullable = false)
     private String content;
-
-    public static GroupSchedule of(ActivityGroup activityGroup, GroupScheduleDto groupScheduleDto) {
-        return GroupSchedule.builder()
-                .activityGroup(activityGroup)
-                .schedule(groupScheduleDto.getSchedule())
-                .content(groupScheduleDto.getContent())
-                .build();
-    }
 
 }

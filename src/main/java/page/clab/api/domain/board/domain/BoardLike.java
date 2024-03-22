@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.global.common.domain.BaseEntity;
 
 @Entity
 @Getter
@@ -19,7 +20,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "BoardLike", indexes = @Index(name = "boardLike_index", columnList = "memberId, boardId"))
-public class BoardLike {
+public class BoardLike extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,8 +30,11 @@ public class BoardLike {
 
     private Long boardId;
 
-    public BoardLike(String memberId, Long boardId) {
-        this.memberId = memberId;
-        this.boardId = boardId;
+    public static BoardLike create(String memberId, Long boardId) {
+        return BoardLike.builder()
+                .memberId(memberId)
+                .boardId(boardId)
+                .build();
     }
+
 }

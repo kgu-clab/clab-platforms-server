@@ -37,9 +37,9 @@ public class ProductController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createProduct(
-            @Valid @RequestBody ProductRequestDto productRequestDto
+            @Valid @RequestBody ProductRequestDto requestDto
     ) {
-        Long id = productService.createProduct(productRequestDto);
+        Long id = productService.createProduct(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -55,9 +55,9 @@ public class ProductController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ProductResponseDto> productResponseDtos = productService.getProductsByConditions(productName, pageable);
+        PagedResponseDto<ProductResponseDto> products = productService.getProductsByConditions(productName, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(productResponseDtos);
+        responseModel.addData(products);
         return responseModel;
     }
 
@@ -66,9 +66,9 @@ public class ProductController {
     @PatchMapping("/{productId}")
     public ResponseModel updateProduct(
             @PathVariable(name = "productId") Long productId,
-            @Valid @RequestBody ProductUpdateRequestDto productUpdateRequestDto
+            @Valid @RequestBody ProductUpdateRequestDto requestDto
     ) {
-        Long id = productService.updateProduct(productId, productUpdateRequestDto);
+        Long id = productService.updateProduct(productId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

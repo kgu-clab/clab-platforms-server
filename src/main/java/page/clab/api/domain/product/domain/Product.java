@@ -11,13 +11,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
-import page.clab.api.domain.product.dto.request.ProductRequestDto;
 import page.clab.api.domain.product.dto.request.ProductUpdateRequestDto;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.global.common.domain.BaseEntity;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
@@ -26,7 +23,7 @@ import java.util.Optional;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product {
+public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,19 +33,12 @@ public class Product {
     @Size(min = 1, message = "{size.product.name}")
     private String name;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false)
     @Size(min = 1, max = 1000, message = "{size.product.description}")
     private String description;
 
     @URL(message = "{url.product.url}")
     private String url;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    public static Product of(ProductRequestDto productRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(productRequestDto, Product.class);
-    }
 
     public void update(ProductUpdateRequestDto productUpdateRequestDto) {
         Optional.ofNullable(productUpdateRequestDto.getName()).ifPresent(this::setName);

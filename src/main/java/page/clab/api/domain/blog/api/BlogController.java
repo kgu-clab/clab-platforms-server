@@ -39,9 +39,9 @@ public class BlogController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createBlog(
-            @Valid @RequestBody BlogRequestDto blogRequestDto
+            @Valid @RequestBody BlogRequestDto requestDto
     ) {
-        Long id = blogService.createBlog(blogRequestDto);
+        Long id = blogService.createBlog(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -82,9 +82,9 @@ public class BlogController {
     @PatchMapping("/{blogId}")
     public ResponseModel updateBlog(
             @PathVariable(name = "blogId") Long blogId,
-            @Valid @RequestBody BlogUpdateRequestDto blogUpdateRequestDto
+            @Valid @RequestBody BlogUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = blogService.updateBlog(blogId, blogUpdateRequestDto);
+        Long id = blogService.updateBlog(blogId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

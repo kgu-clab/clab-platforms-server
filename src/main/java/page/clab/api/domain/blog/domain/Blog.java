@@ -13,14 +13,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import page.clab.api.domain.blog.dto.request.BlogRequestDto;
 import page.clab.api.domain.blog.dto.request.BlogUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.ModelMapperUtil;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
@@ -29,7 +26,7 @@ import java.util.Optional;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Blog {
+public class Blog extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,32 +37,23 @@ public class Blog {
     private Member member;
 
     @Column(nullable = false)
+    @Size(min = 1, max = 100, message = "{size.blog.title}")
     private String title;
 
     @Column(nullable = false)
     private String subTitle;
 
-    @Column(nullable = false, length = 10000)
+    @Column(nullable = false)
     @Size(min = 1, max = 10000, message = "{size.blog.content}")
     private String content;
 
     private String imageUrl;
 
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    public static Blog create(BlogRequestDto blogRequestDto, Member member) {
-        Blog blog = ModelMapperUtil.getModelMapper().map(blogRequestDto, Blog.class);
-        blog.setMember(member);
-        return blog;
-    }
-
-    public void update(BlogUpdateRequestDto blogUpdateRequestDto) {
-        Optional.ofNullable(blogUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
-        Optional.ofNullable(blogUpdateRequestDto.getSubTitle()).ifPresent(this::setSubTitle);
-        Optional.ofNullable(blogUpdateRequestDto.getContent()).ifPresent(this::setContent);
-        Optional.ofNullable(blogUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
+    public void update(BlogUpdateRequestDto requestDto) {
+        Optional.ofNullable(requestDto.getTitle()).ifPresent(this::setTitle);
+        Optional.ofNullable(requestDto.getSubTitle()).ifPresent(this::setSubTitle);
+        Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
+        Optional.ofNullable(requestDto.getImageUrl()).ifPresent(this::setImageUrl);
     }
 
     public boolean isOwner(Member member) {

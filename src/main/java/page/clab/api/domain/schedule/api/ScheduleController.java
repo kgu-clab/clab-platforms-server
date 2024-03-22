@@ -36,9 +36,9 @@ public class ScheduleController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createSchedule(
-            @Valid @RequestBody ScheduleRequestDto scheduleRequestDto
+            @Valid @RequestBody ScheduleRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = scheduleService.createSchedule(scheduleRequestDto);
+        Long id = scheduleService.createSchedule(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -54,10 +54,9 @@ public class ScheduleController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ScheduleResponseDto> scheduleResponseDtos
-                = scheduleService.getSchedulesWithinDateRange(startDate, endDate, pageable);
+        PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getSchedulesWithinDateRange(startDate, endDate, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(scheduleResponseDtos);
+        responseModel.addData(schedules);
         return responseModel;
     }
 
@@ -71,10 +70,9 @@ public class ScheduleController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ScheduleResponseDto> scheduleResponseDtos
-                = scheduleService.getActivitySchedules(startDate, endDate, pageable);
+        PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getActivitySchedules(startDate, endDate, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(scheduleResponseDtos);
+        responseModel.addData(schedules);
         return responseModel;
     }
 

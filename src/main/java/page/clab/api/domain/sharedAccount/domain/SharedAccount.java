@@ -11,13 +11,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
-import page.clab.api.domain.sharedAccount.dto.request.SharedAccountRequestDto;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUpdateRequestDto;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.global.common.domain.BaseEntity;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
@@ -26,7 +23,7 @@ import java.util.Optional;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SharedAccount {
+public class SharedAccount extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,15 +47,6 @@ public class SharedAccount {
 
     @Column(nullable = false)
     private boolean isInUse;
-    
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    public static SharedAccount create(SharedAccountRequestDto sharedAccountRequestDto) {
-        SharedAccount sharedAccount = ModelMapperUtil.getModelMapper().map(sharedAccountRequestDto, SharedAccount.class);
-        sharedAccount.setInUse(false);
-        return sharedAccount;
-    }
 
     public void update(SharedAccountUpdateRequestDto sharedAccountUpdateRequestDto) {
         Optional.ofNullable(sharedAccountUpdateRequestDto.getUsername()).ifPresent(this::setUsername);
@@ -67,7 +55,7 @@ public class SharedAccount {
         Optional.ofNullable(sharedAccountUpdateRequestDto.getPlatformUrl()).ifPresent(this::setPlatformUrl);
     }
 
-    public void updateStatus(boolean isInUse) {
+    public void updateIsInUse(boolean isInUse) {
         this.isInUse = isInUse;
     }
 

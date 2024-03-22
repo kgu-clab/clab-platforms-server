@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.book.domain.Book;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
 
@@ -37,16 +36,22 @@ public class BookResponseDto {
 
     private LocalDateTime createdAt;
 
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
-    public static BookResponseDto of(Book book, LocalDateTime dueDate) {
-        BookResponseDto bookResponseDto = ModelMapperUtil.getModelMapper().map(book, BookResponseDto.class);
-        if (book.getBorrower() != null) {
-            bookResponseDto.setBorrowerId(book.getBorrower().getId());
-            bookResponseDto.setBorrowerName(book.getBorrower().getName());
-        }
-        bookResponseDto.setDueDate(dueDate);
-        return bookResponseDto;
+    public static BookResponseDto toDto(Book book, LocalDateTime dueDate) {
+        return BookResponseDto.builder()
+                .id(book.getId())
+                .borrowerId(book.getBorrower() == null ? null : book.getBorrower().getId())
+                .borrowerName(book.getBorrower() == null ? null : book.getBorrower().getName())
+                .category(book.getCategory())
+                .title(book.getTitle())
+                .author(book.getAuthor())
+                .publisher(book.getPublisher())
+                .imageUrl(book.getImageUrl())
+                .dueDate(dueDate)
+                .createdAt(book.getCreatedAt())
+                .updatedAt(book.getUpdatedAt())
+                .build();
     }
 
 }

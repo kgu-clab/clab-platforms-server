@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.domain.ApplicationType;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,12 +46,29 @@ public class ApplicationResponseDto {
 
     private Boolean isPass;
 
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
     private LocalDateTime createdAt;
 
-    public static ApplicationResponseDto of(Application application) {
-        return ModelMapperUtil.getModelMapper().map(application, ApplicationResponseDto.class);
+    public static ApplicationResponseDto toDto(Application application) {
+        return ApplicationResponseDto.builder()
+                .studentId(application.getStudentId())
+                .recruitmentId(application.getRecruitmentId())
+                .name(application.getName())
+                .contact(application.getContact())
+                .email(application.getEmail())
+                .department(application.getDepartment())
+                .grade(application.getGrade())
+                .birth(application.getBirth())
+                .address(application.getAddress())
+                .interests(application.getInterests())
+                .otherActivities(application.getOtherActivities())
+                .githubUrl(application.getGithubUrl())
+                .applicationType(application.getApplicationType())
+                .isPass(application.getIsPass())
+                .updatedAt(application.getUpdatedAt())
+                .createdAt(application.getCreatedAt())
+                .build();
     }
 
 }

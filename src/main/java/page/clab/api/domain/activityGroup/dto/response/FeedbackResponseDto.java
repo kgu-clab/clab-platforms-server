@@ -27,15 +27,15 @@ public class FeedbackResponseDto {
 
     private LocalDateTime createdAt;
 
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
-    public static FeedbackResponseDto of(ActivityGroupBoard activityGroupBoard) {
+    public static FeedbackResponseDto toDto(ActivityGroupBoard board) {
         return FeedbackResponseDto.builder()
-                .id(activityGroupBoard.getId())
-                .content(activityGroupBoard.getContent())
-                .files(activityGroupBoard.getUploadedFiles().stream().map(UploadedFileResponseDto::of).toList())
-                .createdAt(activityGroupBoard.getCreatedAt())
-                .updateTime(activityGroupBoard.getUpdateTime())
+                .id(board.getId())
+                .content(board.getContent())
+                .files(UploadedFileResponseDto.toDto(board.getUploadedFiles()))
+                .createdAt(board.getCreatedAt())
+                .updatedAt(board.getUpdatedAt())
                 .build();
     }
 

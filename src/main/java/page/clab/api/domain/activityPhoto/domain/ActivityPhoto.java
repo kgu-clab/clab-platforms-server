@@ -13,14 +13,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import page.clab.api.domain.activityPhoto.dto.request.ActivityPhotoRequestDto;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.domain.UploadedFile;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,7 +25,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActivityPhoto {
+public class ActivityPhoto extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,23 +37,13 @@ public class ActivityPhoto {
     @Column(nullable = false)
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_photo_files")
-    private List<UploadedFile> uploadedFiles = new ArrayList<>();
+    private List<UploadedFile> uploadedFiles;
 
     @Column(nullable = false)
     private LocalDate date;
 
     @Column(nullable = false)
     private Boolean isPublic;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    public static ActivityPhoto create(ActivityPhotoRequestDto activityPhotoRequestDto, List<UploadedFile> uploadedFiles) {
-        ActivityPhoto activityPhoto = ModelMapperUtil.getModelMapper().map(activityPhotoRequestDto, ActivityPhoto.class);
-        activityPhoto.uploadedFiles = uploadedFiles;
-        activityPhoto.isPublic = false;
-        return activityPhoto;
-    }
 
     public void togglePublicStatus() {
         this.isPublic = !this.isPublic;

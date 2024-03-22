@@ -13,10 +13,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.workExperience.dto.request.WorkExperienceRequestDto;
 import page.clab.api.domain.workExperience.dto.request.WorkExperienceUpdateRequestDto;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -27,7 +26,7 @@ import java.util.Optional;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WorkExperience {
+public class WorkExperience extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,12 +48,6 @@ public class WorkExperience {
 
     @ManyToOne
     private Member member;
-
-    public static WorkExperience of(WorkExperienceRequestDto workExperienceRequestDto, Member member) {
-        WorkExperience workExperience = ModelMapperUtil.getModelMapper().map(workExperienceRequestDto, WorkExperience.class);
-        workExperience.setMember(member);
-        return workExperience;
-    }
 
     public void update(WorkExperienceUpdateRequestDto workExperienceUpdateRequestDto) {
         Optional.ofNullable(workExperienceUpdateRequestDto.getCompanyName()).ifPresent(this::setCompanyName);

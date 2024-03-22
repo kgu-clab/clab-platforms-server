@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,9 +51,9 @@ public class ActivityGroupBoardController {
     public ResponseModel createActivityGroupBoard(
             @RequestParam(name = "parentId", required = false) Long parentId,
             @RequestParam(name = "activityGroupId") Long activityGroupId,
-            @Valid @RequestBody ActivityGroupBoardRequestDto activityGroupBoardRequestDto
+            @Valid @RequestBody ActivityGroupBoardRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = activityGroupBoardService.createActivityGroupBoard(parentId, activityGroupId, activityGroupBoardRequestDto);
+        Long id = activityGroupBoardService.createActivityGroupBoard(parentId, activityGroupId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -65,10 +66,10 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
-        Pageable pageable = Pageable.ofSize(size).withPage(page);
-        PagedResponseDto<ActivityGroupBoardResponseDto> allBoards = activityGroupBoardService.getAllActivityGroupBoard(pageable);
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<ActivityGroupBoardResponseDto> boards = activityGroupBoardService.getAllActivityGroupBoard(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(allBoards);
+        responseModel.addData(boards);
         return responseModel;
     }
 
@@ -93,7 +94,7 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
-        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ActivityGroupBoardResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByCategory(activityGroupId, category, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boards);
@@ -108,7 +109,7 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) throws PermissionDeniedException {
-        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ActivityGroupBoardChildResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByParent(parentId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(boards);
@@ -121,9 +122,9 @@ public class ActivityGroupBoardController {
     public ResponseModel getMyAssignmentBoardWithFeedback(
             @RequestParam(name = "parentId") Long parentId
     ) {
-        List<AssignmentSubmissionWithFeedbackResponseDto> submissionWithFeedbacks = activityGroupBoardService.getMyAssignmentsWithFeedbacks(parentId);
+        List<AssignmentSubmissionWithFeedbackResponseDto> boards = activityGroupBoardService.getMyAssignmentsWithFeedbacks(parentId);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(submissionWithFeedbacks);
+        responseModel.addData(boards);
         return responseModel;
     }
 
@@ -132,11 +133,11 @@ public class ActivityGroupBoardController {
     @PatchMapping("")
     public ResponseModel updateActivityGroupBoard(
             @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId,
-            @Valid @RequestBody ActivityGroupBoardUpdateRequestDto activityGroupBoardUpdateRequestDto
+            @Valid @RequestBody ActivityGroupBoardUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        ActivityGroupBoardUpdateResponseDto responseDto = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, activityGroupBoardUpdateRequestDto);
+        ActivityGroupBoardUpdateResponseDto board = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(responseDto);
+        responseModel.addData(board);
         return responseModel;
     }
 

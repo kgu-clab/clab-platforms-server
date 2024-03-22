@@ -1,6 +1,5 @@
 package page.clab.api.domain.accuse.dto.response;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +8,8 @@ import lombok.Setter;
 import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.TargetType;
-import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -32,10 +32,16 @@ public class AccuseResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static AccuseResponseDto of(Accuse accuse) {
-        AccuseResponseDto accuseResponseDto = ModelMapperUtil.getModelMapper().map(accuse, AccuseResponseDto.class);
-        accuseResponseDto.setMemberId(accuse.getMember().getId());
-        accuseResponseDto.setName(accuse.getMember().getName());
-        return accuseResponseDto;
+    public static AccuseResponseDto toDto(Accuse accuse) {
+        return AccuseResponseDto.builder()
+                .memberId(accuse.getMember().getId())
+                .name(accuse.getMember().getName())
+                .targetType(accuse.getTargetType())
+                .targetId(accuse.getTargetId())
+                .reason(accuse.getReason())
+                .accuseStatus(accuse.getAccuseStatus())
+                .createdAt(accuse.getCreatedAt())
+                .build();
     }
+
 }

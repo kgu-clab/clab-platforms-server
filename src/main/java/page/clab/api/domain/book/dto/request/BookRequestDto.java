@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.book.domain.Book;
 
 @Getter
 @Setter
@@ -33,5 +34,15 @@ public class BookRequestDto {
 
     @Schema(description = "이미지 URL", example = "https://shopping-phinf.pstatic.net/main_3243625/32436253723.20230928091945.jpg?type=w300")
     private String imageUrl;
+
+    public static Book toEntity(BookRequestDto requestDto) {
+        return Book.builder()
+                .category(requestDto.getCategory())
+                .title(requestDto.getTitle())
+                .author(requestDto.getAuthor())
+                .publisher(requestDto.getPublisher())
+                .imageUrl(requestDto.getImageUrl())
+                .build();
+    }
 
 }

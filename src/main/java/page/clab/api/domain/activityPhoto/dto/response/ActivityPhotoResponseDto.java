@@ -1,8 +1,5 @@
 package page.clab.api.domain.activityPhoto.dto.response;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +7,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
-import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -29,8 +29,14 @@ public class ActivityPhotoResponseDto {
 
     private Boolean isPublic;
 
-    public static ActivityPhotoResponseDto of(ActivityPhoto activityPhoto) {
-        return ModelMapperUtil.getModelMapper().map(activityPhoto, ActivityPhotoResponseDto.class);
+    public static ActivityPhotoResponseDto toDto(ActivityPhoto activityPhoto) {
+        return ActivityPhotoResponseDto.builder()
+                .id(activityPhoto.getId())
+                .title(activityPhoto.getTitle())
+                .files(UploadedFileResponseDto.toDto(activityPhoto.getUploadedFiles()))
+                .date(activityPhoto.getDate())
+                .isPublic(activityPhoto.getIsPublic())
+                .build();
     }
 
 }

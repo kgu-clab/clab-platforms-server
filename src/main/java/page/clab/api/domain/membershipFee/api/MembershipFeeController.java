@@ -38,9 +38,9 @@ public class MembershipFeeController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createMembershipFee(
-            @Valid @RequestBody MembershipFeeRequestDto MembershipFeeRequestDto
+            @Valid @RequestBody MembershipFeeRequestDto requestDto
     ) {
-        Long id = membershipFeeService.createMembershipFee(MembershipFeeRequestDto);
+        Long id = membershipFeeService.createMembershipFee(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -59,9 +59,9 @@ public class MembershipFeeController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<MembershipFeeResponseDto> MembershipFees = membershipFeeService.getMembershipFeesByConditions(memberId, memberName, category, pageable);
+        PagedResponseDto<MembershipFeeResponseDto> membershipFees = membershipFeeService.getMembershipFeesByConditions(memberId, memberName, category, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(MembershipFees);
+        responseModel.addData(membershipFees);
         return responseModel;
     }
 
@@ -70,9 +70,9 @@ public class MembershipFeeController {
     @PatchMapping("/{membershipFeeId}")
     public ResponseModel updateMembershipFee(
             @PathVariable(name = "membershipFeeId") Long membershipFeeId,
-            @Valid @RequestBody MembershipFeeUpdateRequestDto membershipFeeUpdateRequestDto
+            @Valid @RequestBody MembershipFeeUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = membershipFeeService.updateMembershipFee(membershipFeeId, membershipFeeUpdateRequestDto);
+        Long id = membershipFeeService.updateMembershipFee(membershipFeeId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
