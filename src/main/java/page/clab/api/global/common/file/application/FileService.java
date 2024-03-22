@@ -59,7 +59,7 @@ public class FileService {
         Member currentMember = memberService.getCurrentMember();
         String extension = "png";
         String originalFileName = path.replace(File.separator, "-") + nowDateTime;
-        String saveFilename = fileHandler.makeSaveFileName(extension);
+        String saveFilename = fileHandler.makeFileName(extension);
         String savePath = filePath + File.separator + path + File.separator + saveFilename;
         String url = fileURL + "/" + path.replace(File.separator, "/") + "/" + saveFilename;
 
@@ -67,16 +67,6 @@ public class FileService {
         UploadedFile uploadedFile = UploadedFile.create(currentMember, originalFileName, saveFilename, savePath, url, (long) QRCodeImage.length, "image/png", storagePeriod, path);
         uploadedFileService.saveUploadedFile(uploadedFile);
         return url;
-    }
-
-    public String buildPath(String baseDirectory, Long... additionalSegments) {
-        Member currentMember = memberService.getCurrentMember();
-        StringBuilder pathBuilder = new StringBuilder(baseDirectory);
-        for (Long segment : additionalSegments) {
-            pathBuilder.append(File.separator).append(segment);
-        }
-        pathBuilder.append(File.separator).append(currentMember.getId());
-        return pathBuilder.toString();
     }
 
     public List<UploadedFileResponseDto> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws IOException, PermissionDeniedException {
@@ -90,64 +80,19 @@ public class FileService {
 
     public UploadedFileResponseDto saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws IOException, PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
-
-        if (!isValidPathVariable(path)) {
-            throw new NotFoundException("파일 업로드 api 요청 pathVariable이 유효하지 않습니다.");
+        if (!validatePathVariable(path)) {
+            throw new NotFoundException("업로드 요청 경로가 올바르지 않습니다.");
         }
+        validateMemberCloudUsage(multipartFile, path);
+        checkAndRemoveExistingFile(multipartFile, path);
 
-        if (!path.startsWith("membership-fee") && path.startsWith("members")) {
-            String memberId = path.split(Pattern.quote(File.separator))[1];
-            double usage = memberCloudService.getCloudUsageByMemberId(memberId).getUsage();
-            if (multipartFile.getSize() + usage > FileSystemUtil.convertToBytes(maxFileSize)) {
-                throw new CloudStorageNotEnoughException("클라우드 저장 공간이 부족합니다.");
-            }
-        }
+        String savedFilePath = fileHandler.saveFile(multipartFile, path);
+        String fileName = new File(savedFilePath).getName();
+        String url = fileURL + "/" + path.replace(File.separator, "/") + "/" + fileName;
 
-        UploadedFile existingUploadedFile = uploadedFileService.getUniqueUploadedFileByCategoryAndOriginalName(path, multipartFile.getOriginalFilename());
-        if (existingUploadedFile != null) {
-            deleteFileBySavedPath(existingUploadedFile.getSavedPath());
-        }
-
-        if (path.startsWith("profiles")) {
-            UploadedFile profileFile = uploadedFileService.getUniqueUploadedFileByCategory(path);
-            if (profileFile != null) {
-                deleteFileBySavedPath(profileFile.getSavedPath());
-            }
-        }
-
-        UploadedFile uploadedFile = new UploadedFile();
-        String url = fileURL + "/" + path.replace(File.separator.toString(), "/") + fileHandler.saveFile(multipartFile, path, uploadedFile);
-        uploadedFile.setOriginalFileName(multipartFile.getOriginalFilename());
-        uploadedFile.setStoragePeriod(storagePeriod);
-        uploadedFile.setFileSize(multipartFile.getSize());
-        uploadedFile.setContentType(multipartFile.getContentType());
-        uploadedFile.setUploader(currentMember);
-        uploadedFile.setUrl(url);
+        UploadedFile uploadedFile = UploadedFile.create(currentMember, multipartFile.getOriginalFilename(), fileName, savedFilePath, url, multipartFile.getSize(), multipartFile.getContentType(), storagePeriod, path);
         uploadedFileService.saveUploadedFile(uploadedFile);
-
         return UploadedFileResponseDto.toDto(uploadedFile);
-    }
-
-    public boolean isValidPathVariable(String path) throws AssignmentFileUploadFailException {
-        switch (path.split(Pattern.quote(File.separator))[0]) {
-            case "assignment" : {
-                Long activityGroupId = Long.parseLong(path.split(Pattern.quote(File.separator))[1]);
-                Long activityGroupBoardId = Long.parseLong(path.split(Pattern.quote(File.separator))[2]);
-                String memberId = path.split(Pattern.quote(File.separator))[3];
-                Member assignmentWriter = memberService.getMemberById(memberId);
-                if (!activityGroupRepository.existsById(activityGroupId)) {
-                    throw new AssignmentFileUploadFailException("해당 활동은 존재하지 않습니다.");
-                }
-                if (!groupMemberRepository.existsByMemberAndActivityGroupId(assignmentWriter, activityGroupId)) {
-                    throw new AssignmentFileUploadFailException("해당 활동에 참여하고 있지 않은 멤버입니다.");
-                }
-                if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
-                    throw new AssignmentFileUploadFailException("해당 활동 그룹 게시판이 존재하지 않습니다.");
-                }
-                return true;
-            }
-        }
-        return true;
     }
 
     public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) throws PermissionDeniedException {
@@ -166,6 +111,59 @@ public class FileService {
         String deletedFileUrl = uploadedFile.getUrl();
         deleteFileBySavedPath(filePath);
         return deletedFileUrl;
+    }
+
+    public String buildPath(String baseDirectory, Long... additionalSegments) {
+        Member currentMember = memberService.getCurrentMember();
+        StringBuilder pathBuilder = new StringBuilder(baseDirectory);
+        for (Long segment : additionalSegments) {
+            pathBuilder.append(File.separator).append(segment);
+        }
+        pathBuilder.append(File.separator).append(currentMember.getId());
+        return pathBuilder.toString();
+    }
+
+    public boolean validatePathVariable(String path) throws AssignmentFileUploadFailException {
+        if (path.split(Pattern.quote(File.separator))[0].equals("assignment")) {
+            Long activityGroupId = Long.parseLong(path.split(Pattern.quote(File.separator))[1]);
+            Long activityGroupBoardId = Long.parseLong(path.split(Pattern.quote(File.separator))[2]);
+            String memberId = path.split(Pattern.quote(File.separator))[3];
+            Member assignmentWriter = memberService.getMemberById(memberId);
+            if (!activityGroupRepository.existsById(activityGroupId)) {
+                throw new AssignmentFileUploadFailException("해당 활동은 존재하지 않습니다.");
+            }
+            if (!groupMemberRepository.existsByMemberAndActivityGroupId(assignmentWriter, activityGroupId)) {
+                throw new AssignmentFileUploadFailException("해당 활동에 참여하고 있지 않은 멤버입니다.");
+            }
+            if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
+                throw new AssignmentFileUploadFailException("해당 활동 그룹 게시판이 존재하지 않습니다.");
+            }
+            return true;
+        }
+        return true;
+    }
+
+    private void validateMemberCloudUsage(MultipartFile multipartFile, String path) throws PermissionDeniedException {
+        if (path.split(Pattern.quote(File.separator))[0].equals("members")) {
+            String memberId = path.split(Pattern.quote(File.separator))[1];
+            double usage = memberCloudService.getCloudUsageByMemberId(memberId).getUsage();
+            if (multipartFile.getSize() + usage > FileSystemUtil.convertToBytes(maxFileSize)) {
+                throw new CloudStorageNotEnoughException("클라우드 저장 공간이 부족합니다.");
+            }
+        }
+    }
+
+    private void checkAndRemoveExistingFile(MultipartFile multipartFile, String path) {
+        UploadedFile existingUploadedFile = uploadedFileService.getUniqueUploadedFileByCategoryAndOriginalName(path, multipartFile.getOriginalFilename());
+        if (existingUploadedFile != null) {
+            deleteFileBySavedPath(existingUploadedFile.getSavedPath());
+        }
+        if (path.startsWith("profiles")) {
+            UploadedFile profileFile = uploadedFileService.getUniqueUploadedFileByCategory(path);
+            if (profileFile != null) {
+                deleteFileBySavedPath(profileFile.getSavedPath());
+            }
+        }
     }
 
     public void deleteFileBySavedPath(String savedPath) {
