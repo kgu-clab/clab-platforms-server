@@ -25,7 +25,7 @@ import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
-import page.clab.api.global.common.verificationCode.dto.request.VerificationCodeRequestDto;
+import page.clab.api.global.common.verification.dto.request.VerificationRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.util.List;
@@ -43,9 +43,9 @@ public class MemberController {
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createMember(
-            @Valid @RequestBody MemberRequestDto memberRequestDto
+            @Valid @RequestBody MemberRequestDto requestDto
     ) {
-        String id = memberService.createMember(memberRequestDto);
+        String id = memberService.createMember(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -95,10 +95,10 @@ public class MemberController {
     @Operation(summary = "[U] 내 프로필 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my-profile")
-    public ResponseModel getMyProfile(){
-        MyProfileResponseDto memberResponseDto = memberService.getMyProfile();
+    public ResponseModel getMyProfile() {
+        MyProfileResponseDto myProfile = memberService.getMyProfile();
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(memberResponseDto);
+        responseModel.addData(myProfile);
         return responseModel;
     }
 
@@ -123,9 +123,9 @@ public class MemberController {
     @PatchMapping("/{memberId}")
     public ResponseModel updateMemberInfoByMember(
             @PathVariable(name = "memberId") String memberId,
-            @Valid @RequestBody MemberUpdateRequestDto memberUpdateRequestDto
+            @Valid @RequestBody MemberUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        String id = memberService.updateMemberInfo(memberId, memberUpdateRequestDto);
+        String id = memberService.updateMemberInfo(memberId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -134,9 +134,9 @@ public class MemberController {
     @Operation(summary = "멤버 비밀번호 재발급 요청", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/password-reset-requests")
     public ResponseModel requestResetMemberPassword(
-            @Valid @RequestBody MemberResetPasswordRequestDto memberResetPasswordRequestDto
+            @Valid @RequestBody MemberResetPasswordRequestDto requestDto
     ) {
-        memberService.requestResetMemberPassword(memberResetPasswordRequestDto);
+        memberService.requestResetMemberPassword(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
@@ -144,9 +144,9 @@ public class MemberController {
     @Operation(summary = "멤버 비밀번호 재발급 인증", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/password-reset-verifications")
     public ResponseModel verifyResetMemberPassword(
-            @Valid @RequestBody VerificationCodeRequestDto verificationCodeRequestDto
+            @Valid @RequestBody VerificationRequestDto requestDto
     ) {
-        memberService.verifyResetMemberPassword(verificationCodeRequestDto);
+        memberService.verifyResetMemberPassword(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }

@@ -29,18 +29,18 @@ public class AssignmentSubmissionWithFeedbackResponseDto {
 
     private LocalDateTime createdAt;
 
-    private LocalDateTime updateTime;
+    private LocalDateTime updatedAt;
 
     private List<FeedbackResponseDto> feedbacks = new ArrayList<>();
 
-    public static AssignmentSubmissionWithFeedbackResponseDto of(ActivityGroupBoard activityGroupBoard, List<FeedbackResponseDto> feedbackDtos) {
+    public static AssignmentSubmissionWithFeedbackResponseDto toDto(ActivityGroupBoard board, List<FeedbackResponseDto> feedbackDtos) {
         return AssignmentSubmissionWithFeedbackResponseDto.builder()
-                .id(activityGroupBoard.getId())
-                .parentId(activityGroupBoard.getParent() != null ? activityGroupBoard.getParent().getId() : null)
-                .content(activityGroupBoard.getContent())
-                .files(activityGroupBoard.getUploadedFiles().stream().map(UploadedFileResponseDto::of).toList())
-                .createdAt(activityGroupBoard.getCreatedAt())
-                .updateTime(activityGroupBoard.getUpdateTime())
+                .id(board.getId())
+                .parentId(board.getParent() != null ? board.getParent().getId() : null)
+                .content(board.getContent())
+                .files(UploadedFileResponseDto.toDto(board.getUploadedFiles()))
+                .createdAt(board.getCreatedAt())
+                .updatedAt(board.getUpdatedAt())
                 .feedbacks(feedbackDtos)
                 .build();
     }

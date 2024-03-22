@@ -40,9 +40,9 @@ public class DonationController {
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createDonation(
-            @Valid @RequestBody DonationRequestDto donationRequestDto
+            @Valid @RequestBody DonationRequestDto requestDto
     ) {
-        Long id = donationService.createDonation(donationRequestDto);
+        Long id = donationService.createDonation(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -87,9 +87,9 @@ public class DonationController {
     @PatchMapping("/{donationId}")
     public ResponseModel updateDonation(
             @PathVariable(name = "donationId") Long donationId,
-            @Valid @RequestBody DonationUpdateRequestDto donationUpdateRequestDto
+            @Valid @RequestBody DonationUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = donationService.updateDonation(donationId, donationUpdateRequestDto);
+        Long id = donationService.updateDonation(donationId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

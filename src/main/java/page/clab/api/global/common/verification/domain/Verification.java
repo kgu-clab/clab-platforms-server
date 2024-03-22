@@ -1,7 +1,8 @@
-package page.clab.api.global.common.verificationCode.domain;
+package page.clab.api.global.common.verification.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,18 +15,21 @@ import page.clab.api.global.exception.InvalidInformationException;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash(value = "verification-code", timeToLive = 60*3)
-public class VerificationCode {
+@RedisHash(value = "verification", timeToLive = 60*3)
+public class Verification {
 
     @Id
-    @Column(name = "member_id")
+    @Column(name = "member_id", nullable = false)
+    @Size(min = 9, max = 9, message = "{size.verificationCode.memberId}")
     private String id;
 
     @Indexed
+    @Size(min = 12, max = 12, message = "{size.verificationCode.verificationCode}")
+    @Column(nullable = false)
     private String verificationCode;
 
-    public static VerificationCode create(String memberId, String verificationCode) {
-        return VerificationCode.builder()
+    public static Verification create(String memberId, String verificationCode) {
+        return Verification.builder()
                 .id(memberId)
                 .verificationCode(verificationCode)
                 .build();

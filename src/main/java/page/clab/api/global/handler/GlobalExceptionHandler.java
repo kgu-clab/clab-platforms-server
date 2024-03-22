@@ -6,6 +6,7 @@ import com.maxmind.geoip2.exception.GeoIp2Exception;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -14,7 +15,6 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.TransactionSystemException;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -103,7 +103,7 @@ public class GlobalExceptionHandler {
             NotApprovedApplicationException.class,
             DonationSearchArgumentLackException.class
     })
-    public ResponseModel badRequestException(HttpServletResponse response, Exception e){
+    public ResponseModel badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return ResponseUtil.createErrorResponse(false, null);
     }
@@ -121,7 +121,7 @@ public class GlobalExceptionHandler {
             TokenForgeryException.class,
             MessagingException.class,
     })
-    public ResponseModel unAuthorizeException(HttpServletResponse response, Exception e){
+    public ResponseModel unAuthorizeException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         return ResponseUtil.createErrorResponse(false, null);
     }
@@ -131,7 +131,7 @@ public class GlobalExceptionHandler {
             LoanSuspensionException.class,
             InvalidBorrowerException.class,
     })
-    public ResponseModel deniedException(HttpServletResponse response, Exception e){
+    public ResponseModel deniedException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         return ResponseUtil.createErrorResponse(false, null);
     }
@@ -144,7 +144,7 @@ public class GlobalExceptionHandler {
             FileNotFoundException.class,
             AddressNotFoundException.class,
     })
-    public ResponseModel notFoundException(HttpServletResponse response, Exception e){
+    public ResponseModel notFoundException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
         return ResponseUtil.createErrorResponse(true, new ArrayList<>());
     }
@@ -170,7 +170,7 @@ public class GlobalExceptionHandler {
             SharedAccountInUseException.class,
             SharedAccountUsageStateException.class
     })
-    public ResponseModel conflictException(HttpServletResponse response, Exception e){
+    public ResponseModel conflictException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_CONFLICT);
         return ResponseUtil.createErrorResponse(false, null);
     }
@@ -190,7 +190,7 @@ public class GlobalExceptionHandler {
             DecryptionException.class,
             Exception.class
     })
-    public ResponseModel serverException(HttpServletRequest request, HttpServletResponse response, Exception e){
+    public ResponseModel serverException(HttpServletRequest request, HttpServletResponse response, Exception e) {
         slackService.sendServerErrorNotification(request, e);
         log.warn(e.getMessage());
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -198,21 +198,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-            MethodArgumentNotValidException.class
+            MethodArgumentNotValidException.class,
+            ConstraintViolationException.class
     })
-    public ResponseModel handleValidationException(HttpServletResponse response, MethodArgumentNotValidException ex) {
-        BindingResult result = ex.getBindingResult();
-        StringBuilder logMessage = new StringBuilder("Validation errors: ");
-
-        result.getFieldErrors().forEach(fieldError -> {
-            logMessage.append("[");
-            logMessage.append(fieldError.getField());
-            logMessage.append(": ");
-            logMessage.append(fieldError.getDefaultMessage());
-            logMessage.append("] ");
-        });
-        log.info(logMessage.toString());;
-
+    public ResponseModel handleValidationException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return ResponseUtil.createErrorResponse(false, null);
     }

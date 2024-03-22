@@ -1,5 +1,6 @@
 package page.clab.api.domain.activityGroup.dao;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -22,22 +23,31 @@ public class ActivityGroupDetailsRepositoryImpl implements ActivityGroupDetailsR
 
     @Override
     public ActivityGroupDetails fetchActivityGroupDetails(Long activityGroupId) {
-        QActivityGroup activityGroup = QActivityGroup.activityGroup;
-        QGroupMember groupMember = QGroupMember.groupMember;
-        QActivityGroupBoard activityGroupBoard = QActivityGroupBoard.activityGroupBoard;
+        QActivityGroup qActivityGroup = QActivityGroup.activityGroup;
+        QGroupMember qGroupMember = QGroupMember.groupMember;
+        QActivityGroupBoard qActivityGroupBoard = QActivityGroupBoard.activityGroupBoard;
 
-        List<GroupMember> groupMembers = queryFactory.selectFrom(groupMember)
-                .where(groupMember.activityGroup.id.eq(activityGroupId))
+        BooleanBuilder groupMemberCondition = new BooleanBuilder();
+        if (activityGroupId != null) groupMemberCondition.and(qGroupMember.activityGroup.id.eq(activityGroupId));
+
+        List<GroupMember> groupMembers = queryFactory.selectFrom(qGroupMember)
+                .where(groupMemberCondition)
                 .fetch();
 
-        List<ActivityGroupBoard> boards = queryFactory.selectFrom(activityGroupBoard)
-                .where(activityGroupBoard.activityGroup.id.eq(activityGroupId),
-                        activityGroupBoard.category.in(ActivityGroupBoardCategory.NOTICE, ActivityGroupBoardCategory.WEEKLY_ACTIVITY, ActivityGroupBoardCategory.ASSIGNMENT))
-                .orderBy(activityGroupBoard.createdAt.desc())
+        BooleanBuilder boardCondition = new BooleanBuilder();
+        if (activityGroupId != null) boardCondition.and(qActivityGroupBoard.activityGroup.id.eq(activityGroupId));
+        if (activityGroupId != null) boardCondition.and(qActivityGroupBoard.category.in(ActivityGroupBoardCategory.NOTICE, ActivityGroupBoardCategory.WEEKLY_ACTIVITY, ActivityGroupBoardCategory.ASSIGNMENT));
+
+        List<ActivityGroupBoard> boards = queryFactory.selectFrom(qActivityGroupBoard)
+                .where(boardCondition)
+                .orderBy(qActivityGroupBoard.createdAt.desc())
                 .fetch();
 
-        ActivityGroup foundActivityGroup = queryFactory.selectFrom(activityGroup)
-                .where(activityGroup.id.eq(activityGroupId))
+        BooleanBuilder activityGroupCondition = new BooleanBuilder();
+        if (activityGroupId != null) activityGroupCondition.and(qActivityGroup.id.eq(activityGroupId));
+
+        ActivityGroup foundActivityGroup = queryFactory.selectFrom(qActivityGroup)
+                .where(activityGroupCondition)
                 .fetchOne();
 
         return new ActivityGroupDetails(foundActivityGroup, groupMembers, boards);

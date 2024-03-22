@@ -1,6 +1,5 @@
 package page.clab.api.domain.sharedAccount.application;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -9,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.sharedAccount.dao.SharedAccountUsageRepository;
@@ -38,19 +38,20 @@ public class SharedAccountUsageService {
     private final SharedAccountUsageRepository sharedAccountUsageRepository;
 
     @Transactional
-    public Long requestSharedAccountUsage(SharedAccountUsageRequestDto sharedAccountUsageRequestDto) throws CustomOptimisticLockingFailureException {
+    public Long requestSharedAccountUsage(SharedAccountUsageRequestDto requestDto) throws CustomOptimisticLockingFailureException {
         try {
-            Long sharedAccountId = sharedAccountUsageRequestDto.getSharedAccountId();
-            SharedAccountUsage sharedAccountUsage = prepareSharedAccountUsage(sharedAccountUsageRequestDto, sharedAccountId);
+            Long sharedAccountId = requestDto.getSharedAccountId();
+            SharedAccountUsage sharedAccountUsage = prepareSharedAccountUsage(requestDto, sharedAccountId);
             return sharedAccountUsage.getId();
         } catch (ObjectOptimisticLockingFailureException e) {
             throw new CustomOptimisticLockingFailureException("공유 계정 이용 요청에 실패했습니다. 다시 시도해주세요.");
         }
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<SharedAccountUsageResponseDto> getSharedAccountUsages(Pageable pageable) {
         Page<SharedAccountUsage> sharedAccountUsages = sharedAccountUsageRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(sharedAccountUsages.map(SharedAccountUsageResponseDto::of));
+        return new PagedResponseDto<>(sharedAccountUsages.map(SharedAccountUsageResponseDto::toDto));
     }
 
     @Transactional
@@ -168,7 +169,7 @@ public class SharedAccountUsageService {
         Member currentMember = memberService.getCurrentMember();
         sharedAccountUsage.updateStatus(status, currentMember);
         sharedAccountUsageRepository.save(sharedAccountUsage);
-        sharedAccountUsage.getSharedAccount().updateStatus(false);
+        sharedAccountUsage.getSharedAccount().updateIsInUse(false);
         sharedAccountService.save(sharedAccountUsage.getSharedAccount());
     }
 

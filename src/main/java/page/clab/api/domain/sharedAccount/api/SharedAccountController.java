@@ -45,9 +45,9 @@ public class SharedAccountController {
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createSharedAccount(
-            @Valid @RequestBody SharedAccountRequestDto sharedAccountRequestDto
+            @Valid @RequestBody SharedAccountRequestDto requestDto
     ) {
-        Long id = sharedAccountService.createSharedAccount(sharedAccountRequestDto);
+        Long id = sharedAccountService.createSharedAccount(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -72,9 +72,9 @@ public class SharedAccountController {
     @PatchMapping("/{accountId}")
     public ResponseModel updateSharedAccount(
             @PathVariable(name = "accountId") Long accountId,
-            @Valid @RequestBody SharedAccountUpdateRequestDto sharedAccountUpdateRequestDto
+            @Valid @RequestBody SharedAccountUpdateRequestDto requestDto
     ) {
-        Long id = sharedAccountService.updateSharedAccount(accountId, sharedAccountUpdateRequestDto);
+        Long id = sharedAccountService.updateSharedAccount(accountId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -98,9 +98,9 @@ public class SharedAccountController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/usage")
     public ResponseModel requestSharedAccountUsage(
-            @Valid @RequestBody SharedAccountUsageRequestDto sharedAccountUsageRequestDto
+            @Valid @RequestBody SharedAccountUsageRequestDto requestDto
     ) throws CustomOptimisticLockingFailureException {
-        Long id = sharedAccountUsageService.requestSharedAccountUsage(sharedAccountUsageRequestDto);
+        Long id = sharedAccountUsageService.requestSharedAccountUsage(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

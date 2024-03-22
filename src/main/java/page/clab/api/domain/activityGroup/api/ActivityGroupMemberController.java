@@ -2,7 +2,6 @@ package page.clab.api.domain.activityGroup.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,14 +63,14 @@ public class ActivityGroupMemberController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/status")
     public ResponseModel getActivityGroupsByStatus (
-            @RequestParam(name = "activityGroupStatus") ActivityGroupStatus activityGroupStatus,
+            @RequestParam(name = "activityGroupStatus") ActivityGroupStatus status,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ActivityGroupStatusResponseDto> activityGroupList = activityGroupMemberService.getActivityGroupsByStatus(activityGroupStatus, pageable);
+        PagedResponseDto<ActivityGroupStatusResponseDto> activityGroups = activityGroupMemberService.getActivityGroupsByStatus(status, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(activityGroupList);
+        responseModel.addData(activityGroups);
         return responseModel;
     }
 
@@ -125,9 +124,9 @@ public class ActivityGroupMemberController {
     @PostMapping("/apply")
     public ResponseModel applyActivityGroup(
             @RequestParam Long activityGroupId,
-            @Valid @RequestBody ApplyFormRequestDto formRequestDto
-    ) throws MessagingException {
-        Long id = activityGroupMemberService.applyActivityGroup(activityGroupId, formRequestDto);
+            @Valid @RequestBody ApplyFormRequestDto requestDto
+    ) {
+        Long id = activityGroupMemberService.applyActivityGroup(activityGroupId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,9 +52,9 @@ public class AttendanceController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/check-in")
     public ResponseModel checkInAttendance(
-            @RequestBody AttendanceRequestDto attendanceRequestDto
+            @RequestBody AttendanceRequestDto requestDto
     ) throws IllegalAccessException {
-        Long id = attendanceService.checkMemberAttendance(attendanceRequestDto);
+        Long id = attendanceService.checkMemberAttendance(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -68,9 +69,9 @@ public class AttendanceController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) throws IllegalAccessException {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AttendanceResponseDto> attendanceResponseDtos = attendanceService.getMyAttendances(activityGroupId, pageable);
+        PagedResponseDto<AttendanceResponseDto> myAttendances = attendanceService.getMyAttendances(activityGroupId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(attendanceResponseDtos);
+        responseModel.addData(myAttendances);
         return responseModel;
     }
 
@@ -83,9 +84,9 @@ public class AttendanceController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AttendanceResponseDto> attendanceResponseDtos = attendanceService.getGroupAttendances(activityGroupId, pageable);
+        PagedResponseDto<AttendanceResponseDto> attendances = attendanceService.getGroupAttendances(activityGroupId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(attendanceResponseDtos);
+        responseModel.addData(attendances);
         return responseModel;
     }
 
@@ -93,9 +94,9 @@ public class AttendanceController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping({"/absent"})
     public ResponseModel writeAbsentExcuse(
-            @RequestBody AbsentRequestDto absentRequestDto
+            @RequestBody AbsentRequestDto requestDto
     ) throws IllegalAccessException, DuplicateAbsentExcuseException {
-        Long id = attendanceService.writeAbsentExcuse(absentRequestDto);
+        Long id = attendanceService.writeAbsentExcuse(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -103,9 +104,9 @@ public class AttendanceController {
 
     @Operation(summary = "[U] 그룹의 불참 사유서 열람", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping({"/absent/{ActivityGroupId}"})
+    @GetMapping({"/absent/{activityGroupId}"})
     public ResponseModel getActivityGroupAbsentExcuses(
-            @RequestParam(name = "activityGroupId") Long activityGroupId,
+            @PathVariable(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) throws PermissionDeniedException {

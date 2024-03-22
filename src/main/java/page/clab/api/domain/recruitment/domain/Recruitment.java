@@ -13,11 +13,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.application.domain.ApplicationType;
-import page.clab.api.domain.recruitment.dto.request.RecruitmentRequestDto;
 import page.clab.api.domain.recruitment.dto.request.RecruitmentUpdateRequestDto;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -28,7 +26,7 @@ import java.util.Optional;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Recruitment {
+public class Recruitment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,22 +50,12 @@ public class Recruitment {
     @Size(min = 1, message = "{size.recruitment.status}")
     private String status;
 
-    private LocalDateTime updateTime;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    public static Recruitment of(RecruitmentRequestDto recruitmentRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(recruitmentRequestDto, Recruitment.class);
-    }
-
     public void update(RecruitmentUpdateRequestDto recruitmentUpdateRequestDto) {
         Optional.ofNullable(recruitmentUpdateRequestDto.getStartDate()).ifPresent(this::setStartDate);
         Optional.ofNullable(recruitmentUpdateRequestDto.getEndDate()).ifPresent(this::setEndDate);
         Optional.ofNullable(recruitmentUpdateRequestDto.getApplicationType()).ifPresent(this::setApplicationType);
         Optional.ofNullable(recruitmentUpdateRequestDto.getTarget()).ifPresent(this::setTarget);
         Optional.ofNullable(recruitmentUpdateRequestDto.getStatus()).ifPresent(this::setStatus);
-        updateTime = LocalDateTime.now();
     }
 
 }

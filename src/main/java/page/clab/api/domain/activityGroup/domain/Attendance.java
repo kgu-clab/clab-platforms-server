@@ -12,11 +12,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -24,7 +23,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class  Attendance {
+public class Attendance extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,12 +37,8 @@ public class  Attendance {
     @JoinColumn(name = "group_id")
     private ActivityGroup activityGroup;
 
-    @Column(name = "activity_date", nullable = false)
+    @Column(nullable = false)
     private LocalDate activityDate;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
 
     public static Attendance create(Member member, ActivityGroup activityGroup, LocalDate activityDate) {
         return Attendance.builder()

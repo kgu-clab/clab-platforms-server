@@ -38,9 +38,9 @@ public class NewsController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createNews(
-            @Valid @RequestBody NewsRequestDto newsRequestDto
+            @Valid @RequestBody NewsRequestDto requestDto
     ) {
-        Long id = newsService.createNews(newsRequestDto);
+        Long id = newsService.createNews(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -81,9 +81,9 @@ public class NewsController {
     @PatchMapping("/{newsId}")
     public ResponseModel updateNews(
             @PathVariable(name = "newsId") Long newsId,
-            @Valid @RequestBody NewsUpdateRequestDto newsUpdateRequestDto
+            @Valid @RequestBody NewsUpdateRequestDto requestDto
     ) {
-        Long id = newsService.updateNews(newsId, newsUpdateRequestDto);
+        Long id = newsService.updateNews(newsId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

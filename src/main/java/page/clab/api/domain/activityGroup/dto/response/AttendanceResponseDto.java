@@ -1,13 +1,13 @@
 package page.clab.api.domain.activityGroup.dto.response;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.Attendance;
-import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -22,13 +22,12 @@ public class AttendanceResponseDto {
 
     private LocalDateTime attendanceDateTime;
 
-    public static AttendanceResponseDto of(Attendance attendance){
-        AttendanceResponseDto attendanceResponseDto = ModelMapperUtil.getModelMapper().map(attendance, AttendanceResponseDto.class);
-        attendanceResponseDto.setActivityGroupId(attendance.getActivityGroup().getId());
-        attendanceResponseDto.setMemberId(attendance.getMember().getId());
-        attendanceResponseDto.setAttendanceDateTime(attendance.getCreatedAt());
-
-        return attendanceResponseDto;
+    public static AttendanceResponseDto toDto(Attendance attendance) {
+        return AttendanceResponseDto.builder()
+                .activityGroupId(attendance.getActivityGroup().getId())
+                .memberId(attendance.getMember().getId())
+                .attendanceDateTime(attendance.getCreatedAt())
+                .build();
     }
 
 }

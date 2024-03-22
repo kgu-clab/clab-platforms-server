@@ -37,9 +37,9 @@ public class BookController {
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createBook(
-            @Valid @RequestBody BookRequestDto bookRequestDto
+            @Valid @RequestBody BookRequestDto requestDto
     ) {
-        Long id = bookService.createBook(bookRequestDto);
+        Long id = bookService.createBook(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -83,9 +83,9 @@ public class BookController {
     @PatchMapping("")
     public ResponseModel updateBookInfo(
             @RequestParam(name = "bookId") Long bookId,
-            @Valid @RequestBody BookUpdateRequestDto bookUpdateRequestDto
+            @Valid @RequestBody BookUpdateRequestDto requestDto
     ) {
-        Long id = bookService.updateBookInfo(bookId, bookUpdateRequestDto);
+        Long id = bookService.updateBookInfo(bookId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

@@ -7,14 +7,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.position.dto.request.PositionRequestDto;
+import page.clab.api.global.common.domain.BaseEntity;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -22,7 +23,7 @@ import page.clab.api.domain.position.dto.request.PositionRequestDto;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Position {
+public class Position extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,14 +37,13 @@ public class Position {
     private PositionType positionType;
 
     @Column(nullable = false)
-    @Size(min = 1, message = "{size.executive.year}")
     private String year;
 
-    public static Position of(PositionRequestDto positionRequestDto) {
+    public static Position create(Member member) {
         return Position.builder()
-                .member(Member.builder().id(positionRequestDto.getMemberId()).build())
-                .positionType(positionRequestDto.getPositionType())
-                .year(positionRequestDto.getYear())
+                .member(member)
+                .positionType(PositionType.MEMBER)
+                .year(String.valueOf(LocalDate.now().getYear()))
                 .build();
     }
 

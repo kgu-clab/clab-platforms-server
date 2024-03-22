@@ -2,14 +2,16 @@ package page.clab.api.domain.activityGroup.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.Absent;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.member.domain.Member;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -34,8 +36,15 @@ public class AbsentRequestDto {
     @Schema(description = "불참 날짜", example = "2023-11-12", required = true)
     private LocalDate absentDate;
 
-    public static AbsentRequestDto of(Absent absent){
-        return ModelMapperUtil.getModelMapper().map(absent, AbsentRequestDto.class);
+    public static Absent toEntity(AbsentRequestDto requestDto, Member absentee, ActivityGroup activityGroup) {
+        return Absent.builder()
+                .id(null)
+                .absentee(absentee)
+                .activityGroup(activityGroup)
+                .absentDate(requestDto.getAbsentDate())
+                .reason(requestDto.getReason())
+                .build();
+
     }
 
 }

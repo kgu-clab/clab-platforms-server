@@ -26,7 +26,7 @@ public class SuspiciousPatterns {
             Pattern.compile(".*\\/wp-content\\/.*"),
 
             // 관리자 페이지 및 도구들
-            Pattern.compile(".*\\/(phpmyadmin|pma|admin|dbadmin|mysql|myadmin|phpMyAdmin).*"),
+            Pattern.compile(".*\\/(phpmyadmin|pma|dbadmin|mysql|myadmin|phpMyAdmin).*"),
 
             // 개발 관련 파일과 디렉토리
             Pattern.compile(".*\\/(\\.git|\\.svn|\\.hg|\\.env|\\.idea|\\.vscode|\\.vs|\\.DS_Store).*"),

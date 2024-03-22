@@ -102,14 +102,7 @@ public class EmailService {
                 member.getId(),
                 password
         );
-
-        EmailDto emailDto = EmailDto.builder()
-                .to(List.of(member.getEmail()))
-                .subject(subject)
-                .content(content)
-                .emailTemplateType(EmailTemplateType.NORMAL)
-                .build();
-
+        EmailDto emailDto = EmailDto.create(List.of(member.getEmail()), subject, content, EmailTemplateType.NORMAL);
         try {
             String emailContent = generateEmailContent(emailDto, member.getName());
             sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, null, emailDto.getEmailTemplateType());
@@ -127,14 +120,7 @@ public class EmailService {
                         "재설정시 비밀번호는 인증번호로 대체됩니다.",
                 code
         );
-
-        EmailDto emailDto = EmailDto.builder()
-                .to(List.of(member.getEmail()))
-                .subject(subject)
-                .content(content)
-                .emailTemplateType(EmailTemplateType.NORMAL)
-                .build();
-
+        EmailDto emailDto = EmailDto.create(List.of(member.getEmail()), subject, content, EmailTemplateType.NORMAL);
         try {
             broadcastEmail(emailDto, null);
         } catch (Exception e) {
@@ -167,7 +153,7 @@ public class EmailService {
         return file;
     }
 
-    private String generateEmailContent(EmailDto emailDto, String name){
+    private String generateEmailContent(EmailDto emailDto, String name) {
         Context context = new Context();
         context.setVariable("title", emailDto.getSubject());
         context.setVariable("name", name);
@@ -262,13 +248,13 @@ public class EmailService {
             return files;
         }
 
-        public EmailTemplateType getTemplateType(){
+        public EmailTemplateType getTemplateType() {
             return templateType;
         }
     }
 
     private void setImageInTemplate(MimeMessageHelper messageHelper, EmailTemplateType templateType) throws MessagingException {
-        switch(templateType){
+        switch(templateType) {
             case NORMAL -> {
                 messageHelper.addInline("image-1", new ClassPathResource("images/image-1.png"));
                 break;
@@ -276,7 +262,7 @@ public class EmailService {
         }
     }
 
-    private void checkDir(File file){
+    private void checkDir(File file) {
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
