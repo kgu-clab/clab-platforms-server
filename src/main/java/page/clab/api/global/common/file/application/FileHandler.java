@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.util.ImageCompressionUtil;
 
@@ -54,31 +53,27 @@ public class FileHandler {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(image);
         BufferedImage bufferedImage = ImageIO.read(inputStream);
         File file = new File(savePath);
-        checkDir(file);
+        ensureParentDirectoryExists(file);
         ImageIO.write(bufferedImage, extension, file);
     }
 
-    public String saveFile(MultipartFile multipartFile, String category, UploadedFile uploadedFile) throws IOException {
+    public String saveFile(MultipartFile multipartFile, String category) throws IOException {
         init();
-
         String originalFilename = multipartFile.getOriginalFilename();
         String extension = FilenameUtils.getExtension(originalFilename);
-        fileValidation(originalFilename, extension);
-        String saveFilename = makeSaveFileName(extension);
+        validateFileAttributes(originalFilename, extension);
+
+        String saveFilename = makeFileName(extension);
         String savePath = filePath + File.separator + category + File.separator + saveFilename;
 
         File file = new File(savePath);
-        checkDir(file);
+        ensureParentDirectoryExists(file);
         multipartFile.transferTo(file);
-        save(file, savePath, extension);
-
-        uploadedFile.setSavedPath(savePath);
-        uploadedFile.setSaveFileName(saveFilename);
-        uploadedFile.setCategory(category);
-        return "/" + saveFilename;
+        setFilePermissions(file, savePath, extension);
+        return savePath;
     }
 
-    private void fileValidation(String originalFilename, String extension) throws FileUploadFailException {
+    private void validateFileAttributes(String originalFilename, String extension) throws FileUploadFailException {
         if (!validateFilename(originalFilename)) {
             throw new FileUploadFailException("허용되지 않은 파일명 : " + originalFilename);
         }
@@ -95,17 +90,17 @@ public class FileHandler {
         return !Strings.isNullOrEmpty(fileName);
     }
 
-    public String makeSaveFileName(String extension) {
+    public String makeFileName(String extension) {
         return (System.nanoTime() + "_" + UUID.randomUUID() + "." + extension);
     }
 
-    private void checkDir(File file) {
+    private void ensureParentDirectoryExists(File file) {
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
     }
 
-    private void save(File file, String savePath, String extension) throws FileUploadFailException {
+    private void setFilePermissions(File file, String savePath, String extension) throws FileUploadFailException {
         try {
             String os = System.getProperty("os.name").toLowerCase();
             if (compressibleImageExtensions.contains(extension.toLowerCase())) {
