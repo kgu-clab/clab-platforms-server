@@ -18,7 +18,7 @@ import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -35,7 +35,7 @@ public class BoardService {
 
     private final NotificationService notificationService;
 
-    private final FileService fileService;
+    private final UploadedFileService uploadedFileService;
 
     private final ValidationService validationService;
 
@@ -46,7 +46,7 @@ public class BoardService {
     @Transactional
     public Long createBoard(BoardRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
-        List<UploadedFile> uploadedFiles = fileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
+        List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         Board board = BoardRequestDto.toEntity(requestDto, currentMember, uploadedFiles);
         validationService.checkValid(board);
         if (board.shouldNotifyForNewBoard()) {

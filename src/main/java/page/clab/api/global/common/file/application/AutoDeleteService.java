@@ -51,7 +51,7 @@ public class AutoDeleteService {
             if (file.isDirectory()) {
                 processFilesInDirectory(file);
             } else {
-                log.info(file.getAbsolutePath() + "file found");
+                log.info(file.getAbsolutePath() + " file found");
                 processFile(file);
             }
         }

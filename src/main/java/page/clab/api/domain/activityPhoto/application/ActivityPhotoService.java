@@ -10,7 +10,7 @@ import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.domain.activityPhoto.dto.request.ActivityPhotoRequestDto;
 import page.clab.api.domain.activityPhoto.dto.response.ActivityPhotoResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -22,10 +22,10 @@ public class ActivityPhotoService {
 
     private final ActivityPhotoRepository activityPhotoRepository;
 
-    private final FileService fileService;
+    private final UploadedFileService uploadedFileService;
 
     public Long createActivityPhoto(ActivityPhotoRequestDto requestDto) {
-        List<UploadedFile> uploadedFiles = fileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
+        List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         ActivityPhoto activityPhoto = ActivityPhotoRequestDto.toEntity(requestDto, uploadedFiles);
         return activityPhotoRepository.save(activityPhoto).getId();
     }
