@@ -29,9 +29,9 @@ public class DonationService {
 
     private final DonationRepository donationRepository;
 
-    public Long createDonation(DonationRequestDto donationRequestDto) {
-        Member member = memberService.getCurrentMember();
-        Donation donation = Donation.of(donationRequestDto, member);
+    public Long createDonation(DonationRequestDto requestDto) {
+        Member currentMember = memberService.getCurrentMember();
+        Donation donation = DonationRequestDto.toEntity(requestDto, currentMember);
         validationService.checkValid(donation);
         return donationRepository.save(donation).getId();
     }
@@ -39,29 +39,30 @@ public class DonationService {
     @Transactional(readOnly = true)
     public PagedResponseDto<DonationResponseDto> getDonationsByConditions(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Page<Donation> donations = donationRepository.findByConditions(memberId, name, startDate, endDate, pageable);
-        return new PagedResponseDto<>(donations.map(DonationResponseDto::of));
+        return new PagedResponseDto<>(donations.map(DonationResponseDto::toDto));
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<DonationResponseDto> getMyDonations(Pageable pageable) {
-        Member member = memberService.getCurrentMember();
-        Page<Donation> donations = getDonationsByDonor(member, pageable);
-        return new PagedResponseDto<>(donations.map(DonationResponseDto::of));
+        Member currentMember = memberService.getCurrentMember();
+        Page<Donation> donations = getDonationsByDonor(currentMember, pageable);
+        return new PagedResponseDto<>(donations.map(DonationResponseDto::toDto));
     }
 
+    @Transactional
     public Long updateDonation(Long donationId, DonationUpdateRequestDto donationUpdateRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Donation donation = getDonationByIdOrThrow(donationId);
-        validateDonationUpdatePermission(member);
+        validateDonationUpdatePermission(currentMember);
         donation.update(donationUpdateRequestDto);
         validationService.checkValid(donation);
         return donationRepository.save(donation).getId();
     }
 
     public Long deleteDonation(Long donationId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Donation donation = getDonationByIdOrThrow(donationId);
-        validateDonationUpdatePermission(member);
+        validateDonationUpdatePermission(currentMember);
         donationRepository.delete(donation);
         return donation.getId();
     }

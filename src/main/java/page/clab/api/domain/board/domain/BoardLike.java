@@ -30,9 +30,11 @@ public class BoardLike extends BaseEntity {
 
     private Long boardId;
 
-    public BoardLike(String memberId, Long boardId) {
-        this.memberId = memberId;
-        this.boardId = boardId;
+    public static BoardLike create(String memberId, Long boardId) {
+        return BoardLike.builder()
+                .memberId(memberId)
+                .boardId(boardId)
+                .build();
     }
 
 }

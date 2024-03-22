@@ -34,20 +34,17 @@ public class BookLoanRecordService {
     private final BookLoanRecordRepository bookLoanRecordRepository;
 
     @Transactional
-    public Long borrowBook(BookLoanRecordRequestDto dto) throws CustomOptimisticLockingFailureException {
+    public Long borrowBook(BookLoanRecordRequestDto requestDto) throws CustomOptimisticLockingFailureException {
         try {
             Member borrower = memberService.getCurrentMember();
             borrower.checkLoanSuspension();
 
-            Book book = bookService.getBookByIdOrThrow(dto.getBookId());
+            Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
             book.borrowTo(borrower);
             bookRepository.save(book);
 
             BookLoanRecord bookLoanRecord = BookLoanRecord.create(book, borrower);
-            notificationService.sendNotificationToMember(
-                    borrower.getId(),
-                    "[" + book.getTitle() + "] 도서 대출이 완료되었습니다."
-            );
+            notificationService.sendNotificationToMember(borrower.getId(), "[" + book.getTitle() + "] 도서 대출이 완료되었습니다.");
             return bookLoanRecordRepository.save(bookLoanRecord).getId();
         } catch (ObjectOptimisticLockingFailureException e) {
             throw new CustomOptimisticLockingFailureException("도서 대출에 실패했습니다. 다시 시도해주세요.");
@@ -55,35 +52,29 @@ public class BookLoanRecordService {
     }
 
     @Transactional
-    public Long returnBook(BookLoanRecordRequestDto dto) {
+    public Long returnBook(BookLoanRecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
-        Book book = bookService.getBookByIdOrThrow(dto.getBookId());
+        Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
         book.returnBook(currentMember);
         bookRepository.save(book);
 
         BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(book);
         bookLoanRecord.markAsReturned();
 
-        notificationService.sendNotificationToMember(
-                currentMember.getId(),
-                "[" + book.getTitle() + "] 도서 반납이 완료되었습니다."
-        );
+        notificationService.sendNotificationToMember(currentMember.getId(), "[" + book.getTitle() + "] 도서 반납이 완료되었습니다.");
         return bookLoanRecordRepository.save(bookLoanRecord).getId();
     }
 
     @Transactional
-    public Long extendBookLoan(BookLoanRecordRequestDto dto) {
+    public Long extendBookLoan(BookLoanRecordRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
-        Book book = bookService.getBookByIdOrThrow(dto.getBookId());
+        Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
 
         book.validateCurrentBorrower(currentMember);
         BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(book);
         bookLoanRecord.extendLoan();
 
-        notificationService.sendNotificationToMember(
-                currentMember.getId(),
-                "[" + book.getTitle() + "] 도서 대출 연장이 완료되었습니다."
-        );
+        notificationService.sendNotificationToMember(currentMember.getId(), "[" + book.getTitle() + "] 도서 대출 연장이 완료되었습니다.");
         return bookLoanRecordRepository.save(bookLoanRecord).getId();
     }
 

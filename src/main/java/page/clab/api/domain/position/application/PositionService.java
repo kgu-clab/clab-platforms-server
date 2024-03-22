@@ -26,12 +26,12 @@ public class PositionService {
 
     private final PositionRepository positionRepository;
 
-    public Long createPosition(PositionRequestDto positionRequestDto) {
-        Member member = memberService.getMemberByIdOrThrow(positionRequestDto.getMemberId());
-        return positionRepository.findByMemberAndYearAndPositionType(member, positionRequestDto.getYear(), positionRequestDto.getPositionType())
+    public Long createPosition(PositionRequestDto requestDto) {
+        Member member = memberService.getMemberByIdOrThrow(requestDto.getMemberId());
+        return positionRepository.findByMemberAndYearAndPositionType(member, requestDto.getYear(), requestDto.getPositionType())
                 .map(Position::getId)
                 .orElseGet(() -> {
-                    Position position = Position.of(positionRequestDto);
+                    Position position = PositionRequestDto.toEntity(requestDto);
                     return positionRepository.save(position).getId();
                 });
     }
@@ -39,14 +39,17 @@ public class PositionService {
     @Transactional(readOnly = true)
     public PagedResponseDto<PositionResponseDto> getPositionsByConditions(String year, PositionType positionType, Pageable pageable) {
         Page<Position> positions = positionRepository.findByConditions(year, positionType, pageable);
-        return new PagedResponseDto<>(positions.map(PositionResponseDto::of));
+        return new PagedResponseDto<>(positions.map(PositionResponseDto::toDto));
     }
 
     @Transactional(readOnly = true)
     public PositionMyResponseDto getMyPositionsByYear(String year) {
-        Member member = memberService.getCurrentMember();
-        List<Position> positions = getPositionsByMemberAndYear(member, year);
-        return PositionMyResponseDto.of(positions);
+        Member currentMember = memberService.getCurrentMember();
+        List<Position> positions = getPositionsByMemberAndYear(currentMember, year);
+        if (positions.isEmpty()) {
+            throw new NotFoundException("해당 멤버의 " + year + "년도 직책이 존재하지 않습니다.");
+        }
+        return PositionMyResponseDto.toDto(positions);
     }
 
     public Long deletePosition(Long positionId) {

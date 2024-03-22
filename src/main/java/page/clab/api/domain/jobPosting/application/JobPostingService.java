@@ -25,33 +25,30 @@ public class JobPostingService {
 
     private final JobPostingRepository jobPostingRepository;
 
-    public Long createJobPosting(JobPostingRequestDto jobPostingRequestDto) {
-        JobPosting jobPosting = jobPostingRepository.findByJobPostingUrl(jobPostingRequestDto.getJobPostingUrl())
-                .map(existingJobPosting -> updateExistingJobPosting(existingJobPosting, jobPostingRequestDto))
-                .orElseGet(() -> JobPosting.of(jobPostingRequestDto));
+    public Long createJobPosting(JobPostingRequestDto requestDto) {
+        JobPosting jobPosting = jobPostingRepository.findByJobPostingUrl(requestDto.getJobPostingUrl())
+                .map(existingJobPosting -> existingJobPosting.updateFromRequestDto(requestDto))
+                .orElseGet(() -> JobPostingRequestDto.toEntity(requestDto));
         validationService.checkValid(jobPosting);
         return jobPostingRepository.save(jobPosting).getId();
-    }
-
-    private JobPosting updateExistingJobPosting(JobPosting existingJobPosting, JobPostingRequestDto jobPostingRequestDto) {
-        return existingJobPosting.updateFromRequestDto(jobPostingRequestDto);
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<JobPostingResponseDto> getJobPostingsByConditions(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable) {
         Page<JobPosting> jobPostings = jobPostingRepository.findByConditions(title, companyName, careerLevel, employmentType, pageable);
-        return new PagedResponseDto<>(jobPostings.map(JobPostingResponseDto::of));
+        return new PagedResponseDto<>(jobPostings.map(JobPostingResponseDto::toDto));
     }
 
     @Transactional(readOnly = true)
     public JobPostingDetailsResponseDto getJobPosting(Long jobPostingId) {
         JobPosting jobPosting = getJobPostingByIdOrThrow(jobPostingId);
-        return JobPostingDetailsResponseDto.of(jobPosting);
+        return JobPostingDetailsResponseDto.toDto(jobPosting);
     }
 
-    public Long updateJobPosting(Long jobPostingId, JobPostingUpdateRequestDto jobPostingUpdateRequestDto) {
+    @Transactional
+    public Long updateJobPosting(Long jobPostingId, JobPostingUpdateRequestDto requestDto) {
         JobPosting jobPosting = getJobPostingByIdOrThrow(jobPostingId);
-        jobPosting.update(jobPostingUpdateRequestDto);
+        jobPosting.update(requestDto);
         validationService.checkValid(jobPosting);
         return jobPostingRepository.save(jobPosting).getId();
     }

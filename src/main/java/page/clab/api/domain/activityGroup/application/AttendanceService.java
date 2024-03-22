@@ -62,8 +62,8 @@ public class AttendanceService {
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public String generateAttendanceQRCode(Long activityGroupId) throws IOException, WriterException, PermissionDeniedException, IllegalAccessException {
-        Member member = memberService.getCurrentMember();
-        ActivityGroup activityGroup = validateAttendanceQRCodeGeneration(activityGroupId, member);
+        Member currentMember = memberService.getCurrentMember();
+        ActivityGroup activityGroup = validateAttendanceQRCodeGeneration(activityGroupId, currentMember);
 
         String nowDateTime = LocalDateTime.now().format(dateTimeFormatter);
         String secretKey = googleAuthenticator.createCredentials().getKey();
@@ -71,7 +71,7 @@ public class AttendanceService {
         redisQRKeyRepository.save(redisQRKey);
 
         String url = generateQRCodeURL(activityGroupId, secretKey);
-        Attendance attendance = Attendance.create(member, activityGroup, LocalDate.parse(nowDateTime.split(" ")[0], dateFormatter));
+        Attendance attendance = Attendance.create(currentMember, activityGroup, LocalDate.parse(nowDateTime.split(" ")[0], dateFormatter));
         attendanceRepository.save(attendance);
 
         byte[] QRCodeImage = QRCodeUtil.encodeQRCode(url);
@@ -79,64 +79,64 @@ public class AttendanceService {
         return fileService.saveQRCodeImage(QRCodeImage, path, 1, nowDateTime);
     }
 
-    public Long checkMemberAttendance(AttendanceRequestDto attendanceRequestDto) throws IllegalAccessException {
-        Member member = memberService.getCurrentMember();
-        ActivityGroup activityGroup = validateMemberForAttendance(member, attendanceRequestDto.getActivityGroupId());
-        validateQRCodeData(attendanceRequestDto.getQRCodeSecretKey());
-        Attendance attendance = Attendance.create(member, activityGroup, LocalDate.now());
+    public Long checkMemberAttendance(AttendanceRequestDto requestDto) throws IllegalAccessException {
+        Member currentMember = memberService.getCurrentMember();
+        ActivityGroup activityGroup = validateMemberForAttendance(currentMember, requestDto.getActivityGroupId());
+        validateQRCodeData(requestDto.getQRCodeSecretKey());
+        Attendance attendance = Attendance.create(currentMember, activityGroup, LocalDate.now());
         return attendanceRepository.save(attendance).getId();
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<AttendanceResponseDto> getMyAttendances(Long activityGroupId, Pageable pageable) throws IllegalAccessException {
-        Member member = memberService.getCurrentMember();
-        ActivityGroup activityGroup = validateGroupAndMemberForAttendance(activityGroupId, member);
-        Page<Attendance> attendances = getAttendanceByMember(pageable, member, activityGroup);
-        return new PagedResponseDto<>(attendances.map(AttendanceResponseDto::of));
+        Member currentMember = memberService.getCurrentMember();
+        ActivityGroup activityGroup = validateGroupAndMemberForAttendance(activityGroupId, currentMember);
+        Page<Attendance> attendances = getAttendanceByMember(activityGroup, currentMember, pageable);
+        return new PagedResponseDto<>(attendances.map(AttendanceResponseDto::toDto));
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<AttendanceResponseDto> getGroupAttendances(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        ActivityGroup activityGroup = getActivityGroupWithValidPermissions(activityGroupId, member);
-        Page<Attendance> attendances = getAttendanceByActivityGroup(pageable, activityGroup);
-        return new PagedResponseDto<>(attendances.map(AttendanceResponseDto::of));
+        Member currentMember = memberService.getCurrentMember();
+        ActivityGroup activityGroup = getActivityGroupWithValidPermissions(activityGroupId, currentMember);
+        Page<Attendance> attendances = getAttendanceByActivityGroup(activityGroup, pageable);
+        return new PagedResponseDto<>(attendances.map(AttendanceResponseDto::toDto));
     }
 
-    public Long writeAbsentExcuse(AbsentRequestDto absentRequestDto) throws IllegalAccessException, DuplicateAbsentExcuseException {
-        Member absentee = memberService.getMemberByIdOrThrow(absentRequestDto.getAbsenteeId());
-        ActivityGroup activityGroup = getValidActivityGroup(absentRequestDto.getActivityGroupId());
-        validateAbsentExcuseConditions(absentee, activityGroup, absentRequestDto.getAbsentDate());
-        Absent absent = Absent.create(absentee, activityGroup, absentRequestDto);
+    public Long writeAbsentExcuse(AbsentRequestDto requestDto) throws IllegalAccessException, DuplicateAbsentExcuseException {
+        Member absentee = memberService.getMemberByIdOrThrow(requestDto.getAbsenteeId());
+        ActivityGroup activityGroup = getValidActivityGroup(requestDto.getActivityGroupId());
+        validateAbsentExcuseConditions(absentee, activityGroup, requestDto.getAbsentDate());
+        Absent absent = AbsentRequestDto.toEntity(requestDto, absentee, activityGroup);
         return absentRepository.save(absent).getId();
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<AbsentResponseDto> getActivityGroupAbsentExcuses(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        ActivityGroup activityGroup = getActivityGroupWithPermissionCheck(activityGroupId, member);
+        Member currentMember = memberService.getCurrentMember();
+        ActivityGroup activityGroup = getActivityGroupWithPermissionCheck(activityGroupId, currentMember);
         Page<Absent> absents = absentRepository.findAllByActivityGroup(activityGroup, pageable);
-        return new PagedResponseDto<>(absents.map(AbsentResponseDto::of));
+        return new PagedResponseDto<>(absents.map(AbsentResponseDto::toDto));
     }
 
-    private Page<Attendance> getAttendanceByMember(Pageable pageable, Member member, ActivityGroup activityGroup){
+    private Page<Attendance> getAttendanceByMember(ActivityGroup activityGroup, Member member, Pageable pageable) {
         return attendanceRepository.findAllByMemberAndActivityGroupOrderByCreatedAt(member, activityGroup, pageable);
     }
 
-    private Page<Attendance> getAttendanceByActivityGroup(Pageable pageable, ActivityGroup activityGroup){
+    private Page<Attendance> getAttendanceByActivityGroup(ActivityGroup activityGroup, Pageable pageable) {
         return attendanceRepository.findAllByActivityGroupOrderByActivityDateAscMemberAsc(activityGroup, pageable);
     }
 
-    public boolean hasAttendanceHistory(ActivityGroup activityGroup, Member member, LocalDate activityDate){
+    public boolean hasAttendanceHistory(ActivityGroup activityGroup, Member member, LocalDate activityDate) {
         Attendance attendanceHistory = attendanceRepository.findByActivityGroupAndMemberAndActivityDate(activityGroup, member, activityDate);
         return attendanceHistory != null;
     }
 
-    public boolean isActivityExistedAt(ActivityGroup activityGroup, LocalDate date){
+    public boolean isActivityExistedAt(ActivityGroup activityGroup, LocalDate date) {
         return attendanceRepository.existsByActivityGroupAndActivityDate(activityGroup, date);
     }
 
-    public boolean hasAbsentExcuseHistory(ActivityGroup activityGroup, Member absentee, LocalDate absentDate){
+    public boolean hasAbsentExcuseHistory(ActivityGroup activityGroup, Member absentee, LocalDate absentDate) {
         Absent absentHistory = absentRepository.findByActivityGroupAndAbsenteeAndAbsentDate(activityGroup, absentee, absentDate);
         return absentHistory != null;
     }

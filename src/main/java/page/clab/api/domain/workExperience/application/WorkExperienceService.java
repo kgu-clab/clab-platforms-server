@@ -27,40 +27,41 @@ public class WorkExperienceService {
 
     private final WorkExperienceRepository workExperienceRepository;
 
-    public Long createWorkExperience(WorkExperienceRequestDto workExperienceRequestDto) {
-        Member member = memberService.getCurrentMember();
-        WorkExperience workExperience = WorkExperience.of(workExperienceRequestDto, member);
+    public Long createWorkExperience(WorkExperienceRequestDto requestDto) {
+        Member currentMember = memberService.getCurrentMember();
+        WorkExperience workExperience = WorkExperienceRequestDto.toEntity(requestDto, currentMember);
         validationService.checkValid(workExperience);
         return workExperienceRepository.save(workExperience).getId();
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<WorkExperienceResponseDto> getMyWorkExperience(Pageable pageable) {
-        Member member = memberService.getCurrentMember();
-        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMemberOrderByStartDateDesc(member, pageable);
-        return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::of));
+        Member currentMember = memberService.getCurrentMember();
+        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMemberOrderByStartDateDesc(currentMember, pageable);
+        return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<WorkExperienceResponseDto> getWorkExperiencesByConditions(String memberId, Pageable pageable) {
         Member member = memberService.getMemberByIdOrThrow(memberId);
         Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMemberOrderByStartDateDesc(member, pageable);
-        return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::of));
+        return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
     }
 
-    public Long updateWorkExperience(Long workExperienceId, WorkExperienceUpdateRequestDto workExperienceUpdateRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+    @Transactional
+    public Long updateWorkExperience(Long workExperienceId, WorkExperienceUpdateRequestDto requestDto) throws PermissionDeniedException {
+        Member currentMember = memberService.getCurrentMember();
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
-        workExperience.validateAccessPermission(member);
-        workExperience.update(workExperienceUpdateRequestDto);
+        workExperience.validateAccessPermission(currentMember);
+        workExperience.update(requestDto);
         validationService.checkValid(workExperience);
         return workExperienceRepository.save(workExperience).getId();
     }
 
     public Long deleteWorkExperience(Long workExperienceId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
-        workExperience.validateAccessPermission(member);
+        workExperience.validateAccessPermission(currentMember);
         workExperienceRepository.deleteById(workExperienceId);
         return workExperience.getId();
     }

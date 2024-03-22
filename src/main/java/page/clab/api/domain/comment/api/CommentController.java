@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.comment.application.CommentService;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
-import page.clab.api.domain.comment.dto.response.CommentGetAllResponseDto;
-import page.clab.api.domain.comment.dto.response.CommentGetMyResponseDto;
+import page.clab.api.domain.comment.dto.response.CommentResponseDto;
+import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -41,9 +41,9 @@ public class CommentController {
     public ResponseModel createComment(
             @RequestParam(name = "parentId", required = false) Long parentId,
             @PathVariable(name = "boardId") Long boardId,
-            @Valid @RequestBody CommentRequestDto commentRequestDto
+            @Valid @RequestBody CommentRequestDto requestDto
     ) {
-        Long id = commentService.createComment(parentId, boardId, commentRequestDto);
+        Long id = commentService.createComment(parentId, boardId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -58,7 +58,7 @@ public class CommentController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<CommentGetAllResponseDto> comments = commentService.getAllComments(boardId, pageable);
+        PagedResponseDto<CommentResponseDto> comments = commentService.getAllComments(boardId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(comments);
         return responseModel;
@@ -72,7 +72,7 @@ public class CommentController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<CommentGetMyResponseDto> comments = commentService.getMyComments(pageable);
+        PagedResponseDto<CommentMyResponseDto> comments = commentService.getMyComments(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(comments);
         return responseModel;
@@ -83,9 +83,9 @@ public class CommentController {
     @PatchMapping("/{commentId}")
     public ResponseModel updateComment(
             @PathVariable(name = "commentId") Long commentId,
-            @Valid @RequestBody CommentUpdateRequestDto commentUpdateRequestDto
+            @Valid @RequestBody CommentUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = commentService.updateComment(commentId, commentUpdateRequestDto);
+        Long id = commentService.updateComment(commentId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

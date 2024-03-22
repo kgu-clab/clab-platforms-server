@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.application.domain.ApplicationType;
-import page.clab.api.domain.recruitment.domain.Recruitment;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
 
@@ -33,9 +31,5 @@ public class RecruitmentUpdateRequestDto {
 
     @Schema(description = "상태", example = "종료")
     private String status;
-
-    public static RecruitmentUpdateRequestDto of(Recruitment recruitment) {
-        return ModelMapperUtil.getModelMapper().map(recruitment, RecruitmentUpdateRequestDto.class);
-    }
 
 }

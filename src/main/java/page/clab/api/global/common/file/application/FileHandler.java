@@ -106,11 +106,11 @@ public class FileHandler {
         return !Strings.isNullOrEmpty(fileName);
     }
 
-    private String makeSaveFileName(String extension){
+    private String makeSaveFileName(String extension) {
         return (System.nanoTime() + "_" + UUID.randomUUID() + "." + extension);
     }
 
-    private void checkDir(File file){
+    private void checkDir(File file) {
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }

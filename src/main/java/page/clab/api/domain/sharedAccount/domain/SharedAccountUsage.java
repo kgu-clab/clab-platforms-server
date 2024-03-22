@@ -89,7 +89,7 @@ public class SharedAccountUsage extends BaseEntity {
     public void determineStatus(LocalDateTime currentTime) {
         if (!currentTime.isBefore(startTime) && currentTime.isBefore(endTime)) {
             this.status = SharedAccountUsageStatus.IN_USE;
-            this.sharedAccount.setInUse(true);
+            this.sharedAccount.updateIsInUse(true);
         } else if (currentTime.isAfter(endTime)) {
             this.status = SharedAccountUsageStatus.COMPLETED;
         } else if (currentTime.isBefore(startTime)) {
@@ -117,7 +117,7 @@ public class SharedAccountUsage extends BaseEntity {
         }
         setStatus(SharedAccountUsageStatus.CANCELED);
         if (SharedAccountUsageStatus.IN_USE.equals(status)) {
-            sharedAccount.setInUse(false);
+            this.sharedAccount.updateIsInUse(false);
         }
     }
 
@@ -126,7 +126,7 @@ public class SharedAccountUsage extends BaseEntity {
             throw new SharedAccountUsageStateException("IN_USE 상태에서만 완료할 수 있습니다.");
         }
         setStatus(SharedAccountUsageStatus.COMPLETED);
-        sharedAccount.setInUse(false);
+        this.sharedAccount.updateIsInUse(false);
     }
 
     private boolean isInUsableState() {

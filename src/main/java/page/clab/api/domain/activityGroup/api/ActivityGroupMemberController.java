@@ -63,14 +63,14 @@ public class ActivityGroupMemberController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/status")
     public ResponseModel getActivityGroupsByStatus (
-            @RequestParam(name = "activityGroupStatus") ActivityGroupStatus activityGroupStatus,
+            @RequestParam(name = "activityGroupStatus") ActivityGroupStatus status,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ActivityGroupStatusResponseDto> activityGroupList = activityGroupMemberService.getActivityGroupsByStatus(activityGroupStatus, pageable);
+        PagedResponseDto<ActivityGroupStatusResponseDto> activityGroups = activityGroupMemberService.getActivityGroupsByStatus(status, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(activityGroupList);
+        responseModel.addData(activityGroups);
         return responseModel;
     }
 
@@ -124,9 +124,9 @@ public class ActivityGroupMemberController {
     @PostMapping("/apply")
     public ResponseModel applyActivityGroup(
             @RequestParam Long activityGroupId,
-            @Valid @RequestBody ApplyFormRequestDto formRequestDto
+            @Valid @RequestBody ApplyFormRequestDto requestDto
     ) {
-        Long id = activityGroupMemberService.applyActivityGroup(activityGroupId, formRequestDto);
+        Long id = activityGroupMemberService.applyActivityGroup(activityGroupId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

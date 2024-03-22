@@ -14,11 +14,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.donation.dto.request.DonationRequestDto;
 import page.clab.api.domain.donation.dto.request.DonationUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.util.Optional;
 
@@ -45,12 +43,6 @@ public class Donation extends BaseEntity {
     @Column(nullable = false)
     @Size(min = 1, max = 1000, message = "{size.donation.message}")
     private String message;
-
-    public static Donation of(DonationRequestDto donationRequestDto, Member member) {
-        Donation donation = ModelMapperUtil.getModelMapper().map(donationRequestDto, Donation.class);
-        donation.setDonor(member);
-        return donation;
-    }
 
     public void update(DonationUpdateRequestDto donationUpdateRequestDto) {
         Optional.ofNullable(donationUpdateRequestDto.getAmount()).ifPresent(this::setAmount);

@@ -13,12 +13,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.blog.dto.request.BlogRequestDto;
 import page.clab.api.domain.blog.dto.request.BlogUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.util.Optional;
 
@@ -51,17 +49,11 @@ public class Blog extends BaseEntity {
 
     private String imageUrl;
 
-    public static Blog create(BlogRequestDto blogRequestDto, Member member) {
-        Blog blog = ModelMapperUtil.getModelMapper().map(blogRequestDto, Blog.class);
-        blog.setMember(member);
-        return blog;
-    }
-
-    public void update(BlogUpdateRequestDto blogUpdateRequestDto) {
-        Optional.ofNullable(blogUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
-        Optional.ofNullable(blogUpdateRequestDto.getSubTitle()).ifPresent(this::setSubTitle);
-        Optional.ofNullable(blogUpdateRequestDto.getContent()).ifPresent(this::setContent);
-        Optional.ofNullable(blogUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
+    public void update(BlogUpdateRequestDto requestDto) {
+        Optional.ofNullable(requestDto.getTitle()).ifPresent(this::setTitle);
+        Optional.ofNullable(requestDto.getSubTitle()).ifPresent(this::setSubTitle);
+        Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
+        Optional.ofNullable(requestDto.getImageUrl()).ifPresent(this::setImageUrl);
     }
 
     public boolean isOwner(Member member) {

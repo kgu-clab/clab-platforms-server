@@ -12,10 +12,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
-import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter
 @Setter
@@ -39,12 +37,5 @@ public class ApplyForm extends BaseEntity {
 
     @Column(nullable = false)
     private String applyReason;
-
-    public static ApplyForm create(ApplyFormRequestDto applyFormRequestDto, ActivityGroup activityGroup, Member member) {
-        ApplyForm applyForm = ModelMapperUtil.getModelMapper().map(applyFormRequestDto, ApplyForm.class);
-        applyForm.setActivityGroup(activityGroup);
-        applyForm.setMember(member);
-        return applyForm;
-    }
 
 }

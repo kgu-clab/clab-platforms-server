@@ -22,8 +22,8 @@ public class SharedAccountService {
 
     private final SharedAccountRepository sharedAccountRepository;
 
-    public Long createSharedAccount(SharedAccountRequestDto sharedAccountRequestDto) {
-        SharedAccount sharedAccount = SharedAccount.create(sharedAccountRequestDto);
+    public Long createSharedAccount(SharedAccountRequestDto requestDto) {
+        SharedAccount sharedAccount = SharedAccountRequestDto.toEntity(requestDto);
         validationService.checkValid(sharedAccount);
         return sharedAccountRepository.save(sharedAccount).getId();
     }
@@ -31,12 +31,13 @@ public class SharedAccountService {
     @Transactional(readOnly = true)
     public PagedResponseDto<SharedAccountResponseDto> getSharedAccounts(Pageable pageable) {
         Page<SharedAccount> sharedAccounts = sharedAccountRepository.findAllByOrderByIdAsc(pageable);
-        return new PagedResponseDto<>(sharedAccounts.map(SharedAccountResponseDto::of));
+        return new PagedResponseDto<>(sharedAccounts.map(SharedAccountResponseDto::toDto));
     }
 
-    public Long updateSharedAccount(Long accountId, SharedAccountUpdateRequestDto sharedAccountUpdateRequestDto) {
+    @Transactional
+    public Long updateSharedAccount(Long accountId, SharedAccountUpdateRequestDto requestDto) {
         SharedAccount sharedAccount = getSharedAccountByIdOrThrow(accountId);
-        sharedAccount.update(sharedAccountUpdateRequestDto);
+        sharedAccount.update(requestDto);
         validationService.checkValid(sharedAccount);
         return sharedAccountRepository.save(sharedAccount).getId();
     }

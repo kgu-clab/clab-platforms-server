@@ -15,8 +15,8 @@ import page.clab.api.global.exception.InvalidInformationException;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@RedisHash(value = "verification-code", timeToLive = 60*3)
-public class VerificationCode {
+@RedisHash(value = "verification", timeToLive = 60*3)
+public class Verification {
 
     @Id
     @Column(name = "member_id", nullable = false)
@@ -28,8 +28,8 @@ public class VerificationCode {
     @Column(nullable = false)
     private String verificationCode;
 
-    public static VerificationCode create(String memberId, String verificationCode) {
-        return VerificationCode.builder()
+    public static Verification create(String memberId, String verificationCode) {
+        return Verification.builder()
                 .id(memberId)
                 .verificationCode(verificationCode)
                 .build();

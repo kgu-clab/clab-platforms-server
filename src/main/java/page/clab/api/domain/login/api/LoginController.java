@@ -40,12 +40,12 @@ public class LoginController {
     @Operation(summary = "멤버 로그인", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("")
     public ResponseModel login(
-            HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse,
-            @Valid @RequestBody LoginRequestDto loginRequestDto
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @Valid @RequestBody LoginRequestDto requestDto
     ) throws MemberLockedException, LoginFaliedException {
-        LoginHeader headerData = loginService.login(httpServletRequest, loginRequestDto);
-        httpServletResponse.setHeader(authHeader, headerData.toJson());
+        LoginHeader headerData = loginService.login(request, requestDto);
+        response.setHeader(authHeader, headerData.toJson());
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
@@ -53,12 +53,12 @@ public class LoginController {
     @Operation(summary = "TOTP 인증", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("/authenticator")
     public ResponseModel authenticator(
-            HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse,
-            @Valid @RequestBody TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @Valid @RequestBody TwoFactorAuthenticationRequestDto requestDto
     ) throws LoginFaliedException, MemberLockedException {
-        TokenHeader headerData = loginService.authenticator(httpServletRequest, twoFactorAuthenticationRequestDto);
-        httpServletResponse.setHeader(authHeader, headerData.toJson());
+        TokenHeader headerData = loginService.authenticator(request, requestDto);
+        response.setHeader(authHeader, headerData.toJson());
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }
@@ -91,11 +91,11 @@ public class LoginController {
     @PostMapping("/reissue")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel reissue(
-            HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse
+            HttpServletRequest request,
+            HttpServletResponse response
     ) {
-        TokenHeader headerData = loginService.reissue(httpServletRequest);
-        httpServletResponse.setHeader(authHeader, headerData.toJson());
+        TokenHeader headerData = loginService.reissue(request);
+        response.setHeader(authHeader, headerData.toJson());
         ResponseModel responseModel = ResponseModel.builder().build();
         return responseModel;
     }

@@ -40,9 +40,9 @@ public class BoardController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createBoard(
-            @Valid @RequestBody BoardRequestDto boardRequestDto
+            @Valid @RequestBody BoardRequestDto requestDto
     ) {
-        Long id = boardService.createBoard(boardRequestDto);
+        Long id = boardService.createBoard(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -108,9 +108,9 @@ public class BoardController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel updateBoard(
             @PathVariable(name = "boardId") Long boardId,
-            @Valid @RequestBody BoardUpdateRequestDto boardUpdateRequestDto
+            @Valid @RequestBody BoardUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = boardService.updateBoard(boardId, boardUpdateRequestDto);
+        Long id = boardService.updateBoard(boardId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

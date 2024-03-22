@@ -38,9 +38,9 @@ public class AwardController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createAward(
-            @Valid @RequestBody AwardRequestDto awardRequestDto
+            @Valid @RequestBody AwardRequestDto requestDto
     ) {
-        Long id = awardService.createAward(awardRequestDto);
+        Long id = awardService.createAward(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -58,9 +58,9 @@ public class AwardController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.getAwardsByConditions(memberId, year, pageable);
+        PagedResponseDto<AwardResponseDto> awards = awardService.getAwardsByConditions(memberId, year, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(awardResponseDtos);
+        responseModel.addData(awards);
         return responseModel;
     }
 
@@ -72,9 +72,9 @@ public class AwardController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AwardResponseDto> awardResponseDtos = awardService.getMyAwards(pageable);
+        PagedResponseDto<AwardResponseDto> myAwards = awardService.getMyAwards(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(awardResponseDtos);
+        responseModel.addData(myAwards);
         return responseModel;
     }
 
@@ -84,9 +84,9 @@ public class AwardController {
     @PatchMapping("/{awardId}")
     public ResponseModel updateAward(
             @PathVariable(name = "awardId") Long awardId,
-            @Valid @RequestBody AwardUpdateRequestDto awardUpdateRequestDto
+            @Valid @RequestBody AwardUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = awardService.updateAward(awardId, awardUpdateRequestDto);
+        Long id = awardService.updateAward(awardId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

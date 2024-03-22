@@ -4,16 +4,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import page.clab.api.domain.news.domain.News;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Getter
 @Setter
-@ToString
 public class NewsRequestDto {
 
     @NotNull(message = "{notNull.news.title}")
@@ -42,8 +39,15 @@ public class NewsRequestDto {
     @Schema(description = "날짜", example = "2021-08-31", required = true)
     private LocalDate date;
 
-    public static NewsRequestDto of(News news) {
-        return ModelMapperUtil.getModelMapper().map(news, NewsRequestDto.class);
+    public static News toEntity(NewsRequestDto requestDto) {
+        return News.builder()
+                .title(requestDto.getTitle())
+                .category(requestDto.getCategory())
+                .content(requestDto.getContent())
+                .articleUrl(requestDto.getArticleUrl())
+                .source(requestDto.getSource())
+                .date(requestDto.getDate())
+                .build();
     }
 
 }

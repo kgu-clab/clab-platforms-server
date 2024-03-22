@@ -15,17 +15,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.board.dto.request.BoardRequestDto;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.domain.Role;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.ModelMapperUtil;
-import page.clab.api.global.util.RandomNicknameUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,22 +58,12 @@ public class Board extends BaseEntity {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_files")
-    private List<UploadedFile> uploadedFiles = new ArrayList<>();
+    private List<UploadedFile> uploadedFiles;
 
     @Column(nullable = false)
     private boolean wantAnonymous;
 
     private Long likes;
-
-    public static Board create(BoardRequestDto dto, Member member, List<UploadedFile> uploadedFiles) {
-        Board board = ModelMapperUtil.getModelMapper().map(dto, Board.class);
-        board.setMember(member);
-        board.setUploadedFiles(uploadedFiles);
-        board.setNickname(RandomNicknameUtil.makeRandomNickname());
-        board.setWantAnonymous(dto.isWantAnonymous());
-        board.setLikes(0L);
-        return board;
-    }
 
     public void update(BoardUpdateRequestDto boardUpdateRequestDto) {
         Optional.ofNullable(boardUpdateRequestDto.getCategory()).ifPresent(this::setCategory);

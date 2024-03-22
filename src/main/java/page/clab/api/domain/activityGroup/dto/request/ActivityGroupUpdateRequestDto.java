@@ -6,9 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
 
@@ -47,9 +45,5 @@ public class ActivityGroupUpdateRequestDto {
 
     @Schema(description = "Github URL", example = "https://github.com/KGU-C-Lab")
     private String githubUrl;
-
-    public static ActivityGroupUpdateRequestDto of(ActivityGroup activityGroup) {
-        return ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupUpdateRequestDto.class);
-    }
 
 }

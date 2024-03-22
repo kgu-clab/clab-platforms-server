@@ -17,7 +17,6 @@ import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.jobPosting.dto.request.JobPostingRequestDto;
 import page.clab.api.domain.jobPosting.dto.request.JobPostingUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.util.Optional;
 
@@ -53,10 +52,6 @@ public class JobPosting extends BaseEntity {
     @Size(max = 1000, message = "{size.jobPosting.jobPostingUrl}")
     @URL(message = "{url.jobPosting.jobPostingUrl}")
     private String jobPostingUrl;
-
-    public static JobPosting of(JobPostingRequestDto jobPostingRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(jobPostingRequestDto, JobPosting.class);
-    }
 
     public void update(JobPostingUpdateRequestDto jobPostingUpdateRequestDto) {
         Optional.ofNullable(jobPostingUpdateRequestDto.getTitle()).ifPresent(this::setTitle);

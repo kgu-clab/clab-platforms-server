@@ -38,9 +38,9 @@ public class ApplicationController {
     @PostMapping("")
     public ResponseModel createApplication(
             HttpServletRequest request,
-            @Valid @RequestBody ApplicationRequestDto applicationRequestDto
+            @Valid @RequestBody ApplicationRequestDto requestDto
     ) {
-        String id = applicationService.createApplication(request, applicationRequestDto);
+        String id = applicationService.createApplication(request, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -85,9 +85,9 @@ public class ApplicationController {
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "studentId") String studentId
     ) {
-        ApplicationPassResponseDto applicationPassResponseDto = applicationService.getApplicationPass(recruitmentId, studentId);
+        ApplicationPassResponseDto pass = applicationService.getApplicationPass(recruitmentId, studentId);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(applicationPassResponseDto);
+        responseModel.addData(pass);
         return responseModel;
     }
 

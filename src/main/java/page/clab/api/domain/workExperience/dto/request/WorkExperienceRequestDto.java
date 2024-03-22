@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.workExperience.domain.WorkExperience;
 
 import java.time.LocalDate;
 
@@ -32,5 +34,15 @@ public class WorkExperienceRequestDto {
     @NotNull(message = "{notNull.workExperience.endDate}")
     @Schema(description = "종료일", example = "2023-12-31", required = true)
     private LocalDate endDate;
+
+    public static WorkExperience toEntity(WorkExperienceRequestDto requestDto, Member member) {
+        return WorkExperience.builder()
+                .companyName(requestDto.getCompanyName())
+                .position(requestDto.getPosition())
+                .startDate(requestDto.getStartDate())
+                .endDate(requestDto.getEndDate())
+                .member(member)
+                .build();
+    }
 
 }

@@ -26,8 +26,8 @@ public class BookService {
 
     private final BookLoanRecordRepository bookLoanRecordRepository;
 
-    public Long createBook(BookRequestDto bookRequestDto) {
-        Book book = Book.of(bookRequestDto);
+    public Long createBook(BookRequestDto requestDto) {
+        Book book = BookRequestDto.toEntity(requestDto);
         return bookRepository.save(book).getId();
     }
 
@@ -43,6 +43,7 @@ public class BookService {
         return mapToBookResponseDto(book);
     }
 
+    @Transactional
     public Long updateBookInfo(Long bookId, BookUpdateRequestDto bookUpdateRequestDto) {
         Book book = getBookByIdOrThrow(bookId);
         book.update(bookUpdateRequestDto);
@@ -77,7 +78,7 @@ public class BookService {
     private BookResponseDto mapToBookResponseDto(Book book) {
         BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNull(book);
         LocalDateTime dueDate = bookLoanRecord != null ? bookLoanRecord.getDueDate() : null;
-        return BookResponseDto.of(book, dueDate);
+        return BookResponseDto.toDto(book, dueDate);
     }
 
 }

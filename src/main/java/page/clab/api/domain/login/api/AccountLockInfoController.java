@@ -57,14 +57,14 @@ public class AccountLockInfoController {
     @Operation(summary = "[S] 밴 멤버 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getBanList(
+    public ResponseModel getBanMembers(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AccountLockInfoResponseDto> loginFailInfoResponseDtos = accountLockInfoService.getBanList(pageable);
+        PagedResponseDto<AccountLockInfoResponseDto> banMembers = accountLockInfoService.getBanMembers(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(loginFailInfoResponseDtos);
+        responseModel.addData(banMembers);
         return responseModel;
     }
 

@@ -8,8 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.accuse.domain.Accuse;
+import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.TargetType;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.domain.member.domain.Member;
 
 @Getter
 @Setter
@@ -30,8 +31,15 @@ public class AccuseRequestDto {
     @Schema(description = "신고 사유", example = "부적절한 게시글입니다.", required = true)
     private String reason;
 
-    public static AccuseRequestDto of(Accuse accuse) {
-        return ModelMapperUtil.getModelMapper().map(accuse, AccuseRequestDto.class);
+    public static Accuse toEntity(AccuseRequestDto requestDto, Member member) {
+        return Accuse.builder()
+                .id(null)
+                .member(member)
+                .targetType(requestDto.getTargetType())
+                .targetId(requestDto.getTargetId())
+                .reason(requestDto.getReason())
+                .accuseStatus(AccuseStatus.PENDING)
+                .build();
     }
 
 }

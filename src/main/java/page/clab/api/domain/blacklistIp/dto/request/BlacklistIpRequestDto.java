@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
 
 @Getter
 @Setter
@@ -21,5 +22,12 @@ public class BlacklistIpRequestDto {
 
     @Schema(description = "블랙리스트 사유", example = "스팸")
     private String reason;
+
+    public static BlacklistIp toEntity(BlacklistIpRequestDto requestDto) {
+        return BlacklistIp.builder()
+                .ipAddress(requestDto.getIpAddress())
+                .reason(requestDto.getReason())
+                .build();
+    }
 
 }

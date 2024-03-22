@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.product.domain.Product;
 
 @Getter
 @Setter
@@ -25,5 +26,13 @@ public class ProductRequestDto {
 
     @Schema(description = "URL", example = "https://github.com/KGU-C-Lab/petmily-server")
     private String url;
+
+    public static Product toEntity(ProductRequestDto requestDto) {
+        return Product.builder()
+                .name(requestDto.getName())
+                .description(requestDto.getDescription())
+                .url(requestDto.getUrl())
+                .build();
+    }
 
 }

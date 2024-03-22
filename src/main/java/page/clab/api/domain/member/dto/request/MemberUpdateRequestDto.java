@@ -6,9 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.domain.StudentStatus;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
 
@@ -48,9 +46,5 @@ public class MemberUpdateRequestDto {
 
     @Schema(description = "프로필 이미지", example = "https://www.clab.page/assets/dongmin-860f3a1e.jpeg")
     private String imageUrl;
-
-    public static MemberUpdateRequestDto of(Member member) {
-        return ModelMapperUtil.getModelMapper().map(member, MemberUpdateRequestDto.class);
-    }
 
 }

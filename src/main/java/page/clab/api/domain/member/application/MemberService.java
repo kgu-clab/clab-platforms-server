@@ -28,9 +28,9 @@ import page.clab.api.domain.position.domain.PositionType;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.email.application.EmailService;
-import page.clab.api.global.common.verificationCode.application.VerificationCodeService;
-import page.clab.api.global.common.verificationCode.domain.VerificationCode;
-import page.clab.api.global.common.verificationCode.dto.request.VerificationCodeRequestDto;
+import page.clab.api.global.common.verificationCode.application.VerificationService;
+import page.clab.api.global.common.verificationCode.domain.Verification;
+import page.clab.api.global.common.verificationCode.dto.request.VerificationRequestDto;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -38,7 +38,6 @@ import page.clab.api.global.validation.ValidationService;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -46,7 +45,7 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class MemberService {
 
-    private final VerificationCodeService verificationCodeService;
+    private final VerificationService verificationService;
 
     private final ValidationService validationService;
 
@@ -66,9 +65,9 @@ public class MemberService {
     }
 
     @Transactional
-    public String createMember(MemberRequestDto memberRequestDto) {
-        checkMemberUniqueness(memberRequestDto);
-        Member member = Member.of(memberRequestDto);
+    public String createMember(MemberRequestDto requestDto) {
+        checkMemberUniqueness(requestDto);
+        Member member = MemberRequestDto.toEntity(requestDto);
         validationService.checkValid(member);
         setupMemberPassword(member);
         memberRepository.save(member);
@@ -93,50 +92,51 @@ public class MemberService {
     public List<MemberResponseDto> getMembers() {
         List<Member> members = memberRepository.findAll();
         return members.stream()
-                .map(MemberResponseDto::of)
+                .map(MemberResponseDto::toDto)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<MemberResponseDto> getMembersByConditions(String id, String name, Pageable pageable) {
         Page<Member> members = memberRepository.findByConditions(id, name, pageable);
-        return new PagedResponseDto<>(members.map(MemberResponseDto::of));
+        return new PagedResponseDto<>(members.map(MemberResponseDto::toDto));
     }
 
     @Transactional(readOnly = true)
     public MyProfileResponseDto getMyProfile() {
         Member currentMember = getCurrentMember();
-        return MyProfileResponseDto.of(currentMember);
+        return MyProfileResponseDto.toDto(currentMember);
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<MemberBirthdayResponseDto> getBirthdaysThisMonth(int month, Pageable pageable) {
         Page<Member> birthdayMembers = memberRepository.findBirthdaysThisMonth(month, pageable);
-        return new PagedResponseDto<>(birthdayMembers.map(MemberBirthdayResponseDto::of));
+        return new PagedResponseDto<>(birthdayMembers.map(MemberBirthdayResponseDto::toDto));
     }
 
-    public String updateMemberInfo(String memberId, MemberUpdateRequestDto memberUpdateRequestDto) throws PermissionDeniedException {
+    @Transactional
+    public String updateMemberInfo(String memberId, MemberUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
         member.validateAccessPermission(currentMember);
-        member.update(memberUpdateRequestDto, passwordEncoder);
+        member.update(requestDto, passwordEncoder);
         validationService.checkValid(member);
         return memberRepository.save(member).getId();
     }
 
     @Transactional
-    public void requestResetMemberPassword(MemberResetPasswordRequestDto memberResetPasswordRequestDto) {
-        Member member = validateResetPasswordRequest(memberResetPasswordRequestDto);
-        String code = verificationCodeService.generateVerificationCode();
-        verificationCodeService.saveVerificationCode(member.getId(), code);
+    public void requestResetMemberPassword(MemberResetPasswordRequestDto requestDto) {
+        Member member = validateResetPasswordRequest(requestDto);
+        String code = verificationService.generateVerificationCode();
+        verificationService.saveVerificationCode(member.getId(), code);
         emailService.sendPasswordResetEmail(member, code);
     }
 
     @Transactional
-    public void verifyResetMemberPassword(VerificationCodeRequestDto verificationCodeRequestDto) {
-        Member member = getMemberByIdOrThrow(verificationCodeRequestDto.getMemberId());
-        VerificationCode verificationCode = verificationCodeService.validateVerificationCode(verificationCodeRequestDto, member);
-        updateMemberPasswordWithVerificationCode(verificationCode.getVerificationCode(), member);
+    public void verifyResetMemberPassword(VerificationRequestDto requestDto) {
+        Member member = getMemberByIdOrThrow(requestDto.getMemberId());
+        Verification verification = verificationService.validateVerificationCode(requestDto, member);
+        updateMemberPasswordWithVerificationCode(verification.getVerificationCode(), member);
     }
 
     public Member getMemberById(String memberId) {
@@ -192,7 +192,7 @@ public class MemberService {
     }
 
     private Member createMemberByApplication(Application application) {
-        Member member = Member.of(application);
+        Member member = Application.toMember(application);
         validationService.checkValid(member);
         Member existingMember = memberRepository.findById(member.getId()).orElse(null);
         if (existingMember != null) {
@@ -204,7 +204,7 @@ public class MemberService {
     }
 
     private void setRandomPasswordAndSendEmail(Member member) {
-        String password = verificationCodeService.generateVerificationCode();
+        String password = verificationService.generateVerificationCode();
         member.updatePassword(password, passwordEncoder);
         CompletableFuture.runAsync(() -> {
             try {
@@ -215,12 +215,12 @@ public class MemberService {
         });
     }
 
-    private void checkMemberUniqueness(MemberRequestDto memberRequestDto) {
-        if (memberRepository.findById(memberRequestDto.getId()).isPresent())
+    private void checkMemberUniqueness(MemberRequestDto requestDto) {
+        if (memberRepository.findById(requestDto.getId()).isPresent())
             throw new AssociatedAccountExistsException("이미 사용 중인 아이디입니다.");
-        if (memberRepository.findByContact(memberRequestDto.getContact()).isPresent())
+        if (memberRepository.findByContact(requestDto.getContact()).isPresent())
             throw new AssociatedAccountExistsException("이미 사용 중인 연락처입니다.");
-        if (memberRepository.findByEmail(memberRequestDto.getEmail()).isPresent())
+        if (memberRepository.findByEmail(requestDto.getEmail()).isPresent())
             throw new AssociatedAccountExistsException("이미 사용 중인 이메일입니다.");
     }
 
@@ -228,18 +228,13 @@ public class MemberService {
         if (positionRepository.findByMemberAndYearAndPositionType(member, String.valueOf(LocalDate.now().getYear()), PositionType.MEMBER).isPresent()) {
             return;
         }
-        Position position = Position.builder()
-                .member(member)
-                .positionType(PositionType.MEMBER)
-                .year(String.valueOf(LocalDate.now().getYear()))
-                .build();
+        Position position = Position.create(member);
         positionRepository.save(position);
     }
 
-    private Member validateResetPasswordRequest(MemberResetPasswordRequestDto memberResetPasswordRequestDto) {
-        Member member = getMemberByIdOrThrow(memberResetPasswordRequestDto.getId());
-        if (!(Objects.equals(member.getName(), memberResetPasswordRequestDto.getName())
-                && Objects.equals(member.getEmail(), memberResetPasswordRequestDto.getEmail()))) {
+    private Member validateResetPasswordRequest(MemberResetPasswordRequestDto requestDto) {
+        Member member = getMemberByIdOrThrow(requestDto.getId());
+        if (!member.isSameName(requestDto.getName()) || !member.isSameEmail(requestDto.getEmail())) {
             throw new InvalidInformationException("올바르지 않은 정보입니다.");
         }
         return member;
@@ -247,7 +242,7 @@ public class MemberService {
 
     private void updateMemberPasswordWithVerificationCode(String verificationCode, Member member) {
         member.updatePassword(verificationCode, passwordEncoder);
-        verificationCodeService.deleteVerificationCode(verificationCode);
+        verificationService.deleteVerificationCode(verificationCode);
     }
 
     public List<Member> getAdmins() {

@@ -1,6 +1,5 @@
 package page.clab.api.domain.activityGroup.dto.response;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,7 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
-import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -29,7 +29,15 @@ public class ActivityGroupResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static ActivityGroupResponseDto of(ActivityGroup activityGroup) {
-        return ModelMapperUtil.getModelMapper().map(activityGroup, ActivityGroupResponseDto.class);
+    public static ActivityGroupResponseDto toDto(ActivityGroup activityGroup) {
+        return ActivityGroupResponseDto.builder()
+                .id(activityGroup.getId())
+                .name(activityGroup.getName())
+                .category(activityGroup.getCategory())
+                .subject(activityGroup.getSubject())
+                .imageUrl(activityGroup.getImageUrl())
+                .createdAt(activityGroup.getCreatedAt())
+                .build();
     }
+
 }

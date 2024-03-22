@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
 
@@ -27,17 +26,14 @@ public class BoardCategoryResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static BoardCategoryResponseDto of(Board board) {
-        BoardCategoryResponseDto boardCategoryResponseDto = ModelMapperUtil.getModelMapper().map(board, BoardCategoryResponseDto.class);
-
-        if(board.isWantAnonymous()){
-            boardCategoryResponseDto.setWriter(board.getNickname());
-        }
-        else{
-            boardCategoryResponseDto.setWriter(board.getMember().getName());
-        }
-
-        return boardCategoryResponseDto;
+    public static BoardCategoryResponseDto toDto(Board board) {
+        return BoardCategoryResponseDto.builder()
+                .id(board.getId())
+                .category(board.getCategory())
+                .writer(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
+                .title(board.getTitle())
+                .createdAt(board.getCreatedAt())
+                .build();
     }
 
 }

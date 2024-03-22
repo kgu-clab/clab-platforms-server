@@ -1,13 +1,13 @@
 package page.clab.api.domain.membershipFee.dto.response;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
-import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -32,12 +32,17 @@ public class MembershipFeeResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static MembershipFeeResponseDto of(MembershipFee membershipFee) {
-        MembershipFeeResponseDto membershipFeeResponseDto = ModelMapperUtil.getModelMapper()
-                .map(membershipFee, MembershipFeeResponseDto.class);
-        membershipFeeResponseDto.setMemberId(membershipFee.getApplicant().getId());
-        membershipFeeResponseDto.setMemberName(membershipFee.getApplicant().getName());
-        return membershipFeeResponseDto;
+    public static MembershipFeeResponseDto toDto(MembershipFee membershipFee) {
+        return MembershipFeeResponseDto.builder()
+                .id(membershipFee.getId())
+                .memberId(membershipFee.getApplicant().getId())
+                .memberName(membershipFee.getApplicant().getName())
+                .category(membershipFee.getCategory())
+                .amount(membershipFee.getAmount())
+                .content(membershipFee.getContent())
+                .imageUrl(membershipFee.getImageUrl())
+                .createdAt(membershipFee.getCreatedAt())
+                .build();
     }
 
 }

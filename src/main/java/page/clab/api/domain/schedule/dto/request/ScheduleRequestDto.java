@@ -2,14 +2,18 @@ package page.clab.api.domain.schedule.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.ScheduleType;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -40,5 +44,18 @@ public class ScheduleRequestDto {
     private LocalDateTime endDateTime;
 
     private Long activityGroupId;
+
+    public static Schedule toEntity(ScheduleRequestDto requestDto, Member member, ActivityGroup activityGroup) {
+        return Schedule.builder()
+                .id(null)
+                .scheduleType(requestDto.getScheduleType())
+                .title(requestDto.getTitle())
+                .detail(requestDto.getDetail())
+                .startDateTime(requestDto.getStartDateTime())
+                .endDateTime(requestDto.getEndDateTime())
+                .scheduleWriter(member)
+                .activityGroup(activityGroup)
+                .build();
+    }
 
 }

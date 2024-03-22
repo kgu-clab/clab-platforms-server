@@ -35,9 +35,9 @@ public class RecruitmentController {
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createRecruitment(
-            @Valid @RequestBody RecruitmentRequestDto recruitmentRequestDto
+            @Valid @RequestBody RecruitmentRequestDto requestDto
     ) {
-        Long id = recruitmentService.createRecruitment(recruitmentRequestDto);
+        Long id = recruitmentService.createRecruitment(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -58,9 +58,9 @@ public class RecruitmentController {
     @PatchMapping("/{recruitmentId}")
     public ResponseModel updateRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
-            @Valid @RequestBody RecruitmentUpdateRequestDto recruitmentUpdateRequestDto
+            @Valid @RequestBody RecruitmentUpdateRequestDto requestDto
     ) {
-        Long id = recruitmentService.updateRecruitment(recruitmentId, recruitmentUpdateRequestDto);
+        Long id = recruitmentService.updateRecruitment(recruitmentId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

@@ -21,17 +21,17 @@ public class LoginAttemptLogService {
 
     private final LoginAttemptLogRepository loginAttemptLogRepository;
 
-    public void createLoginAttemptLog(HttpServletRequest httpServletRequest, String memberId, LoginAttemptResult loginAttemptResult) {
+    public void createLoginAttemptLog(HttpServletRequest request, String memberId, LoginAttemptResult loginAttemptResult) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         GeoIpInfo geoIpInfo = GeoIpUtil.getInfoByIp(clientIpAddress);
-        LoginAttemptLog loginAttemptLog = LoginAttemptLog.create(memberId, httpServletRequest, clientIpAddress, geoIpInfo, loginAttemptResult);
+        LoginAttemptLog loginAttemptLog = LoginAttemptLog.create(memberId, request, clientIpAddress, geoIpInfo, loginAttemptResult);
         loginAttemptLogRepository.save(loginAttemptLog);
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<LoginAttemptLogResponseDto> getLoginAttemptLogs(String memberId, Pageable pageable) {
         Page<LoginAttemptLog> loginAttemptLogs = getLoginAttemptByMemberId(pageable, memberId);
-        return new PagedResponseDto<>(loginAttemptLogs.map(LoginAttemptLogResponseDto::of));
+        return new PagedResponseDto<>(loginAttemptLogs.map(LoginAttemptLogResponseDto::toDto));
     }
 
     private Page<LoginAttemptLog> getLoginAttemptByMemberId(Pageable pageable, String memberId) {

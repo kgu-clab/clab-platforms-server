@@ -29,13 +29,4 @@ public class BlacklistIp extends BaseEntity {
 
     private String reason;
 
-    private BlacklistIp(String ipAddress, String reason) {
-        this.ipAddress = ipAddress;
-        this.reason = reason;
-    }
-
-    public static BlacklistIp create(String ipAddress, String reason) {
-        return new BlacklistIp(ipAddress, reason);
-    }
-
 }

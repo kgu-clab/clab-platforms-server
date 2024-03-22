@@ -36,24 +36,24 @@ public class NotificationService {
         this.memberService = memberService;
     }
 
-    public Long createNotification(NotificationRequestDto notificationRequestDto) {
-        Member member = memberService.getMemberByIdOrThrow(notificationRequestDto.getMemberId());
-        Notification notification = Notification.create(notificationRequestDto, member);
+    public Long createNotification(NotificationRequestDto requestDto) {
+        Member member = memberService.getMemberByIdOrThrow(requestDto.getMemberId());
+        Notification notification = NotificationRequestDto.toEntity(requestDto, member);
         validationService.checkValid(notification);
         return notificationRepository.save(notification).getId();
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<NotificationResponseDto> getNotifications(Pageable pageable) {
-        Member member = memberService.getCurrentMember();
-        Page<Notification> notifications = getNotificationByMember(member, pageable);
-        return new PagedResponseDto<>(notifications.map(NotificationResponseDto::of));
+        Member currentMember = memberService.getCurrentMember();
+        Page<Notification> notifications = getNotificationByMember(currentMember, pageable);
+        return new PagedResponseDto<>(notifications.map(NotificationResponseDto::toDto));
     }
 
     public Long deleteNotification(Long notificationId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Notification notification = getNotificationByIdOrThrow(notificationId);
-        notification.validateAccessPermission(member);
+        notification.validateAccessPermission(currentMember);
         notificationRepository.delete(notification);
         return notification.getId();
     }

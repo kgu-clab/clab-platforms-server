@@ -33,7 +33,7 @@ public class MemberCloudService {
     @Transactional(readOnly = true)
     public PagedResponseDto<CloudUsageInfo> getAllCloudUsages(Pageable pageable) {
         Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(members.map(this::getCloudUsageForMember).getContent(), pageable, members.getSize());
+        return new PagedResponseDto<>(members.map(this::getCloudUsageForMember));
     }
 
     @Transactional(readOnly = true)
@@ -43,7 +43,7 @@ public class MemberCloudService {
         targetMember.validateAccessPermissionForCloud(currentMember);
         File directory = getMemberDirectory(targetMember.getId());
         long usage = FileSystemUtil.calculateDirectorySize(directory);
-        return new CloudUsageInfo(targetMember.getId(), usage);
+        return CloudUsageInfo.create(targetMember.getId(), usage);
     }
 
     @Transactional(readOnly = true)
@@ -51,13 +51,13 @@ public class MemberCloudService {
         validateMemberExistence(memberId);
         File directory = getMemberDirectory(memberId);
         List<File> files = FileSystemUtil.getFilesInDirectory(directory);
-        return new PagedResponseDto<>(files.stream().map(FileInfo::of).toList(), pageable, files.size());
+        return new PagedResponseDto<>(files.stream().map(FileInfo::toDto).toList(), pageable, files.size());
     }
 
     private CloudUsageInfo getCloudUsageForMember(Member member) {
         File directory = getMemberDirectory(member.getId());
         long usage = FileSystemUtil.calculateDirectorySize(directory);
-        return new CloudUsageInfo(member.getId(), usage);
+        return CloudUsageInfo.create(member.getId(), usage);
     }
 
     private Member validateMemberExistence(String memberId) {

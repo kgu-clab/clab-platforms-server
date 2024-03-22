@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.activityGroup.domain.ActivityGroupReport;
 
 @Getter
 @Setter
@@ -30,5 +32,14 @@ public class ActivityGroupReportRequestDto {
     @NotNull(message = "notNull.report.content")
     @Schema(description = "내용", example = "변수, 자료형에 대해 공부", required = true)
     private String content;
+
+    public static ActivityGroupReport toEntity(ActivityGroupReportRequestDto requestDto, ActivityGroup activityGroup) {
+        return ActivityGroupReport.builder()
+                .turn(requestDto.getTurn())
+                .activityGroup(activityGroup)
+                .title(requestDto.getTitle())
+                .content(requestDto.getContent())
+                .build();
+    }
 
 }

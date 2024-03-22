@@ -20,13 +20,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
-import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -133,20 +130,14 @@ public class Member extends BaseEntity implements UserDetails {
         return true;
     }
 
-    public static Member of(MemberRequestDto memberRequestDto) {
-        Member member = ModelMapperUtil.getModelMapper().map(memberRequestDto, Member.class);
-        member.setContact(member.removeHyphensFromContact(member.getContact()));
-        member.setRole(Role.USER);
-        return member;
+    private Member(String id, String password, Role role) {
+        this.id = id;
+        this.password = password;
+        this.role = role;
     }
 
-    public static Member of(Application application) {
-        Member member = ModelMapperUtil.getModelMapper().map(application, Member.class);
-        member.setId(application.getStudentId());
-        member.setPassword(null);
-        member.setStudentStatus(StudentStatus.CURRENT);
-        member.setRole(Role.USER);
-        return member;
+    public static Member createUserDetails(Member member) {
+        return new Member(member.getId(), member.getPassword(), member.getRole());
     }
 
     public void update(MemberUpdateRequestDto memberUpdateRequestDto, PasswordEncoder passwordEncoder) {
@@ -179,6 +170,14 @@ public class Member extends BaseEntity implements UserDetails {
         return id.equals(memberId);
     }
 
+    public boolean isSameName(String memberName) {
+        return name.equals(memberName);
+    }
+
+    public boolean isSameEmail(String memberEmail) {
+        return email.equals(memberEmail);
+    }
+
     public boolean isOwner(Member member) {
         return this.isSameMember(member);
     }
@@ -193,10 +192,6 @@ public class Member extends BaseEntity implements UserDetails {
         if (!isOwner(member) && !member.isSuperAdminRole()) {
             throw new PermissionDeniedException("해당 멤버의 클라우드 사용량을 조회할 권한이 없습니다.");
         }
-    }
-
-    public String removeHyphensFromContact(String contact) {
-        return contact.replaceAll("-", "");
     }
 
     public void updatePassword(String password, PasswordEncoder passwordEncoder) {

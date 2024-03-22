@@ -15,10 +15,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
-import page.clab.api.global.util.ModelMapperUtil;
 
 @Entity
 @Getter
@@ -50,18 +48,6 @@ public class Accuse extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private AccuseStatus accuseStatus;
-
-    public static Accuse of(AccuseRequestDto accuseRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(accuseRequestDto, Accuse.class);
-    }
-
-    public static Accuse create(AccuseRequestDto accuseRequestDto, Member member) {
-        Accuse accuse = ModelMapperUtil.getModelMapper().map(accuseRequestDto, Accuse.class);
-        accuse.setId(null);
-        accuse.setMember(member);
-        accuse.setAccuseStatus(AccuseStatus.PENDING);
-        return accuse;
-    }
 
     public void updateReason(String reason) {
         this.reason = reason;

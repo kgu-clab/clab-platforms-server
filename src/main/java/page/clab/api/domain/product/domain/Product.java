@@ -12,10 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
-import page.clab.api.domain.product.dto.request.ProductRequestDto;
 import page.clab.api.domain.product.dto.request.ProductUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.util.Optional;
 
@@ -41,10 +39,6 @@ public class Product extends BaseEntity {
 
     @URL(message = "{url.product.url}")
     private String url;
-
-    public static Product of(ProductRequestDto productRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(productRequestDto, Product.class);
-    }
 
     public void update(ProductUpdateRequestDto productUpdateRequestDto) {
         Optional.ofNullable(productUpdateRequestDto.getName()).ifPresent(this::setName);

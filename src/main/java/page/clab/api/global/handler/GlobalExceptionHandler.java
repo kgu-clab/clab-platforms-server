@@ -103,7 +103,7 @@ public class GlobalExceptionHandler {
             NotApprovedApplicationException.class,
             DonationSearchArgumentLackException.class
     })
-    public ResponseModel badRequestException(HttpServletResponse response, Exception e){
+    public ResponseModel badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return ResponseUtil.createErrorResponse(false, null);
     }
@@ -121,7 +121,7 @@ public class GlobalExceptionHandler {
             TokenForgeryException.class,
             MessagingException.class,
     })
-    public ResponseModel unAuthorizeException(HttpServletResponse response, Exception e){
+    public ResponseModel unAuthorizeException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         return ResponseUtil.createErrorResponse(false, null);
     }
@@ -131,7 +131,7 @@ public class GlobalExceptionHandler {
             LoanSuspensionException.class,
             InvalidBorrowerException.class,
     })
-    public ResponseModel deniedException(HttpServletResponse response, Exception e){
+    public ResponseModel deniedException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         return ResponseUtil.createErrorResponse(false, null);
     }
@@ -144,7 +144,7 @@ public class GlobalExceptionHandler {
             FileNotFoundException.class,
             AddressNotFoundException.class,
     })
-    public ResponseModel notFoundException(HttpServletResponse response, Exception e){
+    public ResponseModel notFoundException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
         return ResponseUtil.createErrorResponse(true, new ArrayList<>());
     }
@@ -170,7 +170,7 @@ public class GlobalExceptionHandler {
             SharedAccountInUseException.class,
             SharedAccountUsageStateException.class
     })
-    public ResponseModel conflictException(HttpServletResponse response, Exception e){
+    public ResponseModel conflictException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_CONFLICT);
         return ResponseUtil.createErrorResponse(false, null);
     }
@@ -190,7 +190,7 @@ public class GlobalExceptionHandler {
             DecryptionException.class,
             Exception.class
     })
-    public ResponseModel serverException(HttpServletRequest request, HttpServletResponse response, Exception e){
+    public ResponseModel serverException(HttpServletRequest request, HttpServletResponse response, Exception e) {
         slackService.sendServerErrorNotification(request, e);
         log.warn(e.getMessage());
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

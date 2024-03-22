@@ -38,9 +38,9 @@ public class ReviewController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createReview(
-            @Valid @RequestBody ReviewRequestDto reviewRequestDto
+            @Valid @RequestBody ReviewRequestDto requestDto
     ) {
-        Long id = reviewService.createReview(reviewRequestDto);
+        Long id = reviewService.createReview(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -60,9 +60,9 @@ public class ReviewController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.getReviewsByConditions(memberId, memberName, activityId, isPublic, pageable);
+        PagedResponseDto<ReviewResponseDto> reviews = reviewService.getReviewsByConditions(memberId, memberName, activityId, isPublic, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(reviewResponseDtos);
+        responseModel.addData(reviews);
         return responseModel;
     }
 
@@ -74,9 +74,9 @@ public class ReviewController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.getMyReviews(pageable);
+        PagedResponseDto<ReviewResponseDto> myReviews = reviewService.getMyReviews(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(reviewResponseDtos);
+        responseModel.addData(myReviews);
         return responseModel;
     }
 
@@ -85,9 +85,9 @@ public class ReviewController {
     @PatchMapping("/{reviewId}")
     public ResponseModel updateReview(
             @PathVariable(name = "reviewId") Long reviewId,
-            @Valid @RequestBody ReviewUpdateRequestDto reviewUpdateRequestDto
+            @Valid @RequestBody ReviewUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = reviewService.updateReview(reviewId, reviewUpdateRequestDto);
+        Long id = reviewService.updateReview(reviewId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

@@ -38,9 +38,9 @@ public class WorkExperienceController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
     public ResponseModel createWorkExperience(
-            @Valid @RequestBody WorkExperienceRequestDto workExperienceRequestDto
+            @Valid @RequestBody WorkExperienceRequestDto requestDto
     ) {
-        Long id = workExperienceService.createWorkExperience(workExperienceRequestDto);
+        Long id = workExperienceService.createWorkExperience(requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;
@@ -55,9 +55,9 @@ public class WorkExperienceController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<WorkExperienceResponseDto> workExperienceResponseDtos = workExperienceService.getMyWorkExperience(pageable);
+        PagedResponseDto<WorkExperienceResponseDto> myWorkExperience = workExperienceService.getMyWorkExperience(pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(workExperienceResponseDtos);
+        responseModel.addData(myWorkExperience);
         return responseModel;
     }
 
@@ -71,9 +71,9 @@ public class WorkExperienceController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<WorkExperienceResponseDto> workExperienceResponseDtos = workExperienceService.getWorkExperiencesByConditions(memberId, pageable);
+        PagedResponseDto<WorkExperienceResponseDto> workExperiences = workExperienceService.getWorkExperiencesByConditions(memberId, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(workExperienceResponseDtos);
+        responseModel.addData(workExperiences);
         return responseModel;
     }
 
@@ -83,9 +83,9 @@ public class WorkExperienceController {
     @PatchMapping("/{workExperienceId}")
     public ResponseModel updateWorkExperience(
             @PathVariable(name = "workExperienceId") Long workExperienceId,
-            @Valid @RequestBody WorkExperienceUpdateRequestDto workExperienceUpdateRequestDto
+            @Valid @RequestBody WorkExperienceUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = workExperienceService.updateWorkExperience(workExperienceId, workExperienceUpdateRequestDto);
+        Long id = workExperienceService.updateWorkExperience(workExperienceId, requestDto);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(id);
         return responseModel;

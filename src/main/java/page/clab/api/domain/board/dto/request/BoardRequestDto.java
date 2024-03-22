@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.file.domain.UploadedFile;
+import page.clab.api.global.util.RandomNicknameUtil;
 
 import java.util.List;
 
@@ -38,8 +40,17 @@ public class BoardRequestDto {
     @Schema(description = "익명 사용 여부", example = "false", required = true)
     private boolean wantAnonymous;
 
-    public static BoardRequestDto of(Board board) {
-        return ModelMapperUtil.getModelMapper().map(board, BoardRequestDto.class);
+    public static Board toEntity(BoardRequestDto requestDto, Member member, List<UploadedFile> uploadedFiles) {
+        return Board.builder()
+                .member(member)
+                .nickname(RandomNicknameUtil.makeRandomNickname())
+                .category(requestDto.getCategory())
+                .title(requestDto.getTitle())
+                .content(requestDto.getContent())
+                .uploadedFiles(uploadedFiles)
+                .wantAnonymous(requestDto.isWantAnonymous())
+                .likes(0L)
+                .build();
     }
 
 }

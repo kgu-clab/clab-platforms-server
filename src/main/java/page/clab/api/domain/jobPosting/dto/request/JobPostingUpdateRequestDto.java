@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
-import page.clab.api.domain.jobPosting.domain.JobPosting;
-import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter
 @Setter
@@ -35,9 +33,5 @@ public class JobPostingUpdateRequestDto {
 
     @Schema(description = "채용 공고 URL", example = "https://recruit.navercorp.com/rcrt/view.do?annoId=30001804&sw=&subJobCdArr=1010001%2C1010002%2C1010003%2C1010004%2C1010005%2C1010006%2C1010007%2C1010008%2C1010020%2C1020001%2C1030001%2C1030002%2C1040001%2C1050001%2C1050002%2C1060001&sysCompanyCdArr=&empTypeCdArr=&entTypeCdArr=&workAreaCdArr=")
     private String jobPostingUrl;
-
-    public static JobPostingUpdateRequestDto of(JobPosting jobPosting) {
-        return ModelMapperUtil.getModelMapper().map(jobPosting, JobPostingUpdateRequestDto.class);
-    }
 
 }

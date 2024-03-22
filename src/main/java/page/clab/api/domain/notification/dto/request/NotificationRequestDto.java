@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.notification.domain.Notification;
 
 @Getter
 @Setter
@@ -22,5 +24,12 @@ public class NotificationRequestDto {
     @NotNull(message = "{notNull.notification.content}")
     @Schema(description = "내용", example = "알림 내용", required = true)
     private String content;
+
+    public static Notification toEntity(NotificationRequestDto requestDto, Member member) {
+        return Notification.builder()
+                .content(requestDto.getContent())
+                .member(member)
+                .build();
+    }
 
 }
