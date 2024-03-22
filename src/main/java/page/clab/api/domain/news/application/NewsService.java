@@ -12,7 +12,7 @@ import page.clab.api.domain.news.dto.request.NewsUpdateRequestDto;
 import page.clab.api.domain.news.dto.response.NewsDetailsResponseDto;
 import page.clab.api.domain.news.dto.response.NewsResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.validation.ValidationService;
 
@@ -20,7 +20,7 @@ import page.clab.api.global.validation.ValidationService;
 @RequiredArgsConstructor
 public class NewsService {
 
-    private final FileService fileService;
+    private final UploadedFileService uploadedFileService;
 
     private final ValidationService validationService;
 
@@ -29,7 +29,7 @@ public class NewsService {
     public Long createNews(NewsRequestDto requestDto) {
         News news = NewsRequestDto.toEntity(requestDto);
         validationService.checkValid(news);
-        news.setUploadedFiles(fileService.getUploadedFilesByUrls(requestDto.getFileUrlList()));
+        news.setUploadedFiles(uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList()));
         return newsRepository.save(news).getId();
     }
 

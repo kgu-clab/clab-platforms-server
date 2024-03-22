@@ -25,7 +25,7 @@ import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -51,7 +51,7 @@ public class ActivityGroupBoardService {
 
     private final ValidationService validationService;
 
-    private final FileService fileService;
+    private final UploadedFileService uploadedFileService;
 
     @Transactional
     public Long createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto requestDto) throws PermissionDeniedException {
@@ -62,7 +62,7 @@ public class ActivityGroupBoardService {
         }
 
         validateParentBoard(requestDto.getCategory(), parentId);
-        List<UploadedFile> uploadedFiles = fileService.getUploadedFilesByUrls(requestDto.getFileUrls());
+        List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrls());
 
         ActivityGroupBoard parentBoard = parentId != null ? getActivityGroupBoardByIdOrThrow(parentId) : null;
         ActivityGroupBoard board = ActivityGroupBoardRequestDto.toEntity(requestDto, currentMember, activityGroup, parentBoard, uploadedFiles);
@@ -131,7 +131,7 @@ public class ActivityGroupBoardService {
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
         board.validateAccessPermission(currentMember);
 
-        board.update(requestDto, fileService);
+        board.update(requestDto, uploadedFileService);
         validationService.checkValid(board);
         ActivityGroupBoard savedBoard = activityGroupBoardRepository.save(board);
         return ActivityGroupBoardUpdateResponseDto.toDto(savedBoard);

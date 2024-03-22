@@ -12,7 +12,6 @@ import page.clab.api.domain.activityGroup.dao.GroupMemberRepository;
 import page.clab.api.domain.member.application.MemberCloudService;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.global.common.file.dao.UploadFileRepository;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
@@ -33,13 +32,13 @@ import java.util.regex.Pattern;
 @Slf4j
 public class FileService {
 
-    private final UploadFileRepository uploadFileRepository;
-
     private final FileHandler fileHandler;
 
     private final MemberService memberService;
 
     private final MemberCloudService memberCloudService;
+
+    private final UploadedFileService uploadedFileService;
 
     private final ActivityGroupRepository activityGroupRepository;
 
@@ -58,32 +57,28 @@ public class FileService {
 
     public String saveQRCodeImage(byte[] QRCodeImage, String path, long storagePeriod, String nowDateTime) throws IOException {
         Member currentMember = memberService.getCurrentMember();
-        UploadedFile uploadedFile = new UploadedFile();
-
         String extension = "png";
-        String originalFileName = path.replace(File.separator.toString(), "-") + nowDateTime;
-        String url = fileURL + "/" + path.replace(File.separator.toString(), "/")
-                + fileHandler.saveQRCodeImage(QRCodeImage, path, originalFileName, extension, uploadedFile);
+        String originalFileName = path.replace(File.separator, "-") + nowDateTime;
+        String saveFilename = fileHandler.makeSaveFileName(extension);
+        String savePath = filePath + File.separator + path + File.separator + saveFilename;
+        String url = fileURL + "/" + path.replace(File.separator, "/") + "/" + saveFilename;
 
-        uploadedFile.setOriginalFileName(originalFileName);
-        uploadedFile.setStoragePeriod(storagePeriod);
-        uploadedFile.setContentType("image/png");
-        uploadedFile.setUploader(currentMember);
-        uploadedFile.setUrl(url);
-        uploadFileRepository.save(uploadedFile);
+        fileHandler.saveQRCodeImage(QRCodeImage, path, saveFilename, extension);
+        UploadedFile uploadedFile = UploadedFile.create(currentMember, originalFileName, saveFilename, savePath, url, (long) QRCodeImage.length, "image/png", storagePeriod, path);
+        uploadedFileService.saveUploadedFile(uploadedFile);
         return url;
-    }
-
-    public List<UploadedFileResponseDto> saveAssignmentFiles(List<MultipartFile> multipartFiles, Long activityGroupId, Long activityGroupBoardId, long storagePeriod) throws PermissionDeniedException, IOException {
-        Member currentMember = memberService.getCurrentMember();
-        String path = "assignment" + File.separator + activityGroupId + File.separator+ activityGroupBoardId + File.separator + currentMember.getId();
-        return saveFiles(multipartFiles, path, storagePeriod);
     }
 
     public UploadedFileResponseDto saveProfileFile(MultipartFile multipartFile, long storagePeriod) throws PermissionDeniedException, IOException {
         Member currentMember = memberService.getCurrentMember();
         String path = "profiles" + File.separator + currentMember.getId();
         return saveFile(multipartFile, path, storagePeriod);
+    }
+
+    public List<UploadedFileResponseDto> saveAssignmentFiles(List<MultipartFile> multipartFiles, Long activityGroupId, Long activityGroupBoardId, long storagePeriod) throws PermissionDeniedException, IOException {
+        Member currentMember = memberService.getCurrentMember();
+        String path = "assignment" + File.separator + activityGroupId + File.separator + activityGroupBoardId + File.separator + currentMember.getId();
+        return saveFiles(multipartFiles, path, storagePeriod);
     }
 
     public List<UploadedFileResponseDto> saveCloudFiles(List<MultipartFile> multipartFiles, long storagePeriod) throws PermissionDeniedException, IOException {
@@ -116,13 +111,13 @@ public class FileService {
             }
         }
 
-        UploadedFile existingUploadedFile = getUniqueUploadedFileByCategoryAndOriginalName(path, multipartFile.getOriginalFilename());
+        UploadedFile existingUploadedFile = uploadedFileService.getUniqueUploadedFileByCategoryAndOriginalName(path, multipartFile.getOriginalFilename());
         if (existingUploadedFile != null) {
             deleteFileBySavedPath(existingUploadedFile.getSavedPath());
         }
 
         if (path.startsWith("profiles")) {
-            UploadedFile profileFile = getUniqueUploadedFileByCategory(path);
+            UploadedFile profileFile = uploadedFileService.getUniqueUploadedFileByCategory(path);
             if (profileFile != null) {
                 deleteFileBySavedPath(profileFile.getSavedPath());
             }
@@ -136,7 +131,7 @@ public class FileService {
         uploadedFile.setContentType(multipartFile.getContentType());
         uploadedFile.setUploader(currentMember);
         uploadedFile.setUrl(url);
-        uploadFileRepository.save(uploadedFile);
+        uploadedFileService.saveUploadedFile(uploadedFile);
 
         return UploadedFileResponseDto.toDto(uploadedFile);
     }
@@ -166,45 +161,19 @@ public class FileService {
     public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         String url = deleteFileRequestDto.getUrl();
-        UploadedFile uploadedFile = getUploadedFileByUrl(url);
+        UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
         String filePath = uploadedFile.getSavedPath();
         File storedFile = new File(filePath);
         if (uploadedFile == null || !storedFile.exists()) {
             throw new NotFoundException("존재하지 않는 파일입니다.");
         }
-        if (!(uploadedFile.getUploader().getId().equals(currentMember.getId()) || currentMember.isSuperAdminRole())) {
-            throw new PermissionDeniedException("해당 파일을 삭제할 권한이 없습니다.");
-        }
+        uploadedFile.validateAccessPermission(currentMember);
         if (!storedFile.delete()) {
             log.info("파일 삭제 오류 : {}", filePath);
         }
         String deletedFileUrl = uploadedFile.getUrl();
         deleteFileBySavedPath(filePath);
         return deletedFileUrl;
-    }
-
-    public UploadedFile getUploadedFileByUrl(String url) {
-        return uploadFileRepository.findByUrl(url)
-                .orElseThrow(() -> new NotFoundException("파일을 찾을 수 없습니다."));
-    }
-
-    public List<UploadedFile> getUploadedFilesByUrls(List<String> fileUrls) {
-        if (fileUrls == null || fileUrls.isEmpty()) {
-            return new ArrayList<>();
-        }
-        List<UploadedFile> uploadedFiles = uploadFileRepository.findAllByUrlIn(fileUrls);
-        if (uploadedFiles.size() != fileUrls.size()) {
-            throw new NotFoundException("서버에 업로드되지 않은 파일이 포함되어 있습니다.");
-        }
-        return uploadedFiles;
-    }
-
-    public UploadedFile getUniqueUploadedFileByCategoryAndOriginalName(String category, String originalName) {
-        return uploadFileRepository.findTopByCategoryAndOriginalFileNameOrderByCreatedAtDesc(category, originalName);
-    }
-
-    public UploadedFile getUniqueUploadedFileByCategory(String category) {
-        return uploadFileRepository.findTopByCategoryOrderByCreatedAtDesc(category);
     }
 
     public void deleteFileBySavedPath(String savedPath) {

@@ -48,25 +48,14 @@ public class FileHandler {
         filePath = filePath.replace("/", File.separator).replace("\\", File.separator);
     }
 
-    public String saveQRCodeImage(byte[] image, String category, String originalFilename, String extension, UploadedFile uploadedFile) throws IOException {
+    public void saveQRCodeImage(byte[] image, String category, String saveFilename, String extension) throws IOException {
         init();
-
-        fileValidation(originalFilename, extension);
-        String saveFilename = makeSaveFileName(extension);
         String savePath = filePath + File.separator + category + File.separator + saveFilename;
-
         ByteArrayInputStream inputStream = new ByteArrayInputStream(image);
         BufferedImage bufferedImage = ImageIO.read(inputStream);
-
         File file = new File(savePath);
         checkDir(file);
         ImageIO.write(bufferedImage, extension, file);
-        save(file, savePath, extension);
-        uploadedFile.setFileSize(file.length());
-        uploadedFile.setSavedPath(savePath);
-        uploadedFile.setSaveFileName(saveFilename);
-        uploadedFile.setCategory(category);
-        return "/" + saveFilename;
     }
 
     public String saveFile(MultipartFile multipartFile, String category, UploadedFile uploadedFile) throws IOException {
@@ -88,11 +77,11 @@ public class FileHandler {
         uploadedFile.setCategory(category);
         return "/" + saveFilename;
     }
+
     private void fileValidation(String originalFilename, String extension) throws FileUploadFailException {
         if (!validateFilename(originalFilename)) {
             throw new FileUploadFailException("허용되지 않은 파일명 : " + originalFilename);
         }
-
         if (!validateExtension(extension)) {
             throw new FileUploadFailException("허용되지 않은 확장자 : " + originalFilename);
         }
@@ -106,7 +95,7 @@ public class FileHandler {
         return !Strings.isNullOrEmpty(fileName);
     }
 
-    private String makeSaveFileName(String extension) {
+    public String makeSaveFileName(String extension) {
         return (System.nanoTime() + "_" + UUID.randomUUID() + "." + extension);
     }
 

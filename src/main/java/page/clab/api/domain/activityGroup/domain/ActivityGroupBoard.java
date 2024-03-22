@@ -20,7 +20,7 @@ import lombok.Setter;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
-import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -73,11 +73,11 @@ public class ActivityGroupBoard extends BaseEntity {
 
     private LocalDateTime dueDateTime;
 
-    public void update(ActivityGroupBoardUpdateRequestDto requestDto, FileService fileService) {
+    public void update(ActivityGroupBoardUpdateRequestDto requestDto, UploadedFileService uploadedFileService) {
         Optional.ofNullable(requestDto.getTitle()).ifPresent(this::setTitle);
         Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
         Optional.ofNullable(requestDto.getDueDateTime()).ifPresent(this::setDueDateTime);
-        Optional.ofNullable(requestDto.getFileUrls()).ifPresent(urls -> { this.setUploadedFiles(fileService.getUploadedFilesByUrls(urls)); });
+        Optional.ofNullable(requestDto.getFileUrls()).ifPresent(urls -> { this.setUploadedFiles(uploadedFileService.getUploadedFilesByUrls(urls)); });
     }
 
     public void addChild(ActivityGroupBoard child) {
