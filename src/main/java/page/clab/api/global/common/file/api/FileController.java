@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/files")
+@RequestMapping("/api/v1/files")
 @RequiredArgsConstructor
 @Tag(name = "UploadedFile", description = "파일 업로드")
 @Slf4j

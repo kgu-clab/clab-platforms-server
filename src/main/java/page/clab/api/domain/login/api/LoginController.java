@@ -26,7 +26,7 @@ import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/api/v1/login")
 @RequiredArgsConstructor
 @Tag(name = "Login", description = "로그인")
 @Slf4j

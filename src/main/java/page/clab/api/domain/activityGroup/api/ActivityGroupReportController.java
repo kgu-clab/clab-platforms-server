@@ -26,7 +26,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
-@RequestMapping("/activity-group/report")
+@RequestMapping("/api/v1/activity-group/report")
 @RequiredArgsConstructor
 @Tag(name = "ActivityGroupReport", description = "활동 그룹 보고서")
 @Slf4j

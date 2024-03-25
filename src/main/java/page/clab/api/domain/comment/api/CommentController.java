@@ -27,7 +27,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/api/v1/comments")
 @RequiredArgsConstructor
 @Tag(name = "Comment", description = "댓글")
 @Slf4j

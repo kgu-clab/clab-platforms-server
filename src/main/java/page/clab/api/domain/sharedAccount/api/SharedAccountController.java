@@ -31,7 +31,7 @@ import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
-@RequestMapping("/shared-accounts")
+@RequestMapping("/api/v1/shared-accounts")
 @RequiredArgsConstructor
 @Tag(name = "SharedAccount", description = "공동 계정")
 @Slf4j

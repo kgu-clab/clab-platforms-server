@@ -27,7 +27,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
-@RequestMapping("/job-postings")
+@RequestMapping("/api/v1/job-postings")
 @RequiredArgsConstructor
 @Tag(name = "JobPosting", description = "채용 공고")
 @Slf4j

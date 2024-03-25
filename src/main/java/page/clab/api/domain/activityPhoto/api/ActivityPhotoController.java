@@ -24,7 +24,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
-@RequestMapping("/activity-photos")
+@RequestMapping("/api/v1/activity-photos")
 @RequiredArgsConstructor
 @Tag(name = "ActivityPhoto", description = "활동 사진")
 @Slf4j

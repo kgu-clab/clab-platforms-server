@@ -31,7 +31,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/members")
+@RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
 @Tag(name = "Member", description = "멤버")
 @Slf4j

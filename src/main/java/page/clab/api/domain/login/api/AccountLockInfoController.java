@@ -20,7 +20,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
-@RequestMapping("/account-lock-info")
+@RequestMapping("/api/v1/account-lock-info")
 @RequiredArgsConstructor
 @Tag(name = "Login", description = "로그인")
 @Slf4j

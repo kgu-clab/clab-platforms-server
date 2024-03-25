@@ -26,7 +26,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
-@RequestMapping("/membership-fees")
+@RequestMapping("/api/v1/membership-fees")
 @RequiredArgsConstructor
 @Tag(name = "MembershipFee", description = "회비")
 @Slf4j

@@ -25,7 +25,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/schedule")
+@RequestMapping("/api/v1/schedule")
 @RequiredArgsConstructor
 @Tag(name = "Schedule", description = "일정")
 public class ScheduleController {

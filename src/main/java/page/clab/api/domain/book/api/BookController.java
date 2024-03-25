@@ -25,7 +25,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping("/api/v1/books")
 @RequiredArgsConstructor
 @Tag(name = "Book", description = "도서")
 @Slf4j
