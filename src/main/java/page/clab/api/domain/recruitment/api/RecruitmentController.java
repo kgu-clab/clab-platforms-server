@@ -23,7 +23,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 import java.util.List;
 
 @RestController
-@RequestMapping("/recruitments")
+@RequestMapping("/api/v1/recruitments")
 @RequiredArgsConstructor
 @Tag(name = "Recruitment", description = "모집 공고")
 @Slf4j

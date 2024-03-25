@@ -28,7 +28,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/donations")
+@RequestMapping("/api/v1/donations")
 @RequiredArgsConstructor
 @Tag(name = "Donation", description = "후원")
 @Slf4j

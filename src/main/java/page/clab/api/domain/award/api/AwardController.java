@@ -26,7 +26,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
-@RequestMapping("/awards")
+@RequestMapping("/api/v1/awards")
 @RequiredArgsConstructor
 @Tag(name = "Award", description = "수상 이력")
 @Slf4j

@@ -27,7 +27,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
-@RequestMapping("/blogs")
+@RequestMapping("/api/v1/blogs")
 @RequiredArgsConstructor
 @Tag(name = "Blog", description = "블로그 포스트")
 @Slf4j

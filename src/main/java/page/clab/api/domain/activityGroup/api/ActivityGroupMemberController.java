@@ -27,7 +27,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
-@RequestMapping("/activity-group/member")
+@RequestMapping("/api/v1/activity-group/member")
 @RequiredArgsConstructor
 @Tag(name = "ActivityGroupMember", description = "활동 그룹 멤버")
 @Slf4j

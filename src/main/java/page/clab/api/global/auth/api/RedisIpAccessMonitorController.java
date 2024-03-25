@@ -19,7 +19,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
-@RequestMapping("/ip-access-monitor")
+@RequestMapping("/api/v1/ip-access-monitor")
 @RequiredArgsConstructor
 @Tag(name = "IP Access Monitor", description = "IP 접근 모니터링")
 @Slf4j

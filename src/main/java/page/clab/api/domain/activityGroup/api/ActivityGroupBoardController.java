@@ -31,7 +31,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/activity-group/boards")
+@RequestMapping("/api/v1/activity-group/boards")
 @RequiredArgsConstructor
 @Tag(name = "ActivityGroupBoard", description = "활동 그룹 게시판 관리")
 @Slf4j

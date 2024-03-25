@@ -20,7 +20,7 @@ import page.clab.api.global.common.file.dto.response.FileInfo;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
-@RequestMapping("/member-clouds")
+@RequestMapping("/api/v1/member-clouds")
 @RequiredArgsConstructor
 @Tag(name = "Member Cloud", description = "멤버 클라우드")
 @Slf4j

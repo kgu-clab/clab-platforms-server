@@ -22,7 +22,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 
 @RestController
-@RequestMapping("/book-loan-records")
+@RequestMapping("/api/v1/book-loan-records")
 @RequiredArgsConstructor
 @Tag(name = "BookLoanRecord", description = "도서 대출")
 @Slf4j
