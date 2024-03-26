@@ -202,6 +202,10 @@ public class Member extends BaseEntity implements UserDetails {
         lastLoginTime = LocalDateTime.now();
     }
 
+    public void clearImageUrl() {
+        this.imageUrl = null;
+    }
+
     public void checkLoanSuspension() {
         if (loanSuspensionDate != null && LocalDateTime.now().isBefore(loanSuspensionDate)) {
             throw new LoanSuspensionException("대출 정지 중입니다. 대출 정지일까지는 책을 대출할 수 없습니다.");

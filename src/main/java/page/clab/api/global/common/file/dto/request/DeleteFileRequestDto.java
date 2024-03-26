@@ -19,4 +19,10 @@ public class DeleteFileRequestDto {
     @Schema(description = "파일경로", example = "/resources/files/forms/123456.png", required = true)
     private String url;
 
+    public static DeleteFileRequestDto create(String url) {
+        return DeleteFileRequestDto.builder()
+                .url(url)
+                .build();
+    }
+
 }
