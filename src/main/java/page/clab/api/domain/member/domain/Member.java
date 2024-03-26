@@ -86,7 +86,6 @@ public class Member extends BaseEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private StudentStatus studentStatus;
 
-    @Column(nullable = true)
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
@@ -155,10 +154,6 @@ public class Member extends BaseEntity implements UserDetails {
         Optional.ofNullable(memberUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
     }
 
-    public void updateImageUrlToNull() {
-        this.imageUrl = null;
-    }
-
     public boolean isAdminRole() {
         return role.equals(Role.ADMIN) || role.equals(Role.SUPER);
     }
@@ -205,6 +200,10 @@ public class Member extends BaseEntity implements UserDetails {
 
     public void updateLastLoginTime() {
         lastLoginTime = LocalDateTime.now();
+    }
+
+    public void clearImageUrl() {
+        this.imageUrl = null;
     }
 
     public void checkLoanSuspension() {
