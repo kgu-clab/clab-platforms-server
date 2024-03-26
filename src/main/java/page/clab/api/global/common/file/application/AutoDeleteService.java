@@ -23,7 +23,7 @@ public class AutoDeleteService {
     @Value("${resource.file.path}")
     private String filePath;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0/1 * * * ?")
     public void autoDeleteExpiredFiles() {
         LocalDateTime currentDate = LocalDateTime.now();
         List<String> categoryPaths = Arrays.asList(
@@ -33,10 +33,10 @@ public class AutoDeleteService {
 
         categoryPaths.stream()
                 .map(category -> filePath + File.separator + category)
-                .forEach(directoryPath -> deleteExpiredFilesInDirectory(new File(directoryPath), currentDate));
+                .forEach(directoryPath -> deleteUselessFilesInDirectory(new File(directoryPath), currentDate));
     }
 
-    private void deleteExpiredFilesInDirectory(File directory, LocalDateTime currentDate) {
+    private void deleteUselessFilesInDirectory(File directory, LocalDateTime currentDate) {
         if (!directory.exists()) {
             log.info("Directory does not exist: {}", directory);
             return;
@@ -50,9 +50,10 @@ public class AutoDeleteService {
 
         for (File file : files) {
             if (file.isDirectory()) {
-                deleteExpiredFilesInDirectory(file, currentDate);
+                deleteUselessFilesInDirectory(file, currentDate);
             } else {
                 checkAndDeleteFileIfExpired(file, currentDate);
+                checkAndDeleteFileIfInformationDoesNotExistInDB(file);
             }
         }
     }
@@ -66,12 +67,24 @@ public class AutoDeleteService {
 
         LocalDateTime expirationDate = uploadedFile.getCreatedAt().plusDays(uploadedFile.getStoragePeriod());
         if (currentDate.isAfter(expirationDate)) {
-            boolean deleted = file.delete();
-            if (deleted) {
-                log.info("Deleted expired file: {}", file.getAbsolutePath());
-            } else {
-                log.error("Failed to delete expired file: {}", file.getAbsolutePath());
-            }
+            deleteFile(file);
         }
     }
+
+    private void checkAndDeleteFileIfInformationDoesNotExistInDB(File file) {
+        UploadedFile uploadedFile = uploadFileRepository.findBySavedPath(file.getAbsolutePath());
+        if (uploadedFile == null) {
+            deleteFile(file);
+        }
+    }
+
+    private void deleteFile(File file) {
+        boolean deleted = file.delete();
+        if (deleted) {
+            log.info("Deleted unknown file: {}", file.getAbsolutePath());
+        } else {
+            log.error("Failed to delete unknown file: {}", file.getAbsolutePath());
+        }
+    }
+
 }
