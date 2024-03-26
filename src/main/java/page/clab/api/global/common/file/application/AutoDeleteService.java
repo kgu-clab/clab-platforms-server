@@ -23,7 +23,7 @@ public class AutoDeleteService {
     @Value("${resource.file.path}")
     private String filePath;
 
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0 0 * * *")
     public void autoDeleteExpiredFiles() {
         LocalDateTime currentDate = LocalDateTime.now();
         List<String> categoryPaths = Arrays.asList(
