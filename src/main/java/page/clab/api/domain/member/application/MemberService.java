@@ -28,6 +28,8 @@ import page.clab.api.domain.position.domain.PositionType;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.email.application.EmailService;
+import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.common.verification.application.VerificationService;
 import page.clab.api.global.common.verification.domain.Verification;
 import page.clab.api.global.common.verification.dto.request.VerificationRequestDto;
@@ -59,9 +61,16 @@ public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private  FileService fileService;
+
     @Autowired
     public void setEmailService(@Lazy EmailService emailService) {
         this.emailService = emailService;
+    }
+
+    @Autowired
+    public void setFileServie(@Lazy FileService fileService) {
+        this.fileService = fileService;
     }
 
     @Transactional
@@ -119,7 +128,7 @@ public class MemberService {
         Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
         member.validateAccessPermission(currentMember);
-        member.update(requestDto, passwordEncoder);
+        updateMember(requestDto, member);
         validationService.checkValid(member);
         return memberRepository.save(member).getId();
     }
@@ -243,6 +252,15 @@ public class MemberService {
     private void updateMemberPasswordWithVerificationCode(String verificationCode, Member member) {
         member.updatePassword(verificationCode, passwordEncoder);
         verificationService.deleteVerificationCode(verificationCode);
+    }
+
+    private void updateMember(MemberUpdateRequestDto requestDto, Member member) throws PermissionDeniedException {
+        String previousImageUrl = member.getImageUrl();
+        member.update(requestDto, passwordEncoder);
+        if (requestDto.getImageUrl().isEmpty()) {
+            member.clearImageUrl();
+            fileService.deleteFile(DeleteFileRequestDto.create(previousImageUrl));
+        }
     }
 
     public List<Member> getAdmins() {
