@@ -128,12 +128,7 @@ public class MemberService {
         Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
         member.validateAccessPermission(currentMember);
-        String previousImageUrl = member.getImageUrl();
-        member.update(requestDto, passwordEncoder);
-        if (requestDto.getImageUrl().isEmpty()) {
-            member.updateImageUrlToNull();
-            deletePreviousImageUrl(previousImageUrl);
-        }
+        updateMember(requestDto, member);
         validationService.checkValid(member);
         return memberRepository.save(member).getId();
     }
@@ -151,12 +146,6 @@ public class MemberService {
         Member member = getMemberByIdOrThrow(requestDto.getMemberId());
         Verification verification = verificationService.validateVerificationCode(requestDto, member);
         updateMemberPasswordWithVerificationCode(verification.getVerificationCode(), member);
-    }
-
-    private void deletePreviousImageUrl(String previousImageUrl) throws PermissionDeniedException {
-        fileService.deleteFile(DeleteFileRequestDto.builder()
-                .url(previousImageUrl)
-                .build());
     }
 
     public Member getMemberById(String memberId) {
@@ -263,6 +252,15 @@ public class MemberService {
     private void updateMemberPasswordWithVerificationCode(String verificationCode, Member member) {
         member.updatePassword(verificationCode, passwordEncoder);
         verificationService.deleteVerificationCode(verificationCode);
+    }
+
+    private void updateMember(MemberUpdateRequestDto requestDto, Member member) throws PermissionDeniedException {
+        String previousImageUrl = member.getImageUrl();
+        member.update(requestDto, passwordEncoder);
+        if (requestDto.getImageUrl().isEmpty()) {
+            member.clearImageUrl();
+            fileService.deleteFile(DeleteFileRequestDto.create(previousImageUrl));
+        }
     }
 
     public List<Member> getAdmins() {
