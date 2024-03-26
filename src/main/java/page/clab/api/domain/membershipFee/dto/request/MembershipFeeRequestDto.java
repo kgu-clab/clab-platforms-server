@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
+import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
 
 @Getter
 @Setter
@@ -32,6 +33,10 @@ public class MembershipFeeRequestDto {
     @Schema(description = "증빙 사진", example = "https://images.chosun.com/resizer/mcbrEkwTr5YKQZ89QPO9hmdb0iE=/616x0/smart/cloudfront-ap-northeast-1.images.arcpublishing.com/chosun/LPCZYYKZ4FFIJPDD344FSGCLCY.jpg")
     private String imageUrl;
 
+    @NotNull(message = "{notNull.membershipFee.status}")
+    @Schema(description = "상태", example = "PENDING", required = true)
+    private MembershipFeeStatus status;
+
     public static MembershipFee toEntity(MembershipFeeRequestDto requestDto, Member member) {
         return MembershipFee.builder()
                 .applicant(member)
@@ -39,6 +44,7 @@ public class MembershipFeeRequestDto {
                 .amount(requestDto.getAmount())
                 .content(requestDto.getContent())
                 .imageUrl(requestDto.getImageUrl())
+                .status(requestDto.getStatus())
                 .build();
     }
 

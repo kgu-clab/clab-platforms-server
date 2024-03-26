@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.membershipFee.application.MembershipFeeService;
+import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeUpdateRequestDto;
 import page.clab.api.domain.membershipFee.dto.response.MembershipFeeResponseDto;
@@ -46,7 +47,7 @@ public class MembershipFeeController {
         return responseModel;
     }
 
-    @Operation(summary = "[U] 회비 정보 조회(멤버 ID, 멤버 이름, 카테고리 기준)", description = "ROLE_USER 이상의 권한이 필요함<br> " +
+    @Operation(summary = "[U] 회비 정보 조회(멤버 ID, 멤버 이름, 카테고리, 상태 기준)", description = "ROLE_USER 이상의 권한이 필요함<br> " +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
             "멤버 ID, 멤버 이름, 카테고리 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
@@ -55,11 +56,12 @@ public class MembershipFeeController {
             @RequestParam(name = "memberId", required = false) String memberId,
             @RequestParam(name = "memberName", required = false) String memberName,
             @RequestParam(name = "category", required = false) String category,
+            @RequestParam(name = "status", required = false) MembershipFeeStatus status,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<MembershipFeeResponseDto> membershipFees = membershipFeeService.getMembershipFeesByConditions(memberId, memberName, category, pageable);
+        PagedResponseDto<MembershipFeeResponseDto> membershipFees = membershipFeeService.getMembershipFeesByConditions(memberId, memberName, category, status, pageable);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(membershipFees);
         return responseModel;

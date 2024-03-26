@@ -2,6 +2,8 @@ package page.clab.api.domain.membershipFee.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -49,11 +51,16 @@ public class MembershipFee extends BaseEntity {
 
     private String imageUrl;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private MembershipFeeStatus status;
+
     public void update(MembershipFeeUpdateRequestDto membershipFeeUpdateRequestDto) {
         Optional.ofNullable(membershipFeeUpdateRequestDto.getCategory()).ifPresent(this::setCategory);
         Optional.ofNullable(membershipFeeUpdateRequestDto.getAmount()).ifPresent(this::setAmount);
         Optional.ofNullable(membershipFeeUpdateRequestDto.getContent()).ifPresent(this::setContent);
         Optional.ofNullable(membershipFeeUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
+        Optional.ofNullable(membershipFeeUpdateRequestDto.getStatus()).ifPresent(this::setStatus);
     }
 
     public boolean isOwner(Member member) {
