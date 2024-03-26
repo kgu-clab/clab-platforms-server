@@ -86,6 +86,7 @@ public class Member extends BaseEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private StudentStatus studentStatus;
 
+    @Column(nullable = true)
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
@@ -152,6 +153,10 @@ public class Member extends BaseEntity implements UserDetails {
         Optional.ofNullable(memberUpdateRequestDto.getGithubUrl()).ifPresent(this::setGithubUrl);
         Optional.ofNullable(memberUpdateRequestDto.getStudentStatus()).ifPresent(this::setStudentStatus);
         Optional.ofNullable(memberUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
+    }
+
+    public void updateImageUrlToNull() {
+        this.imageUrl = null;
     }
 
     public boolean isAdminRole() {

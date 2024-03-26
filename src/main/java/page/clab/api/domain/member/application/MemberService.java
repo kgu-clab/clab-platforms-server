@@ -28,6 +28,8 @@ import page.clab.api.domain.position.domain.PositionType;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.email.application.EmailService;
+import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.common.verification.application.VerificationService;
 import page.clab.api.global.common.verification.domain.Verification;
 import page.clab.api.global.common.verification.dto.request.VerificationRequestDto;
@@ -59,9 +61,16 @@ public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private  FileService fileService;
+
     @Autowired
     public void setEmailService(@Lazy EmailService emailService) {
         this.emailService = emailService;
+    }
+
+    @Autowired
+    public void setFileServie(@Lazy FileService fileService) {
+        this.fileService = fileService;
     }
 
     @Transactional
@@ -119,7 +128,12 @@ public class MemberService {
         Member currentMember = getCurrentMember();
         Member member = getMemberByIdOrThrow(memberId);
         member.validateAccessPermission(currentMember);
+        String previousImageUrl = member.getImageUrl();
         member.update(requestDto, passwordEncoder);
+        if (requestDto.getImageUrl().isEmpty()) {
+            member.updateImageUrlToNull();
+            deletePreviousImageUrl(previousImageUrl);
+        }
         validationService.checkValid(member);
         return memberRepository.save(member).getId();
     }
@@ -137,6 +151,12 @@ public class MemberService {
         Member member = getMemberByIdOrThrow(requestDto.getMemberId());
         Verification verification = verificationService.validateVerificationCode(requestDto, member);
         updateMemberPasswordWithVerificationCode(verification.getVerificationCode(), member);
+    }
+
+    private void deletePreviousImageUrl(String previousImageUrl) throws PermissionDeniedException {
+        fileService.deleteFile(DeleteFileRequestDto.builder()
+                .url(previousImageUrl)
+                .build());
     }
 
     public Member getMemberById(String memberId) {
