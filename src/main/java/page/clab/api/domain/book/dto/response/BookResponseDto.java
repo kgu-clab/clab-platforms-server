@@ -8,6 +8,7 @@ import lombok.Setter;
 import page.clab.api.domain.book.domain.Book;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -32,6 +33,8 @@ public class BookResponseDto {
 
     private String imageUrl;
 
+    private List<String> reviewLinks;
+
     private LocalDateTime dueDate;
 
     private LocalDateTime createdAt;
@@ -48,6 +51,7 @@ public class BookResponseDto {
                 .author(book.getAuthor())
                 .publisher(book.getPublisher())
                 .imageUrl(book.getImageUrl())
+                .reviewLinks(book.getReviewLinks())
                 .dueDate(dueDate)
                 .createdAt(book.getCreatedAt())
                 .updatedAt(book.getUpdatedAt())

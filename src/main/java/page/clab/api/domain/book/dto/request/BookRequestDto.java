@@ -7,13 +7,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import page.clab.api.domain.book.domain.Book;
+
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Slf4j
 public class BookRequestDto {
 
     @NotNull(message = "{notNull.book.category}")
@@ -35,6 +39,9 @@ public class BookRequestDto {
     @Schema(description = "이미지 URL", example = "https://shopping-phinf.pstatic.net/main_3243625/32436253723.20230928091945.jpg?type=w300")
     private String imageUrl;
 
+    @Schema(description = "리뷰 링크", example = "[\"https://www.yes24.com/Product/Goods/7516911\",\"https://www.aladin.co.kr/shop/wproduct.aspx?ISBN=8960773433&start=pnaver_02\"]")
+    private List<String> reviewLinks;
+
     public static Book toEntity(BookRequestDto requestDto) {
         return Book.builder()
                 .category(requestDto.getCategory())
@@ -42,6 +49,7 @@ public class BookRequestDto {
                 .author(requestDto.getAuthor())
                 .publisher(requestDto.getPublisher())
                 .imageUrl(requestDto.getImageUrl())
+                .reviewLinks(requestDto.reviewLinks)
                 .build();
     }
 
