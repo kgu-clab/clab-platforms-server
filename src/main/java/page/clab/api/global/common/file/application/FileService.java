@@ -24,6 +24,7 @@ import page.clab.api.global.util.FileSystemUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -83,7 +84,7 @@ public class FileService {
 
         validatePathVariable(path);
         validateMemberCloudUsage(multipartFile, path);
-        checkAndRemoveExistingFile(multipartFile, path);
+        checkAndRemoveExistingFile(path);
 
         String savedFilePath = fileHandler.saveFile(multipartFile, path);
         String fileName = new File(savedFilePath).getName();
@@ -145,15 +146,13 @@ public class FileService {
         }
     }
 
-    private void checkAndRemoveExistingFile(MultipartFile multipartFile, String path) {
-        UploadedFile existingUploadedFile = uploadedFileService.getUniqueUploadedFileByCategoryAndOriginalName(path, multipartFile.getOriginalFilename());
-        if (existingUploadedFile != null) {
-            fileHandler.deleteFile(existingUploadedFile.getSavedPath());
-        }
-        if (path.startsWith("profiles")) {
-            UploadedFile profileFile = uploadedFileService.getUniqueUploadedFileByCategory(path);
-            if (profileFile != null) {
-                fileHandler.deleteFile(profileFile.getSavedPath());
+    private void checkAndRemoveExistingFile(String path) {
+        List<String> validPrefixes = Arrays.asList("profiles", "members/", "assignments");
+        boolean shouldDelete = validPrefixes.stream().anyMatch(path::startsWith);
+        if (shouldDelete) {
+            UploadedFile fileToDelete = uploadedFileService.getUniqueUploadedFileByCategory(path);
+            if (fileToDelete != null) {
+                fileHandler.deleteFile(fileToDelete.getSavedPath());
             }
         }
     }
