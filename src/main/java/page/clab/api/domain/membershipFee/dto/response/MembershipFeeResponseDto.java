@@ -25,6 +25,8 @@ public class MembershipFeeResponseDto {
 
     private String category;
 
+    private String account;
+
     private Long amount;
 
     private String content;
@@ -41,6 +43,7 @@ public class MembershipFeeResponseDto {
                 .memberId(membershipFee.getApplicant().getId())
                 .memberName(membershipFee.getApplicant().getName())
                 .category(membershipFee.getCategory())
+                .account(membershipFee.getAccount())
                 .amount(membershipFee.getAmount())
                 .content(membershipFee.getContent())
                 .imageUrl(membershipFee.getImageUrl())

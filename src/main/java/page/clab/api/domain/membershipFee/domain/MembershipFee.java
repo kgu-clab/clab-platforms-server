@@ -42,6 +42,8 @@ public class MembershipFee extends BaseEntity {
     @Size(min = 1, message = "{size.membershipFee.category}")
     private String category;
 
+    private String account;
+
     @Column(nullable = false)
     private Long amount;
 
@@ -57,6 +59,7 @@ public class MembershipFee extends BaseEntity {
 
     public void update(MembershipFeeUpdateRequestDto membershipFeeUpdateRequestDto) {
         Optional.ofNullable(membershipFeeUpdateRequestDto.getCategory()).ifPresent(this::setCategory);
+        Optional.ofNullable(membershipFeeUpdateRequestDto.getAccount()).ifPresent(this::setAccount);
         Optional.ofNullable(membershipFeeUpdateRequestDto.getAmount()).ifPresent(this::setAmount);
         Optional.ofNullable(membershipFeeUpdateRequestDto.getContent()).ifPresent(this::setContent);
         Optional.ofNullable(membershipFeeUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);

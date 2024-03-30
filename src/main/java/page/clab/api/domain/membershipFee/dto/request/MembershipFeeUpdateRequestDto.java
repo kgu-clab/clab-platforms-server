@@ -18,6 +18,9 @@ public class MembershipFeeUpdateRequestDto {
     @Schema(description = "카테고리", example = "지출")
     private String category;
 
+    @Schema(description = "계좌", example = "110-123-456789")
+    private String account;
+
     @Schema(description = "금액", example = "10000")
     private Long amount;
 
