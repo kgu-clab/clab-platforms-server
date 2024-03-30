@@ -22,6 +22,9 @@ public class MembershipFeeRequestDto {
     @Schema(description = "카테고리", example = "지출", required = true)
     private String category;
 
+    @Schema(description = "계좌", example = "110-123-456789")
+    private String account;
+
     @NotNull(message = "{notNull.membershipFee.amount}")
     @Schema(description = "금액", example = "10000", required = true)
     private Long amount;
@@ -37,6 +40,7 @@ public class MembershipFeeRequestDto {
         return MembershipFee.builder()
                 .applicant(member)
                 .category(requestDto.getCategory())
+                .account(requestDto.getAccount())
                 .amount(requestDto.getAmount())
                 .content(requestDto.getContent())
                 .imageUrl(requestDto.getImageUrl())
