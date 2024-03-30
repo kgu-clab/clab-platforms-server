@@ -120,7 +120,7 @@ public class FileController {
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws PermissionDeniedException, IOException, NotFoundException {
-        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, fileService.buildPath("assignment", activityGroupId, activityGroupBoardId), storagePeriod);
+        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, fileService.buildPath("assignments", activityGroupId, activityGroupBoardId), storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(responseDtos);
         return responseModel;
@@ -133,7 +133,7 @@ public class FileController {
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws PermissionDeniedException, IOException, NotFoundException {
-        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "membership-fee", storagePeriod);
+        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "membership-fees", storagePeriod);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(responseDtos);
         return responseModel;
