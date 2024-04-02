@@ -1,5 +1,6 @@
 package page.clab.api.domain.board.application;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
 import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
+import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -43,6 +45,8 @@ public class BoardService {
 
     private final BoardLikeRepository boardLikeRepository;
 
+    private final CommentRepository commentRepository;
+
     @Transactional
     public Long createBoard(BoardRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
@@ -58,7 +62,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardListResponseDto> getBoards(Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(boards.map(BoardListResponseDto::toDto));
+        return new PagedResponseDto<>(boards.map(this::mapToBoardListResponseDto));
     }
 
     @Transactional(readOnly = true)
@@ -115,6 +119,12 @@ public class BoardService {
         board.checkPermission(currentMember);
         boardRepository.delete(board);
         return board.getId();
+    }
+
+    @NotNull
+    private BoardListResponseDto mapToBoardListResponseDto(Board board) {
+        Long commentCount = commentRepository.countByBoard(board);
+        return BoardListResponseDto.toDto(board, commentCount);
     }
 
     public Board getBoardByIdOrThrow(Long boardId) {
