@@ -11,6 +11,7 @@ import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
+import page.clab.api.domain.book.dto.response.BookDetailsResponseDto;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
@@ -38,9 +39,9 @@ public class BookService {
     }
 
     @Transactional(readOnly = true)
-    public BookResponseDto getBookDetails(Long bookId) {
+    public BookDetailsResponseDto getBookDetails(Long bookId) {
         Book book = getBookByIdOrThrow(bookId);
-        return mapToBookResponseDto(book);
+        return mapToBookDetailsResponseDto(book);
     }
 
     @Transactional
@@ -74,11 +75,21 @@ public class BookService {
         return new PagedResponseDto<>(bookResponseDtos, pageable, books.size());
     }
 
+    private LocalDateTime getDueDateForBook(Book book) {
+        BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNull(book);
+        return bookLoanRecord != null ? bookLoanRecord.getDueDate() : null;
+    }
+
     @NotNull
     private BookResponseDto mapToBookResponseDto(Book book) {
-        BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNull(book);
-        LocalDateTime dueDate = bookLoanRecord != null ? bookLoanRecord.getDueDate() : null;
+        LocalDateTime dueDate = getDueDateForBook(book);
         return BookResponseDto.toDto(book, dueDate);
+    }
+
+    @NotNull
+    private BookDetailsResponseDto mapToBookDetailsResponseDto(Book book) {
+        LocalDateTime dueDate = getDueDateForBook(book);
+        return BookDetailsResponseDto.toDto(book, dueDate);
     }
 
 }
