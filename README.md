@@ -4,6 +4,20 @@
 
 해당 프로젝트는 C-Lab의 활동을 지원하고, 회원들 간의 소통을 원활하게 하기 위해 개발되었습니다.
 
+## Tech Stack
+
+- **Spring Boot**: 웹 및 애플리케이션 개발을 위한 프레임워크.
+- **Spring Security**: 인증 및 권한 부여를 위한 보안 프레임워크.
+- **Spring Data JPA**: 데이터 접근 계층을 위한 JPA.
+- **QueryDSL**: 복잡한 쿼리 작성을 단순화.
+- **PostgreSQL**: 주 데이터베이스로 사용.
+- **Redis**: 캐싱 및 JWT 관리를 위해 사용.
+- **Thymeleaf**: 메일 전송을 위한 템플릿 엔진.
+- **GeoIP2**: IP 주소 기반 위치 정보 조회.
+- **Google Authenticator**: 2단계 인증을 위한 라이브러리.
+- **Slack API**: 각종 보안 알림을 위해 사용.
+- **Swagger**: API 문서 자동화.
+
 ## Project Structure
 
 ### Domain
@@ -30,21 +44,8 @@
 - `validation`: 유효성 검증을 위한 클래스를 포함합니다.
 
 ## Database Schema
+
 ![absent](https://github.com/KGU-C-Lab/clab-server/assets/85067003/4b8e66ab-f7fc-49b7-85a0-cb27b32a0436)
-
-## Tech Stack
-
-- **Spring Boot**: 웹 및 애플리케이션 개발을 위한 프레임워크.
-- **Spring Security**: 인증 및 권한 부여를 위한 보안 프레임워크.
-- **Spring Data JPA**: 데이터 접근 계층을 위한 JPA.
-- **QueryDSL**: 복잡한 쿼리 작성을 단순화.
-- **PostgreSQL**: 주 데이터베이스로 사용.
-- **Redis**: 캐싱 및 JWT 관리를 위해 사용.
-- **Thymeleaf**: 메일 전송을 위한 템플릿 엔진.
-- **GeoIP2**: IP 주소 기반 위치 정보 조회.
-- **Google Authenticator**: 2단계 인증을 위한 라이브러리.
-- **Slack API**: 각종 보안 알림을 위해 사용.
-- **Swagger**: API 문서 자동화.
 
 ## License
 
