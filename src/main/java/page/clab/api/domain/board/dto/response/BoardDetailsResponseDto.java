@@ -22,11 +22,11 @@ public class BoardDetailsResponseDto {
 
     private Long id;
 
-    private String writer;
+    private String writerName;
 
     private Long writerRoleLevel;
 
-    private String memberImageUrl;
+    private String writerImageUrl;
 
     private String title;
 
@@ -46,9 +46,9 @@ public class BoardDetailsResponseDto {
     public static BoardDetailsResponseDto toDto(Board board, boolean hasLikeByMe, boolean isOwner) {
         return BoardDetailsResponseDto.builder()
                 .id(board.getId())
-                .writer(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
+                .writerName(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
                 .writerRoleLevel(board.getMember().getRole().toRoleLevel())
-                .memberImageUrl(board.isWantAnonymous() ? null : board.getMember().getImageUrl())
+                .writerImageUrl(board.isWantAnonymous() ? null : board.getMember().getImageUrl())
                 .title(board.getTitle())
                 .content(board.getContent())
                 .files(UploadedFileResponseDto.toDto(board.getUploadedFiles()))
