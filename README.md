@@ -4,8 +4,6 @@
 
 해당 프로젝트는 C-Lab의 활동을 지원하고, 회원들 간의 소통을 원활하게 하기 위해 개발되었습니다.
 
----
-
 ## Project Structure
 
 ### Domain
@@ -31,7 +29,8 @@
 - `util`: 일반적인 유틸리티 기능을 제공합니다.
 - `validation`: 유효성 검증을 위한 클래스를 포함합니다.
 
----
+## Database Schema
+![absent](https://github.com/KGU-C-Lab/clab-server/assets/85067003/4b8e66ab-f7fc-49b7-85a0-cb27b32a0436)
 
 ## Tech Stack
 
@@ -47,21 +46,15 @@
 - **Slack API**: 각종 보안 알림을 위해 사용.
 - **Swagger**: API 문서 자동화.
 
----
-
 ## License
 
 이 프로젝트는 GNU 일반 공중 사용 허가서(GPL) v3.0에 따라 라이선스가 부여됩니다.
-
----
 
 ## Contributing
 
 본 프로젝트에 기여하고자 하시는 분은 다음의 가이드라인을 따라주세요.
 
 [CONTRIBUTING.md](CONTRIBUTING.md)
-
----
 
 ## Contributors
 
