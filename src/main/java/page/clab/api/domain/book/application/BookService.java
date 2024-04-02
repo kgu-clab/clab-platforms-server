@@ -34,7 +34,7 @@ public class BookService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BookResponseDto> getBooksByConditions(String title, String category, String publisher, String borrowerId, String borrowerName, Pageable pageable) {
-        List<Book> books = bookRepository.findByConditions(title, category, publisher, borrowerId, borrowerName);
+        List<Book> books = bookRepository.findByConditions(title, category, publisher, borrowerId, borrowerName, pageable);
         return getBookResponseDtoPagedResponseDto(books, pageable);
     }
 
