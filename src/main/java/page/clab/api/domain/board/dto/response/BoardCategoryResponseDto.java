@@ -20,7 +20,7 @@ public class BoardCategoryResponseDto {
 
     private String category;
 
-    private String writer;
+    private String writerName;
 
     private String title;
 
@@ -30,7 +30,7 @@ public class BoardCategoryResponseDto {
         return BoardCategoryResponseDto.builder()
                 .id(board.getId())
                 .category(board.getCategory())
-                .writer(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
+                .writerName(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
                 .title(board.getTitle())
                 .createdAt(board.getCreatedAt())
                 .build();
