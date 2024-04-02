@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.book.application.BookService;
 import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
+import page.clab.api.domain.book.dto.response.BookDetailsResponseDto;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -72,7 +73,7 @@ public class BookController {
     public ResponseModel getBook(
             @PathVariable(name = "bookId") Long bookId
     ) {
-        BookResponseDto book = bookService.getBookDetails(bookId);
+        BookDetailsResponseDto book = bookService.getBookDetails(bookId);
         ResponseModel responseModel = ResponseModel.builder().build();
         responseModel.addData(book);
         return responseModel;
