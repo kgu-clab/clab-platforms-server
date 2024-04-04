@@ -1,17 +1,11 @@
 package page.clab.api.domain.blog.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class BlogUpdateRequestDto {
 
     @Schema(description = "제목", example = "Swagger Docs의 접근 권한을 제어하기 위한 여정")

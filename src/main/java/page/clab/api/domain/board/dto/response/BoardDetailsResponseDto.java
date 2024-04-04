@@ -1,10 +1,8 @@
 package page.clab.api.domain.board.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
@@ -15,8 +13,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class BoardDetailsResponseDto {
 

@@ -1,17 +1,11 @@
 package page.clab.api.domain.sharedAccount.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class SharedAccountUpdateRequestDto {
 
     @Schema(description = "아이디", example = "clab8510@gmail.com")

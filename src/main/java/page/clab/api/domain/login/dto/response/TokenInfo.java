@@ -1,12 +1,12 @@
 package page.clab.api.domain.login.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Builder
-@Data
-@AllArgsConstructor
 public class TokenInfo {
 
     private String accessToken;

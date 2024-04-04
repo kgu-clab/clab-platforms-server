@@ -1,12 +1,9 @@
 package page.clab.api.domain.comment.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import page.clab.api.domain.comment.domain.Comment;
 
 import java.time.LocalDateTime;
@@ -14,10 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-@ToString
 public class CommentResponseDto {
 
     private Long id;

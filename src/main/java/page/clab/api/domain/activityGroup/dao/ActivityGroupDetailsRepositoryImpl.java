@@ -50,7 +50,7 @@ public class ActivityGroupDetailsRepositoryImpl implements ActivityGroupDetailsR
                 .where(activityGroupCondition)
                 .fetchOne();
 
-        return new ActivityGroupDetails(foundActivityGroup, groupMembers, boards);
+        return ActivityGroupDetails.create(foundActivityGroup, groupMembers, boards);
     }
 
 }
