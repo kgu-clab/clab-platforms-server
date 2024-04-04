@@ -1,6 +1,7 @@
 package page.clab.api.global.auth.domain;
 
 import jakarta.persistence.Column;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,8 +16,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @RedisHash(value = "ipAccessMonitor", timeToLive = 60 * 5)
 public class RedisIpAccessMonitor {
 

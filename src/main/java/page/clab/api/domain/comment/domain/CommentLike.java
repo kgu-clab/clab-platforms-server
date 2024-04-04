@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,8 +18,8 @@ import page.clab.api.global.common.domain.BaseEntity;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(indexes = @Index(name = "commentLike_index", columnList = "memberId, commentId"))
 public class CommentLike extends BaseEntity {
 

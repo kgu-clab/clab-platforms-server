@@ -8,7 +8,6 @@ import page.clab.api.domain.board.domain.Board;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -28,7 +27,7 @@ public class BoardDetailsResponseDto {
 
     private String content;
 
-    private List<UploadedFileResponseDto> files = new ArrayList<>();
+    private List<UploadedFileResponseDto> files;
 
     private Long likes;
 

@@ -7,7 +7,6 @@ import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -19,7 +18,7 @@ public class ActivityPhotoResponseDto {
 
     private String title;
 
-    private List<UploadedFileResponseDto> files = new ArrayList<>();
+    private List<UploadedFileResponseDto> files;
 
     private LocalDate date;
 
