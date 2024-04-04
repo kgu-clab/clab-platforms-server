@@ -1,17 +1,15 @@
 package page.clab.api.domain.activityGroup.domain;
 
 import jakarta.persistence.Embeddable;
-import java.io.Serializable;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+import java.io.Serializable;
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Embeddable
 public class GroupMemberId implements Serializable {
