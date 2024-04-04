@@ -22,6 +22,8 @@ import page.clab.api.domain.blacklistIp.dto.request.BlacklistIpRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/blacklists")
 @RequiredArgsConstructor
@@ -68,11 +70,11 @@ public class BlacklistIpController {
     @Operation(summary = "[S] 블랙리스트 IP 초기화", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("/clear")
-    public ResponseModel clearBlacklist(
+    public ResponseModel<List<String>> clearBlacklist(
             HttpServletRequest request
     ) {
-        blacklistIpService.clearBlacklist(request);
-        return ResponseModel.success();
+        List<String> blacklistIps = blacklistIpService.clearBlacklist(request);
+        return ResponseModel.success(blacklistIps);
     }
 
 }
