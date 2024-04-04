@@ -21,10 +21,12 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.common.email.dto.request.EmailDto;
+import page.clab.api.global.common.email.exception.MessageSendingFailedException;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -51,42 +53,44 @@ public class EmailService {
 
     private static final BlockingQueue<EmailTask> emailQueue = new LinkedBlockingQueue<>();
 
-    public void broadcastEmail(EmailDto emailDto, List<MultipartFile> multipartFiles) {
-        List<File> convertedFiles;
-        if(multipartFiles != null && !multipartFiles.isEmpty()) {
-            convertedFiles = convertMultipartFiles(multipartFiles);
-        } else {
-            convertedFiles = null;
-        }
+    public List<String> broadcastEmail(EmailDto emailDto, List<MultipartFile> multipartFiles) {
+        List<File> convertedFiles = multipartFiles != null && !multipartFiles.isEmpty()
+                ? convertMultipartFiles(multipartFiles)
+                : new ArrayList<>();
+
+        List<String> successfulAddresses = Collections.synchronizedList(new ArrayList<>());
 
         emailDto.getTo().parallelStream().forEach(address -> {
             try {
                 Member recipient = memberService.getMemberByEmail(address);
                 String emailContent = generateEmailContent(emailDto, recipient.getName());
                 sendEmailAsync(address, emailDto.getSubject(), emailContent, convertedFiles, emailDto.getEmailTemplateType());
+                successfulAddresses.add(address);
             } catch (MessagingException e) {
-                throw new RuntimeException(e);
+                throw new MessageSendingFailedException(address + "에게 이메일을 보내는데 실패했습니다.");
             }
         });
+        return successfulAddresses;
     }
 
-    public void broadcastEmailToAllMember(EmailDto emailDto, List<MultipartFile> multipartFiles) {
-        List<File> convertedFiles;
-        if(multipartFiles != null && !multipartFiles.isEmpty()) {
-            convertedFiles = convertMultipartFiles(multipartFiles);
-        } else {
-            convertedFiles = null;
-        }
+    public List<String> broadcastEmailToAllMember(EmailDto emailDto, List<MultipartFile> multipartFiles) {
+        List<File> convertedFiles = multipartFiles != null && !multipartFiles.isEmpty() ?
+                convertMultipartFiles(multipartFiles) : null;
 
         List<MemberResponseDto> memberList = memberService.getMembers();
+
+        List<String> successfulEmails = Collections.synchronizedList(new ArrayList<>());
+
         memberList.parallelStream().forEach(member -> {
             try {
                 String emailContent = generateEmailContent(emailDto, member.getName());
                 sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, convertedFiles, emailDto.getEmailTemplateType());
+                successfulEmails.add(member.getEmail());
             } catch (MessagingException e) {
-                throw new RuntimeException(e);
+                throw new MessageSendingFailedException(member.getEmail() + "에게 이메일을 보내는데 실패했습니다.");
             }
         });
+        return successfulEmails;
     }
 
     public void broadcastEmailToApprovedMember(Member member, String password) {
@@ -107,7 +111,7 @@ public class EmailService {
             String emailContent = generateEmailContent(emailDto, member.getName());
             sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, null, emailDto.getEmailTemplateType());
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            throw new MessageSendingFailedException(member.getEmail() + " 계정 발급 안내 메일 전송에 실패했습니다.");
         }
     }
 
@@ -124,7 +128,7 @@ public class EmailService {
         try {
             broadcastEmail(emailDto, null);
         } catch (Exception e) {
-            throw new RuntimeException("비밀번호 재발급 인증 메일 발송에 실패했습니다.", e);
+            throw new MessageSendingFailedException(member.getEmail() + " 비밀번호 재발급 인증 메일 전송에 실패했습니다.");
         }
     }
 

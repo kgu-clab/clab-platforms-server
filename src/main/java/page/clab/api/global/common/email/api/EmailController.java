@@ -30,29 +30,31 @@ public class EmailController {
     @Operation(summary = "[A] 메일 전송", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(path = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel broadcastEmail(
+    public ResponseModel<List<String>> broadcastEmail(
             EmailDto emailDto,
             @RequestParam(name = "multipartFile", required = false) List<MultipartFile> files
     ) {
-        CompletableFuture<Void> emailTask = CompletableFuture.runAsync(() -> {
-            emailService.broadcastEmail(emailDto, files);
+        CompletableFuture<List<String>> emailTask = CompletableFuture.supplyAsync(() -> {
+            return emailService.broadcastEmail(emailDto, files);
         });
-        emailTask.join();
-        return ResponseModel.success();
+
+        List<String> successfulAddresses = emailTask.join();
+        return ResponseModel.success(successfulAddresses);
     }
 
     @Operation(summary = "[A] 전체 메일 전송", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(path = "/all", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel broadcastEmailToAllMember(
+    public ResponseModel<List<String>> broadcastEmailToAllMember(
             EmailDto emailDto,
             @RequestParam(name = "multipartFile", required = false) List<MultipartFile> files
     ) {
-        CompletableFuture<Void> emailTask = CompletableFuture.runAsync(() -> {
-            emailService.broadcastEmailToAllMember(emailDto, files);
+        CompletableFuture<List<String>> emailTask = CompletableFuture.supplyAsync(() -> {
+            return emailService.broadcastEmailToAllMember(emailDto, files);
         });
-        emailTask.join();
-        return ResponseModel.success();
+
+        List<String> successfulEmails = emailTask.join();
+        return ResponseModel.success(successfulEmails);
     }
 
 }
