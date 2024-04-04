@@ -39,7 +39,6 @@ public class ScheduleRequestDto {
 
     public static Schedule toEntity(ScheduleRequestDto requestDto, Member member, ActivityGroup activityGroup) {
         return Schedule.builder()
-                .id(null)
                 .scheduleType(requestDto.getScheduleType())
                 .title(requestDto.getTitle())
                 .detail(requestDto.getDetail())

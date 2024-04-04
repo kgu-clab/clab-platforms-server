@@ -32,7 +32,6 @@ public class AbsentRequestDto {
 
     public static Absent toEntity(AbsentRequestDto requestDto, Member absentee, ActivityGroup activityGroup) {
         return Absent.builder()
-                .id(null)
                 .absentee(absentee)
                 .activityGroup(activityGroup)
                 .absentDate(requestDto.getAbsentDate())
