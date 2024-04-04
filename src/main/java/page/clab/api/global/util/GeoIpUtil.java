@@ -8,14 +8,12 @@ import com.maxmind.geoip2.record.Country;
 import com.maxmind.geoip2.record.Location;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Component;
 import page.clab.api.domain.login.domain.GeoIpInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 
-@Component
 public class GeoIpUtil {
 
     private static DatabaseReader databaseReader;
