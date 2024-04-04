@@ -35,39 +35,33 @@ public class NotificationController {
     @Operation(summary = "[U] 알림 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel createNotification(
+    public ResponseModel<Long> createNotification(
             @Valid @RequestBody NotificationRequestDto requestDto
     ) {
         Long id = notificationService.createNotification(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 나의 알림 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getNotifications(
+    public ResponseModel<PagedResponseDto<NotificationResponseDto>> getNotifications(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<NotificationResponseDto> notifications = notificationService.getNotifications(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(notifications);
-        return responseModel;
+        return ResponseModel.success(notifications);
     }
 
     @Operation(summary = "[U] 알림 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{notificationId}")
-    public ResponseModel deleteNotification(
+    public ResponseModel<Long> deleteNotification(
             @PathVariable(name = "notificationId") Long notificationId
     ) throws PermissionDeniedException {
         Long id = notificationService.deleteNotification(notificationId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
 }

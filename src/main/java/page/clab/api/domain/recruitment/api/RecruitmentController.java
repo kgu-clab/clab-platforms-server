@@ -34,48 +34,40 @@ public class RecruitmentController {
     @Operation(summary = "[S] 모집 공고 등록", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel createRecruitment(
+    public ResponseModel<Long> createRecruitment(
             @Valid @RequestBody RecruitmentRequestDto requestDto
     ) {
         Long id = recruitmentService.createRecruitment(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "모집 공고 목록(최근 5건)", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
             "최근 5건의 모집 공고를 조회")
     @GetMapping("")
-    public ResponseModel getRecentRecruitments() {
+    public ResponseModel<List<RecruitmentResponseDto>> getRecentRecruitments() {
         List<RecruitmentResponseDto> recruitments = recruitmentService.getRecentRecruitments();
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(recruitments);
-        return responseModel;
+        return ResponseModel.success(recruitments);
     }
 
     @Operation(summary = "[S] 모집 공고 수정", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PatchMapping("/{recruitmentId}")
-    public ResponseModel updateRecruitment(
+    public ResponseModel<Long> updateRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @Valid @RequestBody RecruitmentUpdateRequestDto requestDto
     ) {
         Long id = recruitmentService.updateRecruitment(recruitmentId, requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[S] 모집 공고 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{recruitmentId}")
-    public ResponseModel deleteRecruitment(
+    public ResponseModel<Long> deleteRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId
     ) {
         Long id = recruitmentService.deleteRecruitment(recruitmentId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
 }

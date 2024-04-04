@@ -39,82 +39,70 @@ public class AttendanceController {
     @Operation(summary = "[U] 출석체크 QR 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "")
-    public ResponseModel generateAttendanceQRCode (
+    public ResponseModel<String> generateAttendanceQRCode (
             @RequestParam(name = "activityGroupId") Long activityGroupId
     ) throws IOException, WriterException, PermissionDeniedException, IllegalAccessException {
         String QRCodeURL = attendanceService.generateAttendanceQRCode(activityGroupId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(QRCodeURL);
-        return responseModel;
+        return ResponseModel.success(QRCodeURL);
     }
 
     @Operation(summary = "[U] 출석 인증", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/check-in")
-    public ResponseModel checkInAttendance(
+    public ResponseModel<Long> checkInAttendance(
             @RequestBody AttendanceRequestDto requestDto
     ) throws IllegalAccessException {
         Long id = attendanceService.checkMemberAttendance(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 내 출석기록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping({"/my-attendance"})
-    public ResponseModel searchMyAttendance(
+    public ResponseModel<PagedResponseDto<AttendanceResponseDto>> searchMyAttendance(
             @RequestParam(name = "activityGroupId", defaultValue = "1") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) throws IllegalAccessException {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AttendanceResponseDto> myAttendances = attendanceService.getMyAttendances(activityGroupId, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(myAttendances);
-        return responseModel;
+        return ResponseModel.success(myAttendances);
     }
 
     @Operation(summary = "[U] 특정 그룹의 출석기록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping({"/group-attendance"})
-    public ResponseModel searchGroupAttendance(
+    public ResponseModel<PagedResponseDto<AttendanceResponseDto>> searchGroupAttendance(
             @RequestParam(name = "activityGroupId", defaultValue = "1") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AttendanceResponseDto> attendances = attendanceService.getGroupAttendances(activityGroupId, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(attendances);
-        return responseModel;
+        return ResponseModel.success(attendances);
     }
 
     @Operation(summary = "[U] 불참 사유서 등록", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping({"/absent"})
-    public ResponseModel writeAbsentExcuse(
+    public ResponseModel<Long> writeAbsentExcuse(
             @RequestBody AbsentRequestDto requestDto
     ) throws IllegalAccessException, DuplicateAbsentExcuseException {
         Long id = attendanceService.writeAbsentExcuse(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 그룹의 불참 사유서 열람", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping({"/absent/{activityGroupId}"})
-    public ResponseModel getActivityGroupAbsentExcuses(
+    public ResponseModel<PagedResponseDto<AbsentResponseDto>> getActivityGroupAbsentExcuses(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AbsentResponseDto> absentExcuses = attendanceService.getActivityGroupAbsentExcuses(activityGroupId, pageable);
-        ResponseModel responseModel =  ResponseModel.builder().build();
-        responseModel.addData(absentExcuses);
-        return responseModel;
+        return ResponseModel.success(absentExcuses);
     }
 
 }

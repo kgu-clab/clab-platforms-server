@@ -37,13 +37,11 @@ public class NewsController {
     @Operation(summary = "뉴스 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel createNews(
+    public ResponseModel<Long> createNews(
             @Valid @RequestBody NewsRequestDto requestDto
     ) {
         Long id = newsService.createNews(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 뉴스 목록 조회(제목, 카테고리 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
@@ -51,7 +49,7 @@ public class NewsController {
             "제목, 카테고리 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getNewsByConditions(
+    public ResponseModel<PagedResponseDto<NewsResponseDto>> getNewsByConditions(
             @RequestParam(name = "title", required = false) String title,
             @RequestParam(name = "category", required = false) String category,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -59,46 +57,38 @@ public class NewsController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<NewsResponseDto> news = newsService.getNewsByConditions(title, category, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(news);
-        return responseModel;
+        return ResponseModel.success(news);
     }
 
     @Operation(summary = "[U] 뉴스 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{newsId}")
-    public ResponseModel getNewsDetails(
+    public ResponseModel<NewsDetailsResponseDto> getNewsDetails(
             @PathVariable(name = "newsId") Long newsId
     ) {
         NewsDetailsResponseDto news = newsService.getNewsDetails(newsId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(news);
-        return responseModel;
+        return ResponseModel.success(news);
     }
 
     @Operation(summary = "[A] 뉴스 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{newsId}")
-    public ResponseModel updateNews(
+    public ResponseModel<Long> updateNews(
             @PathVariable(name = "newsId") Long newsId,
             @Valid @RequestBody NewsUpdateRequestDto requestDto
     ) {
         Long id = newsService.updateNews(newsId, requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[A] 뉴스 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{newsId}")
-    public ResponseModel deleteNews(
+    public ResponseModel<Long> deleteNews(
             @PathVariable(name = "newsId") Long newsId
     ) {
         Long id = newsService.deleteNews(newsId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
 }

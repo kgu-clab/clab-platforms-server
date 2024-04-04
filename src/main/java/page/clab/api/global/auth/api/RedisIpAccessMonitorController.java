@@ -31,29 +31,25 @@ public class RedisIpAccessMonitorController {
             "지속적인 비정상 접근으로 인해 Redis에 추가된 IP를 조회")
     @Secured({"ROLE_SUPER"})
     @GetMapping("/abnormal-access")
-    public ResponseModel getAbnormalAccessBlacklistIps(
+    public ResponseModel<PagedResponseDto<RedisIpAccessMonitor>> getAbnormalAccessBlacklistIps(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<RedisIpAccessMonitor> abnormalAccessBlacklistIps = redisIpAccessMonitorService.getAbnormalAccessIps(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(abnormalAccessBlacklistIps);
-        return responseModel;
+        return ResponseModel.success(abnormalAccessBlacklistIps);
     }
 
     @Operation(summary = "[S] 비정상 접근 IP 기록 삭제", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "지속적인 비정상 접근으로 인해 차단된 IP를 삭제")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("/abnormal-access")
-    public ResponseModel removeAbnormalAccessBlacklistIp(
+    public ResponseModel<String> removeAbnormalAccessBlacklistIp(
             HttpServletRequest request,
             @RequestParam(name = "ipAddress") String ipAddress
     ) {
         String deletedIp = redisIpAccessMonitorService.deleteAbnormalAccessIp(request, ipAddress);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(deletedIp);
-        return responseModel;
+        return ResponseModel.success(deletedIp);
     }
 
     @Operation(summary = "[S] 비정상 접근 IP 기록 초기화", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
@@ -64,8 +60,7 @@ public class RedisIpAccessMonitorController {
             HttpServletRequest request
     ) {
         redisIpAccessMonitorService.clearAbnormalAccessIps(request);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
+        return ResponseModel.success();
     }
 
 }

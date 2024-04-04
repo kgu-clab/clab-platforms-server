@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.comment.application.CommentService;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
-import page.clab.api.domain.comment.dto.response.CommentResponseDto;
 import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
+import page.clab.api.domain.comment.dto.response.CommentResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -38,81 +38,69 @@ public class CommentController {
     @Operation(summary = "[U] 댓글 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/{boardId}")
-    public ResponseModel createComment(
+    public ResponseModel<Long> createComment(
             @RequestParam(name = "parentId", required = false) Long parentId,
             @PathVariable(name = "boardId") Long boardId,
             @Valid @RequestBody CommentRequestDto requestDto
     ) {
         Long id = commentService.createComment(parentId, boardId, requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 댓글 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{boardId}")
-    public ResponseModel getComments(
+    public ResponseModel<PagedResponseDto<CommentResponseDto>> getComments(
             @PathVariable(name = "boardId") Long boardId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<CommentResponseDto> comments = commentService.getAllComments(boardId, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(comments);
-        return responseModel;
+        return ResponseModel.success(comments);
     }
 
     @Operation(summary = "[U] 나의 댓글 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my-comments")
-    public ResponseModel getMyComments(
+    public ResponseModel<PagedResponseDto<CommentMyResponseDto>> getMyComments(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<CommentMyResponseDto> comments = commentService.getMyComments(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(comments);
-        return responseModel;
+        return ResponseModel.success(comments);
     }
 
     @Operation(summary = "[U] 댓글 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{commentId}")
-    public ResponseModel updateComment(
+    public ResponseModel<Long> updateComment(
             @PathVariable(name = "commentId") Long commentId,
             @Valid @RequestBody CommentUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = commentService.updateComment(commentId, requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 댓글 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{commentId}")
-    public ResponseModel deleteComment(
+    public ResponseModel<Long> deleteComment(
             @PathVariable(name = "commentId") Long commentId
     ) throws PermissionDeniedException {
         Long id = commentService.deleteComment(commentId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @PostMapping("/likes/{commentId}")
     @Operation(summary = "[U] 댓글 좋아요 누르기/취소하기", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel toggleLikeStatus(
+    public ResponseModel<Long> toggleLikeStatus(
             @PathVariable(name = "commentId") Long commentId
     ) {
         Long id = commentService.toggleLikeStatus(commentId);
-        ResponseModel responseModel= ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
 }

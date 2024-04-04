@@ -46,8 +46,7 @@ public class LoginController {
     ) throws MemberLockedException, LoginFaliedException {
         LoginHeader headerData = loginService.login(request, requestDto);
         response.setHeader(authHeader, headerData.toJson());
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
+        return ResponseModel.success();
     }
 
     @Operation(summary = "TOTP 인증", description = "ROLE_ANONYMOUS 권한이 필요함")
@@ -59,32 +58,27 @@ public class LoginController {
     ) throws LoginFaliedException, MemberLockedException {
         TokenHeader headerData = loginService.authenticator(request, requestDto);
         response.setHeader(authHeader, headerData.toJson());
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
+        return ResponseModel.success();
     }
 
     @Operation(summary = "[S] TOTP 초기화", description = "ROLE_SUPER 권한이 필요함")
     @DeleteMapping("/authenticator/{memberId}")
     @Secured({"ROLE_SUPER"})
-    public ResponseModel deleteAuthenticator(
+    public ResponseModel<String> deleteAuthenticator(
             @PathVariable(name = "memberId") String memberId
     ) {
         String id = loginService.resetAuthenticator(memberId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[S] 멤버 토큰 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @DeleteMapping("/revoke/{memberId}")
     @Secured({"ROLE_SUPER"})
-    public ResponseModel revoke(
+    public ResponseModel<String> revoke(
             @PathVariable(name = "memberId") String memberId
     ) {
         String id = loginService.revoke(memberId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 멤버 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
@@ -96,8 +90,7 @@ public class LoginController {
     ) {
         TokenHeader headerData = loginService.reissue(request);
         response.setHeader(authHeader, headerData.toJson());
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
+        return ResponseModel.success();
     }
 
 }
