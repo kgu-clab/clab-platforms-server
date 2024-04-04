@@ -134,18 +134,20 @@ public class MemberService {
     }
 
     @Transactional
-    public void requestResetMemberPassword(MemberResetPasswordRequestDto requestDto) {
+    public String requestResetMemberPassword(MemberResetPasswordRequestDto requestDto) {
         Member member = validateResetPasswordRequest(requestDto);
         String code = verificationService.generateVerificationCode();
         verificationService.saveVerificationCode(member.getId(), code);
         emailService.sendPasswordResetEmail(member, code);
+        return member.getId();
     }
 
     @Transactional
-    public void verifyResetMemberPassword(VerificationRequestDto requestDto) {
+    public String verifyResetMemberPassword(VerificationRequestDto requestDto) {
         Member member = getMemberByIdOrThrow(requestDto.getMemberId());
         Verification verification = verificationService.validateVerificationCode(requestDto, member);
         updateMemberPasswordWithVerificationCode(verification.getVerificationCode(), member);
+        return member.getId();
     }
 
     public Member getMemberById(String memberId) {
