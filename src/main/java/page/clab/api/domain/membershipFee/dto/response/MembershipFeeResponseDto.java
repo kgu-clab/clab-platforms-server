@@ -2,14 +2,12 @@ package page.clab.api.domain.membershipFee.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Builder
 public class MembershipFeeResponseDto {
 

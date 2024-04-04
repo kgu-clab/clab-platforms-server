@@ -2,7 +2,6 @@ package page.clab.api.domain.news.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.news.domain.News;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 
@@ -11,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@Setter
 @Builder
 public class NewsDetailsResponseDto {
 

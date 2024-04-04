@@ -2,13 +2,11 @@ package page.clab.api.domain.board.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.board.domain.Board;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Builder
 public class BoardCategoryResponseDto {
 

@@ -2,13 +2,11 @@ package page.clab.api.domain.jobPosting.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
 
 import java.util.List;
 
 @Getter
-@Setter
 @Builder
 public class JobPostingResponseDto {
 

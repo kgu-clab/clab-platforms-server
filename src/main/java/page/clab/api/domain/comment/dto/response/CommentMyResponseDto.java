@@ -2,13 +2,11 @@ package page.clab.api.domain.comment.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.comment.domain.Comment;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Builder
 public class CommentMyResponseDto {
 

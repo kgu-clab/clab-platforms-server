@@ -3,13 +3,11 @@ package page.clab.api.domain.blog.dto.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.blog.domain.Blog;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Builder
 public class BlogDetailsResponseDto {
 

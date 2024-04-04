@@ -2,14 +2,12 @@ package page.clab.api.domain.sharedAccount.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.sharedAccount.domain.SharedAccountUsage;
 import page.clab.api.domain.sharedAccount.domain.SharedAccountUsageStatus;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Builder
 public class SharedAccountUsageResponseDto {
 

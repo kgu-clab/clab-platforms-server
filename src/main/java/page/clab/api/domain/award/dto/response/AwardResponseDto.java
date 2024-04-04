@@ -2,13 +2,11 @@ package page.clab.api.domain.award.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.award.domain.Award;
 
 import java.time.LocalDate;
 
 @Getter
-@Setter
 @Builder
 public class AwardResponseDto {
 

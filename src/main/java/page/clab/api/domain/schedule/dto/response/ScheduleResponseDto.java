@@ -2,13 +2,11 @@ package page.clab.api.domain.schedule.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.schedule.domain.Schedule;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Builder
 public class ScheduleResponseDto {
 

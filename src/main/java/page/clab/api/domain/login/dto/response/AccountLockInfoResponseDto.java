@@ -2,11 +2,9 @@ package page.clab.api.domain.login.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.login.domain.AccountLockInfo;
 
 @Getter
-@Setter
 @Builder
 public class AccountLockInfoResponseDto {
 

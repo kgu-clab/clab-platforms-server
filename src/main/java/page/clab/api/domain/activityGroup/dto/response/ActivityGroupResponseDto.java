@@ -2,14 +2,12 @@ package page.clab.api.domain.activityGroup.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Builder
 public class ActivityGroupResponseDto {
 

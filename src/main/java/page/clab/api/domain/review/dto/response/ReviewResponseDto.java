@@ -2,7 +2,6 @@ package page.clab.api.domain.review.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.review.domain.Review;
@@ -10,7 +9,6 @@ import page.clab.api.domain.review.domain.Review;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Builder
 public class ReviewResponseDto {
 

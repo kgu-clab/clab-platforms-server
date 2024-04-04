@@ -2,7 +2,6 @@ package page.clab.api.domain.activityPhoto.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 
@@ -10,7 +9,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Getter
-@Setter
 @Builder
 public class ActivityPhotoResponseDto {
 
