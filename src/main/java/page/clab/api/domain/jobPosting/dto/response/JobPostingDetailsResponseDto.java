@@ -1,9 +1,7 @@
 package page.clab.api.domain.jobPosting.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
@@ -13,8 +11,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class JobPostingDetailsResponseDto {
 

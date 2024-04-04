@@ -2,19 +2,13 @@ package page.clab.api.domain.blog.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.blog.domain.Blog;
 import page.clab.api.domain.member.domain.Member;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class BlogRequestDto {
 
     @NotNull(message = "{notNull.blog.title}")

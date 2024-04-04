@@ -1,19 +1,13 @@
 package page.clab.api.domain.jobPosting.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class JobPostingUpdateRequestDto {
 
     @Schema(description = "공고명", example = "[네이버웹툰] Analytics Engineer(경력)")

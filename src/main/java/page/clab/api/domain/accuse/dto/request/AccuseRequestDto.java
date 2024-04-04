@@ -2,10 +2,7 @@ package page.clab.api.domain.accuse.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
@@ -14,9 +11,6 @@ import page.clab.api.domain.member.domain.Member;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class AccuseRequestDto {
 
     @NotNull(message = "{notNull.accuse.targetType}")

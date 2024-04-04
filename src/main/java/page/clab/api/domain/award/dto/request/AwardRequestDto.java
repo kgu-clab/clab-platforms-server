@@ -2,10 +2,7 @@ package page.clab.api.domain.award.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.award.domain.Award;
 import page.clab.api.domain.member.domain.Member;
@@ -14,9 +11,6 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class AwardRequestDto {
 
     @NotNull(message = "{notNull.award.competitionName}")

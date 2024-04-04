@@ -2,10 +2,7 @@ package page.clab.api.domain.review.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
@@ -13,9 +10,6 @@ import page.clab.api.domain.review.domain.Review;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class ReviewRequestDto {
 
     @NotNull(message = "{notNull.review.activityGroupId}")

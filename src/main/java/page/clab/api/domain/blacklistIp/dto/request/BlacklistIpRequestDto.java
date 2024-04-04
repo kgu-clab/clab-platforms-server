@@ -2,18 +2,12 @@ package page.clab.api.domain.blacklistIp.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class BlacklistIpRequestDto {
 
     @NotNull(message = "{notNull.blacklistIp.ipAddress}")

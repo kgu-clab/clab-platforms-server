@@ -1,10 +1,7 @@
 package page.clab.api.domain.member.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.member.domain.StudentStatus;
 
@@ -12,9 +9,6 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class MemberUpdateRequestDto {
 
     @Schema(description = "비밀번호", example = "1234")

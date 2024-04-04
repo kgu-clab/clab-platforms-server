@@ -2,22 +2,14 @@ package page.clab.api.domain.book.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import page.clab.api.domain.book.domain.Book;
 
 import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Slf4j
 public class BookRequestDto {
 
     @NotNull(message = "{notNull.book.category}")

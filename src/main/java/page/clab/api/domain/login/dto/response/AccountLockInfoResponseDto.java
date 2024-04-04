@@ -1,16 +1,12 @@
 package page.clab.api.domain.login.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.login.domain.AccountLockInfo;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class AccountLockInfoResponseDto {
 
