@@ -119,20 +119,20 @@ public class MemberController {
 
     @Operation(summary = "멤버 비밀번호 재발급 요청", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/password-reset-requests")
-    public ResponseModel requestResetMemberPassword(
+    public ResponseModel<String> requestResetMemberPassword(
             @Valid @RequestBody MemberResetPasswordRequestDto requestDto
     ) {
-        memberService.requestResetMemberPassword(requestDto);
-        return ResponseModel.success();
+        String id = memberService.requestResetMemberPassword(requestDto);
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "멤버 비밀번호 재발급 인증", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/password-reset-verifications")
-    public ResponseModel verifyResetMemberPassword(
+    public ResponseModel<String> verifyResetMemberPassword(
             @Valid @RequestBody VerificationRequestDto requestDto
     ) {
-        memberService.verifyResetMemberPassword(requestDto);
-        return ResponseModel.success();
+        String id = memberService.verifyResetMemberPassword(requestDto);
+        return ResponseModel.success(id);
     }
 
 }
