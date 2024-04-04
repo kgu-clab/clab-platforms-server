@@ -3,7 +3,6 @@ package page.clab.api.domain.board.dto.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 
@@ -11,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@Setter
 @Builder
 public class BoardDetailsResponseDto {
 

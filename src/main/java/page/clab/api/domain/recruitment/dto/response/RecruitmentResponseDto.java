@@ -2,14 +2,12 @@ package page.clab.api.domain.recruitment.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.application.domain.ApplicationType;
 import page.clab.api.domain.recruitment.domain.Recruitment;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Builder
 public class RecruitmentResponseDto {
 

@@ -2,7 +2,6 @@ package page.clab.api.domain.accuse.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.TargetType;
@@ -10,7 +9,6 @@ import page.clab.api.domain.accuse.domain.TargetType;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Builder
 public class AccuseResponseDto {
 

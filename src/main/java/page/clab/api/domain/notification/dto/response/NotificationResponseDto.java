@@ -2,13 +2,11 @@ package page.clab.api.domain.notification.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.notification.domain.Notification;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Builder
 public class NotificationResponseDto {
 

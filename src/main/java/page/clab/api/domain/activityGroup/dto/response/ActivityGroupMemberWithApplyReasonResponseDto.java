@@ -2,12 +2,10 @@ package page.clab.api.domain.activityGroup.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 
 @Getter
-@Setter
 @Builder
 public class ActivityGroupMemberWithApplyReasonResponseDto {
 

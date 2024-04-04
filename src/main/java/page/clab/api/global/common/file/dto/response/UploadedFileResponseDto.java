@@ -2,14 +2,12 @@ package page.clab.api.global.common.file.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.global.common.file.domain.UploadedFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@Setter
 @Builder
 public class UploadedFileResponseDto {
 

@@ -2,7 +2,6 @@ package page.clab.api.domain.member.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.domain.Role;
 import page.clab.api.domain.member.domain.StudentStatus;
@@ -11,7 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @Builder
 public class MemberResponseDto {
 

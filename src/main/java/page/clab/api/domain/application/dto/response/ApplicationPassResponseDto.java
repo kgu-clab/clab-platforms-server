@@ -2,12 +2,10 @@ package page.clab.api.domain.application.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.domain.ApplicationType;
 
 @Getter
-@Setter
 @Builder
 public class ApplicationPassResponseDto {
 
