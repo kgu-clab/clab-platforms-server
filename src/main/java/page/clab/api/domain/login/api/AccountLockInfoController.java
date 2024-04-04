@@ -31,41 +31,35 @@ public class AccountLockInfoController {
     @Operation(summary = "[S] 멤버 밴 등록", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("/ban/{memberId}")
-    public ResponseModel banMember(
+    public ResponseModel<Long> banMember(
             HttpServletRequest request,
             @PathVariable(name = "memberId") String memberId
     ) {
         Long id = accountLockInfoService.banMemberById(request, memberId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[S] 멤버 밴 해제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("/unban/{memberId}")
-    public ResponseModel unbanMember(
+    public ResponseModel<Long> unbanMember(
             HttpServletRequest request,
             @PathVariable(name = "memberId") String memberId
     ) {
         Long id = accountLockInfoService.unbanMemberById(request, memberId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[S] 밴 멤버 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getBanMembers(
+    public ResponseModel<PagedResponseDto<AccountLockInfoResponseDto>> getBanMembers(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AccountLockInfoResponseDto> banMembers = accountLockInfoService.getBanMembers(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(banMembers);
-        return responseModel;
+        return ResponseModel.success(banMembers);
     }
 
 }

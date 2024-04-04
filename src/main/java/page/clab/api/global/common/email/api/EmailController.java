@@ -2,8 +2,6 @@ package page.clab.api.global.common.email.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -16,6 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.common.email.application.EmailService;
 import page.clab.api.global.common.email.dto.request.EmailDto;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/v1/emails")
@@ -37,8 +38,7 @@ public class EmailController {
             emailService.broadcastEmail(emailDto, files);
         });
         emailTask.join();
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
+        return ResponseModel.success();
     }
 
     @Operation(summary = "[A] 전체 메일 전송", description = "ROLE_ADMIN 이상의 권한이 필요함")
@@ -52,8 +52,7 @@ public class EmailController {
             emailService.broadcastEmailToAllMember(emailDto, files);
         });
         emailTask.join();
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
+        return ResponseModel.success();
     }
 
 }

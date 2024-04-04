@@ -31,44 +31,38 @@ public class MemberCloudController {
     @Operation(summary = "[S] 모든 멤버의 클라우드 사용량 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getAllCloudUsages(
+    public ResponseModel<PagedResponseDto<CloudUsageInfo>> getAllCloudUsages(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<CloudUsageInfo> cloudUsageInfos = memberCloudService.getAllCloudUsages(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(cloudUsageInfos);
-        return responseModel;
+        return ResponseModel.success(cloudUsageInfos);
     }
 
     @Operation(summary = "[U] 멤버의 클라우드 사용량 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{memberId}")
-    public ResponseModel getCloudUsageByMemberId(
+    public ResponseModel<CloudUsageInfo> getCloudUsageByMemberId(
             @PathVariable(name = "memberId") String memberId
     ) throws PermissionDeniedException {
         CloudUsageInfo usage = memberCloudService.getCloudUsageByMemberId(memberId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(usage);
-        return responseModel;
+        return ResponseModel.success(usage);
     }
 
     @Operation(summary = "[U] 멤버 업로드 파일 리스트 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 정보만 조회 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/files/{memberId}")
-    public ResponseModel getMemberUploadedFiles(
+    public ResponseModel<PagedResponseDto<FileInfo>> getMemberUploadedFiles(
             @PathVariable(name = "memberId") String memberId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<FileInfo> files = memberCloudService.getFilesInMemberDirectory(memberId, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(files);
-        return responseModel;
+        return ResponseModel.success(files);
     }
 
 }

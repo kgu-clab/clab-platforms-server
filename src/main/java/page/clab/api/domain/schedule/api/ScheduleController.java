@@ -35,19 +35,17 @@ public class ScheduleController {
     @Operation(summary = "[U] 일정 등록", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel createSchedule(
+    public ResponseModel<Long> createSchedule(
             @Valid @RequestBody ScheduleRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = scheduleService.createSchedule(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 일정 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getSchedulesWithinDateRange(
+    public ResponseModel<PagedResponseDto<ScheduleResponseDto>> getSchedulesWithinDateRange(
             @RequestParam(name = "startDate") LocalDate startDate,
             @RequestParam(name = "endDate") LocalDate endDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -55,15 +53,13 @@ public class ScheduleController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getSchedulesWithinDateRange(startDate, endDate, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(schedules);
-        return responseModel;
+        return ResponseModel.success(schedules);
     }
 
     @Operation(summary = "[U] 내 활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/activity")
-    public ResponseModel getActivitySchedules(
+    public ResponseModel<PagedResponseDto<ScheduleResponseDto>> getActivitySchedules(
             @RequestParam(name = "startDate") LocalDate startDate,
             @RequestParam(name = "endDate") LocalDate endDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -71,21 +67,17 @@ public class ScheduleController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getActivitySchedules(startDate, endDate, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(schedules);
-        return responseModel;
+        return ResponseModel.success(schedules);
     }
 
     @Operation(summary = "[U] 일정 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{scheduleId}")
-    public ResponseModel deleteSchedule(
+    public ResponseModel<Long> deleteSchedule(
             @PathVariable(name = "scheduleId") Long scheduleId
     ) throws PermissionDeniedException {
         Long id = scheduleService.deleteSchedule(scheduleId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
 }

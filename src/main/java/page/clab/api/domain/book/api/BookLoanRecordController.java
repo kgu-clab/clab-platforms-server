@@ -33,37 +33,31 @@ public class BookLoanRecordController {
     @Operation(summary = "[U] 도서 대출", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel borrowBook(
+    public ResponseModel<Long> borrowBook(
             @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) throws CustomOptimisticLockingFailureException {
         Long id = bookLoanRecordService.borrowBook(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 도서 반납", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/return")
-    public ResponseModel returnBook(
+    public ResponseModel<Long> returnBook(
             @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) {
         Long id = bookLoanRecordService.returnBook(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 도서 대출 연장", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/extend")
-    public ResponseModel extendBookLoan(
+    public ResponseModel<Long> extendBookLoan(
             @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) {
         Long id = bookLoanRecordService.extendBookLoan(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 도서 대출 내역 조회(도서 ID, 대출자 ID, 대출 가능 여부 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
@@ -71,7 +65,7 @@ public class BookLoanRecordController {
             "도서 ID, 대출자 ID, 대출 가능 여부 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/conditions")
-    public ResponseModel getBookLoanRecordsByConditions(
+    public ResponseModel<PagedResponseDto<BookLoanRecordResponseDto>> getBookLoanRecordsByConditions(
             @RequestParam(name = "bookId", required = false) Long bookId,
             @RequestParam(name = "borrowerId", required = false) String borrowerId,
             @RequestParam(name = "isReturned", required = false) Boolean isReturned,
@@ -80,9 +74,7 @@ public class BookLoanRecordController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.getBookLoanRecordsByConditions(bookId, borrowerId, isReturned, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(bookLoanRecords);
-        return responseModel;
+        return ResponseModel.success(bookLoanRecords);
     }
 
 }

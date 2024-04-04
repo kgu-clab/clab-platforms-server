@@ -42,44 +42,38 @@ public class MemberController {
     @Operation(summary = "[S] 신규 멤버 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel createMember(
+    public ResponseModel<String> createMember(
             @Valid @RequestBody MemberRequestDto requestDto
     ) {
         String id = memberService.createMember(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[S] 모집 단위별 합격자 멤버 통합 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("/{recruitmentId}")
-    public ResponseModel createMembersByRecruitmentId(
+    public ResponseModel<List<String>> createMembersByRecruitmentId(
             @PathVariable(name = "recruitmentId") Long recruitmentId
     ) {
         List<String> ids = memberService.createMembersByRecruitmentId(recruitmentId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(ids);
-        return responseModel;
+        return ResponseModel.success(ids);
     }
 
     @Operation(summary = "[S] 모집 단위별 합격자 멤버 개별 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("/{recruitmentId}/{memberId}")
-    public ResponseModel createMemberByRecruitmentId(
+    public ResponseModel<String> createMemberByRecruitmentId(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "memberId") String memberId
     ) {
         String id = memberService.createMemberByRecruitmentId(recruitmentId, memberId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[A] 멤버 정보 조회(멤버 ID, 이름 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getMembersByConditions(
+    public ResponseModel<PagedResponseDto<MemberResponseDto>> getMembersByConditions(
             @RequestParam(name = "id", required = false) String id,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -87,48 +81,40 @@ public class MemberController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<MemberResponseDto> members = memberService.getMembersByConditions(id, name, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(members);
-        return responseModel;
+        return ResponseModel.success(members);
     }
 
     @Operation(summary = "[U] 내 프로필 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my-profile")
-    public ResponseModel getMyProfile() {
+    public ResponseModel<MyProfileResponseDto> getMyProfile() {
         MyProfileResponseDto myProfile = memberService.getMyProfile();
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(myProfile);
-        return responseModel;
+        return ResponseModel.success(myProfile);
     }
 
     @Operation(summary = "이달의 생일자 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/birthday")
-    public ResponseModel getBirthdaysThisMonth(
+    public ResponseModel<PagedResponseDto<MemberBirthdayResponseDto>> getBirthdaysThisMonth(
             @RequestParam(name = "month") int month,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<MemberBirthdayResponseDto> birthdayMembers = memberService.getBirthdaysThisMonth(month, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(birthdayMembers);
-        return responseModel;
+        return ResponseModel.success(birthdayMembers);
     }
 
     @Operation(summary = "[U] 멤버 정보 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{memberId}")
-    public ResponseModel updateMemberInfoByMember(
+    public ResponseModel<String> updateMemberInfoByMember(
             @PathVariable(name = "memberId") String memberId,
             @Valid @RequestBody MemberUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         String id = memberService.updateMemberInfo(memberId, requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "멤버 비밀번호 재발급 요청", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
@@ -137,8 +123,7 @@ public class MemberController {
             @Valid @RequestBody MemberResetPasswordRequestDto requestDto
     ) {
         memberService.requestResetMemberPassword(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
+        return ResponseModel.success();
     }
 
     @Operation(summary = "멤버 비밀번호 재발급 인증", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
@@ -147,8 +132,7 @@ public class MemberController {
             @Valid @RequestBody VerificationRequestDto requestDto
     ) {
         memberService.verifyResetMemberPassword(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
+        return ResponseModel.success();
     }
 
 }
