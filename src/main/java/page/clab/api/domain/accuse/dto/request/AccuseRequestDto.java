@@ -27,7 +27,6 @@ public class AccuseRequestDto {
 
     public static Accuse toEntity(AccuseRequestDto requestDto, Member member) {
         return Accuse.builder()
-                .id(null)
                 .member(member)
                 .targetType(requestDto.getTargetType())
                 .targetId(requestDto.getTargetId())

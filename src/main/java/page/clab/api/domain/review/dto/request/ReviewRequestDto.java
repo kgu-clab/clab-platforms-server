@@ -23,7 +23,6 @@ public class ReviewRequestDto {
 
     public static Review toEntity(ReviewRequestDto requestDto, Member member, ActivityGroup activityGroup) {
         return Review.builder()
-                .id(null)
                 .activityGroup(activityGroup)
                 .member(member)
                 .content(requestDto.getContent())
