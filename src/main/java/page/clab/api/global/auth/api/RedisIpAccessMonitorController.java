@@ -18,6 +18,8 @@ import page.clab.api.global.auth.domain.RedisIpAccessMonitor;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/ip-access-monitor")
 @RequiredArgsConstructor
@@ -56,11 +58,11 @@ public class RedisIpAccessMonitorController {
             "지속적인 비정상 접근으로 인해 차단된 IP를 모두 삭제")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("/abnormal-access/clear")
-    public ResponseModel clearAbnormalAccessBlacklist(
+    public ResponseModel<List<RedisIpAccessMonitor>> clearAbnormalAccessBlacklist(
             HttpServletRequest request
     ) {
-        redisIpAccessMonitorService.clearAbnormalAccessIps(request);
-        return ResponseModel.success();
+        List<RedisIpAccessMonitor> ipAccessMonitors = redisIpAccessMonitorService.clearAbnormalAccessIps(request);
+        return ResponseModel.success(ipAccessMonitors);
     }
 
 }
