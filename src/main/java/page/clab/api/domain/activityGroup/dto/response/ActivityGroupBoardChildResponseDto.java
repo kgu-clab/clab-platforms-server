@@ -8,7 +8,6 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -30,7 +29,7 @@ public class ActivityGroupBoardChildResponseDto {
 
     private LocalDateTime createdAt;
 
-    private List<UploadedFileResponseDto> files = new ArrayList<>();
+    private List<UploadedFileResponseDto> files;
 
     private List<ActivityGroupBoardChildResponseDto> children;
 
