@@ -64,7 +64,7 @@ public class WorkExperienceController {
     @Operation(summary = "[U] 멤버의 경력사항 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @GetMapping("/search")
+    @GetMapping("/conditions")
     public ResponseModel getWorkExperiencesByConditions(
             @RequestParam String memberId,
             @RequestParam(name = "page", defaultValue = "0") int page,
