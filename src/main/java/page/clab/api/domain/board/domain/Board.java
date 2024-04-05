@@ -79,8 +79,8 @@ public class Board extends BaseEntity {
         return this.category.equals(BoardCategory.NOTICE);
     }
 
-    public boolean isGradudate() {
-        return this.category.equals(BoardCategory.GRADUATE);
+    public boolean isGraduated() {
+        return this.category.equals(BoardCategory.GRADUATED);
     }
 
     public boolean shouldNotifyForNewBoard() {
@@ -111,7 +111,7 @@ public class Board extends BaseEntity {
         if (this.isNotice() && !currentMember.isAdminRole()) {
             throw new PermissionDeniedException("공지사항은 관리자만 작성할 수 있습니다.");
         }
-        if (this.isGradudate() && !currentMember.isGraduated()) {
+        if (this.isGraduated() && !currentMember.isGraduated()) {
             throw new PermissionDeniedException("졸업생 게시판은 졸업생만 작성할 수 있습니다.");
         }
     }
