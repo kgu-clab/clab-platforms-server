@@ -17,7 +17,7 @@ public class PositionRequestDto {
     private String memberId;
 
     @NotNull(message = "{notNull.position.position}")
-    @Schema(description = "직책", example = "OPERATIONS", required = true)
+    @Schema(description = "직책", example = "OPERATION", required = true)
     private PositionType positionType;
 
     @NotNull(message = "{notNull.position.year}")

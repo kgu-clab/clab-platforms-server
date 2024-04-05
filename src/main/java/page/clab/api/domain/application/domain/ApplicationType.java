@@ -8,7 +8,7 @@ import lombok.Getter;
 public enum ApplicationType {
 
     NORMAL("NORMAL", "일반 회원"),
-    OFFICER("OFFICER", "운영진"),
+    OPERATION("OPERATION", "운영진"),
     CORE_TEAM("CORE_TEAM", "코어팀");
 
     private String key;
