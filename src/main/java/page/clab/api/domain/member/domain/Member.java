@@ -179,6 +179,10 @@ public class Member extends BaseEntity implements UserDetails {
         return email.equals(memberEmail);
     }
 
+    public boolean isGraduated() {
+        return studentStatus.equals(StudentStatus.GRADUATED);
+    }
+
     public boolean isOwner(Member member) {
         return this.isSameMember(member);
     }

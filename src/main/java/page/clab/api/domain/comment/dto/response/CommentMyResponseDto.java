@@ -2,6 +2,7 @@ package page.clab.api.domain.comment.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
+import page.clab.api.domain.board.domain.BoardCategory;
 import page.clab.api.domain.comment.domain.Comment;
 
 import java.time.LocalDateTime;
@@ -14,7 +15,7 @@ public class CommentMyResponseDto {
 
     private Long boardId;
 
-    private String boardCategory;
+    private BoardCategory boardCategory;
 
     private String writer;
 

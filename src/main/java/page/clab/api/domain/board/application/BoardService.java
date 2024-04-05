@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.dao.BoardLikeRepository;
 import page.clab.api.domain.board.dao.BoardRepository;
 import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.domain.BoardCategory;
 import page.clab.api.domain.board.domain.BoardLike;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
@@ -48,10 +49,11 @@ public class BoardService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public Long createBoard(BoardRequestDto requestDto) {
+    public Long createBoard(BoardRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         Board board = BoardRequestDto.toEntity(requestDto, currentMember, uploadedFiles);
+        board.validateAccessPermissionForCreation(currentMember);
         validationService.checkValid(board);
         if (board.shouldNotifyForNewBoard()) {
             notificationService.sendNotificationToMember(currentMember, "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.");
@@ -82,7 +84,7 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<BoardCategoryResponseDto> getBoardsByCategory(String category, Pageable pageable) {
+    public PagedResponseDto<BoardCategoryResponseDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
         Page<Board> boards = getBoardByCategory(category, pageable);
         return new PagedResponseDto<>(boards.map(BoardCategoryResponseDto::toDto));
     }
@@ -91,7 +93,7 @@ public class BoardService {
     public Long updateBoard(Long boardId, BoardUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
-        board.checkPermission(currentMember);
+        board.validateAccessPermission(currentMember);
         board.update(requestDto);
         validationService.checkValid(board);
         return boardRepository.save(board).getId();
@@ -116,7 +118,7 @@ public class BoardService {
     public Long deleteBoard(Long boardId) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
-        board.checkPermission(currentMember);
+        board.validateAccessPermission(currentMember);
         boardRepository.delete(board);
         return board.getId();
     }
@@ -140,7 +142,7 @@ public class BoardService {
         return boardRepository.findAllByMemberOrderByCreatedAtDesc(member, pageable);
     }
 
-    private Page<Board> getBoardByCategory(String category, Pageable pageable) {
+    private Page<Board> getBoardByCategory(BoardCategory category, Pageable pageable) {
         return boardRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
     }
 

@@ -2,6 +2,8 @@ package page.clab.api.domain.board.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -46,8 +48,8 @@ public class Board extends BaseEntity {
     private String nickname;
 
     @Column(nullable = false)
-    @Size(min = 1, max = 50, message = "{size.board.category}")
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private BoardCategory category;
 
     @Column(nullable = false)
     @Size(min = 1, max = 100, message = "{size.board.title}")
@@ -73,8 +75,16 @@ public class Board extends BaseEntity {
         Optional.of(boardUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
     }
 
+    public boolean isNotice() {
+        return this.category.equals(BoardCategory.NOTICE);
+    }
+
+    public boolean isGradudate() {
+        return this.category.equals(BoardCategory.GRADUATE);
+    }
+
     public boolean shouldNotifyForNewBoard() {
-        return !this.member.getRole().equals(Role.USER) && this.category.equals("공지사항");
+        return !this.member.getRole().equals(Role.USER) && this.category.equals(BoardCategory.NOTICE);
     }
 
     public void incrementLikes() {
@@ -91,9 +101,18 @@ public class Board extends BaseEntity {
         return this.member.isSameMember(member);
     }
 
-    public void checkPermission(Member member) throws PermissionDeniedException {
+    public void validateAccessPermission(Member member) throws PermissionDeniedException {
         if (!isOwner(member) && !member.isAdminRole()) {
             throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
+        }
+    }
+
+    public void validateAccessPermissionForCreation(Member currentMember) throws PermissionDeniedException {
+        if (this.isNotice() && !currentMember.isAdminRole()) {
+            throw new PermissionDeniedException("공지사항은 관리자만 작성할 수 있습니다.");
+        }
+        if (this.isGradudate() && !currentMember.isGraduated()) {
+            throw new PermissionDeniedException("졸업생 게시판은 졸업생만 작성할 수 있습니다.");
         }
     }
 

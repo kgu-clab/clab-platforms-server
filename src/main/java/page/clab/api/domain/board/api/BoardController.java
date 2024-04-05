@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.board.application.BoardService;
+import page.clab.api.domain.board.domain.BoardCategory;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
@@ -41,7 +42,7 @@ public class BoardController {
     @PostMapping("")
     public ResponseModel<Long> createBoard(
             @Valid @RequestBody BoardRequestDto requestDto
-    ) {
+    ) throws PermissionDeniedException {
         Long id = boardService.createBoard(requestDto);
         return ResponseModel.success(id);
     }
@@ -84,7 +85,7 @@ public class BoardController {
     @Operation(summary = "[U] 커뮤니티 게시글 카테고리별 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel<PagedResponseDto<BoardCategoryResponseDto>> getBoardsByCategory(
-            @RequestParam(name = "category") String category,
+            @RequestParam(name = "category") BoardCategory category,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {

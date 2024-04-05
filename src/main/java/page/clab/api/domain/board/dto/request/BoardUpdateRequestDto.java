@@ -4,13 +4,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import page.clab.api.domain.board.domain.BoardCategory;
 
 @Getter
 @Setter
 public class BoardUpdateRequestDto {
 
-    @Schema(description = "카테고리", example = "공지사항")
-    private String category;
+    @Schema(description = "카테고리", example = "NOTICE")
+    private BoardCategory category;
 
     @Schema(description = "제목", example = "2023년 2학기 모집 안내")
     private String title;
