@@ -48,7 +48,7 @@ public class BlacklistIpService {
     public String deleteBlacklistedIp(HttpServletRequest request, String ipAddress) {
         BlacklistIp blacklistIp = getBlacklistIpByIpAddressOrThrow(ipAddress);
         blacklistIpRepository.delete(blacklistIp);
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Deleted IP: " + ipAddress);
+        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_REMOVED, "Deleted IP: " + ipAddress);
         return blacklistIp.getIpAddress();
     }
 
@@ -58,7 +58,7 @@ public class BlacklistIpService {
                 .map(BlacklistIp::getIpAddress)
                 .toList();
         blacklistIpRepository.deleteAll();
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Deleted IP: ALL");
+        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_REMOVED, "Deleted IP: ALL");
         return blacklistedIps;
     }
 
