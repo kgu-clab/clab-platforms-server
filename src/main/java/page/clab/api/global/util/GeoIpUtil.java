@@ -34,7 +34,7 @@ public class GeoIpUtil {
             Country country = response.getCountry();
             Location location = response.getLocation();
             return GeoIpInfo.create(city, country, location);
-        } catch (IOException | GeoIp2Exception e) {
+        } catch (NullPointerException | IOException | GeoIp2Exception e) {
             return GeoIpInfo.createUnknown();
         }
     }
