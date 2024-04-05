@@ -59,9 +59,7 @@ public class InvalidEndpointAccessFilter extends GenericFilterBean {
 
         if (!blacklistIpRepository.existsByIpAddress(clientIpAddress)) {
             blacklistIpRepository.save(
-                    BlacklistIp.builder()
-                            .ipAddress(clientIpAddress)
-                            .build()
+                    BlacklistIp.create(clientIpAddress, "서버 내부 파일 및 디렉토리에 대한 접근 시도")
             );
             slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, clientIpAddress);
         }
