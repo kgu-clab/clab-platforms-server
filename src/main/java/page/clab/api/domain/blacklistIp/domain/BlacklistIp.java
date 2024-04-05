@@ -30,4 +30,11 @@ public class BlacklistIp extends BaseEntity {
 
     private String reason;
 
+    public static BlacklistIp create(String ipAddress, String reason) {
+        return BlacklistIp.builder()
+                .ipAddress(ipAddress)
+                .reason(reason)
+                .build();
+    }
+
 }
