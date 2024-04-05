@@ -3,6 +3,7 @@ package page.clab.api.domain.board.dto.response;
 import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.domain.BoardCategory;
 
 import java.time.LocalDateTime;
 
@@ -12,7 +13,7 @@ public class BoardCategoryResponseDto {
 
     private Long id;
 
-    private String category;
+    private BoardCategory category;
 
     private String writerName;
 

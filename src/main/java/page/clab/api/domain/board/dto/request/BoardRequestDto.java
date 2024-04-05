@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.domain.BoardCategory;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.util.RandomNicknameUtil;
@@ -16,8 +17,8 @@ import java.util.List;
 public class BoardRequestDto {
 
     @NotNull(message = "{notNull.board.category}")
-    @Schema(description = "카테고리", example = "공지사항", required = true)
-    private String category;
+    @Schema(description = "카테고리", example = "NOTICE", required = true)
+    private BoardCategory category;
 
     @NotNull(message = "{notNull.board.title}")
     @Schema(description = "제목", example = "2023년 2학기 모집 안내", required = true)
