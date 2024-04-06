@@ -15,7 +15,7 @@ public class CommentMyResponseDto {
 
     private Long boardId;
 
-    private BoardCategory boardCategory;
+    private String boardCategory;
 
     private String writer;
 
@@ -33,7 +33,7 @@ public class CommentMyResponseDto {
         return CommentMyResponseDto.builder()
                 .id(comment.getId())
                 .boardId(comment.getBoard().getId())
-                .boardCategory(comment.getBoard().getCategory())
+                .boardCategory(comment.getBoard().getCategory().getKey())
                 .writer(comment.isWantAnonymous() ? comment.getNickname() : comment.getWriter().getName())
                 .writerImageUrl(comment.isWantAnonymous() ? null : comment.getWriter().getImageUrl())
                 .content(comment.getContent())
