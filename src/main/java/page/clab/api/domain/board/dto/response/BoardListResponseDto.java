@@ -17,7 +17,7 @@ public class BoardListResponseDto {
 
     private String writerName;
 
-    private BoardCategory category;
+    private String category;
 
     private String title;
 
@@ -32,7 +32,7 @@ public class BoardListResponseDto {
                 .id(board.getId())
                 .writerId(board.isWantAnonymous() ? null : board.getMember().getId())
                 .writerName(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
-                .category(board.getCategory())
+                .category(board.getCategory().getKey())
                 .title(board.getTitle())
                 .content(board.getContent())
                 .commentCount(commentCount)

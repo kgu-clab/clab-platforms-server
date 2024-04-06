@@ -13,7 +13,7 @@ public class BoardCategoryResponseDto {
 
     private Long id;
 
-    private BoardCategory category;
+    private String category;
 
     private String writerName;
 
@@ -24,7 +24,7 @@ public class BoardCategoryResponseDto {
     public static BoardCategoryResponseDto toDto(Board board) {
         return BoardCategoryResponseDto.builder()
                 .id(board.getId())
-                .category(board.getCategory())
+                .category(board.getCategory().getKey())
                 .writerName(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
                 .title(board.getTitle())
                 .createdAt(board.getCreatedAt())
