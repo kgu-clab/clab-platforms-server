@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -17,6 +18,8 @@ public class JobPostingResponseDto {
     private String recruitmentPeriod;
 
     private String jobPostingUrl;
+
+    private LocalDateTime createdAt;
     
     public static JobPostingResponseDto toDto(JobPosting jobPosting) {
         return JobPostingResponseDto.builder()
@@ -24,6 +27,7 @@ public class JobPostingResponseDto {
                 .title(jobPosting.getTitle())
                 .recruitmentPeriod(jobPosting.getRecruitmentPeriod())
                 .jobPostingUrl(jobPosting.getJobPostingUrl())
+                .createdAt(jobPosting.getCreatedAt())
                 .build();
     }
 
