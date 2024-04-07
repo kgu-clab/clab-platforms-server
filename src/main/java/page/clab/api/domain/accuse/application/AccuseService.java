@@ -15,6 +15,7 @@ import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.AccuseTargetId;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
+import page.clab.api.domain.accuse.dto.response.AccuseMemberInfo;
 import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
 import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.board.application.BoardService;
@@ -27,6 +28,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.validation.ValidationService;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -73,15 +75,22 @@ public class AccuseService {
     }
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<AccuseResponseDto> getAccusesByConditions(TargetType type, AccuseStatus status, Pageable pageable) {
-        Page<Accuse> accuses = accuseRepository.findByConditions(type, status, pageable);
-        return new PagedResponseDto<>(accuses.map(AccuseResponseDto::toDto));
+    public PagedResponseDto<AccuseResponseDto> getAccusesByConditions(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable) {
+        Page<AccuseTarget> accuseTargets = accuseTargetRepository.findByConditions(type, status, countOrder, pageable);
+        List<AccuseResponseDto> responseDtos = accuseTargets.stream()
+                .map(accuseTarget -> {
+                    List<Accuse> accuses = accuseRepository.findByTargetOrderByCreatedAtDesc(accuseTarget);
+                    List<AccuseMemberInfo> members = AccuseMemberInfo.create(accuses);
+                    return AccuseResponseDto.toDto(accuses.getFirst(), members);
+                })
+                .toList();
+        return new PagedResponseDto<>(responseDtos, pageable, responseDtos.size());
     }
 
     @Transactional
     public Long updateAccuseStatus(Long accuseId, AccuseStatus status) {
         Accuse accuse = getAccuseByIdOrThrow(accuseId);
-        accuse.updateStatus(status);
+        accuse.getTarget().updateStatus(status);
         validationService.checkValid(accuse);
         notificationService.sendNotificationToMember(accuse.getMember(), "신고 상태가 " + status.getDescription() + "로 변경되었습니다.");
         return accuseRepository.save(accuse).getId();

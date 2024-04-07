@@ -45,17 +45,19 @@ public class AccuseController {
 
     @Operation(summary = "[A] 신고 내역 조회(신고 대상, 처리 상태 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "2개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
-            "신고 대상, 처리 상태 중 하나라도 입력하지 않으면 전체 조회됨")
+            "신고 대상, 처리 상태 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
+            "누적 횟수 기준으로 정렬할지 여부를 선택할 수 있음")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ResponseModel<PagedResponseDto<AccuseResponseDto>> getAccusesByConditions(
             @RequestParam(name = "targetType", required = false) TargetType type,
             @RequestParam(name = "accuseStatus", required = false) AccuseStatus status,
+            @RequestParam(name = "countOrder", defaultValue = "false") boolean countOrder,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccusesByConditions(type, status, pageable);
+        PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccusesByConditions(type, status, countOrder, pageable);
         return ResponseModel.success(accuses);
     }
 
