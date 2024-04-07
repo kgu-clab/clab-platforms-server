@@ -28,6 +28,8 @@ import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -95,6 +97,10 @@ public class LoginService {
         TokenInfo newTokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
         redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
         return TokenHeader.create(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS, newTokenInfo);
+    }
+
+    public List<String> getCurrentLoggedInUsers() {
+        return redisTokenService.getCurrentLoggedInUsers();
     }
 
     private void authenticateAndCheckStatus(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFaliedException, MemberLockedException {

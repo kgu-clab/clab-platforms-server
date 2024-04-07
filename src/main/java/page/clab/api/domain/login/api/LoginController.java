@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +25,8 @@ import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.global.common.dto.ResponseModel;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/login")
@@ -91,6 +94,15 @@ public class LoginController {
         TokenHeader headerData = loginService.reissue(request);
         response.setHeader(authHeader, headerData.toJson());
         return ResponseModel.success();
+    }
+
+    @Operation(summary = "[S] 현재 로그인 중인 멤버 조회", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
+            "Redis에 저장된 토큰을 조회하여 현재 로그인 중인 멤버를 조회합니다.")
+    @GetMapping("/current")
+    @Secured({"ROLE_SUPER"})
+    public ResponseModel<List<String>> getCurrentLoggedInUsers() {
+        List<String> currentLoggedInUsers = loginService.getCurrentLoggedInUsers();
+        return ResponseModel.success(currentLoggedInUsers);
     }
 
 }
