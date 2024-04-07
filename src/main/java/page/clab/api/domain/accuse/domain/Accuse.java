@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -37,12 +38,12 @@ public class Accuse extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private TargetType targetType;
-
-    @Column(nullable = false)
-    private Long targetId;
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "target_type", nullable = false),
+            @JoinColumn(name = "target_reference_id", nullable = false)
+    })
+    private AccuseTarget target;
 
     @Column(nullable = false)
     @Size(min = 1, max = 1000, message = "{size.accuse.reason}")
