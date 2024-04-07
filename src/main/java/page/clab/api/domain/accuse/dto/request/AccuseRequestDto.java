@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
+import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.member.domain.Member;
 
@@ -25,13 +26,20 @@ public class AccuseRequestDto {
     @Schema(description = "신고 사유", example = "부적절한 게시글입니다.", required = true)
     private String reason;
 
-    public static Accuse toEntity(AccuseRequestDto requestDto, Member member) {
+    public static Accuse toEntity(AccuseRequestDto requestDto, Member member, AccuseTarget target) {
         return Accuse.builder()
                 .member(member)
-                .targetType(requestDto.getTargetType())
-                .targetId(requestDto.getTargetId())
+                .target(target)
                 .reason(requestDto.getReason())
                 .accuseStatus(AccuseStatus.PENDING)
+                .build();
+    }
+
+    public static AccuseTarget toTargetEntity(AccuseRequestDto requestDto) {
+        return AccuseTarget.builder()
+                .targetType(requestDto.getTargetType())
+                .targetReferenceId(requestDto.getTargetId())
+                .accuseCount(1L)
                 .build();
     }
 

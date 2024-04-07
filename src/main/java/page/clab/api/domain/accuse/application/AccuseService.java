@@ -7,8 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.accuse.dao.AccuseRepository;
+import page.clab.api.domain.accuse.dao.AccuseTargetRepository;
 import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
+import page.clab.api.domain.accuse.domain.AccuseTarget;
+import page.clab.api.domain.accuse.domain.AccuseTargetId;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
@@ -42,19 +45,31 @@ public class AccuseService {
 
     private final AccuseRepository accuseRepository;
 
+    private final AccuseTargetRepository accuseTargetRepository;
+
     @Transactional
     public Long createAccuse(AccuseRequestDto requestDto) {
         TargetType type = requestDto.getTargetType();
-        Long accuseTargetId = requestDto.getTargetId();
-
-        if (!isAccuseRequestValid(type, accuseTargetId)) {
-            throw new NotFoundException(type.getDescription() + " " + accuseTargetId + "을 찾을 수 없습니다.");
+        Long targetId = requestDto.getTargetId();
+        if (!isAccuseRequestValid(type, targetId)) {
+            throw new NotFoundException(type.getDescription() + " " + targetId + "을 찾을 수 없습니다.");
         }
 
+        AccuseTarget target = accuseTargetRepository.findById(AccuseTargetId.create(type, targetId))
+                        .orElseGet(() -> AccuseRequestDto.toTargetEntity(requestDto));
+        validationService.checkValid(target);
+        accuseTargetRepository.save(target);
+
         Member currentMember = memberService.getCurrentMember();
-        Accuse accuse = accuseRepository.findByMemberAndTargetTypeAndTargetId(currentMember, type, accuseTargetId)
-                            .orElseGet(() -> AccuseRequestDto.toEntity(requestDto, currentMember));
-        accuse.updateReason(requestDto.getReason());
+        Accuse accuse = accuseRepository.findByMemberAndTarget(currentMember, target)
+                        .map(existingAccuse -> {
+                            existingAccuse.updateReason(requestDto.getReason());
+                            return existingAccuse;
+                        })
+                        .orElseGet(() -> {
+                            target.increaseAccuseCount();
+                            return AccuseRequestDto.toEntity(requestDto, currentMember, target);
+                        });
         validationService.checkValid(accuse);
 
         notificationService.sendNotificationToMember(currentMember, "신고하신 내용이 접수되었습니다.");

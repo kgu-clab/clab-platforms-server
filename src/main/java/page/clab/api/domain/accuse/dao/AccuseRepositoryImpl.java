@@ -26,7 +26,7 @@ public class AccuseRepositoryImpl implements AccuseRepositoryCustom {
         BooleanBuilder builder = new BooleanBuilder();
 
         if (targetType != null) {
-            builder.and(accuse.targetType.eq(targetType));
+            builder.and(accuse.target.targetType.eq(targetType));
         }
         if (accuseStatus != null) {
             builder.and(accuse.accuseStatus.eq(accuseStatus));
