@@ -1,5 +1,6 @@
 package page.clab.api.domain.accuse.application;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,9 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.validation.ValidationService;
 
+import java.util.Map;
+import java.util.function.Function;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -47,29 +51,20 @@ public class AccuseService {
 
     private final AccuseTargetRepository accuseTargetRepository;
 
+    private Map<TargetType, Function<Long, Boolean>> typeValidationMap;
+
     @Transactional
     public Long createAccuse(AccuseRequestDto requestDto) {
         TargetType type = requestDto.getTargetType();
         Long targetId = requestDto.getTargetId();
-        if (!isAccuseRequestValid(type, targetId)) {
-            throw new NotFoundException(type.getDescription() + " " + targetId + "을 찾을 수 없습니다.");
-        }
+        validateAccuseRequest(type, targetId);
 
-        AccuseTarget target = accuseTargetRepository.findById(AccuseTargetId.create(type, targetId))
-                        .orElseGet(() -> AccuseRequestDto.toTargetEntity(requestDto));
+        AccuseTarget target = getOrCreateAccuseTarget(requestDto, type, targetId);
         validationService.checkValid(target);
         accuseTargetRepository.save(target);
 
         Member currentMember = memberService.getCurrentMember();
-        Accuse accuse = accuseRepository.findByMemberAndTarget(currentMember, target)
-                        .map(existingAccuse -> {
-                            existingAccuse.updateReason(requestDto.getReason());
-                            return existingAccuse;
-                        })
-                        .orElseGet(() -> {
-                            target.increaseAccuseCount();
-                            return AccuseRequestDto.toEntity(requestDto, currentMember, target);
-                        });
+        Accuse accuse = findOrCreateAccuse(requestDto, currentMember, target);
         validationService.checkValid(accuse);
 
         notificationService.sendNotificationToMember(currentMember, "신고하신 내용이 접수되었습니다.");
@@ -92,22 +87,45 @@ public class AccuseService {
         return accuseRepository.save(accuse).getId();
     }
 
-    private boolean isAccuseRequestValid(TargetType type, Long targetId) {
-        if (type == TargetType.BOARD) {
-            return boardService.isBoardExistById(targetId);
-        }
-        if (type == TargetType.COMMENT) {
-            return commentService.isCommentExistById(targetId);
-        }
-        if (type == TargetType.REVIEW) {
-            return reviewService.isReviewExistsById(targetId);
-        }
-        throw new AccuseTargetTypeIncorrectException("신고 대상 유형이 올바르지 않습니다.");
-    }
-
     private Accuse getAccuseByIdOrThrow(Long accuseId) {
         return accuseRepository.findById(accuseId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 신고입니다."));
+    }
+
+    @PostConstruct
+    public void init() {
+        typeValidationMap = Map.of(
+                TargetType.BOARD, boardService::isBoardExistById,
+                TargetType.COMMENT, commentService::isCommentExistById,
+                TargetType.REVIEW, reviewService::isReviewExistsById
+        );
+    }
+
+    private void validateAccuseRequest(TargetType type, Long targetId) {
+        Function<Long, Boolean> validationFunction = typeValidationMap.get(type);
+        if (validationFunction == null) {
+            throw new AccuseTargetTypeIncorrectException("신고 대상 유형이 올바르지 않습니다.");
+        }
+        if (!validationFunction.apply(targetId)) {
+            throw new NotFoundException(type.getDescription() + " ID " + targetId + "을 찾을 수 없습니다.");
+        }
+    }
+
+    private AccuseTarget getOrCreateAccuseTarget(AccuseRequestDto requestDto, TargetType type, Long targetId) {
+        return accuseTargetRepository.findById(AccuseTargetId.create(type, targetId))
+                .orElseGet(() -> AccuseRequestDto.toTargetEntity(requestDto));
+    }
+
+    private Accuse findOrCreateAccuse(AccuseRequestDto requestDto, Member currentMember, AccuseTarget target) {
+        return accuseRepository.findByMemberAndTarget(currentMember, target)
+                .map(existingAccuse -> {
+                    existingAccuse.updateReason(requestDto.getReason());
+                    return existingAccuse;
+                })
+                .orElseGet(() -> {
+                    target.increaseAccuseCount();
+                    return AccuseRequestDto.toEntity(requestDto, currentMember, target);
+                });
     }
 
 }
