@@ -2,8 +2,6 @@ package page.clab.api.domain.accuse.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -49,16 +47,8 @@ public class Accuse extends BaseEntity {
     @Size(min = 1, max = 1000, message = "{size.accuse.reason}")
     private String reason;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private AccuseStatus accuseStatus;
-
     public void updateReason(String reason) {
         this.reason = reason;
-    }
-
-    public void updateStatus(AccuseStatus newStatus) {
-        this.accuseStatus = newStatus;
     }
 
 }

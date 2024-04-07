@@ -34,8 +34,16 @@ public class AccuseTarget extends BaseEntity {
 
     private Long accuseCount;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AccuseStatus accuseStatus;
+
     public void increaseAccuseCount() {
         this.accuseCount++;
+    }
+
+    public void updateStatus(AccuseStatus newStatus) {
+        this.accuseStatus = newStatus;
     }
 
 }

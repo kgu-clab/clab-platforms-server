@@ -31,7 +31,6 @@ public class AccuseRequestDto {
                 .member(member)
                 .target(target)
                 .reason(requestDto.getReason())
-                .accuseStatus(AccuseStatus.PENDING)
                 .build();
     }
 
@@ -40,6 +39,7 @@ public class AccuseRequestDto {
                 .targetType(requestDto.getTargetType())
                 .targetReferenceId(requestDto.getTargetId())
                 .accuseCount(1L)
+                .accuseStatus(AccuseStatus.PENDING)
                 .build();
     }
 
