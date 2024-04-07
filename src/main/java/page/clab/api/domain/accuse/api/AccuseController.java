@@ -63,12 +63,13 @@ public class AccuseController {
 
     @Operation(summary = "[A] 신고 상태 변경", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @PatchMapping("/{accuseId}")
+    @PatchMapping("/{targetType}/{targetId}")
     public ResponseModel<Long> updateAccuseStatus(
-            @PathVariable(name = "accuseId") Long accuseId,
+            @PathVariable(name = "targetType") TargetType type,
+            @PathVariable(name = "targetId") Long targetId,
             @RequestParam(name = "accuseStatus") AccuseStatus status
     ) {
-        Long id = accuseService.updateAccuseStatus(accuseId, status);
+        Long id = accuseService.updateAccuseStatus(type, targetId, status);
         return ResponseModel.success(id);
     }
 
