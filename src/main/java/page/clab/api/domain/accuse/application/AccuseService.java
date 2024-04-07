@@ -3,6 +3,7 @@ package page.clab.api.domain.accuse.application;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -77,28 +78,22 @@ public class AccuseService {
     @Transactional(readOnly = true)
     public PagedResponseDto<AccuseResponseDto> getAccusesByConditions(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable) {
         Page<AccuseTarget> accuseTargets = accuseTargetRepository.findByConditions(type, status, countOrder, pageable);
-        List<AccuseResponseDto> responseDtos = accuseTargets.stream()
-                .map(accuseTarget -> {
-                    List<Accuse> accuses = accuseRepository.findByTargetOrderByCreatedAtDesc(accuseTarget);
-                    List<AccuseMemberInfo> members = AccuseMemberInfo.create(accuses);
-                    return AccuseResponseDto.toDto(accuses.getFirst(), members);
-                })
-                .toList();
+        List<AccuseResponseDto> responseDtos = convertTargetsToResponseDtos(accuseTargets);
         return new PagedResponseDto<>(responseDtos, pageable, responseDtos.size());
     }
 
     @Transactional
-    public Long updateAccuseStatus(Long accuseId, AccuseStatus status) {
-        Accuse accuse = getAccuseByIdOrThrow(accuseId);
-        accuse.getTarget().updateStatus(status);
-        validationService.checkValid(accuse);
-        notificationService.sendNotificationToMember(accuse.getMember(), "신고 상태가 " + status.getDescription() + "로 변경되었습니다.");
-        return accuseRepository.save(accuse).getId();
+    public Long updateAccuseStatus(TargetType type, Long targetId, AccuseStatus status) {
+        AccuseTarget target = getAccuseTargetByIdOrThrow(type, targetId);
+        target.updateStatus(status);
+        validationService.checkValid(target);
+        sendStatusUpdateNotifications(status, target);
+        return accuseTargetRepository.save(target).getTargetReferenceId();
     }
 
-    private Accuse getAccuseByIdOrThrow(Long accuseId) {
-        return accuseRepository.findById(accuseId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 신고입니다."));
+    private AccuseTarget getAccuseTargetByIdOrThrow(TargetType type, Long targetId) {
+        return accuseTargetRepository.findById(AccuseTargetId.create(type, targetId))
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 신고 대상입니다."));
     }
 
     @PostConstruct
@@ -135,6 +130,24 @@ public class AccuseService {
                     target.increaseAccuseCount();
                     return AccuseRequestDto.toEntity(requestDto, currentMember, target);
                 });
+    }
+
+    @NotNull
+    private List<AccuseResponseDto> convertTargetsToResponseDtos(Page<AccuseTarget> accuseTargets) {
+        return accuseTargets.stream()
+                .map(accuseTarget -> {
+                    List<Accuse> accuses = accuseRepository.findByTargetOrderByCreatedAtDesc(accuseTarget);
+                    List<AccuseMemberInfo> members = AccuseMemberInfo.create(accuses);
+                    return AccuseResponseDto.toDto(accuses.getFirst(), members);
+                })
+                .toList();
+    }
+
+    private void sendStatusUpdateNotifications(AccuseStatus status, AccuseTarget target) {
+        List<Member> members = accuseRepository.findByTarget(target).stream()
+                .map(Accuse::getMember)
+                .toList();
+        notificationService.sendNotificationToMembers(members, "신고 상태가 " + status.getDescription() + "(으)로 변경되었습니다.");
     }
 
 }

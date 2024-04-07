@@ -8,6 +8,7 @@ import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.member.domain.Member;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,5 +20,7 @@ public interface AccuseRepository extends JpaRepository<Accuse, Long> {
     Optional<Accuse> findByMemberAndTarget(Member member, AccuseTarget target);
 
     List<Accuse> findByTargetOrderByCreatedAtDesc(AccuseTarget accuseTarget);
+
+    List<Accuse> findByTarget(AccuseTarget target);
 
 }
