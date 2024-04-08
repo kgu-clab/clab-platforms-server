@@ -15,6 +15,8 @@ public class BoardDetailsResponseDto {
 
     private Long id;
 
+    private String writerId;
+
     private String writerName;
 
     private Long writerRoleLevel;
@@ -39,6 +41,7 @@ public class BoardDetailsResponseDto {
     public static BoardDetailsResponseDto toDto(Board board, boolean hasLikeByMe, boolean isOwner) {
         return BoardDetailsResponseDto.builder()
                 .id(board.getId())
+                .writerId(board.isWantAnonymous() ? null : board.getMember().getId())
                 .writerName(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
                 .writerRoleLevel(board.isWantAnonymous() ? null : board.getMember().getRole().toRoleLevel())
                 .writerImageUrl(board.isWantAnonymous() ? null : board.getMember().getImageUrl())
