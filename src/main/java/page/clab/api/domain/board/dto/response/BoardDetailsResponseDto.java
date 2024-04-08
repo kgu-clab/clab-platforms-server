@@ -40,7 +40,7 @@ public class BoardDetailsResponseDto {
         return BoardDetailsResponseDto.builder()
                 .id(board.getId())
                 .writerName(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
-                .writerRoleLevel(board.getMember().getRole().toRoleLevel())
+                .writerRoleLevel(board.isWantAnonymous() ? null : board.getMember().getRole().toRoleLevel())
                 .writerImageUrl(board.isWantAnonymous() ? null : board.getMember().getImageUrl())
                 .title(board.getTitle())
                 .content(board.getContent())
