@@ -16,7 +16,9 @@ public class CommentResponseDto {
 
     private Long id;
 
-    private String writer;
+    private String writerId;
+
+    private String writerName;
 
     private String writerImageUrl;
 
@@ -38,9 +40,10 @@ public class CommentResponseDto {
     public static CommentResponseDto toDto(Comment comment, String currentMemberId) {
         return CommentResponseDto.builder()
                 .id(comment.getId())
-                .writer(comment.isWantAnonymous() ? comment.getNickname() : comment.getWriter().getName())
+                .writerId(comment.isWantAnonymous() ? null : comment.getWriter().getId())
+                .writerName(comment.isWantAnonymous() ? comment.getNickname() : comment.getWriter().getName())
                 .writerImageUrl(comment.isWantAnonymous() ? null : comment.getWriter().getImageUrl())
-                .writerRoleLevel(comment.getWriter().getRole().toRoleLevel())
+                .writerRoleLevel(comment.isWantAnonymous() ? null : comment.getWriter().getRole().toRoleLevel())
                 .content(comment.getContent())
                 .children(comment.getChildren().stream()
                         .map(child -> CommentResponseDto.toDto(child, currentMemberId))
