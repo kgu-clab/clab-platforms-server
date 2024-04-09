@@ -52,6 +52,10 @@ public class Schedule extends BaseEntity {
     @Column(nullable = false)
     private LocalDateTime endDateTime;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private SchedulePriority priority;
+
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member scheduleWriter;

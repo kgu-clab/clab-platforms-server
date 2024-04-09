@@ -7,6 +7,7 @@ import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.domain.Schedule;
+import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.domain.ScheduleType;
 
 import java.time.LocalDateTime;
@@ -35,6 +36,10 @@ public class ScheduleRequestDto {
     @Schema(description = "일정 종료날짜와 시간", example = "2023-11-28 22:00:00.000")
     private LocalDateTime endDateTime;
 
+    @NotNull(message = "{notNull.schedule.priority}")
+    @Schema(description = "일정 중요도", example = "HIGH")
+    private SchedulePriority priority;
+
     private Long activityGroupId;
 
     public static Schedule toEntity(ScheduleRequestDto requestDto, Member member, ActivityGroup activityGroup) {
@@ -44,6 +49,7 @@ public class ScheduleRequestDto {
                 .detail(requestDto.getDetail())
                 .startDateTime(requestDto.getStartDateTime())
                 .endDateTime(requestDto.getEndDateTime())
+                .priority(requestDto.getPriority())
                 .scheduleWriter(member)
                 .activityGroup(activityGroup)
                 .build();
