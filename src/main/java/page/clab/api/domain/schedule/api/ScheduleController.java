@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.schedule.application.ScheduleService;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
+import page.clab.api.domain.schedule.dto.response.ScheduleCollectResponseDto;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -85,6 +86,14 @@ public class ScheduleController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getActivitySchedules(startDate, endDate, pageable);
+        return ResponseModel.success(schedules);
+    }
+
+    @Operation(summary = "[U] 일정 모아보기", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/collect")
+    public ResponseModel<ScheduleCollectResponseDto> getCollectSchedules() {
+        ScheduleCollectResponseDto schedules = scheduleService.getCollectSchedules();
         return ResponseModel.success(schedules);
     }
 
