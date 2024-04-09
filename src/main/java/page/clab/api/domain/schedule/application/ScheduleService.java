@@ -18,6 +18,7 @@ import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.domain.ScheduleType;
 import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
+import page.clab.api.domain.schedule.dto.response.ScheduleCollectResponseDto;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
@@ -57,6 +58,10 @@ public class ScheduleService {
     public PagedResponseDto<ScheduleResponseDto> getSchedulesByConditions(Integer year, Integer month, SchedulePriority priority, Pageable pageable) {
         Page<Schedule> schedules = scheduleRepository.findByConditions(year, month, priority, pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
+    }
+
+    public ScheduleCollectResponseDto getCollectSchedules() {
+        return scheduleRepository.findCollectSchedules();
     }
 
     @Transactional(readOnly = true)

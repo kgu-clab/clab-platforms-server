@@ -12,6 +12,7 @@ import page.clab.api.domain.schedule.domain.QSchedule;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.domain.ScheduleType;
+import page.clab.api.domain.schedule.dto.response.ScheduleCollectResponseDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -103,6 +104,30 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
                 .fetchCount();
 
         return new PageImpl<>(results, pageable, total);
+    }
+
+    @Override
+    public ScheduleCollectResponseDto findCollectSchedules() {
+        QSchedule schedule = QSchedule.schedule;
+        BooleanBuilder builder = new BooleanBuilder();
+
+        LocalDateTime startDateTime = LocalDate.now().withDayOfYear(1).atStartOfDay();
+        LocalDateTime endDateTime = LocalDate.now().withDayOfYear(LocalDate.now().lengthOfYear()).atTime(23, 59, 59);
+
+        builder.and(schedule.startDateTime.goe(startDateTime))
+                .and(schedule.endDateTime.loe(endDateTime));
+
+        long total = queryFactory.selectFrom(schedule)
+                .where(builder)
+                .fetchCount();
+
+        builder.and(schedule.priority.eq(SchedulePriority.HIGH));
+
+        long highPriorityCount = queryFactory.selectFrom(schedule)
+                .where(builder)
+                .fetchCount();
+
+        return ScheduleCollectResponseDto.toDto(total, highPriorityCount);
     }
 
 }
