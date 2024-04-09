@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.domain.QSchedule;
 import page.clab.api.domain.schedule.domain.Schedule;
+import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.domain.ScheduleType;
 
 import java.time.LocalDate;
@@ -33,6 +34,35 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
         builder.and(schedule.startDateTime.goe(startDateTime))
                 .and(schedule.endDateTime.loe(endDateTime))
                 .and(schedule.scheduleWriter.eq(member));
+
+        List<Schedule> results = queryFactory.selectFrom(schedule)
+                .where(builder)
+                .orderBy(schedule.startDateTime.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = queryFactory.selectFrom(schedule)
+                .where(builder)
+                .fetchCount();
+
+        return new PageImpl<>(results, pageable, total);
+    }
+
+    @Override
+    public Page<Schedule> findByConditions(Integer year, Integer month, SchedulePriority priority, Pageable pageable) {
+        QSchedule schedule = QSchedule.schedule;
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (year != null) {
+            builder.and(schedule.startDateTime.year().eq(year));
+        }
+        if (month != null) {
+            builder.and(schedule.startDateTime.month().eq(month));
+        }
+        if (priority != null) {
+            builder.and(schedule.priority.eq(priority));
+        }
 
         List<Schedule> results = queryFactory.selectFrom(schedule)
                 .where(builder)

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.schedule.application.ScheduleService;
+import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -53,6 +54,23 @@ public class ScheduleController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getSchedulesWithinDateRange(startDate, endDate, pageable);
+        return ResponseModel.success(schedules);
+    }
+
+    @Operation(summary = "[U] 일정 조회(연도, 월, 중요도 기준)", description = "ROLE_USER 이상의 권한이 필요함<br> +" +
+            "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
+            "연도, 월, 중요도 중 하나라도 입력하지 않으면 전체 조회됨")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/conditions")
+    public ResponseModel<PagedResponseDto<ScheduleResponseDto>> getSchedulesByConditions(
+            @RequestParam(name = "year", required = false) Integer year,
+            @RequestParam(name = "month", required = false) Integer month,
+            @RequestParam(name = "priority", required = false) SchedulePriority priority,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getSchedulesByConditions(year, month, priority, pageable);
         return ResponseModel.success(schedules);
     }
 

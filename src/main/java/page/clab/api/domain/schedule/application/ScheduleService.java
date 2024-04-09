@@ -15,6 +15,7 @@ import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.dao.ScheduleRepository;
 import page.clab.api.domain.schedule.domain.Schedule;
+import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.domain.ScheduleType;
 import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
@@ -50,6 +51,11 @@ public class ScheduleService {
     public PagedResponseDto<ScheduleResponseDto> getSchedulesWithinDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Schedule> schedules = scheduleRepository.findByDateRangeAndMember(startDate, endDate, currentMember, pageable);
+        return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
+    }
+
+    public PagedResponseDto<ScheduleResponseDto> getSchedulesByConditions(Integer year, Integer month, SchedulePriority priority, Pageable pageable) {
+        Page<Schedule> schedules = scheduleRepository.findByConditions(year, month, priority, pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
 
