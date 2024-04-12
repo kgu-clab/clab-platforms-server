@@ -1,5 +1,7 @@
 # C-Lab Page Server
 
+[![Spring Boot Gradle CI](https://github.com/KGU-C-Lab/clab-server/actions/workflows/spring-boot-gradle-ci.yml/badge.svg)](https://github.com/KGU-C-Lab/clab-server/actions/workflows/spring-boot-gradle-ci.yml)
+
 경기대학교 개발보안동아리 C-Lab의 공식 백엔드 시스템입니다.
 
 해당 프로젝트는 C-Lab의 활동을 지원하고, 회원들 간의 소통을 원활하게 하기 위해 개발되었습니다.
