@@ -5,6 +5,7 @@ public class SecurityConstants {
     public static final String[] PERMIT_ALL = {
             "/api/v1/login/**",
             "/static/**",
+            "/actuator/health",
             "/resources/files/**",
             "/configuration/ui",
             "/configuration/security",
