@@ -9,8 +9,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.book.domain.QBookLoanRecord;
+import page.clab.api.domain.book.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -57,6 +59,39 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
         long total = queryFactory
                 .selectFrom(bookLoanRecord)
                 .where(builder)
+                .fetchCount();
+
+        return new PageImpl<>(results, pageable, total);
+    }
+
+    @Override
+    public Page<BookLoanRecordOverdueResponseDto> findOverdueBookLoanRecords(Pageable pageable) {
+        QBookLoanRecord bookLoanRecord = QBookLoanRecord.bookLoanRecord;
+
+        LocalDateTime now = LocalDateTime.now();
+
+        List<BookLoanRecordOverdueResponseDto> results = queryFactory
+                .select(Projections.constructor(
+                        BookLoanRecordOverdueResponseDto.class,
+                        bookLoanRecord.book.id,
+                        bookLoanRecord.book.title,
+                        bookLoanRecord.borrower.id,
+                        bookLoanRecord.borrower.name,
+                        bookLoanRecord.borrowedAt,
+                        bookLoanRecord.dueDate
+                ))
+                .from(bookLoanRecord)
+                .where(bookLoanRecord.returnedAt.isNull()
+                        .and(bookLoanRecord.dueDate.lt(now)))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(bookLoanRecord.dueDate.asc())
+                .fetch();
+
+        long total = queryFactory
+                .selectFrom(bookLoanRecord)
+                .where(bookLoanRecord.returnedAt.isNull()
+                        .and(bookLoanRecord.dueDate.lt(now)))
                 .fetchCount();
 
         return new PageImpl<>(results, pageable, total);

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.book.application.BookLoanRecordService;
 import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
+import page.clab.api.domain.book.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -75,6 +76,18 @@ public class BookLoanRecordController {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.getBookLoanRecordsByConditions(bookId, borrowerId, isReturned, pageable);
         return ResponseModel.success(bookLoanRecords);
+    }
+
+    @Operation(summary = "[A] 도서 연체자 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/overdue")
+    public ResponseModel<PagedResponseDto<BookLoanRecordOverdueResponseDto>> getOverdueBookLoanRecords(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<BookLoanRecordOverdueResponseDto> overdueRecords = bookLoanRecordService.getOverdueBookLoanRecords(pageable);
+        return ResponseModel.success(overdueRecords);
     }
 
 }
