@@ -32,8 +32,8 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
 
-        builder.and(schedule.startDateTime.goe(startDateTime))
-                .and(schedule.endDateTime.loe(endDateTime))
+        builder.and(schedule.endDateTime.goe(startDateTime))
+                .and(schedule.startDateTime.loe(endDateTime))
                 .and(schedule.scheduleWriter.eq(member));
 
         List<Schedule> results = queryFactory.selectFrom(schedule)
@@ -87,8 +87,8 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
 
-        builder.and(schedule.startDateTime.goe(startDateTime))
-                .and(schedule.endDateTime.loe(endDateTime))
+        builder.and(schedule.endDateTime.goe(startDateTime))
+                .and(schedule.startDateTime.loe(endDateTime))
                 .and(schedule.scheduleWriter.eq(member))
                 .and(schedule.scheduleType.ne(ScheduleType.ALL));
 
