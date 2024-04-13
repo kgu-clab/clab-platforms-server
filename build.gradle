@@ -13,14 +13,21 @@ jar {
 
 bootJar {
 	archivesBaseName = "clab"
-	archiveFileName = "clab.jar"
 	archiveVersion = "0.0.1"
+
 	from("/src/main/resources") {
 		into 'BOOT-INF/classes'
 		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 	}
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+	if (project.hasProperty('prod')) {
+		archiveFileName = "clab-prod.jar"
+	} else {
+		archiveFileName = "clab.jar"
+	}
 }
+
 
 java {
 	sourceCompatibility = '21'
