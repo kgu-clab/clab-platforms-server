@@ -259,7 +259,7 @@ public class MemberService {
     private void updateMember(MemberUpdateRequestDto requestDto, Member member) throws PermissionDeniedException {
         String previousImageUrl = member.getImageUrl();
         member.update(requestDto, passwordEncoder);
-        if (requestDto.getImageUrl().isEmpty()) {
+        if (requestDto.getImageUrl() != null && requestDto.getImageUrl().isEmpty()) {
             member.clearImageUrl();
             fileService.deleteFile(DeleteFileRequestDto.create(previousImageUrl));
         }
