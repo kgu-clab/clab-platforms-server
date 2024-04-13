@@ -13,7 +13,7 @@ jar {
 
 bootJar {
 	archivesBaseName = "clab"
-	archiveVersion = "0.0.1"
+	archiveVersion = "1.0.0"
 
 	from("/src/main/resources") {
 		into 'BOOT-INF/classes'
@@ -23,6 +23,8 @@ bootJar {
 
 	if (project.hasProperty('prod')) {
 		archiveFileName = "clab-prod.jar"
+	} else if (project.hasProperty('stage')) {
+		archiveFileName = "clab-stage.jar"
 	} else {
 		archiveFileName = "clab.jar"
 	}
