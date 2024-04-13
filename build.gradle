@@ -30,6 +30,10 @@ bootJar {
 	}
 }
 
+test {
+	systemProperty 'spring.profiles.active', findProperty('env') ?: 'dev'
+}
+
 
 java {
 	sourceCompatibility = '21'
