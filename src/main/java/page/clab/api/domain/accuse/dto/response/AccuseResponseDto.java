@@ -1,26 +1,19 @@
 package page.clab.api.domain.accuse.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.TargetType;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class AccuseResponseDto {
 
-    private String memberId;
-
-    private String name;
+    private List<AccuseMemberInfo> members;
 
     private TargetType targetType;
 
@@ -30,17 +23,19 @@ public class AccuseResponseDto {
 
     private AccuseStatus accuseStatus;
 
+    private Long accuseCount;
+
     private LocalDateTime createdAt;
 
-    public static AccuseResponseDto toDto(Accuse accuse) {
+    public static AccuseResponseDto toDto(Accuse accuse, List<AccuseMemberInfo> members) {
         return AccuseResponseDto.builder()
-                .memberId(accuse.getMember().getId())
-                .name(accuse.getMember().getName())
-                .targetType(accuse.getTargetType())
-                .targetId(accuse.getTargetId())
+                .members(members)
+                .targetType(accuse.getTarget().getTargetType())
+                .targetId(accuse.getTarget().getTargetReferenceId())
                 .reason(accuse.getReason())
-                .accuseStatus(accuse.getAccuseStatus())
-                .createdAt(accuse.getCreatedAt())
+                .accuseStatus(accuse.getTarget().getAccuseStatus())
+                .accuseCount(accuse.getTarget().getAccuseCount())
+                .createdAt(accuse.getTarget().getCreatedAt())
                 .build();
     }
 

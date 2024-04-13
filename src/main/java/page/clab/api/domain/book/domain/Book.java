@@ -1,6 +1,7 @@
 package page.clab.api.domain.book.domain;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Version;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,15 +20,17 @@ import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
+import page.clab.api.global.util.StringJsonConverter;
 
+import java.util.List;
 import java.util.Optional;
 
 @Entity
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Book extends BaseEntity {
 
     @Id
@@ -47,6 +51,10 @@ public class Book extends BaseEntity {
 
     private String imageUrl;
 
+    @Column(columnDefinition = "TEXT")
+    @Convert(converter = StringJsonConverter.class)
+    private List<String> reviewLinks;
+
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member borrower;
@@ -60,6 +68,7 @@ public class Book extends BaseEntity {
         Optional.ofNullable(requestDto.getAuthor()).ifPresent(this::setAuthor);
         Optional.ofNullable(requestDto.getPublisher()).ifPresent(this::setPublisher);
         Optional.ofNullable(requestDto.getImageUrl()).ifPresent(this::setImageUrl);
+        Optional.ofNullable(requestDto.getReviewLinks()).ifPresent(this::setReviewLinks);
     }
 
     public void borrowTo(Member borrower) {

@@ -2,12 +2,12 @@ package page.clab.api.domain.accuse.dao;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
+import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.TargetType;
 
-public interface AccuseRepositoryCustom {
+public interface AccuseTargetRepositoryCustom {
 
-    Page<Accuse> findByConditions(TargetType targetType, AccuseStatus accuseStatus, Pageable pageable);
+    Page<AccuseTarget> findByConditions(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable);
 
 }

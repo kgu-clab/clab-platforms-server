@@ -18,7 +18,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
-@RequestMapping("/login-attempt-logs")
+@RequestMapping("/api/v1/login-attempt-logs")
 @RequiredArgsConstructor
 @Tag(name = "LoginAttemptLog", description = "로그인 시도 로그")
 @Slf4j
@@ -29,16 +29,14 @@ public class LoginAttemptLogController {
     @Operation(summary = "[S] 계정별 로그인 시도 로그 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @GetMapping("/{memberId}")
-    public ResponseModel getLoginAttemptLogs(
+    public ResponseModel<PagedResponseDto<LoginAttemptLogResponseDto>> getLoginAttemptLogs(
             @PathVariable(name = "memberId") String memberId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<LoginAttemptLogResponseDto> loginAttemptLogs = loginAttemptLogService.getLoginAttemptLogs(memberId, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(loginAttemptLogs);
-        return responseModel;
+        return ResponseModel.success(loginAttemptLogs);
     }
 
 }

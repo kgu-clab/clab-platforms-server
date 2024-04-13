@@ -1,5 +1,6 @@
 package page.clab.api.domain.board.application;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,12 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.dao.BoardLikeRepository;
 import page.clab.api.domain.board.dao.BoardRepository;
 import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.domain.BoardCategory;
 import page.clab.api.domain.board.domain.BoardLike;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
 import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
+import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -43,11 +46,14 @@ public class BoardService {
 
     private final BoardLikeRepository boardLikeRepository;
 
+    private final CommentRepository commentRepository;
+
     @Transactional
-    public Long createBoard(BoardRequestDto requestDto) {
+    public Long createBoard(BoardRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         Board board = BoardRequestDto.toEntity(requestDto, currentMember, uploadedFiles);
+        board.validateAccessPermissionForCreation(currentMember);
         validationService.checkValid(board);
         if (board.shouldNotifyForNewBoard()) {
             notificationService.sendNotificationToMember(currentMember, "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.");
@@ -58,7 +64,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardListResponseDto> getBoards(Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(boards.map(BoardListResponseDto::toDto));
+        return new PagedResponseDto<>(boards.map(this::mapToBoardListResponseDto));
     }
 
     @Transactional(readOnly = true)
@@ -78,7 +84,7 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<BoardCategoryResponseDto> getBoardsByCategory(String category, Pageable pageable) {
+    public PagedResponseDto<BoardCategoryResponseDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
         Page<Board> boards = getBoardByCategory(category, pageable);
         return new PagedResponseDto<>(boards.map(BoardCategoryResponseDto::toDto));
     }
@@ -87,7 +93,7 @@ public class BoardService {
     public Long updateBoard(Long boardId, BoardUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
-        board.checkPermission(currentMember);
+        board.validateAccessPermission(currentMember);
         board.update(requestDto);
         validationService.checkValid(board);
         return boardRepository.save(board).getId();
@@ -112,9 +118,15 @@ public class BoardService {
     public Long deleteBoard(Long boardId) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
-        board.checkPermission(currentMember);
+        board.validateAccessPermission(currentMember);
         boardRepository.delete(board);
         return board.getId();
+    }
+
+    @NotNull
+    private BoardListResponseDto mapToBoardListResponseDto(Board board) {
+        Long commentCount = commentRepository.countByBoard(board);
+        return BoardListResponseDto.toDto(board, commentCount);
     }
 
     public Board getBoardByIdOrThrow(Long boardId) {
@@ -130,7 +142,7 @@ public class BoardService {
         return boardRepository.findAllByMemberOrderByCreatedAtDesc(member, pageable);
     }
 
-    private Page<Board> getBoardByCategory(String category, Pageable pageable) {
+    private Page<Board> getBoardByCategory(BoardCategory category, Pageable pageable) {
         return boardRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
     }
 

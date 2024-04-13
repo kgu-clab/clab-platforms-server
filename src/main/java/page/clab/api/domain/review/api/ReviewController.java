@@ -26,7 +26,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
-@RequestMapping("/reviews")
+@RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
 @Tag(name = "Review", description = "리뷰")
 @Slf4j
@@ -37,13 +37,11 @@ public class ReviewController {
     @Operation(summary = "[U] 리뷰 등록", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel createReview(
+    public ResponseModel<Long> createReview(
             @Valid @RequestBody ReviewRequestDto requestDto
     ) {
         Long id = reviewService.createReview(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 리뷰 목록 조회(멤버 ID, 멤버 이름, 활동 ID, 공개 여부 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
@@ -51,7 +49,7 @@ public class ReviewController {
             "멤버 ID, 멤버 이름, 활동 ID, 공개 여부 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getReviewsByConditions(
+    public ResponseModel<PagedResponseDto<ReviewResponseDto>> getReviewsByConditions(
             @RequestParam(name = "memberId", required = false) String memberId,
             @RequestParam(name = "memberName", required = false) String memberName,
             @RequestParam(name = "activityId", required = false) Long activityId,
@@ -61,48 +59,40 @@ public class ReviewController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ReviewResponseDto> reviews = reviewService.getReviewsByConditions(memberId, memberName, activityId, isPublic, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(reviews);
-        return responseModel;
+        return ResponseModel.success(reviews);
     }
 
     @Operation(summary = "[U] 나의 리뷰 목록", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my")
-    public ResponseModel getMyReviews(
+    public ResponseModel<PagedResponseDto<ReviewResponseDto>> getMyReviews(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ReviewResponseDto> myReviews = reviewService.getMyReviews(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(myReviews);
-        return responseModel;
+        return ResponseModel.success(myReviews);
     }
 
     @Operation(summary = "[U] 리뷰 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{reviewId}")
-    public ResponseModel updateReview(
+    public ResponseModel<Long> updateReview(
             @PathVariable(name = "reviewId") Long reviewId,
             @Valid @RequestBody ReviewUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = reviewService.updateReview(reviewId, requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 리뷰 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{reviewId}")
-    public ResponseModel deleteReview(
+    public ResponseModel<Long> deleteReview(
             @PathVariable(name = "reviewId") Long reviewId
     ) throws PermissionDeniedException {
         Long id = reviewService.deleteReview(reviewId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +17,8 @@ import page.clab.api.global.common.domain.BaseEntity;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class BlacklistIp extends BaseEntity {
 
     @Id
@@ -28,5 +29,12 @@ public class BlacklistIp extends BaseEntity {
     private String ipAddress;
 
     private String reason;
+
+    public static BlacklistIp create(String ipAddress, String reason) {
+        return BlacklistIp.builder()
+                .ipAddress(ipAddress)
+                .reason(reason)
+                .build();
+    }
 
 }

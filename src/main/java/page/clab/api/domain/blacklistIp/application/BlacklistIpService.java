@@ -15,6 +15,8 @@ import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.exception.NotFoundException;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -46,13 +48,18 @@ public class BlacklistIpService {
     public String deleteBlacklistedIp(HttpServletRequest request, String ipAddress) {
         BlacklistIp blacklistIp = getBlacklistIpByIpAddressOrThrow(ipAddress);
         blacklistIpRepository.delete(blacklistIp);
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Deleted IP: " + ipAddress);
+        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_REMOVED, "Deleted IP: " + ipAddress);
         return blacklistIp.getIpAddress();
     }
 
-    public void clearBlacklist(HttpServletRequest request) {
+    public List<String> clearBlacklist(HttpServletRequest request) {
+        List<String> blacklistedIps = blacklistIpRepository.findAll()
+                .stream()
+                .map(BlacklistIp::getIpAddress)
+                .toList();
         blacklistIpRepository.deleteAll();
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Deleted IP: ALL");
+        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_REMOVED, "Deleted IP: ALL");
+        return blacklistedIps;
     }
 
     private BlacklistIp getBlacklistIpByIpAddressOrThrow(String ipAddress) {

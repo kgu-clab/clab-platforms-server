@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
@@ -66,11 +65,11 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SearchResultNotExistException;
 import page.clab.api.global.exception.SecretKeyCreationException;
-import page.clab.api.global.util.ResponseUtil;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice(basePackages = "page.clab.api")
@@ -79,8 +78,6 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
 
     private final SlackService slackService;
-
-    private final MessageSource messageSource;
 
     @ExceptionHandler({
             ActivityGroupNotFinishedException.class,
@@ -105,7 +102,7 @@ public class GlobalExceptionHandler {
     })
     public ResponseModel badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        return ResponseUtil.createErrorResponse(false, null);
+        return ResponseModel.failure();
     }
 
     @ExceptionHandler({
@@ -123,7 +120,7 @@ public class GlobalExceptionHandler {
     })
     public ResponseModel unAuthorizeException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        return ResponseUtil.createErrorResponse(false, null);
+        return ResponseModel.failure();
     }
 
     @ExceptionHandler({
@@ -133,7 +130,7 @@ public class GlobalExceptionHandler {
     })
     public ResponseModel deniedException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        return ResponseUtil.createErrorResponse(false, null);
+        return ResponseModel.failure();
     }
 
     @ExceptionHandler({
@@ -144,9 +141,9 @@ public class GlobalExceptionHandler {
             FileNotFoundException.class,
             AddressNotFoundException.class,
     })
-    public ResponseModel notFoundException(HttpServletResponse response, Exception e) {
+    public ResponseModel<List<?>> notFoundException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
-        return ResponseUtil.createErrorResponse(true, new ArrayList<>());
+        return ResponseModel.success(new ArrayList<>());
     }
 
     @ExceptionHandler({
@@ -154,7 +151,7 @@ public class GlobalExceptionHandler {
     })
     public ResponseModel notFoundException(HttpServletResponse response, AssignmentFileUploadFailException e) {
         response.setStatus(HttpServletResponse.SC_OK);
-        return ResponseUtil.createErrorResponse(false, null);
+        return ResponseModel.failure();
     }
 
     @ExceptionHandler({
@@ -172,7 +169,7 @@ public class GlobalExceptionHandler {
     })
     public ResponseModel conflictException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_CONFLICT);
-        return ResponseUtil.createErrorResponse(false, null);
+        return ResponseModel.failure();
     }
 
     @ExceptionHandler({
@@ -194,7 +191,7 @@ public class GlobalExceptionHandler {
         slackService.sendServerErrorNotification(request, e);
         log.warn(e.getMessage());
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        return ResponseUtil.createErrorResponse(false, null);
+        return ResponseModel.failure();
     }
 
     @ExceptionHandler({
@@ -203,7 +200,7 @@ public class GlobalExceptionHandler {
     })
     public ResponseModel handleValidationException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        return ResponseUtil.createErrorResponse(false, null);
+        return ResponseModel.failure();
     }
 
 }

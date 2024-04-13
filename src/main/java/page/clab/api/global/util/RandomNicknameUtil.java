@@ -1,11 +1,8 @@
 package page.clab.api.global.util;
 
-import org.springframework.stereotype.Component;
-
 import java.util.Arrays;
 import java.util.List;
 
-@Component
 public class RandomNicknameUtil {
 
     private static final int ADJECTIVE_SIZE = 15;

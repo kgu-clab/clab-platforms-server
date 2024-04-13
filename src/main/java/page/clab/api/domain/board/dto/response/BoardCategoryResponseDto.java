@@ -1,18 +1,13 @@
 package page.clab.api.domain.board.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.domain.BoardCategory;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class BoardCategoryResponseDto {
 
@@ -20,7 +15,7 @@ public class BoardCategoryResponseDto {
 
     private String category;
 
-    private String writer;
+    private String writerName;
 
     private String title;
 
@@ -29,8 +24,8 @@ public class BoardCategoryResponseDto {
     public static BoardCategoryResponseDto toDto(Board board) {
         return BoardCategoryResponseDto.builder()
                 .id(board.getId())
-                .category(board.getCategory())
-                .writer(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
+                .category(board.getCategory().getKey())
+                .writerName(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
                 .title(board.getTitle())
                 .createdAt(board.getCreatedAt())
                 .build();

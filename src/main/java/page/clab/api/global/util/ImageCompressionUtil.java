@@ -1,20 +1,17 @@
 package page.clab.api.global.util;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import org.apache.commons.io.FilenameUtils;
+import page.clab.api.global.exception.ImageCompressionException;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.stereotype.Component;
-import page.clab.api.global.exception.ImageCompressionException;
 
-@Component
-@Slf4j
 public class ImageCompressionUtil {
 
     public static void compressImage(String filePath, float quality) {

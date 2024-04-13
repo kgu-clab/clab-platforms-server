@@ -9,8 +9,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,8 +27,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@EqualsAndHashCode(callSuper = false)
 public class Schedule extends BaseEntity {
 
     @Id
@@ -48,6 +51,10 @@ public class Schedule extends BaseEntity {
 
     @Column(nullable = false)
     private LocalDateTime endDateTime;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private SchedulePriority priority;
 
     @ManyToOne
     @JoinColumn(name = "member_id")

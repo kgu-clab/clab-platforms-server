@@ -27,7 +27,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
-@RequestMapping("/blogs")
+@RequestMapping("/api/v1/blogs")
 @RequiredArgsConstructor
 @Tag(name = "Blog", description = "블로그 포스트")
 @Slf4j
@@ -38,13 +38,11 @@ public class BlogController {
     @Operation(summary = "[A] 블로그 포스트 생성", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel createBlog(
+    public ResponseModel<Long> createBlog(
             @Valid @RequestBody BlogRequestDto requestDto
     ) {
         Long id = blogService.createBlog(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 블로그 포스트 조회(제목, 작성자명 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
@@ -52,7 +50,7 @@ public class BlogController {
             "제목, 작성자명 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getBlogsByConditions(
+    public ResponseModel<PagedResponseDto<BlogResponseDto>> getBlogsByConditions(
             @RequestParam(name = "title", required = false) String title,
             @RequestParam(name = "memberName", required = false) String memberName,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -60,46 +58,38 @@ public class BlogController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BlogResponseDto> blogs = blogService.getBlogsByConditions(title, memberName, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(blogs);
-        return responseModel;
+        return ResponseModel.success(blogs);
     }
 
     @Operation(summary = "[U] 블로그 포스트 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{blogId}")
-    public ResponseModel getBlogDetails(
+    public ResponseModel<BlogDetailsResponseDto> getBlogDetails(
             @PathVariable(name = "blogId") Long blogId
     ) {
         BlogDetailsResponseDto blog = blogService.getBlogDetails(blogId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(blog);
-        return responseModel;
+        return ResponseModel.success(blog);
     }
 
     @Operation(summary = "[A] 블로그 포스트 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{blogId}")
-    public ResponseModel updateBlog(
+    public ResponseModel<Long> updateBlog(
             @PathVariable(name = "blogId") Long blogId,
             @Valid @RequestBody BlogUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = blogService.updateBlog(blogId, requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[A] 블로그 포스트 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{blogId}")
-    public ResponseModel deleteBlog(
+    public ResponseModel<Long> deleteBlog(
             @PathVariable(name = "blogId") Long blogId
     ) throws PermissionDeniedException {
         Long id = blogService.deleteBlog(blogId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
 }

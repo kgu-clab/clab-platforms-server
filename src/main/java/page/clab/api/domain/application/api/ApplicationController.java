@@ -26,7 +26,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
-@RequestMapping("/applications")
+@RequestMapping("/api/v1/applications")
 @RequiredArgsConstructor
 @Tag(name = "Application", description = "동아리 지원")
 @Slf4j
@@ -36,14 +36,12 @@ public class ApplicationController {
 
     @Operation(summary = "동아리 지원", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("")
-    public ResponseModel createApplication(
+    public ResponseModel<String> createApplication(
             HttpServletRequest request,
             @Valid @RequestBody ApplicationRequestDto requestDto
     ) {
         String id = applicationService.createApplication(request, requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[A] 지원자 목록 조회(모집 일정 ID, 지원자 ID, 합격 여부 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
@@ -51,7 +49,7 @@ public class ApplicationController {
             "모집 일정 ID, 지원자 ID, 합격 여부 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/conditions")
-    public ResponseModel getApplicationsByConditions(
+    public ResponseModel<PagedResponseDto<ApplicationResponseDto>> getApplicationsByConditions(
             @RequestParam(name = "recruitmentId", required = false) Long recruitmentId,
             @RequestParam(name = "studentId", required = false) String studentId,
             @RequestParam(name = "isPass", required = false) Boolean isPass,
@@ -60,48 +58,40 @@ public class ApplicationController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ApplicationResponseDto> applications = applicationService.getApplicationsByConditions(recruitmentId, studentId, isPass, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(applications);
-        return responseModel;
+        return ResponseModel.success(applications);
     }
 
     @Operation(summary = "[S] 지원 합격/취소", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "승인/취소 상태가 반전됨")
     @Secured({"ROLE_SUPER"})
     @PatchMapping("/{recruitmentId}/{studentId}")
-    public ResponseModel toggleApprovalStatus(
+    public ResponseModel<String> toggleApprovalStatus(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "studentId") String studentId
     ) {
         String id = applicationService.toggleApprovalStatus(recruitmentId, studentId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "합격 여부 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/{recruitmentId}/{studentId}")
-    public ResponseModel getApplicationPass(
+    public ResponseModel<ApplicationPassResponseDto> getApplicationPass(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "studentId") String studentId
     ) {
         ApplicationPassResponseDto pass = applicationService.getApplicationPass(recruitmentId, studentId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(pass);
-        return responseModel;
+        return ResponseModel.success(pass);
     }
 
     @Operation(summary = "[S] 지원서 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{recruitmentId}/{studentId}")
-    public ResponseModel deleteApplication(
+    public ResponseModel<String> deleteApplication(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "studentId") String studentId
     ) {
         String id = applicationService.deleteApplication(recruitmentId, studentId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
 }

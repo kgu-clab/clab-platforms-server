@@ -11,7 +11,7 @@ public enum PositionType {
 
     PRESIDENT("PRESIDENT", "회장"),
     VICE_PRESIDENT("VICE_PRESIDENT", "부회장"),
-    OPERATIONS("OPERATIONS", "운영진"),
+    OPERATION("OPERATION", "운영진"),
     CORE_TEAM("CORE_TEAM", "코어팀"),
     MEMBER("MEMBER", "일반회원");
 

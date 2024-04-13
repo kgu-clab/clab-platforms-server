@@ -1,22 +1,19 @@
 package page.clab.api.domain.membershipFee.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class MembershipFeeUpdateRequestDto {
 
     @Schema(description = "카테고리", example = "지출")
     private String category;
+
+    @Schema(description = "계좌", example = "110-123-456789")
+    private String account;
 
     @Schema(description = "금액", example = "10000")
     private Long amount;

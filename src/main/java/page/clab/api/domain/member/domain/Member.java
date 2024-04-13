@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,8 +36,8 @@ import java.util.Optional;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Member extends BaseEntity implements UserDetails {
 
     @Id
@@ -178,6 +179,10 @@ public class Member extends BaseEntity implements UserDetails {
         return email.equals(memberEmail);
     }
 
+    public boolean isGraduated() {
+        return studentStatus.equals(StudentStatus.GRADUATED);
+    }
+
     public boolean isOwner(Member member) {
         return this.isSameMember(member);
     }
@@ -200,6 +205,10 @@ public class Member extends BaseEntity implements UserDetails {
 
     public void updateLastLoginTime() {
         lastLoginTime = LocalDateTime.now();
+    }
+
+    public void clearImageUrl() {
+        this.imageUrl = null;
     }
 
     public void checkLoanSuspension() {

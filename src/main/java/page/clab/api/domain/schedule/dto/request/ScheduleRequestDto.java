@@ -2,25 +2,18 @@ package page.clab.api.domain.schedule.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.domain.Schedule;
+import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.domain.ScheduleType;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Data
 public class ScheduleRequestDto {
 
     @NotNull(message = "{notNull.schedule.scheduleType}")
@@ -43,16 +36,20 @@ public class ScheduleRequestDto {
     @Schema(description = "일정 종료날짜와 시간", example = "2023-11-28 22:00:00.000")
     private LocalDateTime endDateTime;
 
+    @NotNull(message = "{notNull.schedule.priority}")
+    @Schema(description = "일정 중요도", example = "HIGH")
+    private SchedulePriority priority;
+
     private Long activityGroupId;
 
     public static Schedule toEntity(ScheduleRequestDto requestDto, Member member, ActivityGroup activityGroup) {
         return Schedule.builder()
-                .id(null)
                 .scheduleType(requestDto.getScheduleType())
                 .title(requestDto.getTitle())
                 .detail(requestDto.getDetail())
                 .startDateTime(requestDto.getStartDateTime())
                 .endDateTime(requestDto.getEndDateTime())
+                .priority(requestDto.getPriority())
                 .scheduleWriter(member)
                 .activityGroup(activityGroup)
                 .build();
