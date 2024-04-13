@@ -19,6 +19,8 @@ public class BookLoanRecordResponseDto {
 
     private String borrowerId;
 
+    private String borrowerName;
+
     private LocalDateTime borrowedAt;
 
     private LocalDateTime returnedAt;

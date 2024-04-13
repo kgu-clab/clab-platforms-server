@@ -41,6 +41,7 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
                         bookLoanRecord.book.title,
                         bookLoanRecord.book.imageUrl,
                         bookLoanRecord.borrower.id,
+                        bookLoanRecord.borrower.name,
                         bookLoanRecord.borrowedAt,
                         bookLoanRecord.returnedAt,
                         bookLoanRecord.dueDate,

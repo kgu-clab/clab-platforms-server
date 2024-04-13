@@ -60,7 +60,7 @@ public class BookLoanRecordController {
         return ResponseModel.success(id);
     }
 
-    @Operation(summary = "[U] 도서 대출 내역 조회(도서 ID, 대출자 ID, 대출 가능 여부 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[U] 도서 대출 내역 조회(도서 ID, 대출자 ID, 대출 여부 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
             "도서 ID, 대출자 ID, 대출 가능 여부 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
