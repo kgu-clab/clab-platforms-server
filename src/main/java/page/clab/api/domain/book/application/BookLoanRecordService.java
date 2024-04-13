@@ -11,6 +11,7 @@ import page.clab.api.domain.book.dao.BookRepository;
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
+import page.clab.api.domain.book.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
@@ -82,6 +83,11 @@ public class BookLoanRecordService {
     public PagedResponseDto<BookLoanRecordResponseDto> getBookLoanRecordsByConditions(Long bookId, String borrowerId, Boolean isReturned, Pageable pageable) {
         Page<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordRepository.findByConditions(bookId, borrowerId, isReturned, pageable);
         return new PagedResponseDto<>(bookLoanRecords);
+    }
+
+    public PagedResponseDto<BookLoanRecordOverdueResponseDto> getOverdueBookLoanRecords(Pageable pageable) {
+        Page<BookLoanRecordOverdueResponseDto> overdueBookLoanRecords = bookLoanRecordRepository.findOverdueBookLoanRecords(pageable);
+        return new PagedResponseDto<>(overdueBookLoanRecords);
     }
 
     public BookLoanRecord getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(Book book) {
