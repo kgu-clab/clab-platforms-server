@@ -83,6 +83,19 @@ public class ActivityGroupMemberService {
         }
     }
 
+    public PagedResponseDto<ActivityGroupResponseDto> getMyActivityGroups(Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
+        List<GroupMember> groupMembers = getGroupMemberByMember(currentMember);
+
+        List<ActivityGroupResponseDto> activityGroups = groupMembers.stream()
+                .filter(GroupMember::isAccepted)
+                .map(GroupMember::getActivityGroup)
+                .map(ActivityGroupResponseDto::toDto)
+                .toList();
+
+        return new PagedResponseDto<>(activityGroups, pageable, activityGroups.size());
+    }
+
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupStatusResponseDto> getActivityGroupsByStatus(ActivityGroupStatus status, Pageable pageable) {
         List<ActivityGroup> activityGroups = activityGroupRepository.findActivityGroupsByStatus(status);

@@ -3,6 +3,9 @@ package page.clab.api.domain.book.dao;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.QBook;
@@ -17,7 +20,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Book> findByConditions(String title, String category, String publisher, String borrowerId, String borrowerName) {
+    public Page<Book> findByConditions(String title, String category, String publisher, String borrowerId, String borrowerName, Pageable pageable) {
         QBook book = QBook.book;
         QMember borrower = QMember.member;
         BooleanBuilder builder = new BooleanBuilder();
@@ -28,11 +31,20 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
         if (borrowerId != null) builder.and(borrower.id.eq(borrowerId));
         if (borrowerName != null) builder.and(borrower.name.eq(borrowerName));
 
-        return queryFactory.selectFrom(book)
-                .leftJoin(book.borrower, borrower).fetchJoin()
+        List<Book> books = queryFactory.selectFrom(book)
+                .leftJoin(book.borrower, borrower)
                 .where(builder)
                 .orderBy(book.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        long count = queryFactory.selectFrom(book)
+                .leftJoin(book.borrower, borrower)
+                .where(builder)
+                .fetchCount();
+
+        return new PageImpl<>(books, pageable, count);
     }
 
 }

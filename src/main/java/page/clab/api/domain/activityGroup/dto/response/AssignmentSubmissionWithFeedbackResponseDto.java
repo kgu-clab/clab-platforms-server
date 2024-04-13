@@ -1,21 +1,14 @@
 package page.clab.api.domain.activityGroup.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class AssignmentSubmissionWithFeedbackResponseDto {
 
@@ -25,13 +18,13 @@ public class AssignmentSubmissionWithFeedbackResponseDto {
 
     private String content;
 
-    private List<UploadedFileResponseDto> files = new ArrayList<>();
+    private List<UploadedFileResponseDto> files;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
-    private List<FeedbackResponseDto> feedbacks = new ArrayList<>();
+    private List<FeedbackResponseDto> feedbacks;
 
     public static AssignmentSubmissionWithFeedbackResponseDto toDto(ActivityGroupBoard board, List<FeedbackResponseDto> feedbackDtos) {
         return AssignmentSubmissionWithFeedbackResponseDto.builder()

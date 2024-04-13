@@ -1,18 +1,13 @@
 package page.clab.api.domain.schedule.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import page.clab.api.domain.schedule.domain.Schedule;
+import page.clab.api.domain.schedule.domain.SchedulePriority;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class ScheduleResponseDto {
 
@@ -28,6 +23,8 @@ public class ScheduleResponseDto {
 
     private LocalDateTime endDate;
 
+    private SchedulePriority priority;
+
     public static ScheduleResponseDto toDto(Schedule schedule) {
         return ScheduleResponseDto.builder()
                 .id(schedule.getId())
@@ -36,6 +33,7 @@ public class ScheduleResponseDto {
                 .activityName(schedule.isAllSchedule() ? null : schedule.getActivityGroup().getName())
                 .startDate(schedule.getStartDateTime())
                 .endDate(schedule.getEndDateTime())
+                .priority(schedule.getPriority())
                 .build();
     }
 

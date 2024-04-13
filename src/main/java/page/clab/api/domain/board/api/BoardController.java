@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.board.application.BoardService;
+import page.clab.api.domain.board.domain.BoardCategory;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
@@ -28,7 +29,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
-@RequestMapping("/boards")
+@RequestMapping("/api/v1/boards")
 @RequiredArgsConstructor
 @Tag(name = "Board", description = "커뮤니티 게시판")
 @Slf4j
@@ -39,105 +40,89 @@ public class BoardController {
     @Operation(summary = "[U] 커뮤니티 게시글 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel createBoard(
+    public ResponseModel<Long> createBoard(
             @Valid @RequestBody BoardRequestDto requestDto
-    ) {
+    ) throws PermissionDeniedException {
         Long id = boardService.createBoard(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @GetMapping("")
     @Operation(summary = "[U] 커뮤니티 게시글 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel getBoards(
+    public ResponseModel<PagedResponseDto<BoardListResponseDto>> getBoards(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BoardListResponseDto> boards = boardService.getBoards(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(boards);
-        return responseModel;
+        return ResponseModel.success(boards);
     }
 
     @GetMapping("/{boardId}")
     @Operation(summary = "[U] 커뮤니티 게시글 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel getBoardDetails(
+    public ResponseModel<BoardDetailsResponseDto> getBoardDetails(
             @PathVariable(name = "boardId") Long boardId
     ) {
         BoardDetailsResponseDto board = boardService.getBoardDetails(boardId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(board);
-        return responseModel;
+        return ResponseModel.success(board);
     }
 
     @GetMapping("/my-boards")
     @Operation(summary = "[U] 내가 쓴 커뮤니티 게시글 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel getMyBoards(
+    public ResponseModel<PagedResponseDto<BoardCategoryResponseDto>> getMyBoards(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BoardCategoryResponseDto> board = boardService.getMyBoards(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(board);
-        return responseModel;
+        return ResponseModel.success(board);
     }
 
     @GetMapping("/list")
     @Operation(summary = "[U] 커뮤니티 게시글 카테고리별 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel getBoardsByCategory(
-            @RequestParam(name = "category") String category,
+    public ResponseModel<PagedResponseDto<BoardCategoryResponseDto>> getBoardsByCategory(
+            @RequestParam(name = "category") BoardCategory category,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BoardCategoryResponseDto> boards = boardService.getBoardsByCategory(category, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(boards);
-        return responseModel;
+        return ResponseModel.success(boards);
     }
 
     @PatchMapping("/{boardId}")
     @Operation(summary = "[U] 커뮤니티 게시글 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel updateBoard(
+    public ResponseModel<Long> updateBoard(
             @PathVariable(name = "boardId") Long boardId,
             @Valid @RequestBody BoardUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = boardService.updateBoard(boardId, requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @DeleteMapping("/{boardId}")
     @Operation(summary = "[U] 커뮤니티 게시글 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel deleteBoard(
+    public ResponseModel<Long> deleteBoard(
             @PathVariable(name = "boardId") Long boardId
     ) throws PermissionDeniedException {
         Long id = boardService.deleteBoard(boardId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @PostMapping("/likes/{boardId}")
     @Operation(summary = "[U] 커뮤니티 게시글 좋아요 누르기/취소하기", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel toggleLikeStatus(
+    public ResponseModel<Long> toggleLikeStatus(
             @PathVariable(name = "boardId") Long boardId
     ) {
         Long id = boardService.toggleLikeStatus(boardId);
-        ResponseModel responseModel= ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
 }

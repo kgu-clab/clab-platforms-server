@@ -67,10 +67,7 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        return TokenInfo.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return TokenInfo.create(accessToken, refreshToken);
     }
 
     public boolean isRefreshToken(String token) {
@@ -129,6 +126,15 @@ public class JwtTokenProvider {
             log.info("JWT claims string is empty.");
         }
         return false;
+    }
+
+    public boolean validateTokenSilently(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public Claims parseClaims(String accessToken) {

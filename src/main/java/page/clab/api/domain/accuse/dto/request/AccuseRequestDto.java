@@ -2,21 +2,16 @@ package page.clab.api.domain.accuse.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
+import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.member.domain.Member;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class AccuseRequestDto {
 
     @NotNull(message = "{notNull.accuse.targetType}")
@@ -31,13 +26,19 @@ public class AccuseRequestDto {
     @Schema(description = "신고 사유", example = "부적절한 게시글입니다.", required = true)
     private String reason;
 
-    public static Accuse toEntity(AccuseRequestDto requestDto, Member member) {
+    public static Accuse toEntity(AccuseRequestDto requestDto, Member member, AccuseTarget target) {
         return Accuse.builder()
-                .id(null)
                 .member(member)
-                .targetType(requestDto.getTargetType())
-                .targetId(requestDto.getTargetId())
+                .target(target)
                 .reason(requestDto.getReason())
+                .build();
+    }
+
+    public static AccuseTarget toTargetEntity(AccuseRequestDto requestDto) {
+        return AccuseTarget.builder()
+                .targetType(requestDto.getTargetType())
+                .targetReferenceId(requestDto.getTargetId())
+                .accuseCount(1L)
                 .accuseStatus(AccuseStatus.PENDING)
                 .build();
     }

@@ -1,16 +1,22 @@
 package page.clab.api.domain.accuse.application;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.accuse.dao.AccuseRepository;
+import page.clab.api.domain.accuse.dao.AccuseTargetRepository;
 import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
+import page.clab.api.domain.accuse.domain.AccuseTarget;
+import page.clab.api.domain.accuse.domain.AccuseTargetId;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
+import page.clab.api.domain.accuse.dto.response.AccuseMemberInfo;
 import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
 import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.board.application.BoardService;
@@ -22,6 +28,10 @@ import page.clab.api.domain.review.application.ReviewService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.validation.ValidationService;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -42,19 +52,22 @@ public class AccuseService {
 
     private final AccuseRepository accuseRepository;
 
+    private final AccuseTargetRepository accuseTargetRepository;
+
+    private Map<TargetType, Function<Long, Boolean>> typeValidationMap;
+
     @Transactional
     public Long createAccuse(AccuseRequestDto requestDto) {
         TargetType type = requestDto.getTargetType();
-        Long accuseTargetId = requestDto.getTargetId();
+        Long targetId = requestDto.getTargetId();
+        validateAccuseRequest(type, targetId);
 
-        if (!isAccuseRequestValid(type, accuseTargetId)) {
-            throw new NotFoundException(type.getDescription() + " " + accuseTargetId + "을 찾을 수 없습니다.");
-        }
+        AccuseTarget target = getOrCreateAccuseTarget(requestDto, type, targetId);
+        validationService.checkValid(target);
+        accuseTargetRepository.save(target);
 
         Member currentMember = memberService.getCurrentMember();
-        Accuse accuse = accuseRepository.findByMemberAndTargetTypeAndTargetId(currentMember, type, accuseTargetId)
-                            .orElseGet(() -> AccuseRequestDto.toEntity(requestDto, currentMember));
-        accuse.updateReason(requestDto.getReason());
+        Accuse accuse = findOrCreateAccuse(requestDto, currentMember, target);
         validationService.checkValid(accuse);
 
         notificationService.sendNotificationToMember(currentMember, "신고하신 내용이 접수되었습니다.");
@@ -63,36 +76,78 @@ public class AccuseService {
     }
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<AccuseResponseDto> getAccusesByConditions(TargetType type, AccuseStatus status, Pageable pageable) {
-        Page<Accuse> accuses = accuseRepository.findByConditions(type, status, pageable);
-        return new PagedResponseDto<>(accuses.map(AccuseResponseDto::toDto));
+    public PagedResponseDto<AccuseResponseDto> getAccusesByConditions(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable) {
+        Page<AccuseTarget> accuseTargets = accuseTargetRepository.findByConditions(type, status, countOrder, pageable);
+        List<AccuseResponseDto> responseDtos = convertTargetsToResponseDtos(accuseTargets);
+        return new PagedResponseDto<>(responseDtos, pageable, responseDtos.size());
     }
 
     @Transactional
-    public Long updateAccuseStatus(Long accuseId, AccuseStatus status) {
-        Accuse accuse = getAccuseByIdOrThrow(accuseId);
-        accuse.updateStatus(status);
-        validationService.checkValid(accuse);
-        notificationService.sendNotificationToMember(accuse.getMember(), "신고 상태가 " + status.getDescription() + "로 변경되었습니다.");
-        return accuseRepository.save(accuse).getId();
+    public Long updateAccuseStatus(TargetType type, Long targetId, AccuseStatus status) {
+        AccuseTarget target = getAccuseTargetByIdOrThrow(type, targetId);
+        target.updateStatus(status);
+        validationService.checkValid(target);
+        sendStatusUpdateNotifications(status, target);
+        return accuseTargetRepository.save(target).getTargetReferenceId();
     }
 
-    private boolean isAccuseRequestValid(TargetType type, Long targetId) {
-        if (type == TargetType.BOARD) {
-            return boardService.isBoardExistById(targetId);
-        }
-        if (type == TargetType.COMMENT) {
-            return commentService.isCommentExistById(targetId);
-        }
-        if (type == TargetType.REVIEW) {
-            return reviewService.isReviewExistsById(targetId);
-        }
-        throw new AccuseTargetTypeIncorrectException("신고 대상 유형이 올바르지 않습니다.");
+    private AccuseTarget getAccuseTargetByIdOrThrow(TargetType type, Long targetId) {
+        return accuseTargetRepository.findById(AccuseTargetId.create(type, targetId))
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 신고 대상입니다."));
     }
 
-    private Accuse getAccuseByIdOrThrow(Long accuseId) {
-        return accuseRepository.findById(accuseId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 신고입니다."));
+    @PostConstruct
+    public void init() {
+        typeValidationMap = Map.of(
+                TargetType.BOARD, boardService::isBoardExistById,
+                TargetType.COMMENT, commentService::isCommentExistById,
+                TargetType.REVIEW, reviewService::isReviewExistsById
+        );
+    }
+
+    private void validateAccuseRequest(TargetType type, Long targetId) {
+        Function<Long, Boolean> validationFunction = typeValidationMap.get(type);
+        if (validationFunction == null) {
+            throw new AccuseTargetTypeIncorrectException("신고 대상 유형이 올바르지 않습니다.");
+        }
+        if (!validationFunction.apply(targetId)) {
+            throw new NotFoundException(type.getDescription() + " ID " + targetId + "을 찾을 수 없습니다.");
+        }
+    }
+
+    private AccuseTarget getOrCreateAccuseTarget(AccuseRequestDto requestDto, TargetType type, Long targetId) {
+        return accuseTargetRepository.findById(AccuseTargetId.create(type, targetId))
+                .orElseGet(() -> AccuseRequestDto.toTargetEntity(requestDto));
+    }
+
+    private Accuse findOrCreateAccuse(AccuseRequestDto requestDto, Member currentMember, AccuseTarget target) {
+        return accuseRepository.findByMemberAndTarget(currentMember, target)
+                .map(existingAccuse -> {
+                    existingAccuse.updateReason(requestDto.getReason());
+                    return existingAccuse;
+                })
+                .orElseGet(() -> {
+                    target.increaseAccuseCount();
+                    return AccuseRequestDto.toEntity(requestDto, currentMember, target);
+                });
+    }
+
+    @NotNull
+    private List<AccuseResponseDto> convertTargetsToResponseDtos(Page<AccuseTarget> accuseTargets) {
+        return accuseTargets.stream()
+                .map(accuseTarget -> {
+                    List<Accuse> accuses = accuseRepository.findByTargetOrderByCreatedAtDesc(accuseTarget);
+                    List<AccuseMemberInfo> members = AccuseMemberInfo.create(accuses);
+                    return AccuseResponseDto.toDto(accuses.getFirst(), members);
+                })
+                .toList();
+    }
+
+    private void sendStatusUpdateNotifications(AccuseStatus status, AccuseTarget target) {
+        List<Member> members = accuseRepository.findByTarget(target).stream()
+                .map(Accuse::getMember)
+                .toList();
+        notificationService.sendNotificationToMembers(members, "신고 상태가 " + status.getDescription() + "(으)로 변경되었습니다.");
     }
 
 }

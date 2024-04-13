@@ -63,7 +63,7 @@ public class ApplicationService {
 
     @Transactional(readOnly = true)
     public ApplicationPassResponseDto getApplicationPass(Long recruitmentId, String studentId) {
-        ApplicationId id = new ApplicationId(studentId, recruitmentId);
+        ApplicationId id = ApplicationId.create(studentId, recruitmentId);
         return applicationRepository.findById(id)
                 .map(ApplicationPassResponseDto::toDto)
                 .orElseGet(() -> ApplicationPassResponseDto.builder()
@@ -78,7 +78,7 @@ public class ApplicationService {
     }
 
     private Application getApplicationByIdOrThrow(String studentId, Long recruitmentId) {
-        ApplicationId id = new ApplicationId(studentId, recruitmentId);
+        ApplicationId id = ApplicationId.create(studentId, recruitmentId);
         return applicationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("해당 지원자가 없습니다."));
     }

@@ -27,7 +27,7 @@ import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
-@RequestMapping("/membership-fees")
+@RequestMapping("/api/v1/membership-fees")
 @RequiredArgsConstructor
 @Tag(name = "MembershipFee", description = "회비")
 @Slf4j
@@ -38,21 +38,20 @@ public class MembershipFeeController {
     @Operation(summary = "[U] 회비 신청", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel createMembershipFee(
+    public ResponseModel<Long> createMembershipFee(
             @Valid @RequestBody MembershipFeeRequestDto requestDto
     ) {
         Long id = membershipFeeService.createMembershipFee(requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 회비 정보 조회(멤버 ID, 멤버 이름, 카테고리, 상태 기준)", description = "ROLE_USER 이상의 권한이 필요함<br> " +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
-            "멤버 ID, 멤버 이름, 카테고리 중 하나라도 입력하지 않으면 전체 조회됨")
+            "멤버 ID, 멤버 이름, 카테고리 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
+            "계좌 정보는 관리자 이상의 권한만 조회 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getMembershipFeesByConditions(
+    public ResponseModel<PagedResponseDto<MembershipFeeResponseDto>> getMembershipFeesByConditions(
             @RequestParam(name = "memberId", required = false) String memberId,
             @RequestParam(name = "memberName", required = false) String memberName,
             @RequestParam(name = "category", required = false) String category,
@@ -62,34 +61,28 @@ public class MembershipFeeController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<MembershipFeeResponseDto> membershipFees = membershipFeeService.getMembershipFeesByConditions(memberId, memberName, category, status, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(membershipFees);
-        return responseModel;
+        return ResponseModel.success(membershipFees);
     }
 
     @Operation(summary = "[S] 회비 정보 수정", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PatchMapping("/{membershipFeeId}")
-    public ResponseModel updateMembershipFee(
+    public ResponseModel<Long> updateMembershipFee(
             @PathVariable(name = "membershipFeeId") Long membershipFeeId,
             @Valid @RequestBody MembershipFeeUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = membershipFeeService.updateMembershipFee(membershipFeeId, requestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[S] 회비 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{membershipFeeId}")
-    public ResponseModel deleteMembershipFee(
+    public ResponseModel<Long> deleteMembershipFee(
             @PathVariable(name = "membershipFeeId") Long membershipFeeId
     ) throws PermissionDeniedException {
         Long id = membershipFeeService.deleteMembershipFee(membershipFeeId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
 }

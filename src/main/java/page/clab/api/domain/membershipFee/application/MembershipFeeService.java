@@ -41,8 +41,10 @@ public class MembershipFeeService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<MembershipFeeResponseDto> getMembershipFeesByConditions(String memberId, String memberName, String category, MembershipFeeStatus status, Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
+        boolean isAdminOrSuper = currentMember.isAdminRole();
         Page<MembershipFee> membershipFeesPage = membershipFeeRepository.findByConditions(memberId, memberName, category, status, pageable);
-        return new PagedResponseDto<>(membershipFeesPage.map(MembershipFeeResponseDto::toDto));
+        return new PagedResponseDto<>(membershipFeesPage.map(membershipFee -> MembershipFeeResponseDto.toDto(membershipFee, isAdminOrSuper)));
     }
 
     @Transactional

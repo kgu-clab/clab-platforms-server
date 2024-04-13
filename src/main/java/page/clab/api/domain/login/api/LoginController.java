@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,8 +26,10 @@ import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.global.common.dto.ResponseModel;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/api/v1/login")
 @RequiredArgsConstructor
 @Tag(name = "Login", description = "로그인")
 @Slf4j
@@ -46,8 +49,7 @@ public class LoginController {
     ) throws MemberLockedException, LoginFaliedException {
         LoginHeader headerData = loginService.login(request, requestDto);
         response.setHeader(authHeader, headerData.toJson());
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
+        return ResponseModel.success();
     }
 
     @Operation(summary = "TOTP 인증", description = "ROLE_ANONYMOUS 권한이 필요함")
@@ -59,32 +61,27 @@ public class LoginController {
     ) throws LoginFaliedException, MemberLockedException {
         TokenHeader headerData = loginService.authenticator(request, requestDto);
         response.setHeader(authHeader, headerData.toJson());
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
+        return ResponseModel.success();
     }
 
     @Operation(summary = "[S] TOTP 초기화", description = "ROLE_SUPER 권한이 필요함")
     @DeleteMapping("/authenticator/{memberId}")
     @Secured({"ROLE_SUPER"})
-    public ResponseModel deleteAuthenticator(
+    public ResponseModel<String> deleteAuthenticator(
             @PathVariable(name = "memberId") String memberId
     ) {
         String id = loginService.resetAuthenticator(memberId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[S] 멤버 토큰 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @DeleteMapping("/revoke/{memberId}")
     @Secured({"ROLE_SUPER"})
-    public ResponseModel revoke(
+    public ResponseModel<String> revoke(
             @PathVariable(name = "memberId") String memberId
     ) {
         String id = loginService.revoke(memberId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ResponseModel.success(id);
     }
 
     @Operation(summary = "[U] 멤버 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
@@ -96,8 +93,16 @@ public class LoginController {
     ) {
         TokenHeader headerData = loginService.reissue(request);
         response.setHeader(authHeader, headerData.toJson());
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
+        return ResponseModel.success();
+    }
+
+    @Operation(summary = "[S] 현재 로그인 중인 멤버 조회", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
+            "Redis에 저장된 토큰을 조회하여 현재 로그인 중인 멤버를 조회합니다.")
+    @GetMapping("/current")
+    @Secured({"ROLE_SUPER"})
+    public ResponseModel<List<String>> getCurrentLoggedInUsers() {
+        List<String> currentLoggedInUsers = loginService.getCurrentLoggedInUsers();
+        return ResponseModel.success(currentLoggedInUsers);
     }
 
 }

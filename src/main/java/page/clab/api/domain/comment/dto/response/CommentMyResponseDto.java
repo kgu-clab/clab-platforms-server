@@ -1,21 +1,14 @@
 package page.clab.api.domain.comment.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import page.clab.api.domain.board.domain.BoardCategory;
 import page.clab.api.domain.comment.domain.Comment;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
-@ToString
 public class CommentMyResponseDto {
 
     private Long id;
@@ -40,7 +33,7 @@ public class CommentMyResponseDto {
         return CommentMyResponseDto.builder()
                 .id(comment.getId())
                 .boardId(comment.getBoard().getId())
-                .boardCategory(comment.getBoard().getCategory())
+                .boardCategory(comment.getBoard().getCategory().getKey())
                 .writer(comment.isWantAnonymous() ? comment.getNickname() : comment.getWriter().getName())
                 .writerImageUrl(comment.isWantAnonymous() ? null : comment.getWriter().getImageUrl())
                 .content(comment.getContent())

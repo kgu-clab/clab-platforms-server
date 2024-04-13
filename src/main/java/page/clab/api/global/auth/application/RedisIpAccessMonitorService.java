@@ -69,9 +69,13 @@ public class RedisIpAccessMonitorService {
         return ipAddress;
     }
 
-    public void clearAbnormalAccessIps(HttpServletRequest request) {
+    public List<RedisIpAccessMonitor> clearAbnormalAccessIps(HttpServletRequest request) {
+        List<RedisIpAccessMonitor> ipAccessMonitors = StreamSupport
+                .stream(redisIpAccessMonitorRepository.findAll().spliterator(), false)
+                .toList();
         redisIpAccessMonitorRepository.deleteAll();
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS_IP_DELETED, "Deleted IP: ALL");
+        return ipAccessMonitors;
     }
 
 }
