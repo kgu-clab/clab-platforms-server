@@ -20,6 +20,7 @@ import page.clab.api.domain.accuse.application.AccuseService;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
+import page.clab.api.domain.accuse.dto.response.AccuseMyResponseDto;
 import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
@@ -58,6 +59,18 @@ public class AccuseController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccusesByConditions(type, status, countOrder, pageable);
+        return ResponseModel.success(accuses);
+    }
+
+    @Operation(summary = "[U] 나의 신고 내역 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @GetMapping("/my")
+    public ResponseModel<PagedResponseDto<AccuseMyResponseDto>> getMyAccuses(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<AccuseMyResponseDto> accuses = accuseService.getMyAccuses(pageable);
         return ResponseModel.success(accuses);
     }
 

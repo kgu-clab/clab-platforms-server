@@ -1,6 +1,5 @@
 package page.clab.api.domain.accuse.application;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +16,7 @@ import page.clab.api.domain.accuse.domain.AccuseTargetId;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.accuse.dto.response.AccuseMemberInfo;
+import page.clab.api.domain.accuse.dto.response.AccuseMyResponseDto;
 import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
 import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.board.application.BoardService;
@@ -33,8 +33,6 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.validation.ValidationService;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -82,6 +80,12 @@ public class AccuseService {
         Page<AccuseTarget> accuseTargets = accuseTargetRepository.findByConditions(type, status, countOrder, pageable);
         List<AccuseResponseDto> responseDtos = convertTargetsToResponseDtos(accuseTargets);
         return new PagedResponseDto<>(responseDtos, pageable, responseDtos.size());
+    }
+
+    public PagedResponseDto<AccuseMyResponseDto> getMyAccuses(Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
+        Page<Accuse> accuses = accuseRepository.findByMemberOrderByCreatedAtDesc(currentMember, pageable);
+        return new PagedResponseDto<>(accuses.map(AccuseMyResponseDto::toDto));
     }
 
     @Transactional
