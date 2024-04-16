@@ -9,6 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,13 +33,13 @@ public class BookLoanRecordController {
 
     private final BookLoanRecordService bookLoanRecordService;
 
-    @Operation(summary = "[U] 도서 대출", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 도서 대출 요청", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel<Long> borrowBook(
+    public ResponseModel<Long> requestBookLoan(
             @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) throws CustomOptimisticLockingFailureException {
-        Long id = bookLoanRecordService.borrowBook(requestDto);
+        Long id = bookLoanRecordService.requestBookLoan(requestDto);
         return ResponseModel.success(id);
     }
 
@@ -58,6 +60,26 @@ public class BookLoanRecordController {
             @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) {
         Long id = bookLoanRecordService.extendBookLoan(requestDto);
+        return ResponseModel.success(id);
+    }
+
+    @Operation(summary = "[A] 도서 대출 승인", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @PatchMapping("/approve/{bookLoanRecordId}")
+    public ResponseModel<Long> approveBookLoan(
+            @PathVariable(name = "bookLoanRecordId") Long bookLoanRecordId
+    ) {
+        Long id = bookLoanRecordService.approveBookLoan(bookLoanRecordId);
+        return ResponseModel.success(id);
+    }
+
+    @Operation(summary = "[A] 도서 대출 거절", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @PatchMapping("/reject/{bookLoanRecordId}")
+    public ResponseModel<Long> rejectBookLoan(
+            @PathVariable(name = "bookLoanRecordId") Long bookLoanRecordId
+    ) {
+        Long id = bookLoanRecordService.rejectBookLoan(bookLoanRecordId);
         return ResponseModel.success(id);
     }
 
