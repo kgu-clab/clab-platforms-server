@@ -14,6 +14,7 @@ import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
+import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -43,6 +44,8 @@ public class BookLoanRecordService {
         try {
             Member borrower = memberService.getCurrentMember();
             borrower.checkLoanSuspension();
+
+            validateBorrowLimit(borrower);
 
             Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
             book.validateBookIsNotBorrowed();
@@ -89,6 +92,8 @@ public class BookLoanRecordService {
 
     @Transactional
     public Long approveBookLoan(Long bookLoanRecordId) {
+        Member currentMember = memberService.getCurrentMember();
+        validateBorrowLimit(currentMember);
         BookLoanRecord bookLoanRecord = getBookLoanRecordByIdOrThrow(bookLoanRecordId);
         bookLoanRecord.approve();
         validationService.checkValid(bookLoanRecord);
@@ -122,6 +127,14 @@ public class BookLoanRecordService {
     public BookLoanRecord getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(Book book) {
         return bookLoanRecordRepository.findByBookAndReturnedAtIsNull(book)
                 .orElseThrow(() -> new NotFoundException("해당 도서 대출 기록이 없습니다."));
+    }
+
+    private void validateBorrowLimit(Member borrower) {
+        int borrowedBookCount = bookService.getNumberOfBooksBorrowedByMember(borrower);
+        int maxBorrowableBookCount = 3;
+        if (borrowedBookCount >= maxBorrowableBookCount) {
+            throw new MaxBorrowLimitExceededException("대출 가능한 도서의 수를 초과했습니다.");
+        }
     }
 
 }
