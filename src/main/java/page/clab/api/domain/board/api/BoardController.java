@@ -24,6 +24,7 @@ import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
 import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
+import page.clab.api.domain.board.dto.response.BoardMyResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -72,12 +73,12 @@ public class BoardController {
     @GetMapping("/my-boards")
     @Operation(summary = "[U] 내가 쓴 커뮤니티 게시글 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel<PagedResponseDto<BoardCategoryResponseDto>> getMyBoards(
+    public ResponseModel<PagedResponseDto<BoardMyResponseDto>> getMyBoards(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BoardCategoryResponseDto> board = boardService.getMyBoards(pageable);
+        PagedResponseDto<BoardMyResponseDto> board = boardService.getMyBoards(pageable);
         return ResponseModel.success(board);
     }
 

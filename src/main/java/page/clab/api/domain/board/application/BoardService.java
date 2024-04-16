@@ -16,6 +16,7 @@ import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
 import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
+import page.clab.api.domain.board.dto.response.BoardMyResponseDto;
 import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
@@ -77,10 +78,10 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<BoardCategoryResponseDto> getMyBoards(Pageable pageable) {
+    public PagedResponseDto<BoardMyResponseDto> getMyBoards(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Board> boards = getBoardByMember(pageable, currentMember);
-        return new PagedResponseDto<>(boards.map(BoardCategoryResponseDto::toDto));
+        return new PagedResponseDto<>(boards.map(BoardMyResponseDto::toDto));
     }
 
     @Transactional(readOnly = true)
