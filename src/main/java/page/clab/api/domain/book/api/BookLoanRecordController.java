@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.book.application.BookLoanRecordService;
+import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
@@ -83,7 +84,7 @@ public class BookLoanRecordController {
         return ResponseModel.success(id);
     }
 
-    @Operation(summary = "[U] 도서 대출 내역 조회(도서 ID, 대출자 ID, 대출 여부 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[U] 도서 대출 내역 조회(도서 ID, 대출자 ID, 대출 상태 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
             "도서 ID, 대출자 ID, 대출 가능 여부 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
@@ -91,12 +92,12 @@ public class BookLoanRecordController {
     public ResponseModel<PagedResponseDto<BookLoanRecordResponseDto>> getBookLoanRecordsByConditions(
             @RequestParam(name = "bookId", required = false) Long bookId,
             @RequestParam(name = "borrowerId", required = false) String borrowerId,
-            @RequestParam(name = "isReturned", required = false) Boolean isReturned,
+            @RequestParam(name = "status", required = false) BookLoanStatus status,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.getBookLoanRecordsByConditions(bookId, borrowerId, isReturned, pageable);
+        PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.getBookLoanRecordsByConditions(bookId, borrowerId, status, pageable);
         return ResponseModel.success(bookLoanRecords);
     }
 

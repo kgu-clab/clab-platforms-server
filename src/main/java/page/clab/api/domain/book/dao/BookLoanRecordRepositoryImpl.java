@@ -23,19 +23,13 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<BookLoanRecordResponseDto> findByConditions(Long bookId, String borrowerId, Boolean isReturned, Pageable pageable) {
+    public Page<BookLoanRecordResponseDto> findByConditions(Long bookId, String borrowerId, BookLoanStatus status, Pageable pageable) {
         QBookLoanRecord bookLoanRecord = QBookLoanRecord.bookLoanRecord;
 
         BooleanBuilder builder = new BooleanBuilder();
         if (bookId != null) builder.and(bookLoanRecord.book.id.eq(bookId));
         if (borrowerId != null && !borrowerId.trim().isEmpty()) builder.and(bookLoanRecord.borrower.id.eq(borrowerId));
-        if (isReturned != null) {
-            if (isReturned) {
-                builder.and(bookLoanRecord.returnedAt.isNotNull());
-            } else {
-                builder.and(bookLoanRecord.returnedAt.isNull());
-            }
-        }
+        if (status != null) builder.and(bookLoanRecord.status.eq(status));
 
         List<BookLoanRecordResponseDto> results = queryFactory
                 .select(Projections.constructor(
@@ -91,7 +85,7 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
 
         long total = queryFactory
                 .selectFrom(bookLoanRecord)
-                .where(bookLoanRecord.returnedAt.isNull()
+                .where(bookLoanRecord.status.eq(BookLoanStatus.APPROVED)
                         .and(bookLoanRecord.dueDate.lt(now)))
                 .fetchCount();
 
