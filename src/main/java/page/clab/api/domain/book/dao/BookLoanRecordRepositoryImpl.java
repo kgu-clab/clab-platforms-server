@@ -42,7 +42,8 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
                         bookLoanRecord.borrowedAt,
                         bookLoanRecord.returnedAt,
                         bookLoanRecord.dueDate,
-                        bookLoanRecord.loanExtensionCount
+                        bookLoanRecord.loanExtensionCount,
+                        bookLoanRecord.status
                 ))
                 .from(bookLoanRecord)
                 .where(builder)
@@ -73,7 +74,8 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
                         bookLoanRecord.borrower.id,
                         bookLoanRecord.borrower.name,
                         bookLoanRecord.borrowedAt,
-                        bookLoanRecord.dueDate
+                        bookLoanRecord.dueDate,
+                        bookLoanRecord.status
                 ))
                 .from(bookLoanRecord)
                 .where(bookLoanRecord.status.eq(BookLoanStatus.APPROVED)
