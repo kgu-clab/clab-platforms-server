@@ -31,6 +31,9 @@ public class BoardRequestDto {
     @Schema(description = "첨부파일 경로 리스트", example = "[\"/resources/files/boards/339609571877700_4305d83e-090a-480b-a470-b5e96164d113.png\", \"/resources/files/boards/4305d83e-090a-480b-a470-b5e96164d114.png\"]")
     private List<String> fileUrlList;
 
+    @Schema(description = "썸네일 이미지 URL", example = "/resources/files/boards/339609571877700_4305d83e-090a-480b-a470-b5e96164d113.png")
+    private String imageUrl;
+
     @NotNull(message = "{notNull.board.wantAnonymous}")
     @Schema(description = "익명 사용 여부", example = "false", required = true)
     private boolean wantAnonymous;
@@ -43,6 +46,7 @@ public class BoardRequestDto {
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
                 .uploadedFiles(uploadedFiles)
+                .imageUrl(requestDto.getImageUrl())
                 .wantAnonymous(requestDto.isWantAnonymous())
                 .likes(0L)
                 .build();

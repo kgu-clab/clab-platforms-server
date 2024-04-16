@@ -18,6 +18,8 @@ public class BoardMyResponseDto {
 
     private String title;
 
+    private String imageUrl;
+
     private LocalDateTime createdAt;
 
     public static BoardMyResponseDto toDto(Board board) {
@@ -26,6 +28,7 @@ public class BoardMyResponseDto {
                 .category(board.getCategory().getKey())
                 .writerName(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
                 .title(board.getTitle())
+                .imageUrl(board.getImageUrl())
                 .createdAt(board.getCreatedAt())
                 .build();
     }
