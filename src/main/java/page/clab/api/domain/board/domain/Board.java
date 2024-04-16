@@ -74,6 +74,7 @@ public class Board extends BaseEntity {
         Optional.ofNullable(boardUpdateRequestDto.getCategory()).ifPresent(this::setCategory);
         Optional.ofNullable(boardUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
         Optional.ofNullable(boardUpdateRequestDto.getContent()).ifPresent(this::setContent);
+        Optional.ofNullable(boardUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
         Optional.of(boardUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
     }
 
