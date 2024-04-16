@@ -26,6 +26,7 @@ public class NewsService {
 
     private final NewsRepository newsRepository;
 
+    @Transactional
     public Long createNews(NewsRequestDto requestDto) {
         News news = NewsRequestDto.toEntity(requestDto);
         validationService.checkValid(news);

@@ -27,6 +27,7 @@ public class AwardService {
 
     private final AwardRepository awardRepository;
 
+    @Transactional
     public Long createAward(AwardRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Award award = AwardRequestDto.toEntity(requestDto, currentMember);

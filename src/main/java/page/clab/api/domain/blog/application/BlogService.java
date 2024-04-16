@@ -28,6 +28,7 @@ public class BlogService {
 
     private final BlogRepository blogRepository;
 
+    @Transactional
     public Long createBlog(BlogRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Blog blog = BlogRequestDto.toEntity(requestDto, currentMember);

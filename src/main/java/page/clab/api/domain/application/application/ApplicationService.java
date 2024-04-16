@@ -58,6 +58,7 @@ public class ApplicationService {
     public String toggleApprovalStatus(Long recruitmentId, String studentId) {
         Application application = getApplicationByIdOrThrow(studentId, recruitmentId);
         application.toggleApprovalStatus();
+        validationService.checkValid(application);
         return applicationRepository.save(application).getStudentId();
     }
 

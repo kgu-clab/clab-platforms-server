@@ -22,6 +22,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
+    @Transactional
     public Long createProduct(ProductRequestDto requestDto) {
         Product product = ProductRequestDto.toEntity(requestDto);
         validationService.checkValid(product);

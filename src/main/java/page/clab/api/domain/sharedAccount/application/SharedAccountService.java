@@ -22,6 +22,7 @@ public class SharedAccountService {
 
     private final SharedAccountRepository sharedAccountRepository;
 
+    @Transactional
     public Long createSharedAccount(SharedAccountRequestDto requestDto) {
         SharedAccount sharedAccount = SharedAccountRequestDto.toEntity(requestDto);
         validationService.checkValid(sharedAccount);

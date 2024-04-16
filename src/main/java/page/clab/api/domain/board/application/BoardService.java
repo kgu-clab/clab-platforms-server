@@ -111,6 +111,7 @@ public class BoardService {
         } else {
             board.incrementLikes();
             BoardLike newBoardLike = BoardLike.create(currentMember.getId(), board.getId());
+            validationService.checkValid(newBoardLike);
             boardLikeRepository.save(newBoardLike);
         }
         return board.getLikes();
@@ -133,10 +134,6 @@ public class BoardService {
     public Board getBoardByIdOrThrow(Long boardId) {
         return boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundException("해당 게시글이 존재하지 않습니다."));
-    }
-
-    public boolean isBoardExistById(Long boardId) {
-        return boardRepository.existsById(boardId);
     }
 
     private Page<Board> getBoardByMember(Pageable pageable, Member member) {

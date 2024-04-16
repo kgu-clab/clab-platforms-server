@@ -103,10 +103,6 @@ public class ReviewService {
         return reviewRepository.existsByMemberAndActivityGroup(member, activityGroup);
     }
 
-    public boolean isReviewExistsById(Long id) {
-        return reviewRepository.existsById(id);
-    }
-
     public Review getReviewByIdOrThrow(Long reviewId) {
         return reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException("해당 리뷰가 없습니다."));

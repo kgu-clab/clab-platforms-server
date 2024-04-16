@@ -27,6 +27,7 @@ public class WorkExperienceService {
 
     private final WorkExperienceRepository workExperienceRepository;
 
+    @Transactional
     public Long createWorkExperience(WorkExperienceRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         WorkExperience workExperience = WorkExperienceRequestDto.toEntity(requestDto, currentMember);

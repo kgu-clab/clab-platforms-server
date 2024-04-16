@@ -27,6 +27,7 @@ public class BookService {
 
     private final BookLoanRecordRepository bookLoanRecordRepository;
 
+    @Transactional
     public Long createBook(BookRequestDto requestDto) {
         Book book = BookRequestDto.toEntity(requestDto);
         return bookRepository.save(book).getId();

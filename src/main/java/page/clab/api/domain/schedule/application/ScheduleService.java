@@ -40,6 +40,7 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
+    @Transactional
     public Long createSchedule(ScheduleRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         ActivityGroup activityGroup = resolveActivityGroupForSchedule(requestDto, currentMember);
