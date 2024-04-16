@@ -26,6 +26,7 @@ public class PositionService {
 
     private final PositionRepository positionRepository;
 
+    @Transactional
     public Long createPosition(PositionRequestDto requestDto) {
         Member member = memberService.getMemberByIdOrThrow(requestDto.getMemberId());
         return positionRepository.findByMemberAndYearAndPositionType(member, requestDto.getYear(), requestDto.getPositionType())

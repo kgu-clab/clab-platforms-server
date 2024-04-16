@@ -25,6 +25,7 @@ public class JobPostingService {
 
     private final JobPostingRepository jobPostingRepository;
 
+    @Transactional
     public Long createJobPosting(JobPostingRequestDto requestDto) {
         JobPosting jobPosting = jobPostingRepository.findByJobPostingUrl(requestDto.getJobPostingUrl())
                 .map(existingJobPosting -> existingJobPosting.updateFromRequestDto(requestDto))

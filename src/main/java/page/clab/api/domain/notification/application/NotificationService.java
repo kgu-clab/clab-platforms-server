@@ -36,6 +36,7 @@ public class NotificationService {
         this.memberService = memberService;
     }
 
+    @Transactional
     public Long createNotification(NotificationRequestDto requestDto) {
         Member member = memberService.getMemberByIdOrThrow(requestDto.getMemberId());
         Notification notification = NotificationRequestDto.toEntity(requestDto, member);

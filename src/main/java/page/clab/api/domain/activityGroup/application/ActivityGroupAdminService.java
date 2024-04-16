@@ -81,6 +81,7 @@ public class ActivityGroupAdminService {
     public Long manageActivityGroup(Long activityGroupId, ActivityGroupStatus status) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroup.updateStatus(status);
+        validationService.checkValid(activityGroup);
         activityGroupRepository.save(activityGroup);
 
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);

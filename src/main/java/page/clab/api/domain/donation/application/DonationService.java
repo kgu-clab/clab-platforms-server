@@ -29,6 +29,7 @@ public class DonationService {
 
     private final DonationRepository donationRepository;
 
+    @Transactional
     public Long createDonation(DonationRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Donation donation = DonationRequestDto.toEntity(requestDto, currentMember);

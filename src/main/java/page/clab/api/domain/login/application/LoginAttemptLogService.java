@@ -21,6 +21,7 @@ public class LoginAttemptLogService {
 
     private final LoginAttemptLogRepository loginAttemptLogRepository;
 
+    @Transactional
     public void createLoginAttemptLog(HttpServletRequest request, String memberId, LoginAttemptResult loginAttemptResult) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         GeoIpInfo geoIpInfo = GeoIpUtil.getInfoByIp(clientIpAddress);

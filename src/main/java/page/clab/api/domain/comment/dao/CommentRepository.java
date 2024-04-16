@@ -9,16 +9,12 @@ import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.member.domain.Member;
 
-import java.util.Optional;
-
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     Page<Comment> findAllByBoardIdAndParentIsNullOrderByCreatedAtDesc(Long boardId, Pageable pageable);
 
     Page<Comment> findAllByWriterOrderByCreatedAtDesc(Member member, Pageable pageable);
-
-    Optional<Comment> findById(Long id);
 
     Long countByBoard(Board board);
 

@@ -15,8 +15,8 @@ import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.domain.CommentLike;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
-import page.clab.api.domain.comment.dto.response.CommentResponseDto;
 import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
+import page.clab.api.domain.comment.dto.response.CommentResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -100,10 +100,6 @@ public class CommentService {
             commentLikeRepository.save(newLike);
         }
         return comment.getLikes();
-    }
-
-    public boolean isCommentExistById(Long id) {
-        return commentRepository.existsById(id);
     }
 
     public Comment getCommentByIdOrThrow(Long id) {

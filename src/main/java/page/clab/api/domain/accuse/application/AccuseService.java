@@ -82,6 +82,7 @@ public class AccuseService {
         return new PagedResponseDto<>(responseDtos, pageable, responseDtos.size());
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<AccuseMyResponseDto> getMyAccuses(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Accuse> accuses = accuseRepository.findByMemberOrderByCreatedAtDesc(currentMember, pageable);

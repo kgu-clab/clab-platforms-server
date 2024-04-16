@@ -5,6 +5,7 @@ import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.login.dao.AuthenticatorRepository;
 import page.clab.api.domain.login.domain.Authenticator;
 import page.clab.api.global.exception.NotFoundException;
@@ -21,6 +22,7 @@ public class AuthenticatorService {
 
     private final EncryptionUtil encryptionUtil;
 
+    @Transactional
     public String generateSecretKey(String memberId) {
         GoogleAuthenticatorKey key = googleAuthenticator.createCredentials();
         String secretKey = key.getKey();

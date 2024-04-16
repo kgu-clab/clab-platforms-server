@@ -31,6 +31,7 @@ public class MembershipFeeService {
 
     private final MembershipFeeRepository membershipFeeRepository;
 
+    @Transactional
     public Long createMembershipFee(MembershipFeeRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         MembershipFee membershipFee = MembershipFeeRequestDto.toEntity(requestDto, currentMember);

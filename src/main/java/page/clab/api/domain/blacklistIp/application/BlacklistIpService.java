@@ -26,6 +26,7 @@ public class BlacklistIpService {
 
     private final BlacklistIpRepository blacklistIpRepository;
 
+    @Transactional
     public String addBlacklistedIp(HttpServletRequest request, BlacklistIpRequestDto requestDto) {
         String ipAddress = requestDto.getIpAddress();
         return blacklistIpRepository.findByIpAddress(ipAddress)
