@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.domain.book.domain.QBookLoanRecord;
 import page.clab.api.domain.book.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
@@ -81,7 +82,7 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
                         bookLoanRecord.dueDate
                 ))
                 .from(bookLoanRecord)
-                .where(bookLoanRecord.returnedAt.isNull()
+                .where(bookLoanRecord.status.eq(BookLoanStatus.APPROVED)
                         .and(bookLoanRecord.dueDate.lt(now)))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
