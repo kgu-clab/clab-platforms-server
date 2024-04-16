@@ -71,11 +71,10 @@ public class Book extends BaseEntity {
         Optional.ofNullable(requestDto.getReviewLinks()).ifPresent(this::setReviewLinks);
     }
 
-    public void borrowTo(Member borrower) {
+    public void validateBookIsNotBorrowed() {
         if (this.borrower != null) {
             throw new BookAlreadyBorrowedException("이미 대출 중인 도서입니다.");
         }
-        this.borrower = borrower;
     }
 
     public void returnBook(Member currentMember) {

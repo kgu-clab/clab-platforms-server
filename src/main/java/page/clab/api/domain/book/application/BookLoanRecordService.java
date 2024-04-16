@@ -19,6 +19,7 @@ import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -28,27 +29,30 @@ public class BookLoanRecordService {
 
     private final MemberService memberService;
 
-    private final BookRepository bookRepository;
-
     private final NotificationService notificationService;
+
+    private final ValidationService validationService;
+
+    private final BookRepository bookRepository;
 
     private final BookLoanRecordRepository bookLoanRecordRepository;
 
     @Transactional
-    public Long borrowBook(BookLoanRecordRequestDto requestDto) throws CustomOptimisticLockingFailureException {
+    public Long requestBookLoan(BookLoanRecordRequestDto requestDto) throws CustomOptimisticLockingFailureException {
         try {
             Member borrower = memberService.getCurrentMember();
             borrower.checkLoanSuspension();
 
             Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
-            book.borrowTo(borrower);
-            bookRepository.save(book);
+            book.validateBookIsNotBorrowed();
 
             BookLoanRecord bookLoanRecord = BookLoanRecord.create(book, borrower);
-            notificationService.sendNotificationToMember(borrower.getId(), "[" + book.getTitle() + "] 도서 대출이 완료되었습니다.");
+            validationService.checkValid(bookLoanRecord);
+
+            notificationService.sendNotificationToMember(borrower.getId(), "[" + book.getTitle() + "] 도서 대출 신청이 완료되었습니다.");
             return bookLoanRecordRepository.save(bookLoanRecord).getId();
         } catch (ObjectOptimisticLockingFailureException e) {
-            throw new CustomOptimisticLockingFailureException("도서 대출에 실패했습니다. 다시 시도해주세요.");
+            throw new CustomOptimisticLockingFailureException("도서 대출 신청에 실패했습니다. 다시 시도해주세요.");
         }
     }
 
@@ -61,6 +65,7 @@ public class BookLoanRecordService {
 
         BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(book);
         bookLoanRecord.markAsReturned();
+        validationService.checkValid(bookLoanRecord);
 
         notificationService.sendNotificationToMember(currentMember.getId(), "[" + book.getTitle() + "] 도서 반납이 완료되었습니다.");
         return bookLoanRecordRepository.save(bookLoanRecord).getId();
@@ -74,9 +79,32 @@ public class BookLoanRecordService {
         book.validateCurrentBorrower(currentMember);
         BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(book);
         bookLoanRecord.extendLoan();
+        validationService.checkValid(bookLoanRecord);
 
         notificationService.sendNotificationToMember(currentMember.getId(), "[" + book.getTitle() + "] 도서 대출 연장이 완료되었습니다.");
+
         return bookLoanRecordRepository.save(bookLoanRecord).getId();
+    }
+
+    @Transactional
+    public Long approveBookLoan(Long bookLoanRecordId) {
+        BookLoanRecord bookLoanRecord = getBookLoanRecordByIdOrThrow(bookLoanRecordId);
+        bookLoanRecord.approve();
+        validationService.checkValid(bookLoanRecord);
+        return bookLoanRecordRepository.save(bookLoanRecord).getId();
+    }
+
+    @Transactional
+    public Long rejectBookLoan(Long bookLoanRecordId) {
+        BookLoanRecord bookLoanRecord = getBookLoanRecordByIdOrThrow(bookLoanRecordId);
+        bookLoanRecord.reject();
+        validationService.checkValid(bookLoanRecord);
+        return bookLoanRecordRepository.save(bookLoanRecord).getId();
+    }
+
+    public BookLoanRecord getBookLoanRecordByIdOrThrow(Long bookLoanRecordId) {
+        return bookLoanRecordRepository.findById(bookLoanRecordId)
+                .orElseThrow(() -> new NotFoundException("해당 도서 대출 기록이 없습니다."));
     }
 
     @Transactional(readOnly = true)

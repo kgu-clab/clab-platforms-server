@@ -34,7 +34,9 @@ import page.clab.api.domain.activityGroup.exception.LeaderStatusChangeNotAllowed
 import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
 import page.clab.api.domain.application.exception.NotApprovedApplicationException;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
+import page.clab.api.domain.book.exception.BookAlreadyReturnedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
+import page.clab.api.domain.book.exception.LoanNotPendingException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.book.exception.OverdueException;
 import page.clab.api.domain.donation.exception.DonationSearchArgumentLackException;
@@ -157,6 +159,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             AssociatedAccountExistsException.class,
             BookAlreadyBorrowedException.class,
+            BookAlreadyReturnedException.class,
+            LoanNotPendingException.class,
             DuplicateLoginException.class,
             AlreadyReviewedException.class,
             AlreadyAppliedException.class,
