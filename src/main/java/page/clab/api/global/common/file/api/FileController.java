@@ -33,7 +33,7 @@ public class FileController {
 
     private final FileService fileService;
 
-    @Operation(summary = "[U] 게시글 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 게시글 파일 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/boards", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseModel<List<UploadedFileResponseDto>> boardUpload(
