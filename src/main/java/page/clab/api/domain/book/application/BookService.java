@@ -14,6 +14,7 @@ import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
 import page.clab.api.domain.book.dto.response.BookDetailsResponseDto;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
+import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -66,6 +67,10 @@ public class BookService {
     public BookLoanRecord getBookLoanRecordByBookAndReturnedAtIsNull(Book book) {
         return bookLoanRecordRepository.findByBookAndReturnedAtIsNull(book)
                 .orElse(null);
+    }
+
+    public int getNumberOfBooksBorrowedByMember(Member member) {
+        return bookRepository.countByBorrower(member);
     }
 
     private LocalDateTime getDueDateForBook(Book book) {

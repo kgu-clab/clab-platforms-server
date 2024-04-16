@@ -38,6 +38,7 @@ import page.clab.api.domain.book.exception.BookAlreadyReturnedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
 import page.clab.api.domain.book.exception.LoanNotPendingException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
+import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.book.exception.OverdueException;
 import page.clab.api.domain.donation.exception.DonationSearchArgumentLackException;
 import page.clab.api.domain.login.exception.DuplicateLoginException;
@@ -160,6 +161,7 @@ public class GlobalExceptionHandler {
             AssociatedAccountExistsException.class,
             BookAlreadyBorrowedException.class,
             BookAlreadyReturnedException.class,
+            MaxBorrowLimitExceededException.class,
             LoanNotPendingException.class,
             DuplicateLoginException.class,
             AlreadyReviewedException.class,
