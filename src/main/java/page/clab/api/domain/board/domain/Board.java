@@ -63,6 +63,8 @@ public class Board extends BaseEntity {
     @JoinColumn(name = "board_files")
     private List<UploadedFile> uploadedFiles;
 
+    private String imageUrl;
+
     @Column(nullable = false)
     private boolean wantAnonymous;
 
