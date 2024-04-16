@@ -3,6 +3,7 @@ package page.clab.api.domain.book.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import page.clab.api.domain.book.domain.BookLoanStatus;
 
 import java.time.LocalDateTime;
 
@@ -22,5 +23,7 @@ public class BookLoanRecordOverdueResponseDto {
     private LocalDateTime borrowedAt;
 
     private LocalDateTime dueDate;
+
+    private BookLoanStatus status;
 
 }
