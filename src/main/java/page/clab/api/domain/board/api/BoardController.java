@@ -82,7 +82,7 @@ public class BoardController {
         return ResponseModel.success(board);
     }
 
-    @GetMapping("/list")
+    @GetMapping("/category")
     @Operation(summary = "[U] 커뮤니티 게시글 카테고리별 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ResponseModel<PagedResponseDto<BoardCategoryResponseDto>> getBoardsByCategory(
