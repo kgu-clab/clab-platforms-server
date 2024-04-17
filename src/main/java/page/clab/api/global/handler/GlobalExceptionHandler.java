@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
-import page.clab.api.domain.accuse.exception.AccuseSearchArgumentLackException;
 import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotProgressingException;
@@ -31,7 +30,6 @@ import page.clab.api.domain.activityGroup.exception.DuplicateReportException;
 import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
 import page.clab.api.domain.activityGroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.activityGroup.exception.LeaderStatusChangeNotAllowedException;
-import page.clab.api.domain.activityGroup.exception.NotSubmitCategoryBoardException;
 import page.clab.api.domain.application.exception.NotApprovedApplicationException;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.BookAlreadyReturnedException;
@@ -40,14 +38,11 @@ import page.clab.api.domain.book.exception.LoanNotPendingException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.book.exception.OverdueException;
-import page.clab.api.domain.donation.exception.DonationSearchArgumentLackException;
-import page.clab.api.domain.login.exception.DuplicateLoginException;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
 import page.clab.api.domain.review.exception.AlreadyReviewedException;
 import page.clab.api.domain.sharedAccount.exception.InvalidUsageTimeException;
-import page.clab.api.domain.sharedAccount.exception.SharedAccountInUseException;
 import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
 import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
 import page.clab.api.global.auth.exception.TokenForgeryException;
@@ -66,8 +61,6 @@ import page.clab.api.global.exception.EncryptionException;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.exception.SearchResultNotExistException;
-import page.clab.api.global.exception.SecretKeyCreationException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -97,11 +90,8 @@ public class GlobalExceptionHandler {
             ActivityGroupNotProgressingException.class,
             LeaderStatusChangeNotAllowedException.class,
             CloudStorageNotEnoughException.class,
-            NotSubmitCategoryBoardException.class,
             AccuseTargetTypeIncorrectException.class,
-            AccuseSearchArgumentLackException.class,
             NotApprovedApplicationException.class,
-            DonationSearchArgumentLackException.class
     })
     public ResponseModel badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -138,7 +128,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             NullPointerException.class,
-            SearchResultNotExistException.class,
             NotFoundException.class,
             NoSuchElementException.class,
             FileNotFoundException.class,
@@ -163,14 +152,12 @@ public class GlobalExceptionHandler {
             BookAlreadyReturnedException.class,
             MaxBorrowLimitExceededException.class,
             LoanNotPendingException.class,
-            DuplicateLoginException.class,
             AlreadyReviewedException.class,
             AlreadyAppliedException.class,
             DuplicateAttendanceException.class,
             DuplicateAbsentExcuseException.class,
             DuplicateReportException.class,
             InvalidUsageTimeException.class,
-            SharedAccountInUseException.class,
             SharedAccountUsageStateException.class
     })
     public ResponseModel conflictException(HttpServletResponse response, Exception e) {
@@ -188,7 +175,6 @@ public class GlobalExceptionHandler {
             TransactionSystemException.class,
             SecurityException.class,
             CustomOptimisticLockingFailureException.class,
-            SecretKeyCreationException.class,
             EncryptionException.class,
             DecryptionException.class,
             Exception.class
