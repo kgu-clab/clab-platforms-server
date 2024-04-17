@@ -24,7 +24,7 @@ import page.clab.api.domain.jobPosting.dto.request.JobPostingUpdateRequestDto;
 import page.clab.api.domain.jobPosting.dto.response.JobPostingDetailsResponseDto;
 import page.clab.api.domain.jobPosting.dto.response.JobPostingResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/job-postings")
@@ -38,11 +38,11 @@ public class JobPostingController {
     @Operation(summary = "[A] 채용 공고 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel<Long> createJobPosting(
+    public ApiResponse<Long> createJobPosting(
             @Valid @RequestBody JobPostingRequestDto requestDto
     ) {
         Long id = jobPostingService.createJobPosting(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 채용 공고 목록 조회(공고명, 기업명, 경력, 근로 조건 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
@@ -50,7 +50,7 @@ public class JobPostingController {
             "공고명, 기업명, 경력, 근로 조건 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel<PagedResponseDto<JobPostingResponseDto>> getJobPostingsByConditions(
+    public ApiResponse<PagedResponseDto<JobPostingResponseDto>> getJobPostingsByConditions(
             @RequestParam(name = "title", required = false) String title,
             @RequestParam(name = "companyName", required = false) String companyName,
             @RequestParam(name = "careerLevel", required = false) CareerLevel careerLevel,
@@ -60,38 +60,38 @@ public class JobPostingController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<JobPostingResponseDto> jobPostings = jobPostingService.getJobPostingsByConditions(title, companyName, careerLevel, employmentType, pageable);
-        return ResponseModel.success(jobPostings);
+        return ApiResponse.success(jobPostings);
     }
 
     @Operation(summary = "[U] 채용 공고 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{jobPostingId}")
-    public ResponseModel<JobPostingDetailsResponseDto> getJobPosting(
+    public ApiResponse<JobPostingDetailsResponseDto> getJobPosting(
             @PathVariable(name = "jobPostingId") Long jobPostingId
     ) {
         JobPostingDetailsResponseDto jobPosting = jobPostingService.getJobPosting(jobPostingId);
-        return ResponseModel.success(jobPosting);
+        return ApiResponse.success(jobPosting);
     }
 
     @Operation(summary = "[A] 채용 공고 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/{jobPostingId}")
-    public ResponseModel<Long> updateJobPosting(
+    public ApiResponse<Long> updateJobPosting(
             @PathVariable(name = "jobPostingId") Long jobPostingId,
             @Valid @RequestBody JobPostingUpdateRequestDto requestDto
     ) {
         Long id = jobPostingService.updateJobPosting(jobPostingId, requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[A] 채용 공고 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{jobPostingId}")
-    public ResponseModel<Long> deleteJobPosting(
+    public ApiResponse<Long> deleteJobPosting(
             @PathVariable(name = "jobPostingId") Long jobPostingId
     ) {
         Long id = jobPostingService.deleteJobPosting(jobPostingId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
 }

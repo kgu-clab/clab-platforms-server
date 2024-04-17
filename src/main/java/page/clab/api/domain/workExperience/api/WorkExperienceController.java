@@ -22,7 +22,7 @@ import page.clab.api.domain.workExperience.dto.request.WorkExperienceRequestDto;
 import page.clab.api.domain.workExperience.dto.request.WorkExperienceUpdateRequestDto;
 import page.clab.api.domain.workExperience.dto.response.WorkExperienceResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
@@ -37,61 +37,61 @@ public class WorkExperienceController {
     @Operation(summary = "[U] 경력사항 등록", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel<Long> createWorkExperience(
+    public ApiResponse<Long> createWorkExperience(
             @Valid @RequestBody WorkExperienceRequestDto requestDto
     ) {
         Long id = workExperienceService.createWorkExperience(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 나의 경력사항 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel<PagedResponseDto<WorkExperienceResponseDto>> getMyWorkExperience(
+    public ApiResponse<PagedResponseDto<WorkExperienceResponseDto>> getMyWorkExperience(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<WorkExperienceResponseDto> myWorkExperience = workExperienceService.getMyWorkExperience(pageable);
-        return ResponseModel.success(myWorkExperience);
+        return ApiResponse.success(myWorkExperience);
     }
 
     @Operation(summary = "[U] 멤버의 경력사항 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/conditions")
-    public ResponseModel<PagedResponseDto<WorkExperienceResponseDto>> getWorkExperiencesByConditions(
+    public ApiResponse<PagedResponseDto<WorkExperienceResponseDto>> getWorkExperiencesByConditions(
             @RequestParam String memberId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<WorkExperienceResponseDto> workExperiences = workExperienceService.getWorkExperiencesByConditions(memberId, pageable);
-        return ResponseModel.success(workExperiences);
+        return ApiResponse.success(workExperiences);
     }
 
     @Operation(summary = "[U] 경력사항 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{workExperienceId}")
-    public ResponseModel<Long> updateWorkExperience(
+    public ApiResponse<Long> updateWorkExperience(
             @PathVariable(name = "workExperienceId") Long workExperienceId,
             @Valid @RequestBody WorkExperienceUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = workExperienceService.updateWorkExperience(workExperienceId, requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 경력사항 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{workExperienceId}")
-    public ResponseModel<Long> deleteWorkExperience(
+    public ApiResponse<Long> deleteWorkExperience(
             @PathVariable(name = "workExperienceId") Long workExperienceId
     ) throws PermissionDeniedException {
         Long id = workExperienceService.deleteWorkExperience(workExperienceId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
 }

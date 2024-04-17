@@ -24,7 +24,7 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStatusResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/activity-group/member")
@@ -37,97 +37,97 @@ public class ActivityGroupMemberController {
 
     @Operation(summary = "활동 전체 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("")
-    public ResponseModel<PagedResponseDto<ActivityGroupResponseDto>> getActivityGroups(
+    public ApiResponse<PagedResponseDto<ActivityGroupResponseDto>> getActivityGroups(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroups(pageable);
-        return ResponseModel.success(activityGroups);
+        return ApiResponse.success(activityGroups);
     }
 
     @Operation(summary = "활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/{activityGroupId}")
-    public ResponseModel<Object> getActivityGroup(
+    public ApiResponse<Object> getActivityGroup(
             @PathVariable(name = "activityGroupId") Long activityGroupId
     ) {
         Object activityGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
-        return ResponseModel.success(activityGroup);
+        return ApiResponse.success(activityGroup);
     }
 
     @Operation(summary = "[U] 나의 활동 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my")
-    public ResponseModel<PagedResponseDto<ActivityGroupResponseDto>> getMyActivityGroups(
+    public ApiResponse<PagedResponseDto<ActivityGroupResponseDto>> getMyActivityGroups(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getMyActivityGroups(pageable);
-        return ResponseModel.success(activityGroups);
+        return ApiResponse.success(activityGroups);
     }
 
     @Operation(summary = "[U] 활동 상태별 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/status")
-    public ResponseModel<PagedResponseDto<ActivityGroupStatusResponseDto>> getActivityGroupsByStatus (
+    public ApiResponse<PagedResponseDto<ActivityGroupStatusResponseDto>> getActivityGroupsByStatus (
             @RequestParam(name = "activityGroupStatus") ActivityGroupStatus status,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ActivityGroupStatusResponseDto> activityGroups = activityGroupMemberService.getActivityGroupsByStatus(status, pageable);
-        return ResponseModel.success(activityGroups);
+        return ApiResponse.success(activityGroups);
     }
 
     @Operation(summary = "카테고리별 활동 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/list")
-    public ResponseModel<PagedResponseDto<ActivityGroupResponseDto>> getActivityGroupsByCategory(
+    public ApiResponse<PagedResponseDto<ActivityGroupResponseDto>> getActivityGroupsByCategory(
             @RequestParam(name = "category") ActivityGroupCategory category,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroupsByCategory(category, pageable);
-        return ResponseModel.success(activityGroups);
+        return ApiResponse.success(activityGroups);
     }
 
     @Operation(summary = "[U] 활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/schedule")
-    public ResponseModel<PagedResponseDto<GroupScheduleDto>> getGroupScheduleList(
+    public ApiResponse<PagedResponseDto<GroupScheduleDto>> getGroupScheduleList(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<GroupScheduleDto> groupSchedules = activityGroupMemberService.getGroupSchedules(activityGroupId, pageable);
-        return ResponseModel.success(groupSchedules);
+        return ApiResponse.success(groupSchedules);
     }
 
     @Operation(summary = "[U] 활동 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "활동에 참여(수락)된 멤버만 조회 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/members")
-    public ResponseModel<PagedResponseDto<GroupMemberResponseDto>> getActivityGroupMemberList(
+    public ApiResponse<PagedResponseDto<GroupMemberResponseDto>> getActivityGroupMemberList(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<GroupMemberResponseDto> activityGroupMembers = activityGroupMemberService.getActivityGroupMembers(activityGroupId, pageable);
-        return ResponseModel.success(activityGroupMembers);
+        return ApiResponse.success(activityGroupMembers);
     }
 
     @Operation(summary = "[U] 활동 신청", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/apply")
-    public ResponseModel<Long> applyActivityGroup(
+    public ApiResponse<Long> applyActivityGroup(
             @RequestParam Long activityGroupId,
             @Valid @RequestBody ApplyFormRequestDto requestDto
     ) {
         Long id = activityGroupMemberService.applyActivityGroup(activityGroupId, requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
 }

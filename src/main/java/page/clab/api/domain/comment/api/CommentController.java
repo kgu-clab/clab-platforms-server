@@ -23,7 +23,7 @@ import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
 import page.clab.api.domain.comment.dto.response.CommentResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
@@ -38,69 +38,69 @@ public class CommentController {
     @Operation(summary = "[U] 댓글 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/{boardId}")
-    public ResponseModel<Long> createComment(
+    public ApiResponse<Long> createComment(
             @RequestParam(name = "parentId", required = false) Long parentId,
             @PathVariable(name = "boardId") Long boardId,
             @Valid @RequestBody CommentRequestDto requestDto
     ) {
         Long id = commentService.createComment(parentId, boardId, requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 댓글 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{boardId}")
-    public ResponseModel<PagedResponseDto<CommentResponseDto>> getComments(
+    public ApiResponse<PagedResponseDto<CommentResponseDto>> getComments(
             @PathVariable(name = "boardId") Long boardId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<CommentResponseDto> comments = commentService.getAllComments(boardId, pageable);
-        return ResponseModel.success(comments);
+        return ApiResponse.success(comments);
     }
 
     @Operation(summary = "[U] 나의 댓글 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my-comments")
-    public ResponseModel<PagedResponseDto<CommentMyResponseDto>> getMyComments(
+    public ApiResponse<PagedResponseDto<CommentMyResponseDto>> getMyComments(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<CommentMyResponseDto> comments = commentService.getMyComments(pageable);
-        return ResponseModel.success(comments);
+        return ApiResponse.success(comments);
     }
 
     @Operation(summary = "[U] 댓글 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{commentId}")
-    public ResponseModel<Long> updateComment(
+    public ApiResponse<Long> updateComment(
             @PathVariable(name = "commentId") Long commentId,
             @Valid @RequestBody CommentUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = commentService.updateComment(commentId, requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 댓글 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{commentId}")
-    public ResponseModel<Long> deleteComment(
+    public ApiResponse<Long> deleteComment(
             @PathVariable(name = "commentId") Long commentId
     ) throws PermissionDeniedException {
         Long id = commentService.deleteComment(commentId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @PostMapping("/likes/{commentId}")
     @Operation(summary = "[U] 댓글 좋아요 누르기/취소하기", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel<Long> toggleLikeStatus(
+    public ApiResponse<Long> toggleLikeStatus(
             @PathVariable(name = "commentId") Long commentId
     ) {
         Long id = commentService.toggleLikeStatus(commentId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
 }

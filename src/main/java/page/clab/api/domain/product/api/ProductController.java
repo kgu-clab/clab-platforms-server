@@ -22,7 +22,7 @@ import page.clab.api.domain.product.dto.request.ProductRequestDto;
 import page.clab.api.domain.product.dto.request.ProductUpdateRequestDto;
 import page.clab.api.domain.product.dto.response.ProductResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -36,46 +36,46 @@ public class ProductController {
     @Operation(summary = "[A] 서비스 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel<Long> createProduct(
+    public ApiResponse<Long> createProduct(
             @Valid @RequestBody ProductRequestDto requestDto
     ) {
         Long id = productService.createProduct(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 서비스 조회", description = "ROLE_USER 이상의 권한이 필요함<br> " +
             "서비스명을 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel<PagedResponseDto<ProductResponseDto>> getProductsByConditions(
+    public ApiResponse<PagedResponseDto<ProductResponseDto>> getProductsByConditions(
             @RequestParam(required = false) String productName,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ProductResponseDto> products = productService.getProductsByConditions(productName, pageable);
-        return ResponseModel.success(products);
+        return ApiResponse.success(products);
     }
 
     @Operation(summary = "[A] 서비스 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{productId}")
-    public ResponseModel<Long> updateProduct(
+    public ApiResponse<Long> updateProduct(
             @PathVariable(name = "productId") Long productId,
             @Valid @RequestBody ProductUpdateRequestDto requestDto
     ) {
         Long id = productService.updateProduct(productId, requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[A] 서비스 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("")
-    public ResponseModel<Long> deleteProduct(
+    public ApiResponse<Long> deleteProduct(
             @RequestParam Long productId
     ) {
         Long id = productService.deleteProduct(productId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
 }

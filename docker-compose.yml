@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  postgresql:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: clab
+      POSTGRES_PASSWORD: clab@1362!
+    ports:
+      - "4000:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis
+    restart: always
+    command: redis-server --requirepass clab@redis1362!
+    ports:
+      - "4001:6379"
+    volumes:
+      - redis-data:/data
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    user: root
+    restart: always
+    ports:
+      - "5010:8080"
+      - "5000:5000"
+    volumes:
+      - jenkins-data:/var/jenkins_home
+
+  openjdk21:
+    image: openjdk:21-jdk
+    command: "/bin/bash"
+    volumes:
+      - /var/jenkins_home/workspace/clab-server:/app
+
+  goofy_perlman:
+    image: openjdk:21-jdk
+    command: "/bin/bash"
+
+volumes:
+  postgres-data:
+  redis-data:
+  jenkins-data:
+
+networks:
+  default:
+    driver: bridge
