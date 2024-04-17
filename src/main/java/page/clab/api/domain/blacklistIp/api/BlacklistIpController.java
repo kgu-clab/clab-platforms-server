@@ -20,7 +20,7 @@ import page.clab.api.domain.blacklistIp.application.BlacklistIpService;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
 import page.clab.api.domain.blacklistIp.dto.request.BlacklistIpRequestDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 
 import java.util.List;
 
@@ -36,45 +36,45 @@ public class BlacklistIpController {
     @Operation(summary = "[S] 블랙리스트 IP 추가", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel<String> addBlacklistedIp(
+    public ApiResponse<String> addBlacklistedIp(
             HttpServletRequest request,
             @Valid @RequestBody BlacklistIpRequestDto requestDto
     ) {
         String addedIp = blacklistIpService.addBlacklistedIp(request, requestDto);
-        return ResponseModel.success(addedIp);
+        return ApiResponse.success(addedIp);
     }
 
     @Operation(summary = "[A] 블랙리스트 IP 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel<PagedResponseDto<BlacklistIp>> getBlacklistedIps(
+    public ApiResponse<PagedResponseDto<BlacklistIp>> getBlacklistedIps(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BlacklistIp> blacklistedIps = blacklistIpService.getBlacklistedIps(pageable);
-        return ResponseModel.success(blacklistedIps);
+        return ApiResponse.success(blacklistedIps);
     }
 
     @Operation(summary = "[S] 블랙리스트 IP 제거", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("")
-    public ResponseModel<String> removeBlacklistedIp(
+    public ApiResponse<String> removeBlacklistedIp(
             HttpServletRequest request,
             @RequestParam(name = "ipAddress") String ipAddress
     ) {
         String deletedIp = blacklistIpService.deleteBlacklistedIp(request, ipAddress);
-        return ResponseModel.success(deletedIp);
+        return ApiResponse.success(deletedIp);
     }
 
     @Operation(summary = "[S] 블랙리스트 IP 초기화", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("/clear")
-    public ResponseModel<List<String>> clearBlacklist(
+    public ApiResponse<List<String>> clearBlacklist(
             HttpServletRequest request
     ) {
         List<String> blacklistIps = blacklistIpService.clearBlacklist(request);
-        return ResponseModel.success(blacklistIps);
+        return ApiResponse.success(blacklistIps);
     }
 
 }

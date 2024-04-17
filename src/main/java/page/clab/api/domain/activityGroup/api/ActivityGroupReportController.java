@@ -22,7 +22,7 @@ import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportRequest
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupReportResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
@@ -37,57 +37,57 @@ public class ActivityGroupReportController {
     @Operation(summary = "[U] 활동 보고서 작성", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel<Long> writeReport(
+    public ApiResponse<Long> writeReport(
             @Valid @RequestBody ActivityGroupReportRequestDto requestDto
     ) throws PermissionDeniedException, IllegalAccessException {
         Long id = activityGroupReportService.writeReport(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 특정 그룹의 활동 보고서 전체 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel<PagedResponseDto<ActivityGroupReportResponseDto>> getReports(
+    public ApiResponse<PagedResponseDto<ActivityGroupReportResponseDto>> getReports(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page,size);
         PagedResponseDto<ActivityGroupReportResponseDto> reports = activityGroupReportService.getReports(activityGroupId, pageable);
-        return ResponseModel.success(reports);
+        return ApiResponse.success(reports);
     }
 
     @Operation(summary = "[U] 특정 그룹의 특정 차시 활동 보고서 검색", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/search")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel<ActivityGroupReportResponseDto> searchReport(
+    public ApiResponse<ActivityGroupReportResponseDto> searchReport(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "turn") Long turn
     ) {
         ActivityGroupReportResponseDto report = activityGroupReportService.searchReport(activityGroupId, turn);
-        return ResponseModel.success(report);
+        return ApiResponse.success(report);
     }
 
     @Operation(summary = "[U] 활동 보고서 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @PatchMapping("/{reportId}")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel<Long> updateReport(
+    public ApiResponse<Long> updateReport(
             @PathVariable(name = "reportId") Long reportId,
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @Valid @RequestBody ActivityGroupReportUpdateRequestDto requestDto
     ) throws PermissionDeniedException, IllegalAccessException {
         Long id = activityGroupReportService.updateReport(reportId, activityGroupId, requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 활동보고서 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{reportId}")
-    public ResponseModel<Long> deleteAward(
+    public ApiResponse<Long> deleteAward(
             @PathVariable(name = "reportId") Long reportId
     ) throws PermissionDeniedException {
         Long id = activityGroupReportService.deleteReport(reportId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
 }

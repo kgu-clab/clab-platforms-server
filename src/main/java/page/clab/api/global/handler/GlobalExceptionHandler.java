@@ -52,7 +52,7 @@ import page.clab.api.global.auth.exception.TokenNotFoundException;
 import page.clab.api.global.auth.exception.TokenValidateException;
 import page.clab.api.global.auth.exception.UnAuthorizeException;
 import page.clab.api.global.common.dto.ErrorResponse;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.file.exception.AssignmentFileUploadFailException;
 import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
 import page.clab.api.global.common.file.exception.FileUploadFailException;
@@ -88,9 +88,9 @@ public class GlobalExceptionHandler {
             MethodArgumentTypeMismatchException.class,
             IllegalAccessException.class,
     })
-    public ResponseModel badRequestException(HttpServletResponse response, Exception e) {
+    public ApiResponse badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        return ResponseModel.failure();
+        return ApiResponse.failure();
     }
 
     @ExceptionHandler({
@@ -106,18 +106,18 @@ public class GlobalExceptionHandler {
             TokenForgeryException.class,
             MessagingException.class,
     })
-    public ResponseModel unAuthorizeException(HttpServletResponse response, Exception e) {
+    public ApiResponse unAuthorizeException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        return ResponseModel.failure();
+        return ApiResponse.failure();
     }
 
     @ExceptionHandler({
             PermissionDeniedException.class,
             InvalidBorrowerException.class,
     })
-    public ResponseModel deniedException(HttpServletResponse response, Exception e) {
+    public ApiResponse deniedException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        return ResponseModel.failure();
+        return ApiResponse.failure();
     }
 
     @ExceptionHandler({
@@ -127,17 +127,17 @@ public class GlobalExceptionHandler {
             FileNotFoundException.class,
             AddressNotFoundException.class,
     })
-    public ResponseModel<List<?>> notFoundException(HttpServletResponse response, Exception e) {
+    public ApiResponse<List<?>> notFoundException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
-        return ResponseModel.success(new ArrayList<>());
+        return ApiResponse.success(new ArrayList<>());
     }
 
     @ExceptionHandler({
             AssignmentFileUploadFailException.class
     })
-    public ResponseModel notFoundException(HttpServletResponse response, AssignmentFileUploadFailException e) {
+    public ApiResponse notFoundException(HttpServletResponse response, AssignmentFileUploadFailException e) {
         response.setStatus(HttpServletResponse.SC_OK);
-        return ResponseModel.failure();
+        return ApiResponse.failure();
     }
 
     @ExceptionHandler({
@@ -182,20 +182,20 @@ public class GlobalExceptionHandler {
             DecryptionException.class,
             Exception.class
     })
-    public ResponseModel serverException(HttpServletRequest request, HttpServletResponse response, Exception e) {
+    public ApiResponse serverException(HttpServletRequest request, HttpServletResponse response, Exception e) {
         slackService.sendServerErrorNotification(request, e);
         log.warn(e.getMessage());
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        return ResponseModel.failure();
+        return ApiResponse.failure();
     }
 
     @ExceptionHandler({
             MethodArgumentNotValidException.class,
             ConstraintViolationException.class
     })
-    public ResponseModel handleValidationException(HttpServletResponse response, Exception e) {
+    public ApiResponse handleValidationException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        return ResponseModel.failure();
+        return ApiResponse.failure();
     }
 
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.email.application.EmailService;
 import page.clab.api.global.common.email.dto.request.EmailDto;
 
@@ -30,7 +30,7 @@ public class EmailController {
     @Operation(summary = "[A] 메일 전송", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(path = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel<List<String>> broadcastEmail(
+    public ApiResponse<List<String>> broadcastEmail(
             EmailDto emailDto,
             @RequestParam(name = "multipartFile", required = false) List<MultipartFile> files
     ) {
@@ -39,13 +39,13 @@ public class EmailController {
         });
 
         List<String> successfulAddresses = emailTask.join();
-        return ResponseModel.success(successfulAddresses);
+        return ApiResponse.success(successfulAddresses);
     }
 
     @Operation(summary = "[A] 전체 메일 전송", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(path = "/all", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel<List<String>> broadcastEmailToAllMember(
+    public ApiResponse<List<String>> broadcastEmailToAllMember(
             EmailDto emailDto,
             @RequestParam(name = "multipartFile", required = false) List<MultipartFile> files
     ) {
@@ -54,7 +54,7 @@ public class EmailController {
         });
 
         List<String> successfulEmails = emailTask.join();
-        return ResponseModel.success(successfulEmails);
+        return ApiResponse.success(successfulEmails);
     }
 
 }

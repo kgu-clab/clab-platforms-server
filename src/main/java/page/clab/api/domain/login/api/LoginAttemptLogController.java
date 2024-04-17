@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.login.application.LoginAttemptLogService;
 import page.clab.api.domain.login.dto.response.LoginAttemptLogResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/login-attempt-logs")
@@ -29,14 +29,14 @@ public class LoginAttemptLogController {
     @Operation(summary = "[S] 계정별 로그인 시도 로그 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @GetMapping("/{memberId}")
-    public ResponseModel<PagedResponseDto<LoginAttemptLogResponseDto>> getLoginAttemptLogs(
+    public ApiResponse<PagedResponseDto<LoginAttemptLogResponseDto>> getLoginAttemptLogs(
             @PathVariable(name = "memberId") String memberId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<LoginAttemptLogResponseDto> loginAttemptLogs = loginAttemptLogService.getLoginAttemptLogs(memberId, pageable);
-        return ResponseModel.success(loginAttemptLogs);
+        return ApiResponse.success(loginAttemptLogs);
     }
 
 }

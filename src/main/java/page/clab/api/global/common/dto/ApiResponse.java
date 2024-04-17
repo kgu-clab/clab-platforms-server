@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ResponseModel<T> {
+public class ApiResponse<T> {
 
     @Builder.Default
     private Boolean success = true;
@@ -19,24 +19,24 @@ public class ResponseModel<T> {
         return gson.toJson(this);
     }
 
-    public static <T> ResponseModel<T> success() {
-        return ResponseModel.<T>builder().build();
+    public static <T> ApiResponse<T> success() {
+        return ApiResponse.<T>builder().build();
     }
 
-    public static <T> ResponseModel<T> success(T data) {
-        return ResponseModel.<T>builder()
+    public static <T> ApiResponse<T> success(T data) {
+        return ApiResponse.<T>builder()
                 .data(data)
                 .build();
     }
 
-    public static <T> ResponseModel<T> failure() {
-        return ResponseModel.<T>builder()
+    public static <T> ApiResponse<T> failure() {
+        return ApiResponse.<T>builder()
                 .success(false)
                 .build();
     }
 
-    public static <T> ResponseModel<T> failure(T data) {
-        return ResponseModel.<T>builder()
+    public static <T> ApiResponse<T> failure(T data) {
+        return ApiResponse.<T>builder()
                 .success(false)
                 .data(data)
                 .build();

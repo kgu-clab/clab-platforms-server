@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.login.application.AccountLockInfoService;
 import page.clab.api.domain.login.dto.response.AccountLockInfoResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/account-lock-info")
@@ -31,35 +31,35 @@ public class AccountLockInfoController {
     @Operation(summary = "[S] 멤버 밴 등록", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("/ban/{memberId}")
-    public ResponseModel<Long> banMember(
+    public ApiResponse<Long> banMember(
             HttpServletRequest request,
             @PathVariable(name = "memberId") String memberId
     ) {
         Long id = accountLockInfoService.banMemberById(request, memberId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[S] 멤버 밴 해제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("/unban/{memberId}")
-    public ResponseModel<Long> unbanMember(
+    public ApiResponse<Long> unbanMember(
             HttpServletRequest request,
             @PathVariable(name = "memberId") String memberId
     ) {
         Long id = accountLockInfoService.unbanMemberById(request, memberId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[S] 밴 멤버 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel<PagedResponseDto<AccountLockInfoResponseDto>> getBanMembers(
+    public ApiResponse<PagedResponseDto<AccountLockInfoResponseDto>> getBanMembers(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AccountLockInfoResponseDto> banMembers = accountLockInfoService.getBanMembers(pageable);
-        return ResponseModel.success(banMembers);
+        return ApiResponse.success(banMembers);
     }
 
 }

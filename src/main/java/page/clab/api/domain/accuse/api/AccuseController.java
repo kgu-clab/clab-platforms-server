@@ -23,7 +23,7 @@ import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.accuse.dto.response.AccuseMyResponseDto;
 import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/accuses")
@@ -37,11 +37,11 @@ public class AccuseController {
     @Operation(summary = "[U] 신고하기", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel<Long> createAccuse(
+    public ApiResponse<Long> createAccuse(
             @Valid @RequestBody AccuseRequestDto requestDto
     ) {
         Long id = accuseService.createAccuse(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[A] 신고 내역 조회(신고 대상, 처리 상태 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
@@ -50,7 +50,7 @@ public class AccuseController {
             "누적 횟수 기준으로 정렬할지 여부를 선택할 수 있음")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel<PagedResponseDto<AccuseResponseDto>> getAccusesByConditions(
+    public ApiResponse<PagedResponseDto<AccuseResponseDto>> getAccusesByConditions(
             @RequestParam(name = "targetType", required = false) TargetType type,
             @RequestParam(name = "accuseStatus", required = false) AccuseStatus status,
             @RequestParam(name = "countOrder", defaultValue = "false") boolean countOrder,
@@ -59,31 +59,31 @@ public class AccuseController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccusesByConditions(type, status, countOrder, pageable);
-        return ResponseModel.success(accuses);
+        return ApiResponse.success(accuses);
     }
 
     @Operation(summary = "[U] 나의 신고 내역 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my")
-    public ResponseModel<PagedResponseDto<AccuseMyResponseDto>> getMyAccuses(
+    public ApiResponse<PagedResponseDto<AccuseMyResponseDto>> getMyAccuses(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AccuseMyResponseDto> accuses = accuseService.getMyAccuses(pageable);
-        return ResponseModel.success(accuses);
+        return ApiResponse.success(accuses);
     }
 
     @Operation(summary = "[A] 신고 상태 변경", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{targetType}/{targetId}")
-    public ResponseModel<Long> updateAccuseStatus(
+    public ApiResponse<Long> updateAccuseStatus(
             @PathVariable(name = "targetType") TargetType type,
             @PathVariable(name = "targetId") Long targetId,
             @RequestParam(name = "accuseStatus") AccuseStatus status
     ) {
         Long id = accuseService.updateAccuseStatus(type, targetId, status);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
 }
