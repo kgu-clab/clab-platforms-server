@@ -49,7 +49,6 @@ public class BookLoanRecordService {
             validateBorrowLimit(borrower);
 
             Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
-            book.validateBookIsNotBorrowed();
             checkIfLoanAlreadyApplied(book, borrower);
 
             BookLoanRecord bookLoanRecord = BookLoanRecord.create(book, borrower);
@@ -95,9 +94,13 @@ public class BookLoanRecordService {
     @Transactional
     public Long approveBookLoan(Long bookLoanRecordId) {
         Member currentMember = memberService.getCurrentMember();
-        validateBorrowLimit(currentMember);
         BookLoanRecord bookLoanRecord = getBookLoanRecordByIdOrThrow(bookLoanRecordId);
+        Book book = bookService.getBookByIdOrThrow(bookLoanRecord.getBook().getId());
+
+        book.validateBookIsNotBorrowed();
+        validateBorrowLimit(currentMember);
         bookLoanRecord.approve();
+
         validationService.checkValid(bookLoanRecord);
         return bookLoanRecordRepository.save(bookLoanRecord).getId();
     }
