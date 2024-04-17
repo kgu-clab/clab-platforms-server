@@ -18,6 +18,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.domain.Role;
@@ -34,6 +36,8 @@ import java.util.Optional;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@SQLDelete(sql = "UPDATE board SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
 public class Board extends BaseEntity {
 
     @Id
@@ -69,6 +73,8 @@ public class Board extends BaseEntity {
     private boolean wantAnonymous;
 
     private Long likes;
+
+    private boolean isDeleted = Boolean.FALSE;
 
     public void update(BoardUpdateRequestDto boardUpdateRequestDto) {
         Optional.ofNullable(boardUpdateRequestDto.getCategory()).ifPresent(this::setCategory);
