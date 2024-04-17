@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
@@ -36,101 +36,101 @@ public class FileController {
     @Operation(summary = "[U] 게시글 파일 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/boards", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel<List<UploadedFileResponseDto>> boardUpload(
+    public ApiResponse<List<UploadedFileResponseDto>> boardUpload(
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "boards", storagePeriod);
-        return ResponseModel.success(responseDtos);
+        return ApiResponse.success(responseDtos);
     }
 
     @Operation(summary = "[U] 뉴스 사진 업로드", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/news", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel<List<UploadedFileResponseDto>> newsUpload(
+    public ApiResponse<List<UploadedFileResponseDto>> newsUpload(
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "news", storagePeriod);
-        return ResponseModel.success(responseDtos);
+        return ApiResponse.success(responseDtos);
     }
 
     @Operation(summary = "[U] 멤버 프로필 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/profiles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel<UploadedFileResponseDto> profileUpload(
+    public ApiResponse<UploadedFileResponseDto> profileUpload(
             @RequestParam(name = "multipartFile") MultipartFile multipartFile,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
         UploadedFileResponseDto responseDto = fileService.saveFile(multipartFile, fileService.buildPath("profiles"), storagePeriod);
-        return ResponseModel.success(responseDto);
+        return ApiResponse.success(responseDto);
     }
 
     @Operation(summary = "[U] 함께하는 활동 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/activity-photos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel<List<UploadedFileResponseDto>> activityUpload(
+    public ApiResponse<List<UploadedFileResponseDto>> activityUpload(
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "activity-photos", storagePeriod);
-        return ResponseModel.success(responseDtos);
+        return ApiResponse.success(responseDtos);
     }
 
     @Operation(summary = "[U] 멤버 클라우드 파일 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/members", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel memberCloudUpload(
+    public ApiResponse memberCloudUpload(
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, fileService.buildPath("members"), storagePeriod);
-        return ResponseModel.success(responseDtos);
+        return ApiResponse.success(responseDtos);
     }
 
     @Operation(summary = "[U] 양식 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/forms", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel<List<UploadedFileResponseDto>> formUpload(
+    public ApiResponse<List<UploadedFileResponseDto>> formUpload(
             @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam("storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "forms", storagePeriod);
-        return ResponseModel.success(responseDtos);
+        return ApiResponse.success(responseDtos);
     }
 
     @Operation(summary = "[U] 활동 그룹 과제 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/assignment/{activityGroupId}/{activityGroupBoardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel<List<UploadedFileResponseDto>> assignmentUpload(
+    public ApiResponse<List<UploadedFileResponseDto>> assignmentUpload(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
             @PathVariable(name = "activityGroupBoardId") Long activityGroupBoardId,
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws PermissionDeniedException, IOException, NotFoundException {
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, fileService.buildPath("assignments", activityGroupId, activityGroupBoardId), storagePeriod);
-        return ResponseModel.success(responseDtos);
+        return ApiResponse.success(responseDtos);
     }
 
     @Operation(summary = "[U] 회비 증빙 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/membership-fee", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseModel<List<UploadedFileResponseDto>> assignmentUpload(
+    public ApiResponse<List<UploadedFileResponseDto>> assignmentUpload(
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws PermissionDeniedException, IOException, NotFoundException {
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "membership-fees", storagePeriod);
-        return ResponseModel.success(responseDtos);
+        return ApiResponse.success(responseDtos);
     }
 
     @Operation(summary = "[U] 파일 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능<br>" + "/resources/files/~를 입력. 즉 생성시 전달받은 url을 입력.")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("")
-    public ResponseModel<String> deleteFile(@RequestBody DeleteFileRequestDto deleteFileRequestDto)
+    public ApiResponse<String> deleteFile(@RequestBody DeleteFileRequestDto deleteFileRequestDto)
             throws PermissionDeniedException {
         String deletedFileUrl = fileService.deleteFile(deleteFileRequestDto);
-        return ResponseModel.success(deletedFileUrl);
+        return ApiResponse.success(deletedFileUrl);
     }
 
 }

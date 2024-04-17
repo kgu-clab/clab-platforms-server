@@ -26,7 +26,7 @@ import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUsageRequestD
 import page.clab.api.domain.sharedAccount.dto.response.SharedAccountResponseDto;
 import page.clab.api.domain.sharedAccount.dto.response.SharedAccountUsageResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -44,44 +44,44 @@ public class SharedAccountController {
     @Operation(summary = "[S] 공동 계정 추가", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel<Long> createSharedAccount(
+    public ApiResponse<Long> createSharedAccount(
             @Valid @RequestBody SharedAccountRequestDto requestDto
     ) {
         Long id = sharedAccountService.createSharedAccount(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 공동 계정 조회(상태 포함)", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel<PagedResponseDto<SharedAccountResponseDto>> getSharedAccounts(
+    public ApiResponse<PagedResponseDto<SharedAccountResponseDto>> getSharedAccounts(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<SharedAccountResponseDto> sharedAccounts = sharedAccountService.getSharedAccounts(pageable);
-        return ResponseModel.success(sharedAccounts);
+        return ApiResponse.success(sharedAccounts);
     }
 
     @Operation(summary = "[S] 공동 계정 수정", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PatchMapping("/{accountId}")
-    public ResponseModel<Long> updateSharedAccount(
+    public ApiResponse<Long> updateSharedAccount(
             @PathVariable(name = "accountId") Long accountId,
             @Valid @RequestBody SharedAccountUpdateRequestDto requestDto
     ) {
         Long id = sharedAccountService.updateSharedAccount(accountId, requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[S] 공동 계정 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{accountId}")
-    public ResponseModel<Long> deleteSharedAccount(
+    public ApiResponse<Long> deleteSharedAccount(
             @PathVariable(name = "accountId") Long accountId
     ) {
         Long id = sharedAccountService.deleteSharedAccount(accountId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 공동 계정 이용 신청", description = "ROLE_USER 이상의 권한이 필요함<br>" +
@@ -89,35 +89,35 @@ public class SharedAccountController {
             "신청시에 계정 상태가 자동으로 바뀌므로 상태 변경은 별도로 안해도 됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/usage")
-    public ResponseModel<Long> requestSharedAccountUsage(
+    public ApiResponse<Long> requestSharedAccountUsage(
             @Valid @RequestBody SharedAccountUsageRequestDto requestDto
     ) throws CustomOptimisticLockingFailureException {
         Long id = sharedAccountUsageService.requestSharedAccountUsage(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 공동 계정 이용 내역 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/usage")
-    public ResponseModel<PagedResponseDto<SharedAccountUsageResponseDto>> getSharedAccountUsages(
+    public ApiResponse<PagedResponseDto<SharedAccountUsageResponseDto>> getSharedAccountUsages(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<SharedAccountUsageResponseDto> sharedAccountUsages = sharedAccountUsageService.getSharedAccountUsages(pageable);
-        return ResponseModel.success(sharedAccountUsages);
+        return ApiResponse.success(sharedAccountUsages);
     }
 
     @Operation(summary = "[U] 공동 계정 이용 상태 변경", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "이용 중 취소/완료, 예약 취소만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/usage/{usageId}")
-    public ResponseModel<Long> updateSharedAccountUsage(
+    public ApiResponse<Long> updateSharedAccountUsage(
             @PathVariable(name = "usageId") Long usageId,
             @RequestParam(name = "status") SharedAccountUsageStatus status
     ) throws PermissionDeniedException {
         Long id = sharedAccountUsageService.updateSharedAccountUsage(usageId, status);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
 }

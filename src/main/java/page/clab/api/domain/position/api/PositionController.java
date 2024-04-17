@@ -22,7 +22,7 @@ import page.clab.api.domain.position.dto.request.PositionRequestDto;
 import page.clab.api.domain.position.dto.response.PositionMyResponseDto;
 import page.clab.api.domain.position.dto.response.PositionResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/positions")
@@ -36,11 +36,11 @@ public class PositionController {
     @Operation(summary = "[S] 직책 등록", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel<Long> createPosition(
+    public ApiResponse<Long> createPosition(
             @Valid @RequestBody PositionRequestDto requestDto
     ) {
         Long id = positionService.createPosition(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 연도/직책별 목록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
@@ -48,7 +48,7 @@ public class PositionController {
             "연도, 직책 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel<PagedResponseDto<PositionResponseDto>> getPositionsByConditions(
+    public ApiResponse<PagedResponseDto<PositionResponseDto>> getPositionsByConditions(
             @RequestParam(name = "year", required = false) String year,
             @RequestParam(name = "positionType", required = false) PositionType positionType,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -56,27 +56,27 @@ public class PositionController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<PositionResponseDto> positions = positionService.getPositionsByConditions(year, positionType, pageable);
-        return ResponseModel.success(positions);
+        return ApiResponse.success(positions);
     }
 
     @Operation(summary = "[U] 나의 직책 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my-positions")
-    public ResponseModel<PositionMyResponseDto> getMyPositionsByYear(
+    public ApiResponse<PositionMyResponseDto> getMyPositionsByYear(
             @RequestParam(name = "year", required = false) String year
     ) {
         PositionMyResponseDto positions = positionService.getMyPositionsByYear(year);
-        return ResponseModel.success(positions);
+        return ApiResponse.success(positions);
     }
 
     @Operation(summary = "[S] 직책 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{positionId}")
-    public ResponseModel<Long> deletePosition(
+    public ApiResponse<Long> deletePosition(
             @PathVariable("positionId") Long positionId
     ) {
         Long id = positionService.deletePosition(positionId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
 }

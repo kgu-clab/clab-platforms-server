@@ -24,7 +24,7 @@ import page.clab.api.domain.member.dto.response.MemberBirthdayResponseDto;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.verification.dto.request.VerificationRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -42,38 +42,38 @@ public class MemberController {
     @Operation(summary = "[S] 신규 멤버 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel<String> createMember(
+    public ApiResponse<String> createMember(
             @Valid @RequestBody MemberRequestDto requestDto
     ) {
         String id = memberService.createMember(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[S] 모집 단위별 합격자 멤버 통합 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("/{recruitmentId}")
-    public ResponseModel<List<String>> createMembersByRecruitmentId(
+    public ApiResponse<List<String>> createMembersByRecruitmentId(
             @PathVariable(name = "recruitmentId") Long recruitmentId
     ) {
         List<String> ids = memberService.createMembersByRecruitmentId(recruitmentId);
-        return ResponseModel.success(ids);
+        return ApiResponse.success(ids);
     }
 
     @Operation(summary = "[S] 모집 단위별 합격자 멤버 개별 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("/{recruitmentId}/{memberId}")
-    public ResponseModel<String> createMemberByRecruitmentId(
+    public ApiResponse<String> createMemberByRecruitmentId(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "memberId") String memberId
     ) {
         String id = memberService.createMemberByRecruitmentId(recruitmentId, memberId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[A] 멤버 정보 조회(멤버 ID, 이름 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel<PagedResponseDto<MemberResponseDto>> getMembersByConditions(
+    public ApiResponse<PagedResponseDto<MemberResponseDto>> getMembersByConditions(
             @RequestParam(name = "id", required = false) String id,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -81,58 +81,58 @@ public class MemberController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<MemberResponseDto> members = memberService.getMembersByConditions(id, name, pageable);
-        return ResponseModel.success(members);
+        return ApiResponse.success(members);
     }
 
     @Operation(summary = "[U] 내 프로필 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my-profile")
-    public ResponseModel<MyProfileResponseDto> getMyProfile() {
+    public ApiResponse<MyProfileResponseDto> getMyProfile() {
         MyProfileResponseDto myProfile = memberService.getMyProfile();
-        return ResponseModel.success(myProfile);
+        return ApiResponse.success(myProfile);
     }
 
     @Operation(summary = "이달의 생일자 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/birthday")
-    public ResponseModel<PagedResponseDto<MemberBirthdayResponseDto>> getBirthdaysThisMonth(
+    public ApiResponse<PagedResponseDto<MemberBirthdayResponseDto>> getBirthdaysThisMonth(
             @RequestParam(name = "month") int month,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<MemberBirthdayResponseDto> birthdayMembers = memberService.getBirthdaysThisMonth(month, pageable);
-        return ResponseModel.success(birthdayMembers);
+        return ApiResponse.success(birthdayMembers);
     }
 
     @Operation(summary = "[U] 멤버 정보 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{memberId}")
-    public ResponseModel<String> updateMemberInfoByMember(
+    public ApiResponse<String> updateMemberInfoByMember(
             @PathVariable(name = "memberId") String memberId,
             @Valid @RequestBody MemberUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         String id = memberService.updateMemberInfo(memberId, requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "멤버 비밀번호 재발급 요청", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/password-reset-requests")
-    public ResponseModel<String> requestResetMemberPassword(
+    public ApiResponse<String> requestResetMemberPassword(
             @Valid @RequestBody MemberResetPasswordRequestDto requestDto
     ) {
         String id = memberService.requestResetMemberPassword(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "멤버 비밀번호 재발급 인증", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/password-reset-verifications")
-    public ResponseModel<String> verifyResetMemberPassword(
+    public ApiResponse<String> verifyResetMemberPassword(
             @Valid @RequestBody VerificationRequestDto requestDto
     ) {
         String id = memberService.verifyResetMemberPassword(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
 }

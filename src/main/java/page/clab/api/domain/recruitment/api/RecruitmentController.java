@@ -18,7 +18,7 @@ import page.clab.api.domain.recruitment.application.RecruitmentService;
 import page.clab.api.domain.recruitment.dto.request.RecruitmentRequestDto;
 import page.clab.api.domain.recruitment.dto.request.RecruitmentUpdateRequestDto;
 import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 
 import java.util.List;
 
@@ -34,40 +34,40 @@ public class RecruitmentController {
     @Operation(summary = "[S] 모집 공고 등록", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel<Long> createRecruitment(
+    public ApiResponse<Long> createRecruitment(
             @Valid @RequestBody RecruitmentRequestDto requestDto
     ) {
         Long id = recruitmentService.createRecruitment(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "모집 공고 목록(최근 5건)", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
             "최근 5건의 모집 공고를 조회")
     @GetMapping("")
-    public ResponseModel<List<RecruitmentResponseDto>> getRecentRecruitments() {
+    public ApiResponse<List<RecruitmentResponseDto>> getRecentRecruitments() {
         List<RecruitmentResponseDto> recruitments = recruitmentService.getRecentRecruitments();
-        return ResponseModel.success(recruitments);
+        return ApiResponse.success(recruitments);
     }
 
     @Operation(summary = "[S] 모집 공고 수정", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PatchMapping("/{recruitmentId}")
-    public ResponseModel<Long> updateRecruitment(
+    public ApiResponse<Long> updateRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @Valid @RequestBody RecruitmentUpdateRequestDto requestDto
     ) {
         Long id = recruitmentService.updateRecruitment(recruitmentId, requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[S] 모집 공고 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{recruitmentId}")
-    public ResponseModel<Long> deleteRecruitment(
+    public ApiResponse<Long> deleteRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId
     ) {
         Long id = recruitmentService.deleteRecruitment(recruitmentId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
 }

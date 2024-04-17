@@ -22,7 +22,7 @@ import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 
 @RestController
@@ -37,51 +37,51 @@ public class BookLoanRecordController {
     @Operation(summary = "[U] 도서 대출 요청", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel<Long> requestBookLoan(
+    public ApiResponse<Long> requestBookLoan(
             @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) throws CustomOptimisticLockingFailureException {
         Long id = bookLoanRecordService.requestBookLoan(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 도서 반납", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/return")
-    public ResponseModel<Long> returnBook(
+    public ApiResponse<Long> returnBook(
             @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) {
         Long id = bookLoanRecordService.returnBook(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 도서 대출 연장", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/extend")
-    public ResponseModel<Long> extendBookLoan(
+    public ApiResponse<Long> extendBookLoan(
             @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) {
         Long id = bookLoanRecordService.extendBookLoan(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[A] 도서 대출 승인", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/approve/{bookLoanRecordId}")
-    public ResponseModel<Long> approveBookLoan(
+    public ApiResponse<Long> approveBookLoan(
             @PathVariable(name = "bookLoanRecordId") Long bookLoanRecordId
     ) {
         Long id = bookLoanRecordService.approveBookLoan(bookLoanRecordId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[A] 도서 대출 거절", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/reject/{bookLoanRecordId}")
-    public ResponseModel<Long> rejectBookLoan(
+    public ApiResponse<Long> rejectBookLoan(
             @PathVariable(name = "bookLoanRecordId") Long bookLoanRecordId
     ) {
         Long id = bookLoanRecordService.rejectBookLoan(bookLoanRecordId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 도서 대출 내역 조회(도서 ID, 대출자 ID, 대출 상태 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
@@ -89,7 +89,7 @@ public class BookLoanRecordController {
             "도서 ID, 대출자 ID, 대출 가능 여부 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/conditions")
-    public ResponseModel<PagedResponseDto<BookLoanRecordResponseDto>> getBookLoanRecordsByConditions(
+    public ApiResponse<PagedResponseDto<BookLoanRecordResponseDto>> getBookLoanRecordsByConditions(
             @RequestParam(name = "bookId", required = false) Long bookId,
             @RequestParam(name = "borrowerId", required = false) String borrowerId,
             @RequestParam(name = "status", required = false) BookLoanStatus status,
@@ -98,19 +98,19 @@ public class BookLoanRecordController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.getBookLoanRecordsByConditions(bookId, borrowerId, status, pageable);
-        return ResponseModel.success(bookLoanRecords);
+        return ApiResponse.success(bookLoanRecords);
     }
 
     @Operation(summary = "[A] 도서 연체자 조회", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/overdue")
-    public ResponseModel<PagedResponseDto<BookLoanRecordOverdueResponseDto>> getOverdueBookLoanRecords(
+    public ApiResponse<PagedResponseDto<BookLoanRecordOverdueResponseDto>> getOverdueBookLoanRecords(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BookLoanRecordOverdueResponseDto> overdueRecords = bookLoanRecordService.getOverdueBookLoanRecords(pageable);
-        return ResponseModel.success(overdueRecords);
+        return ApiResponse.success(overdueRecords);
     }
 
 }

@@ -21,7 +21,7 @@ import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
 import page.clab.api.domain.schedule.dto.response.ScheduleCollectResponseDto;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.time.LocalDate;
@@ -37,17 +37,17 @@ public class ScheduleController {
     @Operation(summary = "[U] 일정 등록", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel<Long> createSchedule(
+    public ApiResponse<Long> createSchedule(
             @Valid @RequestBody ScheduleRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = scheduleService.createSchedule(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 일정 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel<PagedResponseDto<ScheduleResponseDto>> getSchedulesWithinDateRange(
+    public ApiResponse<PagedResponseDto<ScheduleResponseDto>> getSchedulesWithinDateRange(
             @RequestParam(name = "startDate") LocalDate startDate,
             @RequestParam(name = "endDate") LocalDate endDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -55,7 +55,7 @@ public class ScheduleController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getSchedulesWithinDateRange(startDate, endDate, pageable);
-        return ResponseModel.success(schedules);
+        return ApiResponse.success(schedules);
     }
 
     @Operation(summary = "[U] 일정 조회(연도, 월, 중요도 기준)", description = "ROLE_USER 이상의 권한이 필요함<br> +" +
@@ -63,7 +63,7 @@ public class ScheduleController {
             "연도, 월, 중요도 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/conditions")
-    public ResponseModel<PagedResponseDto<ScheduleResponseDto>> getSchedulesByConditions(
+    public ApiResponse<PagedResponseDto<ScheduleResponseDto>> getSchedulesByConditions(
             @RequestParam(name = "year", required = false) Integer year,
             @RequestParam(name = "month", required = false) Integer month,
             @RequestParam(name = "priority", required = false) SchedulePriority priority,
@@ -72,13 +72,13 @@ public class ScheduleController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getSchedulesByConditions(year, month, priority, pageable);
-        return ResponseModel.success(schedules);
+        return ApiResponse.success(schedules);
     }
 
     @Operation(summary = "[U] 내 활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/activity")
-    public ResponseModel<PagedResponseDto<ScheduleResponseDto>> getActivitySchedules(
+    public ApiResponse<PagedResponseDto<ScheduleResponseDto>> getActivitySchedules(
             @RequestParam(name = "startDate") LocalDate startDate,
             @RequestParam(name = "endDate") LocalDate endDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -86,25 +86,25 @@ public class ScheduleController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getActivitySchedules(startDate, endDate, pageable);
-        return ResponseModel.success(schedules);
+        return ApiResponse.success(schedules);
     }
 
     @Operation(summary = "[U] 일정 모아보기", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/collect")
-    public ResponseModel<ScheduleCollectResponseDto> getCollectSchedules() {
+    public ApiResponse<ScheduleCollectResponseDto> getCollectSchedules() {
         ScheduleCollectResponseDto schedules = scheduleService.getCollectSchedules();
-        return ResponseModel.success(schedules);
+        return ApiResponse.success(schedules);
     }
 
     @Operation(summary = "[U] 일정 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{scheduleId}")
-    public ResponseModel<Long> deleteSchedule(
+    public ApiResponse<Long> deleteSchedule(
             @PathVariable(name = "scheduleId") Long scheduleId
     ) throws PermissionDeniedException {
         Long id = scheduleService.deleteSchedule(scheduleId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
 }
