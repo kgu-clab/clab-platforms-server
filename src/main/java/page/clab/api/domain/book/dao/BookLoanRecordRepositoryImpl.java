@@ -49,7 +49,7 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
                 .where(builder)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(bookLoanRecord.borrowedAt.desc())
+                .orderBy(bookLoanRecord.borrowedAt.desc(), bookLoanRecord.createdAt.asc())
                 .fetch();
 
         long total = queryFactory
