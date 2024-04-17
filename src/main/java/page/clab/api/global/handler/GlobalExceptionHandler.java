@@ -161,8 +161,8 @@ public class GlobalExceptionHandler {
             InvalidUsageTimeException.class,
     })
     public ResponseModel conflictException(HttpServletResponse response, Exception e) {
-        response.setStatus(HttpServletResponse.SC_CONFLICT);
-        return ResponseModel.failure();
+        response.setStatus(HttpServletResponse.SC_OK);
+        return ResponseModel.failure(e);
     }
 
     @ExceptionHandler({
