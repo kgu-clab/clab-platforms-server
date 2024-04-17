@@ -76,22 +76,15 @@ public class GlobalExceptionHandler {
     private final SlackService slackService;
 
     @ExceptionHandler({
-            ActivityGroupNotFinishedException.class,
             InvalidInformationException.class,
             InvalidParentBoardException.class,
             InvalidCategoryException.class,
-            OverdueException.class,
             StringIndexOutOfBoundsException.class,
             MissingServletRequestParameterException.class,
             MalformedJsonException.class,
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class,
             IllegalAccessException.class,
-            ActivityGroupNotProgressingException.class,
-            LeaderStatusChangeNotAllowedException.class,
-            CloudStorageNotEnoughException.class,
-            AccuseTargetTypeIncorrectException.class,
-            NotApprovedApplicationException.class,
     })
     public ResponseModel badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -118,7 +111,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             PermissionDeniedException.class,
-            LoanSuspensionException.class,
             InvalidBorrowerException.class,
     })
     public ResponseModel deniedException(HttpServletResponse response, Exception e) {
@@ -147,18 +139,26 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
+            AccuseTargetTypeIncorrectException.class,
+            NotApprovedApplicationException.class,
             AssociatedAccountExistsException.class,
+            CloudStorageNotEnoughException.class,
+            ActivityGroupNotFinishedException.class,
+            ActivityGroupNotProgressingException.class,
+            LeaderStatusChangeNotAllowedException.class,
+            AlreadyAppliedException.class,
+            DuplicateReportException.class,
+            DuplicateAttendanceException.class,
+            DuplicateAbsentExcuseException.class,
+            AlreadyReviewedException.class,
             BookAlreadyBorrowedException.class,
             BookAlreadyReturnedException.class,
             MaxBorrowLimitExceededException.class,
+            OverdueException.class,
+            LoanSuspensionException.class,
             LoanNotPendingException.class,
-            AlreadyReviewedException.class,
-            AlreadyAppliedException.class,
-            DuplicateAttendanceException.class,
-            DuplicateAbsentExcuseException.class,
-            DuplicateReportException.class,
+            SharedAccountUsageStateException.class,
             InvalidUsageTimeException.class,
-            SharedAccountUsageStateException.class
     })
     public ResponseModel conflictException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_CONFLICT);
