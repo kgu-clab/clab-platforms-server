@@ -14,6 +14,7 @@ import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
+import page.clab.api.domain.book.exception.BookAlreadyAppliedForLoanException;
 import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
@@ -49,6 +50,7 @@ public class BookLoanRecordService {
 
             Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
             book.validateBookIsNotBorrowed();
+            checkIfLoanAlreadyApplied(book, borrower);
 
             BookLoanRecord bookLoanRecord = BookLoanRecord.create(book, borrower);
             validationService.checkValid(bookLoanRecord);
@@ -135,6 +137,13 @@ public class BookLoanRecordService {
         if (borrowedBookCount >= maxBorrowableBookCount) {
             throw new MaxBorrowLimitExceededException("대출 가능한 도서의 수를 초과했습니다.");
         }
+    }
+
+    private void checkIfLoanAlreadyApplied(Book book, Member borrower) {
+        bookLoanRecordRepository.findByBookAndBorrowerAndStatus(book, borrower, BookLoanStatus.PENDING)
+                .ifPresent(bookLoanRecord -> {
+                    throw new BookAlreadyAppliedForLoanException("이미 대출 신청한 도서입니다.");
+                });
     }
 
 }

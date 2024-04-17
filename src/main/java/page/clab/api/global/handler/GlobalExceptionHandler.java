@@ -31,6 +31,7 @@ import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
 import page.clab.api.domain.activityGroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.activityGroup.exception.LeaderStatusChangeNotAllowedException;
 import page.clab.api.domain.application.exception.NotApprovedApplicationException;
+import page.clab.api.domain.book.exception.BookAlreadyAppliedForLoanException;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.BookAlreadyReturnedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
@@ -153,6 +154,7 @@ public class GlobalExceptionHandler {
             AlreadyReviewedException.class,
             BookAlreadyBorrowedException.class,
             BookAlreadyReturnedException.class,
+            BookAlreadyAppliedForLoanException.class,
             MaxBorrowLimitExceededException.class,
             OverdueException.class,
             LoanSuspensionException.class,
