@@ -14,8 +14,6 @@ public class ResponseModel<T> {
 
     private T data;
 
-    private String errorMessage;
-
     public String toJson() {
         Gson gson = new GsonBuilder().serializeNulls().create();
         return gson.toJson(this);
@@ -37,11 +35,10 @@ public class ResponseModel<T> {
                 .build();
     }
 
-    public static <T> ResponseModel<T> failure(Exception e) {
-        String exceptionName = e.getClass().getSimpleName();
+    public static <T> ResponseModel<T> failure(T data) {
         return ResponseModel.<T>builder()
                 .success(false)
-                .errorMessage(exceptionName.toUpperCase())
+                .data(data)
                 .build();
     }
 

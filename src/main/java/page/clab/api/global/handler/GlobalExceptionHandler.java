@@ -51,6 +51,7 @@ import page.clab.api.global.auth.exception.TokenMisuseException;
 import page.clab.api.global.auth.exception.TokenNotFoundException;
 import page.clab.api.global.auth.exception.TokenValidateException;
 import page.clab.api.global.auth.exception.UnAuthorizeException;
+import page.clab.api.global.common.dto.ErrorResponse;
 import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.common.file.exception.AssignmentFileUploadFailException;
 import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
@@ -162,9 +163,9 @@ public class GlobalExceptionHandler {
             SharedAccountUsageStateException.class,
             InvalidUsageTimeException.class,
     })
-    public ResponseModel conflictException(HttpServletResponse response, Exception e) {
+    public ErrorResponse conflictException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
-        return ResponseModel.failure(e);
+        return ErrorResponse.failure(e);
     }
 
     @ExceptionHandler({
