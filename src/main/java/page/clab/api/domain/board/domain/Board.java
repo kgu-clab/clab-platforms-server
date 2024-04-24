@@ -37,6 +37,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @SQLDelete(sql = "UPDATE board SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
 public class Board extends BaseEntity {
 
     @Id

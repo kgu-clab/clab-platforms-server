@@ -24,8 +24,6 @@ import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
-import page.clab.api.global.common.softDelete.SoftDeleteService;
-import page.clab.api.global.common.softDelete.SoftDeletedEntity;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.validation.ValidationService;
@@ -66,7 +64,7 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardListResponseDto> getBoards(Pageable pageable) {
-        Page<Board> boards = boardRepository.findAllByIsDeletedFalseOrderByCreatedAtDesc(pageable);
+        Page<Board> boards = boardRepository.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(boards.map(this::mapToBoardListResponseDto));
     }
 
@@ -139,16 +137,16 @@ public class BoardService {
     }
 
     public Board getBoardByIdOrThrow(Long boardId) {
-        return boardRepository.findByIsDeletedFalseAndId(boardId)
+        return boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundException("해당 게시글이 존재하지 않습니다."));
     }
 
     private Page<Board> getBoardByMember(Pageable pageable, Member member) {
-        return boardRepository.findAllByIsDeletedFalseAndMemberOrderByCreatedAtDesc(member, pageable);
+        return boardRepository.findAllByMemberOrderByCreatedAtDesc(member, pageable);
     }
 
     private Page<Board> getBoardByCategory(BoardCategory category, Pageable pageable) {
-        return boardRepository.findAllByIsDeletedFalseAndCategoryOrderByCreatedAtDesc(category, pageable);
+        return boardRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
     }
 
     private boolean checkLikeStatus(Board board, Member member) {
