@@ -37,7 +37,6 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @SQLDelete(sql = "UPDATE board SET is_deleted = true WHERE id = ?")
-@Where(clause = "is_deleted = false")
 public class Board extends BaseEntity {
 
     @Id
@@ -73,8 +72,6 @@ public class Board extends BaseEntity {
     private boolean wantAnonymous;
 
     private Long likes;
-
-    private boolean isDeleted = Boolean.FALSE;
 
     public void update(BoardUpdateRequestDto boardUpdateRequestDto) {
         Optional.ofNullable(boardUpdateRequestDto.getCategory()).ifPresent(this::setCategory);

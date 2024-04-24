@@ -24,6 +24,8 @@ import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
+import page.clab.api.global.common.softDelete.SoftDeleteService;
+import page.clab.api.global.common.softDelete.SoftDeletedEntity;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.validation.ValidationService;
@@ -64,7 +66,7 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardListResponseDto> getBoards(Pageable pageable) {
-        Page<Board> boards = boardRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<Board> boards = boardRepository.findAllByIsDeletedFalseOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(boards.map(this::mapToBoardListResponseDto));
     }
 
@@ -117,6 +119,11 @@ public class BoardService {
         return board.getLikes();
     }
 
+    public PagedResponseDto<BoardListResponseDto> getDeletedBoards(Pageable pageable) {
+        Page<Board> boards = boardRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(boards.map(this::mapToBoardListResponseDto));
+    }
+
     public Long deleteBoard(Long boardId) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
@@ -132,16 +139,16 @@ public class BoardService {
     }
 
     public Board getBoardByIdOrThrow(Long boardId) {
-        return boardRepository.findById(boardId)
+        return boardRepository.findByIsDeletedFalseAndId(boardId)
                 .orElseThrow(() -> new NotFoundException("해당 게시글이 존재하지 않습니다."));
     }
 
     private Page<Board> getBoardByMember(Pageable pageable, Member member) {
-        return boardRepository.findAllByMemberOrderByCreatedAtDesc(member, pageable);
+        return boardRepository.findAllByIsDeletedFalseAndMemberOrderByCreatedAtDesc(member, pageable);
     }
 
     private Page<Board> getBoardByCategory(BoardCategory category, Pageable pageable) {
-        return boardRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
+        return boardRepository.findAllByIsDeletedFalseAndCategoryOrderByCreatedAtDesc(category, pageable);
     }
 
     private boolean checkLikeStatus(Board board, Member member) {
