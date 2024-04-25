@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.membershipFee.dao.MembershipFeeRepository;
@@ -46,6 +48,13 @@ public class MembershipFeeService {
         boolean isAdminOrSuper = currentMember.isAdminRole();
         Page<MembershipFee> membershipFeesPage = membershipFeeRepository.findByConditions(memberId, memberName, category, status, pageable);
         return new PagedResponseDto<>(membershipFeesPage.map(membershipFee -> MembershipFeeResponseDto.toDto(membershipFee, isAdminOrSuper)));
+    }
+
+    public PagedResponseDto<MembershipFeeResponseDto> getDeletedMembershipFees(Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
+        boolean isAdminOrSuper = currentMember.isAdminRole();
+        Page<MembershipFee> membershipFees = membershipFeeRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(membershipFees.map(membershipFee -> MembershipFeeResponseDto.toDto(membershipFee, isAdminOrSuper)));
     }
 
     @Transactional
