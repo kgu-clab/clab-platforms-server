@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.workExperience.dao.WorkExperienceRepository;
@@ -46,6 +48,11 @@ public class WorkExperienceService {
     public PagedResponseDto<WorkExperienceResponseDto> getWorkExperiencesByConditions(String memberId, Pageable pageable) {
         Member member = memberService.getMemberByIdOrThrow(memberId);
         Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMemberOrderByStartDateDesc(member, pageable);
+        return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
+    }
+
+    public PagedResponseDto<WorkExperienceResponseDto> getDeletedWorkExperiences(Pageable pageable) {
+        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
     }
 
