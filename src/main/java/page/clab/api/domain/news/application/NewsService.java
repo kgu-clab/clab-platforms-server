@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.news.dao.NewsRepository;
 import page.clab.api.domain.news.domain.News;
 import page.clab.api.domain.news.dto.request.NewsRequestDto;
@@ -44,6 +46,11 @@ public class NewsService {
     public NewsDetailsResponseDto getNewsDetails(Long newsId) {
         News news = getNewsByIdOrThrow(newsId);
         return NewsDetailsResponseDto.toDto(news);
+    }
+
+    public PagedResponseDto<NewsDetailsResponseDto> getDeletedNews(Pageable pageable) {
+        Page<News> newsPage = newsRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(newsPage.map(NewsDetailsResponseDto::toDto));
     }
 
     @Transactional
