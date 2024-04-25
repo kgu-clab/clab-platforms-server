@@ -11,6 +11,8 @@ import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
+import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.dao.ScheduleRepository;
@@ -69,6 +71,11 @@ public class ScheduleService {
     public PagedResponseDto<ScheduleResponseDto> getActivitySchedules(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Schedule> schedules = scheduleRepository.findActivitySchedulesByDateRangeAndMember(startDate, endDate, currentMember, pageable);
+        return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
+    }
+
+    public PagedResponseDto<ScheduleResponseDto> getDeletedSchedules(Pageable pageable) {
+        Page<Schedule> schedules = scheduleRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
 

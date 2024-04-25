@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.schedule.application.ScheduleService;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
@@ -105,6 +106,18 @@ public class ScheduleController {
     ) throws PermissionDeniedException {
         Long id = scheduleService.deleteSchedule(scheduleId);
         return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 일정 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<ScheduleResponseDto>> getDeletedSchedules(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getDeletedSchedules(pageable);
+        return ApiResponse.success(schedules);
     }
 
 }
