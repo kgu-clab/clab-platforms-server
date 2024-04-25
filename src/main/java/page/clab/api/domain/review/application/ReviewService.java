@@ -11,6 +11,8 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
+import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -62,6 +64,12 @@ public class ReviewService {
     public PagedResponseDto<ReviewResponseDto> getMyReviews(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Review> reviews = getReviewByMember(currentMember, pageable);
+        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));
+    }
+
+    public PagedResponseDto<ReviewResponseDto> getDeletedReviews(Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
+        Page<Review> reviews = reviewRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));
     }
 

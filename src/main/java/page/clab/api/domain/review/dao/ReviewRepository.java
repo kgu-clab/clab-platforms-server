@@ -3,8 +3,10 @@ package page.clab.api.domain.review.dao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.review.domain.Review;
 
@@ -15,5 +17,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewRep
     Page<Review> findAllByMemberOrderByCreatedAtDesc(Member member, Pageable pageable);
 
     Page<Review> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    @Query(value = "SELECT r.* FROM review r WHERE r.is_deleted = true", nativeQuery = true)
+    Page<Review> findAllByIsDeletedTrue(Pageable pageable);
 
 }
