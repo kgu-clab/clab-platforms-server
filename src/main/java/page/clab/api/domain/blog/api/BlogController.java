@@ -22,6 +22,7 @@ import page.clab.api.domain.blog.dto.request.BlogRequestDto;
 import page.clab.api.domain.blog.dto.request.BlogUpdateRequestDto;
 import page.clab.api.domain.blog.dto.response.BlogDetailsResponseDto;
 import page.clab.api.domain.blog.dto.response.BlogResponseDto;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -90,6 +91,18 @@ public class BlogController {
     ) throws PermissionDeniedException {
         Long id = blogService.deleteBlog(blogId);
         return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 블로그 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<BlogDetailsResponseDto>> getDeletedBlogs(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<BlogDetailsResponseDto> blogs = blogService.getDeletedBlogs(pageable);
+        return ApiResponse.success(blogs);
     }
 
 }

@@ -11,6 +11,7 @@ import page.clab.api.domain.blog.dto.request.BlogRequestDto;
 import page.clab.api.domain.blog.dto.request.BlogUpdateRequestDto;
 import page.clab.api.domain.blog.dto.response.BlogDetailsResponseDto;
 import page.clab.api.domain.blog.dto.response.BlogResponseDto;
+import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -48,6 +49,13 @@ public class BlogService {
         Blog blog = getBlogByIdOrThrow(blogId);
         boolean isOwner = blog.isOwner(currentMember);
         return BlogDetailsResponseDto.toDto(blog, isOwner);
+    }
+
+    public PagedResponseDto<BlogDetailsResponseDto> getDeletedBlogs(Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
+        Page<Blog> blogs = blogRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(blogs
+                .map(blog -> BlogDetailsResponseDto.toDto(blog, blog.isOwner(currentMember))));
     }
 
     @Transactional
