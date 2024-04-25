@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.position.dao.PositionRepository;
@@ -51,6 +53,11 @@ public class PositionService {
             throw new NotFoundException("해당 멤버의 " + year + "년도 직책이 존재하지 않습니다.");
         }
         return PositionMyResponseDto.toDto(positions);
+    }
+
+    public PagedResponseDto<PositionResponseDto> getDeletedPositions(Pageable pageable) {
+        Page<Position> positions = positionRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(positions.map(PositionResponseDto::toDto));
     }
 
     public Long deletePosition(Long positionId) {
