@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.product.application.ProductService;
 import page.clab.api.domain.product.dto.request.ProductRequestDto;
 import page.clab.api.domain.product.dto.request.ProductUpdateRequestDto;
@@ -76,6 +77,18 @@ public class ProductController {
     ) {
         Long id = productService.deleteProduct(productId);
         return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 서비스 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<ProductResponseDto>> getDeletedProducts(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<ProductResponseDto> products = productService.getDeletedProducts(pageable);
+        return ApiResponse.success(products);
     }
 
 }
