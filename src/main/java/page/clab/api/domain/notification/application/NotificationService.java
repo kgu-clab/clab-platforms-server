@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.dao.NotificationRepository;
@@ -48,6 +50,11 @@ public class NotificationService {
     public PagedResponseDto<NotificationResponseDto> getNotifications(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Notification> notifications = getNotificationByMember(currentMember, pageable);
+        return new PagedResponseDto<>(notifications.map(NotificationResponseDto::toDto));
+    }
+
+    public PagedResponseDto<NotificationResponseDto> getDeletedNotifications(Pageable pageable) {
+        Page<Notification> notifications = notificationRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(notifications.map(NotificationResponseDto::toDto));
     }
 
