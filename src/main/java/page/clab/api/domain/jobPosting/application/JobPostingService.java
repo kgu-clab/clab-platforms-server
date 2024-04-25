@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.jobPosting.dao.JobPostingRepository;
 import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
@@ -44,6 +46,11 @@ public class JobPostingService {
     public JobPostingDetailsResponseDto getJobPosting(Long jobPostingId) {
         JobPosting jobPosting = getJobPostingByIdOrThrow(jobPostingId);
         return JobPostingDetailsResponseDto.toDto(jobPosting);
+    }
+
+    public PagedResponseDto<JobPostingDetailsResponseDto> getDeletedJobPostings(Pageable pageable) {
+        Page<JobPosting> jobPostings = jobPostingRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(jobPostings.map(JobPostingDetailsResponseDto::toDto));
     }
 
     @Transactional
