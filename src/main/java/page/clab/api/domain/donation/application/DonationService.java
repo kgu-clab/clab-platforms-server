@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.donation.dao.DonationRepository;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.dto.request.DonationRequestDto;
@@ -47,6 +49,11 @@ public class DonationService {
     public PagedResponseDto<DonationResponseDto> getMyDonations(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Donation> donations = getDonationsByDonor(currentMember, pageable);
+        return new PagedResponseDto<>(donations.map(DonationResponseDto::toDto));
+    }
+
+    public PagedResponseDto<DonationResponseDto> getDeletedDonations(Pageable pageable) {
+        Page<Donation> donations = donationRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(donations.map(DonationResponseDto::toDto));
     }
 
