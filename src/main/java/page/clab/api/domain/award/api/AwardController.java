@@ -21,6 +21,7 @@ import page.clab.api.domain.award.application.AwardService;
 import page.clab.api.domain.award.dto.request.AwardRequestDto;
 import page.clab.api.domain.award.dto.request.AwardUpdateRequestDto;
 import page.clab.api.domain.award.dto.response.AwardResponseDto;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -93,6 +94,18 @@ public class AwardController {
     ) throws PermissionDeniedException {
         Long id = awardService.deleteAward(awardId);
         return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 수상이력 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<AwardResponseDto>> getDeletedAwards(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<AwardResponseDto> awards = awardService.getDeletedAwards(pageable);
+        return ApiResponse.success(awards);
     }
 
 }
