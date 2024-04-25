@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.sharedAccount.application.SharedAccountService;
 import page.clab.api.domain.sharedAccount.application.SharedAccountUsageService;
 import page.clab.api.domain.sharedAccount.domain.SharedAccountUsageStatus;
@@ -118,6 +119,18 @@ public class SharedAccountController {
     ) throws PermissionDeniedException {
         Long id = sharedAccountUsageService.updateSharedAccountUsage(usageId, status);
         return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 공동 계정 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<SharedAccountResponseDto>> getDeletedSharedAccounts(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<SharedAccountResponseDto> sharedAccounts = sharedAccountService.getDeletedSharedAccounts(pageable);
+        return ApiResponse.success(sharedAccounts);
     }
 
 }
