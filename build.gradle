@@ -14,7 +14,19 @@ jar {
 bootJar {
 	archivesBaseName = "clab"
 	archiveFileName = "clab.jar"
-	archiveVersion = "0.0.1"
+	archiveVersion = "1.0.0"
+
+	if (project.hasProperty('prod')) {
+		archiveFileName = "clab-prod.jar"
+	} else if (project.hasProperty('stage')) {
+		archiveFileName = "clab-stage.jar"
+	} else {
+		archiveFileName = "clab.jar"
+	}
+}
+
+test {
+	systemProperty 'spring.profiles.active', findProperty('env') ?: 'dev'
 }
 
 java {
