@@ -46,7 +46,7 @@ dependencies {
 	implementation 'com.google.zxing:core:3.4.1' // QR 코드
 	implementation 'com.google.zxing:javase:3.4.1' // QR 코드
 	implementation 'com.slack.api:slack-api-client:1.38.0' // Slack API
-	implementation 'io.ipinfo:ipinfo-spring:0.3.1'
+	implementation 'io.ipinfo:ipinfo-spring:0.3.1' // IPInfo
 
 
 	// DB
@@ -56,7 +56,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation' // Hibernate Validator
 	implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final' // Bean Validation
 	implementation 'jakarta.validation:jakarta.validation-api:3.0.2' // Jakarta Bean Validation
-	implementation 'com.maxmind.geoip2:geoip2:4.2.0' // GeoIP2
 
 	// QueryDSL
 	implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
