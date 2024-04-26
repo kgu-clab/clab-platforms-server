@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.sharedAccount.dao.SharedAccountRepository;
 import page.clab.api.domain.sharedAccount.domain.SharedAccount;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountRequestDto;
@@ -11,26 +12,34 @@ import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUpdateRequest
 import page.clab.api.domain.sharedAccount.dto.response.SharedAccountResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
 public class SharedAccountService {
 
+    private final ValidationService validationService;
+
     private final SharedAccountRepository sharedAccountRepository;
 
-    public Long createSharedAccount(SharedAccountRequestDto sharedAccountRequestDto) {
-        SharedAccount sharedAccount = SharedAccount.create(sharedAccountRequestDto);
+    @Transactional
+    public Long createSharedAccount(SharedAccountRequestDto requestDto) {
+        SharedAccount sharedAccount = SharedAccountRequestDto.toEntity(requestDto);
+        validationService.checkValid(sharedAccount);
         return sharedAccountRepository.save(sharedAccount).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<SharedAccountResponseDto> getSharedAccounts(Pageable pageable) {
         Page<SharedAccount> sharedAccounts = sharedAccountRepository.findAllByOrderByIdAsc(pageable);
-        return new PagedResponseDto<>(sharedAccounts.map(SharedAccountResponseDto::of));
+        return new PagedResponseDto<>(sharedAccounts.map(SharedAccountResponseDto::toDto));
     }
 
-    public Long updateSharedAccount(Long accountId, SharedAccountUpdateRequestDto sharedAccountUpdateRequestDto) {
+    @Transactional
+    public Long updateSharedAccount(Long accountId, SharedAccountUpdateRequestDto requestDto) {
         SharedAccount sharedAccount = getSharedAccountByIdOrThrow(accountId);
-        sharedAccount.update(sharedAccountUpdateRequestDto);
+        sharedAccount.update(requestDto);
+        validationService.checkValid(sharedAccount);
         return sharedAccountRepository.save(sharedAccount).getId();
     }
 

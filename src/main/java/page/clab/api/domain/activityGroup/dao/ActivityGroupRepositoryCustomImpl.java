@@ -1,5 +1,6 @@
 package page.clab.api.domain.activityGroup.dao;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -18,8 +19,12 @@ public class ActivityGroupRepositoryCustomImpl implements ActivityGroupRepositor
     @Override
     public List<ActivityGroup> findActivityGroupsByStatus(ActivityGroupStatus status) {
         QActivityGroup qActivityGroup = QActivityGroup.activityGroup;
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (status != null) builder.and(qActivityGroup.status.eq(status));
+
         return queryFactory.selectFrom(qActivityGroup)
-                .where(qActivityGroup.status.eq(status))
+                .where(builder)
                 .fetch();
     }
 

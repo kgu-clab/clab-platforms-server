@@ -1,26 +1,15 @@
 package page.clab.api.domain.jobPosting.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
-import page.clab.api.domain.jobPosting.domain.JobPosting;
-import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class JobPostingUpdateRequestDto {
 
-    @Size(min = 1, max = 100, message = "{size.jobPosting.title}")
     @Schema(description = "공고명", example = "[네이버웹툰] Analytics Engineer(경력)")
     private String title;
 
@@ -30,19 +19,13 @@ public class JobPostingUpdateRequestDto {
     @Schema(description = "고용 형태", example = "FULL_TIME")
     private EmploymentType employmentType;
 
-    @Size(min = 1, message = "{size.jobPosting.companyName}")
     @Schema(description = "기업명", example = "네이버")
     private String companyName;
 
     @Schema(description = "채용 기간", example = "2024.01.11 ~ 2024.01.28")
     private String recruitmentPeriod;
 
-    @URL(message = "{url.jobPosting.jobPostingUrl}")
     @Schema(description = "채용 공고 URL", example = "https://recruit.navercorp.com/rcrt/view.do?annoId=30001804&sw=&subJobCdArr=1010001%2C1010002%2C1010003%2C1010004%2C1010005%2C1010006%2C1010007%2C1010008%2C1010020%2C1020001%2C1030001%2C1030002%2C1040001%2C1050001%2C1050002%2C1060001&sysCompanyCdArr=&empTypeCdArr=&entTypeCdArr=&workAreaCdArr=")
     private String jobPostingUrl;
-
-    public static JobPostingUpdateRequestDto of(JobPosting jobPosting) {
-        return ModelMapperUtil.getModelMapper().map(jobPosting, JobPostingUpdateRequestDto.class);
-    }
 
 }

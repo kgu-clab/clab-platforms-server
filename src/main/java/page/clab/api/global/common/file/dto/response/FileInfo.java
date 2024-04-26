@@ -1,17 +1,12 @@
 package page.clab.api.global.common.file.dto.response;
 
-import java.io.File;
-import java.util.Date;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.io.File;
+import java.util.Date;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class FileInfo {
 
@@ -23,7 +18,7 @@ public class FileInfo {
 
     private Date modificationDate;
 
-    public static FileInfo of(File file) {
+    public static FileInfo toDto(File file) {
         if (file == null || !file.exists() || !file.isFile()) {
             return null;
         }

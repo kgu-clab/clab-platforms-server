@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.donation.dao.DonationRepository;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.dto.request.DonationRequestDto;
@@ -14,6 +15,7 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 import java.time.LocalDate;
 
@@ -23,37 +25,45 @@ public class DonationService {
 
     private final MemberService memberService;
 
+    private final ValidationService validationService;
+
     private final DonationRepository donationRepository;
 
-    public Long createDonation(DonationRequestDto donationRequestDto) {
-        Member member = memberService.getCurrentMember();
-        Donation donation = Donation.of(donationRequestDto, member);
+    @Transactional
+    public Long createDonation(DonationRequestDto requestDto) {
+        Member currentMember = memberService.getCurrentMember();
+        Donation donation = DonationRequestDto.toEntity(requestDto, currentMember);
+        validationService.checkValid(donation);
         return donationRepository.save(donation).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<DonationResponseDto> getDonationsByConditions(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Page<Donation> donations = donationRepository.findByConditions(memberId, name, startDate, endDate, pageable);
-        return new PagedResponseDto<>(donations.map(DonationResponseDto::of));
+        return new PagedResponseDto<>(donations.map(DonationResponseDto::toDto));
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<DonationResponseDto> getMyDonations(Pageable pageable) {
-        Member member = memberService.getCurrentMember();
-        Page<Donation> donations = getDonationsByDonor(member, pageable);
-        return new PagedResponseDto<>(donations.map(DonationResponseDto::of));
+        Member currentMember = memberService.getCurrentMember();
+        Page<Donation> donations = getDonationsByDonor(currentMember, pageable);
+        return new PagedResponseDto<>(donations.map(DonationResponseDto::toDto));
     }
 
+    @Transactional
     public Long updateDonation(Long donationId, DonationUpdateRequestDto donationUpdateRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Donation donation = getDonationByIdOrThrow(donationId);
-        validateDonationUpdatePermission(member);
+        validateDonationUpdatePermission(currentMember);
         donation.update(donationUpdateRequestDto);
+        validationService.checkValid(donation);
         return donationRepository.save(donation).getId();
     }
 
     public Long deleteDonation(Long donationId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Donation donation = getDonationByIdOrThrow(donationId);
-        validateDonationUpdatePermission(member);
+        validateDonationUpdatePermission(currentMember);
         donationRepository.delete(donation);
         return donation.getId();
     }

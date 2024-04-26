@@ -26,7 +26,6 @@ import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -68,10 +67,7 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        return TokenInfo.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return TokenInfo.create(accessToken, refreshToken);
     }
 
     public boolean isRefreshToken(String token) {
@@ -102,7 +98,7 @@ public class JwtTokenProvider {
                 Arrays.stream(claims.get("role").toString().split(","))
                         .map(this::formatRoleString)
                         .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+                        .toList();
 
         UserDetails principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
@@ -130,6 +126,15 @@ public class JwtTokenProvider {
             log.info("JWT claims string is empty.");
         }
         return false;
+    }
+
+    public boolean validateTokenSilently(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public Claims parseClaims(String accessToken) {

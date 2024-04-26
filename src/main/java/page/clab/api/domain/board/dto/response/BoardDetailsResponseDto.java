@@ -1,39 +1,35 @@
 package page.clab.api.domain.board.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class BoardDetailsResponseDto {
 
     private Long id;
 
-    private String writer;
+    private String writerId;
+
+    private String writerName;
 
     private Long writerRoleLevel;
 
-    private String memberImageUrl;
+    private String writerImageUrl;
 
     private String title;
 
     private String content;
 
-    private List<UploadedFileResponseDto> files = new ArrayList<>();
+    private List<UploadedFileResponseDto> files;
+
+    private String imageUrl;
 
     private Long likes;
 
@@ -44,18 +40,22 @@ public class BoardDetailsResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static BoardDetailsResponseDto create(Board board, boolean hasLikeByMe, boolean isOwner) {
-        BoardDetailsResponseDto boardResponseDto = ModelMapperUtil.getModelMapper().map(board, BoardDetailsResponseDto.class);
-        if (board.isWantAnonymous()) {
-            boardResponseDto.setWriter(board.getNickName());
-            boardResponseDto.setMemberImageUrl(null);
-        } else {
-            boardResponseDto.setWriter(board.getMember().getName());
-            boardResponseDto.setMemberImageUrl(board.getMember().getImageUrl());
-        }
-        boardResponseDto.setHasLikeByMe(hasLikeByMe);
-        boardResponseDto.setIsOwner(isOwner);
-        return boardResponseDto;
+    public static BoardDetailsResponseDto toDto(Board board, boolean hasLikeByMe, boolean isOwner) {
+        return BoardDetailsResponseDto.builder()
+                .id(board.getId())
+                .writerId(board.isWantAnonymous() ? null : board.getMember().getId())
+                .writerName(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
+                .writerRoleLevel(board.isWantAnonymous() ? null : board.getMember().getRole().toRoleLevel())
+                .writerImageUrl(board.isWantAnonymous() ? null : board.getMember().getImageUrl())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .files(UploadedFileResponseDto.toDto(board.getUploadedFiles()))
+                .imageUrl(board.getImageUrl())
+                .likes(board.getLikes())
+                .hasLikeByMe(hasLikeByMe)
+                .isOwner(isOwner)
+                .createdAt(board.getCreatedAt())
+                .build();
     }
 
 }

@@ -14,8 +14,7 @@ public enum Role {
     private String key;
     private String description;
 
-    // Role을 Long으로 변환
-    public Long toLong() {
+    public Long toRoleLevel() {
         switch (this) {
             case USER:
                 return 1L;

@@ -1,22 +1,16 @@
 package page.clab.api.domain.position.dto.response;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class PositionMyResponseDto {
 
@@ -34,28 +28,21 @@ public class PositionMyResponseDto {
 
     private Map<String, List<PositionType>> positionTypes;
 
-    public static PositionMyResponseDto of(List<Position> positions) {
+    public static PositionMyResponseDto toDto(List<Position> positions) {
         Member member = positions.getFirst().getMember();
-        PositionMyResponseDto positionResponseDto = PositionMyResponseDto.builder()
+        Map<String, List<PositionType>> positionTypesByYear = positions.stream()
+                .collect(Collectors.groupingBy(
+                        Position::getYear,
+                        Collectors.mapping(Position::getPositionType, Collectors.toList())
+                ));
+        return PositionMyResponseDto.builder()
                 .name(member.getName())
                 .email(member.getEmail())
                 .imageUrl(member.getImageUrl())
                 .interests(member.getInterests())
                 .githubUrl(member.getGithubUrl())
-                .positionTypes(new HashMap<>())
+                .positionTypes(positionTypesByYear)
                 .build();
-        positions.forEach(position -> {
-            String year = position.getYear();
-            PositionType positionType = position.getPositionType();
-            if (positionResponseDto.getPositionTypes().containsKey(year)) {
-                positionResponseDto.getPositionTypes().get(year).add(positionType);
-            } else {
-                List<PositionType> positionTypes = new ArrayList<>();
-                positionTypes.add(positionType);
-                positionResponseDto.getPositionTypes().put(year, positionTypes);
-            }
-        });
-        return positionResponseDto;
     }
 
 }

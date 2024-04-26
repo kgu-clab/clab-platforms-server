@@ -1,5 +1,6 @@
 package page.clab.api.domain.login.domain;
 
+import io.ipinfo.api.model.IPResponse;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -7,11 +8,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDateTime;
 
@@ -19,9 +22,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class LoginAttemptLog {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class LoginAttemptLog extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,12 +43,12 @@ public class LoginAttemptLog {
 
     private LocalDateTime loginAttemptTime;
 
-    public static LoginAttemptLog create(String memberId, HttpServletRequest httpServletRequest, String ipAddress, GeoIpInfo geoIpInfo, LoginAttemptResult loginAttemptResult) {
+    public static LoginAttemptLog create(String memberId, HttpServletRequest httpServletRequest, String ipAddress, IPResponse ipResponse, LoginAttemptResult loginAttemptResult) {
         return LoginAttemptLog.builder()
                 .memberId(memberId)
                 .userAgent(httpServletRequest.getHeader("User-Agent"))
                 .ipAddress(ipAddress)
-                .location(geoIpInfo.getLocation())
+                .location(ipResponse == null ? "Unknown" : ipResponse.getCountryName() + " " + ipResponse.getRegion() + " " + ipResponse.getCity())
                 .loginAttemptResult(loginAttemptResult)
                 .loginAttemptTime(LocalDateTime.now())
                 .build();

@@ -1,19 +1,13 @@
 package page.clab.api.domain.schedule.dto.response;
 
-import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import page.clab.api.domain.schedule.domain.Schedule;
-import page.clab.api.domain.schedule.domain.ScheduleType;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.domain.schedule.domain.SchedulePriority;
+
+import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class ScheduleResponseDto {
 
@@ -29,15 +23,18 @@ public class ScheduleResponseDto {
 
     private LocalDateTime endDate;
 
-    public static ScheduleResponseDto of(Schedule schedule) {
-        ScheduleResponseDto scheduleResponseDto = ModelMapperUtil.getModelMapper()
-                .map(schedule, ScheduleResponseDto.class);
+    private SchedulePriority priority;
 
-        if (schedule.getScheduleType() != ScheduleType.ALL) {
-            scheduleResponseDto.setActivityName(schedule.getActivityGroup().getName());
-        }
-
-        return scheduleResponseDto;
+    public static ScheduleResponseDto toDto(Schedule schedule) {
+        return ScheduleResponseDto.builder()
+                .id(schedule.getId())
+                .title(schedule.getTitle())
+                .detail(schedule.getDetail())
+                .activityName(schedule.isAllSchedule() ? null : schedule.getActivityGroup().getName())
+                .startDate(schedule.getStartDateTime())
+                .endDate(schedule.getEndDateTime())
+                .priority(schedule.getPriority())
+                .build();
     }
 
 }

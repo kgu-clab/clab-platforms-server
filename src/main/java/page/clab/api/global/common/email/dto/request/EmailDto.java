@@ -2,18 +2,15 @@ package page.clab.api.global.common.email.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 
+import java.util.List;
+
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class EmailDto {
 
@@ -33,11 +30,12 @@ public class EmailDto {
     @Schema(description = "이메일 템플릿", example = "NORMAL")
     private EmailTemplateType emailTemplateType;
 
-    public static EmailDto of(List<String> to, String subject, String content) {
+    public static EmailDto create(List<String> to, String subject, String content, EmailTemplateType emailTemplateType) {
         return EmailDto.builder()
                 .to(to)
                 .subject(subject)
                 .content(content)
+                .emailTemplateType(emailTemplateType)
                 .build();
     }
 

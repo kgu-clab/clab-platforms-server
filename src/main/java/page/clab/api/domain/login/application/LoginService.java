@@ -28,6 +28,8 @@ import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -51,14 +53,15 @@ public class LoginService {
     private final SlackService slackService;
 
     @Transactional
-    public LoginHeader login(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFaliedException, MemberLockedException {
-        authenticateAndCheckStatus(httpServletRequest, loginRequestDto);
-        logLoginAttempt(httpServletRequest, loginRequestDto.getId(), true);
-        Member member = memberService.getMemberByIdOrThrow(loginRequestDto.getId());
+    public LoginHeader login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFaliedException, MemberLockedException {
+        authenticateAndCheckStatus(request, requestDto);
+        logLoginAttempt(request, requestDto.getId(), true);
+        Member member = memberService.getMemberByIdOrThrow(requestDto.getId());
         member.updateLastLoginTime();
-        return generateLoginHeader(loginRequestDto.getId());
+        return generateLoginHeader(requestDto.getId());
     }
 
+    @Transactional
     public TokenHeader authenticator(HttpServletRequest httpServletRequest, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
         String memberId = twoFactorAuthenticationRequestDto.getMemberId();
         Member loginMember = memberService.getMemberById(memberId);
@@ -69,7 +72,7 @@ public class LoginService {
 
         TokenInfo tokenInfo = generateAndSaveToken(loginMember);
         sendAdminLoginNotification(loginMember);
-        return constructTokenHeader(tokenInfo);
+        return TokenHeader.create(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS, tokenInfo);
     }
 
     public String resetAuthenticator(String memberId) {
@@ -93,7 +96,11 @@ public class LoginService {
 
         TokenInfo newTokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
         redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
-        return constructTokenHeader(newTokenInfo);
+        return TokenHeader.create(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS, newTokenInfo);
+    }
+
+    public List<String> getCurrentLoggedInUsers() {
+        return redisTokenService.getCurrentLoggedInUsers();
     }
 
     private void authenticateAndCheckStatus(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFaliedException, MemberLockedException {
@@ -117,18 +124,18 @@ public class LoginService {
     private LoginHeader generateLoginHeader(String memberId) {
         if (!authenticatorService.isAuthenticatorExist(memberId)) {
             String secretKey = authenticatorService.generateSecretKey(memberId);
-            return new LoginHeader(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus(), secretKey);
+            return LoginHeader.create(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS, secretKey);
         }
-        return new LoginHeader(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus(), null);
+        return LoginHeader.create(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS, null);
     }
 
-    private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest httpServletRequest) throws MemberLockedException, LoginFaliedException {
+    private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request) throws MemberLockedException, LoginFaliedException {
         if (!authenticatorService.isAuthenticatorValid(memberId, totp)) {
-            loginAttemptLogService.createLoginAttemptLog(httpServletRequest, memberId, LoginAttemptResult.FAILURE);
-            accountLockInfoService.handleLoginFailure(httpServletRequest, memberId);
+            loginAttemptLogService.createLoginAttemptLog(request, memberId, LoginAttemptResult.FAILURE);
+            accountLockInfoService.handleLoginFailure(request, memberId);
             throw new LoginFaliedException("잘못된 인증번호입니다.");
         }
-        loginAttemptLogService.createLoginAttemptLog(httpServletRequest, memberId, LoginAttemptResult.TOTP);
+        loginAttemptLogService.createLoginAttemptLog(request, memberId, LoginAttemptResult.TOTP);
     }
 
     private TokenInfo generateAndSaveToken(Member member) {
@@ -158,14 +165,6 @@ public class LoginService {
             redisTokenService.deleteRedisTokenByAccessToken(redisToken.getAccessToken());
             throw new TokenMisuseException("[" + clientIpAddress + "] 토큰 발급 IP와 다른 IP에서 발급을 시도하여 토큰을 삭제하였습니다.");
         }
-    }
-
-    private TokenHeader constructTokenHeader(TokenInfo newTokenInfo) {
-        return TokenHeader.builder()
-                .status(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS.getHttpStatus())
-                .accessToken(newTokenInfo.getAccessToken())
-                .refreshToken(newTokenInfo.getRefreshToken())
-                .build();
     }
 
 }

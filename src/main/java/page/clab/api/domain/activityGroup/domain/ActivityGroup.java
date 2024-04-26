@@ -8,30 +8,28 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.URL;
-import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotProgressingException;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity(name = "activity_group")
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ActivityGroup {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class ActivityGroup extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,28 +70,17 @@ public class ActivityGroup {
     @URL(message = "{url.activityGroup.githubUrl}")
     private String githubUrl;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    public static ActivityGroup create(ActivityGroupRequestDto activityGroupRequestDto) {
-        ActivityGroup activityGroup = ModelMapperUtil.getModelMapper().map(activityGroupRequestDto, ActivityGroup.class);
-        activityGroup.setStatus(ActivityGroupStatus.WAITING);
-        activityGroup.setProgress(0L);
-        return activityGroup;
-    }
-
-    public void update(ActivityGroupUpdateRequestDto dto) {
-        Optional.ofNullable(dto.getCategory()).ifPresent(this::setCategory);
-        Optional.ofNullable(dto.getSubject()).ifPresent(this::setSubject);
-        Optional.ofNullable(dto.getName()).ifPresent(this::setName);
-        Optional.ofNullable(dto.getContent()).ifPresent(this::setContent);
-        Optional.ofNullable(dto.getImageUrl()).ifPresent(this::setImageUrl);
-        Optional.ofNullable(dto.getCurriculum()).ifPresent(this::setCurriculum);
-        Optional.ofNullable(dto.getStartDate()).ifPresent(this::setStartDate);
-        Optional.ofNullable(dto.getEndDate()).ifPresent(this::setEndDate);
-        Optional.ofNullable(dto.getTechStack()).ifPresent(this::setTechStack);
-        Optional.ofNullable(dto.getGithubUrl()).ifPresent(this::setGithubUrl);
+    public void update(ActivityGroupUpdateRequestDto requestDto) {
+        Optional.ofNullable(requestDto.getCategory()).ifPresent(this::setCategory);
+        Optional.ofNullable(requestDto.getSubject()).ifPresent(this::setSubject);
+        Optional.ofNullable(requestDto.getName()).ifPresent(this::setName);
+        Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
+        Optional.ofNullable(requestDto.getImageUrl()).ifPresent(this::setImageUrl);
+        Optional.ofNullable(requestDto.getCurriculum()).ifPresent(this::setCurriculum);
+        Optional.ofNullable(requestDto.getStartDate()).ifPresent(this::setStartDate);
+        Optional.ofNullable(requestDto.getEndDate()).ifPresent(this::setEndDate);
+        Optional.ofNullable(requestDto.getTechStack()).ifPresent(this::setTechStack);
+        Optional.ofNullable(requestDto.getGithubUrl()).ifPresent(this::setGithubUrl);
     }
 
     public boolean isWaiting() {
@@ -110,6 +97,10 @@ public class ActivityGroup {
 
     public void updateStatus(ActivityGroupStatus status) {
         this.status = status;
+    }
+
+    public void updateProgress(Long progress) {
+        this.progress = progress;
     }
 
     public boolean isStudy() {

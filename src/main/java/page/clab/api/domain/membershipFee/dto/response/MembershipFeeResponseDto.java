@@ -1,18 +1,13 @@
 package page.clab.api.domain.membershipFee.dto.response;
 
-import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
+
+import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class MembershipFeeResponseDto {
 
@@ -24,20 +19,31 @@ public class MembershipFeeResponseDto {
 
     private String category;
 
+    private String account;
+
     private Long amount;
 
     private String content;
 
     private String imageUrl;
 
+    private MembershipFeeStatus status;
+
     private LocalDateTime createdAt;
 
-    public static MembershipFeeResponseDto of(MembershipFee membershipFee) {
-        MembershipFeeResponseDto membershipFeeResponseDto = ModelMapperUtil.getModelMapper()
-                .map(membershipFee, MembershipFeeResponseDto.class);
-        membershipFeeResponseDto.setMemberId(membershipFee.getApplicant().getId());
-        membershipFeeResponseDto.setMemberName(membershipFee.getApplicant().getName());
-        return membershipFeeResponseDto;
+    public static MembershipFeeResponseDto toDto(MembershipFee membershipFee, boolean isAdminOrSuper) {
+        return MembershipFeeResponseDto.builder()
+                .id(membershipFee.getId())
+                .memberId(membershipFee.getApplicant().getId())
+                .memberName(membershipFee.getApplicant().getName())
+                .category(membershipFee.getCategory())
+                .account(isAdminOrSuper ? membershipFee.getAccount() : null)
+                .amount(membershipFee.getAmount())
+                .content(membershipFee.getContent())
+                .imageUrl(membershipFee.getImageUrl())
+                .status(membershipFee.getStatus())
+                .createdAt(membershipFee.getCreatedAt())
+                .build();
     }
 
 }

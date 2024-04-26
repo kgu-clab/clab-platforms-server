@@ -8,27 +8,26 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.jobPosting.dto.request.JobPostingRequestDto;
 import page.clab.api.domain.jobPosting.dto.request.JobPostingUpdateRequestDto;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.global.common.domain.BaseEntity;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class JobPosting {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class JobPosting extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,17 +49,10 @@ public class JobPosting {
 
     private String recruitmentPeriod;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false)
+    @Size(max = 1000, message = "{size.jobPosting.jobPostingUrl}")
     @URL(message = "{url.jobPosting.jobPostingUrl}")
     private String jobPostingUrl;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    public static JobPosting of(JobPostingRequestDto jobPostingRequestDto) {
-        return ModelMapperUtil.getModelMapper().map(jobPostingRequestDto, JobPosting.class);
-    }
 
     public void update(JobPostingUpdateRequestDto jobPostingUpdateRequestDto) {
         Optional.ofNullable(jobPostingUpdateRequestDto.getTitle()).ifPresent(this::setTitle);

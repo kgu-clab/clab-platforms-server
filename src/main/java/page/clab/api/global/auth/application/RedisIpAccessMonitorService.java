@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.global.auth.dao.RedisIpAccessMonitorRepository;
 import page.clab.api.global.auth.domain.RedisIpAccessMonitor;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -45,6 +46,7 @@ public class RedisIpAccessMonitorService {
         return existingAttempt != null && existingAttempt.getAttempts() >= maxAttempts;
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<RedisIpAccessMonitor> getAbnormalAccessIps(Pageable pageable) {
         List<RedisIpAccessMonitor> allMonitors = StreamSupport
                 .stream(redisIpAccessMonitorRepository.findAll().spliterator(), false)
@@ -67,9 +69,13 @@ public class RedisIpAccessMonitorService {
         return ipAddress;
     }
 
-    public void clearAbnormalAccessIps(HttpServletRequest request) {
+    public List<RedisIpAccessMonitor> clearAbnormalAccessIps(HttpServletRequest request) {
+        List<RedisIpAccessMonitor> ipAccessMonitors = StreamSupport
+                .stream(redisIpAccessMonitorRepository.findAll().spliterator(), false)
+                .toList();
         redisIpAccessMonitorRepository.deleteAll();
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS_IP_DELETED, "Deleted IP: ALL");
+        return ipAccessMonitors;
     }
 
 }

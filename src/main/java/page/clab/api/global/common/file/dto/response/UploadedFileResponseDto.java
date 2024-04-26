@@ -1,18 +1,13 @@
 package page.clab.api.global.common.file.dto.response;
 
-import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import page.clab.api.global.common.file.domain.UploadedFile;
-import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class UploadedFileResponseDto {
 
@@ -24,8 +19,19 @@ public class UploadedFileResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static UploadedFileResponseDto of(UploadedFile uploadedFile) {
-        return ModelMapperUtil.getModelMapper().map(uploadedFile, UploadedFileResponseDto.class);
+    public static List<UploadedFileResponseDto> toDto(List<UploadedFile> uploadedFiles) {
+        return uploadedFiles.stream()
+                .map(UploadedFileResponseDto::toDto)
+                .toList();
+    }
+
+    public static UploadedFileResponseDto toDto(UploadedFile uploadedFile) {
+        return UploadedFileResponseDto.builder()
+                .fileUrl(uploadedFile.getUrl())
+                .originalFileName(uploadedFile.getOriginalFileName())
+                .storagePeriod(uploadedFile.getStoragePeriod())
+                .createdAt(uploadedFile.getCreatedAt())
+                .build();
     }
 
 }

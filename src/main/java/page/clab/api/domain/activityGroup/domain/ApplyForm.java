@@ -7,25 +7,22 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.global.util.ModelMapperUtil;
-
-import java.time.LocalDateTime;
+import page.clab.api.global.common.domain.BaseEntity;
 
 @Getter
 @Setter
 @Entity
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ApplyForm {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class ApplyForm extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,15 +38,5 @@ public class ApplyForm {
 
     @Column(nullable = false)
     private String applyReason;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    public static ApplyForm create(ApplyFormRequestDto applyFormRequestDto, ActivityGroup activityGroup, Member member) {
-        ApplyForm applyForm = ModelMapperUtil.getModelMapper().map(applyFormRequestDto, ApplyForm.class);
-        applyForm.setActivityGroup(activityGroup);
-        applyForm.setMember(member);
-        return applyForm;
-    }
 
 }

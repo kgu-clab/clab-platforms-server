@@ -8,7 +8,8 @@ import lombok.Getter;
 public enum ActivityGroupRole {
 
     LEADER("LEADER", "Leader"),
-    MEMBER("MEMBER", "Member");
+    MEMBER("MEMBER", "Member"),
+    NONE("NONE", "None");
 
     private String key;
     private String description;

@@ -5,20 +5,21 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
+import lombok.Setter;
+import page.clab.api.global.common.domain.BaseEntity;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class BlacklistIp {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class BlacklistIp extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,17 +30,11 @@ public class BlacklistIp {
 
     private String reason;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    private BlacklistIp(String ipAddress, String reason) {
-        this.ipAddress = ipAddress;
-        this.reason = reason;
-    }
-
     public static BlacklistIp create(String ipAddress, String reason) {
-        return new BlacklistIp(ipAddress, reason);
+        return BlacklistIp.builder()
+                .ipAddress(ipAddress)
+                .reason(reason)
+                .build();
     }
 
 }

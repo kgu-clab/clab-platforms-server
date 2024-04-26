@@ -6,12 +6,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDateTime;
 
@@ -19,9 +21,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class AccountLockInfo {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class AccountLockInfo extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +38,15 @@ public class AccountLockInfo {
     private Boolean isLock;
 
     private LocalDateTime lockUntil;
+
+    public static AccountLockInfo create(Member member) {
+        return AccountLockInfo.builder()
+                .member(member)
+                .loginFailCount(0L)
+                .isLock(false)
+                .lockUntil(null)
+                .build();
+    }
 
     public void banPermanently() {
         this.isLock = true;

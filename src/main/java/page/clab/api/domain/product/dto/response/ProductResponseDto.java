@@ -1,18 +1,12 @@
 package page.clab.api.domain.product.dto.response;
 
-import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import page.clab.api.domain.product.domain.Product;
-import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class ProductResponseDto {
 
@@ -26,8 +20,14 @@ public class ProductResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static ProductResponseDto of(Product product) {
-        return ModelMapperUtil.getModelMapper().map(product, ProductResponseDto.class);
+    public static ProductResponseDto toDto(Product product) {
+        return ProductResponseDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .url(product.getUrl())
+                .createdAt(product.getCreatedAt())
+                .build();
     }
 
 }
