@@ -34,6 +34,7 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
         List<BookLoanRecordResponseDto> results = queryFactory
                 .select(Projections.constructor(
                         BookLoanRecordResponseDto.class,
+                        bookLoanRecord.id,
                         bookLoanRecord.book.id,
                         bookLoanRecord.book.title,
                         bookLoanRecord.book.imageUrl,

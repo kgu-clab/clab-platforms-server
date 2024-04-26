@@ -13,7 +13,7 @@ import page.clab.api.domain.login.domain.LoginAttemptResult;
 import page.clab.api.domain.login.dto.response.LoginAttemptLogResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.util.HttpReqResUtil;
-import page.clab.api.global.util.IpInfoUtil;
+import page.clab.api.global.util.IPInfoUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class LoginAttemptLogService {
     @Transactional
     public void createLoginAttemptLog(HttpServletRequest request, String memberId, LoginAttemptResult loginAttemptResult) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        IPResponse ipResponse = IpInfoUtil.getIpInfo(request);
+        IPResponse ipResponse = HttpReqResUtil.isLocalRequest(clientIpAddress) ? null : IPInfoUtil.getIpInfo(request);
         LoginAttemptLog loginAttemptLog = LoginAttemptLog.create(memberId, request, clientIpAddress, ipResponse, loginAttemptResult);
         loginAttemptLogRepository.save(loginAttemptLog);
     }

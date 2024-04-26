@@ -4,7 +4,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.util.Set;
+
 public class HttpReqResUtil {
+
+    private static final Set<String> localIpSet = Set.of("0:0:0:0:0:0:0:1", "127.0.0.1", "192.168.0.1");
 
     private static final String[] IP_HEADER_CANDIDATES = {
             "X-Forwarded-For",
@@ -27,12 +31,15 @@ public class HttpReqResUtil {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         for (String header : IP_HEADER_CANDIDATES) {
             String ipList = request.getHeader(header);
-            if (ipList != null && ipList.length() != 0 && !"unknown".equalsIgnoreCase(ipList)) {
-                String ip = ipList.split(",")[0];
-                return ip;
+            if (ipList != null && !ipList.isEmpty() && !"unknown".equalsIgnoreCase(ipList)) {
+                return ipList.split(",")[0];
             }
         }
         return request.getRemoteAddr();
+    }
+
+    public static boolean isLocalRequest(String ipAddress) {
+        return localIpSet.contains(ipAddress);
     }
 
 }

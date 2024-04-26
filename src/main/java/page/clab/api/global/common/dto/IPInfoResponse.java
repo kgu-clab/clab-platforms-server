@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class IpInfoResponse {
+public class IPInfoResponse {
 
     private String ip;
 
