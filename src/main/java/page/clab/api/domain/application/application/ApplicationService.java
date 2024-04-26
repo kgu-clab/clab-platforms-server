@@ -13,6 +13,7 @@ import page.clab.api.domain.application.domain.ApplicationId;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.application.dto.response.ApplicationPassResponseDto;
 import page.clab.api.domain.application.dto.response.ApplicationResponseDto;
+import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.recruitment.application.RecruitmentService;
 import page.clab.api.domain.recruitment.domain.Recruitment;
@@ -76,6 +77,11 @@ public class ApplicationService {
         Application application = getApplicationByIdOrThrow(studentId, recruitmentId);
         applicationRepository.delete(application);
         return application.getStudentId();
+    }
+
+    public PagedResponseDto<ApplicationResponseDto> getDeletedApplications(Pageable pageable) {
+        Page<Application> applications = applicationRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(applications.map(ApplicationResponseDto::toDto));
     }
 
     private Application getApplicationByIdOrThrow(String studentId, Long recruitmentId) {
