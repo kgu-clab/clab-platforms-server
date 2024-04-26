@@ -27,7 +27,7 @@ public class IPInfoConfig {
                 .setIPinfo(new IPinfo.Builder().setToken(accessToken).build())
                 .interceptorStrategy(new BotInterceptorStrategy())
                 .ipStrategy(new XForwardedForIPStrategy())
-                .attributeStrategy(new SessionAttributeStrategy())
+                .attributeStrategy(attributeStrategy())
                 .build();
     }
 

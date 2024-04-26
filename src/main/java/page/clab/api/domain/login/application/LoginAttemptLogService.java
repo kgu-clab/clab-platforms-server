@@ -24,7 +24,7 @@ public class LoginAttemptLogService {
     @Transactional
     public void createLoginAttemptLog(HttpServletRequest request, String memberId, LoginAttemptResult loginAttemptResult) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        IPResponse ipResponse = IPInfoUtil.getIpInfo(request);
+        IPResponse ipResponse = HttpReqResUtil.isLocalRequest(clientIpAddress) ? null : IPInfoUtil.getIpInfo(request);
         LoginAttemptLog loginAttemptLog = LoginAttemptLog.create(memberId, request, clientIpAddress, ipResponse, loginAttemptResult);
         loginAttemptLogRepository.save(loginAttemptLog);
     }

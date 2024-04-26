@@ -21,12 +21,14 @@ public class IpAuthenticationFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String ipAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        IPResponse ipResponse = IPInfoUtil.getIpInfo((HttpServletRequest) request);
-        String country = ipResponse == null ? null : ipResponse.getCountryCode();
-        if (country != null && !country.equals("KR")) {
-            log.info("[{}:{}] 허용되지 않은 국가로부터의 접근입니다.", ipAddress, country);
-            return;
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        if (!HttpReqResUtil.isLocalRequest(clientIpAddress)) {
+            IPResponse ipResponse = IPInfoUtil.getIpInfo((HttpServletRequest) request);
+            String country = ipResponse == null ? null : ipResponse.getCountryCode();
+            if (country != null && !country.equals("KR")) {
+                log.info("[{}:{}] 허용되지 않은 국가로부터의 접근입니다.", clientIpAddress, country);
+                return;
+            }
         }
         chain.doFilter(request, response);
     }
