@@ -23,8 +23,8 @@ public class IpAuthenticationFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         String ipAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         IPResponse ipResponse = IpInfoUtil.getIpInfo((HttpServletRequest) request);
-        String country = ipResponse == null ? null : ipResponse.getCountryName();
-        if (country != null && !country.equals("South Korea")) {
+        String country = ipResponse == null ? null : ipResponse.getCountryCode();
+        if (country != null && !country.equals("KR")) {
             log.info("[{}:{}] 허용되지 않은 국가로부터의 접근입니다.", ipAddress, country);
             return;
         }
