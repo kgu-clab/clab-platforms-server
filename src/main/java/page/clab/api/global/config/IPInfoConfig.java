@@ -6,15 +6,20 @@ import io.ipinfo.spring.strategies.attribute.AttributeStrategy;
 import io.ipinfo.spring.strategies.attribute.SessionAttributeStrategy;
 import io.ipinfo.spring.strategies.interceptor.BotInterceptorStrategy;
 import io.ipinfo.spring.strategies.ip.XForwardedForIPStrategy;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestClient;
 
+@Getter
 @Configuration
 public class IPInfoConfig {
 
+    private final RestClient restClient = RestClient.create("https://ipinfo.io/");
+
     @Value("${ipinfo.access-token}")
-    private static String accessToken;
+    private String accessToken;
 
     @Bean
     public IPinfoSpring ipinfoSpring() {
@@ -29,10 +34,6 @@ public class IPInfoConfig {
     @Bean
     public AttributeStrategy attributeStrategy() {
         return new SessionAttributeStrategy();
-    }
-
-    public String getAccessToken() {
-        return accessToken;
     }
 
 }
