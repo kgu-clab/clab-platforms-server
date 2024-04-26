@@ -1,7 +1,6 @@
 package page.clab.api.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.ipinfo.spring.IPinfoSpring;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +28,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
     private ApiLoggingInterceptor apiLoggingInterceptor;
-
-    @Autowired
-    private IPinfoSpring ipinfoSpring;
 
     @Value("${resource.file.path}")
     private String filePath;
@@ -67,7 +63,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(ipinfoSpring);
         registry.addInterceptor(apiLoggingInterceptor);
     }
 

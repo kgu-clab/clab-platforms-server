@@ -1,6 +1,5 @@
 package page.clab.api.global.config;
 
-import io.ipinfo.spring.strategies.attribute.AttributeStrategy;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +62,7 @@ public class SecurityConfig {
 
     private final OpenApiPatternsProperties OpenApiPatternsProperties;
 
-    private final AttributeStrategy attributeStrategy;
+    private final IPInfoConfig ipInfoConfig;
 
     @Value("${resource.file.url}")
     String fileURL;
@@ -82,7 +81,7 @@ public class SecurityConfig {
                 .authorizeRequests(this::configureRequests)
                 .authenticationProvider(authenticationConfig.authenticationProvider())
                 .addFilterBefore(
-                        new IpAuthenticationFilter(attributeStrategy),
+                        new IpAuthenticationFilter(ipInfoConfig),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
