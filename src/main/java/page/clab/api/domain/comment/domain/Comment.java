@@ -16,6 +16,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
@@ -104,6 +106,10 @@ public class Comment extends BaseEntity {
         if (this.likes > 0) {
             this.likes--;
         }
+    }
+
+    public void updateIsDeleted(){
+        this.isDeleted = true;
     }
 
 }
