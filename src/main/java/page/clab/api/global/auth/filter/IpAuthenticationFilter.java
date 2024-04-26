@@ -1,6 +1,7 @@
 package page.clab.api.global.auth.filter;
 
 import io.ipinfo.api.model.IPResponse;
+import io.ipinfo.spring.strategies.attribute.AttributeStrategy;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -10,8 +11,6 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import page.clab.api.global.util.HttpReqResUtil;
-import page.clab.api.global.util.IPInfoUtil;
 
 import java.io.IOException;
 
@@ -19,28 +18,38 @@ import java.io.IOException;
 @Slf4j
 public class IpAuthenticationFilter implements Filter {
 
+    private final AttributeStrategy attributeStrategy;
+
+    public IpAuthenticationFilter(AttributeStrategy attributeStrategy) {
+        this.attributeStrategy = attributeStrategy;
+    }
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        if (!HttpReqResUtil.isLocalRequest(clientIpAddress)) {
-            IPResponse ipResponse = IPInfoUtil.getIpInfo((HttpServletRequest) request);
-            String country = ipResponse == null ? null : ipResponse.getCountryCode();
-            if (country != null && !country.equals("KR")) {
-                log.info("[{}:{}] 허용되지 않은 국가로부터의 접근입니다.", clientIpAddress, country);
-                return;
-            }
+        IPResponse ipResponse = attributeStrategy.getAttribute((HttpServletRequest) request);
+        if (ipResponse == null) {
+            log.warn("No IP information found in the request.");
+            chain.doFilter(request, response);
+            return;
         }
+
+        String country = ipResponse.getCountryCode();
+        if (country != null && !country.equals("KR")) {
+            log.warn("Access from non-permitted country: {}", country);
+            return;
+        }
+
         chain.doFilter(request, response);
     }
 
     @Override
     public void init(FilterConfig filterConfig) {
-        log.info("IP Authentication Filter Init..");
+        log.info("IP Authentication Filter initialized.");
     }
 
     @Override
     public void destroy() {
-        log.info("IP Authentication Filter Destroy..");
+        log.info("IP Authentication Filter destroyed.");
     }
 
 }
