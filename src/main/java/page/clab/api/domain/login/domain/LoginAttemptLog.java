@@ -48,7 +48,7 @@ public class LoginAttemptLog extends BaseEntity {
                 .memberId(memberId)
                 .userAgent(httpServletRequest.getHeader("User-Agent"))
                 .ipAddress(ipAddress)
-                .location(ipResponse == null ? "Unknown" : ipResponse.getCity())
+                .location(ipResponse == null ? "Unknown" : ipResponse.getCountryName() + ", " + ipResponse.getCity())
                 .loginAttemptResult(loginAttemptResult)
                 .loginAttemptTime(LocalDateTime.now())
                 .build();
