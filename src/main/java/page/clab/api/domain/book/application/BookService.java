@@ -60,7 +60,8 @@ public class BookService {
 
     public Long deleteBook(Long bookId) {
         Book book = getBookByIdOrThrow(bookId);
-        bookRepository.delete(book);
+        book.updateIsDeleted(true);
+        bookRepository.save(book);
         return book.getId();
     }
 
