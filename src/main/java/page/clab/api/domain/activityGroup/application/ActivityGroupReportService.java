@@ -14,6 +14,8 @@ import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportRequest
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupReportResponseDto;
 import page.clab.api.domain.activityGroup.exception.DuplicateReportException;
+import page.clab.api.domain.award.domain.Award;
+import page.clab.api.domain.award.dto.response.AwardResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -73,6 +75,11 @@ public class ActivityGroupReportService {
         ActivityGroupReport report = validateReportDeletionPermission(reportId, currentMember);
         activityGroupReportRepository.delete(report);
         return report.getId();
+    }
+
+    public PagedResponseDto<ActivityGroupReportResponseDto> getDeletedActivityGroupReports(Pageable pageable) {
+        Page<ActivityGroupReport> activityGroupReports = activityGroupReportRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(activityGroupReports.map(ActivityGroupReportResponseDto::toDto));
     }
 
     public ActivityGroupReport getReportByIdOrThrow(Long reportId) {

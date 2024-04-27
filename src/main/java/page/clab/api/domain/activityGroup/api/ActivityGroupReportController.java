@@ -21,6 +21,7 @@ import page.clab.api.domain.activityGroup.application.ActivityGroupReportService
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupReportResponseDto;
+import page.clab.api.domain.award.dto.response.AwardResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -88,6 +89,19 @@ public class ActivityGroupReportController {
     ) throws PermissionDeniedException {
         Long id = activityGroupReportService.deleteReport(reportId);
         return ApiResponse.success(id);
+    }
+
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 활동보고서 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<ActivityGroupReportResponseDto>> getDeletedActivityGroupReports(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<ActivityGroupReportResponseDto> activityGroupReports = activityGroupReportService.getDeletedActivityGroupReports(pageable);
+        return ApiResponse.success(activityGroupReports);
     }
 
 }
