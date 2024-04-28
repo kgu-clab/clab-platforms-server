@@ -46,6 +46,7 @@ public class JobPostingService {
         return JobPostingDetailsResponseDto.toDto(jobPosting);
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<JobPostingDetailsResponseDto> getDeletedJobPostings(Pageable pageable) {
         Page<JobPosting> jobPostings = jobPostingRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(jobPostings.map(JobPostingDetailsResponseDto::toDto));

@@ -48,6 +48,7 @@ public class MembershipFeeService {
         return new PagedResponseDto<>(membershipFeesPage.map(membershipFee -> MembershipFeeResponseDto.toDto(membershipFee, isAdminOrSuper)));
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<MembershipFeeResponseDto> getDeletedMembershipFees(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         boolean isAdminOrSuper = currentMember.isAdminRole();

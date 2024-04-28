@@ -66,6 +66,7 @@ public class AwardService {
         return award.getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<AwardResponseDto> getDeletedAwards(Pageable pageable) {
         Page<Award> awards = awardRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(awards.map(AwardResponseDto::toDto));

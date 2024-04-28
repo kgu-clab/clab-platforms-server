@@ -43,6 +43,7 @@ public class RecruitmentService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<RecruitmentResponseDto> getDeletedRecruitments(Pageable pageable) {
         Page<Recruitment> recruitments = recruitmentRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(recruitments

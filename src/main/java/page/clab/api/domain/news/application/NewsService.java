@@ -46,6 +46,7 @@ public class NewsService {
         return NewsDetailsResponseDto.toDto(news);
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<NewsDetailsResponseDto> getDeletedNews(Pageable pageable) {
         Page<News> newsPage = newsRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(newsPage.map(NewsDetailsResponseDto::toDto));

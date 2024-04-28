@@ -35,6 +35,7 @@ public class ProductService {
         return new PagedResponseDto<>(products.map(ProductResponseDto::toDto));
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ProductResponseDto> getDeletedProducts(Pageable pageable) {
         Page<Product> products = productRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(products.map(ProductResponseDto::toDto));

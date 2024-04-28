@@ -53,6 +53,7 @@ public class PositionService {
         return PositionMyResponseDto.toDto(positions);
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<PositionResponseDto> getDeletedPositions(Pageable pageable) {
         Page<Position> positions = positionRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(positions.map(PositionResponseDto::toDto));

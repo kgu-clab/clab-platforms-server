@@ -117,6 +117,7 @@ public class BoardService {
         return board.getLikes();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<BoardListResponseDto> getDeletedBoards(Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(boards.map(this::mapToBoardListResponseDto));

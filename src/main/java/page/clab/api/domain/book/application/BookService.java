@@ -46,6 +46,7 @@ public class BookService {
         return mapToBookDetailsResponseDto(book);
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<BookDetailsResponseDto> getDeletedBooks(Pageable pageable) {
         Page<Book> books = bookRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(books.map(this::mapToBookDetailsResponseDto));

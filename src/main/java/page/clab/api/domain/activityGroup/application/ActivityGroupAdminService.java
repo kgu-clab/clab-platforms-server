@@ -92,6 +92,7 @@ public class ActivityGroupAdminService {
         return activityGroup.getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupResponseDto> getDeletedActivityGroups(Pageable pageable) {
         Page<ActivityGroup> activityGroups = activityGroupRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(activityGroups.map(ActivityGroupResponseDto::toDto));

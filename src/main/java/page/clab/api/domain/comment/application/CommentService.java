@@ -69,6 +69,7 @@ public class CommentService {
         return new PagedResponseDto<>(commentDtos);
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<DeletedCommentResponseDto> getDeletedComments(Long boardId, Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Comment> comments = commentRepository.findAllByIsDeletedTrueAndBoardId(boardId, pageable);

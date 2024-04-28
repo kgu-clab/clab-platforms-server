@@ -51,6 +51,7 @@ public class NotificationService {
         return new PagedResponseDto<>(notifications.map(NotificationResponseDto::toDto));
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<NotificationResponseDto> getDeletedNotifications(Pageable pageable) {
         Page<Notification> notifications = notificationRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(notifications.map(NotificationResponseDto::toDto));

@@ -50,6 +50,7 @@ public class BlogService {
         return BlogDetailsResponseDto.toDto(blog, isOwner);
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<BlogDetailsResponseDto> getDeletedBlogs(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Blog> blogs = blogRepository.findAllByIsDeletedTrue(pageable);
