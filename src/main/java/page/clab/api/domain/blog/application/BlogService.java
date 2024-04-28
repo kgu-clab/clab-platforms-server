@@ -50,14 +50,6 @@ public class BlogService {
         return BlogDetailsResponseDto.toDto(blog, isOwner);
     }
 
-    @Transactional(readOnly = true)
-    public PagedResponseDto<BlogDetailsResponseDto> getDeletedBlogs(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
-        Page<Blog> blogs = blogRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(blogs
-                .map(blog -> BlogDetailsResponseDto.toDto(blog, blog.isOwner(currentMember))));
-    }
-
     @Transactional
     public Long updateBlog(Long blogId, BlogUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();

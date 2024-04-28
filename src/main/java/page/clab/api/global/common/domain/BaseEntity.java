@@ -22,7 +22,4 @@ public class BaseEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @Column(name = "is_deleted")
-    protected Boolean isDeleted = Boolean.FALSE;
-
 }

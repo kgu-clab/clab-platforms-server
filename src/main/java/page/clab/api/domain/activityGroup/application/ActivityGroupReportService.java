@@ -75,12 +75,6 @@ public class ActivityGroupReportService {
         return report.getId();
     }
 
-    @Transactional(readOnly = true)
-    public PagedResponseDto<ActivityGroupReportResponseDto> getDeletedActivityGroupReports(Pageable pageable) {
-        Page<ActivityGroupReport> activityGroupReports = activityGroupReportRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(activityGroupReports.map(ActivityGroupReportResponseDto::toDto));
-    }
-
     public ActivityGroupReport getReportByIdOrThrow(Long reportId) {
         return activityGroupReportRepository.findById(reportId)
                 .orElseThrow(() -> new NotFoundException("활동 보고서를 찾을 수 없습니다."));

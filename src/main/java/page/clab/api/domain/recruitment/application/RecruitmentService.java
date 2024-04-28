@@ -1,8 +1,6 @@
 package page.clab.api.domain.recruitment.application;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -11,7 +9,6 @@ import page.clab.api.domain.recruitment.domain.Recruitment;
 import page.clab.api.domain.recruitment.dto.request.RecruitmentRequestDto;
 import page.clab.api.domain.recruitment.dto.request.RecruitmentUpdateRequestDto;
 import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
-import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.validation.ValidationService;
 
@@ -41,13 +38,6 @@ public class RecruitmentService {
         return recruitments.stream()
                 .map(RecruitmentResponseDto::toDto)
                 .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public PagedResponseDto<RecruitmentResponseDto> getDeletedRecruitments(Pageable pageable) {
-        Page<Recruitment> recruitments = recruitmentRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(recruitments
-                .map(RecruitmentResponseDto::toDto));
     }
 
     @Transactional

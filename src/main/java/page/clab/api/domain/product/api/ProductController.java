@@ -21,8 +21,8 @@ import page.clab.api.domain.product.application.ProductService;
 import page.clab.api.domain.product.dto.request.ProductRequestDto;
 import page.clab.api.domain.product.dto.request.ProductUpdateRequestDto;
 import page.clab.api.domain.product.dto.response.ProductResponseDto;
-import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -76,18 +76,6 @@ public class ProductController {
     ) {
         Long id = productService.deleteProduct(productId);
         return ApiResponse.success(id);
-    }
-
-    @GetMapping("/deleted")
-    @Operation(summary = "[S] 삭제된 서비스 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
-    public ApiResponse<PagedResponseDto<ProductResponseDto>> getDeletedProducts(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ProductResponseDto> products = productService.getDeletedProducts(pageable);
-        return ApiResponse.success(products);
     }
 
 }

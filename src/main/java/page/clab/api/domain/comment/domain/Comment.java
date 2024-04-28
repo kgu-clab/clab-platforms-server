@@ -106,8 +106,4 @@ public class Comment extends BaseEntity {
         }
     }
 
-    public void updateIsDeleted(){
-        this.isDeleted = true;
-    }
-
 }

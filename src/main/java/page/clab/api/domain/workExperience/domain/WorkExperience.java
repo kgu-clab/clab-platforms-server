@@ -13,8 +13,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.workExperience.dto.request.WorkExperienceUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
@@ -29,8 +27,6 @@ import java.util.Optional;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@SQLDelete(sql = "UPDATE work_experience SET is_deleted = true WHERE id = ?")
-@SQLRestriction("is_deleted = false")
 public class WorkExperience extends BaseEntity {
 
     @Id

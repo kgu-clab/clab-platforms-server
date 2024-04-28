@@ -14,8 +14,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
@@ -31,8 +29,6 @@ import java.util.Optional;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@SQLDelete(sql = "UPDATE activity_group SET is_deleted = true WHERE id = ?")
-@SQLRestriction("is_deleted = false")
 public class ActivityGroup extends BaseEntity {
 
     @Id

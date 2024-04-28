@@ -12,8 +12,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
@@ -26,8 +24,6 @@ import java.util.Optional;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@SQLDelete(sql = "UPDATE shared_account SET is_deleted = true WHERE id = ?")
-@SQLRestriction("is_deleted = false")
 public class SharedAccount extends BaseEntity {
 
     @Id

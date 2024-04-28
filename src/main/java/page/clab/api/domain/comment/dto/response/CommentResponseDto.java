@@ -16,8 +16,6 @@ public class CommentResponseDto {
 
     private Long id;
 
-    private Boolean isDeleted;
-
     private String writerId;
 
     private String writerName;
@@ -32,26 +30,16 @@ public class CommentResponseDto {
 
     private Long likes;
 
-    private Boolean hasLikeByMe;
+    private boolean hasLikeByMe;
 
     @JsonProperty("isOwner")
-    private Boolean isOwner;
+    private boolean isOwner;
 
     private LocalDateTime createdAt;
 
     public static CommentResponseDto toDto(Comment comment, String currentMemberId) {
-        if (comment.getIsDeleted()) {
-            return CommentResponseDto.builder()
-                    .id(comment.getId())
-                    .isDeleted(true)
-                    .children(comment.getChildren().stream()
-                            .map(child -> CommentResponseDto.toDto(child, currentMemberId))
-                            .toList())
-                    .build();
-        }
         return CommentResponseDto.builder()
                 .id(comment.getId())
-                .isDeleted(false)
                 .writerId(comment.isWantAnonymous() ? null : comment.getWriter().getId())
                 .writerName(comment.isWantAnonymous() ? comment.getNickname() : comment.getWriter().getName())
                 .writerImageUrl(comment.isWantAnonymous() ? null : comment.getWriter().getImageUrl())
@@ -64,7 +52,6 @@ public class CommentResponseDto {
                 .isOwner(comment.isOwner(currentMemberId))
                 .createdAt(comment.getCreatedAt())
                 .build();
-
     }
 
 }

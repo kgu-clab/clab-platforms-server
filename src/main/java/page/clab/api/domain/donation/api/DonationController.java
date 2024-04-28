@@ -21,8 +21,8 @@ import page.clab.api.domain.donation.application.DonationService;
 import page.clab.api.domain.donation.dto.request.DonationRequestDto;
 import page.clab.api.domain.donation.dto.request.DonationUpdateRequestDto;
 import page.clab.api.domain.donation.dto.response.DonationResponseDto;
-import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.time.LocalDate;
@@ -95,18 +95,6 @@ public class DonationController {
     ) throws PermissionDeniedException {
         Long id = donationService.deleteDonation(donationId);
         return ApiResponse.success(id);
-    }
-
-    @GetMapping("/deleted")
-    @Operation(summary = "[S] 삭제된 후원 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
-    public ApiResponse<PagedResponseDto<DonationResponseDto>> getDeletedDonations(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<DonationResponseDto> donations = donationService.getDeletedDonations(pageable);
-        return ApiResponse.success(donations);
     }
 
 }

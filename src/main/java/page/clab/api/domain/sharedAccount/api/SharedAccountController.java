@@ -25,8 +25,8 @@ import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUpdateRequest
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUsageRequestDto;
 import page.clab.api.domain.sharedAccount.dto.response.SharedAccountResponseDto;
 import page.clab.api.domain.sharedAccount.dto.response.SharedAccountUsageResponseDto;
-import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -120,16 +120,5 @@ public class SharedAccountController {
         return ApiResponse.success(id);
     }
 
-    @GetMapping("/deleted")
-    @Operation(summary = "[S] 삭제된 공동 계정 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
-    public ApiResponse<PagedResponseDto<SharedAccountResponseDto>> getDeletedSharedAccounts(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<SharedAccountResponseDto> sharedAccounts = sharedAccountService.getDeletedSharedAccounts(pageable);
-        return ApiResponse.success(sharedAccounts);
-    }
-
 }
+

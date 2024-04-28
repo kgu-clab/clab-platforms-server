@@ -46,12 +46,6 @@ public class BookService {
         return mapToBookDetailsResponseDto(book);
     }
 
-    @Transactional(readOnly = true)
-    public PagedResponseDto<BookDetailsResponseDto> getDeletedBooks(Pageable pageable) {
-        Page<Book> books = bookRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(books.map(this::mapToBookDetailsResponseDto));
-    }
-
     @Transactional
     public Long updateBookInfo(Long bookId, BookUpdateRequestDto bookUpdateRequestDto) {
         Book book = getBookByIdOrThrow(bookId);
@@ -61,8 +55,7 @@ public class BookService {
 
     public Long deleteBook(Long bookId) {
         Book book = getBookByIdOrThrow(bookId);
-        book.updateIsDeleted(true);
-        bookRepository.save(book);
+        bookRepository.delete(book);
         return book.getId();
     }
 

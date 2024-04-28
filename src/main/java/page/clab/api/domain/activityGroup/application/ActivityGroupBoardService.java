@@ -21,8 +21,6 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardUpdateR
 import page.clab.api.domain.activityGroup.dto.response.AssignmentSubmissionWithFeedbackResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.FeedbackResponseDto;
 import page.clab.api.domain.activityGroup.exception.InvalidParentBoardException;
-import page.clab.api.domain.award.domain.Award;
-import page.clab.api.domain.award.dto.response.AwardResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -145,12 +143,6 @@ public class ActivityGroupBoardService {
         board.validateAccessPermission(currentMember);
         activityGroupBoardRepository.delete(board);
         return board.getId();
-    }
-
-    @Transactional(readOnly = true)
-    public PagedResponseDto<ActivityGroupBoardResponseDto> getDeletedActivityGroupBoards(Pageable pageable) {
-        Page<ActivityGroupBoard> activityGroupBoards = activityGroupBoardRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(activityGroupBoards.map(ActivityGroupBoardResponseDto::toDto));
     }
 
     private ActivityGroupBoard getActivityGroupBoardByIdOrThrow(Long activityGroupBoardId) {

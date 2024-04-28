@@ -20,7 +20,6 @@ import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberWithApplyReasonResponseDto;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -92,17 +91,11 @@ public class ActivityGroupAdminService {
         return activityGroup.getId();
     }
 
-    @Transactional(readOnly = true)
-    public PagedResponseDto<ActivityGroupResponseDto> getDeletedActivityGroups(Pageable pageable) {
-        Page<ActivityGroup> activityGroups = activityGroupRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(activityGroups.map(ActivityGroupResponseDto::toDto));
-    }
-
     @Transactional
     public Long deleteActivityGroup(Long activityGroupId) {
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
         List<GroupSchedule> groupSchedules = groupScheduleRepository.findAllByActivityGroupIdOrderByIdDesc(activityGroupId);
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
 
         activityGroupMemberService.deleteAll(groupMembers);

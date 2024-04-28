@@ -48,14 +48,6 @@ public class MembershipFeeService {
         return new PagedResponseDto<>(membershipFeesPage.map(membershipFee -> MembershipFeeResponseDto.toDto(membershipFee, isAdminOrSuper)));
     }
 
-    @Transactional(readOnly = true)
-    public PagedResponseDto<MembershipFeeResponseDto> getDeletedMembershipFees(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
-        boolean isAdminOrSuper = currentMember.isAdminRole();
-        Page<MembershipFee> membershipFees = membershipFeeRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(membershipFees.map(membershipFee -> MembershipFeeResponseDto.toDto(membershipFee, isAdminOrSuper)));
-    }
-
     @Transactional
     public Long updateMembershipFee(Long membershipFeeId, MembershipFeeUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();

@@ -15,7 +15,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
@@ -32,7 +31,6 @@ import java.util.Optional;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@SQLRestriction("is_deleted = false")
 public class Book extends BaseEntity {
 
     @Id
@@ -71,10 +69,6 @@ public class Book extends BaseEntity {
         Optional.ofNullable(requestDto.getPublisher()).ifPresent(this::setPublisher);
         Optional.ofNullable(requestDto.getImageUrl()).ifPresent(this::setImageUrl);
         Optional.ofNullable(requestDto.getReviewLinks()).ifPresent(this::setReviewLinks);
-    }
-
-    public void updateIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted;
     }
 
     public void validateBookIsNotBorrowed() {

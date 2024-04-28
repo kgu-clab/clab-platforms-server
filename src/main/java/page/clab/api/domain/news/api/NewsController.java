@@ -22,8 +22,8 @@ import page.clab.api.domain.news.dto.request.NewsRequestDto;
 import page.clab.api.domain.news.dto.request.NewsUpdateRequestDto;
 import page.clab.api.domain.news.dto.response.NewsDetailsResponseDto;
 import page.clab.api.domain.news.dto.response.NewsResponseDto;
-import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/news")
@@ -89,18 +89,6 @@ public class NewsController {
     ) {
         Long id = newsService.deleteNews(newsId);
         return ApiResponse.success(id);
-    }
-
-    @GetMapping("/deleted")
-    @Operation(summary = "[S] 삭제된 뉴스 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
-    public ApiResponse<PagedResponseDto<NewsDetailsResponseDto>> getDeletedNews(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<NewsDetailsResponseDto> pagedNews = newsService.getDeletedNews(pageable);
-        return ApiResponse.success(pagedNews);
     }
 
 }

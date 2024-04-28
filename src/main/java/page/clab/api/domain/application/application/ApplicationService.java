@@ -43,7 +43,7 @@ public class ApplicationService {
         validationService.checkValid(application);
 
         notificationService.sendNotificationToAdmins(requestDto.getStudentId() + " " +
-                requestDto.getName() + "님이 동아리에 지원하였습니다.");
+                        requestDto.getName() + "님이 동아리에 지원하였습니다.");
         slackService.sendApplicationNotification(request, requestDto);
         return applicationRepository.save(application).getStudentId();
     }
@@ -76,11 +76,6 @@ public class ApplicationService {
         Application application = getApplicationByIdOrThrow(studentId, recruitmentId);
         applicationRepository.delete(application);
         return application.getStudentId();
-    }
-
-    public PagedResponseDto<ApplicationResponseDto> getDeletedApplications(Pageable pageable) {
-        Page<Application> applications = applicationRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(applications.map(ApplicationResponseDto::toDto));
     }
 
     private Application getApplicationByIdOrThrow(String studentId, Long recruitmentId) {

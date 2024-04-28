@@ -72,12 +72,6 @@ public class ScheduleService {
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
 
-    @Transactional(readOnly = true)
-    public PagedResponseDto<ScheduleResponseDto> getDeletedSchedules(Pageable pageable) {
-        Page<Schedule> schedules = scheduleRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
-    }
-
     public Long deleteSchedule(Long scheduleId) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         Schedule schedule = getScheduleById(scheduleId);

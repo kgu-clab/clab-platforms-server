@@ -24,8 +24,6 @@ import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberWithApplyReasonResponseDto;
-import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
-import page.clab.api.domain.award.dto.response.AwardResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -130,18 +128,6 @@ public class ActivityGroupAdminController {
     ) throws PermissionDeniedException {
         String id = activityGroupAdminService.manageGroupMemberStatus(activityGroupId, memberId, status);
         return ApiResponse.success(id);
-    }
-
-    @GetMapping("/deleted")
-    @Operation(summary = "[S] 삭제된 활동그룹 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
-    public ApiResponse<PagedResponseDto<ActivityGroupResponseDto>> getDeletedActivityGroups(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupAdminService.getDeletedActivityGroups(pageable);
-        return ApiResponse.success(activityGroups);
     }
 
 }
