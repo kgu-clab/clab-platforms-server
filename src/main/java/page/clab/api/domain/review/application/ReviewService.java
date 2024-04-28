@@ -65,6 +65,13 @@ public class ReviewService {
         return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));
     }
 
+    @Transactional(readOnly = true)
+    public PagedResponseDto<ReviewResponseDto> getDeletedReviews(Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
+        Page<Review> reviews = reviewRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));
+    }
+
     @Transactional
     public Long updateReview(Long reviewId, ReviewUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();

@@ -22,8 +22,9 @@ import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
 import page.clab.api.domain.comment.dto.response.CommentResponseDto;
-import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.domain.comment.dto.response.DeletedCommentResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
@@ -101,6 +102,19 @@ public class CommentController {
     ) {
         Long id = commentService.toggleLikeStatus(commentId);
         return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted/{boardId}")
+    @Operation(summary = "[S] 게시글의 삭제된 댓글 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<DeletedCommentResponseDto>> getDeletedComments(
+            @PathVariable(name = "boardId") Long boardId,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<DeletedCommentResponseDto> comments = commentService.getDeletedComments(boardId, pageable);
+        return ApiResponse.success(comments);
     }
 
 }

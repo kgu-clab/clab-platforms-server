@@ -35,6 +35,12 @@ public class SharedAccountService {
         return new PagedResponseDto<>(sharedAccounts.map(SharedAccountResponseDto::toDto));
     }
 
+    @Transactional(readOnly = true)
+    public PagedResponseDto<SharedAccountResponseDto> getDeletedSharedAccounts(Pageable pageable) {
+        Page<SharedAccount> sharedAccounts = sharedAccountRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(sharedAccounts.map(SharedAccountResponseDto::toDto));
+    }
+
     @Transactional
     public Long updateSharedAccount(Long accountId, SharedAccountUpdateRequestDto requestDto) {
         SharedAccount sharedAccount = getSharedAccountByIdOrThrow(accountId);

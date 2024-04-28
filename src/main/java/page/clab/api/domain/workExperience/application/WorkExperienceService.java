@@ -49,6 +49,12 @@ public class WorkExperienceService {
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
     }
 
+    @Transactional(readOnly = true)
+    public PagedResponseDto<WorkExperienceResponseDto> getDeletedWorkExperiences(Pageable pageable) {
+        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
+    }
+
     @Transactional
     public Long updateWorkExperience(Long workExperienceId, WorkExperienceUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();

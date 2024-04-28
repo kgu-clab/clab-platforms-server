@@ -23,8 +23,8 @@ import page.clab.api.domain.jobPosting.dto.request.JobPostingRequestDto;
 import page.clab.api.domain.jobPosting.dto.request.JobPostingUpdateRequestDto;
 import page.clab.api.domain.jobPosting.dto.response.JobPostingDetailsResponseDto;
 import page.clab.api.domain.jobPosting.dto.response.JobPostingResponseDto;
-import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.common.dto.PagedResponseDto;
 
 @RestController
 @RequestMapping("/api/v1/job-postings")
@@ -92,6 +92,18 @@ public class JobPostingController {
     ) {
         Long id = jobPostingService.deleteJobPosting(jobPostingId);
         return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 채용 공고 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<JobPostingDetailsResponseDto>> getDeletedJobPostings(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<JobPostingDetailsResponseDto> jobPostings = jobPostingService.getDeletedJobPostings(pageable);
+        return ApiResponse.success(jobPostings);
     }
 
 }

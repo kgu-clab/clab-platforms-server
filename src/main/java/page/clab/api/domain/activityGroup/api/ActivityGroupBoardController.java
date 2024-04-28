@@ -24,6 +24,7 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardChildRe
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardUpdateResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.AssignmentSubmissionWithFeedbackResponseDto;
+import page.clab.api.domain.award.dto.response.AwardResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -135,6 +136,18 @@ public class ActivityGroupBoardController {
     ) throws PermissionDeniedException {
         Long id = activityGroupBoardService.deleteActivityGroupBoard(activityGroupBoardId);
         return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 활동 그룹 게시판 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<ActivityGroupBoardResponseDto>> getDeletedActivityGroupBoards(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<ActivityGroupBoardResponseDto> activityBoards = activityGroupBoardService.getDeletedActivityGroupBoards(pageable);
+        return ApiResponse.success(activityBoards);
     }
 
 }

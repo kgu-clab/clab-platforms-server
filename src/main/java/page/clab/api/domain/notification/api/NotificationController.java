@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.domain.notification.dto.response.NotificationResponseDto;
-import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
@@ -62,6 +62,18 @@ public class NotificationController {
     ) throws PermissionDeniedException {
         Long id = notificationService.deleteNotification(notificationId);
         return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 알림 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<NotificationResponseDto>> getDeletedNotifications(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<NotificationResponseDto> notifications = notificationService.getDeletedNotifications(pageable);
+        return ApiResponse.success(notifications);
     }
 
 }

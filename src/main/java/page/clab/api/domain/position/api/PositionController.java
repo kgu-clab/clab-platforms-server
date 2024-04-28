@@ -21,8 +21,8 @@ import page.clab.api.domain.position.domain.PositionType;
 import page.clab.api.domain.position.dto.request.PositionRequestDto;
 import page.clab.api.domain.position.dto.response.PositionMyResponseDto;
 import page.clab.api.domain.position.dto.response.PositionResponseDto;
-import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.common.dto.PagedResponseDto;
 
 @RestController
 @RequestMapping("/api/v1/positions")
@@ -77,6 +77,18 @@ public class PositionController {
     ) {
         Long id = positionService.deletePosition(positionId);
         return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 직책 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<PositionResponseDto>> getDeletedPositions(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<PositionResponseDto> positions = positionService.getDeletedPositions(pageable);
+        return ApiResponse.success(positions);
     }
 
 }

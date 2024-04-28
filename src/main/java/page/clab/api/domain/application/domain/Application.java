@@ -17,6 +17,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.domain.Role;
@@ -32,6 +34,8 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @IdClass(ApplicationId.class)
+@SQLDelete(sql = "UPDATE application SET is_deleted = true WHERE recruitment_id = ? AND student_id = ?")
+@SQLRestriction("is_deleted = false")
 public class Application extends BaseEntity {
 
     @Id

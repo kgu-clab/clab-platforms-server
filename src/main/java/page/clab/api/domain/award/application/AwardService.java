@@ -66,6 +66,12 @@ public class AwardService {
         return award.getId();
     }
 
+    @Transactional(readOnly = true)
+    public PagedResponseDto<AwardResponseDto> getDeletedAwards(Pageable pageable) {
+        Page<Award> awards = awardRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(awards.map(AwardResponseDto::toDto));
+    }
+
     private Award getAwardByIdOrThrow(Long awardId) {
         return awardRepository.findById(awardId)
                 .orElseThrow(() -> new NotFoundException("해당 수상 이력이 존재하지 않습니다."));

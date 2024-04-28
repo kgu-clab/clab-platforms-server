@@ -14,6 +14,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.jobPosting.dto.request.JobPostingRequestDto;
 import page.clab.api.domain.jobPosting.dto.request.JobPostingUpdateRequestDto;
@@ -27,6 +29,8 @@ import java.util.Optional;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@SQLDelete(sql = "UPDATE job_posting SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 public class JobPosting extends BaseEntity {
 
     @Id

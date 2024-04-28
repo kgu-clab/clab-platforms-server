@@ -3,6 +3,7 @@ package page.clab.api.domain.activityGroup.dao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
@@ -20,5 +21,8 @@ public interface ActivityGroupBoardRepository extends JpaRepository<ActivityGrou
     Long countByActivityGroupIdAndCategory(Long id, ActivityGroupBoardCategory category);
 
     List<ActivityGroupBoard> findAllChildrenByParentId(Long activityGroupBoardId);
+
+    @Query(value = "SELECT a.* FROM activity_group_board a WHERE a.is_deleted = true", nativeQuery = true)
+    Page<ActivityGroupBoard> findAllByIsDeletedTrue(Pageable pageable);
 
 }
