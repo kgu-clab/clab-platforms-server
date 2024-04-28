@@ -46,7 +46,7 @@ public class IpAuthenticationFilter implements Filter {
             }
             IPResponse ipResponse = storeIpInformation(clientIpAddress, httpRequest);
             if (isNonPermittedCountry(ipResponse)) {
-                log.warn("Access from non-permitted country: {}", ipResponse.getCountryName());
+                log.warn("[{}:{}] Access from non-permitted country", clientIpAddress, ipResponse.getCountryName());
                 return;
             }
         } catch (RateLimitedException e) {
