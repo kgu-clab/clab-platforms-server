@@ -28,6 +28,7 @@ public class BlogService {
 
     private final BlogRepository blogRepository;
 
+    @Transactional
     public Long createBlog(BlogRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Blog blog = BlogRequestDto.toEntity(requestDto, currentMember);
@@ -47,6 +48,14 @@ public class BlogService {
         Blog blog = getBlogByIdOrThrow(blogId);
         boolean isOwner = blog.isOwner(currentMember);
         return BlogDetailsResponseDto.toDto(blog, isOwner);
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<BlogDetailsResponseDto> getDeletedBlogs(Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
+        Page<Blog> blogs = blogRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(blogs
+                .map(blog -> BlogDetailsResponseDto.toDto(blog, blog.isOwner(currentMember))));
     }
 
     @Transactional

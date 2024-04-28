@@ -15,8 +15,9 @@ import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.domain.CommentLike;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
-import page.clab.api.domain.comment.dto.response.CommentResponseDto;
 import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
+import page.clab.api.domain.comment.dto.response.CommentResponseDto;
+import page.clab.api.domain.comment.dto.response.DeletedCommentResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
@@ -68,6 +69,13 @@ public class CommentService {
         return new PagedResponseDto<>(commentDtos);
     }
 
+    @Transactional(readOnly = true)
+    public PagedResponseDto<DeletedCommentResponseDto> getDeletedComments(Long boardId, Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
+        Page<Comment> comments = commentRepository.findAllByIsDeletedTrueAndBoardId(boardId, pageable);
+        return new PagedResponseDto<>(comments.map(comment -> DeletedCommentResponseDto.toDto(comment, currentMember.getId())));
+    }
+
     @Transactional
     public Long updateComment(Long commentId, CommentUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
@@ -82,7 +90,8 @@ public class CommentService {
         Member currentMember = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
         comment.validateAccessPermission(currentMember);
-        commentRepository.delete(comment);
+        comment.updateIsDeleted();
+        commentRepository.save(comment);
         return comment.getId();
     }
 
@@ -100,10 +109,6 @@ public class CommentService {
             commentLikeRepository.save(newLike);
         }
         return comment.getLikes();
-    }
-
-    public boolean isCommentExistById(Long id) {
-        return commentRepository.existsById(id);
     }
 
     public Comment getCommentByIdOrThrow(Long id) {
@@ -143,10 +148,12 @@ public class CommentService {
     }
 
     private CommentResponseDto toCommentResponseDto(Comment comment, Member currentMember) {
-        boolean hasLikeByMe = checkLikeStatus(comment.getId(), currentMember.getId());
+        Boolean hasLikeByMe = checkLikeStatus(comment.getId(), currentMember.getId());
         CommentResponseDto responseDto = CommentResponseDto.toDto(comment, currentMember.getId());
-        responseDto.setHasLikeByMe(hasLikeByMe);
         responseDto.getChildren().forEach(childDto -> setLikeStatusForChildren(childDto, currentMember));
+        if (!responseDto.getIsDeleted()) {
+            responseDto.setHasLikeByMe(hasLikeByMe);
+        }
         return responseDto;
     }
 
@@ -160,7 +167,7 @@ public class CommentService {
     }
 
     private CommentMyResponseDto toCommentMyResponseDto(Comment comment, Member currentMember) {
-        boolean hasLikeByMe = checkLikeStatus(comment.getId(), currentMember.getId());
+        Boolean hasLikeByMe = checkLikeStatus(comment.getId(), currentMember.getId());
         return CommentMyResponseDto.toDto(comment, hasLikeByMe);
     }
 

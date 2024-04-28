@@ -83,6 +83,7 @@ public class ActivityGroupMemberService {
         }
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupResponseDto> getMyActivityGroups(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         List<GroupMember> groupMembers = getGroupMemberByMember(currentMember);

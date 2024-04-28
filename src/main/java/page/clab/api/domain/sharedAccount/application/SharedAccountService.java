@@ -22,6 +22,7 @@ public class SharedAccountService {
 
     private final SharedAccountRepository sharedAccountRepository;
 
+    @Transactional
     public Long createSharedAccount(SharedAccountRequestDto requestDto) {
         SharedAccount sharedAccount = SharedAccountRequestDto.toEntity(requestDto);
         validationService.checkValid(sharedAccount);
@@ -31,6 +32,12 @@ public class SharedAccountService {
     @Transactional(readOnly = true)
     public PagedResponseDto<SharedAccountResponseDto> getSharedAccounts(Pageable pageable) {
         Page<SharedAccount> sharedAccounts = sharedAccountRepository.findAllByOrderByIdAsc(pageable);
+        return new PagedResponseDto<>(sharedAccounts.map(SharedAccountResponseDto::toDto));
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<SharedAccountResponseDto> getDeletedSharedAccounts(Pageable pageable) {
+        Page<SharedAccount> sharedAccounts = sharedAccountRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(sharedAccounts.map(SharedAccountResponseDto::toDto));
     }
 

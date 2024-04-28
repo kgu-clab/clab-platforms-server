@@ -21,8 +21,8 @@ import page.clab.api.domain.award.application.AwardService;
 import page.clab.api.domain.award.dto.request.AwardRequestDto;
 import page.clab.api.domain.award.dto.request.AwardUpdateRequestDto;
 import page.clab.api.domain.award.dto.response.AwardResponseDto;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
@@ -37,11 +37,11 @@ public class AwardController {
     @Operation(summary = "[U] 수상 이력 등록", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel<Long> createAward(
+    public ApiResponse<Long> createAward(
             @Valid @RequestBody AwardRequestDto requestDto
     ) {
         Long id = awardService.createAward(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 수상 이력 조회(학번, 연도 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
@@ -49,7 +49,7 @@ public class AwardController {
             "학번, 연도 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel<PagedResponseDto<AwardResponseDto>> getAwardsByConditions(
+    public ApiResponse<PagedResponseDto<AwardResponseDto>> getAwardsByConditions(
             @RequestParam(name = "memberId", required = false) String memberId,
             @RequestParam(name = "year", required = false) Long year,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -57,42 +57,54 @@ public class AwardController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AwardResponseDto> awards = awardService.getAwardsByConditions(memberId, year, pageable);
-        return ResponseModel.success(awards);
+        return ApiResponse.success(awards);
     }
 
     @Operation(summary = "[U] 나의 수상 이력 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my")
-    public ResponseModel<PagedResponseDto<AwardResponseDto>> getMyAwards(
+    public ApiResponse<PagedResponseDto<AwardResponseDto>> getMyAwards(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<AwardResponseDto> myAwards = awardService.getMyAwards(pageable);
-        return ResponseModel.success(myAwards);
+        return ApiResponse.success(myAwards);
     }
 
     @Operation(summary = "[U] 수상 이력 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{awardId}")
-    public ResponseModel<Long> updateAward(
+    public ApiResponse<Long> updateAward(
             @PathVariable(name = "awardId") Long awardId,
             @Valid @RequestBody AwardUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = awardService.updateAward(awardId, requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 수상 이력 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{awardId}")
-    public ResponseModel<Long> deleteAward(
+    public ApiResponse<Long> deleteAward(
             @PathVariable(name = "awardId") Long awardId
     ) throws PermissionDeniedException {
         Long id = awardService.deleteAward(awardId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 수상이력 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<AwardResponseDto>> getDeletedAwards(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<AwardResponseDto> awards = awardService.getDeletedAwards(pageable);
+        return ApiResponse.success(awards);
     }
 
 }

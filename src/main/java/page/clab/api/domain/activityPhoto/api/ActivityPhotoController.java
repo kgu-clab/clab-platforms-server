@@ -21,7 +21,7 @@ import page.clab.api.domain.activityPhoto.application.ActivityPhotoService;
 import page.clab.api.domain.activityPhoto.dto.request.ActivityPhotoRequestDto;
 import page.clab.api.domain.activityPhoto.dto.response.ActivityPhotoResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/activity-photos")
@@ -35,44 +35,44 @@ public class ActivityPhotoController {
     @Operation(summary = "[A] 활동 사진 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel<Long> createActivityPhoto(
+    public ApiResponse<Long> createActivityPhoto(
             @Valid @RequestBody ActivityPhotoRequestDto requestDto
     ) {
         Long id = activityPhotoService.createActivityPhoto(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "활동 사진 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br> " +
             "공개 여부를 입력하지 않으면 전체 조회됨")
     @GetMapping("")
-    public ResponseModel<PagedResponseDto<ActivityPhotoResponseDto>> getActivityPhotosByConditions(
+    public ApiResponse<PagedResponseDto<ActivityPhotoResponseDto>> getActivityPhotosByConditions(
             @RequestParam(name = "isPublic", required = false) Boolean isPublic,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ActivityPhotoResponseDto> activityPhotos = activityPhotoService.getActivityPhotosByConditions(isPublic, pageable);
-        return ResponseModel.success(activityPhotos);
+        return ApiResponse.success(activityPhotos);
     }
 
     @Operation(summary = "활동 사진 고정/해제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{activityPhotoId}")
-    public ResponseModel<Long> togglePublicStatus(
+    public ApiResponse<Long> togglePublicStatus(
             @PathVariable(name = "activityPhotoId") Long activityPhotoId
     ) {
         Long id = activityPhotoService.togglePublicStatus(activityPhotoId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[A] 활동 사진 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{activityPhotoId}")
-    public ResponseModel<Long> deleteActivityPhoto(
+    public ApiResponse<Long> deleteActivityPhoto(
             @PathVariable(name = "activityPhotoId") Long activityPhotoId
     ) {
         Long id = activityPhotoService.deleteActivityPhoto(activityPhotoId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
 }

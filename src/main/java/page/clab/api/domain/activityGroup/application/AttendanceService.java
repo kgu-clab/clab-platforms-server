@@ -61,6 +61,7 @@ public class AttendanceService {
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    @Transactional
     public String generateAttendanceQRCode(Long activityGroupId) throws IOException, WriterException, PermissionDeniedException, IllegalAccessException {
         Member currentMember = memberService.getCurrentMember();
         ActivityGroup activityGroup = validateAttendanceQRCodeGeneration(activityGroupId, currentMember);
@@ -79,6 +80,7 @@ public class AttendanceService {
         return fileService.saveQRCodeImage(QRCodeImage, path, 1, nowDateTime);
     }
 
+    @Transactional
     public Long checkMemberAttendance(AttendanceRequestDto requestDto) throws IllegalAccessException {
         Member currentMember = memberService.getCurrentMember();
         ActivityGroup activityGroup = validateMemberForAttendance(currentMember, requestDto.getActivityGroupId());
@@ -103,6 +105,7 @@ public class AttendanceService {
         return new PagedResponseDto<>(attendances.map(AttendanceResponseDto::toDto));
     }
 
+    @Transactional
     public Long writeAbsentExcuse(AbsentRequestDto requestDto) throws IllegalAccessException, DuplicateAbsentExcuseException {
         Member absentee = memberService.getMemberByIdOrThrow(requestDto.getAbsenteeId());
         ActivityGroup activityGroup = getValidActivityGroup(requestDto.getActivityGroupId());

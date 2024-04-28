@@ -15,9 +15,13 @@ public class BoardCategoryResponseDto {
 
     private String category;
 
+    private String writerId;
+
     private String writerName;
 
     private String title;
+
+    private String imageUrl;
 
     private LocalDateTime createdAt;
 
@@ -25,8 +29,10 @@ public class BoardCategoryResponseDto {
         return BoardCategoryResponseDto.builder()
                 .id(board.getId())
                 .category(board.getCategory().getKey())
+                .writerId(board.isWantAnonymous() ? null : board.getMember().getId())
                 .writerName(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
                 .title(board.getTitle())
+                .imageUrl(board.getImageUrl())
                 .createdAt(board.getCreatedAt())
                 .build();
     }

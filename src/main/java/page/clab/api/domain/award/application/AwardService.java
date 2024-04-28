@@ -27,6 +27,7 @@ public class AwardService {
 
     private final AwardRepository awardRepository;
 
+    @Transactional
     public Long createAward(AwardRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Award award = AwardRequestDto.toEntity(requestDto, currentMember);
@@ -63,6 +64,12 @@ public class AwardService {
         award.validateAccessPermission(currentMember);
         awardRepository.delete(award);
         return award.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<AwardResponseDto> getDeletedAwards(Pageable pageable) {
+        Page<Award> awards = awardRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(awards.map(AwardResponseDto::toDto));
     }
 
     private Award getAwardByIdOrThrow(Long awardId) {

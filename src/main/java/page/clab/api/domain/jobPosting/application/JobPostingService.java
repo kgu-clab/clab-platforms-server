@@ -25,6 +25,7 @@ public class JobPostingService {
 
     private final JobPostingRepository jobPostingRepository;
 
+    @Transactional
     public Long createJobPosting(JobPostingRequestDto requestDto) {
         JobPosting jobPosting = jobPostingRepository.findByJobPostingUrl(requestDto.getJobPostingUrl())
                 .map(existingJobPosting -> existingJobPosting.updateFromRequestDto(requestDto))
@@ -45,6 +46,12 @@ public class JobPostingService {
         return JobPostingDetailsResponseDto.toDto(jobPosting);
     }
 
+    @Transactional(readOnly = true)
+    public PagedResponseDto<JobPostingDetailsResponseDto> getDeletedJobPostings(Pageable pageable) {
+        Page<JobPosting> jobPostings = jobPostingRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(jobPostings.map(JobPostingDetailsResponseDto::toDto));
+    }
+
     @Transactional
     public Long updateJobPosting(Long jobPostingId, JobPostingUpdateRequestDto requestDto) {
         JobPosting jobPosting = getJobPostingByIdOrThrow(jobPostingId);
@@ -61,7 +68,7 @@ public class JobPostingService {
 
     public JobPosting getJobPostingByIdOrThrow(Long jobPostingId) {
         return jobPostingRepository.findById(jobPostingId)
-                    .orElseThrow(() -> new NotFoundException("존재하지 않는 채용 공고입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 채용 공고입니다."));
     }
 
 }

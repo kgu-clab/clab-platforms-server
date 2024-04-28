@@ -36,6 +36,7 @@ public class NotificationService {
         this.memberService = memberService;
     }
 
+    @Transactional
     public Long createNotification(NotificationRequestDto requestDto) {
         Member member = memberService.getMemberByIdOrThrow(requestDto.getMemberId());
         Notification notification = NotificationRequestDto.toEntity(requestDto, member);
@@ -47,6 +48,12 @@ public class NotificationService {
     public PagedResponseDto<NotificationResponseDto> getNotifications(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Notification> notifications = getNotificationByMember(currentMember, pageable);
+        return new PagedResponseDto<>(notifications.map(NotificationResponseDto::toDto));
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<NotificationResponseDto> getDeletedNotifications(Pageable pageable) {
+        Page<Notification> notifications = notificationRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(notifications.map(NotificationResponseDto::toDto));
     }
 

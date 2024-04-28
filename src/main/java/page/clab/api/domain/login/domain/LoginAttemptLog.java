@@ -1,5 +1,6 @@
 package page.clab.api.domain.login.domain;
 
+import io.ipinfo.api.model.IPResponse;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -42,12 +43,12 @@ public class LoginAttemptLog extends BaseEntity {
 
     private LocalDateTime loginAttemptTime;
 
-    public static LoginAttemptLog create(String memberId, HttpServletRequest httpServletRequest, String ipAddress, GeoIpInfo geoIpInfo, LoginAttemptResult loginAttemptResult) {
+    public static LoginAttemptLog create(String memberId, HttpServletRequest httpServletRequest, String ipAddress, IPResponse ipResponse, LoginAttemptResult loginAttemptResult) {
         return LoginAttemptLog.builder()
                 .memberId(memberId)
                 .userAgent(httpServletRequest.getHeader("User-Agent"))
                 .ipAddress(ipAddress)
-                .location(geoIpInfo.getLocation())
+                .location(ipResponse == null ? "Unknown" : ipResponse.getCountryName() + ", " + ipResponse.getCity())
                 .loginAttemptResult(loginAttemptResult)
                 .loginAttemptTime(LocalDateTime.now())
                 .build();

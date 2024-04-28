@@ -16,6 +16,7 @@ import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
 import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
+import page.clab.api.domain.board.dto.response.BoardMyResponseDto;
 import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
@@ -77,10 +78,10 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<BoardCategoryResponseDto> getMyBoards(Pageable pageable) {
+    public PagedResponseDto<BoardMyResponseDto> getMyBoards(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Board> boards = getBoardByMember(pageable, currentMember);
-        return new PagedResponseDto<>(boards.map(BoardCategoryResponseDto::toDto));
+        return new PagedResponseDto<>(boards.map(BoardMyResponseDto::toDto));
     }
 
     @Transactional(readOnly = true)
@@ -110,9 +111,16 @@ public class BoardService {
         } else {
             board.incrementLikes();
             BoardLike newBoardLike = BoardLike.create(currentMember.getId(), board.getId());
+            validationService.checkValid(newBoardLike);
             boardLikeRepository.save(newBoardLike);
         }
         return board.getLikes();
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<BoardListResponseDto> getDeletedBoards(Pageable pageable) {
+        Page<Board> boards = boardRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(boards.map(this::mapToBoardListResponseDto));
     }
 
     public Long deleteBoard(Long boardId) throws PermissionDeniedException {
@@ -132,10 +140,6 @@ public class BoardService {
     public Board getBoardByIdOrThrow(Long boardId) {
         return boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundException("해당 게시글이 존재하지 않습니다."));
-    }
-
-    public boolean isBoardExistById(Long boardId) {
-        return boardRepository.existsById(boardId);
     }
 
     private Page<Board> getBoardByMember(Pageable pageable, Member member) {

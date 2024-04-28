@@ -29,6 +29,8 @@ public class BoardDetailsResponseDto {
 
     private List<UploadedFileResponseDto> files;
 
+    private String imageUrl;
+
     private Long likes;
 
     private boolean hasLikeByMe;
@@ -48,6 +50,7 @@ public class BoardDetailsResponseDto {
                 .title(board.getTitle())
                 .content(board.getContent())
                 .files(UploadedFileResponseDto.toDto(board.getUploadedFiles()))
+                .imageUrl(board.getImageUrl())
                 .likes(board.getLikes())
                 .hasLikeByMe(hasLikeByMe)
                 .isOwner(isOwner)

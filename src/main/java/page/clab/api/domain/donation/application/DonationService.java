@@ -29,6 +29,7 @@ public class DonationService {
 
     private final DonationRepository donationRepository;
 
+    @Transactional
     public Long createDonation(DonationRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         Donation donation = DonationRequestDto.toEntity(requestDto, currentMember);
@@ -46,6 +47,12 @@ public class DonationService {
     public PagedResponseDto<DonationResponseDto> getMyDonations(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Donation> donations = getDonationsByDonor(currentMember, pageable);
+        return new PagedResponseDto<>(donations.map(DonationResponseDto::toDto));
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<DonationResponseDto> getDeletedDonations(Pageable pageable) {
+        Page<Donation> donations = donationRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(donations.map(DonationResponseDto::toDto));
     }
 

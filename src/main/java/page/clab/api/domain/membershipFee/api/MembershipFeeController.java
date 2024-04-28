@@ -22,8 +22,8 @@ import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeUpdateRequestDto;
 import page.clab.api.domain.membershipFee.dto.response.MembershipFeeResponseDto;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
@@ -38,11 +38,11 @@ public class MembershipFeeController {
     @Operation(summary = "[U] 회비 신청", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel<Long> createMembershipFee(
+    public ApiResponse<Long> createMembershipFee(
             @Valid @RequestBody MembershipFeeRequestDto requestDto
     ) {
         Long id = membershipFeeService.createMembershipFee(requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 회비 정보 조회(멤버 ID, 멤버 이름, 카테고리, 상태 기준)", description = "ROLE_USER 이상의 권한이 필요함<br> " +
@@ -51,7 +51,7 @@ public class MembershipFeeController {
             "계좌 정보는 관리자 이상의 권한만 조회 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel<PagedResponseDto<MembershipFeeResponseDto>> getMembershipFeesByConditions(
+    public ApiResponse<PagedResponseDto<MembershipFeeResponseDto>> getMembershipFeesByConditions(
             @RequestParam(name = "memberId", required = false) String memberId,
             @RequestParam(name = "memberName", required = false) String memberName,
             @RequestParam(name = "category", required = false) String category,
@@ -61,28 +61,40 @@ public class MembershipFeeController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<MembershipFeeResponseDto> membershipFees = membershipFeeService.getMembershipFeesByConditions(memberId, memberName, category, status, pageable);
-        return ResponseModel.success(membershipFees);
+        return ApiResponse.success(membershipFees);
     }
 
     @Operation(summary = "[S] 회비 정보 수정", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PatchMapping("/{membershipFeeId}")
-    public ResponseModel<Long> updateMembershipFee(
+    public ApiResponse<Long> updateMembershipFee(
             @PathVariable(name = "membershipFeeId") Long membershipFeeId,
             @Valid @RequestBody MembershipFeeUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = membershipFeeService.updateMembershipFee(membershipFeeId, requestDto);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[S] 회비 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{membershipFeeId}")
-    public ResponseModel<Long> deleteMembershipFee(
+    public ApiResponse<Long> deleteMembershipFee(
             @PathVariable(name = "membershipFeeId") Long membershipFeeId
     ) throws PermissionDeniedException {
         Long id = membershipFeeService.deleteMembershipFee(membershipFeeId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 회비 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<MembershipFeeResponseDto>> getDeletedMembershipFees(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<MembershipFeeResponseDto> membershipFees = membershipFeeService.getDeletedMembershipFees(pageable);
+        return ApiResponse.success(membershipFees);
     }
 
 }

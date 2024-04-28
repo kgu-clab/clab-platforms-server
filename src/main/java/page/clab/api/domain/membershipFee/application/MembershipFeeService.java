@@ -31,6 +31,7 @@ public class MembershipFeeService {
 
     private final MembershipFeeRepository membershipFeeRepository;
 
+    @Transactional
     public Long createMembershipFee(MembershipFeeRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         MembershipFee membershipFee = MembershipFeeRequestDto.toEntity(requestDto, currentMember);
@@ -45,6 +46,14 @@ public class MembershipFeeService {
         boolean isAdminOrSuper = currentMember.isAdminRole();
         Page<MembershipFee> membershipFeesPage = membershipFeeRepository.findByConditions(memberId, memberName, category, status, pageable);
         return new PagedResponseDto<>(membershipFeesPage.map(membershipFee -> MembershipFeeResponseDto.toDto(membershipFee, isAdminOrSuper)));
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<MembershipFeeResponseDto> getDeletedMembershipFees(Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
+        boolean isAdminOrSuper = currentMember.isAdminRole();
+        Page<MembershipFee> membershipFees = membershipFeeRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(membershipFees.map(membershipFee -> MembershipFeeResponseDto.toDto(membershipFee, isAdminOrSuper)));
     }
 
     @Transactional

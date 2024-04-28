@@ -14,6 +14,7 @@ import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
 import page.clab.api.domain.book.dto.response.BookDetailsResponseDto;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
+import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -27,6 +28,7 @@ public class BookService {
 
     private final BookLoanRecordRepository bookLoanRecordRepository;
 
+    @Transactional
     public Long createBook(BookRequestDto requestDto) {
         Book book = BookRequestDto.toEntity(requestDto);
         return bookRepository.save(book).getId();
@@ -44,6 +46,12 @@ public class BookService {
         return mapToBookDetailsResponseDto(book);
     }
 
+    @Transactional(readOnly = true)
+    public PagedResponseDto<BookDetailsResponseDto> getDeletedBooks(Pageable pageable) {
+        Page<Book> books = bookRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(books.map(this::mapToBookDetailsResponseDto));
+    }
+
     @Transactional
     public Long updateBookInfo(Long bookId, BookUpdateRequestDto bookUpdateRequestDto) {
         Book book = getBookByIdOrThrow(bookId);
@@ -53,7 +61,8 @@ public class BookService {
 
     public Long deleteBook(Long bookId) {
         Book book = getBookByIdOrThrow(bookId);
-        bookRepository.delete(book);
+        book.updateIsDeleted(true);
+        bookRepository.save(book);
         return book.getId();
     }
 
@@ -65,6 +74,10 @@ public class BookService {
     public BookLoanRecord getBookLoanRecordByBookAndReturnedAtIsNull(Book book) {
         return bookLoanRecordRepository.findByBookAndReturnedAtIsNull(book)
                 .orElse(null);
+    }
+
+    public int getNumberOfBooksBorrowedByMember(Member member) {
+        return bookRepository.countByBorrower(member);
     }
 
     private LocalDateTime getDueDateForBook(Book book) {

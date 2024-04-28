@@ -26,6 +26,7 @@ public class PositionService {
 
     private final PositionRepository positionRepository;
 
+    @Transactional
     public Long createPosition(PositionRequestDto requestDto) {
         Member member = memberService.getMemberByIdOrThrow(requestDto.getMemberId());
         return positionRepository.findByMemberAndYearAndPositionType(member, requestDto.getYear(), requestDto.getPositionType())
@@ -50,6 +51,12 @@ public class PositionService {
             throw new NotFoundException("해당 멤버의 " + year + "년도 직책이 존재하지 않습니다.");
         }
         return PositionMyResponseDto.toDto(positions);
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<PositionResponseDto> getDeletedPositions(Pageable pageable) {
+        Page<Position> positions = positionRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(positions.map(PositionResponseDto::toDto));
     }
 
     public Long deletePosition(Long positionId) {

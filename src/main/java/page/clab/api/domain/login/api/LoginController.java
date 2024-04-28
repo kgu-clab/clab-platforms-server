@@ -24,7 +24,7 @@ import page.clab.api.domain.login.dto.response.LoginHeader;
 import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 
 import java.util.List;
 
@@ -42,67 +42,67 @@ public class LoginController {
 
     @Operation(summary = "멤버 로그인", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("")
-    public ResponseModel login(
+    public ApiResponse login(
             HttpServletRequest request,
             HttpServletResponse response,
             @Valid @RequestBody LoginRequestDto requestDto
     ) throws MemberLockedException, LoginFaliedException {
         LoginHeader headerData = loginService.login(request, requestDto);
         response.setHeader(authHeader, headerData.toJson());
-        return ResponseModel.success();
+        return ApiResponse.success();
     }
 
     @Operation(summary = "TOTP 인증", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("/authenticator")
-    public ResponseModel authenticator(
+    public ApiResponse authenticator(
             HttpServletRequest request,
             HttpServletResponse response,
             @Valid @RequestBody TwoFactorAuthenticationRequestDto requestDto
     ) throws LoginFaliedException, MemberLockedException {
         TokenHeader headerData = loginService.authenticator(request, requestDto);
         response.setHeader(authHeader, headerData.toJson());
-        return ResponseModel.success();
+        return ApiResponse.success();
     }
 
     @Operation(summary = "[S] TOTP 초기화", description = "ROLE_SUPER 권한이 필요함")
     @DeleteMapping("/authenticator/{memberId}")
     @Secured({"ROLE_SUPER"})
-    public ResponseModel<String> deleteAuthenticator(
+    public ApiResponse<String> deleteAuthenticator(
             @PathVariable(name = "memberId") String memberId
     ) {
         String id = loginService.resetAuthenticator(memberId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[S] 멤버 토큰 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @DeleteMapping("/revoke/{memberId}")
     @Secured({"ROLE_SUPER"})
-    public ResponseModel<String> revoke(
+    public ApiResponse<String> revoke(
             @PathVariable(name = "memberId") String memberId
     ) {
         String id = loginService.revoke(memberId);
-        return ResponseModel.success(id);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 멤버 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/reissue")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel reissue(
+    public ApiResponse reissue(
             HttpServletRequest request,
             HttpServletResponse response
     ) {
         TokenHeader headerData = loginService.reissue(request);
         response.setHeader(authHeader, headerData.toJson());
-        return ResponseModel.success();
+        return ApiResponse.success();
     }
 
     @Operation(summary = "[S] 현재 로그인 중인 멤버 조회", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "Redis에 저장된 토큰을 조회하여 현재 로그인 중인 멤버를 조회합니다.")
     @GetMapping("/current")
     @Secured({"ROLE_SUPER"})
-    public ResponseModel<List<String>> getCurrentLoggedInUsers() {
+    public ApiResponse<List<String>> getCurrentLoggedInUsers() {
         List<String> currentLoggedInUsers = loginService.getCurrentLoggedInUsers();
-        return ResponseModel.success(currentLoggedInUsers);
+        return ApiResponse.success(currentLoggedInUsers);
     }
 
 }

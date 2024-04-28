@@ -27,6 +27,7 @@ public class WorkExperienceService {
 
     private final WorkExperienceRepository workExperienceRepository;
 
+    @Transactional
     public Long createWorkExperience(WorkExperienceRequestDto requestDto) {
         Member currentMember = memberService.getCurrentMember();
         WorkExperience workExperience = WorkExperienceRequestDto.toEntity(requestDto, currentMember);
@@ -45,6 +46,12 @@ public class WorkExperienceService {
     public PagedResponseDto<WorkExperienceResponseDto> getWorkExperiencesByConditions(String memberId, Pageable pageable) {
         Member member = memberService.getMemberByIdOrThrow(memberId);
         Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMemberOrderByStartDateDesc(member, pageable);
+        return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<WorkExperienceResponseDto> getDeletedWorkExperiences(Pageable pageable) {
+        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
     }
 

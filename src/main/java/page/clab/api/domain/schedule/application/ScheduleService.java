@@ -40,6 +40,7 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
+    @Transactional
     public Long createSchedule(ScheduleRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         ActivityGroup activityGroup = resolveActivityGroupForSchedule(requestDto, currentMember);
@@ -68,6 +69,12 @@ public class ScheduleService {
     public PagedResponseDto<ScheduleResponseDto> getActivitySchedules(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Schedule> schedules = scheduleRepository.findActivitySchedulesByDateRangeAndMember(startDate, endDate, currentMember, pageable);
+        return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<ScheduleResponseDto> getDeletedSchedules(Pageable pageable) {
+        Page<Schedule> schedules = scheduleRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
 

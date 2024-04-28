@@ -24,6 +24,7 @@ public class ActivityPhotoService {
 
     private final UploadedFileService uploadedFileService;
 
+    @Transactional
     public Long createActivityPhoto(ActivityPhotoRequestDto requestDto) {
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         ActivityPhoto activityPhoto = ActivityPhotoRequestDto.toEntity(requestDto, uploadedFiles);

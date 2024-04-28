@@ -26,6 +26,7 @@ public class NewsService {
 
     private final NewsRepository newsRepository;
 
+    @Transactional
     public Long createNews(NewsRequestDto requestDto) {
         News news = NewsRequestDto.toEntity(requestDto);
         validationService.checkValid(news);
@@ -43,6 +44,12 @@ public class NewsService {
     public NewsDetailsResponseDto getNewsDetails(Long newsId) {
         News news = getNewsByIdOrThrow(newsId);
         return NewsDetailsResponseDto.toDto(news);
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<NewsDetailsResponseDto> getDeletedNews(Pageable pageable) {
+        Page<News> newsPage = newsRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(newsPage.map(NewsDetailsResponseDto::toDto));
     }
 
     @Transactional

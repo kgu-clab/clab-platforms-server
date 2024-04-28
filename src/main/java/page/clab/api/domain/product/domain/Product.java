@@ -12,6 +12,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.product.dto.request.ProductUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
@@ -24,6 +26,8 @@ import java.util.Optional;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@SQLDelete(sql = "UPDATE product SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 public class Product extends BaseEntity {
 
     @Id

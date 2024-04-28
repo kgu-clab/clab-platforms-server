@@ -3,6 +3,7 @@ package page.clab.api.domain.book.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import page.clab.api.domain.book.domain.BookLoanStatus;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +11,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookLoanRecordResponseDto {
+
+    private Long bookLoanRecordId;
 
     private Long bookId;
 
@@ -19,6 +22,8 @@ public class BookLoanRecordResponseDto {
 
     private String borrowerId;
 
+    private String borrowerName;
+
     private LocalDateTime borrowedAt;
 
     private LocalDateTime returnedAt;
@@ -26,5 +31,7 @@ public class BookLoanRecordResponseDto {
     private LocalDateTime dueDate;
 
     private Long loanExtensionCount;
+
+    private BookLoanStatus status;
 
 }

@@ -25,6 +25,8 @@ public class BoardListResponseDto {
 
     private Long commentCount;
 
+    private String imageUrl;
+
     private LocalDateTime createdAt;
 
     public static BoardListResponseDto toDto(Board board, Long commentCount) {
@@ -36,6 +38,7 @@ public class BoardListResponseDto {
                 .title(board.getTitle())
                 .content(board.getContent())
                 .commentCount(commentCount)
+                .imageUrl(board.getImageUrl())
                 .createdAt(board.getCreatedAt())
                 .build();
     }
