@@ -3,6 +3,8 @@ package page.clab.api.global.common.slack.application;
 import com.slack.api.Slack;
 import com.slack.api.webhook.Payload;
 import com.slack.api.webhook.WebhookResponse;
+import io.ipinfo.api.model.IPResponse;
+import io.ipinfo.spring.strategies.attribute.AttributeStrategy;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,10 +32,14 @@ import java.util.concurrent.CompletableFuture;
 public class SlackService {
 
     private final Slack slack = Slack.getInstance();
+
     private final String webhookUrl;
 
-    public SlackService(@Value("${slack.webhook.url}") String webhookUrl) {
+    private final AttributeStrategy attributeStrategy;
+
+    public SlackService(@Value("${slack.webhook.url}") String webhookUrl, AttributeStrategy attributeStrategy) {
         this.webhookUrl = webhookUrl;
+        this.attributeStrategy = attributeStrategy;
     }
 
     public CompletableFuture<Boolean> sendServerErrorNotification(HttpServletRequest request, Exception e) {
@@ -55,9 +61,11 @@ public class SlackService {
         String requestUrl = request.getRequestURI();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
+        IPResponse ipResponse = attributeStrategy.getAttribute(request);
+        String location = ipResponse == null ? "Unknown" : ipResponse.getCountryName() + ", " + ipResponse.getCity();
 
-        String message = String.format(":red_circle: *%s [%s] - %s*\n>*User*: %s\n>*Endpoint*: %s\n>*Details*: `%s`\n>```%s```",
-                alertType.getTitle(), clientIpAddress, serverTime, username, requestUrl, alertType.getDefaultMessage(), additionalMessage);
+        String message = String.format(":red_circle: *%s [%s] - %s*\n>*User*: %s\n>*Location*: %s\n>*Endpoint*: %s\n>*Details*: `%s`\n>```%s```",
+                alertType.getTitle(), clientIpAddress, serverTime, username, location, requestUrl, alertType.getDefaultMessage(), additionalMessage);
         return sendSlackMessage(message);
     }
 

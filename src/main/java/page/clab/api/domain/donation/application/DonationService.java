@@ -50,6 +50,12 @@ public class DonationService {
         return new PagedResponseDto<>(donations.map(DonationResponseDto::toDto));
     }
 
+    @Transactional(readOnly = true)
+    public PagedResponseDto<DonationResponseDto> getDeletedDonations(Pageable pageable) {
+        Page<Donation> donations = donationRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(donations.map(DonationResponseDto::toDto));
+    }
+
     @Transactional
     public Long updateDonation(Long donationId, DonationUpdateRequestDto donationUpdateRequestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
