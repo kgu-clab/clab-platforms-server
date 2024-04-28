@@ -10,7 +10,6 @@ import page.clab.api.domain.application.domain.ApplicationId;
 
 import java.util.List;
 import java.util.Optional;
-import page.clab.api.domain.board.domain.Board;
 
 public interface ApplicationRepository extends JpaRepository<Application, ApplicationId>, ApplicationRepositoryCustom, QuerydslPredicateExecutor<Application> {
 

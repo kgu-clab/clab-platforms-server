@@ -1,8 +1,6 @@
 package page.clab.api.global.handler;
 
 import com.google.gson.stream.MalformedJsonException;
-import com.maxmind.geoip2.exception.AddressNotFoundException;
-import com.maxmind.geoip2.exception.GeoIp2Exception;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -51,8 +49,8 @@ import page.clab.api.global.auth.exception.TokenMisuseException;
 import page.clab.api.global.auth.exception.TokenNotFoundException;
 import page.clab.api.global.auth.exception.TokenValidateException;
 import page.clab.api.global.auth.exception.UnAuthorizeException;
-import page.clab.api.global.common.dto.ErrorResponse;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.common.dto.ErrorResponse;
 import page.clab.api.global.common.file.exception.AssignmentFileUploadFailException;
 import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
 import page.clab.api.global.common.file.exception.FileUploadFailException;
@@ -125,7 +123,6 @@ public class GlobalExceptionHandler {
             NotFoundException.class,
             NoSuchElementException.class,
             FileNotFoundException.class,
-            AddressNotFoundException.class,
     })
     public ApiResponse<List<?>> notFoundException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
@@ -172,7 +169,6 @@ public class GlobalExceptionHandler {
             IllegalStateException.class,
             FileUploadFailException.class,
             DataIntegrityViolationException.class,
-            GeoIp2Exception.class,
             IOException.class,
             WebClientRequestException.class,
             TransactionSystemException.class,

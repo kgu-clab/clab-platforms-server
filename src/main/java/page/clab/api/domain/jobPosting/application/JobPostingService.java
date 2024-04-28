@@ -5,8 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.jobPosting.dao.JobPostingRepository;
 import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
@@ -69,7 +67,7 @@ public class JobPostingService {
 
     public JobPosting getJobPostingByIdOrThrow(Long jobPostingId) {
         return jobPostingRepository.findById(jobPostingId)
-                    .orElseThrow(() -> new NotFoundException("존재하지 않는 채용 공고입니다."));
+                .orElseThrow(() -> new NotFoundException("존재하지 않는 채용 공고입니다."));
     }
 
 }

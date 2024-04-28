@@ -22,9 +22,8 @@ import page.clab.api.domain.blog.dto.request.BlogRequestDto;
 import page.clab.api.domain.blog.dto.request.BlogUpdateRequestDto;
 import page.clab.api.domain.blog.dto.response.BlogDetailsResponseDto;
 import page.clab.api.domain.blog.dto.response.BlogResponseDto;
-import page.clab.api.domain.board.dto.response.BoardListResponseDto;
-import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController

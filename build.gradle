@@ -1,116 +1,111 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.2.1'
-	id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+    id 'org.springframework.boot' version '3.2.1'
+    id 'io.spring.dependency-management' version '1.1.4'
 }
 
 group = 'page.clab'
 version = '0.0.1-SNAPSHOT'
 
 jar {
-	enabled = false
+    enabled = false
 }
 
 bootJar {
-	archivesBaseName = "clab"
-	archiveVersion = "1.0.0"
+    archivesBaseName = "clab"
+    archiveFileName = "clab.jar"
+    archiveVersion = "1.0.0"
 
-	from("/src/main/resources") {
-		into 'BOOT-INF/classes'
-		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	}
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-	if (project.hasProperty('prod')) {
-		archiveFileName = "clab-prod.jar"
-	} else if (project.hasProperty('stage')) {
-		archiveFileName = "clab-stage.jar"
-	} else {
-		archiveFileName = "clab.jar"
-	}
+    if (project.hasProperty('prod')) {
+        archiveFileName = "clab-prod.jar"
+    } else if (project.hasProperty('stage')) {
+        archiveFileName = "clab-stage.jar"
+    } else {
+        archiveFileName = "clab.jar"
+    }
 }
 
 test {
-	systemProperty 'spring.profiles.active', findProperty('env') ?: 'dev'
+    systemProperty 'spring.profiles.active', findProperty('env') ?: 'dev'
 }
 
-
 java {
-	sourceCompatibility = '21'
+    sourceCompatibility = '21'
 }
 
 repositories {
-	mavenCentral()
-	maven { url 'https://jitpack.io' }
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-	// Spring Project
-	implementation 'org.springframework.boot:spring-boot-starter-actuator' // 모니터링
-	implementation 'org.springframework.boot:spring-boot-starter-web' // 웹 MVC
-	implementation 'org.springframework.boot:spring-boot-starter-validation' // 유효성 검사
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 템플릿 엔진
-	implementation 'org.springframework.boot:spring-boot-starter-webflux' // WebFlux
-	developmentOnly 'org.springframework.boot:spring-boot-devtools' // 개발 도구
+    // Spring Project
+    implementation 'org.springframework.boot:spring-boot-starter-actuator' // 모니터링
+    implementation 'org.springframework.boot:spring-boot-starter-web' // 웹 MVC
+    implementation 'org.springframework.boot:spring-boot-starter-validation' // 유효성 검사
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 템플릿 엔진
+    implementation 'org.springframework.boot:spring-boot-starter-webflux' // WebFlux
+    developmentOnly 'org.springframework.boot:spring-boot-devtools' // 개발 도구
 
-	// Util
-	compileOnly 'org.projectlombok:lombok' // 롬복
-	annotationProcessor 'org.projectlombok:lombok' // 롬복
-	implementation 'com.google.code.gson:gson:2.10.1' // JSON 라이브러리
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0' // Swagger
-	implementation 'commons-io:commons-io:2.15.1' // Apache Commons IO
-	implementation 'com.google.guava:guava:33.0.0-jre' // Google Core Libraries For Java
-	implementation 'org.springframework.boot:spring-boot-starter-mail' // Spring Mail
-	implementation 'com.google.zxing:core:3.4.1' // QR 코드
-	implementation 'com.google.zxing:javase:3.4.1' // QR 코드
-	implementation 'com.slack.api:slack-api-client:1.38.0' // Slack API
+    // Util
+    compileOnly 'org.projectlombok:lombok' // 롬복
+    annotationProcessor 'org.projectlombok:lombok' // 롬복
+    implementation 'com.google.code.gson:gson:2.10.1' // JSON 라이브러리
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0' // Swagger
+    implementation 'commons-io:commons-io:2.15.1' // Apache Commons IO
+    implementation 'com.google.guava:guava:33.0.0-jre' // Google Core Libraries For Java
+    implementation 'org.springframework.boot:spring-boot-starter-mail' // Spring Mail
+    implementation 'com.google.zxing:core:3.4.1' // QR 코드
+    implementation 'com.google.zxing:javase:3.4.1' // QR 코드
+    implementation 'com.slack.api:slack-api-client:1.38.0' // Slack API
+    implementation 'io.ipinfo:ipinfo-spring:0.3.1' // IPInfo
 
-	// DB
-	implementation 'org.postgresql:postgresql:42.7.1' // PostgreSQL JDBC Driver
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis' // Redis
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
-	implementation 'org.springframework.boot:spring-boot-starter-validation' // Hibernate Validator
-	implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final' // Bean Validation
-	implementation 'jakarta.validation:jakarta.validation-api:3.0.2' // Jakarta Bean Validation
-	implementation 'com.maxmind.geoip2:geoip2:4.2.0' // GeoIP2
 
-	// QueryDSL
-	implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
-	annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
-	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    // DB
+    implementation 'org.postgresql:postgresql:42.7.1' // PostgreSQL JDBC Driver
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis' // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
+    implementation 'org.springframework.boot:spring-boot-starter-validation' // Hibernate Validator
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final' // Bean Validation
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2' // Jakarta Bean Validation
 
-	// Security
-	implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
-	implementation 'com.warrenstrange:googleauth:1.5.0' // Google Authenticator
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5' // JWT 라이브러리
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // JWT 구현체
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JWT Jackson 모듈
+    // QueryDSL
+    implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
-	// XSS Filter
-	implementation 'com.navercorp.lucy:lucy-xss-servlet:2.0.1' // Lucy XSS Servlet Filter
-	implementation 'com.navercorp.lucy:lucy-xss:1.6.3' // Lucy XSS Filter
-	implementation 'org.apache.commons:commons-text:1.11.0' // Apache Commons Text
+    // Security
+    implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
+    implementation 'com.warrenstrange:googleauth:1.5.0' // Google Authenticator
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5' // JWT 라이브러리
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // JWT 구현체
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JWT Jackson 모듈
 
-	// Test
-	testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot Test
-	testImplementation 'org.springframework.security:spring-security-test' // Spring Security Test
+    // XSS Filter
+    implementation 'com.navercorp.lucy:lucy-xss-servlet:2.0.1' // Lucy XSS Servlet Filter
+    implementation 'com.navercorp.lucy:lucy-xss:1.6.3' // Lucy XSS Filter
+    implementation 'org.apache.commons:commons-text:1.11.0' // Apache Commons Text
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot Test
+    testImplementation 'org.springframework.security:spring-security-test' // Spring Security Test
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
 
 sourceSets {
-	main.java.srcDirs += [ querydslDir ]
+    main.java.srcDirs += [ querydslDir ]
 }
 
 tasks.withType(JavaCompile) {
-	options.generatedSourceOutputDirectory = file(querydslDir)
+    options.generatedSourceOutputDirectory = file(querydslDir)
 }
 
 clean.doLast {
-	file(querydslDir).deleteDir()
+    file(querydslDir).deleteDir()
 }

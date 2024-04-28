@@ -11,8 +11,6 @@ import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
-import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.dao.ScheduleRepository;

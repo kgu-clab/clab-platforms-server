@@ -16,14 +16,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.position.application.PositionService;
 import page.clab.api.domain.position.domain.PositionType;
 import page.clab.api.domain.position.dto.request.PositionRequestDto;
 import page.clab.api.domain.position.dto.response.PositionMyResponseDto;
 import page.clab.api.domain.position.dto.response.PositionResponseDto;
-import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.common.dto.PagedResponseDto;
 
 @RestController
 @RequestMapping("/api/v1/positions")

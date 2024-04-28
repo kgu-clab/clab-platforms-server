@@ -21,9 +21,8 @@ import page.clab.api.domain.award.application.AwardService;
 import page.clab.api.domain.award.dto.request.AwardRequestDto;
 import page.clab.api.domain.award.dto.request.AwardUpdateRequestDto;
 import page.clab.api.domain.award.dto.response.AwardResponseDto;
-import page.clab.api.domain.board.dto.response.BoardListResponseDto;
-import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController

@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupReport;
-import page.clab.api.domain.award.domain.Award;
 
 @Repository
 public interface ActivityGroupReportRepository extends JpaRepository<ActivityGroupReport, Long> {

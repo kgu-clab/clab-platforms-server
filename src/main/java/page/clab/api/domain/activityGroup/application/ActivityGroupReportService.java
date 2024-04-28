@@ -14,8 +14,6 @@ import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportRequest
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupReportResponseDto;
 import page.clab.api.domain.activityGroup.exception.DuplicateReportException;
-import page.clab.api.domain.award.domain.Award;
-import page.clab.api.domain.award.dto.response.AwardResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;

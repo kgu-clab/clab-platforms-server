@@ -21,9 +21,8 @@ import page.clab.api.domain.activityGroup.application.ActivityGroupReportService
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupReportResponseDto;
-import page.clab.api.domain.award.dto.response.AwardResponseDto;
-import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController

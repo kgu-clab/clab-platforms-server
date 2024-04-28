@@ -13,7 +13,6 @@ import page.clab.api.domain.application.domain.ApplicationId;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.application.dto.response.ApplicationPassResponseDto;
 import page.clab.api.domain.application.dto.response.ApplicationResponseDto;
-import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.recruitment.application.RecruitmentService;
 import page.clab.api.domain.recruitment.domain.Recruitment;
@@ -44,7 +43,7 @@ public class ApplicationService {
         validationService.checkValid(application);
 
         notificationService.sendNotificationToAdmins(requestDto.getStudentId() + " " +
-                        requestDto.getName() + "님이 동아리에 지원하였습니다.");
+                requestDto.getName() + "님이 동아리에 지원하였습니다.");
         slackService.sendApplicationNotification(request, requestDto);
         return applicationRepository.save(application).getStudentId();
     }

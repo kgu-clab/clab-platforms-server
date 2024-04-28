@@ -4,7 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.domain.Notification;
 

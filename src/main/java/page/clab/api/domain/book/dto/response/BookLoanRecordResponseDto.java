@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BookLoanRecordResponseDto {
 
+    private Long bookLoanRecordId;
+
     private Long bookId;
 
     private String bookTitle;

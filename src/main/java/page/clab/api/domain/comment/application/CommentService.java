@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.application.BoardService;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.comment.dao.CommentLikeRepository;
 import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.comment.domain.Comment;
@@ -90,10 +89,8 @@ public class CommentService {
         Member currentMember = memberService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
         comment.validateAccessPermission(currentMember);
-        if (comment != null) {
-            comment.updateIsDeleted();
-            commentRepository.save(comment);
-        }
+        comment.updateIsDeleted();
+        commentRepository.save(comment);
         return comment.getId();
     }
 
@@ -153,7 +150,7 @@ public class CommentService {
         Boolean hasLikeByMe = checkLikeStatus(comment.getId(), currentMember.getId());
         CommentResponseDto responseDto = CommentResponseDto.toDto(comment, currentMember.getId());
         responseDto.getChildren().forEach(childDto -> setLikeStatusForChildren(childDto, currentMember));
-        if (responseDto.getIsDeleted() == false) {
+        if (!responseDto.getIsDeleted()) {
             responseDto.setHasLikeByMe(hasLikeByMe);
         }
         return responseDto;
