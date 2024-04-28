@@ -1,6 +1,7 @@
 package page.clab.api.domain.login.domain;
 
 import jakarta.persistence.Column;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,8 +12,8 @@ import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @RedisHash(value = "QRCodeKey", timeToLive = 60 * 3)
 public class RedisQRKey {
 

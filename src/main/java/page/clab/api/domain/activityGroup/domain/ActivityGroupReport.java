@@ -7,59 +7,45 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportRequestDto;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportUpdateRequestDto;
+import page.clab.api.global.common.domain.BaseEntity;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ActivityGroupReport {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@SQLDelete(sql = "UPDATE activity_group_report SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
+public class ActivityGroupReport extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @Column(nullable = false)
     private Long turn;
 
     @ManyToOne
     @JoinColumn(name = "activity_group_id", nullable = false)
     private ActivityGroup activityGroup;
 
-    @NotNull
+    @Column(nullable = false)
     private String title;
 
-    @NotNull
+    @Column(nullable = false)
     private String content;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "update_time")
-    private LocalDateTime updateTime;
-
-    public static ActivityGroupReport create(Long turn, ActivityGroup activityGroup, ActivityGroupReportRequestDto reportRequestDto) {
-        return ActivityGroupReport.builder()
-                .turn(turn)
-                .activityGroup(activityGroup)
-                .title(reportRequestDto.getTitle())
-                .content(reportRequestDto.getContent())
-                .build();
-    }
 
     public void update(ActivityGroupReportUpdateRequestDto reportRequestDto) {
         Optional.ofNullable(reportRequestDto.getTurn()).ifPresent(this::setTurn);

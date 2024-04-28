@@ -10,23 +10,21 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
-import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,12 +36,13 @@ import java.util.Optional;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class Member implements UserDetails {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class Member extends BaseEntity implements UserDetails {
 
     @Id
-    @Column(updatable = false, unique = true, nullable = false)
+    @Column(nullable = false, updatable = false, unique = true)
+    @Size(min = 9, max = 9, message = "{size.member.id}")
     private String id;
 
     @JsonIgnore
@@ -93,10 +92,6 @@ public class Member implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
     private LocalDateTime lastLoginTime;
 
     private LocalDateTime loanSuspensionDate;
@@ -136,20 +131,14 @@ public class Member implements UserDetails {
         return true;
     }
 
-    public static Member of(MemberRequestDto memberRequestDto) {
-        Member member = ModelMapperUtil.getModelMapper().map(memberRequestDto, Member.class);
-        member.setContact(member.removeHyphensFromContact(member.getContact()));
-        member.setRole(Role.USER);
-        return member;
+    private Member(String id, String password, Role role) {
+        this.id = id;
+        this.password = password;
+        this.role = role;
     }
 
-    public static Member of(Application application) {
-        Member member = ModelMapperUtil.getModelMapper().map(application, Member.class);
-        member.setId(application.getStudentId());
-        member.setPassword(null);
-        member.setStudentStatus(StudentStatus.CURRENT);
-        member.setRole(Role.USER);
-        return member;
+    public static Member createUserDetails(Member member) {
+        return new Member(member.getId(), member.getPassword(), member.getRole());
     }
 
     public void update(MemberUpdateRequestDto memberUpdateRequestDto, PasswordEncoder passwordEncoder) {
@@ -182,6 +171,18 @@ public class Member implements UserDetails {
         return id.equals(memberId);
     }
 
+    public boolean isSameName(String memberName) {
+        return name.equals(memberName);
+    }
+
+    public boolean isSameEmail(String memberEmail) {
+        return email.equals(memberEmail);
+    }
+
+    public boolean isGraduated() {
+        return studentStatus.equals(StudentStatus.GRADUATED);
+    }
+
     public boolean isOwner(Member member) {
         return this.isSameMember(member);
     }
@@ -198,16 +199,16 @@ public class Member implements UserDetails {
         }
     }
 
-    public String removeHyphensFromContact(String contact) {
-        return contact.replaceAll("-", "");
-    }
-
     public void updatePassword(String password, PasswordEncoder passwordEncoder) {
         setPassword(passwordEncoder.encode(password));
     }
 
     public void updateLastLoginTime() {
         lastLoginTime = LocalDateTime.now();
+    }
+
+    public void clearImageUrl() {
+        this.imageUrl = null;
     }
 
     public void checkLoanSuspension() {

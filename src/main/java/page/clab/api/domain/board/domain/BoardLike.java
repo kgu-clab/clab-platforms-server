@@ -6,20 +6,22 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.global.common.domain.BaseEntity;
 
 @Entity
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "BoardLike", indexes = @Index(name = "boardLike_index", columnList = "memberId, boardId"))
-public class BoardLike {
+public class BoardLike extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,8 +31,11 @@ public class BoardLike {
 
     private Long boardId;
 
-    public BoardLike(String memberId, Long boardId) {
-        this.memberId = memberId;
-        this.boardId = boardId;
+    public static BoardLike create(String memberId, Long boardId) {
+        return BoardLike.builder()
+                .memberId(memberId)
+                .boardId(boardId)
+                .build();
     }
+
 }

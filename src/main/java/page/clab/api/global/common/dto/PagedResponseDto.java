@@ -1,18 +1,12 @@
 package page.clab.api.global.common.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@Builder
 public class PagedResponseDto<T> {
 
     private final int currentPage;

@@ -9,27 +9,29 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import page.clab.api.domain.donation.dto.request.DonationRequestDto;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.donation.dto.request.DonationUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.global.common.domain.BaseEntity;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Entity
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class Donation {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@SQLDelete(sql = "UPDATE donation SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
+public class Donation extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,19 +45,9 @@ public class Donation {
     @Min(value = 1, message = "{min.donation.amount}")
     private Double amount;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false)
     @Size(min = 1, max = 1000, message = "{size.donation.message}")
     private String message;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    public static Donation of(DonationRequestDto donationRequestDto, Member member) {
-        Donation donation = ModelMapperUtil.getModelMapper().map(donationRequestDto, Donation.class);
-        donation.setDonor(member);
-        return donation;
-    }
 
     public void update(DonationUpdateRequestDto donationUpdateRequestDto) {
         Optional.ofNullable(donationUpdateRequestDto.getAmount()).ifPresent(this::setAmount);

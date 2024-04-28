@@ -2,20 +2,16 @@ package page.clab.api.domain.activityPhoto.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
+import page.clab.api.global.common.file.domain.UploadedFile;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class ActivityPhotoRequestDto {
 
     @NotNull(message = "{notNull.activityPhoto.title}")
@@ -29,5 +25,14 @@ public class ActivityPhotoRequestDto {
     @NotNull(message = "{notNull.activityPhoto.date}")
     @Schema(description = "활동 날짜", example = "2021-01-01", required = true)
     private LocalDate date;
+
+    public static ActivityPhoto toEntity(ActivityPhotoRequestDto requestDto, List<UploadedFile> uploadedFiles) {
+        return ActivityPhoto.builder()
+                .title(requestDto.getTitle())
+                .uploadedFiles(uploadedFiles)
+                .date(requestDto.getDate())
+                .isPublic(false)
+                .build();
+    }
 
 }

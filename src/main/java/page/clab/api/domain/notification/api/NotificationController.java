@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.domain.notification.dto.response.NotificationResponseDto;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
-@RequestMapping("/notifications")
+@RequestMapping("/api/v1/notifications")
 @RequiredArgsConstructor
 @Tag(name = "Notification", description = "알림")
 @Slf4j
@@ -35,39 +35,45 @@ public class NotificationController {
     @Operation(summary = "[U] 알림 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel createNotification(
-            @Valid @RequestBody NotificationRequestDto notificationRequestDto
+    public ApiResponse<Long> createNotification(
+            @Valid @RequestBody NotificationRequestDto requestDto
     ) {
-        Long id = notificationService.createNotification(notificationRequestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        Long id = notificationService.createNotification(requestDto);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 나의 알림 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getNotifications(
+    public ApiResponse<PagedResponseDto<NotificationResponseDto>> getNotifications(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<NotificationResponseDto> notifications = notificationService.getNotifications(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(notifications);
-        return responseModel;
+        return ApiResponse.success(notifications);
     }
 
     @Operation(summary = "[U] 알림 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{notificationId}")
-    public ResponseModel deleteNotification(
+    public ApiResponse<Long> deleteNotification(
             @PathVariable(name = "notificationId") Long notificationId
     ) throws PermissionDeniedException {
         Long id = notificationService.deleteNotification(notificationId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 알림 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<NotificationResponseDto>> getDeletedNotifications(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<NotificationResponseDto> notifications = notificationService.getDeletedNotifications(pageable);
+        return ApiResponse.success(notifications);
     }
 
 }

@@ -1,11 +1,11 @@
 package page.clab.api.domain.activityGroup.application;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupDetailsRepository;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupRepository;
@@ -60,11 +60,13 @@ public class ActivityGroupMemberService {
 
     private final ActivityGroupDetailsRepository activityGroupDetailsRepository;
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupResponseDto> getActivityGroups(Pageable pageable) {
-        Page<ActivityGroup> activityGroupList = activityGroupRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
+        Page<ActivityGroup> activityGroups = activityGroupRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return new PagedResponseDto<>(activityGroups.map(ActivityGroupResponseDto::toDto));
     }
 
+    @Transactional(readOnly = true)
     public Object getActivityGroup(Long activityGroupId) {
         ActivityGroupDetails details = activityGroupDetailsRepository.fetchActivityGroupDetails(activityGroupId);
         Member currentMember = memberService.getCurrentMember();
@@ -81,31 +83,53 @@ public class ActivityGroupMemberService {
         }
     }
 
-    public PagedResponseDto<ActivityGroupStatusResponseDto> getActivityGroupsByStatus(ActivityGroupStatus activityGroupStatus, Pageable pageable) {
-        List<ActivityGroup> activityGroups = activityGroupRepository.findActivityGroupsByStatus(activityGroupStatus);
-        List<ActivityGroupStatusResponseDto> dtos = activityGroups.stream().map(activityGroup -> {
+    @Transactional(readOnly = true)
+    public PagedResponseDto<ActivityGroupResponseDto> getMyActivityGroups(Pageable pageable) {
+        Member currentMember = memberService.getCurrentMember();
+        List<GroupMember> groupMembers = getGroupMemberByMember(currentMember);
+
+        List<ActivityGroupResponseDto> activityGroups = groupMembers.stream()
+                .filter(GroupMember::isAccepted)
+                .map(GroupMember::getActivityGroup)
+                .map(ActivityGroupResponseDto::toDto)
+                .toList();
+
+        return new PagedResponseDto<>(activityGroups, pageable, activityGroups.size());
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<ActivityGroupStatusResponseDto> getActivityGroupsByStatus(ActivityGroupStatus status, Pageable pageable) {
+        List<ActivityGroup> activityGroups = activityGroupRepository.findActivityGroupsByStatus(status);
+
+        List<ActivityGroupStatusResponseDto> activityGroupDtos = activityGroups.stream().map(activityGroup -> {
             Long participantCount = groupMemberRepository.countAcceptedMembersByActivityGroupId(activityGroup.getId());
             GroupMember leader = groupMemberRepository.findLeaderByActivityGroupId(activityGroup.getId());
+
             Member leaderMember = leader != null ? leader.getMember() : null;
             Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroup.getId(), ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
-            return ActivityGroupStatusResponseDto.create(activityGroup, leaderMember, participantCount, weeklyActivityCount);
+
+            return ActivityGroupStatusResponseDto.toDto(activityGroup, leaderMember, participantCount, weeklyActivityCount);
         }).toList();
-        return new PagedResponseDto<>(dtos, pageable, dtos.size());
+
+        return new PagedResponseDto<>(activityGroupDtos, pageable, activityGroupDtos.size());
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByCategory(ActivityGroupCategory category, Pageable pageable) {
         Page<ActivityGroup> activityGroupList = getActivityGroupByCategory(category, pageable);
-        return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::of));
+        return new PagedResponseDto<>(activityGroupList.map(ActivityGroupResponseDto::toDto));
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<GroupScheduleDto> getGroupSchedules(Long activityGroupId, Pageable pageable) {
         Page<GroupSchedule> groupSchedules = getGroupScheduleByActivityGroupId(activityGroupId, pageable);
-        return new PagedResponseDto<>(groupSchedules.map(GroupScheduleDto::of));
+        return new PagedResponseDto<>(groupSchedules.map(GroupScheduleDto::toDto));
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<GroupMemberResponseDto> getActivityGroupMembers(Long activityGroupId, Pageable pageable) {
         Page<GroupMember> groupMembers = getGroupMemberByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.ACCEPTED, pageable);
-        return new PagedResponseDto<>(groupMembers.map(GroupMemberResponseDto::of));
+        return new PagedResponseDto<>(groupMembers.map(GroupMemberResponseDto::toDto));
     }
 
     @Transactional
@@ -116,16 +140,16 @@ public class ActivityGroupMemberService {
         if (isGroupMember(activityGroup, currentMember)) {
             throw new AlreadyAppliedException("해당 활동에 신청한 내역이 존재합니다.");
         }
-        ApplyForm form = ApplyForm.create(formRequestDto, activityGroup, currentMember);
+
+        ApplyForm form = ApplyFormRequestDto.toEntity(formRequestDto, activityGroup, currentMember);
         applyFormRepository.save(form);
-        GroupMember groupMember = GroupMember.create(currentMember, activityGroup, ActivityGroupRole.MEMBER, GroupMemberStatus.WAITING);
+
+        GroupMember groupMember = GroupMember.create(currentMember, activityGroup, ActivityGroupRole.NONE, GroupMemberStatus.WAITING);
         groupMemberRepository.save(groupMember);
+
         GroupMember groupLeader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         if (groupLeader != null) {
-            notificationService.sendNotificationToMember(
-                    groupLeader.getMember(),
-                    "[" + activityGroup.getName() + "] " + currentMember.getName() + "님이 활동 참가 신청을 하였습니다."
-            );
+            notificationService.sendNotificationToMember(groupLeader.getMember(), "[" + activityGroup.getName() + "] " + currentMember.getName() + "님이 활동 참가 신청을 하였습니다.");
         }
         return activityGroup.getId();
     }
@@ -165,7 +189,7 @@ public class ActivityGroupMemberService {
                 .orElse(null);
     }
 
-    public List<GroupMember> getGroupMemberByMember(Member member){
+    public List<GroupMember> getGroupMemberByMember(Member member) {
         return groupMemberRepository.findAllByMember(member);
     }
 

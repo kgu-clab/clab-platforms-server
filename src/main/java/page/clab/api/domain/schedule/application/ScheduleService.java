@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activityGroup.application.ActivityGroupAdminService;
 import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
@@ -14,8 +15,10 @@ import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.dao.ScheduleRepository;
 import page.clab.api.domain.schedule.domain.Schedule;
+import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.domain.ScheduleType;
 import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
+import page.clab.api.domain.schedule.dto.response.ScheduleCollectResponseDto;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
@@ -37,38 +40,57 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
-    public Long createSchedule(ScheduleRequestDto scheduleRequestDto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
-        ActivityGroup activityGroup = resolveActivityGroupForSchedule(scheduleRequestDto, member);
-        Schedule schedule = Schedule.create(scheduleRequestDto, member, activityGroup);
+    @Transactional
+    public Long createSchedule(ScheduleRequestDto requestDto) throws PermissionDeniedException {
+        Member currentMember = memberService.getCurrentMember();
+        ActivityGroup activityGroup = resolveActivityGroupForSchedule(requestDto, currentMember);
+        Schedule schedule = ScheduleRequestDto.toEntity(requestDto, currentMember, activityGroup);
+        schedule.validateAccessPermissionForCreation(currentMember);
         return scheduleRepository.save(schedule).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> getSchedulesWithinDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        Member member = memberService.getCurrentMember();
-        Page<Schedule> schedules = scheduleRepository.findByDateRangeAndMember(startDate, endDate, member, pageable);
-        return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::of));
+        Member currentMember = memberService.getCurrentMember();
+        Page<Schedule> schedules = scheduleRepository.findByDateRangeAndMember(startDate, endDate, currentMember, pageable);
+        return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
 
+    public PagedResponseDto<ScheduleResponseDto> getSchedulesByConditions(Integer year, Integer month, SchedulePriority priority, Pageable pageable) {
+        Page<Schedule> schedules = scheduleRepository.findByConditions(year, month, priority, pageable);
+        return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
+    }
+
+    public ScheduleCollectResponseDto getCollectSchedules() {
+        return scheduleRepository.findCollectSchedules();
+    }
+
+    @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> getActivitySchedules(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        Member member = memberService.getCurrentMember();
-        Page<Schedule> schedules = scheduleRepository.findActivitySchedulesByDateRangeAndMember(startDate, endDate, member, pageable);
-        return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::of));
+        Member currentMember = memberService.getCurrentMember();
+        Page<Schedule> schedules = scheduleRepository.findActivitySchedulesByDateRangeAndMember(startDate, endDate, currentMember, pageable);
+        return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<ScheduleResponseDto> getDeletedSchedules(Pageable pageable) {
+        Page<Schedule> schedules = scheduleRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
 
     public Long deleteSchedule(Long scheduleId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Schedule schedule = getScheduleById(scheduleId);
-        schedule.validateAccessPermission(member);
+        schedule.validateAccessPermission(currentMember);
         scheduleRepository.delete(schedule);
         return schedule.getId();
     }
 
-    private ActivityGroup resolveActivityGroupForSchedule(ScheduleRequestDto scheduleRequestDto, Member member) throws PermissionDeniedException {
-        ScheduleType scheduleType = scheduleRequestDto.getScheduleType();
+    private ActivityGroup resolveActivityGroupForSchedule(ScheduleRequestDto requestDto, Member member) throws PermissionDeniedException {
+        ScheduleType scheduleType = requestDto.getScheduleType();
         ActivityGroup activityGroup = null;
         if (!scheduleType.equals(ScheduleType.ALL)) {
-            Long activityGroupId = Optional.ofNullable(scheduleRequestDto.getActivityGroupId())
+            Long activityGroupId = Optional.ofNullable(requestDto.getActivityGroupId())
                     .orElseThrow(() -> new NullPointerException("스터디 또는 프로젝트 일정은 그룹 id를 입력해야 합니다."));
             activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
             validateMemberIsGroupLeaderOrAdmin(member, activityGroup);

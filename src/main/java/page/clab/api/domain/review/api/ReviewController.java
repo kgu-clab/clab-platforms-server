@@ -21,12 +21,12 @@ import page.clab.api.domain.review.application.ReviewService;
 import page.clab.api.domain.review.dto.request.ReviewRequestDto;
 import page.clab.api.domain.review.dto.request.ReviewUpdateRequestDto;
 import page.clab.api.domain.review.dto.response.ReviewResponseDto;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
-@RequestMapping("/reviews")
+@RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
 @Tag(name = "Review", description = "리뷰")
 @Slf4j
@@ -37,13 +37,11 @@ public class ReviewController {
     @Operation(summary = "[U] 리뷰 등록", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel createReview(
-            @Valid @RequestBody ReviewRequestDto reviewRequestDto
+    public ApiResponse<Long> createReview(
+            @Valid @RequestBody ReviewRequestDto requestDto
     ) {
-        Long id = reviewService.createReview(reviewRequestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        Long id = reviewService.createReview(requestDto);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 리뷰 목록 조회(멤버 ID, 멤버 이름, 활동 ID, 공개 여부 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
@@ -51,7 +49,7 @@ public class ReviewController {
             "멤버 ID, 멤버 이름, 활동 ID, 공개 여부 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getReviewsByConditions(
+    public ApiResponse<PagedResponseDto<ReviewResponseDto>> getReviewsByConditions(
             @RequestParam(name = "memberId", required = false) String memberId,
             @RequestParam(name = "memberName", required = false) String memberName,
             @RequestParam(name = "activityId", required = false) Long activityId,
@@ -60,49 +58,54 @@ public class ReviewController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.getReviewsByConditions(memberId, memberName, activityId, isPublic, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(reviewResponseDtos);
-        return responseModel;
+        PagedResponseDto<ReviewResponseDto> reviews = reviewService.getReviewsByConditions(memberId, memberName, activityId, isPublic, pageable);
+        return ApiResponse.success(reviews);
     }
 
     @Operation(summary = "[U] 나의 리뷰 목록", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my")
-    public ResponseModel getMyReviews(
+    public ApiResponse<PagedResponseDto<ReviewResponseDto>> getMyReviews(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ReviewResponseDto> reviewResponseDtos = reviewService.getMyReviews(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(reviewResponseDtos);
-        return responseModel;
+        PagedResponseDto<ReviewResponseDto> myReviews = reviewService.getMyReviews(pageable);
+        return ApiResponse.success(myReviews);
     }
 
     @Operation(summary = "[U] 리뷰 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{reviewId}")
-    public ResponseModel updateReview(
+    public ApiResponse<Long> updateReview(
             @PathVariable(name = "reviewId") Long reviewId,
-            @Valid @RequestBody ReviewUpdateRequestDto reviewUpdateRequestDto
+            @Valid @RequestBody ReviewUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = reviewService.updateReview(reviewId, reviewUpdateRequestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        Long id = reviewService.updateReview(reviewId, requestDto);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 리뷰 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{reviewId}")
-    public ResponseModel deleteReview(
+    public ApiResponse<Long> deleteReview(
             @PathVariable(name = "reviewId") Long reviewId
     ) throws PermissionDeniedException {
         Long id = reviewService.deleteReview(reviewId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ApiResponse.success(id);
+    }
+
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 리뷰 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<ReviewResponseDto>> getDeletedReviews(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<ReviewResponseDto> reviews = reviewService.getDeletedReviews(pageable);
+        return ApiResponse.success(reviews);
     }
 
 }

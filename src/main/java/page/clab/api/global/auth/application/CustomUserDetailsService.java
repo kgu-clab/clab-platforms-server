@@ -22,11 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private UserDetails createUserDetails(Member member) {
-        return Member.builder()
-                .id(member.getUsername())
-                .password(member.getPassword())
-                .role(member.getRole())
-                .build();
+        return Member.createUserDetails(member);
     }
 
 }

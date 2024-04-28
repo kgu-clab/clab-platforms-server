@@ -24,14 +24,16 @@ import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberWithApplyReasonResponseDto;
+import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
+import page.clab.api.domain.award.dto.response.AwardResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/activity-group/admin")
+@RequestMapping("/api/v1/activity-group/admin")
 @RequiredArgsConstructor
 @Tag(name = "ActivityGroupAdmin", description = "활동 그룹 관리")
 @Slf4j
@@ -42,108 +44,104 @@ public class ActivityGroupAdminController {
     @Operation(summary = "[U] 활동 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel createActivityGroup(
-            @Valid @RequestBody ActivityGroupRequestDto activityGroupRequestDto
+    public ApiResponse<Long> createActivityGroup(
+            @Valid @RequestBody ActivityGroupRequestDto requestDto
     ) {
-        Long id = activityGroupAdminService.createActivityGroup(activityGroupRequestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        Long id = activityGroupAdminService.createActivityGroup(requestDto);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 활동 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{activityGroupId}")
-    public ResponseModel updateActivityGroup(
+    public ApiResponse<Long> updateActivityGroup(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
-            @Valid @RequestBody ActivityGroupUpdateRequestDto activityGroupUpdateRequestDto
+            @Valid @RequestBody ActivityGroupUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = activityGroupAdminService.updateActivityGroup(activityGroupId, activityGroupUpdateRequestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        Long id = activityGroupAdminService.updateActivityGroup(activityGroupId, requestDto);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[A] 활동 상태 변경", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("manage/{activityGroupId}")
-    public ResponseModel manageActivityGroupStatus(
+    public ApiResponse<Long> manageActivityGroupStatus(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
-            @RequestParam(name = "activityGroupStatus") ActivityGroupStatus activityGroupStatus
+            @RequestParam(name = "activityGroupStatus") ActivityGroupStatus status
     ) {
-        Long id = activityGroupAdminService.manageActivityGroup(activityGroupId, activityGroupStatus);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        Long id = activityGroupAdminService.manageActivityGroup(activityGroupId, status);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[A] 활동 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{activityGroupId}")
-    public ResponseModel deleteActivityGroup(
+    public ApiResponse<Long> deleteActivityGroup(
             @PathVariable(name = "activityGroupId") Long activityGroupId
     ) {
         Long id = activityGroupAdminService.deleteActivityGroup(activityGroupId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 프로젝트 진행도 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "진행도는 0~100 사이의 값으로 입력해야 함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/progress/{activityGroupId}")
-    public ResponseModel updateProjectProgress(
+    public ApiResponse<Long> updateProjectProgress(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "progress") Long progress
     ) throws PermissionDeniedException {
         Long id = activityGroupAdminService.updateProjectProgress(activityGroupId, progress);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 커리큘럼 및 일정 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/schedule")
-    public ResponseModel addSchedule(
+    public ApiResponse<Long> addSchedule(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
-            @Valid @RequestBody List<GroupScheduleDto> groupScheduleDto
+            @Valid @RequestBody List<GroupScheduleDto> scheduleDtos
     ) throws PermissionDeniedException {
-        Long id = activityGroupAdminService.addSchedule(activityGroupId, groupScheduleDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        Long id = activityGroupAdminService.addSchedule(activityGroupId, scheduleDtos);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 활동 멤버 및 지원서 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "관리자 또는 리더만 조회 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/members")
-    public ResponseModel getApplyGroupMemberList(
+    public ApiResponse<PagedResponseDto<ActivityGroupMemberWithApplyReasonResponseDto>> getApplyGroupMemberList(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ActivityGroupMemberWithApplyReasonResponseDto> groupMembers = activityGroupAdminService.getGroupMembersWithApplyReason(activityGroupId, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(groupMembers);
-        return responseModel;
+        return ApiResponse.success(groupMembers);
     }
 
     @Operation(summary = "[U] 신청 멤버 상태 변경", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/accept")
-    public ResponseModel acceptGroupMember(
+    public ApiResponse<String> acceptGroupMember(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "memberId") String memberId,
             @RequestParam(name = "status") GroupMemberStatus status
     ) throws PermissionDeniedException {
         String id = activityGroupAdminService.manageGroupMemberStatus(activityGroupId, memberId, status);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 활동그룹 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<ActivityGroupResponseDto>> getDeletedActivityGroups(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupAdminService.getDeletedActivityGroups(pageable);
+        return ApiResponse.success(activityGroups);
     }
 
 }

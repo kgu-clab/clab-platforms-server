@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.dao.MemberRepository;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
@@ -29,31 +30,34 @@ public class MemberCloudService {
     @Value("${resource.file.path}")
     private String filePath;
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<CloudUsageInfo> getAllCloudUsages(Pageable pageable) {
         Page<Member> members = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(members.map(this::getCloudUsageForMember).getContent(), pageable, members.getSize());
+        return new PagedResponseDto<>(members.map(this::getCloudUsageForMember));
     }
 
+    @Transactional(readOnly = true)
     public CloudUsageInfo getCloudUsageByMemberId(String memberId) throws PermissionDeniedException {
         Member currentMember = getCurrentMember();
         Member targetMember = validateMemberExistence(memberId);
         targetMember.validateAccessPermissionForCloud(currentMember);
         File directory = getMemberDirectory(targetMember.getId());
         long usage = FileSystemUtil.calculateDirectorySize(directory);
-        return new CloudUsageInfo(targetMember.getId(), usage);
+        return CloudUsageInfo.create(targetMember.getId(), usage);
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<FileInfo> getFilesInMemberDirectory(String memberId, Pageable pageable) {
         validateMemberExistence(memberId);
         File directory = getMemberDirectory(memberId);
         List<File> files = FileSystemUtil.getFilesInDirectory(directory);
-        return new PagedResponseDto<>(files.stream().map(FileInfo::of).toList(), pageable, files.size());
+        return new PagedResponseDto<>(files.stream().map(FileInfo::toDto).toList(), pageable, files.size());
     }
 
     private CloudUsageInfo getCloudUsageForMember(Member member) {
         File directory = getMemberDirectory(member.getId());
         long usage = FileSystemUtil.calculateDirectorySize(directory);
-        return new CloudUsageInfo(member.getId(), usage);
+        return CloudUsageInfo.create(member.getId(), usage);
     }
 
     private Member validateMemberExistence(String memberId) {

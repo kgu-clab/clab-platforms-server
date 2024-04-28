@@ -1,17 +1,10 @@
 package page.clab.api.domain.sharedAccount.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import page.clab.api.domain.sharedAccount.domain.SharedAccount;
-import page.clab.api.global.util.ModelMapperUtil;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class SharedAccountResponseDto {
 
@@ -27,8 +20,15 @@ public class SharedAccountResponseDto {
 
     private boolean isInUse;
 
-    public static SharedAccountResponseDto of(SharedAccount sharedAccount) {
-        return ModelMapperUtil.getModelMapper().map(sharedAccount, SharedAccountResponseDto.class);
+    public static SharedAccountResponseDto toDto(SharedAccount sharedAccount) {
+        return SharedAccountResponseDto.builder()
+                .id(sharedAccount.getId())
+                .username(sharedAccount.getUsername())
+                .password(sharedAccount.getPassword())
+                .platformName(sharedAccount.getPlatformName())
+                .platformUrl(sharedAccount.getPlatformUrl())
+                .isInUse(sharedAccount.isInUse())
+                .build();
     }
 
 }

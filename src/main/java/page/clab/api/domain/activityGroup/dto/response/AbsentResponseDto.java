@@ -1,18 +1,12 @@
 package page.clab.api.domain.activityGroup.dto.response;
 
-import java.time.LocalDate;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.Absent;
-import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class AbsentResponseDto {
 
@@ -28,8 +22,15 @@ public class AbsentResponseDto {
 
     private LocalDate absentDate;
 
-    public static AbsentResponseDto of(Absent absent) {
-        return ModelMapperUtil.getModelMapper().map(absent, AbsentResponseDto.class);
+    public static AbsentResponseDto toDto(Absent absent) {
+        return AbsentResponseDto.builder()
+                .absenteeId(absent.getAbsentee().getId())
+                .absenteeName(absent.getAbsentee().getName())
+                .activityGroupId(absent.getActivityGroup().getId())
+                .activityGroupName(absent.getActivityGroup().getName())
+                .reason(absent.getReason())
+                .absentDate(absent.getAbsentDate())
+                .build();
     }
 
 }

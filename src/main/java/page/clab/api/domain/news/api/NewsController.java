@@ -22,11 +22,11 @@ import page.clab.api.domain.news.dto.request.NewsRequestDto;
 import page.clab.api.domain.news.dto.request.NewsUpdateRequestDto;
 import page.clab.api.domain.news.dto.response.NewsDetailsResponseDto;
 import page.clab.api.domain.news.dto.response.NewsResponseDto;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
 
 @RestController
-@RequestMapping("/news")
+@RequestMapping("/api/v1/news")
 @RequiredArgsConstructor
 @Tag(name = "News", description = "뉴스")
 @Slf4j
@@ -37,13 +37,11 @@ public class NewsController {
     @Operation(summary = "뉴스 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ResponseModel createNews(
-            @Valid @RequestBody NewsRequestDto newsRequestDto
+    public ApiResponse<Long> createNews(
+            @Valid @RequestBody NewsRequestDto requestDto
     ) {
-        Long id = newsService.createNews(newsRequestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        Long id = newsService.createNews(requestDto);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 뉴스 목록 조회(제목, 카테고리 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
@@ -51,7 +49,7 @@ public class NewsController {
             "제목, 카테고리 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getNewsByConditions(
+    public ApiResponse<PagedResponseDto<NewsResponseDto>> getNewsByConditions(
             @RequestParam(name = "title", required = false) String title,
             @RequestParam(name = "category", required = false) String category,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -59,46 +57,50 @@ public class NewsController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<NewsResponseDto> news = newsService.getNewsByConditions(title, category, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(news);
-        return responseModel;
+        return ApiResponse.success(news);
     }
 
     @Operation(summary = "[U] 뉴스 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{newsId}")
-    public ResponseModel getNewsDetails(
+    public ApiResponse<NewsDetailsResponseDto> getNewsDetails(
             @PathVariable(name = "newsId") Long newsId
     ) {
         NewsDetailsResponseDto news = newsService.getNewsDetails(newsId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(news);
-        return responseModel;
+        return ApiResponse.success(news);
     }
 
     @Operation(summary = "[A] 뉴스 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{newsId}")
-    public ResponseModel updateNews(
+    public ApiResponse<Long> updateNews(
             @PathVariable(name = "newsId") Long newsId,
-            @Valid @RequestBody NewsUpdateRequestDto newsUpdateRequestDto
+            @Valid @RequestBody NewsUpdateRequestDto requestDto
     ) {
-        Long id = newsService.updateNews(newsId, newsUpdateRequestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        Long id = newsService.updateNews(newsId, requestDto);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[A] 뉴스 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{newsId}")
-    public ResponseModel deleteNews(
+    public ApiResponse<Long> deleteNews(
             @PathVariable(name = "newsId") Long newsId
     ) {
         Long id = newsService.deleteNews(newsId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 뉴스 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<NewsDetailsResponseDto>> getDeletedNews(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<NewsDetailsResponseDto> pagedNews = newsService.getDeletedNews(pageable);
+        return ApiResponse.success(pagedNews);
     }
 
 }

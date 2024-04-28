@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,10 +24,12 @@ import page.clab.api.domain.login.dto.response.LoginHeader;
 import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/api/v1/login")
 @RequiredArgsConstructor
 @Tag(name = "Login", description = "로그인")
 @Slf4j
@@ -39,65 +42,67 @@ public class LoginController {
 
     @Operation(summary = "멤버 로그인", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("")
-    public ResponseModel login(
-            HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse,
-            @Valid @RequestBody LoginRequestDto loginRequestDto
+    public ApiResponse login(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @Valid @RequestBody LoginRequestDto requestDto
     ) throws MemberLockedException, LoginFaliedException {
-        LoginHeader headerData = loginService.login(httpServletRequest, loginRequestDto);
-        httpServletResponse.setHeader(authHeader, headerData.toJson());
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
+        LoginHeader headerData = loginService.login(request, requestDto);
+        response.setHeader(authHeader, headerData.toJson());
+        return ApiResponse.success();
     }
 
     @Operation(summary = "TOTP 인증", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("/authenticator")
-    public ResponseModel authenticator(
-            HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse,
-            @Valid @RequestBody TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto
+    public ApiResponse authenticator(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @Valid @RequestBody TwoFactorAuthenticationRequestDto requestDto
     ) throws LoginFaliedException, MemberLockedException {
-        TokenHeader headerData = loginService.authenticator(httpServletRequest, twoFactorAuthenticationRequestDto);
-        httpServletResponse.setHeader(authHeader, headerData.toJson());
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
+        TokenHeader headerData = loginService.authenticator(request, requestDto);
+        response.setHeader(authHeader, headerData.toJson());
+        return ApiResponse.success();
     }
 
     @Operation(summary = "[S] TOTP 초기화", description = "ROLE_SUPER 권한이 필요함")
     @DeleteMapping("/authenticator/{memberId}")
     @Secured({"ROLE_SUPER"})
-    public ResponseModel deleteAuthenticator(
+    public ApiResponse<String> deleteAuthenticator(
             @PathVariable(name = "memberId") String memberId
     ) {
         String id = loginService.resetAuthenticator(memberId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[S] 멤버 토큰 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @DeleteMapping("/revoke/{memberId}")
     @Secured({"ROLE_SUPER"})
-    public ResponseModel revoke(
+    public ApiResponse<String> revoke(
             @PathVariable(name = "memberId") String memberId
     ) {
         String id = loginService.revoke(memberId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 멤버 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/reissue")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel reissue(
-            HttpServletRequest httpServletRequest,
-            HttpServletResponse httpServletResponse
+    public ApiResponse reissue(
+            HttpServletRequest request,
+            HttpServletResponse response
     ) {
-        TokenHeader headerData = loginService.reissue(httpServletRequest);
-        httpServletResponse.setHeader(authHeader, headerData.toJson());
-        ResponseModel responseModel = ResponseModel.builder().build();
-        return responseModel;
+        TokenHeader headerData = loginService.reissue(request);
+        response.setHeader(authHeader, headerData.toJson());
+        return ApiResponse.success();
+    }
+
+    @Operation(summary = "[S] 현재 로그인 중인 멤버 조회", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
+            "Redis에 저장된 토큰을 조회하여 현재 로그인 중인 멤버를 조회합니다.")
+    @GetMapping("/current")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<List<String>> getCurrentLoggedInUsers() {
+        List<String> currentLoggedInUsers = loginService.getCurrentLoggedInUsers();
+        return ApiResponse.success(currentLoggedInUsers);
     }
 
 }

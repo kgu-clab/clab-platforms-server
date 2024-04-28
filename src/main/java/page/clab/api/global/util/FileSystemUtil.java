@@ -1,13 +1,10 @@
 package page.clab.api.global.util;
 
-import org.springframework.stereotype.Component;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Component
 public class FileSystemUtil {
 
     public static long calculateDirectorySize(File directory) {

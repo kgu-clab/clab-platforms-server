@@ -1,20 +1,14 @@
 package page.clab.api.domain.review.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.review.domain.Review;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class ReviewResponseDto {
 
@@ -40,16 +34,22 @@ public class ReviewResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static ReviewResponseDto of(Review review, Member currentMember) {
-        ReviewResponseDto reviewResponseDto = ModelMapperUtil.getModelMapper().map(review, ReviewResponseDto.class);
-        reviewResponseDto.setActivityGroupId(review.getActivityGroup().getId());
-        reviewResponseDto.setActivityGroupName(review.getActivityGroup().getName());
-        reviewResponseDto.setActivityGroupCategory(String.valueOf(review.getActivityGroup().getCategory()));
-        reviewResponseDto.setMemberId(review.getMember().getId());
-        reviewResponseDto.setName(review.getMember().getName());
-        reviewResponseDto.setDepartment(review.getMember().getDepartment());
-        reviewResponseDto.setIsOwner(review.isOwner(currentMember));
-        return reviewResponseDto;
+    public static ReviewResponseDto toDto(Review review, Member currentMember) {
+        ActivityGroup activityGroup = review.getActivityGroup();
+        Member member = review.getMember();
+        return ReviewResponseDto.builder()
+                .id(review.getId())
+                .activityGroupId(activityGroup.getId())
+                .activityGroupName(activityGroup.getName())
+                .activityGroupCategory(String.valueOf(activityGroup.getCategory()))
+                .memberId(member.getId())
+                .name(member.getName())
+                .department(member.getDepartment())
+                .content(review.getContent())
+                .isPublic(review.getIsPublic())
+                .isOwner(review.isOwner(currentMember))
+                .createdAt(review.getCreatedAt())
+                .build();
     }
 
 }

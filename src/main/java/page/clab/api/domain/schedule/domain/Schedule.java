@@ -9,18 +9,19 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
 
@@ -28,9 +29,12 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class Schedule {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@EqualsAndHashCode(callSuper = false)
+@SQLDelete(sql = "UPDATE schedule SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
+public class Schedule extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,23 +44,21 @@ public class Schedule {
     @Enumerated(EnumType.STRING)
     private ScheduleType scheduleType;
 
-    @NotNull
+    @Column(nullable = false)
     private String title;
 
-    @NotNull
+    @Column(nullable = false)
     private String detail;
 
-    @NotNull
-    @Column(name = "start_date_time")
+    @Column(nullable = false)
     private LocalDateTime startDateTime;
 
-    @NotNull
-    @Column(name = "end_date_time")
+    @Column(nullable = false)
     private LocalDateTime endDateTime;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private SchedulePriority priority;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -66,24 +68,23 @@ public class Schedule {
     @JoinColumn(name = "activityGroup")
     private ActivityGroup activityGroup;
 
-    public static Schedule create(ScheduleRequestDto dto, Member member, ActivityGroup activityGroup) throws PermissionDeniedException {
-        if (dto.getScheduleType().equals(ScheduleType.ALL) && !member.isAdminRole()) {
-            throw new PermissionDeniedException("동아리 공통 일정은 ADMIN 이상의 권한만 추가할 수 있습니다.");
-        }
-        Schedule schedule = ModelMapperUtil.getModelMapper().map(dto, Schedule.class);
-        schedule.setId(null);
-        schedule.setScheduleWriter(member);
-        schedule.setActivityGroup(activityGroup);
-        return schedule;
-    }
-
     public boolean isOwner(Member member) {
         return this.scheduleWriter.isSameMember(member);
+    }
+
+    public boolean isAllSchedule() {
+        return this.scheduleType.equals(ScheduleType.ALL);
     }
 
     public void validateAccessPermission(Member member) throws PermissionDeniedException {
         if (!isOwner(member) && !member.isAdminRole()) {
             throw new PermissionDeniedException("해당 일정을 수정/삭제할 권한이 없습니다.");
+        }
+    }
+
+    public void validateAccessPermissionForCreation(Member member) throws PermissionDeniedException {
+        if (this.getScheduleType().equals(ScheduleType.ALL) && !member.isAdminRole()) {
+            throw new PermissionDeniedException("동아리 공통 일정은 ADMIN 이상의 권한만 추가할 수 있습니다.");
         }
     }
 

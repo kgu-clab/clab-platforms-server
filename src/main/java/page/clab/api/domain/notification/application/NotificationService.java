@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.dao.NotificationRepository;
@@ -15,6 +16,7 @@ import page.clab.api.domain.notification.dto.response.NotificationResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -25,6 +27,8 @@ public class NotificationService {
 
     private MemberService memberService;
 
+    private final ValidationService validationService;
+
     private final NotificationRepository notificationRepository;
 
     @Autowired
@@ -32,22 +36,31 @@ public class NotificationService {
         this.memberService = memberService;
     }
 
-    public Long createNotification(NotificationRequestDto notificationRequestDto) {
-        Member member = memberService.getMemberByIdOrThrow(notificationRequestDto.getMemberId());
-        Notification notification = Notification.create(notificationRequestDto, member);
+    @Transactional
+    public Long createNotification(NotificationRequestDto requestDto) {
+        Member member = memberService.getMemberByIdOrThrow(requestDto.getMemberId());
+        Notification notification = NotificationRequestDto.toEntity(requestDto, member);
+        validationService.checkValid(notification);
         return notificationRepository.save(notification).getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<NotificationResponseDto> getNotifications(Pageable pageable) {
-        Member member = memberService.getCurrentMember();
-        Page<Notification> notifications = getNotificationByMember(member, pageable);
-        return new PagedResponseDto<>(notifications.map(NotificationResponseDto::of));
+        Member currentMember = memberService.getCurrentMember();
+        Page<Notification> notifications = getNotificationByMember(currentMember, pageable);
+        return new PagedResponseDto<>(notifications.map(NotificationResponseDto::toDto));
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<NotificationResponseDto> getDeletedNotifications(Pageable pageable) {
+        Page<Notification> notifications = notificationRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(notifications.map(NotificationResponseDto::toDto));
     }
 
     public Long deleteNotification(Long notificationId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         Notification notification = getNotificationByIdOrThrow(notificationId);
-        notification.validateAccessPermission(member);
+        notification.validateAccessPermission(currentMember);
         notificationRepository.delete(notification);
         return notification.getId();
     }
@@ -62,6 +75,13 @@ public class NotificationService {
     public void sendNotificationToMember(Member member, String content) {
         Notification notification = Notification.create(member, content);
         notificationRepository.save(notification);
+    }
+
+    public void sendNotificationToMembers(List<Member> members, String content) {
+        List<Notification> notifications = members.stream()
+                .map(member -> Notification.create(member, content))
+                .toList();
+        notificationRepository.saveAll(notifications);
     }
 
     public void sendNotificationToMember(String memberId, String content) {

@@ -62,6 +62,8 @@ public class SecurityConfig {
 
     private final OpenApiPatternsProperties OpenApiPatternsProperties;
 
+    private final IPInfoConfig ipInfoConfig;
+
     @Value("${resource.file.url}")
     String fileURL;
 
@@ -79,7 +81,7 @@ public class SecurityConfig {
                 .authorizeRequests(this::configureRequests)
                 .authenticationProvider(authenticationConfig.authenticationProvider())
                 .addFilterBefore(
-                        new IpAuthenticationFilter(),
+                        new IpAuthenticationFilter(ipInfoConfig),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(

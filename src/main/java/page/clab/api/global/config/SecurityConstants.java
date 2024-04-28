@@ -3,8 +3,9 @@ package page.clab.api.global.config;
 public class SecurityConstants {
 
     public static final String[] PERMIT_ALL = {
-            "/login/**",
+            "/api/v1/login/**",
             "/static/**",
+            "/actuator/health",
             "/resources/files/**",
             "/configuration/ui",
             "/configuration/security",
@@ -14,23 +15,23 @@ public class SecurityConstants {
     };
 
     public static final String[] PERMIT_ALL_API_ENDPOINTS_GET = {
-            "/applications/{studentId}",
-            "/recruitments",
-            "/news", "/news/**",
-            "/blogs", "/blogs/**",
-            "/executives", "/executives/**",
-            "/awards", "/awards/**",
-            "/activity-group", "/activity-group/**",
-            "/work-experiences", "/work-experiences/**",
-            "/products", "/products/**",
-            "/reviews", "/reviews/**",
-            "/activity-photos", "/activity-photos/**"
+            "/api/v1/applications/{studentId}",
+            "/api/v1/recruitments",
+            "/api/v1/news", "/api/v1/news/**",
+            "/api/v1/blogs", "/api/v1/blogs/**",
+            "/api/v1/positions", "/api/v1/positions/**",
+            "/api/v1/awards", "/api/v1/awards/**",
+            "/api/v1/activity-group", "/api/v1/activity-group/**",
+            "/api/v1/work-experiences", "/api/v1/work-experiences/**",
+            "/api/v1/products", "/api/v1/products/**",
+            "/api/v1/reviews", "/api/v1/reviews/**",
+            "/api/v1/activity-photos", "/api/v1/activity-photos/**"
     };
 
     public static final String[] PERMIT_ALL_API_ENDPOINTS_POST = {
-            "/applications",
-            "/members/password-reset-requests",
-            "/members/password-reset-verifications",
+            "/api/v1/applications",
+            "/api/v1/members/password-reset-requests",
+            "/api/v1/members/password-reset-verifications",
     };
 
 }

@@ -12,33 +12,35 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.domain.BaseEntity;
+import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ActivityGroupBoard {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@SQLDelete(sql = "UPDATE activity_group_board SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
+public class ActivityGroupBoard extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,40 +74,15 @@ public class ActivityGroupBoard {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_group_board_files")
-    private List<UploadedFile> uploadedFiles = new ArrayList<>();
+    private List<UploadedFile> uploadedFiles;
 
-    @Column(name = "dueDate_time")
     private LocalDateTime dueDateTime;
 
-    @Column(name = "update_time")
-    private LocalDateTime updateTime;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    public static ActivityGroupBoard create(ActivityGroupBoardRequestDto dto, Member member, ActivityGroup activityGroup, ActivityGroupBoard parent, List<UploadedFile> uploadedFiles) {
-        ActivityGroupBoard activityGroupBoard = ModelMapperUtil.getModelMapper().map(dto, ActivityGroupBoard.class);
-        activityGroupBoard.setMember(member);
-        activityGroupBoard.setActivityGroup(activityGroup);
-        activityGroupBoard.setParent(parent);
-        activityGroupBoard.setUploadedFiles(uploadedFiles);
-        return activityGroupBoard;
-    }
-
-
-    public void update(ActivityGroupBoardUpdateRequestDto dto, FileService fileService) {
-        Optional.ofNullable(dto.getTitle()).ifPresent(this::setTitle);
-        Optional.ofNullable(dto.getContent()).ifPresent(this::setContent);
-        Optional.ofNullable(dto.getDueDateTime()).ifPresent(this::setDueDateTime);
-        Optional.ofNullable(dto.getFileUrls())
-                .ifPresent(urls -> {
-                    List<UploadedFile> uploadedFiles = urls.stream()
-                            .map(fileService::getUploadedFileByUrl)
-                            .collect(Collectors.toList());
-                    setUploadedFiles(uploadedFiles);
-                });
-        this.updateTime = LocalDateTime.now();
+    public void update(ActivityGroupBoardUpdateRequestDto requestDto, UploadedFileService uploadedFileService) {
+        Optional.ofNullable(requestDto.getTitle()).ifPresent(this::setTitle);
+        Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
+        Optional.ofNullable(requestDto.getDueDateTime()).ifPresent(this::setDueDateTime);
+        Optional.ofNullable(requestDto.getFileUrls()).ifPresent(urls -> { this.setUploadedFiles(uploadedFileService.getUploadedFilesByUrls(urls)); });
     }
 
     public void addChild(ActivityGroupBoard child) {

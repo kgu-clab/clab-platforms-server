@@ -1,19 +1,13 @@
 package page.clab.api.domain.member.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.domain.member.domain.StudentStatus;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class MyProfileResponseDto {
 
@@ -31,16 +25,28 @@ public class MyProfileResponseDto {
 
     private String githubUrl;
 
+    private StudentStatus studentStatus;
+
     private String imageUrl;
 
     private Long roleLevel;
 
     private LocalDateTime createdAt;
 
-    public static MyProfileResponseDto of(Member member) {
-        MyProfileResponseDto myProfileResponseDto = ModelMapperUtil.getModelMapper().map(member, MyProfileResponseDto.class);
-        myProfileResponseDto.setRoleLevel(member.getRole().toLong());
-        return myProfileResponseDto;
+    public static MyProfileResponseDto toDto(Member member) {
+        return MyProfileResponseDto.builder()
+                .name(member.getName())
+                .id(member.getId())
+                .interests(member.getInterests())
+                .contact(member.getContact())
+                .email(member.getEmail())
+                .address(member.getAddress())
+                .githubUrl(member.getGithubUrl())
+                .studentStatus(member.getStudentStatus())
+                .imageUrl(member.getImageUrl())
+                .roleLevel(member.getRole().toRoleLevel())
+                .createdAt(member.getCreatedAt())
+                .build();
     }
 
 }

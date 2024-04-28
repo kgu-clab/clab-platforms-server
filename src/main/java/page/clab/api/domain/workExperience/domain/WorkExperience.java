@@ -7,16 +7,18 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.workExperience.dto.request.WorkExperienceRequestDto;
 import page.clab.api.domain.workExperience.dto.request.WorkExperienceUpdateRequestDto;
+import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.util.ModelMapperUtil;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -25,9 +27,11 @@ import java.util.Optional;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class WorkExperience {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@SQLDelete(sql = "UPDATE work_experience SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
+public class WorkExperience extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,12 +53,6 @@ public class WorkExperience {
 
     @ManyToOne
     private Member member;
-
-    public static WorkExperience of(WorkExperienceRequestDto workExperienceRequestDto, Member member) {
-        WorkExperience workExperience = ModelMapperUtil.getModelMapper().map(workExperienceRequestDto, WorkExperience.class);
-        workExperience.setMember(member);
-        return workExperience;
-    }
 
     public void update(WorkExperienceUpdateRequestDto workExperienceUpdateRequestDto) {
         Optional.ofNullable(workExperienceUpdateRequestDto.getCompanyName()).ifPresent(this::setCompanyName);

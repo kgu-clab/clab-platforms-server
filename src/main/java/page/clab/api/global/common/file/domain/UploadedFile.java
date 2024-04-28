@@ -7,22 +7,23 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.global.common.domain.BaseEntity;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 @Entity
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class UploadedFile {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class UploadedFile extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,10 +54,30 @@ public class UploadedFile {
     @Column(nullable = false)
     private String category;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
     private Long storagePeriod;
+
+    public static UploadedFile create(Member uploader, String originalFileName, String saveFileName, String savedPath, String url, Long fileSize, String contentType, Long storagePeriod, String category) {
+        return UploadedFile.builder()
+                .uploader(uploader)
+                .originalFileName(originalFileName)
+                .saveFileName(saveFileName)
+                .savedPath(savedPath)
+                .url(url)
+                .fileSize(fileSize)
+                .contentType(contentType)
+                .storagePeriod(storagePeriod)
+                .category(category)
+                .build();
+    }
+
+    public boolean isOwner(Member member) {
+        return this.uploader.isSameMember(member);
+    }
+
+    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+        if (!isOwner(member) && !member.isSuperAdminRole()) {
+            throw new PermissionDeniedException("해당 파일을 삭제할 권한이 없습니다.");
+        }
+    }
 
 }

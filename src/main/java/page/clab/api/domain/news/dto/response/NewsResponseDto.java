@@ -1,15 +1,14 @@
 package page.clab.api.domain.news.dto.response;
 
-import java.time.LocalDate;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 import page.clab.api.domain.news.domain.News;
-import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@ToString
+@Builder
 public class NewsResponseDto {
 
     private Long id;
@@ -22,8 +21,17 @@ public class NewsResponseDto {
 
     private LocalDate date;
 
-    public static NewsResponseDto of(News news) {
-        return ModelMapperUtil.getModelMapper().map(news, NewsResponseDto.class);
+    private LocalDateTime createdAt;
+
+    public static NewsResponseDto toDto(News news) {
+        return NewsResponseDto.builder()
+                .id(news.getId())
+                .title(news.getTitle())
+                .category(news.getCategory())
+                .articleUrl(news.getArticleUrl())
+                .date(news.getDate())
+                .createdAt(news.getCreatedAt())
+                .build();
     }
 
 }

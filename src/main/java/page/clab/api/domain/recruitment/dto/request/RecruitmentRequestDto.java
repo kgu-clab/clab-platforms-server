@@ -2,22 +2,15 @@ package page.clab.api.domain.recruitment.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.application.domain.ApplicationType;
 import page.clab.api.domain.recruitment.domain.Recruitment;
-import page.clab.api.global.util.ModelMapperUtil;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class RecruitmentRequestDto {
 
     @NotNull(message = "{notNull.recruitment.startDate}")
@@ -33,17 +26,21 @@ public class RecruitmentRequestDto {
     private ApplicationType applicationType;
 
     @NotNull(message = "{notNull.recruitment.target}")
-    @Size(min = 1, message = "{size.recruitment.target}")
     @Schema(description = "대상", example = "2~3학년", required = true)
     private String target;
 
     @NotNull(message = "{notNull.recruitment.status}")
-    @Size(min = 1, message = "{size.recruitment.status}")
     @Schema(description = "상태", example = "종료", required = true)
     private String status;
 
-    public static RecruitmentRequestDto of(Recruitment recruitment) {
-        return ModelMapperUtil.getModelMapper().map(recruitment, RecruitmentRequestDto.class);
+    public static Recruitment toEntity(RecruitmentRequestDto requestDto) {
+        return Recruitment.builder()
+                .startDate(requestDto.getStartDate())
+                .endDate(requestDto.getEndDate())
+                .applicationType(requestDto.getApplicationType())
+                .target(requestDto.getTarget())
+                .status(requestDto.getStatus())
+                .build();
     }
 
 }

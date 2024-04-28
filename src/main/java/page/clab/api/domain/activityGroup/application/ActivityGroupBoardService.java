@@ -1,13 +1,12 @@
 package page.clab.api.domain.activityGroup.application;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
@@ -22,19 +21,20 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupBoardUpdateR
 import page.clab.api.domain.activityGroup.dto.response.AssignmentSubmissionWithFeedbackResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.FeedbackResponseDto;
 import page.clab.api.domain.activityGroup.exception.InvalidParentBoardException;
+import page.clab.api.domain.award.domain.Award;
+import page.clab.api.domain.award.dto.response.AwardResponseDto;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,57 +51,67 @@ public class ActivityGroupBoardService {
 
     private final NotificationService notificationService;
 
-    private final FileService fileService;
+    private final ValidationService validationService;
+
+    private final UploadedFileService uploadedFileService;
 
     @Transactional
-    public Long createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto dto) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+    public Long createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto requestDto) throws PermissionDeniedException {
+        Member currentMember = memberService.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroupMemberService.isGroupMember(activityGroup, member)) {
+        if (!activityGroupMemberService.isGroupMember(activityGroup, currentMember)) {
             throw new PermissionDeniedException("활동 그룹 멤버만 게시글을 등록할 수 있습니다.");
         }
-        validateParentBoard(dto.getCategory(), parentId);
-        List<UploadedFile> uploadedFiles = prepareUploadedFiles(dto.getFileUrls());
+
+        validateParentBoard(requestDto.getCategory(), parentId);
+        List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrls());
+
         ActivityGroupBoard parentBoard = parentId != null ? getActivityGroupBoardByIdOrThrow(parentId) : null;
-        ActivityGroupBoard board = ActivityGroupBoard.create(dto, member, activityGroup, parentBoard, uploadedFiles);
+        ActivityGroupBoard board = ActivityGroupBoardRequestDto.toEntity(requestDto, currentMember, activityGroup, parentBoard, uploadedFiles);
+        validationService.checkValid(board);
         if (parentId != null) {
             parentBoard.addChild(board);
             activityGroupBoardRepository.save(parentBoard);
         }
         activityGroupBoardRepository.save(board);
-        notifyMembersAboutNewBoard(activityGroupId, activityGroup, member);
+
+        notifyMembersAboutNewBoard(activityGroupId, activityGroup, currentMember);
         return board.getId();
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardResponseDto> getAllActivityGroupBoard(Pageable pageable) {
         Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByOrderByCreatedAtDesc(pageable);
-        return new PagedResponseDto<>(boards.map(ActivityGroupBoardResponseDto::of));
+        return new PagedResponseDto<>(boards.map(ActivityGroupBoardResponseDto::toDto));
     }
 
+    @Transactional(readOnly = true)
     public ActivityGroupBoardResponseDto getActivityGroupBoardById(Long activityGroupBoardId) {
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        return ActivityGroupBoardResponseDto.of(board);
+        return ActivityGroupBoardResponseDto.toDto(board);
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardResponseDto> getActivityGroupBoardByCategory(Long activityGroupId, ActivityGroupBoardCategory category, Pageable pageable) {
         Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByActivityGroup_IdAndCategoryOrderByCreatedAtDesc(activityGroupId, category, pageable);
-        return new PagedResponseDto<>(boards.map(ActivityGroupBoardResponseDto::of));
+        return new PagedResponseDto<>(boards.map(ActivityGroupBoardResponseDto::toDto));
     }
 
+    @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
         Long activityGroupId = parentBoard.getActivityGroup().getId();
 
-        GroupMember leader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
-        parentBoard.validateAccessPermission(currentMember, leader);
+        GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
+        parentBoard.validateAccessPermission(currentMember, groupLeader);
 
         List<ActivityGroupBoard> childBoards = getChildBoards(parentId);
         Page<ActivityGroupBoard> boards = new PageImpl<>(childBoards, pageable, childBoards.size());
-        return new PagedResponseDto<>(boards.map(ActivityGroupBoardChildResponseDto::of));
+        return new PagedResponseDto<>(boards.map(ActivityGroupBoardChildResponseDto::toDto));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<AssignmentSubmissionWithFeedbackResponseDto> getMyAssignmentsWithFeedbacks(Long parentId) {
         Member currentMember = memberService.getCurrentMember();
         ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
@@ -110,28 +120,37 @@ public class ActivityGroupBoardService {
                 .map(submission -> {
                     List<FeedbackResponseDto> feedbackDtos = submission.getChildren().stream()
                             .filter(ActivityGroupBoard::isFeedback)
-                            .map(FeedbackResponseDto::of)
-                            .collect(Collectors.toList());
-                    return AssignmentSubmissionWithFeedbackResponseDto.of(submission, feedbackDtos);
+                            .map(FeedbackResponseDto::toDto)
+                            .toList();
+                    return AssignmentSubmissionWithFeedbackResponseDto.toDto(submission, feedbackDtos);
                 })
                 .toList();
     }
 
-    public ActivityGroupBoardUpdateResponseDto updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardUpdateRequestDto activityGroupBoardUpdateRequestDto) throws PermissionDeniedException {
+    @Transactional
+    public ActivityGroupBoardUpdateResponseDto updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
         board.validateAccessPermission(currentMember);
-        board.update(activityGroupBoardUpdateRequestDto, fileService);
+
+        board.update(requestDto, uploadedFileService);
+        validationService.checkValid(board);
         ActivityGroupBoard savedBoard = activityGroupBoardRepository.save(board);
-        return ActivityGroupBoardUpdateResponseDto.create(savedBoard);
+        return ActivityGroupBoardUpdateResponseDto.toDto(savedBoard);
     }
 
     public Long deleteActivityGroupBoard(Long activityGroupBoardId) throws PermissionDeniedException {
-        Member member = memberService.getCurrentMember();
+        Member currentMember = memberService.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        board.validateAccessPermission(member);
+        board.validateAccessPermission(currentMember);
         activityGroupBoardRepository.delete(board);
         return board.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponseDto<ActivityGroupBoardResponseDto> getDeletedActivityGroupBoards(Pageable pageable) {
+        Page<ActivityGroupBoard> activityGroupBoards = activityGroupBoardRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(activityGroupBoards.map(ActivityGroupBoardResponseDto::toDto));
     }
 
     private ActivityGroupBoard getActivityGroupBoardByIdOrThrow(Long activityGroupBoardId) {
@@ -141,19 +160,21 @@ public class ActivityGroupBoardService {
 
     private List<ActivityGroupBoard> getChildBoards(Long activityGroupBoardId) {
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        List<ActivityGroupBoard> allChildren = activityGroupBoardRepository.findAllChildrenByParentId(activityGroupBoardId);
-        allChildren.sort(Comparator.comparing(ActivityGroupBoard::getCreatedAt).reversed());
-        return allChildren;
+        List<ActivityGroupBoard> children = activityGroupBoardRepository.findAllChildrenByParentId(activityGroupBoardId);
+        children.sort(Comparator.comparing(ActivityGroupBoard::getCreatedAt).reversed());
+        return children;
     }
 
     private void validateParentBoard(ActivityGroupBoardCategory category, Long parentId) throws InvalidParentBoardException {
-        if (!(category == ActivityGroupBoardCategory.ASSIGNMENT ||
-                category == ActivityGroupBoardCategory.SUBMIT ||
-                category == ActivityGroupBoardCategory.FEEDBACK) && parentId != null) {
-            throw new InvalidParentBoardException("공지사항과 주차별활동 게시물은 부모 게시판을 가질 수 없습니다.");
+        if ((category == ActivityGroupBoardCategory.NOTICE || category == ActivityGroupBoardCategory.WEEKLY_ACTIVITY)) {
+            if (parentId != null) {
+                throw new InvalidParentBoardException(category.getDescription() + " 게시물은 부모 게시판을 가질 수 없습니다.");
+            } else {
+                return;
+            }
         }
 
-        if (parentId == null) {
+        if ((category == ActivityGroupBoardCategory.ASSIGNMENT || category == ActivityGroupBoardCategory.SUBMIT || category == ActivityGroupBoardCategory.FEEDBACK) && parentId == null) {
             throw new InvalidParentBoardException(category.getDescription() + " 게시물은 부모 게시판이 필요합니다.");
         }
 
@@ -163,7 +184,7 @@ public class ActivityGroupBoardService {
             case ASSIGNMENT -> ActivityGroupBoardCategory.WEEKLY_ACTIVITY;
             case SUBMIT -> ActivityGroupBoardCategory.ASSIGNMENT;
             case FEEDBACK -> ActivityGroupBoardCategory.SUBMIT;
-            default -> null;
+            default -> throw new InvalidParentBoardException("유효하지 않은 카테고리입니다.");
         };
 
         if (parentBoard.getCategory() != expectedParentCategory) {
@@ -177,14 +198,6 @@ public class ActivityGroupBoardService {
         }
     }
 
-    @NotNull
-    private List<UploadedFile> prepareUploadedFiles(List<String> fileUrls) {
-        if (fileUrls == null) return new ArrayList<>();
-        return fileUrls.stream()
-                .map(fileService::getUploadedFileByUrl)
-                .collect(Collectors.toList());
-    }
-
     private void notifyMembersAboutNewBoard(Long activityGroupId, ActivityGroup activityGroup, Member member) {
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
         if (groupMember.isLeader()) {
@@ -192,19 +205,13 @@ public class ActivityGroupBoardService {
             groupMembers
                     .forEach(gMember -> {
                         if (!gMember.isOwner(member)) {
-                            notificationService.sendNotificationToMember(
-                                    gMember.getMember(),
-                                    "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다."
-                            );
+                            notificationService.sendNotificationToMember(gMember.getMember(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
                         }
                     });
         } else {
             GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
             if (groupLeader != null) {
-                notificationService.sendNotificationToMember(
-                        groupLeader.getMember(),
-                        "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다."
-                );
+                notificationService.sendNotificationToMember(groupLeader.getMember(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
             }
         }
     }

@@ -5,8 +5,6 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import page.clab.api.global.config.AesConfig;
 import page.clab.api.global.exception.DecryptionException;
 import page.clab.api.global.exception.EncryptionException;
@@ -17,18 +15,28 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
 
-@Component
-@RequiredArgsConstructor
 public class EncryptionUtil {
 
-    private final AesConfig aesConfig;
+    private final String secretKey;
+    private final int ivLengthBytes;
+    private final int gcmTagLengthBits;
+
+    private EncryptionUtil(String secretKey, int ivLengthBytes, int gcmTagLengthBits) {
+        this.secretKey = secretKey;
+        this.ivLengthBytes = ivLengthBytes;
+        this.gcmTagLengthBits = gcmTagLengthBits;
+    }
+
+    public static EncryptionUtil create(AesConfig aesConfig) {
+        return new EncryptionUtil(aesConfig.getSecretKey(), aesConfig.getIvLengthBytes(), aesConfig.getGcmTagLengthBits());
+    }
 
     public String encrypt(String strToEncrypt) {
         try {
-            byte[] iv = generateRandomIV(aesConfig.getIvLengthBytes());
-            SecretKeySpec keySpec = new SecretKeySpec(aesConfig.getSecretKey().getBytes(StandardCharsets.UTF_8), "AES");
+            byte[] iv = generateRandomIV(this.ivLengthBytes);
+            SecretKeySpec keySpec = new SecretKeySpec(this.secretKey.getBytes(StandardCharsets.UTF_8), "AES");
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-            GCMParameterSpec gcmSpec = new GCMParameterSpec(aesConfig.getGcmTagLengthBits(), iv);
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(this.gcmTagLengthBits, iv);
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec);
             byte[] cipherText = cipher.doFinal(strToEncrypt.getBytes(StandardCharsets.UTF_8));
             byte[] combined = concat(iv, cipherText);
@@ -47,11 +55,11 @@ public class EncryptionUtil {
     public String decrypt(String strToDecrypt) {
         try {
             byte[] combined = Base64.getDecoder().decode(strToDecrypt);
-            byte[] iv = Arrays.copyOfRange(combined, 0, aesConfig.getIvLengthBytes());
-            byte[] cipherText = Arrays.copyOfRange(combined, aesConfig.getIvLengthBytes(), combined.length);
-            SecretKeySpec keySpec = new SecretKeySpec(aesConfig.getSecretKey().getBytes(StandardCharsets.UTF_8), "AES");
+            byte[] iv = Arrays.copyOfRange(combined, 0, this.ivLengthBytes);
+            byte[] cipherText = Arrays.copyOfRange(combined, this.ivLengthBytes, combined.length);
+            SecretKeySpec keySpec = new SecretKeySpec(this.secretKey.getBytes(StandardCharsets.UTF_8), "AES");
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-            GCMParameterSpec gcmSpec = new GCMParameterSpec(aesConfig.getGcmTagLengthBits(), iv);
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(this.gcmTagLengthBits, iv);
             cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmSpec);
             byte[] decryptedText = cipher.doFinal(cipherText);
             return new String(decryptedText, StandardCharsets.UTF_8);

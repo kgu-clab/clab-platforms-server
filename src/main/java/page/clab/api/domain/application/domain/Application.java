@@ -9,30 +9,34 @@ import jakarta.persistence.IdClass;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.URL;
-import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
-import page.clab.api.global.util.ModelMapperUtil;
+import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.domain.Role;
+import page.clab.api.domain.member.domain.StudentStatus;
+import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @IdClass(ApplicationId.class)
-public class Application {
+@SQLDelete(sql = "UPDATE application SET is_deleted = true WHERE recruitment_id = ? AND student_id = ?")
+@SQLRestriction("is_deleted = false")
+public class Application extends BaseEntity {
 
     @Id
     @Size(min = 9, max = 9, message = "{size.application.studentId}")
@@ -85,31 +89,28 @@ public class Application {
     @Enumerated(EnumType.STRING)
     private ApplicationType applicationType;
 
-    @NotNull
+    @Column(nullable = false)
     private Boolean isPass;
 
-    @CreationTimestamp
-    private LocalDateTime updateTime;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    public static Application create(ApplicationRequestDto applicationRequestDto) {
-        Application application = ModelMapperUtil.getModelMapper().map(applicationRequestDto, Application.class);
-        application.setContact(removeHyphensFromContact(application.getContact()));
-        application.setIsPass(false);
-        application.setUpdateTime(LocalDateTime.now());
-        return application;
-    }
-
-    public static String removeHyphensFromContact(String contact) {
-        return contact.replaceAll("-", "");
+    public static Member toMember(Application application) {
+        return Member.builder()
+                .id(application.getStudentId())
+                .name(application.getName())
+                .contact(application.getContact())
+                .email(application.getEmail())
+                .department(application.getDepartment())
+                .grade(application.getGrade())
+                .birth(application.getBirth())
+                .address(application.getAddress())
+                .interests(application.getInterests())
+                .githubUrl(application.getGithubUrl())
+                .studentStatus(StudentStatus.CURRENT)
+                .role(Role.USER)
+                .build();
     }
 
     public void toggleApprovalStatus() {
         this.isPass = !this.isPass;
-        this.setUpdateTime(LocalDateTime.now());
     }
 
 }

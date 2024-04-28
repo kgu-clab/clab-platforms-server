@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.login.application.AccountLockInfoService;
 import page.clab.api.domain.login.dto.response.AccountLockInfoResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
-@RequestMapping("/account-lock-info")
+@RequestMapping("/api/v1/account-lock-info")
 @RequiredArgsConstructor
 @Tag(name = "Login", description = "로그인")
 @Slf4j
@@ -31,41 +31,35 @@ public class AccountLockInfoController {
     @Operation(summary = "[S] 멤버 밴 등록", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("/ban/{memberId}")
-    public ResponseModel banMember(
+    public ApiResponse<Long> banMember(
             HttpServletRequest request,
             @PathVariable(name = "memberId") String memberId
     ) {
         Long id = accountLockInfoService.banMemberById(request, memberId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[S] 멤버 밴 해제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("/unban/{memberId}")
-    public ResponseModel unbanMember(
+    public ApiResponse<Long> unbanMember(
             HttpServletRequest request,
             @PathVariable(name = "memberId") String memberId
     ) {
         Long id = accountLockInfoService.unbanMemberById(request, memberId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[S] 밴 멤버 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @GetMapping("")
-    public ResponseModel getBanList(
+    public ApiResponse<PagedResponseDto<AccountLockInfoResponseDto>> getBanMembers(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AccountLockInfoResponseDto> loginFailInfoResponseDtos = accountLockInfoService.getBanList(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(loginFailInfoResponseDtos);
-        return responseModel;
+        PagedResponseDto<AccountLockInfoResponseDto> banMembers = accountLockInfoService.getBanMembers(pageable);
+        return ApiResponse.success(banMembers);
     }
 
 }

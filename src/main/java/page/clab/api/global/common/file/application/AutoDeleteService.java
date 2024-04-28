@@ -1,9 +1,5 @@
 package page.clab.api.global.common.file.application;
 
-import java.io.File;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +7,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import page.clab.api.global.common.file.dao.UploadFileRepository;
 import page.clab.api.global.common.file.domain.UploadedFile;
+
+import java.io.File;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,54 +24,66 @@ public class AutoDeleteService {
     private String filePath;
 
     @Scheduled(cron = "0 0 0 * * *")
-    public void autoDeleteFiles() {
+    public void autoDeleteExpiredFiles() {
+        LocalDateTime currentDate = LocalDateTime.now();
         List<String> categoryPaths = Arrays.asList(
                 "boards", "news", "books", "profiles",
                 "activity-photos", "members", "forms", "attendance"
         );
+
         categoryPaths.stream()
                 .map(category -> filePath + File.separator + category)
-                .forEach(this::deleteFilesInDirectory);
+                .forEach(directoryPath -> deleteUselessFilesInDirectory(new File(directoryPath), currentDate));
     }
 
-    private void deleteFilesInDirectory(String directoryPath) {
-        File directory = new File(directoryPath);
+    private void deleteUselessFilesInDirectory(File directory, LocalDateTime currentDate) {
         if (!directory.exists()) {
-            log.info("No Directory : " + directory);
+            log.info("Directory does not exist: {}", directory);
             return;
         }
-        processFilesInDirectory(directory);
-    }
 
-    private void processFilesInDirectory(File directory) {
         File[] files = directory.listFiles();
         if (files == null) {
-            log.info("No file in Directory : " + directory);
+            log.info("No files in directory: {}", directory);
+            return;
         }
+
         for (File file : files) {
             if (file.isDirectory()) {
-                processFilesInDirectory(file);
+                deleteUselessFilesInDirectory(file, currentDate);
             } else {
-                log.info(file.getAbsolutePath() + "file found");
-                processFile(file);
+                checkAndDeleteFileIfExpired(file, currentDate);
+                checkAndDeleteFileIfInformationDoesNotExistInDB(file);
             }
         }
     }
 
-    private void processFile(File file) {
-        LocalDateTime currentDate = LocalDateTime.now();
+    private void checkAndDeleteFileIfExpired(File file, LocalDateTime currentDate) {
         UploadedFile uploadedFile = uploadFileRepository.findBySavedPath(file.getAbsolutePath());
         if (uploadedFile == null) {
-            log.info("No UploadedFile in DB : " + file.getAbsolutePath());
+            log.info("No matching UploadedFile record in DB for file: {}", file.getAbsolutePath());
             return;
         }
-        LocalDateTime fileCreatedAt = uploadedFile.getCreatedAt();
-        long storagePeriod = uploadedFile.getStoragePeriod();
-        if (fileCreatedAt.plusDays(storagePeriod).isBefore(currentDate)) {
-            boolean deleted = file.delete();
-            if (!deleted) {
-                log.info("File Delete Error : " + file.getAbsolutePath());
-            }
+
+        LocalDateTime expirationDate = uploadedFile.getCreatedAt().plusDays(uploadedFile.getStoragePeriod());
+        if (currentDate.isAfter(expirationDate)) {
+            deleteFile(file);
+        }
+    }
+
+    private void checkAndDeleteFileIfInformationDoesNotExistInDB(File file) {
+        UploadedFile uploadedFile = uploadFileRepository.findBySavedPath(file.getAbsolutePath());
+        if (uploadedFile == null) {
+            deleteFile(file);
+        }
+    }
+
+    private void deleteFile(File file) {
+        boolean deleted = file.delete();
+        if (deleted) {
+            log.info("Deleted unknown file: {}", file.getAbsolutePath());
+        } else {
+            log.error("Failed to delete unknown file: {}", file.getAbsolutePath());
         }
     }
 

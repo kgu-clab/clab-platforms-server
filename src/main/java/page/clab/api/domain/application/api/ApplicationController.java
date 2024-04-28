@@ -22,11 +22,12 @@ import page.clab.api.domain.application.application.ApplicationService;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.application.dto.response.ApplicationPassResponseDto;
 import page.clab.api.domain.application.dto.response.ApplicationResponseDto;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
+import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
-@RequestMapping("/applications")
+@RequestMapping("/api/v1/applications")
 @RequiredArgsConstructor
 @Tag(name = "Application", description = "동아리 지원")
 @Slf4j
@@ -36,14 +37,12 @@ public class ApplicationController {
 
     @Operation(summary = "동아리 지원", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("")
-    public ResponseModel createApplication(
+    public ApiResponse<String> createApplication(
             HttpServletRequest request,
-            @Valid @RequestBody ApplicationRequestDto applicationRequestDto
+            @Valid @RequestBody ApplicationRequestDto requestDto
     ) {
-        String id = applicationService.createApplication(request, applicationRequestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        String id = applicationService.createApplication(request, requestDto);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[A] 지원자 목록 조회(모집 일정 ID, 지원자 ID, 합격 여부 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
@@ -51,7 +50,7 @@ public class ApplicationController {
             "모집 일정 ID, 지원자 ID, 합격 여부 중 하나라도 입력하지 않으면 전체 조회됨")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/conditions")
-    public ResponseModel getApplicationsByConditions(
+    public ApiResponse<PagedResponseDto<ApplicationResponseDto>> getApplicationsByConditions(
             @RequestParam(name = "recruitmentId", required = false) Long recruitmentId,
             @RequestParam(name = "studentId", required = false) String studentId,
             @RequestParam(name = "isPass", required = false) Boolean isPass,
@@ -60,48 +59,52 @@ public class ApplicationController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ApplicationResponseDto> applications = applicationService.getApplicationsByConditions(recruitmentId, studentId, isPass, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(applications);
-        return responseModel;
+        return ApiResponse.success(applications);
     }
 
     @Operation(summary = "[S] 지원 합격/취소", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "승인/취소 상태가 반전됨")
     @Secured({"ROLE_SUPER"})
     @PatchMapping("/{recruitmentId}/{studentId}")
-    public ResponseModel toggleApprovalStatus(
+    public ApiResponse<String> toggleApprovalStatus(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "studentId") String studentId
     ) {
         String id = applicationService.toggleApprovalStatus(recruitmentId, studentId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "합격 여부 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/{recruitmentId}/{studentId}")
-    public ResponseModel getApplicationPass(
+    public ApiResponse<ApplicationPassResponseDto> getApplicationPass(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "studentId") String studentId
     ) {
-        ApplicationPassResponseDto applicationPassResponseDto = applicationService.getApplicationPass(recruitmentId, studentId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(applicationPassResponseDto);
-        return responseModel;
+        ApplicationPassResponseDto pass = applicationService.getApplicationPass(recruitmentId, studentId);
+        return ApiResponse.success(pass);
     }
 
     @Operation(summary = "[S] 지원서 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{recruitmentId}/{studentId}")
-    public ResponseModel deleteApplication(
+    public ApiResponse<String> deleteApplication(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "studentId") String studentId
     ) {
         String id = applicationService.deleteApplication(recruitmentId, studentId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted")
+    @Operation(summary = "[S] 삭제된 지원서 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<ApplicationResponseDto>> getDeletedBoards(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<ApplicationResponseDto> applications = applicationService.getDeletedApplications(pageable);
+        return ApiResponse.success(applications);
     }
 
 }

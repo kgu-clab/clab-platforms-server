@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.login.dao.AccountLockInfoRepository;
 import page.clab.api.domain.login.domain.AccountLockInfo;
 import page.clab.api.domain.login.dto.response.AccountLockInfoResponseDto;
@@ -39,12 +40,7 @@ public class AccountLockInfoService {
     @Value("${security.login-attempt.lock-duration-minutes}")
     private int lockDurationMinutes;
 
-    public AccountLockInfo createAccountLockInfo(Member member) {
-        AccountLockInfo accountLockInfo = new AccountLockInfo(null, member, 0L, false, null);
-        accountLockInfoRepository.save(accountLockInfo);
-        return accountLockInfo;
-    }
-
+    @Transactional
     public Long banMemberById(HttpServletRequest request, String memberId) {
         Member member = memberService.getMemberById(memberId);
         AccountLockInfo accountLockInfo = ensureAccountLockInfo(member);
@@ -54,6 +50,7 @@ public class AccountLockInfoService {
         return accountLockInfoRepository.save(accountLockInfo).getId();
     }
 
+    @Transactional
     public Long unbanMemberById(HttpServletRequest request, String memberId) {
         Member member = memberService.getMemberById(memberId);
         AccountLockInfo accountLockInfo = ensureAccountLockInfo(member);
@@ -62,12 +59,14 @@ public class AccountLockInfoService {
         return accountLockInfoRepository.save(accountLockInfo).getId();
     }
 
-    public PagedResponseDto<AccountLockInfoResponseDto> getBanList(Pageable pageable) {
+    @Transactional(readOnly = true)
+    public PagedResponseDto<AccountLockInfoResponseDto> getBanMembers(Pageable pageable) {
         LocalDateTime banDate = LocalDateTime.of(9999, 12, 31, 23, 59);
-        Page<AccountLockInfo> banList = accountLockInfoRepository.findByLockUntil(banDate, pageable);
-        return new PagedResponseDto<>(banList.map(AccountLockInfoResponseDto::of));
+        Page<AccountLockInfo> banMembers = accountLockInfoRepository.findByLockUntil(banDate, pageable);
+        return new PagedResponseDto<>(banMembers.map(AccountLockInfoResponseDto::toDto));
     }
 
+    @Transactional
     public void handleAccountLockInfo(String memberId) throws MemberLockedException, LoginFaliedException {
         AccountLockInfo accountLockInfo = ensureAccountLockInfoForMemberId(memberId);
         validateAccountLockStatus(accountLockInfo);
@@ -75,6 +74,7 @@ public class AccountLockInfoService {
         accountLockInfoRepository.save(accountLockInfo);
     }
 
+    @Transactional
     public void handleLoginFailure(HttpServletRequest request, String memberId) throws MemberLockedException, LoginFaliedException {
         AccountLockInfo accountLockInfo = ensureAccountLockInfoForMemberId(memberId);
         validateAccountLockStatus(accountLockInfo);
@@ -85,6 +85,12 @@ public class AccountLockInfoService {
                     "[" + accountLockInfo.getMember().getId() + "/" + accountLockInfo.getMember().getName() + "]" + " 로그인 실패 횟수 초과로 계정이 잠겼습니다.");
         }
         accountLockInfoRepository.save(accountLockInfo);
+    }
+
+    public AccountLockInfo createAccountLockInfo(Member member) {
+        AccountLockInfo accountLockInfo = AccountLockInfo.create(member);
+        accountLockInfoRepository.save(accountLockInfo);
+        return accountLockInfo;
     }
 
     private AccountLockInfo ensureAccountLockInfo(Member member) {

@@ -20,14 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.comment.application.CommentService;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
-import page.clab.api.domain.comment.dto.response.CommentGetAllResponseDto;
-import page.clab.api.domain.comment.dto.response.CommentGetMyResponseDto;
+import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
+import page.clab.api.domain.comment.dto.response.CommentResponseDto;
+import page.clab.api.domain.comment.dto.response.DeletedCommentResponseDto;
+import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.common.dto.ResponseModel;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/api/v1/comments")
 @RequiredArgsConstructor
 @Tag(name = "Comment", description = "댓글")
 @Slf4j
@@ -38,81 +39,82 @@ public class CommentController {
     @Operation(summary = "[U] 댓글 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/{boardId}")
-    public ResponseModel createComment(
+    public ApiResponse<Long> createComment(
             @RequestParam(name = "parentId", required = false) Long parentId,
             @PathVariable(name = "boardId") Long boardId,
-            @Valid @RequestBody CommentRequestDto commentRequestDto
+            @Valid @RequestBody CommentRequestDto requestDto
     ) {
-        Long id = commentService.createComment(parentId, boardId, commentRequestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        Long id = commentService.createComment(parentId, boardId, requestDto);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 댓글 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{boardId}")
-    public ResponseModel getComments(
+    public ApiResponse<PagedResponseDto<CommentResponseDto>> getComments(
             @PathVariable(name = "boardId") Long boardId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<CommentGetAllResponseDto> comments = commentService.getAllComments(boardId, pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(comments);
-        return responseModel;
+        PagedResponseDto<CommentResponseDto> comments = commentService.getAllComments(boardId, pageable);
+        return ApiResponse.success(comments);
     }
 
     @Operation(summary = "[U] 나의 댓글 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my-comments")
-    public ResponseModel getMyComments(
+    public ApiResponse<PagedResponseDto<CommentMyResponseDto>> getMyComments(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<CommentGetMyResponseDto> comments = commentService.getMyComments(pageable);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(comments);
-        return responseModel;
+        PagedResponseDto<CommentMyResponseDto> comments = commentService.getMyComments(pageable);
+        return ApiResponse.success(comments);
     }
 
     @Operation(summary = "[U] 댓글 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{commentId}")
-    public ResponseModel updateComment(
+    public ApiResponse<Long> updateComment(
             @PathVariable(name = "commentId") Long commentId,
-            @Valid @RequestBody CommentUpdateRequestDto commentUpdateRequestDto
+            @Valid @RequestBody CommentUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = commentService.updateComment(commentId, commentUpdateRequestDto);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        Long id = commentService.updateComment(commentId, requestDto);
+        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 댓글 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{commentId}")
-    public ResponseModel deleteComment(
+    public ApiResponse<Long> deleteComment(
             @PathVariable(name = "commentId") Long commentId
     ) throws PermissionDeniedException {
         Long id = commentService.deleteComment(commentId);
-        ResponseModel responseModel = ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ApiResponse.success(id);
     }
 
     @PostMapping("/likes/{commentId}")
     @Operation(summary = "[U] 댓글 좋아요 누르기/취소하기", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ResponseModel toggleLikeStatus(
+    public ApiResponse<Long> toggleLikeStatus(
             @PathVariable(name = "commentId") Long commentId
     ) {
         Long id = commentService.toggleLikeStatus(commentId);
-        ResponseModel responseModel= ResponseModel.builder().build();
-        responseModel.addData(id);
-        return responseModel;
+        return ApiResponse.success(id);
+    }
+
+    @GetMapping("/deleted/{boardId}")
+    @Operation(summary = "[S] 게시글의 삭제된 댓글 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    public ApiResponse<PagedResponseDto<DeletedCommentResponseDto>> getDeletedComments(
+            @PathVariable(name = "boardId") Long boardId,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        PagedResponseDto<DeletedCommentResponseDto> comments = commentService.getDeletedComments(boardId, pageable);
+        return ApiResponse.success(comments);
     }
 
 }
