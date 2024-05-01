@@ -10,7 +10,7 @@ gradle/
 !/src/main/resources/application.yml
 src/main/java/page/clab/api/global/auth/application/DataLoader.java
 src/main/java/page/clab/api/auth/service/DataLoader.java
-/config
+/config/whitelist.json
 
 ### STS ###
 .apt_generated
@@ -42,3 +42,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Environments ###
+.env

@@ -1,4 +1,8 @@
-FROM openjdk:21
-EXPOSE 8080
-COPY build/libs/clab.jar /clab.jar
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=stage", "/clab.jar"]
+FROM jenkins/jenkins:2.440.3-lts-jdk21
+
+USER root
+
+RUN apt-get update && \
+    apt-get install -y docker.io
+
+USER jenkins
