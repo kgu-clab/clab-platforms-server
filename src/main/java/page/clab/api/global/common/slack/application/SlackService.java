@@ -81,18 +81,9 @@ public class SlackService {
         return sendSlackMessage(message);
     }
 
-    public CompletableFuture<Boolean> sendSecurityAlertNotification(HttpServletRequest request, SecurityAlertType alertType, String additionalMessage) {
-        String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        String requestUrl = request.getRequestURI();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
-        IPResponse ipResponse = attributeStrategy.getAttribute(request);
-        String location = ipResponse == null ? "Unknown" : ipResponse.getCountryName() + ", " + ipResponse.getCity();
-
-        String message = String.format(":red_circle: *%s [%s] - %s*\n>*User*: %s\n>*Location*: %s\n>*Endpoint*: %s\n>*Details*: `%s`\n>```%s```",
-                alertType.getTitle(), clientIpAddress, serverTime, username, location, requestUrl, alertType.getDefaultMessage(), additionalMessage);
-        return sendSlackMessage(message);
+    public void sendSecurityAlertNotification(HttpServletRequest request, SecurityAlertType alertType, String additionalMessage) {
+        List<LayoutBlock> blocks = createSecurityAlertBlocks(request, alertType, additionalMessage);
+        sendSlackMessageWithBlocks(blocks);
     }
 
     public void sendAdminLoginNotification(HttpServletRequest request, Member loginMember) {
@@ -123,6 +114,27 @@ public class SlackService {
         sendSlackMessageWithBlocks(blocks);
     }
 
+    private List<LayoutBlock> createSecurityAlertBlocks(HttpServletRequest request, SecurityAlertType alertType, String additionalMessage) {
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        String requestUrl = request.getRequestURI();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
+
+        IPResponse ipResponse = attributeStrategy.getAttribute(request);
+        String location = ipResponse == null ? "Unknown" : ipResponse.getCountryName() + ", " + ipResponse.getCity();
+
+        return Arrays.asList(
+                section(section -> section.text(markdownText(String.format(":imp: *%s*", alertType.getTitle())))),
+                section(section -> section.fields(Arrays.asList(
+                        markdownText("*User:*\n" + username),
+                        markdownText("*IP Address:*\n" + clientIpAddress),
+                        markdownText("*Location:*\n" + location),
+                        markdownText("*Endpoint:*\n" + requestUrl)
+                ))),
+                section(section -> section.text(markdownText("*Details:*\n" + alertType.getDefaultMessage() + "\n" + additionalMessage)))
+        );
+    }
+
     private List<LayoutBlock> createAdminLoginBlocks(HttpServletRequest request, Member loginMember) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         IPResponse ipResponse = attributeStrategy.getAttribute(request);
@@ -141,7 +153,7 @@ public class SlackService {
     private List<LayoutBlock> createApplicationBlocks(ApplicationRequestDto requestDto) {
         List<LayoutBlock> blocks = new ArrayList<>();
 
-        blocks.add(section(section -> section.text(markdownText(":sparkles: *New Application Notification*"))));
+        blocks.add(section(section -> section.text(markdownText(":sparkles: *New Application*"))));
         blocks.add(section(section -> section.fields(Arrays.asList(
                 markdownText("*Type:*\n" + requestDto.getApplicationType().getDescription()),
                 markdownText("*Student ID:*\n" + requestDto.getStudentId()),
