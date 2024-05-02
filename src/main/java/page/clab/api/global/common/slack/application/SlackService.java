@@ -35,6 +35,7 @@ import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -103,12 +104,9 @@ public class SlackService {
         return sendSlackMessage(message);
     }
 
-    public CompletableFuture<Boolean> sendApplicationNotification(HttpServletRequest request, ApplicationRequestDto applicationRequestDto) {
-        String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        String message = String.format(":sparkles: *New Application [%s] - %s*\n>*Type*: %s\n>*Student*: %s %s\n>*Grade*: %s\n>*Interests*: %s\n>*Github*: %s",
-                clientIpAddress, serverTime, applicationRequestDto.getApplicationType().getDescription(), applicationRequestDto.getStudentId(), applicationRequestDto.getName(), applicationRequestDto.getGrade(), applicationRequestDto.getInterests(), applicationRequestDto.getGithubUrl());
-        return sendSlackMessage(message);
+    public void sendApplicationNotification(ApplicationRequestDto applicationRequestDto) {
+        List<LayoutBlock> blocks = createApplicationBlocks(applicationRequestDto);
+        sendSlackMessageWithBlocks(blocks);
     }
 
     @EventListener(ContextRefreshedEvent.class)
@@ -127,6 +125,28 @@ public class SlackService {
 
         List<LayoutBlock> blocks = createServerStartBlocks(osInfo, jdkVersion, cpuUsage, memoryInfo);
         sendSlackMessageWithBlocks(blocks);
+    }
+
+    private List<LayoutBlock> createApplicationBlocks(ApplicationRequestDto requestDto) {
+        List<LayoutBlock> blocks = new ArrayList<>();
+
+        blocks.add(section(section -> section.text(markdownText(":sparkles: *New Application Notification*"))));
+        blocks.add(section(section -> section.fields(Arrays.asList(
+                markdownText("*Type:*\n" + requestDto.getApplicationType().getDescription()),
+                markdownText("*Student ID:*\n" + requestDto.getStudentId()),
+                markdownText("*Name:*\n" + requestDto.getName()),
+                markdownText("*Grade:*\n" + requestDto.getGrade() + "학년"),
+                markdownText("*Interests:*\n" + requestDto.getInterests())
+        ))));
+
+        if (requestDto.getGithubUrl() != null && !requestDto.getGithubUrl().isEmpty()) {
+            blocks.add(actions(actions -> actions.elements(asElements(
+                    button(b -> b.text(plainText(pt -> pt.emoji(true).text("Github")))
+                            .url(requestDto.getGithubUrl())
+                            .actionId("click_github"))
+            ))));
+        }
+        return blocks;
     }
 
     private List<LayoutBlock> createServerStartBlocks(String osInfo, String jdkVersion, double cpuUsage, String memoryInfo) {
@@ -173,10 +193,10 @@ public class SlackService {
         Payload payload = Payload.builder().
                 attachments(
                         Attachments.asAttachments(
-                            Attachment.builder()
-                                .color(color)
-                                .blocks(blocks)
-                                .build()
+                                Attachment.builder()
+                                        .color(color)
+                                        .blocks(blocks)
+                                        .build()
                         )
                 ).build();
         try {

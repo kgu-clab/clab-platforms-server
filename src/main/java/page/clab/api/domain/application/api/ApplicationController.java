@@ -38,10 +38,9 @@ public class ApplicationController {
     @Operation(summary = "동아리 지원", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("")
     public ApiResponse<String> createApplication(
-            HttpServletRequest request,
             @Valid @RequestBody ApplicationRequestDto requestDto
     ) {
-        String id = applicationService.createApplication(request, requestDto);
+        String id = applicationService.createApplication(requestDto);
         return ApiResponse.success(id);
     }
 
