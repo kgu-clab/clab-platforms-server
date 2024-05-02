@@ -1,21 +1,31 @@
 package page.clab.api.global.common.slack.application;
 
 import com.slack.api.Slack;
+import com.slack.api.model.Attachment;
+import com.slack.api.model.Attachments;
+import static com.slack.api.model.block.Blocks.actions;
+import static com.slack.api.model.block.Blocks.section;
+import com.slack.api.model.block.LayoutBlock;
+import static com.slack.api.model.block.composition.BlockCompositions.markdownText;
+import static com.slack.api.model.block.composition.BlockCompositions.plainText;
+import static com.slack.api.model.block.element.BlockElements.asElements;
+import static com.slack.api.model.block.element.BlockElements.button;
 import com.slack.api.webhook.Payload;
 import com.slack.api.webhook.WebhookResponse;
 import io.ipinfo.api.model.IPResponse;
 import io.ipinfo.spring.strategies.attribute.AttributeStrategy;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.member.domain.Role;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
+import page.clab.api.global.config.SlackConfig;
 import page.clab.api.global.util.HttpReqResUtil;
 
 import java.io.IOException;
@@ -25,20 +35,35 @@ import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
 public class SlackService {
 
-    private final Slack slack = Slack.getInstance();
+    private final Slack slack;
 
     private final String webhookUrl;
 
+    private final String webUrl;
+
+    private final String apiUrl;
+
+    private final String color;
+
+    private final Environment environment;
+
     private final AttributeStrategy attributeStrategy;
 
-    public SlackService(@Value("${slack.webhook.url}") String webhookUrl, AttributeStrategy attributeStrategy) {
-        this.webhookUrl = webhookUrl;
+    public SlackService(SlackConfig slackConfig, Environment environment, AttributeStrategy attributeStrategy) {
+        this.slack = slackConfig.slack();
+        this.webhookUrl = slackConfig.getWebhookUrl();
+        this.webUrl = slackConfig.getWebUrl();
+        this.apiUrl = slackConfig.getApiUrl();
+        this.color = slackConfig.getColor();
+        this.environment = environment;
         this.attributeStrategy = attributeStrategy;
     }
 
@@ -88,24 +113,47 @@ public class SlackService {
 
     @EventListener(ContextRefreshedEvent.class)
     public void sendServerStartNotification() {
-        String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String osInfo = System.getProperty("os.name") + " " + System.getProperty("os.version");
         String jdkVersion = System.getProperty("java.version");
 
-        OperatingSystemMXBean osbean = ManagementFactory.getOperatingSystemMXBean();
-        int availableProcessors = osbean.getAvailableProcessors();
-        double systemLoadAverage = osbean.getSystemLoadAverage();
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        int availableProcessors = osBean.getAvailableProcessors();
+        double systemLoadAverage = osBean.getSystemLoadAverage();
         double cpuUsage = ((systemLoadAverage / availableProcessors) * 100);
 
         MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
         MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
-        long usedMemory = heapMemoryUsage.getUsed() / (1024 * 1024);
-        long maxMemory = heapMemoryUsage.getMax() / (1024 * 1024);
-        double usagePercentage = ((double) usedMemory / maxMemory) * 100;
+        String memoryInfo = formatMemoryUsage(heapMemoryUsage);
 
-        String message = String.format(":rocket: *Server Started*\n>*Server Time*: %s\n>*OS*: %s\n>*JDK Version*: %s\n>*CPU Usage*: %.2f%%\n>*Memory Usage*: %dMB / %dMB (%.2f%%)",
-                serverTime, osInfo, jdkVersion, cpuUsage, usedMemory, maxMemory, usagePercentage);
-        sendSlackMessage(message);
+        List<LayoutBlock> blocks = createServerStartBlocks(osInfo, jdkVersion, cpuUsage, memoryInfo);
+        sendSlackMessageWithBlocks(blocks);
+    }
+
+    private List<LayoutBlock> createServerStartBlocks(String osInfo, String jdkVersion, double cpuUsage, String memoryInfo) {
+        return Arrays.asList(
+                section(section -> section.text(markdownText("*:rocket: Server Started*"))),
+                section(section -> section.fields(Arrays.asList(
+                        markdownText("*Environment:* \n" + environment.getProperty("spring.profiles.active")),
+                        markdownText("*OS:* \n" + osInfo),
+                        markdownText("*JDK Version:* \n" + jdkVersion),
+                        markdownText("*CPU Usage:* \n" + String.format("%.2f%%", cpuUsage)),
+                        markdownText("*Memory Usage:* \n" + memoryInfo)
+                ))),
+                actions(actions -> actions.elements(asElements(
+                        button(b -> b.text(plainText(pt -> pt.emoji(true).text("Web")))
+                                .url(webUrl)
+                                .value("click_web")),
+                        button(b -> b.text(plainText(pt -> pt.emoji(true).text("Swagger")))
+                                .url(apiUrl)
+                                .value("click_swagger"))
+                )))
+        );
+    }
+
+    private String formatMemoryUsage(MemoryUsage memoryUsage) {
+        long usedMemory = memoryUsage.getUsed() / (1024 * 1024);
+        long maxMemory = memoryUsage.getMax() / (1024 * 1024);
+        return String.format("%dMB / %dMB (%.2f%%)", usedMemory, maxMemory, ((double) usedMemory / maxMemory) * 100);
     }
 
     private CompletableFuture<Boolean> sendSlackMessage(String message) {
@@ -119,6 +167,26 @@ public class SlackService {
                 return false;
             }
         });
+    }
+
+    private void sendSlackMessageWithBlocks(List<LayoutBlock> blocks) {
+        Payload payload = Payload.builder().
+                attachments(
+                        Attachments.asAttachments(
+                            Attachment.builder()
+                                .color(color)
+                                .blocks(blocks)
+                                .build()
+                        )
+                ).build();
+        try {
+            WebhookResponse response = slack.send(webhookUrl, payload);
+            if (response.getCode() != 200) {
+                log.error("Slack notification failed: {}", response.getMessage());
+            }
+        } catch (IOException e) {
+            log.error("Failed to send Slack message: {}", e.getMessage(), e);
+        }
     }
 
 }
