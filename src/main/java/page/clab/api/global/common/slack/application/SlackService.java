@@ -90,19 +90,7 @@ public class SlackService {
 
     @EventListener(ContextRefreshedEvent.class)
     public void sendServerStartNotification() {
-        String osInfo = System.getProperty("os.name") + " " + System.getProperty("os.version");
-        String jdkVersion = System.getProperty("java.version");
-
-        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-        int availableProcessors = osBean.getAvailableProcessors();
-        double systemLoadAverage = osBean.getSystemLoadAverage();
-        double cpuUsage = ((systemLoadAverage / availableProcessors) * 100);
-
-        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-        MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
-        String memoryInfo = formatMemoryUsage(heapMemoryUsage);
-
-        List<LayoutBlock> blocks = createServerStartBlocks(osInfo, jdkVersion, cpuUsage, memoryInfo);
+        List<LayoutBlock> blocks = createServerStartBlocks();
         sendSlackMessageWithBlocks(blocks);
     }
 
@@ -182,7 +170,19 @@ public class SlackService {
         return blocks;
     }
 
-    private List<LayoutBlock> createServerStartBlocks(String osInfo, String jdkVersion, double cpuUsage, String memoryInfo) {
+    private List<LayoutBlock> createServerStartBlocks() {
+        String osInfo = System.getProperty("os.name") + " " + System.getProperty("os.version");
+        String jdkVersion = System.getProperty("java.version");
+
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        int availableProcessors = osBean.getAvailableProcessors();
+        double systemLoadAverage = osBean.getSystemLoadAverage();
+        double cpuUsage = ((systemLoadAverage / availableProcessors) * 100);
+
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
+        String memoryInfo = formatMemoryUsage(heapMemoryUsage);
+
         return Arrays.asList(
                 section(section -> section.text(markdownText("*:rocket: Server Started*"))),
                 section(section -> section.fields(Arrays.asList(
