@@ -23,7 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
-import page.clab.api.domain.member.domain.Role;
+import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.config.SlackConfig;
 import page.clab.api.global.util.HttpReqResUtil;
@@ -95,13 +95,9 @@ public class SlackService {
         return sendSlackMessage(message);
     }
 
-    public CompletableFuture<Boolean> sendAdminLoginNotification(String username, Role role) {
-        String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-
-        String message = String.format(":large_yellow_circle: *%s Login [%s] - %s*\n>*User*: %s",
-                role.getDescription(), clientIpAddress, serverTime, username);
-        return sendSlackMessage(message);
+    public void sendAdminLoginNotification(HttpServletRequest request, Member loginMember) {
+        List<LayoutBlock> blocks = createAdminLoginBlocks(request, loginMember);
+        sendSlackMessageWithBlocks(blocks);
     }
 
     public void sendApplicationNotification(ApplicationRequestDto applicationRequestDto) {
@@ -125,6 +121,21 @@ public class SlackService {
 
         List<LayoutBlock> blocks = createServerStartBlocks(osInfo, jdkVersion, cpuUsage, memoryInfo);
         sendSlackMessageWithBlocks(blocks);
+    }
+
+    private List<LayoutBlock> createAdminLoginBlocks(HttpServletRequest request, Member loginMember) {
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        IPResponse ipResponse = attributeStrategy.getAttribute(request);
+        String location = ipResponse == null ? "Unknown" : ipResponse.getCountryName() + ", " + ipResponse.getCity();
+
+        return Arrays.asList(
+                section(section -> section.text(markdownText(String.format(":mechanic: *%s Login*", loginMember.getRole().getDescription())))),
+                section(section -> section.fields(Arrays.asList(
+                        markdownText("*User:*\n" + loginMember.getId() + " " + loginMember.getName()),
+                        markdownText("*IP Address:*\n" + clientIpAddress),
+                        markdownText("*Location:*\n" + location)
+                )))
+        );
     }
 
     private List<LayoutBlock> createApplicationBlocks(ApplicationRequestDto requestDto) {
