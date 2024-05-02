@@ -68,17 +68,9 @@ public class SlackService {
         this.attributeStrategy = attributeStrategy;
     }
 
-    public CompletableFuture<Boolean> sendServerErrorNotification(HttpServletRequest request, Exception e) {
-        String serverTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        String requestUrl = request.getRequestURI();
-        String errorLocation = e.getStackTrace()[0].toString();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
-
-        String message = String.format(":red_circle: *Server Error [%s]- %s*\n>*User*: %s\n>*Endpoint*: %s\n>*Error*: `%s`\n>```%s```",
-                clientIpAddress, serverTime, username, requestUrl, errorLocation, e.getMessage());
-        return sendSlackMessage(message);
+    public void sendServerErrorNotification(HttpServletRequest request, Exception e) {
+        List<LayoutBlock> blocks = createErrorBlocks(request, e);
+        sendSlackMessageWithBlocks(blocks);
     }
 
     public void sendSecurityAlertNotification(HttpServletRequest request, SecurityAlertType alertType, String additionalMessage) {
@@ -112,6 +104,24 @@ public class SlackService {
 
         List<LayoutBlock> blocks = createServerStartBlocks(osInfo, jdkVersion, cpuUsage, memoryInfo);
         sendSlackMessageWithBlocks(blocks);
+    }
+
+    private List<LayoutBlock> createErrorBlocks(HttpServletRequest request, Exception e) {
+        String httpMethod = request.getMethod();
+        String requestUrl = request.getRequestURI();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
+
+        return Arrays.asList(
+                section(section -> section.text(markdownText(":firecracker: *Server Error*"))),
+                section(section -> section.fields(Arrays.asList(
+                        markdownText("*User:*\n" + username),
+                        markdownText("*Endpoint:*\n[" + httpMethod + "] " + requestUrl)
+                ))),
+                section(section -> section.text(markdownText("*Error Message:*\n" + e.getMessage().split(":")[1]))),
+                section(section -> section.text(markdownText("*Stack Trace:*\n```" + Arrays.toString(e.getStackTrace()) + "```")))
+        );
     }
 
     private List<LayoutBlock> createSecurityAlertBlocks(HttpServletRequest request, SecurityAlertType alertType, String additionalMessage) {
