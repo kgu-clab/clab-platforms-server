@@ -33,12 +33,9 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
@@ -207,19 +204,6 @@ public class SlackService {
         long usedMemory = memoryUsage.getUsed() / (1024 * 1024);
         long maxMemory = memoryUsage.getMax() / (1024 * 1024);
         return String.format("%dMB / %dMB (%.2f%%)", usedMemory, maxMemory, ((double) usedMemory / maxMemory) * 100);
-    }
-
-    private CompletableFuture<Boolean> sendSlackMessage(String message) {
-        Payload payload = Payload.builder().text(message).build();
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                WebhookResponse response = slack.send(webhookUrl, payload);
-                return response.getCode() == 200;
-            } catch (IOException e) {
-                log.error("Error sending slack message: {}", e.getMessage(), e);
-                return false;
-            }
-        });
     }
 
     private void sendSlackMessageWithBlocks(List<LayoutBlock> blocks) {

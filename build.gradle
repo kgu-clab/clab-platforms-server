@@ -64,7 +64,6 @@ dependencies {
     implementation 'io.ipinfo:ipinfo-api:3.0.0' // IPInfo API
 
     // Slack
-    implementation 'com.slack.api:slack-api-client:1.39.0'
     implementation 'com.slack.api:slack-api-model:1.39.0'
     implementation 'com.slack.api:slack-api-client:1.39.0'
     implementation 'com.slack.api:slack-app-backend:1.39.0'
