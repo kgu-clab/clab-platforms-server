@@ -35,7 +35,9 @@ import java.lang.management.MemoryUsage;
 import java.lang.management.OperatingSystemMXBean;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
@@ -89,6 +91,30 @@ public class SlackService {
     public void sendServerStartNotification() {
         List<LayoutBlock> blocks = createServerStartBlocks();
         sendSlackMessageWithBlocks(blocks);
+    }
+
+    private CompletableFuture<Boolean> sendSlackMessageWithBlocks(List<LayoutBlock> blocks) {
+        return CompletableFuture.supplyAsync(() -> {
+            Payload payload = Payload.builder()
+                    .attachments(Collections.singletonList(
+                            Attachment.builder()
+                                    .color(color)
+                                    .blocks(blocks)
+                                    .build()
+                    )).build();
+            try {
+                WebhookResponse response = slack.send(webhookUrl, payload);
+                if (response.getCode() == 200) {
+                    return true;
+                } else {
+                    log.error("Slack notification failed: {}", response.getMessage());
+                    return false;
+                }
+            } catch (IOException e) {
+                log.error("Failed to send Slack message: {}", e.getMessage(), e);
+                return false;
+            }
+        });
     }
 
     private List<LayoutBlock> createErrorBlocks(HttpServletRequest request, Exception e) {
@@ -204,26 +230,6 @@ public class SlackService {
         long usedMemory = memoryUsage.getUsed() / (1024 * 1024);
         long maxMemory = memoryUsage.getMax() / (1024 * 1024);
         return String.format("%dMB / %dMB (%.2f%%)", usedMemory, maxMemory, ((double) usedMemory / maxMemory) * 100);
-    }
-
-    private void sendSlackMessageWithBlocks(List<LayoutBlock> blocks) {
-        Payload payload = Payload.builder().
-                attachments(
-                        Attachments.asAttachments(
-                                Attachment.builder()
-                                        .color(color)
-                                        .blocks(blocks)
-                                        .build()
-                        )
-                ).build();
-        try {
-            WebhookResponse response = slack.send(webhookUrl, payload);
-            if (response.getCode() != 200) {
-                log.error("Slack notification failed: {}", response.getMessage());
-            }
-        } catch (IOException e) {
-            log.error("Failed to send Slack message: {}", e.getMessage(), e);
-        }
     }
 
 }
