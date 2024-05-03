@@ -18,6 +18,8 @@ public class BlogResponseDto {
 
     private String imageUrl;
 
+    private String hyperlink;
+
     private LocalDateTime createdAt;
 
     public static BlogResponseDto toDto(Blog blog) {
@@ -26,6 +28,7 @@ public class BlogResponseDto {
                 .title(blog.getTitle())
                 .subTitle(blog.getSubTitle())
                 .imageUrl(blog.getImageUrl())
+                .hyperlink(blog.getHyperlink())
                 .createdAt(blog.getCreatedAt())
                 .build();
     }
