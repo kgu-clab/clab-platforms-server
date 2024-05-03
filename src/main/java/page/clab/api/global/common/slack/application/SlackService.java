@@ -207,7 +207,7 @@ public class SlackService {
         String memoryInfo = formatMemoryUsage(heapMemoryUsage);
 
         return Arrays.asList(
-                section(section -> section.text(markdownText("*:rocket: Server Started*"))),
+                section(section -> section.text(markdownText("*:battery: Server Started*"))),
                 section(section -> section.fields(Arrays.asList(
                         markdownText("*Environment:* \n" + environment.getProperty("spring.profiles.active")),
                         markdownText("*OS:* \n" + osInfo),
