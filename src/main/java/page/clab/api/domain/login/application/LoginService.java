@@ -62,16 +62,16 @@ public class LoginService {
     }
 
     @Transactional
-    public TokenHeader authenticator(HttpServletRequest httpServletRequest, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
+    public TokenHeader authenticator(HttpServletRequest request, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
         String memberId = twoFactorAuthenticationRequestDto.getMemberId();
         Member loginMember = memberService.getMemberById(memberId);
         String totp = twoFactorAuthenticationRequestDto.getTotp();
 
         accountLockInfoService.handleAccountLockInfo(memberId);
-        verifyTwoFactorAuthentication(memberId, totp, httpServletRequest);
+        verifyTwoFactorAuthentication(memberId, totp, request);
 
         TokenInfo tokenInfo = generateAndSaveToken(loginMember);
-        sendAdminLoginNotification(loginMember);
+        sendAdminLoginNotification(request, loginMember);
         return TokenHeader.create(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS, tokenInfo);
     }
 
@@ -145,9 +145,9 @@ public class LoginService {
         return tokenInfo;
     }
 
-    private void sendAdminLoginNotification(Member loginMember) {
+    private void sendAdminLoginNotification(HttpServletRequest request, Member loginMember) {
         if (loginMember.isSuperAdminRole()) {
-            slackService.sendAdminLoginNotification(loginMember.getId(), loginMember.getRole());
+            slackService.sendAdminLoginNotification(request, loginMember);
         }
     }
 

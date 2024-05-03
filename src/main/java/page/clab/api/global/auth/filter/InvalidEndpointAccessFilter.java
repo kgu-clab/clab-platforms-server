@@ -61,7 +61,7 @@ public class InvalidEndpointAccessFilter extends GenericFilterBean {
             blacklistIpRepository.save(
                     BlacklistIp.create(clientIpAddress, "서버 내부 파일 및 디렉토리에 대한 접근 시도")
             );
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, clientIpAddress);
+            slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Added IP: " + clientIpAddress);
         }
         ResponseUtil.sendErrorResponse(response, httpStatus);
     }
