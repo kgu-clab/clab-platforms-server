@@ -130,7 +130,7 @@ public class BookLoanRecordService {
     }
 
     public BookLoanRecord getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(Book book) {
-        return bookLoanRecordRepository.findByBookAndReturnedAtIsNull(book)
+        return bookLoanRecordRepository.findByBookAndReturnedAtIsNullAndStatus(book, BookLoanStatus.APPROVED)
                 .orElseThrow(() -> new NotFoundException("해당 도서 대출 기록이 없습니다."));
     }
 

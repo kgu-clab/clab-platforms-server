@@ -10,6 +10,7 @@ import page.clab.api.domain.book.dao.BookLoanRecordRepository;
 import page.clab.api.domain.book.dao.BookRepository;
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
+import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
 import page.clab.api.domain.book.dto.response.BookDetailsResponseDto;
@@ -72,7 +73,7 @@ public class BookService {
     }
 
     public BookLoanRecord getBookLoanRecordByBookAndReturnedAtIsNull(Book book) {
-        return bookLoanRecordRepository.findByBookAndReturnedAtIsNull(book)
+        return bookLoanRecordRepository.findByBookAndReturnedAtIsNullAndStatus(book, BookLoanStatus.APPROVED)
                 .orElse(null);
     }
 
