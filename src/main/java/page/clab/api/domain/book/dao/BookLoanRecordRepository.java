@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface BookLoanRecordRepository extends JpaRepository<BookLoanRecord, Long>, BookLoanRecordRepositoryCustom {
 
-    Optional<BookLoanRecord> findByBookAndReturnedAtIsNull(Book book);
+    Optional<BookLoanRecord> findByBookAndReturnedAtIsNullAndStatus(Book book, BookLoanStatus bookLoanStatus);
 
     Optional<Object> findByBookAndBorrowerAndStatus(Book book, Member borrower, BookLoanStatus bookLoanStatus);
 
