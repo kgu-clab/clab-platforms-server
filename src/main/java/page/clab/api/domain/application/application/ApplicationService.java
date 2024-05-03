@@ -37,14 +37,14 @@ public class ApplicationService {
     private final ApplicationRepository applicationRepository;
 
     @Transactional
-    public String createApplication(HttpServletRequest request, ApplicationRequestDto requestDto) {
+    public String createApplication(ApplicationRequestDto requestDto) {
         Recruitment recruitment = recruitmentService.getRecruitmentByIdOrThrow(requestDto.getRecruitmentId());
         Application application = ApplicationRequestDto.toEntity(requestDto);
         validationService.checkValid(application);
 
         notificationService.sendNotificationToAdmins(requestDto.getStudentId() + " " +
                 requestDto.getName() + "님이 동아리에 지원하였습니다.");
-        slackService.sendApplicationNotification(request, requestDto);
+        slackService.sendApplicationNotification(requestDto);
         return applicationRepository.save(application).getStudentId();
     }
 

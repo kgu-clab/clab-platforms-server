@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+    nginx:
+        image: nginx
+        container_name: nginx
+        ports:
+            - "${NGINX_PORT_80}:80"
+            - "${NGINX_PORT_443}:443"
+        volumes:
+            - "${NGINX_VOLUME_PATH}:/etc/nginx:rw"
+            - "${APP_VOLUME_PATH}:/app:rw"
+            - "${LETS_ENCRYPT_VOLUME_PATH}:/etc/letsencrypt:rw"
+        environment:
+            - STATIC_CONTENT_PATH=${STATIC_CONTENT_PATH}
+            - DOMAIN=${DOMAIN}
+            - DOMAIN_OPS=${DOMAIN_OPS}
+            - DOMAIN_API=${DOMAIN_API}
+        networks:
+            - network_name
+
+    jenkins:
+        build: .
+        container_name: jenkins
+        user: "1000:1000"
+        ports:
+            - "${JENKINS_PORT_50000}:50000"
+            - "${JENKINS_PORT_8080}:8080"
+        volumes:
+            - "${JENKINS_HOME_VOLUME_PATH}:/var/jenkins_home:rw"
+            - "/var/run/docker.sock:/var/run/docker.sock"
+        environment:
+            - DOCKER_HOST=unix:///var/run/docker.sock
+        networks:
+            - network_name
+
+    openjdk21:
+        image: openjdk:21-jdk
+        container_name: openjdk21
+        command: tail -f /dev/null
+        networks:
+            - network_name
+
+    redis:
+        image: redis
+        container_name: redis
+        ports:
+            - "${REDIS_PORT}:6379"
+        environment:
+            - REDIS_PASSWORD=${REDIS_PASSWORD}
+        volumes:
+            - "${REDIS_DATA_VOLUME_PATH}:/data"
+        networks:
+            - network_name
+
+    postgres:
+        image: postgres
+        container_name: postgresql
+        ports:
+            - "${POSTGRES_PORT}:5432"
+        environment:
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        volumes:
+            - "${POSTGRESQL_DATA_VOLUME_PATH}:/var/lib/postgresql/data"
+        networks:
+            - network_name
+
+networks:
+    network_name:
+        driver: bridge
+        external: false
+        name: ${NETWORK_NAME}
