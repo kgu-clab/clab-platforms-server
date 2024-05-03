@@ -20,4 +20,7 @@ public class BlogUpdateRequestDto {
     @Schema(description = "이미지 URL", example = "https://www.clab.page/assets/logoWhite-fc1ef9a0.webp")
     private String imageUrl;
 
+    @Schema(description = "하이퍼링크", example = "https://www.clab.page")
+    private String hyperlink;
+
 }

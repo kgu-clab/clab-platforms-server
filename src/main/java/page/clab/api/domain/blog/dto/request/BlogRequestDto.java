@@ -26,12 +26,16 @@ public class BlogRequestDto {
     @Schema(description = "이미지 URL", example = "https://www.clab.page/assets/logoWhite-fc1ef9a0.webp")
     private String imageUrl;
 
+    @Schema(description = "하이퍼링크", example = "https://www.clab.page")
+    private String hyperlink;
+
     public static Blog toEntity(BlogRequestDto requestDto, Member member) {
         return Blog.builder()
                 .member(member)
                 .title(requestDto.getTitle())
                 .subTitle(requestDto.getSubTitle())
                 .content(requestDto.getContent())
+                .hyperlink(requestDto.getHyperlink())
                 .imageUrl(requestDto.getImageUrl())
                 .build();
     }

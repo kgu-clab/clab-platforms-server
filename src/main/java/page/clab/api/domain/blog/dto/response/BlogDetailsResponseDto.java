@@ -25,6 +25,8 @@ public class BlogDetailsResponseDto {
 
     private String imageUrl;
 
+    private String hyperlink;
+
     @JsonProperty("isOwner")
     private Boolean isOwner;
 
@@ -39,6 +41,7 @@ public class BlogDetailsResponseDto {
                 .subTitle(blog.getSubTitle())
                 .content(blog.getContent())
                 .imageUrl(blog.getImageUrl())
+                .hyperlink(blog.getHyperlink())
                 .isOwner(isOwner)
                 .createdAt(blog.getCreatedAt())
                 .build();
