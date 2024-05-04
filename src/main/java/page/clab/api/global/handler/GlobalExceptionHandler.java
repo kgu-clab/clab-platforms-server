@@ -8,6 +8,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -67,6 +68,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CompletionException;
 
 @RestControllerAdvice(basePackages = "page.clab.api")
 @RequiredArgsConstructor
@@ -169,11 +171,14 @@ public class GlobalExceptionHandler {
             IllegalStateException.class,
             FileUploadFailException.class,
             DataIntegrityViolationException.class,
+            IncorrectResultSizeDataAccessException.class,
+            ArrayIndexOutOfBoundsException.class,
             IOException.class,
             WebClientRequestException.class,
             TransactionSystemException.class,
             SecurityException.class,
             CustomOptimisticLockingFailureException.class,
+            CompletionException.class,
             EncryptionException.class,
             DecryptionException.class,
             Exception.class

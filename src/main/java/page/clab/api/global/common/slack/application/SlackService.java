@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -124,14 +125,17 @@ public class SlackService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
 
+        String errorMessage = e.getMessage() == null ? "No error message provided" : e.getMessage();
+        String detailedMessage = extractMessageAfterException(errorMessage);
+        log.error("Server Error: {}", detailedMessage);
         return Arrays.asList(
                 section(section -> section.text(markdownText(":firecracker: *Server Error*"))),
                 section(section -> section.fields(Arrays.asList(
                         markdownText("*User:*\n" + username),
                         markdownText("*Endpoint:*\n[" + httpMethod + "] " + requestUrl)
                 ))),
-                section(section -> section.text(markdownText("*Error Message:*\n" + e.getMessage().split(":")[1]))),
-                section(section -> section.text(markdownText("*Stack Trace:*\n```" + Arrays.toString(e.getStackTrace()) + "```")))
+                section(section -> section.text(markdownText("*Error Message:*\n" + detailedMessage))),
+                section(section -> section.text(markdownText("*Stack Trace:*\n```" + getStackTraceSummary(e) + "```")))
         );
     }
 
@@ -224,6 +228,19 @@ public class SlackService {
                                 .value("click_swagger"))
                 )))
         );
+    }
+
+    private String extractMessageAfterException(String message) {
+        String exceptionIndicator = "Exception:";
+        int exceptionIndex = message.indexOf(exceptionIndicator);
+        return exceptionIndex == -1 ? message : message.substring(exceptionIndex + exceptionIndicator.length()).trim();
+    }
+
+    private String getStackTraceSummary(Exception e) {
+        return Arrays.stream(e.getStackTrace())
+                .limit(10)
+                .map(StackTraceElement::toString)
+                .collect(Collectors.joining("\n"));
     }
 
     private String formatMemoryUsage(MemoryUsage memoryUsage) {
