@@ -30,7 +30,7 @@ public class CommentMyResponseDto {
     private LocalDateTime createdAt;
 
     public static CommentMyResponseDto toDto(Comment comment, boolean hasLikeByMe) {
-        if (comment.getBoard() == null) {
+        if (comment.getBoard() == null || comment.getIsDeleted()) {
             return null;
         }
         return CommentMyResponseDto.builder()
