@@ -51,7 +51,7 @@ public class CommentService {
     public Long createComment(Long parentId, Long boardId, CommentRequestDto requestDto) {
         Comment comment = createAndStoreComment(parentId, boardId, requestDto);
         sendNotificationForNewComment(comment);
-        return comment.getId();
+        return boardId;
     }
 
     @Transactional(readOnly = true)
@@ -89,7 +89,8 @@ public class CommentService {
         comment.validateAccessPermission(currentMember);
         comment.update(requestDto);
         validationService.checkValid(comment);
-        return commentRepository.save(comment).getId();
+        commentRepository.save(comment);
+        return comment.getBoard().getId();
     }
 
     public Long deleteComment(Long commentId) throws PermissionDeniedException {
@@ -98,7 +99,7 @@ public class CommentService {
         comment.validateAccessPermission(currentMember);
         comment.updateIsDeleted();
         commentRepository.save(comment);
-        return comment.getId();
+        return comment.getBoard().getId();
     }
 
     @Transactional
