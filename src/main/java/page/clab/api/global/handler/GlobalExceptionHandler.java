@@ -65,8 +65,6 @@ import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletionException;
 
@@ -88,9 +86,9 @@ public class GlobalExceptionHandler {
             MethodArgumentTypeMismatchException.class,
             IllegalAccessException.class,
     })
-    public ApiResponse badRequestException(HttpServletResponse response, Exception e) {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        return ApiResponse.failure();
+    public ErrorResponse badRequestException(HttpServletResponse response, Exception e) {
+        response.setStatus(HttpServletResponse.SC_OK);
+        return ErrorResponse.failure(e);
     }
 
     @ExceptionHandler({
@@ -126,9 +124,9 @@ public class GlobalExceptionHandler {
             NoSuchElementException.class,
             FileNotFoundException.class,
     })
-    public ApiResponse<List<?>> notFoundException(HttpServletResponse response, Exception e) {
+    public ErrorResponse notFoundException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
-        return ApiResponse.success(new ArrayList<>());
+        return ErrorResponse.failure(e);
     }
 
     @ExceptionHandler({
