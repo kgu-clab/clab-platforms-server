@@ -47,6 +47,7 @@ public class CommentResponseDto {
                     .children(comment.getChildren().stream()
                             .map(child -> CommentResponseDto.toDto(child, currentMemberId))
                             .toList())
+                    .createdAt(comment.getCreatedAt())
                     .build();
         }
         return CommentResponseDto.builder()

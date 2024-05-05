@@ -41,10 +41,10 @@ public class BoardController {
     @Operation(summary = "[U] 커뮤니티 게시글 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ApiResponse<Long> createBoard(
+    public ApiResponse<String> createBoard(
             @Valid @RequestBody BoardRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = boardService.createBoard(requestDto);
+        String id = boardService.createBoard(requestDto);
         return ApiResponse.success(id);
     }
 
@@ -98,21 +98,21 @@ public class BoardController {
     @PatchMapping("/{boardId}")
     @Operation(summary = "[U] 커뮤니티 게시글 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ApiResponse<Long> updateBoard(
+    public ApiResponse<String> updateBoard(
             @PathVariable(name = "boardId") Long boardId,
             @Valid @RequestBody BoardUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = boardService.updateBoard(boardId, requestDto);
+        String id = boardService.updateBoard(boardId, requestDto);
         return ApiResponse.success(id);
     }
 
     @DeleteMapping("/{boardId}")
     @Operation(summary = "[U] 커뮤니티 게시글 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ApiResponse<Long> deleteBoard(
+    public ApiResponse<String> deleteBoard(
             @PathVariable(name = "boardId") Long boardId
     ) throws PermissionDeniedException {
-        Long id = boardService.deleteBoard(boardId);
+        String id = boardService.deleteBoard(boardId);
         return ApiResponse.success(id);
     }
 

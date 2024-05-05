@@ -50,7 +50,7 @@ public class BoardService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public Long createBoard(BoardRequestDto requestDto) throws PermissionDeniedException {
+    public String createBoard(BoardRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         Board board = BoardRequestDto.toEntity(requestDto, currentMember, uploadedFiles);
@@ -59,7 +59,7 @@ public class BoardService {
         if (board.shouldNotifyForNewBoard()) {
             notificationService.sendNotificationToMember(currentMember, "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.");
         }
-        return boardRepository.save(board).getId();
+        return boardRepository.save(board).getCategory().getKey();
     }
 
     @Transactional(readOnly = true)
@@ -91,13 +91,13 @@ public class BoardService {
     }
 
     @Transactional
-    public Long updateBoard(Long boardId, BoardUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public String updateBoard(Long boardId, BoardUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
         board.validateAccessPermission(currentMember);
         board.update(requestDto);
         validationService.checkValid(board);
-        return boardRepository.save(board).getId();
+        return boardRepository.save(board).getCategory().getKey();
     }
 
     @Transactional
@@ -123,12 +123,12 @@ public class BoardService {
         return new PagedResponseDto<>(boards.map(this::mapToBoardListResponseDto));
     }
 
-    public Long deleteBoard(Long boardId) throws PermissionDeniedException {
+    public String deleteBoard(Long boardId) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
         board.validateAccessPermission(currentMember);
         boardRepository.delete(board);
-        return board.getId();
+        return board.getCategory().getKey();
     }
 
     @NotNull
