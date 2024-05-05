@@ -26,6 +26,8 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.validation.ValidationService;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -65,8 +67,12 @@ public class CommentService {
     public PagedResponseDto<CommentMyResponseDto> getMyComments(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByWriter(currentMember, pageable);
-        Page<CommentMyResponseDto> commentDtos = comments.map(comment -> toCommentMyResponseDto(comment, currentMember));
-        return new PagedResponseDto<>(commentDtos);
+        List<CommentMyResponseDto> dtos = comments
+                .map(comment -> toCommentMyResponseDto(comment, currentMember))
+                .stream()
+                .filter(Objects::nonNull)
+                .toList();
+        return new PagedResponseDto<>(dtos, pageable, dtos.size());
     }
 
     @Transactional(readOnly = true)
@@ -167,7 +173,7 @@ public class CommentService {
     }
 
     private CommentMyResponseDto toCommentMyResponseDto(Comment comment, Member currentMember) {
-        Boolean hasLikeByMe = checkLikeStatus(comment.getId(), currentMember.getId());
+        boolean hasLikeByMe = checkLikeStatus(comment.getId(), currentMember.getId());
         return CommentMyResponseDto.toDto(comment, hasLikeByMe);
     }
 
