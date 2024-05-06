@@ -26,11 +26,12 @@ public class BoardCategoryResponseDto {
     private LocalDateTime createdAt;
 
     public static BoardCategoryResponseDto toDto(Board board) {
+        WriterInfo writerInfo = WriterInfo.fromBoard(board);
         return BoardCategoryResponseDto.builder()
                 .id(board.getId())
                 .category(board.getCategory().getKey())
-                .writerId(board.isWantAnonymous() ? null : board.getMember().getId())
-                .writerName(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
+                .writerId(writerInfo.getId())
+                .writerName(writerInfo.getName())
                 .title(board.getTitle())
                 .imageUrl(board.getImageUrl())
                 .createdAt(board.getCreatedAt())

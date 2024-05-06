@@ -41,12 +41,13 @@ public class BoardDetailsResponseDto {
     private LocalDateTime createdAt;
 
     public static BoardDetailsResponseDto toDto(Board board, boolean hasLikeByMe, boolean isOwner) {
+        WriterInfo writerInfo = WriterInfo.fromBoardDetails(board);
         return BoardDetailsResponseDto.builder()
                 .id(board.getId())
-                .writerId(board.isWantAnonymous() ? null : board.getMember().getId())
-                .writerName(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
-                .writerRoleLevel(board.isWantAnonymous() ? null : board.getMember().getRole().toRoleLevel())
-                .writerImageUrl(board.isWantAnonymous() ? null : board.getMember().getImageUrl())
+                .writerId(writerInfo.getId())
+                .writerName(writerInfo.getName())
+                .writerRoleLevel(writerInfo.getRoleLevel())
+                .writerImageUrl(writerInfo.getImageUrl())
                 .title(board.getTitle())
                 .content(board.getContent())
                 .files(UploadedFileResponseDto.toDto(board.getUploadedFiles()))
