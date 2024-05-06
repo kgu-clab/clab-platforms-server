@@ -229,11 +229,11 @@ public class MemberService {
     }
 
     private void checkMemberUniqueness(MemberRequestDto requestDto) {
-        if (memberRepository.findById(requestDto.getId()).isPresent())
+        if (memberRepository.existsById(requestDto.getId()))
             throw new DuplicateMemberIdException("이미 사용 중인 아이디입니다.");
-        if (memberRepository.findByContact(requestDto.getContact()).isPresent())
+        if (memberRepository.existsByContact(requestDto.getContact()))
             throw new DuplicateMemberContactException("이미 사용 중인 연락처입니다.");
-        if (memberRepository.findByEmail(requestDto.getEmail()).isPresent())
+        if (memberRepository.existsByEmail(requestDto.getEmail()))
             throw new DuplicateMemberEmailException("이미 사용 중인 이메일입니다.");
     }
 
