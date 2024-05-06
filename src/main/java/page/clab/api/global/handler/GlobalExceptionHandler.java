@@ -40,7 +40,9 @@ import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.book.exception.OverdueException;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
+import page.clab.api.domain.member.exception.DuplicateMemberContactException;
+import page.clab.api.domain.member.exception.DuplicateMemberEmailException;
+import page.clab.api.domain.member.exception.DuplicateMemberIdException;
 import page.clab.api.domain.review.exception.AlreadyReviewedException;
 import page.clab.api.domain.sharedAccount.exception.InvalidUsageTimeException;
 import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
@@ -140,7 +142,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             AccuseTargetTypeIncorrectException.class,
             NotApprovedApplicationException.class,
-            AssociatedAccountExistsException.class,
+            DuplicateMemberIdException.class,
+            DuplicateMemberContactException.class,
+            DuplicateMemberEmailException.class,
             CloudStorageNotEnoughException.class,
             ActivityGroupNotFinishedException.class,
             ActivityGroupNotProgressingException.class,
