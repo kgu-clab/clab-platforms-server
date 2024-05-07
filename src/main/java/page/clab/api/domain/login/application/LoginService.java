@@ -15,8 +15,9 @@ import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
 import page.clab.api.domain.login.dto.response.LoginHeader;
-import page.clab.api.domain.login.dto.response.TokenInfo;
+import page.clab.api.domain.login.dto.response.LoginResult;
 import page.clab.api.domain.login.dto.response.TokenHeader;
+import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberService;
@@ -52,7 +53,7 @@ public class LoginService {
     private final SlackService slackService;
 
     @Transactional
-    public String login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFaliedException, MemberLockedException {
+    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFaliedException, MemberLockedException {
         authenticateAndCheckStatus(request, requestDto);
         logLoginAttempt(request, requestDto.getId(), true);
         Member loginMember = memberService.getMemberByIdOrThrow(requestDto.getId());
@@ -120,17 +121,21 @@ public class LoginService {
         loginAttemptLogService.createLoginAttemptLog(request, memberId, result);
     }
 
-    private String generateLoginHeader(Member loginMember) {
+    private LoginResult generateLoginHeader(Member loginMember) {
         String memberId = loginMember.getId();
+        String header;
         if (loginMember.getIsOtpEnabled()) {
             if (!authenticatorService.isAuthenticatorExist(memberId)) {
                 String secretKey = authenticatorService.generateSecretKey(memberId);
-                return LoginHeader.create(secretKey).toJson();
+                header = LoginHeader.create(secretKey).toJson();
+                return LoginResult.create(header, true);
             }
-            return TokenHeader.create().toJson();
+            header = TokenHeader.create().toJson();
+            return LoginResult.create(header, true);
         }
         TokenInfo tokenInfo = generateAndSaveToken(loginMember);
-        return TokenHeader.create(tokenInfo).toJson();
+        header = TokenHeader.create(tokenInfo).toJson();
+        return LoginResult.create(header, false);
     }
 
     private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request) throws MemberLockedException, LoginFaliedException {

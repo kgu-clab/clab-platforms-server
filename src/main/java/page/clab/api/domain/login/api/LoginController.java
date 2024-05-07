@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.login.application.LoginService;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
-import page.clab.api.domain.login.dto.response.LoginHeader;
+import page.clab.api.domain.login.dto.response.LoginResult;
 import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
@@ -47,9 +47,9 @@ public class LoginController {
             HttpServletResponse response,
             @Valid @RequestBody LoginRequestDto requestDto
     ) throws MemberLockedException, LoginFaliedException {
-        String headerData = loginService.login(request, requestDto);
-        response.setHeader(authHeader, headerData);
-        return ApiResponse.success();
+        LoginResult result = loginService.login(request, requestDto);
+        response.setHeader(authHeader, result.getHeader());
+        return ApiResponse.success(result.getBody());
     }
 
     @Operation(summary = "TOTP 인증", description = "ROLE_ANONYMOUS 권한이 필요함")
