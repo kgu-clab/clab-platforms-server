@@ -4,26 +4,22 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import lombok.Setter;
-import page.clab.api.global.auth.domain.ClabAuthResponseStatus;
 
 @Getter
 @Setter
 public class TokenHeader {
 
-    private int status;
-
     private String accessToken;
 
     private String refreshToken;
 
-    private TokenHeader(int status, String accessToken, String refreshToken) {
-        this.status = status;
+    private TokenHeader(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
 
-    public static TokenHeader create(ClabAuthResponseStatus status, TokenInfo tokenInfo) {
-        return new TokenHeader(status.getHttpStatus(), tokenInfo.getAccessToken(), tokenInfo.getRefreshToken());
+    public static TokenHeader create(TokenInfo tokenInfo) {
+        return new TokenHeader(tokenInfo.getAccessToken(), tokenInfo.getRefreshToken());
     }
 
     public String toJson() {

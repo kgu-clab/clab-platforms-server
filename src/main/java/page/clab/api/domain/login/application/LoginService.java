@@ -21,7 +21,6 @@ import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.global.auth.domain.ClabAuthResponseStatus;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
@@ -72,7 +71,7 @@ public class LoginService {
 
         TokenInfo tokenInfo = generateAndSaveToken(loginMember);
         sendAdminLoginNotification(request, loginMember);
-        return TokenHeader.create(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS, tokenInfo);
+        return TokenHeader.create(tokenInfo);
     }
 
     public String resetAuthenticator(String memberId) {
@@ -96,7 +95,7 @@ public class LoginService {
 
         TokenInfo newTokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
         redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
-        return TokenHeader.create(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS, newTokenInfo);
+        return TokenHeader.create(newTokenInfo);
     }
 
     public List<String> getCurrentLoggedInUsers() {
@@ -124,9 +123,9 @@ public class LoginService {
     private LoginHeader generateLoginHeader(String memberId) {
         if (!authenticatorService.isAuthenticatorExist(memberId)) {
             String secretKey = authenticatorService.generateSecretKey(memberId);
-            return LoginHeader.create(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS, secretKey);
+            return LoginHeader.create(secretKey);
         }
-        return LoginHeader.create(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS, null);
+        return LoginHeader.create(null);
     }
 
     private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request) throws MemberLockedException, LoginFaliedException {
