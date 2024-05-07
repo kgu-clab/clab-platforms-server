@@ -42,7 +42,7 @@ public class LoginController {
 
     @Operation(summary = "멤버 로그인", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("")
-    public ApiResponse login(
+    public ApiResponse<Boolean> login(
             HttpServletRequest request,
             HttpServletResponse response,
             @Valid @RequestBody LoginRequestDto requestDto
@@ -54,14 +54,14 @@ public class LoginController {
 
     @Operation(summary = "TOTP 인증", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("/authenticator")
-    public ApiResponse authenticator(
+    public ApiResponse<Boolean> authenticator(
             HttpServletRequest request,
             HttpServletResponse response,
             @Valid @RequestBody TwoFactorAuthenticationRequestDto requestDto
     ) throws LoginFaliedException, MemberLockedException {
-        TokenHeader headerData = loginService.authenticator(request, requestDto);
-        response.setHeader(authHeader, headerData.toJson());
-        return ApiResponse.success();
+        LoginResult result = loginService.authenticator(request, requestDto);
+        response.setHeader(authHeader, result.getHeader());
+        return ApiResponse.success(result.getBody());
     }
 
     @Operation(summary = "[S] TOTP 초기화", description = "ROLE_SUPER 권한이 필요함")

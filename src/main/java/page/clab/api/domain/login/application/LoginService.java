@@ -62,7 +62,7 @@ public class LoginService {
     }
 
     @Transactional
-    public TokenHeader authenticator(HttpServletRequest request, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
+    public LoginResult authenticator(HttpServletRequest request, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
         String memberId = twoFactorAuthenticationRequestDto.getMemberId();
         Member loginMember = memberService.getMemberById(memberId);
         String totp = twoFactorAuthenticationRequestDto.getTotp();
@@ -72,7 +72,8 @@ public class LoginService {
 
         TokenInfo tokenInfo = generateAndSaveToken(loginMember);
         sendAdminLoginNotification(request, loginMember);
-        return TokenHeader.create(tokenInfo);
+        String header = TokenHeader.create(tokenInfo).toJson();
+        return LoginResult.create(header, true);
     }
 
     public String resetAuthenticator(String memberId) {
