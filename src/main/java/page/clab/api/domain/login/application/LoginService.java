@@ -58,7 +58,7 @@ public class LoginService {
         logLoginAttempt(request, requestDto.getId(), true);
         Member loginMember = memberService.getMemberByIdOrThrow(requestDto.getId());
         loginMember.updateLastLoginTime();
-        return generateLoginHeader(loginMember);
+        return generateLoginResult(loginMember);
     }
 
     @Transactional
@@ -122,7 +122,7 @@ public class LoginService {
         loginAttemptLogService.createLoginAttemptLog(request, memberId, result);
     }
 
-    private LoginResult generateLoginHeader(Member loginMember) {
+    private LoginResult generateLoginResult(Member loginMember) {
         String memberId = loginMember.getId();
         String header;
         if (loginMember.getIsOtpEnabled()) {
