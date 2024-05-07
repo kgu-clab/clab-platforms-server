@@ -96,6 +96,8 @@ public class Member extends BaseEntity implements UserDetails {
 
     private LocalDateTime loanSuspensionDate;
 
+    private Boolean isOtpEnabled;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(getRole().getKey()));
