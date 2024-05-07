@@ -13,9 +13,18 @@ public class TokenHeader {
 
     private String refreshToken;
 
+    private TokenHeader() {
+        this.accessToken = null;
+        this.refreshToken = null;
+    }
+
     private TokenHeader(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+    }
+
+    public static TokenHeader create() {
+        return new TokenHeader();
     }
 
     public static TokenHeader create(TokenInfo tokenInfo) {

@@ -47,8 +47,8 @@ public class LoginController {
             HttpServletResponse response,
             @Valid @RequestBody LoginRequestDto requestDto
     ) throws MemberLockedException, LoginFaliedException {
-        LoginHeader headerData = loginService.login(request, requestDto);
-        response.setHeader(authHeader, headerData.toJson());
+        String headerData = loginService.login(request, requestDto);
+        response.setHeader(authHeader, headerData);
         return ApiResponse.success();
     }
 

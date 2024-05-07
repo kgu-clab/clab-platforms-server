@@ -52,12 +52,12 @@ public class LoginService {
     private final SlackService slackService;
 
     @Transactional
-    public LoginHeader login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFaliedException, MemberLockedException {
+    public String login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFaliedException, MemberLockedException {
         authenticateAndCheckStatus(request, requestDto);
         logLoginAttempt(request, requestDto.getId(), true);
-        Member member = memberService.getMemberByIdOrThrow(requestDto.getId());
-        member.updateLastLoginTime();
-        return generateLoginHeader(requestDto.getId());
+        Member loginMember = memberService.getMemberByIdOrThrow(requestDto.getId());
+        loginMember.updateLastLoginTime();
+        return generateLoginHeader(loginMember);
     }
 
     @Transactional
@@ -120,12 +120,17 @@ public class LoginService {
         loginAttemptLogService.createLoginAttemptLog(request, memberId, result);
     }
 
-    private LoginHeader generateLoginHeader(String memberId) {
-        if (!authenticatorService.isAuthenticatorExist(memberId)) {
-            String secretKey = authenticatorService.generateSecretKey(memberId);
-            return LoginHeader.create(secretKey);
+    private String generateLoginHeader(Member loginMember) {
+        String memberId = loginMember.getId();
+        if (loginMember.getIsOtpEnabled()) {
+            if (!authenticatorService.isAuthenticatorExist(memberId)) {
+                String secretKey = authenticatorService.generateSecretKey(memberId);
+                return LoginHeader.create(secretKey).toJson();
+            }
+            return TokenHeader.create().toJson();
         }
-        return LoginHeader.create(null);
+        TokenInfo tokenInfo = generateAndSaveToken(loginMember);
+        return TokenHeader.create(tokenInfo).toJson();
     }
 
     private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request) throws MemberLockedException, LoginFaliedException {
