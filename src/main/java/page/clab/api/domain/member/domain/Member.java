@@ -155,6 +155,7 @@ public class Member extends BaseEntity implements UserDetails {
         Optional.ofNullable(memberUpdateRequestDto.getGithubUrl()).ifPresent(this::setGithubUrl);
         Optional.ofNullable(memberUpdateRequestDto.getStudentStatus()).ifPresent(this::setStudentStatus);
         Optional.ofNullable(memberUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
+        Optional.ofNullable(memberUpdateRequestDto.getIsOtpEnabled()).ifPresent(this::setIsOtpEnabled);
     }
 
     public boolean isAdminRole() {
