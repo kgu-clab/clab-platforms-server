@@ -125,7 +125,7 @@ public class LoginService {
     private LoginResult generateLoginResult(Member loginMember) {
         String memberId = loginMember.getId();
         String header;
-        if (loginMember.getIsOtpEnabled()) {
+        if (loginMember.getIsOtpEnabled() || loginMember.isAdminRole()) {
             if (!authenticatorService.isAuthenticatorExist(memberId)) {
                 String secretKey = authenticatorService.generateSecretKey(memberId);
                 header = LoginHeader.create(secretKey).toJson();
