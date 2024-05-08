@@ -143,19 +143,23 @@ public class Member extends BaseEntity implements UserDetails {
         return new Member(member.getId(), member.getPassword(), member.getRole());
     }
 
-    public void update(MemberUpdateRequestDto memberUpdateRequestDto, PasswordEncoder passwordEncoder) {
-        Optional.ofNullable(memberUpdateRequestDto.getPassword())
+    public void update(MemberUpdateRequestDto requestDto, PasswordEncoder passwordEncoder) {
+        Optional.ofNullable(requestDto.getPassword())
                 .ifPresent(password -> setPassword(passwordEncoder.encode(password)));
-        Optional.ofNullable(memberUpdateRequestDto.getContact()).ifPresent(this::setContact);
-        Optional.ofNullable(memberUpdateRequestDto.getEmail()).ifPresent(this::setEmail);
-        Optional.ofNullable(memberUpdateRequestDto.getGrade()).ifPresent(this::setGrade);
-        Optional.ofNullable(memberUpdateRequestDto.getBirth()).ifPresent(this::setBirth);
-        Optional.ofNullable(memberUpdateRequestDto.getAddress()).ifPresent(this::setAddress);
-        Optional.ofNullable(memberUpdateRequestDto.getInterests()).ifPresent(this::setInterests);
-        Optional.ofNullable(memberUpdateRequestDto.getGithubUrl()).ifPresent(this::setGithubUrl);
-        Optional.ofNullable(memberUpdateRequestDto.getStudentStatus()).ifPresent(this::setStudentStatus);
-        Optional.ofNullable(memberUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
-        Optional.ofNullable(memberUpdateRequestDto.getIsOtpEnabled()).ifPresent(this::setIsOtpEnabled);
+        Optional.ofNullable(requestDto.getContact()).ifPresent(this::setContact);
+        Optional.ofNullable(requestDto.getEmail()).ifPresent(this::setEmail);
+        Optional.ofNullable(requestDto.getGrade()).ifPresent(this::setGrade);
+        Optional.ofNullable(requestDto.getBirth()).ifPresent(this::setBirth);
+        Optional.ofNullable(requestDto.getAddress()).ifPresent(this::setAddress);
+        Optional.ofNullable(requestDto.getInterests()).ifPresent(this::setInterests);
+        Optional.ofNullable(requestDto.getGithubUrl()).ifPresent(this::setGithubUrl);
+        Optional.ofNullable(requestDto.getStudentStatus()).ifPresent(this::setStudentStatus);
+        Optional.ofNullable(requestDto.getImageUrl()).ifPresent(this::setImageUrl);
+        if (isAdminRole()) {
+            isOtpEnabled = true;
+        } else {
+            Optional.ofNullable(requestDto.getIsOtpEnabled()).ifPresent(this::setIsOtpEnabled);
+        }
     }
 
     public boolean isAdminRole() {
