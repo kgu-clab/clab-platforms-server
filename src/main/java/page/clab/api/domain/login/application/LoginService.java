@@ -15,13 +15,13 @@ import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
 import page.clab.api.domain.login.dto.response.LoginHeader;
-import page.clab.api.domain.login.dto.response.TokenInfo;
+import page.clab.api.domain.login.dto.response.LoginResult;
 import page.clab.api.domain.login.dto.response.TokenHeader;
+import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.global.auth.domain.ClabAuthResponseStatus;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
@@ -53,16 +53,16 @@ public class LoginService {
     private final SlackService slackService;
 
     @Transactional
-    public LoginHeader login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFaliedException, MemberLockedException {
+    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFaliedException, MemberLockedException {
         authenticateAndCheckStatus(request, requestDto);
         logLoginAttempt(request, requestDto.getId(), true);
-        Member member = memberService.getMemberByIdOrThrow(requestDto.getId());
-        member.updateLastLoginTime();
-        return generateLoginHeader(requestDto.getId());
+        Member loginMember = memberService.getMemberByIdOrThrow(requestDto.getId());
+        loginMember.updateLastLoginTime();
+        return generateLoginResult(loginMember);
     }
 
     @Transactional
-    public TokenHeader authenticator(HttpServletRequest request, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
+    public LoginResult authenticator(HttpServletRequest request, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
         String memberId = twoFactorAuthenticationRequestDto.getMemberId();
         Member loginMember = memberService.getMemberById(memberId);
         String totp = twoFactorAuthenticationRequestDto.getTotp();
@@ -72,7 +72,8 @@ public class LoginService {
 
         TokenInfo tokenInfo = generateAndSaveToken(loginMember);
         sendAdminLoginNotification(request, loginMember);
-        return TokenHeader.create(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS, tokenInfo);
+        String header = TokenHeader.create(tokenInfo).toJson();
+        return LoginResult.create(header, true);
     }
 
     public String resetAuthenticator(String memberId) {
@@ -96,7 +97,7 @@ public class LoginService {
 
         TokenInfo newTokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
         redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
-        return TokenHeader.create(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS, newTokenInfo);
+        return TokenHeader.create(newTokenInfo);
     }
 
     public List<String> getCurrentLoggedInUsers() {
@@ -121,12 +122,21 @@ public class LoginService {
         loginAttemptLogService.createLoginAttemptLog(request, memberId, result);
     }
 
-    private LoginHeader generateLoginHeader(String memberId) {
-        if (!authenticatorService.isAuthenticatorExist(memberId)) {
-            String secretKey = authenticatorService.generateSecretKey(memberId);
-            return LoginHeader.create(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS, secretKey);
+    private LoginResult generateLoginResult(Member loginMember) {
+        String memberId = loginMember.getId();
+        String header;
+        if (loginMember.getIsOtpEnabled() || loginMember.isAdminRole()) {
+            if (!authenticatorService.isAuthenticatorExist(memberId)) {
+                String secretKey = authenticatorService.generateSecretKey(memberId);
+                header = LoginHeader.create(secretKey).toJson();
+                return LoginResult.create(header, true);
+            }
+            header = TokenHeader.create().toJson();
+            return LoginResult.create(header, true);
         }
-        return LoginHeader.create(ClabAuthResponseStatus.AUTHENTICATION_SUCCESS, null);
+        TokenInfo tokenInfo = generateAndSaveToken(loginMember);
+        header = TokenHeader.create(tokenInfo).toJson();
+        return LoginResult.create(header, false);
     }
 
     private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request) throws MemberLockedException, LoginFaliedException {

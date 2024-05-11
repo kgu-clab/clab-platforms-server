@@ -39,11 +39,13 @@ public class MemberResponseDto {
 
     private Role role;
 
-    private LocalDateTime createdAt;
-
     private LocalDateTime lastLoginTime;
 
     private LocalDateTime loanSuspensionDate;
+
+    private Boolean isOtpEnabled;
+
+    private LocalDateTime createdAt;
 
     public static MemberResponseDto toDto(Member member) {
         return MemberResponseDto.builder()
@@ -60,9 +62,10 @@ public class MemberResponseDto {
                 .studentStatus(member.getStudentStatus())
                 .imageUrl(member.getImageUrl())
                 .role(member.getRole())
-                .createdAt(member.getCreatedAt())
                 .lastLoginTime(member.getLastLoginTime())
                 .loanSuspensionDate(member.getLoanSuspensionDate())
+                .isOtpEnabled(member.getIsOtpEnabled())
+                .createdAt(member.getCreatedAt())
                 .build();
     }
 

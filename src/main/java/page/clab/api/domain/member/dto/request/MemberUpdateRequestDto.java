@@ -41,4 +41,7 @@ public class MemberUpdateRequestDto {
     @Schema(description = "프로필 이미지", example = "https://www.clab.page/assets/dongmin-860f3a1e.jpeg")
     private String imageUrl;
 
+    @Schema(description = "OTP 사용 여부", example = "false")
+    private Boolean isOtpEnabled;
+
 }
