@@ -61,10 +61,6 @@
 
 ## Contributors
 
-- [한관희](https://github.com/limehee)
-- [전민주](https://github.com/mingmingmon)
-- [이한음](https://github.com/LeeHanEum)
-- [김관식](https://github.com/gwansikk)
-
-기여해 주신 모든 분들께 감사드립니다.
-
+<a href="https://github.com/KGU-C-Lab/clab-server/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=KGU-C-Lab/clab-server" />
+</a>
