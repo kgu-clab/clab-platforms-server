@@ -77,7 +77,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             }
             if (!redisToken.getIp().equals(clientIpAddress)) {
                 redisTokenService.deleteRedisTokenByAccessToken(token);
-                slackService.sendSecurityAlertNotification(request, SecurityAlertType.DUPLICATE_LOGIN, "토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
+                sendSlackMessage(request, redisToken);
                 log.warn("[{}] 토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.", clientIpAddress);
                 ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
                 return false;
@@ -87,6 +87,13 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             return true;
         } else {
             return true;
+        }
+    }
+
+    private void sendSlackMessage(HttpServletRequest request, RedisToken redisToken) {
+        if (redisToken.isAdminToken()) {
+            request.setAttribute("member", redisToken.getId());
+            slackService.sendSecurityAlertNotification(request, SecurityAlertType.DUPLICATE_LOGIN, "토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
         }
     }
 
