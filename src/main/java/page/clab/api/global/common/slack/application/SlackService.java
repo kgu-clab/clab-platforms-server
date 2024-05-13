@@ -16,6 +16,7 @@ import io.ipinfo.api.model.IPResponse;
 import io.ipinfo.spring.strategies.attribute.AttributeStrategy;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -121,9 +123,7 @@ public class SlackService {
     private List<LayoutBlock> createErrorBlocks(HttpServletRequest request, Exception e) {
         String httpMethod = request.getMethod();
         String requestUrl = request.getRequestURI();
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
+        String username = getUsername();
 
         String errorMessage = e.getMessage() == null ? "No error message provided" : e.getMessage();
         String detailedMessage = extractMessageAfterException(errorMessage);
@@ -142,8 +142,7 @@ public class SlackService {
     private List<LayoutBlock> createSecurityAlertBlocks(HttpServletRequest request, SecurityAlertType alertType, String additionalMessage) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String requestUrl = request.getRequestURI();
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
+        String username = getUsername(request);
 
         IPResponse ipResponse = attributeStrategy.getAttribute(request);
         String location = ipResponse == null ? "Unknown" : ipResponse.getCountryName() + ", " + ipResponse.getCity();
@@ -247,6 +246,20 @@ public class SlackService {
         long usedMemory = memoryUsage.getUsed() / (1024 * 1024);
         long maxMemory = memoryUsage.getMax() / (1024 * 1024);
         return String.format("%dMB / %dMB (%.2f%%)", usedMemory, maxMemory, ((double) usedMemory / maxMemory) * 100);
+    }
+
+    private static String getUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
+    }
+
+    private @NotNull String getUsername(HttpServletRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return Optional.ofNullable(request.getAttribute("memberId"))
+                .map(Object::toString)
+                .orElseGet(() -> Optional.ofNullable(authentication)
+                        .map(Authentication::getName)
+                        .orElse("anonymous"));
     }
 
 }

@@ -49,4 +49,8 @@ public class RedisToken {
         return this.ip.equals(ip);
     }
 
+    public boolean isAdminToken() {
+        return role == Role.ADMIN || role == Role.SUPER;
+    }
+
 }
