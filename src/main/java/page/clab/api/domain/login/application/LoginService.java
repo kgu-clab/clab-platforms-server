@@ -29,6 +29,7 @@ import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -125,7 +126,8 @@ public class LoginService {
     private LoginResult generateLoginResult(Member loginMember) {
         String memberId = loginMember.getId();
         String header;
-        if (loginMember.getIsOtpEnabled() || loginMember.isAdminRole()) {
+        boolean isOtpEnabled = Optional.ofNullable(loginMember.getIsOtpEnabled()).orElse(false);
+        if (isOtpEnabled || loginMember.isAdminRole()) {
             if (!authenticatorService.isAuthenticatorExist(memberId)) {
                 String secretKey = authenticatorService.generateSecretKey(memberId);
                 header = LoginHeader.create(secretKey).toJson();
