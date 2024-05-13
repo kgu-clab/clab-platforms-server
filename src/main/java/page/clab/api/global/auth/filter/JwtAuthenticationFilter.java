@@ -92,7 +92,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private void sendSlackMessage(HttpServletRequest request, RedisToken redisToken) {
         if (redisToken.isAdminToken()) {
-            request.setAttribute("memberId", redisToken.getId());
+            request.setAttribute("member", redisToken.getId());
             slackService.sendSecurityAlertNotification(request, SecurityAlertType.DUPLICATE_LOGIN, "토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
         }
     }

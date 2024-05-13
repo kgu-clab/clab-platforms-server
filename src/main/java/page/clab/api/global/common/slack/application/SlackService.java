@@ -255,7 +255,7 @@ public class SlackService {
 
     private @NotNull String getUsername(HttpServletRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return Optional.ofNullable(request.getAttribute("memberId"))
+        return Optional.ofNullable(request.getAttribute("member"))
                 .map(Object::toString)
                 .orElseGet(() -> Optional.ofNullable(authentication)
                         .map(Authentication::getName)
