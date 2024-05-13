@@ -2,7 +2,6 @@ package page.clab.api.global.common.slack.application;
 
 import com.slack.api.Slack;
 import com.slack.api.model.Attachment;
-import com.slack.api.model.Attachments;
 import static com.slack.api.model.block.Blocks.actions;
 import static com.slack.api.model.block.Blocks.section;
 import com.slack.api.model.block.LayoutBlock;
@@ -99,10 +98,11 @@ public class SlackService {
     private CompletableFuture<Boolean> sendSlackMessageWithBlocks(List<LayoutBlock> blocks) {
         return CompletableFuture.supplyAsync(() -> {
             Payload payload = Payload.builder()
+                    .blocks(List.of(blocks.getFirst()))
                     .attachments(Collections.singletonList(
                             Attachment.builder()
                                     .color(color)
-                                    .blocks(blocks)
+                                    .blocks(blocks.subList(1, blocks.size()))
                                     .build()
                     )).build();
             try {
@@ -143,9 +143,7 @@ public class SlackService {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String requestUrl = request.getRequestURI();
         String username = getUsername(request);
-
-        IPResponse ipResponse = attributeStrategy.getAttribute(request);
-        String location = ipResponse == null ? "Unknown" : ipResponse.getCountryName() + ", " + ipResponse.getCity();
+        String location = getLocation(request);
 
         return Arrays.asList(
                 section(section -> section.text(markdownText(String.format(":imp: *%s*", alertType.getTitle())))),
@@ -161,8 +159,7 @@ public class SlackService {
 
     private List<LayoutBlock> createAdminLoginBlocks(HttpServletRequest request, Member loginMember) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        IPResponse ipResponse = attributeStrategy.getAttribute(request);
-        String location = ipResponse == null ? "Unknown" : ipResponse.getCountryName() + ", " + ipResponse.getCity();
+        String location = getLocation(request);
 
         return Arrays.asList(
                 section(section -> section.text(markdownText(String.format(":mechanic: *%s Login*", loginMember.getRole().getDescription())))),
@@ -260,6 +257,11 @@ public class SlackService {
                 .orElseGet(() -> Optional.ofNullable(authentication)
                         .map(Authentication::getName)
                         .orElse("anonymous"));
+    }
+
+    private @NotNull String getLocation(HttpServletRequest request) {
+        IPResponse ipResponse = attributeStrategy.getAttribute(request);
+        return ipResponse == null ? "Unknown" : ipResponse.getCountryName() + ", " + ipResponse.getCity();
     }
 
 }
