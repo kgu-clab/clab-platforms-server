@@ -105,7 +105,9 @@ public class Application extends BaseEntity {
                 .interests(application.getInterests())
                 .githubUrl(application.getGithubUrl())
                 .studentStatus(StudentStatus.CURRENT)
+                .imageUrl("")
                 .role(Role.USER)
+                .isOtpEnabled(false)
                 .build();
     }
 
