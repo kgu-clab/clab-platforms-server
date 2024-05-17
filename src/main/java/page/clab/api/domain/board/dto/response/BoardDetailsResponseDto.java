@@ -23,6 +23,8 @@ public class BoardDetailsResponseDto {
 
     private String writerImageUrl;
 
+    private String category;
+
     private String title;
 
     private String content;
@@ -48,6 +50,7 @@ public class BoardDetailsResponseDto {
                 .writerName(writerInfo.getName())
                 .writerRoleLevel(writerInfo.getRoleLevel())
                 .writerImageUrl(writerInfo.getImageUrl())
+                .category(board.getCategory().getKey())
                 .title(board.getTitle())
                 .content(board.getContent())
                 .files(UploadedFileResponseDto.toDto(board.getUploadedFiles()))
