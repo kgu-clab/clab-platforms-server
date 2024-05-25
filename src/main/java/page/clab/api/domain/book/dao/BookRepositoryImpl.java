@@ -12,6 +12,7 @@ import page.clab.api.domain.book.domain.QBook;
 import page.clab.api.domain.member.domain.QMember;
 
 import java.util.List;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
         List<Book> books = queryFactory.selectFrom(book)
                 .leftJoin(book.borrower, borrower)
                 .where(builder)
-                .orderBy(book.createdAt.desc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, "book"))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

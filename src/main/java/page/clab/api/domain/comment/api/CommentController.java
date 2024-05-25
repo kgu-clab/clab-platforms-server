@@ -3,6 +3,8 @@ package page.clab.api.domain.comment.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.comment.application.CommentService;
+import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
@@ -26,6 +30,8 @@ import page.clab.api.domain.comment.dto.response.DeletedCommentResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.exception.SortingArgumentException;
+import page.clab.api.global.util.PageableUtils;
 
 @RestController
 @RequestMapping("/api/v1/comments")
@@ -54,9 +60,13 @@ public class CommentController {
     public ApiResponse<PagedResponseDto<CommentResponseDto>> getComments(
             @PathVariable(name = "boardId") Long boardId,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException {
+        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Comment.class);
         PagedResponseDto<CommentResponseDto> comments = commentService.getAllComments(boardId, pageable);
         return ApiResponse.success(comments);
     }
@@ -66,9 +76,13 @@ public class CommentController {
     @GetMapping("/my-comments")
     public ApiResponse<PagedResponseDto<CommentMyResponseDto>> getMyComments(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException {
+        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Comment.class);
         PagedResponseDto<CommentMyResponseDto> comments = commentService.getMyComments(pageable);
         return ApiResponse.success(comments);
     }

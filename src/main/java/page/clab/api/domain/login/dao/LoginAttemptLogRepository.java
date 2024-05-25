@@ -9,6 +9,6 @@ import page.clab.api.domain.login.domain.LoginAttemptLog;
 @Repository
 public interface LoginAttemptLogRepository extends JpaRepository<LoginAttemptLog, Long> {
 
-    Page<LoginAttemptLog> findAllByMemberIdOrderByLoginAttemptTimeDesc(String memberId, Pageable pageable);
+    Page<LoginAttemptLog> findAllByMemberId(String memberId, Pageable pageable);
 
 }

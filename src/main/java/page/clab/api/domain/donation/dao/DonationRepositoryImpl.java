@@ -13,6 +13,7 @@ import page.clab.api.domain.member.domain.QMember;
 
 import java.time.LocalDate;
 import java.util.List;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class DonationRepositoryImpl implements DonationRepositoryCustom {
                 .selectFrom(donation)
                 .leftJoin(donation.donor, member)
                 .where(builder)
-                .orderBy(donation.createdAt.desc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, "donation"))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

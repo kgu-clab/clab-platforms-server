@@ -13,7 +13,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, Donat
 
     Page<Donation> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    Page<Donation> findByDonorOrderByCreatedAtDesc(Member member, Pageable pageable);
+    Page<Donation> findByDonor(Member member, Pageable pageable);
 
     @Query(value = "SELECT d.* FROM donation d WHERE d.is_deleted = true", nativeQuery = true)
     Page<Donation> findAllByIsDeletedTrue(Pageable pageable);

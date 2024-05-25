@@ -3,6 +3,8 @@ package page.clab.api.domain.donation.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.donation.application.DonationService;
+import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.dto.request.DonationRequestDto;
 import page.clab.api.domain.donation.dto.request.DonationUpdateRequestDto;
 import page.clab.api.domain.donation.dto.response.DonationResponseDto;
@@ -26,6 +30,8 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.time.LocalDate;
+import page.clab.api.global.exception.SortingArgumentException;
+import page.clab.api.global.util.PageableUtils;
 
 @RestController
 @RequestMapping("/api/v1/donations")
@@ -57,9 +63,13 @@ public class DonationController {
             @RequestParam(name = "startDate", required = false) LocalDate startDate,
             @RequestParam(name = "endDate", required = false) LocalDate endDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException {
+        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Donation.class);
         PagedResponseDto<DonationResponseDto> donations = donationService.getDonationsByConditions(memberId, name, startDate, endDate, pageable);
         return ApiResponse.success(donations);
     }
@@ -69,9 +79,13 @@ public class DonationController {
     @GetMapping("/my-donations")
     public ApiResponse<PagedResponseDto<DonationResponseDto>> getMyDonations(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException {
+        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Donation.class);
         PagedResponseDto<DonationResponseDto> donations = donationService.getMyDonations(pageable);
         return ApiResponse.success(donations);
     }
