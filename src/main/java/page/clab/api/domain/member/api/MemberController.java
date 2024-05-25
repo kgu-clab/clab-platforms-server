@@ -3,6 +3,7 @@ package page.clab.api.domain.member.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
 import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
@@ -29,6 +32,8 @@ import page.clab.api.global.common.verification.dto.request.VerificationRequestD
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.util.List;
+import page.clab.api.global.exception.SortingArgumentException;
+import page.clab.api.global.util.PageableUtils;
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -77,9 +82,13 @@ public class MemberController {
             @RequestParam(name = "id", required = false) String id,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException {
+        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Member.class);
         PagedResponseDto<MemberResponseDto> members = memberService.getMembersByConditions(id, name, pageable);
         return ApiResponse.success(members);
     }
@@ -98,9 +107,13 @@ public class MemberController {
     public ApiResponse<PagedResponseDto<MemberBirthdayResponseDto>> getBirthdaysThisMonth(
             @RequestParam(name = "month") int month,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException {
+        List<String> sortByList = sortBy.orElse(List.of("birth"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("asc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Member.class);
         PagedResponseDto<MemberBirthdayResponseDto> birthdayMembers = memberService.getBirthdaysThisMonth(month, pageable);
         return ApiResponse.success(birthdayMembers);
     }
