@@ -81,7 +81,7 @@ public class ActivityGroupBoardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardResponseDto> getAllActivityGroupBoard(Pageable pageable) {
-        Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAll(pageable);
         return new PagedResponseDto<>(boards.map(ActivityGroupBoardResponseDto::toDto));
     }
 
@@ -93,7 +93,7 @@ public class ActivityGroupBoardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardResponseDto> getActivityGroupBoardByCategory(Long activityGroupId, ActivityGroupBoardCategory category, Pageable pageable) {
-        Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByActivityGroup_IdAndCategoryOrderByCreatedAtDesc(activityGroupId, category, pageable);
+        Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByActivityGroup_IdAndCategory(activityGroupId, category, pageable);
         return new PagedResponseDto<>(boards.map(ActivityGroupBoardResponseDto::toDto));
     }
 

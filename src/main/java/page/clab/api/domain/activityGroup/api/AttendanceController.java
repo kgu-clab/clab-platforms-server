@@ -3,6 +3,8 @@ package page.clab.api.domain.activityGroup.api;
 import com.google.zxing.WriterException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -16,16 +18,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activityGroup.application.AttendanceService;
+import page.clab.api.domain.activityGroup.domain.Absent;
+import page.clab.api.domain.activityGroup.domain.Attendance;
 import page.clab.api.domain.activityGroup.dto.request.AbsentRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.AttendanceRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.AbsentResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.AttendanceResponseDto;
 import page.clab.api.domain.activityGroup.exception.DuplicateAbsentExcuseException;
+import page.clab.api.domain.application.domain.Application;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.io.IOException;
+import page.clab.api.global.exception.SortingArgumentException;
+import page.clab.api.global.util.PageableUtils;
 
 @RestController
 @RequestMapping("/api/v1/attendance")
@@ -62,9 +69,13 @@ public class AttendanceController {
     public ApiResponse<PagedResponseDto<AttendanceResponseDto>> searchMyAttendance(
             @RequestParam(name = "activityGroupId", defaultValue = "1") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) throws IllegalAccessException {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException, IllegalAccessException {
+        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Attendance.class);
         PagedResponseDto<AttendanceResponseDto> myAttendances = attendanceService.getMyAttendances(activityGroupId, pageable);
         return ApiResponse.success(myAttendances);
     }
@@ -75,9 +86,13 @@ public class AttendanceController {
     public ApiResponse<PagedResponseDto<AttendanceResponseDto>> searchGroupAttendance(
             @RequestParam(name = "activityGroupId", defaultValue = "1") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) throws PermissionDeniedException {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException, PermissionDeniedException {
+        List<String> sortByList = sortBy.orElse(List.of("activityDate", "member"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("asc", "asc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Attendance.class);
         PagedResponseDto<AttendanceResponseDto> attendances = attendanceService.getGroupAttendances(activityGroupId, pageable);
         return ApiResponse.success(attendances);
     }
@@ -98,9 +113,13 @@ public class AttendanceController {
     public ApiResponse<PagedResponseDto<AbsentResponseDto>> getActivityGroupAbsentExcuses(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) throws PermissionDeniedException {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException, PermissionDeniedException {
+        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Absent.class);
         PagedResponseDto<AbsentResponseDto> absentExcuses = attendanceService.getActivityGroupAbsentExcuses(activityGroupId, pageable);
         return ApiResponse.success(absentExcuses);
     }

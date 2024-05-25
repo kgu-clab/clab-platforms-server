@@ -12,6 +12,6 @@ public interface GroupScheduleRepository extends JpaRepository<GroupSchedule, Lo
 
     List<GroupSchedule> findAllByActivityGroupIdOrderByIdDesc(Long activityGroupId);
 
-    Page<GroupSchedule> findAllByActivityGroupIdOrderByIdDesc(Long activityGroupId, Pageable pageable);
+    Page<GroupSchedule> findAllByActivityGroupId(Long activityGroupId, Pageable pageable);
 
 }

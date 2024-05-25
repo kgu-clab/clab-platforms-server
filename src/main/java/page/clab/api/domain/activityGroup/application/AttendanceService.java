@@ -123,11 +123,11 @@ public class AttendanceService {
     }
 
     private Page<Attendance> getAttendanceByMember(ActivityGroup activityGroup, Member member, Pageable pageable) {
-        return attendanceRepository.findAllByMemberAndActivityGroupOrderByCreatedAt(member, activityGroup, pageable);
+        return attendanceRepository.findAllByMemberAndActivityGroup(member, activityGroup, pageable);
     }
 
     private Page<Attendance> getAttendanceByActivityGroup(ActivityGroup activityGroup, Pageable pageable) {
-        return attendanceRepository.findAllByActivityGroupOrderByActivityDateAscMemberAsc(activityGroup, pageable);
+        return attendanceRepository.findAllByActivityGroup(activityGroup, pageable);
     }
 
     public boolean hasAttendanceHistory(ActivityGroup activityGroup, Member member, LocalDate activityDate) {
