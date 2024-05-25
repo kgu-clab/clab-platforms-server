@@ -11,7 +11,7 @@ import page.clab.api.domain.workExperience.domain.WorkExperience;
 @Repository
 public interface WorkExperienceRepository extends JpaRepository<WorkExperience, Long> {
 
-    Page<WorkExperience> findAllByMemberOrderByStartDateDesc(Member member, Pageable pageable);
+    Page<WorkExperience> findAllByMember(Member member, Pageable pageable);
 
     @Query(value = "SELECT w.* FROM work_experience w WHERE w.is_deleted = true", nativeQuery = true)
     Page<WorkExperience> findAllByIsDeletedTrue(Pageable pageable);

@@ -3,6 +3,8 @@ package page.clab.api.domain.sharedAccount.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -17,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.sharedAccount.application.SharedAccountService;
 import page.clab.api.domain.sharedAccount.application.SharedAccountUsageService;
+import page.clab.api.domain.sharedAccount.domain.SharedAccount;
 import page.clab.api.domain.sharedAccount.domain.SharedAccountUsageStatus;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountRequestDto;
 import page.clab.api.domain.sharedAccount.dto.request.SharedAccountUpdateRequestDto;
@@ -29,6 +33,8 @@ import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.exception.SortingArgumentException;
+import page.clab.api.global.util.PageableUtils;
 
 @RestController
 @RequestMapping("/api/v1/shared-accounts")
@@ -56,9 +62,13 @@ public class SharedAccountController {
     @GetMapping("")
     public ApiResponse<PagedResponseDto<SharedAccountResponseDto>> getSharedAccounts(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException {
+        List<String> sortByList = sortBy.orElse(List.of("id"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("asc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, SharedAccount.class);
         PagedResponseDto<SharedAccountResponseDto> sharedAccounts = sharedAccountService.getSharedAccounts(pageable);
         return ApiResponse.success(sharedAccounts);
     }
@@ -101,9 +111,13 @@ public class SharedAccountController {
     @GetMapping("/usage")
     public ApiResponse<PagedResponseDto<SharedAccountUsageResponseDto>> getSharedAccountUsages(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException {
+        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, SharedAccount.class);
         PagedResponseDto<SharedAccountUsageResponseDto> sharedAccountUsages = sharedAccountUsageService.getSharedAccountUsages(pageable);
         return ApiResponse.success(sharedAccountUsages);
     }
