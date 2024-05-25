@@ -63,7 +63,7 @@ public class AccuseController {
             @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
             @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
     ) throws SortingArgumentException {
-        List<String> sortByList = sortBy.orElse(List.of("createAt"));
+        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
         List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
         Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Accuse.class);
         PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccusesByConditions(type, status, countOrder, pageable);
@@ -79,7 +79,7 @@ public class AccuseController {
             @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
             @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
     ) throws SortingArgumentException {
-        List<String> sortByList = sortBy.orElse(List.of("createAt"));
+        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
         List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
         Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Accuse.class);
         PagedResponseDto<AccuseMyResponseDto> accuses = accuseService.getMyAccuses(pageable);

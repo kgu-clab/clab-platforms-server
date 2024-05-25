@@ -132,13 +132,9 @@ public class ScheduleController {
     @Secured({"ROLE_SUPER"})
     public ApiResponse<PagedResponseDto<ScheduleResponseDto>> getDeletedSchedules(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
-    ) throws SortingArgumentException {
-        List<String> sortByList = sortBy.orElse(List.of("startDateTime"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("asc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Schedule.class);
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getDeletedSchedules(pageable);
         return ApiResponse.success(schedules);
     }

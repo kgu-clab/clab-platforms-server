@@ -1,11 +1,6 @@
 package page.clab.api.domain.schedule.dao;
 
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Path;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import page.clab.api.domain.board.domain.QBoard;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.domain.QSchedule;
 import page.clab.api.domain.schedule.domain.Schedule;
