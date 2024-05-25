@@ -3,9 +3,10 @@ package page.clab.api.domain.accuse.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ import page.clab.api.domain.accuse.dto.response.AccuseMyResponseDto;
 import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -58,10 +60,12 @@ public class AccuseController {
             @RequestParam(name = "countOrder", defaultValue = "false") boolean countOrder,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
-            @RequestParam(name = "sortDirection", defaultValue = "asc") String sortDirection
-    ) {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Accuse.class);
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException {
+        List<String> sortByList = sortBy.orElse(List.of("createAt"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Accuse.class);
         PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccusesByConditions(type, status, countOrder, pageable);
         return ApiResponse.success(accuses);
     }
@@ -72,10 +76,12 @@ public class AccuseController {
     public ApiResponse<PagedResponseDto<AccuseMyResponseDto>> getMyAccuses(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
-            @RequestParam(name = "sortDirection", defaultValue = "asc") String sortDirection
-    ) {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Accuse.class);
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException {
+        List<String> sortByList = sortBy.orElse(List.of("createAt"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Accuse.class);
         PagedResponseDto<AccuseMyResponseDto> accuses = accuseService.getMyAccuses(pageable);
         return ApiResponse.success(accuses);
     }

@@ -20,7 +20,7 @@ public interface AccuseRepository extends JpaRepository<Accuse, Long> {
 
     List<Accuse> findByTargetOrderByCreatedAtDesc(AccuseTarget accuseTarget);
 
-    Page<Accuse> findByMemberOrderByCreatedAtDesc(Member currentMember, Pageable pageable);
+    Page<Accuse> findByMember(Member currentMember, Pageable pageable);
 
     List<Accuse> findByTarget(AccuseTarget target);
 

@@ -69,6 +69,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletionException;
+import page.clab.api.global.exception.SortingArgumentException;
 
 @RestControllerAdvice(basePackages = "page.clab.api")
 @RequiredArgsConstructor
@@ -88,6 +89,7 @@ public class GlobalExceptionHandler {
             MethodArgumentTypeMismatchException.class,
             IllegalAccessException.class,
             NumberFormatException.class,
+            SortingArgumentException.class
     })
     public ErrorResponse badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);

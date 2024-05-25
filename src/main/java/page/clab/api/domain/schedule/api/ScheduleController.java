@@ -3,7 +3,10 @@ package page.clab.api.domain.schedule.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
@@ -15,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.schedule.application.ScheduleService;
+import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
 import page.clab.api.domain.schedule.dto.response.ScheduleCollectResponseDto;
@@ -25,11 +30,14 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.time.LocalDate;
+import page.clab.api.global.exception.SortingArgumentException;
+import page.clab.api.global.util.PageableUtils;
 
 @RestController
 @RequestMapping("/api/v1/schedule")
 @RequiredArgsConstructor
 @Tag(name = "Schedule", description = "일정")
+@Slf4j
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
@@ -51,9 +59,13 @@ public class ScheduleController {
             @RequestParam(name = "startDate") LocalDate startDate,
             @RequestParam(name = "endDate") LocalDate endDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException {
+        List<String> sortByList = sortBy.orElse(List.of("startDateTime"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("asc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Schedule.class);
         PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getSchedulesWithinDateRange(startDate, endDate, pageable);
         return ApiResponse.success(schedules);
     }
@@ -68,9 +80,13 @@ public class ScheduleController {
             @RequestParam(name = "month", required = false) Integer month,
             @RequestParam(name = "priority", required = false) SchedulePriority priority,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException {
+        List<String> sortByList = sortBy.orElse(List.of("startDateTime"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("asc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Schedule.class);
         PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getSchedulesByConditions(year, month, priority, pageable);
         return ApiResponse.success(schedules);
     }
@@ -82,9 +98,13 @@ public class ScheduleController {
             @RequestParam(name = "startDate") LocalDate startDate,
             @RequestParam(name = "endDate") LocalDate endDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException {
+        List<String> sortByList = sortBy.orElse(List.of("startDateTime"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("asc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Schedule.class);
         PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getActivitySchedules(startDate, endDate, pageable);
         return ApiResponse.success(schedules);
     }
@@ -112,9 +132,13 @@ public class ScheduleController {
     @Secured({"ROLE_SUPER"})
     public ApiResponse<PagedResponseDto<ScheduleResponseDto>> getDeletedSchedules(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
+            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+    ) throws SortingArgumentException {
+        List<String> sortByList = sortBy.orElse(List.of("startDateTime"));
+        List<String> sortDirectionList = sortDirection.orElse(List.of("asc"));
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Schedule.class);
         PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getDeletedSchedules(pageable);
         return ApiResponse.success(schedules);
     }
