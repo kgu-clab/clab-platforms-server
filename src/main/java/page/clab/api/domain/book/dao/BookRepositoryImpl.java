@@ -35,7 +35,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
         List<Book> books = queryFactory.selectFrom(book)
                 .leftJoin(book.borrower, borrower)
                 .where(builder)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, "book"))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, book))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

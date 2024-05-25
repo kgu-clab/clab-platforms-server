@@ -36,7 +36,7 @@ public class DonationRepositoryImpl implements DonationRepositoryCustom {
                 .selectFrom(donation)
                 .leftJoin(donation.donor, member)
                 .where(builder)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, "donation"))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, donation))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

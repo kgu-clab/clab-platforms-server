@@ -33,7 +33,7 @@ public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
 
         List<JobPosting> jobPostings = queryFactory.selectFrom(qJobPosting)
                 .where(builder)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, "jobPosting"))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qJobPosting))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

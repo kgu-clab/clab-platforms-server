@@ -35,7 +35,7 @@ public class AccuseTargetRepositoryImpl implements AccuseTargetRepositoryCustom 
 
         List<AccuseTarget> accuseTargets = queryFactory.selectFrom(qAccuseTarget)
                 .where(predicate)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, "accuse"))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qAccuseTarget))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

@@ -40,7 +40,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
 
         List<Schedule> results = queryFactory.selectFrom(schedule)
                 .where(builder)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, "schedule"))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, schedule))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -69,7 +69,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
 
         List<Schedule> results = queryFactory.selectFrom(schedule)
                 .where(builder)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, "schedule"))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, schedule))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -96,7 +96,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
 
         List<Schedule> results = queryFactory.selectFrom(schedule)
                 .where(builder)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, "schedule"))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, schedule))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

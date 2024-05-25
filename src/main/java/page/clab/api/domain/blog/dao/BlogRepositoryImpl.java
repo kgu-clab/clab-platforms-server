@@ -33,7 +33,7 @@ public class BlogRepositoryImpl implements BlogRepositoryCustom {
         List<Blog> blogs = queryFactory.selectFrom(qBlog)
                 .leftJoin(qBlog.member, qMember)
                 .where(builder)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, "blog"))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qBlog))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

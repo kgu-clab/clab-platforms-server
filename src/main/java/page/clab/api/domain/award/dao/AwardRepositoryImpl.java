@@ -37,7 +37,7 @@ public class AwardRepositoryImpl implements AwardRepositoryCustom {
         List<Award> awards = queryFactory.selectFrom(qAward)
                 .leftJoin(qAward.member, qMember)
                 .where(builder)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, "award"))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qAward))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

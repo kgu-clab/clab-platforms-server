@@ -30,7 +30,7 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom {
 
         List<Application> applications = queryFactory.selectFrom(qApplication)
                 .where(builder.getValue())
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, "application"))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qApplication))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
