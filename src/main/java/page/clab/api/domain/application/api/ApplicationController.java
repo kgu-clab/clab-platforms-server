@@ -109,13 +109,9 @@ public class ApplicationController {
     @Secured({"ROLE_SUPER"})
     public ApiResponse<PagedResponseDto<ApplicationResponseDto>> getDeletedBoards(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) throws SortingArgumentException {
-        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Application.class);
+        Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ApplicationResponseDto> applications = applicationService.getDeletedApplications(pageable);
         return ApiResponse.success(applications);
     }
