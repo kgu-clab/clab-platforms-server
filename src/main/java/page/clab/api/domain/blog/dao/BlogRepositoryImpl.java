@@ -12,6 +12,7 @@ import page.clab.api.domain.blog.domain.QBlog;
 import page.clab.api.domain.member.domain.QMember;
 
 import java.util.List;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class BlogRepositoryImpl implements BlogRepositoryCustom {
         List<Blog> blogs = queryFactory.selectFrom(qBlog)
                 .leftJoin(qBlog.member, qMember)
                 .where(builder)
-                .orderBy(qBlog.createdAt.desc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, "blog"))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

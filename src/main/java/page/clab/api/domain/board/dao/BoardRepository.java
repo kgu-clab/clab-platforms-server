@@ -12,11 +12,11 @@ import page.clab.api.domain.member.domain.Member;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    Page<Board> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<Board> findAll(Pageable pageable);
 
-    Page<Board> findAllByMemberOrderByCreatedAtDesc(Member member, Pageable pageable);
+    Page<Board> findAllByMember(Member member, Pageable pageable);
 
-    Page<Board> findAllByCategoryOrderByCreatedAtDesc(BoardCategory category, Pageable pageable);
+    Page<Board> findAllByCategory(BoardCategory category, Pageable pageable);
 
     @Query(value = "SELECT b.* FROM board b WHERE b.is_deleted = true", nativeQuery = true)
     Page<Board> findAllByIsDeletedTrue(Pageable pageable);
