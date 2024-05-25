@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.accuse.application.AccuseService;
+import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
@@ -24,6 +25,7 @@ import page.clab.api.domain.accuse.dto.response.AccuseMyResponseDto;
 import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.util.PageableUtils;
 
 @RestController
 @RequestMapping("/api/v1/accuses")
@@ -55,9 +57,11 @@ public class AccuseController {
             @RequestParam(name = "accuseStatus", required = false) AccuseStatus status,
             @RequestParam(name = "countOrder", defaultValue = "false") boolean countOrder,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "asc") String sortDirection
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Accuse.class);
         PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccusesByConditions(type, status, countOrder, pageable);
         return ApiResponse.success(accuses);
     }
@@ -67,9 +71,11 @@ public class AccuseController {
     @GetMapping("/my")
     public ApiResponse<PagedResponseDto<AccuseMyResponseDto>> getMyAccuses(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "asc") String sortDirection
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Accuse.class);
         PagedResponseDto<AccuseMyResponseDto> accuses = accuseService.getMyAccuses(pageable);
         return ApiResponse.success(accuses);
     }
