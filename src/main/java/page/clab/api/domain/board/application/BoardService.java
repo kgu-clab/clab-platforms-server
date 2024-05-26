@@ -87,7 +87,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardCategoryResponseDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
         Page<Board> boards = getBoardByCategory(category, pageable);
-        return new PagedResponseDto<>(boards.map(BoardCategoryResponseDto::toDto));
+        return new PagedResponseDto<>(boards.map(this::mapToBoardCategoryResponseDto));
     }
 
     @Transactional
@@ -135,6 +135,12 @@ public class BoardService {
     private BoardListResponseDto mapToBoardListResponseDto(Board board) {
         Long commentCount = commentRepository.countByBoard(board);
         return BoardListResponseDto.toDto(board, commentCount);
+    }
+
+    @NotNull
+    private BoardCategoryResponseDto mapToBoardCategoryResponseDto(Board board) {
+        Long commentCount = commentRepository.countByBoard(board);
+        return BoardCategoryResponseDto.toDto(board, commentCount);
     }
 
     public Board getBoardByIdOrThrow(Long boardId) {
