@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.accuse.application.AccuseService;
 import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
+import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.accuse.dto.response.AccuseMyResponseDto;
@@ -65,7 +66,7 @@ public class AccuseController {
     ) throws SortingArgumentException {
         List<String> sortByList = sortBy.orElse(List.of("createdAt"));
         List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Accuse.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, AccuseTarget.class);
         PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccusesByConditions(type, status, countOrder, pageable);
         return ApiResponse.success(accuses);
     }
