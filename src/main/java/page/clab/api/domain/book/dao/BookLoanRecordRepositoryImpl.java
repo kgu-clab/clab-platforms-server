@@ -15,6 +15,7 @@ import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -50,7 +51,7 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
                 .where(builder)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(bookLoanRecord.borrowedAt.desc(), bookLoanRecord.createdAt.asc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, bookLoanRecord))
                 .fetch();
 
         long total = queryFactory
@@ -83,7 +84,7 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
                         .and(bookLoanRecord.dueDate.lt(now)))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(bookLoanRecord.dueDate.asc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, bookLoanRecord))
                 .fetch();
 
         long total = queryFactory
