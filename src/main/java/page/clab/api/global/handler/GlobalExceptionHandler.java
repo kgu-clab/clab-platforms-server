@@ -7,8 +7,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.sqm.UnknownPathException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -91,7 +93,8 @@ public class GlobalExceptionHandler {
             IllegalAccessException.class,
             NumberFormatException.class,
             SortingArgumentException.class,
-            InvalidColumnException.class
+            InvalidColumnException.class,
+            UnknownPathException.class
     })
     public ErrorResponse badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
@@ -188,6 +191,7 @@ public class GlobalExceptionHandler {
             CompletionException.class,
             EncryptionException.class,
             DecryptionException.class,
+            InvalidDataAccessApiUsageException.class,
             Exception.class
     })
     public ApiResponse serverException(HttpServletRequest request, HttpServletResponse response, Exception e) {
