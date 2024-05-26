@@ -61,12 +61,10 @@ public class ScheduleController {
             @RequestParam(name = "endDate") LocalDate endDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "startDateTime") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("startDateTime"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("asc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Schedule.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Schedule.class);
         PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getSchedulesWithinDateRange(startDate, endDate, pageable);
         return ApiResponse.success(schedules);
     }
@@ -82,12 +80,10 @@ public class ScheduleController {
             @RequestParam(name = "priority", required = false) SchedulePriority priority,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "startDateTime") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("startDateTime"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("asc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Schedule.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Schedule.class);
         PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getSchedulesByConditions(year, month, priority, pageable);
         return ApiResponse.success(schedules);
     }
@@ -100,12 +96,10 @@ public class ScheduleController {
             @RequestParam(name = "endDate") LocalDate endDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "startDateTime") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("startDateTime"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("asc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Schedule.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Schedule.class);
         PagedResponseDto<ScheduleResponseDto> schedules = scheduleService.getActivitySchedules(startDate, endDate, pageable);
         return ApiResponse.success(schedules);
     }

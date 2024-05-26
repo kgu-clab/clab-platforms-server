@@ -65,12 +65,10 @@ public class DonationController {
             @RequestParam(name = "endDate", required = false) LocalDate endDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Donation.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Donation.class);
         PagedResponseDto<DonationResponseDto> donations = donationService.getDonationsByConditions(memberId, name, startDate, endDate, pageable);
         return ApiResponse.success(donations);
     }
@@ -81,12 +79,10 @@ public class DonationController {
     public ApiResponse<PagedResponseDto<DonationResponseDto>> getMyDonations(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Donation.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Donation.class);
         PagedResponseDto<DonationResponseDto> donations = donationService.getMyDonations(pageable);
         return ApiResponse.success(donations);
     }

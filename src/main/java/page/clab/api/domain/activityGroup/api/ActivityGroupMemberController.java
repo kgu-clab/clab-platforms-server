@@ -49,12 +49,10 @@ public class ActivityGroupMemberController {
     public ApiResponse<PagedResponseDto<ActivityGroupResponseDto>> getActivityGroups(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, ActivityGroup.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroup.class);
         PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroups(pageable);
         return ApiResponse.success(activityGroups);
     }
@@ -99,12 +97,10 @@ public class ActivityGroupMemberController {
             @RequestParam(name = "category") ActivityGroupCategory category,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, ActivityGroup.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroup.class);
         PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroupsByCategory(category, pageable);
         return ApiResponse.success(activityGroups);
     }
@@ -116,12 +112,10 @@ public class ActivityGroupMemberController {
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "id") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("id"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, GroupSchedule.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, GroupSchedule.class);
         PagedResponseDto<GroupScheduleDto> groupSchedules = activityGroupMemberService.getGroupSchedules(activityGroupId, pageable);
         return ApiResponse.success(groupSchedules);
     }
@@ -134,12 +128,10 @@ public class ActivityGroupMemberController {
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "memberId") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("memberId"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("asc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, GroupMember.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, GroupMember.class);
         PagedResponseDto<GroupMemberResponseDto> activityGroupMembers = activityGroupMemberService.getActivityGroupMembers(activityGroupId, pageable);
         return ApiResponse.success(activityGroupMembers);
     }

@@ -64,12 +64,10 @@ public class BookController {
             @RequestParam(name = "borrowerName", required = false) String borrowerName,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Book.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Book.class);
         PagedResponseDto<BookResponseDto> books = bookService.getBooksByConditions(title, category, publisher, borrowerId, borrowerName, pageable);
         return ApiResponse.success(books);
     }

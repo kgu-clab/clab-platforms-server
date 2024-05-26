@@ -102,12 +102,10 @@ public class BookLoanRecordController {
             @RequestParam(name = "status", required = false) BookLoanStatus status,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "borrowedAt, createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc, asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("borrowedAt", "createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc", "asc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, BookLoanRecord.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, BookLoanRecord.class);
         PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = bookLoanRecordService.getBookLoanRecordsByConditions(bookId, borrowerId, status, pageable);
         return ApiResponse.success(bookLoanRecords);
     }
@@ -118,12 +116,10 @@ public class BookLoanRecordController {
     public ApiResponse<PagedResponseDto<BookLoanRecordOverdueResponseDto>> getOverdueBookLoanRecords(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "dueDate") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("dueDate"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("asc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, BookLoanRecord.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, BookLoanRecord.class);
         PagedResponseDto<BookLoanRecordOverdueResponseDto> overdueRecords = bookLoanRecordService.getOverdueBookLoanRecords(pageable);
         return ApiResponse.success(overdueRecords);
     }

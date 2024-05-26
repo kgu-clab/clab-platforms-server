@@ -58,12 +58,10 @@ public class WorkExperienceController {
     public ApiResponse<PagedResponseDto<WorkExperienceResponseDto>> getMyWorkExperience(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "startDate") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("startDate"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, WorkExperience.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, WorkExperience.class);
         PagedResponseDto<WorkExperienceResponseDto> myWorkExperience = workExperienceService.getMyWorkExperience(pageable);
         return ApiResponse.success(myWorkExperience);
     }
@@ -76,12 +74,10 @@ public class WorkExperienceController {
             @RequestParam String memberId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "startDate") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("startDate"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, WorkExperience.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, WorkExperience.class);
         PagedResponseDto<WorkExperienceResponseDto> workExperiences = workExperienceService.getWorkExperiencesByConditions(memberId, pageable);
         return ApiResponse.success(workExperiences);
     }

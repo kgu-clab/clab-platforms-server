@@ -84,12 +84,10 @@ public class MemberController {
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Member.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Member.class);
         PagedResponseDto<MemberResponseDto> members = memberService.getMembersByConditions(id, name, pageable);
         return ApiResponse.success(members);
     }
@@ -109,12 +107,10 @@ public class MemberController {
             @RequestParam(name = "month") int month,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "birth") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("birth"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("asc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Member.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Member.class);
         PagedResponseDto<MemberBirthdayResponseDto> birthdayMembers = memberService.getBirthdaysThisMonth(month, pageable);
         return ApiResponse.success(birthdayMembers);
     }

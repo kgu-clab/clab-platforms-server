@@ -58,12 +58,10 @@ public class ActivityGroupReportController {
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, ActivityGroupReport.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupReport.class);
         PagedResponseDto<ActivityGroupReportResponseDto> reports = activityGroupReportService.getReports(activityGroupId, pageable);
         return ApiResponse.success(reports);
     }

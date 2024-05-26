@@ -120,12 +120,10 @@ public class ActivityGroupAdminController {
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "memberId") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, PermissionDeniedException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("memberId"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("asc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, GroupMember.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, GroupMember.class);
         PagedResponseDto<ActivityGroupMemberWithApplyReasonResponseDto> groupMembers = activityGroupAdminService.getGroupMembersWithApplyReason(activityGroupId, pageable);
         return ApiResponse.success(groupMembers);
     }

@@ -58,12 +58,10 @@ public class ProductController {
             @RequestParam(required = false) String productName,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Product.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Product.class);
         PagedResponseDto<ProductResponseDto> products = productService.getProductsByConditions(productName, pageable);
         return ApiResponse.success(products);
     }

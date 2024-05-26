@@ -60,12 +60,10 @@ public class PositionController {
             @RequestParam(name = "positionType", required = false) PositionType positionType,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "year, positionType") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc, asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("year", "positionType"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc", "asc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Position.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Position.class);
         PagedResponseDto<PositionResponseDto> positions = positionService.getPositionsByConditions(year, positionType, pageable);
         return ApiResponse.success(positions);
     }

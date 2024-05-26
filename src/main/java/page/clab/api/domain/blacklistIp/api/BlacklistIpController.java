@@ -55,12 +55,10 @@ public class BlacklistIpController {
     public ApiResponse<PagedResponseDto<BlacklistIp>> getBlacklistedIps(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, BlacklistIp.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, BlacklistIp.class);
         PagedResponseDto<BlacklistIp> blacklistedIps = blacklistIpService.getBlacklistedIps(pageable);
         return ApiResponse.success(blacklistedIps);
     }

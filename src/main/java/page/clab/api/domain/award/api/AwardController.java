@@ -61,12 +61,10 @@ public class AwardController {
             @RequestParam(name = "year", required = false) Long year,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "awardDate") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("awardDate"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Award.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Award.class);
         PagedResponseDto<AwardResponseDto> awards = awardService.getAwardsByConditions(memberId, year, pageable);
         return ApiResponse.success(awards);
     }
@@ -77,12 +75,10 @@ public class AwardController {
     public ApiResponse<PagedResponseDto<AwardResponseDto>> getMyAwards(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "awardDate") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("awardDate"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Award.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Award.class);
         PagedResponseDto<AwardResponseDto> myAwards = awardService.getMyAwards(pageable);
         return ApiResponse.success(myAwards);
     }

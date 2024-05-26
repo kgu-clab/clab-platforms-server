@@ -64,12 +64,10 @@ public class SharedAccountController {
     public ApiResponse<PagedResponseDto<SharedAccountResponseDto>> getSharedAccounts(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "id") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("id"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("asc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, SharedAccount.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, SharedAccount.class);
         PagedResponseDto<SharedAccountResponseDto> sharedAccounts = sharedAccountService.getSharedAccounts(pageable);
         return ApiResponse.success(sharedAccounts);
     }
@@ -113,12 +111,10 @@ public class SharedAccountController {
     public ApiResponse<PagedResponseDto<SharedAccountUsageResponseDto>> getSharedAccountUsages(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, SharedAccount.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, SharedAccount.class);
         PagedResponseDto<SharedAccountUsageResponseDto> sharedAccountUsages = sharedAccountUsageService.getSharedAccountUsages(pageable);
         return ApiResponse.success(sharedAccountUsages);
     }

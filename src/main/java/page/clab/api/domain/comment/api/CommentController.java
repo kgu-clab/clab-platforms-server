@@ -62,12 +62,10 @@ public class CommentController {
             @PathVariable(name = "boardId") Long boardId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Comment.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Comment.class);
         PagedResponseDto<CommentResponseDto> comments = commentService.getAllComments(boardId, pageable);
         return ApiResponse.success(comments);
     }
@@ -78,12 +76,10 @@ public class CommentController {
     public ApiResponse<PagedResponseDto<CommentMyResponseDto>> getMyComments(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Comment.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Comment.class);
         PagedResponseDto<CommentMyResponseDto> comments = commentService.getMyComments(pageable);
         return ApiResponse.success(comments);
     }

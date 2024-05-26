@@ -62,12 +62,10 @@ public class AccuseController {
             @RequestParam(name = "countOrder", defaultValue = "false") boolean countOrder,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, AccuseTarget.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, AccuseTarget.class);
         PagedResponseDto<AccuseResponseDto> accuses = accuseService.getAccusesByConditions(type, status, countOrder, pageable);
         return ApiResponse.success(accuses);
     }
@@ -78,12 +76,10 @@ public class AccuseController {
     public ApiResponse<PagedResponseDto<AccuseMyResponseDto>> getMyAccuses(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
-            @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        List<String> sortByList = sortBy.orElse(List.of("createdAt"));
-        List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
-        Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Accuse.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Accuse.class);
         PagedResponseDto<AccuseMyResponseDto> accuses = accuseService.getMyAccuses(pageable);
         return ApiResponse.success(accuses);
     }
