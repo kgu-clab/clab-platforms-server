@@ -21,11 +21,13 @@ public class BoardCategoryResponseDto {
 
     private String title;
 
+    private Long commentCount;
+
     private String imageUrl;
 
     private LocalDateTime createdAt;
 
-    public static BoardCategoryResponseDto toDto(Board board) {
+    public static BoardCategoryResponseDto toDto(Board board, Long commentCount) {
         WriterInfo writerInfo = WriterInfo.fromBoard(board);
         return BoardCategoryResponseDto.builder()
                 .id(board.getId())
@@ -33,6 +35,7 @@ public class BoardCategoryResponseDto {
                 .writerId(writerInfo.getId())
                 .writerName(writerInfo.getName())
                 .title(board.getTitle())
+                .commentCount(commentCount)
                 .imageUrl(board.getImageUrl())
                 .createdAt(board.getCreatedAt())
                 .build();
