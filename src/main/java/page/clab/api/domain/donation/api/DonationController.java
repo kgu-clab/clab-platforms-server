@@ -27,6 +27,7 @@ import page.clab.api.domain.donation.dto.request.DonationUpdateRequestDto;
 import page.clab.api.domain.donation.dto.response.DonationResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.time.LocalDate;
@@ -66,7 +67,7 @@ public class DonationController {
             @RequestParam(name = "size", defaultValue = "20") int size,
             @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
             @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
-    ) throws SortingArgumentException {
+    ) throws SortingArgumentException, InvalidColumnException {
         List<String> sortByList = sortBy.orElse(List.of("createdAt"));
         List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
         Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Donation.class);
@@ -82,7 +83,7 @@ public class DonationController {
             @RequestParam(name = "size", defaultValue = "20") int size,
             @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
             @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
-    ) throws SortingArgumentException {
+    ) throws SortingArgumentException, InvalidColumnException {
         List<String> sortByList = sortBy.orElse(List.of("createdAt"));
         List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
         Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Donation.class);

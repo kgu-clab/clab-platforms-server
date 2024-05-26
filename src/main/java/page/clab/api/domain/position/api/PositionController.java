@@ -27,6 +27,7 @@ import page.clab.api.domain.position.dto.response.PositionMyResponseDto;
 import page.clab.api.domain.position.dto.response.PositionResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
@@ -61,7 +62,7 @@ public class PositionController {
             @RequestParam(name = "size", defaultValue = "20") int size,
             @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
             @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
-    ) throws SortingArgumentException {
+    ) throws SortingArgumentException, InvalidColumnException {
         List<String> sortByList = sortBy.orElse(List.of("year", "positionType"));
         List<String> sortDirectionList = sortDirection.orElse(List.of("desc", "asc"));
         Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, Position.class);

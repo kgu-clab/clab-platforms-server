@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.SortingArgumentException;
 
@@ -19,14 +20,14 @@ public class PageableUtils {
         PageableUtils.columnValidator = columnValidator;
     }
 
-    public static Pageable createPageable(int page, int size, List<String> sortByList, List<String> sortDirectionList, Class<?> entityClass) throws SortingArgumentException {
+    public static Pageable createPageable(int page, int size, List<String> sortByList, List<String> sortDirectionList, Class<?> entityClass) throws SortingArgumentException, InvalidColumnException {
         if (sortByList.size() != sortDirectionList.size()) {
             throw new SortingArgumentException();
         }
 
         for (String sortBy : sortByList) {
             if (!columnValidator.isValidColumn(entityClass, sortBy)) {
-                throw new NotFoundException(sortBy + "라는 칼럼이 존재하지 않습니다.");
+                throw new InvalidColumnException(sortBy + "라는 칼럼이 존재하지 않습니다.");
             }
         }
 

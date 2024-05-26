@@ -30,6 +30,7 @@ import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.award.dto.response.AwardResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.util.List;
@@ -71,7 +72,7 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "size", defaultValue = "20") int size,
             @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
             @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
-    ) throws SortingArgumentException {
+    ) throws SortingArgumentException, InvalidColumnException {
         List<String> sortByList = sortBy.orElse(List.of("createdAt"));
         List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
         Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, ActivityGroupBoard.class);
@@ -99,7 +100,7 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "size", defaultValue = "20") int size,
             @RequestParam(name = "sortBy", required = false) Optional<List<String>> sortBy,
             @RequestParam(name = "sortDirection", required = false) Optional<List<String>> sortDirection
-    ) throws SortingArgumentException {
+    ) throws SortingArgumentException, InvalidColumnException {
         List<String> sortByList = sortBy.orElse(List.of("createdAt"));
         List<String> sortDirectionList = sortDirection.orElse(List.of("desc"));
         Pageable pageable = PageableUtils.createPageable(page, size, sortByList, sortDirectionList, ActivityGroupBoard.class);

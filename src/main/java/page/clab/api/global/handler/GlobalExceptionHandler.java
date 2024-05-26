@@ -61,6 +61,7 @@ import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.DecryptionException;
 import page.clab.api.global.exception.EncryptionException;
+import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -89,7 +90,8 @@ public class GlobalExceptionHandler {
             MethodArgumentTypeMismatchException.class,
             IllegalAccessException.class,
             NumberFormatException.class,
-            SortingArgumentException.class
+            SortingArgumentException.class,
+            InvalidColumnException.class
     })
     public ErrorResponse badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
