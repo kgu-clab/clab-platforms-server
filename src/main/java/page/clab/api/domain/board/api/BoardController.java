@@ -56,7 +56,8 @@ public class BoardController {
     }
 
     @GetMapping("")
-    @Operation(summary = "[U] 커뮤니티 게시글 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 커뮤니티 게시글 목록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ApiResponse<PagedResponseDto<BoardListResponseDto>> getBoards(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -80,7 +81,8 @@ public class BoardController {
     }
 
     @GetMapping("/my-boards")
-    @Operation(summary = "[U] 내가 쓴 커뮤니티 게시글 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 내가 쓴 커뮤니티 게시글 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ApiResponse<PagedResponseDto<BoardMyResponseDto>> getMyBoards(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -94,7 +96,8 @@ public class BoardController {
     }
 
     @GetMapping("/category")
-    @Operation(summary = "[U] 커뮤니티 게시글 카테고리별 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 커뮤니티 게시글 카테고리별 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ApiResponse<PagedResponseDto<BoardCategoryResponseDto>> getBoardsByCategory(
             @RequestParam(name = "category") BoardCategory category,

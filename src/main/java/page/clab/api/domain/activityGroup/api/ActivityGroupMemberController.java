@@ -44,7 +44,8 @@ public class ActivityGroupMemberController {
 
     private final ActivityGroupMemberService activityGroupMemberService;
 
-    @Operation(summary = "활동 전체 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Operation(summary = "활동 전체 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDate, startDate")
     @GetMapping("")
     public ApiResponse<PagedResponseDto<ActivityGroupResponseDto>> getActivityGroups(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -91,7 +92,8 @@ public class ActivityGroupMemberController {
         return ApiResponse.success(activityGroups);
     }
 
-    @Operation(summary = "카테고리별 활동 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Operation(summary = "카테고리별 활동 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDate, startDate")
     @GetMapping("/list")
     public ApiResponse<PagedResponseDto<ActivityGroupResponseDto>> getActivityGroupsByCategory(
             @RequestParam(name = "category") ActivityGroupCategory category,
@@ -105,7 +107,8 @@ public class ActivityGroupMemberController {
         return ApiResponse.success(activityGroups);
     }
 
-    @Operation(summary = "[U] 활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDate, startDate")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/schedule")
     public ApiResponse<PagedResponseDto<GroupScheduleDto>> getGroupScheduleList(
@@ -121,7 +124,8 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "[U] 활동 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "활동에 참여(수락)된 멤버만 조회 가능")
+            "활동에 참여(수락)된 멤버만 조회 가능<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDate, startDate")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/members")
     public ApiResponse<PagedResponseDto<GroupMemberResponseDto>> getActivityGroupMemberList(

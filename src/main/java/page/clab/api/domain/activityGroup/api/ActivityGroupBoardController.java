@@ -64,7 +64,8 @@ public class ActivityGroupBoardController {
         return ApiResponse.success(id);
     }
 
-    @Operation(summary = "[U] 활동 그룹 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 활동 그룹 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, activityGroupId, dueDateTime, parentId, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/list")
     public ApiResponse<PagedResponseDto<ActivityGroupBoardResponseDto>> getActivityGroupBoardList(
@@ -88,7 +89,8 @@ public class ActivityGroupBoardController {
         return ApiResponse.success(board);
     }
 
-    @Operation(summary = "[U] 활동 그룹 ID에 대한 카테고리별 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 활동 그룹 ID에 대한 카테고리별 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, activityGroupId, dueDateTime, parentId, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/by-category")
     public ApiResponse<PagedResponseDto<ActivityGroupBoardResponseDto>> getActivityGroupBoardByCategory(

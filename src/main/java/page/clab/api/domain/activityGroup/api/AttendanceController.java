@@ -64,7 +64,8 @@ public class AttendanceController {
         return ApiResponse.success(id);
     }
 
-    @Operation(summary = "[U] 내 출석기록 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 내 출석기록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, activityDate, groupId, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping({"/my-attendance"})
     public ApiResponse<PagedResponseDto<AttendanceResponseDto>> searchMyAttendance(
@@ -79,7 +80,8 @@ public class AttendanceController {
         return ApiResponse.success(myAttendances);
     }
 
-    @Operation(summary = "[U] 특정 그룹의 출석기록 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 특정 그룹의 출석기록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, activityDate, groupId, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping({"/group-attendance"})
     public ApiResponse<PagedResponseDto<AttendanceResponseDto>> searchGroupAttendance(
@@ -104,7 +106,8 @@ public class AttendanceController {
         return ApiResponse.success(id);
     }
 
-    @Operation(summary = "[U] 그룹의 불참 사유서 열람", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 그룹의 불참 사유서 열람", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, activityDate, groupId, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping({"/absent/{activityGroupId}"})
     public ApiResponse<PagedResponseDto<AbsentResponseDto>> getActivityGroupAbsentExcuses(

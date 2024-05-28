@@ -52,7 +52,8 @@ public class PositionController {
 
     @Operation(summary = "[U] 연도/직책별 목록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "2개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
-            "연도, 직책 중 하나라도 입력하지 않으면 전체 조회됨")
+            "연도, 직책 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, memberId, year")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ApiResponse<PagedResponseDto<PositionResponseDto>> getPositionsByConditions(

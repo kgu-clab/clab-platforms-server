@@ -113,7 +113,8 @@ public class ActivityGroupAdminController {
     }
 
     @Operation(summary = "[U] 활동 멤버 및 지원서 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "관리자 또는 리더만 조회 가능")
+            "관리자 또는 리더만 조회 가능<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, activityGroupId, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/members")
     public ApiResponse<PagedResponseDto<ActivityGroupMemberWithApplyReasonResponseDto>> getApplyGroupMemberList(

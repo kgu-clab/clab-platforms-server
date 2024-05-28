@@ -50,7 +50,8 @@ public class ActivityPhotoController {
     }
 
     @Operation(summary = "활동 사진 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br> " +
-            "공개 여부를 입력하지 않으면 전체 조회됨")
+            "공개 여부를 입력하지 않으면 전체 조회됨<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, date,  groupId, memberId")
     @GetMapping("")
     public ApiResponse<PagedResponseDto<ActivityPhotoResponseDto>> getActivityPhotosByConditions(
             @RequestParam(name = "isPublic", required = false) Boolean isPublic,

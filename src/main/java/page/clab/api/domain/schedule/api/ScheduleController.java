@@ -53,7 +53,8 @@ public class ScheduleController {
         return ApiResponse.success(id);
     }
 
-    @Operation(summary = "[U] 일정 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 일정 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDateTime, startDateTime, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ApiResponse<PagedResponseDto<ScheduleResponseDto>> getSchedulesWithinDateRange(
@@ -71,7 +72,8 @@ public class ScheduleController {
 
     @Operation(summary = "[U] 일정 조회(연도, 월, 중요도 기준)", description = "ROLE_USER 이상의 권한이 필요함<br> +" +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
-            "연도, 월, 중요도 중 하나라도 입력하지 않으면 전체 조회됨")
+            "연도, 월, 중요도 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDateTime, startDateTime, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/conditions")
     public ApiResponse<PagedResponseDto<ScheduleResponseDto>> getSchedulesByConditions(
@@ -88,7 +90,8 @@ public class ScheduleController {
         return ApiResponse.success(schedules);
     }
 
-    @Operation(summary = "[U] 내 활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 내 활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDateTime, startDateTime, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/activity")
     public ApiResponse<PagedResponseDto<ScheduleResponseDto>> getActivitySchedules(

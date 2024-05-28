@@ -55,7 +55,8 @@ public class MembershipFeeController {
     @Operation(summary = "[U] 회비 정보 조회(멤버 ID, 멤버 이름, 카테고리, 상태 기준)", description = "ROLE_USER 이상의 권한이 필요함<br> " +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
             "멤버 ID, 멤버 이름, 카테고리 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
-            "계좌 정보는 관리자 이상의 권한만 조회 가능")
+            "계좌 정보는 관리자 이상의 권한만 조회 가능<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, amount, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ApiResponse<PagedResponseDto<MembershipFeeResponseDto>> getMembershipFeesByConditions(

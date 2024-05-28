@@ -52,7 +52,8 @@ public class WorkExperienceController {
     }
 
     @Operation(summary = "[U] 나의 경력사항 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌")
+            "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDate, startDate, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ApiResponse<PagedResponseDto<WorkExperienceResponseDto>> getMyWorkExperience(
@@ -67,7 +68,8 @@ public class WorkExperienceController {
     }
 
     @Operation(summary = "[U] 멤버의 경력사항 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌")
+            "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDate, startDate, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/conditions")
     public ApiResponse<PagedResponseDto<WorkExperienceResponseDto>> getWorkExperiencesByConditions(

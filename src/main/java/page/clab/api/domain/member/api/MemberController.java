@@ -76,7 +76,8 @@ public class MemberController {
         return ApiResponse.success(id);
     }
 
-    @Operation(summary = "[A] 멤버 정보 조회(멤버 ID, 이름 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Operation(summary = "[A] 멤버 정보 조회(멤버 ID, 이름 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, birth, grade, lastLoginTime, loanSuspensionDate")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ApiResponse<PagedResponseDto<MemberResponseDto>> getMembersByConditions(
@@ -100,7 +101,8 @@ public class MemberController {
         return ApiResponse.success(myProfile);
     }
 
-    @Operation(summary = "이달의 생일자 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "이달의 생일자 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, birth, grade, lastLoginTime, loanSuspensionDate")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/birthday")
     public ApiResponse<PagedResponseDto<MemberBirthdayResponseDto>> getBirthdaysThisMonth(

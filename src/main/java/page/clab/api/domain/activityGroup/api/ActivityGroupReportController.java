@@ -51,7 +51,8 @@ public class ActivityGroupReportController {
         return ApiResponse.success(id);
     }
 
-    @Operation(summary = "[U] 특정 그룹의 활동 보고서 전체 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 특정 그룹의 활동 보고서 전체 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, activityGroupId")
     @GetMapping("")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ApiResponse<PagedResponseDto<ActivityGroupReportResponseDto>> getReports(

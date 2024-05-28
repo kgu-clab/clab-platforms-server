@@ -58,7 +58,8 @@ public class SharedAccountController {
         return ApiResponse.success(id);
     }
 
-    @Operation(summary = "[U] 공동 계정 조회(상태 포함)", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 공동 계정 조회(상태 포함)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ApiResponse<PagedResponseDto<SharedAccountResponseDto>> getSharedAccounts(
@@ -105,7 +106,8 @@ public class SharedAccountController {
         return ApiResponse.success(id);
     }
 
-    @Operation(summary = "[U] 공동 계정 이용 내역 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 공동 계정 이용 내역 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/usage")
     public ApiResponse<PagedResponseDto<SharedAccountUsageResponseDto>> getSharedAccountUsages(
