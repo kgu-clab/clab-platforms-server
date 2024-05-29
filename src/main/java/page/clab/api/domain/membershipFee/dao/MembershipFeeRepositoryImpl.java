@@ -13,6 +13,7 @@ import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
 import page.clab.api.domain.membershipFee.domain.QMembershipFee;
 
 import java.util.List;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class MembershipFeeRepositoryImpl implements MembershipFeeRepositoryCusto
         List<MembershipFee> membershipFees = queryFactory.selectFrom(qMembershipFee)
                 .leftJoin(qMembershipFee.applicant, qMember)
                 .where(builder)
-                .orderBy(qMembershipFee.createdAt.desc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qMembershipFee))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

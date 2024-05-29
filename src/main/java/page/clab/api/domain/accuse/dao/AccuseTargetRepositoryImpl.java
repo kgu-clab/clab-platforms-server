@@ -13,6 +13,7 @@ import page.clab.api.domain.accuse.domain.QAccuseTarget;
 import page.clab.api.domain.accuse.domain.TargetType;
 
 import java.util.List;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class AccuseTargetRepositoryImpl implements AccuseTargetRepositoryCustom 
 
         List<AccuseTarget> accuseTargets = queryFactory.selectFrom(qAccuseTarget)
                 .where(predicate)
-                .orderBy(countOrder ? qAccuseTarget.accuseCount.desc() : qAccuseTarget.createdAt.desc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qAccuseTarget))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

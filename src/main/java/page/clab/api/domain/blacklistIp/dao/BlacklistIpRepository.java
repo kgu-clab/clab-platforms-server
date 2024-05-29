@@ -10,7 +10,7 @@ import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
 @Repository
 public interface BlacklistIpRepository extends JpaRepository<BlacklistIp, Long> {
 
-    Page<BlacklistIp> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<BlacklistIp> findAll(Pageable pageable);
 
     boolean existsByIpAddress(String ipAddress);
 

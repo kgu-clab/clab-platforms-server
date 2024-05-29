@@ -124,11 +124,11 @@ public class CommentService {
     }
 
     private Page<Comment> getCommentByBoardIdAndParentIsNull(Long boardId, Pageable pageable) {
-        return commentRepository.findAllByBoardIdAndParentIsNullOrderByCreatedAtDesc(boardId, pageable);
+        return commentRepository.findAllByBoardIdAndParentIsNull(boardId, pageable);
     }
 
     private Page<Comment> getCommentByWriter(Member member, Pageable pageable) {
-        return commentRepository.findAllByWriterOrderByCreatedAtDesc(member, pageable);
+        return commentRepository.findAllByWriter(member, pageable);
     }
 
     private Comment createAndStoreComment(Long parentId, Long boardId, CommentRequestDto requestDto) {

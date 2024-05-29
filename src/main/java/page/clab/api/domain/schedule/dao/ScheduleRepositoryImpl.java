@@ -2,6 +2,7 @@ package page.clab.api.domain.schedule.dao;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,6 +18,7 @@ import page.clab.api.domain.schedule.dto.response.ScheduleCollectResponseDto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -38,7 +40,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
 
         List<Schedule> results = queryFactory.selectFrom(schedule)
                 .where(builder)
-                .orderBy(schedule.startDateTime.asc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, schedule))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -67,7 +69,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
 
         List<Schedule> results = queryFactory.selectFrom(schedule)
                 .where(builder)
-                .orderBy(schedule.startDateTime.asc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, schedule))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -94,7 +96,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
 
         List<Schedule> results = queryFactory.selectFrom(schedule)
                 .where(builder)
-                .orderBy(schedule.startDateTime.asc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, schedule))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

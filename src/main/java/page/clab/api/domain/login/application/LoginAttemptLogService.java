@@ -36,7 +36,7 @@ public class LoginAttemptLogService {
     }
 
     private Page<LoginAttemptLog> getLoginAttemptByMemberId(Pageable pageable, String memberId) {
-        return loginAttemptLogRepository.findAllByMemberIdOrderByLoginAttemptTimeDesc(memberId, pageable);
+        return loginAttemptLogRepository.findAllByMemberId(memberId, pageable);
     }
 
 }

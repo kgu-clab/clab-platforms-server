@@ -12,9 +12,9 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 @Repository
 public interface ActivityGroupRepository extends JpaRepository<ActivityGroup, Long>, ActivityGroupRepositoryCustom, QuerydslPredicateExecutor<ActivityGroup> {
 
-    Page<ActivityGroup> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<ActivityGroup> findAll(Pageable pageable);
 
-    Page<ActivityGroup> findAllByCategoryOrderByCreatedAtDesc(ActivityGroupCategory category, Pageable pageable);
+    Page<ActivityGroup> findAllByCategory(ActivityGroupCategory category, Pageable pageable);
 
     @Query(value = "SELECT a.* FROM activity_group a WHERE a.is_deleted = true", nativeQuery = true)
     Page<ActivityGroup> findAllByIsDeletedTrue(Pageable pageable);

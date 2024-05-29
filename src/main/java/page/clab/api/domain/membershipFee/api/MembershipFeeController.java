@@ -3,6 +3,8 @@ package page.clab.api.domain.membershipFee.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -17,14 +19,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.membershipFee.application.MembershipFeeService;
+import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeUpdateRequestDto;
 import page.clab.api.domain.membershipFee.dto.response.MembershipFeeResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.exception.SortingArgumentException;
+import page.clab.api.global.util.PageableUtils;
 
 @RestController
 @RequestMapping("/api/v1/membership-fees")
@@ -48,7 +55,8 @@ public class MembershipFeeController {
     @Operation(summary = "[U] 회비 정보 조회(멤버 ID, 멤버 이름, 카테고리, 상태 기준)", description = "ROLE_USER 이상의 권한이 필요함<br> " +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
             "멤버 ID, 멤버 이름, 카테고리 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
-            "계좌 정보는 관리자 이상의 권한만 조회 가능")
+            "계좌 정보는 관리자 이상의 권한만 조회 가능<br>" +
+            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, amount, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
     public ApiResponse<PagedResponseDto<MembershipFeeResponseDto>> getMembershipFeesByConditions(
@@ -57,9 +65,11 @@ public class MembershipFeeController {
             @RequestParam(name = "category", required = false) String category,
             @RequestParam(name = "status", required = false) MembershipFeeStatus status,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
+    ) throws SortingArgumentException, InvalidColumnException {
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, MembershipFee.class);
         PagedResponseDto<MembershipFeeResponseDto> membershipFees = membershipFeeService.getMembershipFeesByConditions(memberId, memberName, category, status, pageable);
         return ApiResponse.success(membershipFees);
     }

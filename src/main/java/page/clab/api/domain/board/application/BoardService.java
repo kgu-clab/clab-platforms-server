@@ -64,7 +64,7 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardListResponseDto> getBoards(Pageable pageable) {
-        Page<Board> boards = boardRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<Board> boards = boardRepository.findAll(pageable);
         return new PagedResponseDto<>(boards.map(this::mapToBoardListResponseDto));
     }
 
@@ -149,11 +149,11 @@ public class BoardService {
     }
 
     private Page<Board> getBoardByMember(Pageable pageable, Member member) {
-        return boardRepository.findAllByMemberOrderByCreatedAtDesc(member, pageable);
+        return boardRepository.findAllByMember(member, pageable);
     }
 
     private Page<Board> getBoardByCategory(BoardCategory category, Pageable pageable) {
-        return boardRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
+        return boardRepository.findAllByCategory(category, pageable);
     }
 
     private boolean checkLikeStatus(Board board, Member member) {

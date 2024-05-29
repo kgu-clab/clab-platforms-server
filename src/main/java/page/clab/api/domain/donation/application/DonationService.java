@@ -80,7 +80,7 @@ public class DonationService {
     }
 
     private Page<Donation> getDonationsByDonor(Member member, Pageable pageable) {
-        return donationRepository.findByDonorOrderByCreatedAtDesc(member, pageable);
+        return donationRepository.findByDonor(member, pageable);
     }
 
     private void validateDonationUpdatePermission(Member member) throws PermissionDeniedException {

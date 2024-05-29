@@ -14,9 +14,9 @@ import java.util.List;
 @Repository
 public interface ActivityGroupBoardRepository extends JpaRepository<ActivityGroupBoard, Long>, ActivityGroupBoardRepositoryCustom, QuerydslPredicateExecutor<ActivityGroupBoard> {
 
-    Page<ActivityGroupBoard> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<ActivityGroupBoard> findAll(Pageable pageable);
 
-    Page<ActivityGroupBoard> findAllByActivityGroup_IdAndCategoryOrderByCreatedAtDesc(Long activityGroupId, ActivityGroupBoardCategory category, Pageable pageable);
+    Page<ActivityGroupBoard> findAllByActivityGroup_IdAndCategory(Long activityGroupId, ActivityGroupBoardCategory category, Pageable pageable);
 
     Long countByActivityGroupIdAndCategory(Long id, ActivityGroupBoardCategory category);
 

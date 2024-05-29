@@ -12,7 +12,7 @@ import page.clab.api.domain.member.domain.Member;
 @Repository
 public interface AwardRepository extends JpaRepository<Award, Long>, AwardRepositoryCustom, QuerydslPredicateExecutor<Award> {
 
-    Page<Award> findAllByMemberOrderByAwardDateDesc(Member member, Pageable pageable);
+    Page<Award> findAllByMember(Member member, Pageable pageable);
 
     @Query(value = "SELECT a.* FROM award a WHERE a.is_deleted = true", nativeQuery = true)
     Page<Award> findAllByIsDeletedTrue(Pageable pageable);

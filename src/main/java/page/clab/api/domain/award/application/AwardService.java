@@ -78,7 +78,7 @@ public class AwardService {
     }
 
     private Page<Award> getAwardByMember(Pageable pageable, Member member) {
-        return awardRepository.findAllByMemberOrderByAwardDateDesc(member, pageable);
+        return awardRepository.findAllByMember(member, pageable);
     }
 
 }

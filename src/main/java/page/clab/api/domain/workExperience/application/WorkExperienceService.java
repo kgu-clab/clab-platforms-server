@@ -38,14 +38,14 @@ public class WorkExperienceService {
     @Transactional(readOnly = true)
     public PagedResponseDto<WorkExperienceResponseDto> getMyWorkExperience(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
-        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMemberOrderByStartDateDesc(currentMember, pageable);
+        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMember(currentMember, pageable);
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<WorkExperienceResponseDto> getWorkExperiencesByConditions(String memberId, Pageable pageable) {
         Member member = memberService.getMemberByIdOrThrow(memberId);
-        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMemberOrderByStartDateDesc(member, pageable);
+        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMember(member, pageable);
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
     }
 

@@ -41,7 +41,7 @@ public class BlacklistIpService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BlacklistIp> getBlacklistedIps(Pageable pageable) {
-        Page<BlacklistIp> blacklistedIps = blacklistIpRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<BlacklistIp> blacklistedIps = blacklistIpRepository.findAll(pageable);
         return new PagedResponseDto<>(blacklistedIps);
     }
 

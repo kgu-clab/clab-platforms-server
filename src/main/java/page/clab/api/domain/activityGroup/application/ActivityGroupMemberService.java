@@ -62,7 +62,7 @@ public class ActivityGroupMemberService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupResponseDto> getActivityGroups(Pageable pageable) {
-        Page<ActivityGroup> activityGroups = activityGroupRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<ActivityGroup> activityGroups = activityGroupRepository.findAll(pageable);
         return new PagedResponseDto<>(activityGroups.map(ActivityGroupResponseDto::toDto));
     }
 
@@ -165,11 +165,11 @@ public class ActivityGroupMemberService {
     }
 
     private Page<ActivityGroup> getActivityGroupByCategory(ActivityGroupCategory category, Pageable pageable) {
-        return activityGroupRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
+        return activityGroupRepository.findAllByCategory(category, pageable);
     }
 
     private Page<GroupSchedule> getGroupScheduleByActivityGroupId(Long activityGroupId, Pageable pageable) {
-        return groupScheduleRepository.findAllByActivityGroupIdOrderByIdDesc(activityGroupId, pageable);
+        return groupScheduleRepository.findAllByActivityGroupId(activityGroupId, pageable);
     }
 
     public List<GroupMember> getGroupMemberByActivityGroupId(Long activityGroupId) {
@@ -177,11 +177,11 @@ public class ActivityGroupMemberService {
     }
 
     public Page<GroupMember> getGroupMemberByActivityGroupId(Long activityGroupId, Pageable pageable) {
-        return groupMemberRepository.findAllByActivityGroupIdOrderByMember_IdAsc(activityGroupId, pageable);
+        return groupMemberRepository.findAllByActivityGroupId(activityGroupId, pageable);
     }
 
     public Page<GroupMember> getGroupMemberByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status, Pageable pageable) {
-        return groupMemberRepository.findAllByActivityGroupIdAndStatusOrderByMember_IdAsc(activityGroupId, status, pageable);
+        return groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, status, pageable);
     }
 
     public GroupMember getGroupMemberByActivityGroupIdAndRole(Long activityGroupId, ActivityGroupRole role) {

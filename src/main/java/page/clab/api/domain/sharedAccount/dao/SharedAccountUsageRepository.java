@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface SharedAccountUsageRepository extends JpaRepository<SharedAccountUsage, Long> {
 
-    Page<SharedAccountUsage> findAllByOrderByCreatedAtDesc(Pageable pageable);
+    Page<SharedAccountUsage> findAll(Pageable pageable);
 
     List<SharedAccountUsage> findByStatusAndEndTimeBefore(SharedAccountUsageStatus sharedAccountUsageStatus, LocalDateTime now);
 

@@ -8,7 +8,7 @@ import page.clab.api.domain.sharedAccount.domain.SharedAccount;
 
 public interface SharedAccountRepository extends JpaRepository<SharedAccount, Long> {
 
-    Page<SharedAccount> findAllByOrderByIdAsc(Pageable pageable);
+    Page<SharedAccount> findAll(Pageable pageable);
 
     @Query(value = "SELECT s.* FROM shared_account s WHERE s.is_deleted = true", nativeQuery = true)
     Page<SharedAccount> findAllByIsDeletedTrue(Pageable pageable);
