@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -56,6 +57,7 @@ public class Comment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "parent_id")
     @JsonIgnoreProperties("children")
+    @OrderBy("createdAt ASC")
     private Comment parent;
 
     @Builder.Default
