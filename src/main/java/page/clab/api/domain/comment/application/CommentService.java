@@ -1,5 +1,6 @@
 package page.clab.api.domain.comment.application;
 
+import java.util.Comparator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
@@ -58,7 +59,10 @@ public class CommentService {
     public PagedResponseDto<CommentResponseDto> getAllComments(Long boardId, Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByBoardIdAndParentIsNull(boardId, pageable);
-        comments.forEach(comment -> Hibernate.initialize(comment.getChildren()));
+        comments.forEach(comment -> {
+            Hibernate.initialize(comment.getChildren());
+            sortChildrenComments(comment);
+        });
         Page<CommentResponseDto> commentDtos = comments.map(comment -> toCommentResponseDto(comment, currentMember));
         return new PagedResponseDto<>(commentDtos);
     }
@@ -176,6 +180,10 @@ public class CommentService {
     private CommentMyResponseDto toCommentMyResponseDto(Comment comment, Member currentMember) {
         boolean hasLikeByMe = checkLikeStatus(comment.getId(), currentMember.getId());
         return CommentMyResponseDto.toDto(comment, hasLikeByMe);
+    }
+
+    private void sortChildrenComments(Comment comment) {
+        comment.getChildren().sort(Comparator.comparing(Comment::getCreatedAt));
     }
 
 }
