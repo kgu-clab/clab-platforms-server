@@ -30,6 +30,7 @@ import page.clab.api.global.auth.filter.IpAuthenticationFilter;
 import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
+import page.clab.api.global.filter.IPinfoSpringFilter;
 import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
 
@@ -80,6 +81,10 @@ public class SecurityConfig {
                 )
                 .authorizeRequests(this::configureRequests)
                 .authenticationProvider(authenticationConfig.authenticationProvider())
+                .addFilterBefore(
+                        new IPinfoSpringFilter(ipInfoConfig),
+                        UsernamePasswordAuthenticationFilter.class
+                )
                 .addFilterBefore(
                         new IpAuthenticationFilter(ipInfoConfig),
                         UsernamePasswordAuthenticationFilter.class
