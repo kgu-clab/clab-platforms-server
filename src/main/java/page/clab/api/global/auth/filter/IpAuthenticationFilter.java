@@ -60,7 +60,7 @@ public class IpAuthenticationFilter implements Filter {
     private boolean shouldProcessRequest(HttpServletRequest httpRequest, String clientIpAddress) {
         return !interceptorStrategy.shouldRun(httpRequest)
                 || attributeStrategy.hasAttribute(httpRequest)
-                || HttpReqResUtil.isLocalRequest(clientIpAddress)
+                || HttpReqResUtil.isBogonRequest(clientIpAddress)
                 || clientIpAddress.equals("0.0.0.0");
     }
 
