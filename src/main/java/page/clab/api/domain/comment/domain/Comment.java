@@ -62,7 +62,6 @@ public class Comment extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "parent", orphanRemoval = true)
     @JsonIgnoreProperties("parent")
-    @OrderBy("createdAt ASC")
     private List<Comment> children = new ArrayList<>();
 
     @Column(nullable = false)
