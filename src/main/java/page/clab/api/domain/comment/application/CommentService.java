@@ -67,10 +67,6 @@ public class CommentService {
         return new PagedResponseDto<>(commentDtos);
     }
 
-    private void sortChildrenComments(Comment comment) {
-        comment.getChildren().sort(Comparator.comparing(Comment::getCreatedAt));
-    }
-
     @Transactional(readOnly = true)
     public PagedResponseDto<CommentMyResponseDto> getMyComments(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
@@ -184,6 +180,10 @@ public class CommentService {
     private CommentMyResponseDto toCommentMyResponseDto(Comment comment, Member currentMember) {
         boolean hasLikeByMe = checkLikeStatus(comment.getId(), currentMember.getId());
         return CommentMyResponseDto.toDto(comment, hasLikeByMe);
+    }
+
+    private void sortChildrenComments(Comment comment) {
+        comment.getChildren().sort(Comparator.comparing(Comment::getCreatedAt));
     }
 
 }
