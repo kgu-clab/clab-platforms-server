@@ -116,7 +116,7 @@ public class ReviewService {
     }
 
     private Page<Review> getReviewByMember(Member member, Pageable pageable) {
-        return reviewRepository.findAllByMemberOrderByCreatedAtDesc(member, pageable);
+        return reviewRepository.findAllByMember(member, pageable);
     }
 
 }

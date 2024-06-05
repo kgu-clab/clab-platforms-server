@@ -111,7 +111,7 @@ public class NotificationService {
     }
 
     private Page<Notification> getNotificationByMember(Member member, Pageable pageable) {
-        return notificationRepository.findByMemberOrderByCreatedAtDesc(member, pageable);
+        return notificationRepository.findByMember(member, pageable);
     }
 
 }

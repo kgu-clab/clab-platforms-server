@@ -11,6 +11,7 @@ import page.clab.api.domain.product.domain.Product;
 import page.clab.api.domain.product.domain.QProduct;
 
 import java.util.List;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
         List<Product> products = queryFactory.selectFrom(qProduct)
                 .where(builder)
-                .orderBy(qProduct.createdAt.desc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qProduct))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

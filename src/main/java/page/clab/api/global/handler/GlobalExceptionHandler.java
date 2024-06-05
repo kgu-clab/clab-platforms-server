@@ -7,7 +7,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.sqm.UnknownPathException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -39,7 +42,9 @@ import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.book.exception.OverdueException;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
+import page.clab.api.domain.member.exception.DuplicateMemberContactException;
+import page.clab.api.domain.member.exception.DuplicateMemberEmailException;
+import page.clab.api.domain.member.exception.DuplicateMemberIdException;
 import page.clab.api.domain.review.exception.AlreadyReviewedException;
 import page.clab.api.domain.sharedAccount.exception.InvalidUsageTimeException;
 import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
@@ -58,15 +63,16 @@ import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.DecryptionException;
 import page.clab.api.global.exception.EncryptionException;
+import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CompletionException;
+import page.clab.api.global.exception.SortingArgumentException;
 
 @RestControllerAdvice(basePackages = "page.clab.api")
 @RequiredArgsConstructor
@@ -85,10 +91,14 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class,
             IllegalAccessException.class,
+            NumberFormatException.class,
+            SortingArgumentException.class,
+            InvalidColumnException.class,
+            UnknownPathException.class
     })
-    public ApiResponse badRequestException(HttpServletResponse response, Exception e) {
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        return ApiResponse.failure();
+    public ErrorResponse badRequestException(HttpServletResponse response, Exception e) {
+        response.setStatus(HttpServletResponse.SC_OK);
+        return ErrorResponse.failure(e);
     }
 
     @ExceptionHandler({
@@ -124,9 +134,9 @@ public class GlobalExceptionHandler {
             NoSuchElementException.class,
             FileNotFoundException.class,
     })
-    public ApiResponse<List<?>> notFoundException(HttpServletResponse response, Exception e) {
+    public ErrorResponse notFoundException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
-        return ApiResponse.success(new ArrayList<>());
+        return ErrorResponse.failure(e);
     }
 
     @ExceptionHandler({
@@ -140,7 +150,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             AccuseTargetTypeIncorrectException.class,
             NotApprovedApplicationException.class,
-            AssociatedAccountExistsException.class,
+            DuplicateMemberIdException.class,
+            DuplicateMemberContactException.class,
+            DuplicateMemberEmailException.class,
             CloudStorageNotEnoughException.class,
             ActivityGroupNotFinishedException.class,
             ActivityGroupNotProgressingException.class,
@@ -169,13 +181,17 @@ public class GlobalExceptionHandler {
             IllegalStateException.class,
             FileUploadFailException.class,
             DataIntegrityViolationException.class,
+            IncorrectResultSizeDataAccessException.class,
+            ArrayIndexOutOfBoundsException.class,
             IOException.class,
             WebClientRequestException.class,
             TransactionSystemException.class,
             SecurityException.class,
             CustomOptimisticLockingFailureException.class,
+            CompletionException.class,
             EncryptionException.class,
             DecryptionException.class,
+            InvalidDataAccessApiUsageException.class,
             Exception.class
     })
     public ApiResponse serverException(HttpServletRequest request, HttpServletResponse response, Exception e) {

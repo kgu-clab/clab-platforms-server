@@ -13,7 +13,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewRep
 
     boolean existsByMemberAndActivityGroup(Member member, ActivityGroup activityGroup);
 
-    Page<Review> findAllByMemberOrderByCreatedAtDesc(Member member, Pageable pageable);
+    Page<Review> findAllByMember(Member member, Pageable pageable);
 
     Page<Review> findAllByOrderByCreatedAtDesc(Pageable pageable);
 

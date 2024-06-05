@@ -76,13 +76,13 @@ public class AccountLockInfoService {
 
     @Transactional
     public void handleLoginFailure(HttpServletRequest request, String memberId) throws MemberLockedException, LoginFaliedException {
+        Member member = memberService.getMemberById(memberId);
         AccountLockInfo accountLockInfo = ensureAccountLockInfoForMemberId(memberId);
         validateAccountLockStatus(accountLockInfo);
         accountLockInfo.incrementLoginFailCount();
         if (accountLockInfo.shouldBeLocked(maxLoginFailures)) {
             accountLockInfo.lockAccount(lockDurationMinutes);
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.REPEATED_LOGIN_FAILURES,
-                    "[" + accountLockInfo.getMember().getId() + "/" + accountLockInfo.getMember().getName() + "]" + " 로그인 실패 횟수 초과로 계정이 잠겼습니다.");
+            sendSlackMessage(request, member);
         }
         accountLockInfoRepository.save(accountLockInfo);
     }
@@ -106,6 +106,13 @@ public class AccountLockInfoService {
     private void validateAccountLockStatus(AccountLockInfo accountLockInfo) throws MemberLockedException {
         if (accountLockInfo.isCurrentlyLocked()) {
             throw new MemberLockedException();
+        }
+    }
+
+    private void sendSlackMessage(HttpServletRequest request, Member member) {
+        if (member.isAdminRole()) {
+            request.setAttribute("member", member.getId() + " " + member.getName());
+            slackService.sendSecurityAlertNotification(request, SecurityAlertType.REPEATED_LOGIN_FAILURES, "로그인 실패 횟수 초과로 계정이 잠겼습니다.");
         }
     }
 

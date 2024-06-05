@@ -4,23 +4,19 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import lombok.Setter;
-import page.clab.api.global.auth.domain.ClabAuthResponseStatus;
 
 @Getter
 @Setter
 public class LoginHeader {
 
-    private int status;
-
     private String secretKey;
 
-    private LoginHeader(int status, String secretKey) {
-        this.status = status;
+    private LoginHeader(String secretKey) {
         this.secretKey = secretKey;
     }
 
-    public static LoginHeader create(ClabAuthResponseStatus status, String secretKey) {
-        return new LoginHeader(status.getHttpStatus(), secretKey);
+    public static LoginHeader create(String secretKey) {
+        return new LoginHeader(secretKey);
     }
 
     public String toJson() {

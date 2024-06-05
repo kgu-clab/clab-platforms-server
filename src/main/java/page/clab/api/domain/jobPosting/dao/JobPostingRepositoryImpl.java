@@ -13,6 +13,7 @@ import page.clab.api.domain.jobPosting.domain.JobPosting;
 import page.clab.api.domain.jobPosting.domain.QJobPosting;
 
 import java.util.List;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,7 +33,7 @@ public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
 
         List<JobPosting> jobPostings = queryFactory.selectFrom(qJobPosting)
                 .where(builder)
-                .orderBy(qJobPosting.createdAt.desc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qJobPosting))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

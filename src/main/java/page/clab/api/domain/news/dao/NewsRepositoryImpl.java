@@ -11,6 +11,7 @@ import page.clab.api.domain.news.domain.News;
 import page.clab.api.domain.news.domain.QNews;
 
 import java.util.List;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public class NewsRepositoryImpl implements NewsRepositoryCustom {
 
         List<News> newsList = queryFactory.selectFrom(qNews)
                 .where(builder)
-                .orderBy(qNews.createdAt.desc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qNews))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

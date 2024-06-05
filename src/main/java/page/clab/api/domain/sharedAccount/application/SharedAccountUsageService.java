@@ -50,7 +50,7 @@ public class SharedAccountUsageService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<SharedAccountUsageResponseDto> getSharedAccountUsages(Pageable pageable) {
-        Page<SharedAccountUsage> sharedAccountUsages = sharedAccountUsageRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<SharedAccountUsage> sharedAccountUsages = sharedAccountUsageRepository.findAll(pageable);
         return new PagedResponseDto<>(sharedAccountUsages.map(SharedAccountUsageResponseDto::toDto));
     }
 

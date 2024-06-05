@@ -21,7 +21,9 @@ import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
 import page.clab.api.domain.member.dto.response.MemberBirthdayResponseDto;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
-import page.clab.api.domain.member.exception.AssociatedAccountExistsException;
+import page.clab.api.domain.member.exception.DuplicateMemberContactException;
+import page.clab.api.domain.member.exception.DuplicateMemberEmailException;
+import page.clab.api.domain.member.exception.DuplicateMemberIdException;
 import page.clab.api.domain.position.dao.PositionRepository;
 import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
@@ -227,12 +229,12 @@ public class MemberService {
     }
 
     private void checkMemberUniqueness(MemberRequestDto requestDto) {
-        if (memberRepository.findById(requestDto.getId()).isPresent())
-            throw new AssociatedAccountExistsException("이미 사용 중인 아이디입니다.");
-        if (memberRepository.findByContact(requestDto.getContact()).isPresent())
-            throw new AssociatedAccountExistsException("이미 사용 중인 연락처입니다.");
-        if (memberRepository.findByEmail(requestDto.getEmail()).isPresent())
-            throw new AssociatedAccountExistsException("이미 사용 중인 이메일입니다.");
+        if (memberRepository.existsById(requestDto.getId()))
+            throw new DuplicateMemberIdException("이미 사용 중인 아이디입니다.");
+        if (memberRepository.existsByContact(requestDto.getContact()))
+            throw new DuplicateMemberContactException("이미 사용 중인 연락처입니다.");
+        if (memberRepository.existsByEmail(requestDto.getEmail()))
+            throw new DuplicateMemberEmailException("이미 사용 중인 이메일입니다.");
     }
 
     public void createPositionByMember(Member member) {

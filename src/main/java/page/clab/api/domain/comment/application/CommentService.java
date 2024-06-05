@@ -1,5 +1,6 @@
 package page.clab.api.domain.comment.application;
 
+import java.util.Comparator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
@@ -26,6 +27,8 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.validation.ValidationService;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -49,14 +52,17 @@ public class CommentService {
     public Long createComment(Long parentId, Long boardId, CommentRequestDto requestDto) {
         Comment comment = createAndStoreComment(parentId, boardId, requestDto);
         sendNotificationForNewComment(comment);
-        return comment.getId();
+        return boardId;
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<CommentResponseDto> getAllComments(Long boardId, Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByBoardIdAndParentIsNull(boardId, pageable);
-        comments.forEach(comment -> Hibernate.initialize(comment.getChildren()));
+        comments.forEach(comment -> {
+            Hibernate.initialize(comment.getChildren());
+            sortChildrenComments(comment);
+        });
         Page<CommentResponseDto> commentDtos = comments.map(comment -> toCommentResponseDto(comment, currentMember));
         return new PagedResponseDto<>(commentDtos);
     }
@@ -65,8 +71,12 @@ public class CommentService {
     public PagedResponseDto<CommentMyResponseDto> getMyComments(Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
         Page<Comment> comments = getCommentByWriter(currentMember, pageable);
-        Page<CommentMyResponseDto> commentDtos = comments.map(comment -> toCommentMyResponseDto(comment, currentMember));
-        return new PagedResponseDto<>(commentDtos);
+        List<CommentMyResponseDto> dtos = comments
+                .map(comment -> toCommentMyResponseDto(comment, currentMember))
+                .stream()
+                .filter(Objects::nonNull)
+                .toList();
+        return new PagedResponseDto<>(dtos, pageable, dtos.size());
     }
 
     @Transactional(readOnly = true)
@@ -83,7 +93,8 @@ public class CommentService {
         comment.validateAccessPermission(currentMember);
         comment.update(requestDto);
         validationService.checkValid(comment);
-        return commentRepository.save(comment).getId();
+        commentRepository.save(comment);
+        return comment.getBoard().getId();
     }
 
     public Long deleteComment(Long commentId) throws PermissionDeniedException {
@@ -92,7 +103,7 @@ public class CommentService {
         comment.validateAccessPermission(currentMember);
         comment.updateIsDeleted();
         commentRepository.save(comment);
-        return comment.getId();
+        return comment.getBoard().getId();
     }
 
     @Transactional
@@ -117,11 +128,11 @@ public class CommentService {
     }
 
     private Page<Comment> getCommentByBoardIdAndParentIsNull(Long boardId, Pageable pageable) {
-        return commentRepository.findAllByBoardIdAndParentIsNullOrderByCreatedAtDesc(boardId, pageable);
+        return commentRepository.findAllByBoardIdAndParentIsNull(boardId, pageable);
     }
 
     private Page<Comment> getCommentByWriter(Member member, Pageable pageable) {
-        return commentRepository.findAllByWriterOrderByCreatedAtDesc(member, pageable);
+        return commentRepository.findAllByWriter(member, pageable);
     }
 
     private Comment createAndStoreComment(Long parentId, Long boardId, CommentRequestDto requestDto) {
@@ -167,8 +178,12 @@ public class CommentService {
     }
 
     private CommentMyResponseDto toCommentMyResponseDto(Comment comment, Member currentMember) {
-        Boolean hasLikeByMe = checkLikeStatus(comment.getId(), currentMember.getId());
+        boolean hasLikeByMe = checkLikeStatus(comment.getId(), currentMember.getId());
         return CommentMyResponseDto.toDto(comment, hasLikeByMe);
+    }
+
+    private void sortChildrenComments(Comment comment) {
+        comment.getChildren().sort(Comparator.comparing(Comment::getCreatedAt));
     }
 
 }

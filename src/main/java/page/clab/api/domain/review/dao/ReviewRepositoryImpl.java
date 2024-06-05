@@ -11,6 +11,7 @@ import page.clab.api.domain.review.domain.QReview;
 import page.clab.api.domain.review.domain.Review;
 
 import java.util.List;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
         List<Review> reviews = queryFactory.selectFrom(qReview)
                 .where(builder)
-                .orderBy(qReview.createdAt.desc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qReview))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

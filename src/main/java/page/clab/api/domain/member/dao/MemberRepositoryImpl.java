@@ -12,6 +12,7 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.domain.QMember;
 
 import java.util.List;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
         List<Member> members = queryFactory
                 .selectFrom(member)
                 .where(builder)
-                .orderBy(member.createdAt.desc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, member))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -49,7 +50,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
         List<Member> members = queryFactory
                 .selectFrom(qMember)
                 .where(birthdayInMonth(month))
-                .orderBy(qMember.birth.dayOfMonth().asc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qMember))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

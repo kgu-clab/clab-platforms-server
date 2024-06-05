@@ -50,7 +50,7 @@ public class BoardService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public Long createBoard(BoardRequestDto requestDto) throws PermissionDeniedException {
+    public String createBoard(BoardRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         Board board = BoardRequestDto.toEntity(requestDto, currentMember, uploadedFiles);
@@ -59,12 +59,12 @@ public class BoardService {
         if (board.shouldNotifyForNewBoard()) {
             notificationService.sendNotificationToMember(currentMember, "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.");
         }
-        return boardRepository.save(board).getId();
+        return boardRepository.save(board).getCategory().getKey();
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardListResponseDto> getBoards(Pageable pageable) {
-        Page<Board> boards = boardRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<Board> boards = boardRepository.findAll(pageable);
         return new PagedResponseDto<>(boards.map(this::mapToBoardListResponseDto));
     }
 
@@ -87,17 +87,17 @@ public class BoardService {
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardCategoryResponseDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
         Page<Board> boards = getBoardByCategory(category, pageable);
-        return new PagedResponseDto<>(boards.map(BoardCategoryResponseDto::toDto));
+        return new PagedResponseDto<>(boards.map(this::mapToBoardCategoryResponseDto));
     }
 
     @Transactional
-    public Long updateBoard(Long boardId, BoardUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public String updateBoard(Long boardId, BoardUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
         board.validateAccessPermission(currentMember);
         board.update(requestDto);
         validationService.checkValid(board);
-        return boardRepository.save(board).getId();
+        return boardRepository.save(board).getCategory().getKey();
     }
 
     @Transactional
@@ -123,12 +123,12 @@ public class BoardService {
         return new PagedResponseDto<>(boards.map(this::mapToBoardListResponseDto));
     }
 
-    public Long deleteBoard(Long boardId) throws PermissionDeniedException {
+    public String deleteBoard(Long boardId) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
         board.validateAccessPermission(currentMember);
         boardRepository.delete(board);
-        return board.getId();
+        return board.getCategory().getKey();
     }
 
     @NotNull
@@ -137,17 +137,23 @@ public class BoardService {
         return BoardListResponseDto.toDto(board, commentCount);
     }
 
+    @NotNull
+    private BoardCategoryResponseDto mapToBoardCategoryResponseDto(Board board) {
+        Long commentCount = commentRepository.countByBoard(board);
+        return BoardCategoryResponseDto.toDto(board, commentCount);
+    }
+
     public Board getBoardByIdOrThrow(Long boardId) {
         return boardRepository.findById(boardId)
                 .orElseThrow(() -> new NotFoundException("해당 게시글이 존재하지 않습니다."));
     }
 
     private Page<Board> getBoardByMember(Pageable pageable, Member member) {
-        return boardRepository.findAllByMemberOrderByCreatedAtDesc(member, pageable);
+        return boardRepository.findAllByMember(member, pageable);
     }
 
     private Page<Board> getBoardByCategory(BoardCategory category, Pageable pageable) {
-        return boardRepository.findAllByCategoryOrderByCreatedAtDesc(category, pageable);
+        return boardRepository.findAllByCategory(category, pageable);
     }
 
     private boolean checkLikeStatus(Board board, Member member) {

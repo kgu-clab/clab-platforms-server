@@ -54,11 +54,14 @@ public class Blog extends BaseEntity {
 
     private String imageUrl;
 
+    private String hyperlink;
+
     public void update(BlogUpdateRequestDto requestDto) {
         Optional.ofNullable(requestDto.getTitle()).ifPresent(this::setTitle);
         Optional.ofNullable(requestDto.getSubTitle()).ifPresent(this::setSubTitle);
         Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
         Optional.ofNullable(requestDto.getImageUrl()).ifPresent(this::setImageUrl);
+        Optional.ofNullable(requestDto.getHyperlink()).ifPresent(this::setHyperlink);
     }
 
     public boolean isOwner(Member member) {

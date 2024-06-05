@@ -24,7 +24,7 @@ public class LoginAttemptLogService {
     @Transactional
     public void createLoginAttemptLog(HttpServletRequest request, String memberId, LoginAttemptResult loginAttemptResult) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        IPResponse ipResponse = HttpReqResUtil.isLocalRequest(clientIpAddress) ? null : IPInfoUtil.getIpInfo(request);
+        IPResponse ipResponse = HttpReqResUtil.isBogonRequest(clientIpAddress) ? null : IPInfoUtil.getIpInfo(request);
         LoginAttemptLog loginAttemptLog = LoginAttemptLog.create(memberId, request, clientIpAddress, ipResponse, loginAttemptResult);
         loginAttemptLogRepository.save(loginAttemptLog);
     }
@@ -36,7 +36,7 @@ public class LoginAttemptLogService {
     }
 
     private Page<LoginAttemptLog> getLoginAttemptByMemberId(Pageable pageable, String memberId) {
-        return loginAttemptLogRepository.findAllByMemberIdOrderByLoginAttemptTimeDesc(memberId, pageable);
+        return loginAttemptLogRepository.findAllByMemberId(memberId, pageable);
     }
 
 }

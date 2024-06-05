@@ -80,6 +80,7 @@ public class MemberRequestDto {
                 .studentStatus(requestDto.getStudentStatus())
                 .imageUrl(requestDto.getImageUrl())
                 .role(Role.USER)
+                .isOtpEnabled(false)
                 .build();
     }
 

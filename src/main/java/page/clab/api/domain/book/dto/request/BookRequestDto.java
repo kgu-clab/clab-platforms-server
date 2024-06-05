@@ -41,7 +41,7 @@ public class BookRequestDto {
                 .author(requestDto.getAuthor())
                 .publisher(requestDto.getPublisher())
                 .imageUrl(requestDto.getImageUrl())
-                .reviewLinks(requestDto.reviewLinks)
+                .reviewLinks(requestDto.reviewLinks == null ? List.of() : requestDto.reviewLinks)
                 .build();
     }
 

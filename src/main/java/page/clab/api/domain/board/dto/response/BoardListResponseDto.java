@@ -3,7 +3,6 @@ package page.clab.api.domain.board.dto.response;
 import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.board.domain.BoardCategory;
 
 import java.time.LocalDateTime;
 
@@ -30,10 +29,11 @@ public class BoardListResponseDto {
     private LocalDateTime createdAt;
 
     public static BoardListResponseDto toDto(Board board, Long commentCount) {
+        WriterInfo writerInfo = WriterInfo.fromBoard(board);
         return BoardListResponseDto.builder()
                 .id(board.getId())
-                .writerId(board.isWantAnonymous() ? null : board.getMember().getId())
-                .writerName(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
+                .writerId(writerInfo.getId())
+                .writerName(writerInfo.getName())
                 .category(board.getCategory().getKey())
                 .title(board.getTitle())
                 .content(board.getContent())

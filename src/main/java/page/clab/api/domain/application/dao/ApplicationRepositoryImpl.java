@@ -11,6 +11,7 @@ import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.domain.QApplication;
 
 import java.util.List;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,7 +30,7 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom {
 
         List<Application> applications = queryFactory.selectFrom(qApplication)
                 .where(builder.getValue())
-                .orderBy(qApplication.createdAt.desc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qApplication))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

@@ -31,6 +31,8 @@ public class MyProfileResponseDto {
 
     private Long roleLevel;
 
+    private Boolean isOtpEnabled;
+
     private LocalDateTime createdAt;
 
     public static MyProfileResponseDto toDto(Member member) {
@@ -45,6 +47,7 @@ public class MyProfileResponseDto {
                 .studentStatus(member.getStudentStatus())
                 .imageUrl(member.getImageUrl())
                 .roleLevel(member.getRole().toRoleLevel())
+                .isOtpEnabled(member.getIsOtpEnabled())
                 .createdAt(member.getCreatedAt())
                 .build();
     }

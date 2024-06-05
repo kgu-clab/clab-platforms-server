@@ -13,6 +13,7 @@ import page.clab.api.domain.member.domain.QMember;
 
 import java.time.LocalDate;
 import java.util.List;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class AwardRepositoryImpl implements AwardRepositoryCustom {
         List<Award> awards = queryFactory.selectFrom(qAward)
                 .leftJoin(qAward.member, qMember)
                 .where(builder)
-                .orderBy(qAward.awardDate.desc())
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qAward))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

@@ -21,17 +21,21 @@ public class BoardCategoryResponseDto {
 
     private String title;
 
+    private Long commentCount;
+
     private String imageUrl;
 
     private LocalDateTime createdAt;
 
-    public static BoardCategoryResponseDto toDto(Board board) {
+    public static BoardCategoryResponseDto toDto(Board board, Long commentCount) {
+        WriterInfo writerInfo = WriterInfo.fromBoard(board);
         return BoardCategoryResponseDto.builder()
                 .id(board.getId())
                 .category(board.getCategory().getKey())
-                .writerId(board.isWantAnonymous() ? null : board.getMember().getId())
-                .writerName(board.isWantAnonymous() ? board.getNickname() : board.getMember().getName())
+                .writerId(writerInfo.getId())
+                .writerName(writerInfo.getName())
                 .title(board.getTitle())
+                .commentCount(commentCount)
                 .imageUrl(board.getImageUrl())
                 .createdAt(board.getCreatedAt())
                 .build();
