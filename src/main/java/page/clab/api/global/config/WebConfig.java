@@ -41,7 +41,7 @@ public class WebConfig implements WebMvcConfigurer {
         log.info("Resource UploadedFile Mapped : {} -> {}", fileURL, filePath);
         registry
                 .addResourceHandler(fileURL + "/**")
-                .addResourceLocations("file:" + File.separator + filePath + "/")
+                .addResourceLocations("file://" + filePath + "/")
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver() {
                     @Override
