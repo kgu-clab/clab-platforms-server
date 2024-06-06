@@ -1,6 +1,7 @@
 package page.clab.api.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class WebConfig implements WebMvcConfigurer {
         log.info("Resource UploadedFile Mapped : {} -> {}", fileURL, filePath);
         registry
                 .addResourceHandler(fileURL + "/**")
-                .addResourceLocations("file://" + filePath + "/")
+                .addResourceLocations("file:" + File.separator + filePath + "/")
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver() {
                     @Override

@@ -1,9 +1,16 @@
 package page.clab.api.global.common.file.application;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifIFD0Directory;
 import com.google.common.base.Strings;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -68,9 +75,57 @@ public class FileHandler {
 
         File file = new File(savePath);
         ensureParentDirectoryExists(file);
-        multipartFile.transferTo(file);
+
+        try {
+            BufferedImage originalImage = adjustImageDirection(multipartFile);
+            ImageIO.write(originalImage, extension, file);
+        } catch (Exception e) {
+            throw new IOException("이미지의 뱡향을 조정하는데 오류가 발생했습니다.", e);
+        }
+
         setFilePermissions(file, savePath, extension);
         return savePath;
+    }
+
+    private BufferedImage adjustImageDirection(MultipartFile multipartFile) throws Exception {
+        File tempFile = File.createTempFile("temp", null);
+        multipartFile.transferTo(tempFile);
+        int originalDirection = getImageDirection(tempFile);
+        BufferedImage bufferedImage = ImageIO.read(tempFile);
+
+        switch (originalDirection) {
+            case 1:
+                break;
+            case 3:
+                bufferedImage = Scalr.rotate(bufferedImage, Scalr.Rotation.CW_180, null);
+                break;
+            case 6:
+                bufferedImage = Scalr.rotate(bufferedImage, Scalr.Rotation.CW_90, null);
+                break;
+            case 8:
+                bufferedImage = Scalr.rotate(bufferedImage, Scalr.Rotation.CW_270, null);
+                break;
+        }
+
+        if (tempFile.exists() && !tempFile.delete()) {
+            throw new IOException("Failed to delete image file: " + tempFile.getAbsolutePath());
+        }
+
+        return bufferedImage;
+    }
+
+    public int getImageDirection(File tempFile) {
+        int originalDirection = 1;
+        try {
+            Metadata metadata = ImageMetadataReader.readMetadata(tempFile);
+            Directory directory = metadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+            if (directory != null) {
+                originalDirection = directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
+            }
+        } catch (Exception e) {
+            originalDirection = 1;
+        }
+        return originalDirection;
     }
 
     private void validateFileAttributes(String originalFilename, String extension) throws FileUploadFailException {
