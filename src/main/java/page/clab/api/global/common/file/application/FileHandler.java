@@ -79,8 +79,13 @@ public class FileHandler {
         ensureParentDirectoryExists(file);
 
         try {
-            BufferedImage originalImage = adjustImageDirection(multipartFile);
-            ImageIO.write(originalImage, extension, file);
+            if (isImageFile(multipartFile)) {
+                BufferedImage originalImage = adjustImageDirection(multipartFile);
+                ImageIO.write(originalImage, extension, file);
+            }
+            else {
+                multipartFile.transferTo(file);
+            }
         } catch (Exception e) {
             throw new IOException("이미지의 뱡향을 조정하는데 오류가 발생했습니다.", e);
         }
@@ -134,6 +139,11 @@ public class FileHandler {
             log.error("예기치 않은 오류 발생: " + e.getMessage());
         }
         return originalDirection;
+    }
+
+    private boolean isImageFile(MultipartFile file) {
+        String contentType = file.getContentType();
+        return contentType != null && contentType.startsWith("image/");
     }
 
     private void validateFileAttributes(String originalFilename, String extension) throws FileUploadFailException {
