@@ -130,13 +130,13 @@ public class FileHandler {
                 originalDirection = directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
             }
         } catch (IOException e) {
-            log.error("이미지 파일을 읽는 중 IO 오류 발생: " + e.getMessage());
+            log.error("이미지 파일을 읽는 중 IO 오류 발생: {}", e.getMessage());
         } catch (ImageProcessingException e) {
-            log.error("이미지 파일 처리 중 오류 발생: " + e.getMessage());
+            log.error("이미지 파일 처리 중 오류 발생: {}", e.getMessage());
         } catch (MetadataException e) {
-            log.error("이미지 파일의 메타데이터를 읽는 중 오류 발생: " + e.getMessage());
+            log.error("이미지 파일의 메타데이터를 읽는 중 오류 발생: {}", e.getMessage());
         } catch (Exception e) {
-            log.error("예기치 않은 오류 발생: " + e.getMessage());
+            log.error("예기치 않은 오류 발생: {}", e.getMessage());
         }
         return originalDirection;
     }
