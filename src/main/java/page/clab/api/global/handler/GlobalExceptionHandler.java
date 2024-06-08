@@ -1,5 +1,7 @@
 package page.clab.api.global.handler;
 
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.MetadataException;
 import com.google.gson.stream.MalformedJsonException;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -192,6 +194,8 @@ public class GlobalExceptionHandler {
             EncryptionException.class,
             DecryptionException.class,
             InvalidDataAccessApiUsageException.class,
+            ImageProcessingException.class,
+            MetadataException.class,
             Exception.class
     })
     public ApiResponse serverException(HttpServletRequest request, HttpServletResponse response, Exception e) {
