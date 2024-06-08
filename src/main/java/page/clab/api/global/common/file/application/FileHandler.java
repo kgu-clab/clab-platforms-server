@@ -1,8 +1,10 @@
 package page.clab.api.global.common.file.application;
 
 import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.google.common.base.Strings;
 import java.io.FileOutputStream;
@@ -122,8 +124,14 @@ public class FileHandler {
             if (directory != null) {
                 originalDirection = directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
             }
+        } catch (IOException e) {
+            log.error("이미지 파일을 읽는 중 IO 오류 발생: " + e.getMessage());
+        } catch (ImageProcessingException e) {
+            log.error("이미지 파일 처리 중 오류 발생: " + e.getMessage());
+        } catch (MetadataException e) {
+            log.error("이미지 파일의 메타데이터를 읽는 중 오류 발생: " + e.getMessage());
         } catch (Exception e) {
-            originalDirection = 1;
+            log.error("예기치 않은 오류 발생: " + e.getMessage());
         }
         return originalDirection;
     }
