@@ -47,6 +47,14 @@ pipeline {
             }
         }
 
+        stage('Git 변경 이력 가져오기') {
+            steps {
+                script {
+                    env.GIT_CHANGELOG = getChangeLog()
+                }
+            }
+        }
+
         stage('PostgreSQL 백업') {
             steps {
                 script {
@@ -113,13 +121,13 @@ pipeline {
     post {
         failure {
             script {
-                sendSlackNotification(":scream_cat: Deployment failed.", env.SLACK_COLOR_FAILURE)
+                sendSlackNotification("${env.GIT_CHANGELOG}\n:scream_cat: Deployment failed.", env.SLACK_COLOR_FAILURE)
             }
         }
 
         success {
             script {
-                sendSlackNotification(":rocket: Deployment completed successfully.", env.SLACK_COLOR_SUCCESS)
+                sendSlackNotification("${env.GIT_CHANGELOG}\n:rocket: Deployment completed successfully.", env.SLACK_COLOR_SUCCESS)
             }
         }
     }
@@ -127,17 +135,36 @@ pipeline {
 
 def sendSlackNotification(message, color) {
     withEnv(["SLACK_WEBHOOK_URL=${env.SLACK_WEBHOOK_URL}"]) {
+        def payload = """{
+            "attachments": [
+                {
+                    "color": "${color}",
+                    "text": "${message.replaceAll('"', '\\"').replaceAll('\n', '\\n')}"
+                }
+            ]
+        }"""
+
         sh """
-            curl -X POST --data-urlencode 'payload={
-                "attachments": [
-                    {
-                        "color": "${color}",
-                        "text": "${message}"
-                    }
-                ]
-            }' ${SLACK_WEBHOOK_URL}
+            curl -X POST --data-urlencode 'payload=${payload}' ${SLACK_WEBHOOK_URL}
         """
     }
+}
+
+def getChangeLog() {
+    def previousCommit = env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: 'HEAD~1'
+    def currentCommit = env.GIT_COMMIT ?: 'HEAD'
+
+    def changeLog = sh(
+        script: "git log ${previousCommit}..${currentCommit} --pretty=format:\"* %h - %s (%an)\" --abbrev-commit",
+        returnStdout: true
+    ).trim()
+
+    def lines = changeLog.split('\n')
+    if (lines.size() > 10) {
+        changeLog = lines.take(10).join('\n') + '\n... (truncated)'
+    }
+
+    return changeLog
 }
 
 def backupPostgres() {
