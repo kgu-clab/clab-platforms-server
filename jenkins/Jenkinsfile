@@ -139,7 +139,7 @@ def sendSlackNotification(message, color) {
             "attachments": [
                 {
                     "color": "${color}",
-                    "text": "${message.replaceAll('"', '\\"').replaceAll('\n', '\\n')}"
+                    "text": "${message.replaceAll('"', '\\"').replaceAll('\n', '\\\\n')}"
                 }
             ]
         }"""
