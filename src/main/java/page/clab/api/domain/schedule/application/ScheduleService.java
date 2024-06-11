@@ -2,13 +2,13 @@ package page.clab.api.domain.schedule.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activityGroup.application.ActivityGroupAdminService;
 import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService;
-import page.clab.api.domain.activityGroup.dao.GroupMemberRepository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,8 +44,6 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
-    private final GroupMemberRepository groupMemberRepository;
-
     @Transactional
     public Long createSchedule(ScheduleRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
@@ -57,12 +56,9 @@ public class ScheduleService {
     @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> getSchedulesWithinDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
-        List<GroupMember> groupMembers = groupMemberRepository.findAllByMember(currentMember);
-        List<ActivityGroup> myGroupList = new ArrayList<>();
-        for (GroupMember groupMember : groupMembers) {
-            myGroupList.add(groupMember.getActivityGroup());
-        }
-        Page<Schedule> schedules = scheduleRepository.findByDateRangeAndMember(startDate, endDate, myGroupList, pageable);
+        List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByMember(currentMember);
+        List<ActivityGroup> myGroups = getMyActivityGroups(groupMembers);
+        Page<Schedule> schedules = scheduleRepository.findByDateRangeAndMember(startDate, endDate, myGroups, pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
 
@@ -118,6 +114,13 @@ public class ScheduleService {
     public Schedule getScheduleById(Long scheduleId) {
         return scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new NotFoundException("일정이 존재하지 않습니다."));
+    }
+
+    public List<ActivityGroup> getMyActivityGroups(List<GroupMember> groupMembers) {
+        return groupMembers.stream()
+                .map(GroupMember::getActivityGroup)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
 }
