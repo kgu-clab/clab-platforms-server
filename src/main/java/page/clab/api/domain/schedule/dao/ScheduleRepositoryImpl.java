@@ -2,12 +2,12 @@ package page.clab.api.domain.schedule.dao;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.domain.QSchedule;
 import page.clab.api.domain.schedule.domain.Schedule;
@@ -27,7 +27,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Schedule> findByDateRangeAndMember(LocalDate startDate, LocalDate endDate, Member member, Pageable pageable) {
+    public Page<Schedule> findByDateRangeAndMember(LocalDate startDate, LocalDate endDate, List<ActivityGroup> myGroupList, Pageable pageable) {
         QSchedule schedule = QSchedule.schedule;
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -35,8 +35,14 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
         LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
 
         builder.and(schedule.endDateTime.goe(startDateTime))
-                .and(schedule.startDateTime.loe(endDateTime))
-                .and(schedule.scheduleWriter.eq(member));
+                .and(schedule.startDateTime.loe(endDateTime));
+
+        if (myGroupList != null && !myGroupList.isEmpty()) {
+            builder.and(schedule.activityGroup.isNull()
+                    .or(schedule.activityGroup.in(myGroupList)));
+        } else {
+            builder.and(schedule.activityGroup.isNull());
+        }
 
         List<Schedule> results = queryFactory.selectFrom(schedule)
                 .where(builder)

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activityGroup.application.ActivityGroupAdminService;
 import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService;
+import page.clab.api.domain.activityGroup.dao.GroupMemberRepository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
@@ -25,6 +26,8 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -40,6 +43,8 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
+    private final GroupMemberRepository groupMemberRepository;
+
     @Transactional
     public Long createSchedule(ScheduleRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberService.getCurrentMember();
@@ -52,7 +57,12 @@ public class ScheduleService {
     @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> getSchedulesWithinDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
-        Page<Schedule> schedules = scheduleRepository.findByDateRangeAndMember(startDate, endDate, currentMember, pageable);
+        List<GroupMember> groupMembers = groupMemberRepository.findAllByMember(currentMember);
+        List<ActivityGroup> myGroupList = new ArrayList<>();
+        for (GroupMember groupMember : groupMembers) {
+            myGroupList.add(groupMember.getActivityGroup());
+        }
+        Page<Schedule> schedules = scheduleRepository.findByDateRangeAndMember(startDate, endDate, myGroupList, pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
 
