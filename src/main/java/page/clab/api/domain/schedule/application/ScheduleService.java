@@ -25,7 +25,9 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +54,9 @@ public class ScheduleService {
     @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> getSchedulesWithinDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Member currentMember = memberService.getCurrentMember();
-        Page<Schedule> schedules = scheduleRepository.findByDateRangeAndMember(startDate, endDate, currentMember, pageable);
+        List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByMember(currentMember);
+        List<ActivityGroup> myGroups = getMyActivityGroups(groupMembers);
+        Page<Schedule> schedules = scheduleRepository.findByDateRangeAndMember(startDate, endDate, myGroups, pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
 
@@ -108,6 +112,12 @@ public class ScheduleService {
     public Schedule getScheduleById(Long scheduleId) {
         return scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new NotFoundException("일정이 존재하지 않습니다."));
+    }
+
+    public List<ActivityGroup> getMyActivityGroups(List<GroupMember> groupMembers) {
+        return groupMembers.stream()
+                .map(GroupMember::getActivityGroup)
+                .collect(Collectors.toList());
     }
 
 }
