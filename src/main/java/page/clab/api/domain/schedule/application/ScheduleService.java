@@ -117,7 +117,6 @@ public class ScheduleService {
     public List<ActivityGroup> getMyActivityGroups(List<GroupMember> groupMembers) {
         return groupMembers.stream()
                 .map(GroupMember::getActivityGroup)
-                .distinct()
                 .collect(Collectors.toList());
     }
 
