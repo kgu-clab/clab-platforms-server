@@ -13,7 +13,7 @@ import java.util.List;
 
 public interface ScheduleRepositoryCustom {
 
-    Page<Schedule> findByDateRangeAndMember(LocalDate startDate, LocalDate endDate, List<ActivityGroup> myGroupList, Pageable pageable);
+    Page<Schedule> findByDateRangeAndMember(LocalDate startDate, LocalDate endDate, List<ActivityGroup> myGroups, Pageable pageable);
 
     Page<Schedule> findByConditions(Integer year, Integer month, SchedulePriority priority, Pageable pageable);
 

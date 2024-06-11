@@ -27,7 +27,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Schedule> findByDateRangeAndMember(LocalDate startDate, LocalDate endDate, List<ActivityGroup> myGroupList, Pageable pageable) {
+    public Page<Schedule> findByDateRangeAndMember(LocalDate startDate, LocalDate endDate, List<ActivityGroup> myGroups, Pageable pageable) {
         QSchedule schedule = QSchedule.schedule;
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -37,9 +37,9 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
         builder.and(schedule.endDateTime.goe(startDateTime))
                 .and(schedule.startDateTime.loe(endDateTime));
 
-        if (myGroupList != null && !myGroupList.isEmpty()) {
+        if (myGroups != null && !myGroups.isEmpty()) {
             builder.and(schedule.activityGroup.isNull()
-                    .or(schedule.activityGroup.in(myGroupList)));
+                    .or(schedule.activityGroup.in(myGroups)));
         } else {
             builder.and(schedule.activityGroup.isNull());
         }
