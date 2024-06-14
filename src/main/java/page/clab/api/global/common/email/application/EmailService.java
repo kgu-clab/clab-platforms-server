@@ -12,7 +12,6 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
-import page.clab.api.global.common.email.domain.EmailTask;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.common.email.dto.request.EmailDto;
 import page.clab.api.global.common.email.exception.MessageSendingFailedException;
@@ -23,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
 @RequiredArgsConstructor
@@ -39,8 +36,6 @@ public class EmailService {
 
     @Value("${resource.file.path}")
     private String filePath;
-
-    protected static final BlockingQueue<EmailTask> emailQueue = new LinkedBlockingQueue<>();
 
     public List<String> broadcastEmail(EmailDto emailDto, List<MultipartFile> multipartFiles) {
         List<File> convertedFiles = multipartFiles != null && !multipartFiles.isEmpty()

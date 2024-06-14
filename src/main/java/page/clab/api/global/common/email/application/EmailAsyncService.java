@@ -18,8 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static page.clab.api.global.common.email.application.EmailService.emailQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
 @Slf4j
@@ -32,6 +32,8 @@ public class EmailAsyncService {
     private String sender;
 
     private static final int MAX_BATCH_SIZE = 10;
+
+    private static final BlockingQueue<EmailTask> emailQueue = new LinkedBlockingQueue<>();
 
     @Async
     public void sendEmailAsync(String to, String subject, String content, List<File> files, EmailTemplateType emailTemplateType) throws MessagingException {
