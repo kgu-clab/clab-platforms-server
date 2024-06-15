@@ -10,6 +10,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import page.clab.api.global.common.email.domain.EmailTask;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
@@ -42,6 +43,7 @@ public class EmailAsyncService {
     }
 
     @Async
+    @Scheduled(fixedRate = 1000)
     public void processEmailQueue() {
         try {
             List<EmailTask> batch = new ArrayList<>();

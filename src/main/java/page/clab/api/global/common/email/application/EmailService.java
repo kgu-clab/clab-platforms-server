@@ -54,7 +54,6 @@ public class EmailService {
                 throw new MessageSendingFailedException(address + "에게 이메일을 보내는데 실패했습니다.");
             }
         });
-        emailAsyncService.processEmailQueue();
         return successfulAddresses;
     }
 
@@ -75,7 +74,6 @@ public class EmailService {
                 throw new MessageSendingFailedException(member.getEmail() + "에게 이메일을 보내는데 실패했습니다.");
             }
         });
-        emailAsyncService.processEmailQueue();
         return successfulEmails;
     }
 
@@ -99,7 +97,6 @@ public class EmailService {
         } catch (MessagingException e) {
             throw new MessageSendingFailedException(member.getEmail() + " 계정 발급 안내 메일 전송에 실패했습니다.");
         }
-        emailAsyncService.processEmailQueue();
     }
 
     public void sendPasswordResetEmail(Member member, String code) {
