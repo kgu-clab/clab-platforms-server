@@ -235,7 +235,7 @@ def buildApplication() {
     withEnv([
         "PROFILE=${env.PROFILE}"
     ]) {
-       sh './gradlew clean build -Penv=${PROFILE} --stacktrace --info'
+       sh './gradlew clean build -Pprofile=$PROFILE --stacktrace --info'
     }
 }
 
