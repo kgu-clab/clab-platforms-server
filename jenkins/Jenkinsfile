@@ -285,13 +285,15 @@ def deployNewInstance() {
             docker run -d --name ${DEPLOY_CONTAINER} \\
                 -p ${NEW_PORT}:8080 \\
                 --network ${APPLICATION_NETWORK} \\
-                --network ${MONITORING_NETWORK} \\
                 -v ${EXTERNAL_SERVER_CONFIG_PATH}:${INTERNAL_SERVER_CONFIG_PATH} \\
                 -v ${EXTERNAL_SERVER_CLOUD_PATH}:${INTERNAL_SERVER_CLOUD_PATH} \\
                 -v ${EXTERNAL_SERVER_LOGS_PATH}:${INTERNAL_SERVER_LOGS_PATH} \\
                 -e LOG_PATH=${INTERNAL_SERVER_LOGS_PATH} \\
                 -e SPRING_PROFILES_ACTIVE=${PROFILE} \\
                 ${IMAGE_NAME}:${DEPLOY_CONTAINER}
+
+            echo "Connecting to monitoring network"
+            docker network connect ${MONITORING_NETWORK} ${DEPLOY_CONTAINER}
 
             echo "Listing all containers"
             docker ps -a
