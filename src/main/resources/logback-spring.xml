@@ -11,9 +11,8 @@
 
     <!-- File appender for stage environment -->
     <appender name="FILE_STAGE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/stage/application.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/stage/application.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${LOG_PATH}/stage/application.%d{yyyy-MM-dd_HH-mm-ss}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
@@ -23,9 +22,8 @@
 
     <!-- File appender for prod environment -->
     <appender name="FILE_PROD" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/prod/application.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/prod/application.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${LOG_PATH}/prod/application.%d{yyyy-MM-dd_HH-mm-ss}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
