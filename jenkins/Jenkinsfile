@@ -16,7 +16,7 @@ pipeline {
 
         EXTERNAL_SERVER_CONFIG_PATH = credentials('external_server_config_path')
         EXTERNAL_SERVER_CLOUD_PATH = credentials('external_server_cloud_path')
-        EXTERNAL_SERVER_LOG_PATH = credentials('external_server_log_path')
+        EXTERNAL_SERVER_LOGS_PATH = credentials('external_server_logs_path')
 
         INTERNAL_SERVER_CONFIG_PATH = credentials('internal_server_config_path')
         INTERNAL_SERVER_CLOUD_PATH = credentials('internal_server_cloud_path')
@@ -267,7 +267,7 @@ def deployNewInstance() {
         "MONITORING_NETWORK=${env.MONITORING_NETWORK}",
         "EXTERNAL_SERVER_CONFIG_PATH=${env.EXTERNAL_SERVER_CONFIG_PATH}",
         "EXTERNAL_SERVER_CLOUD_PATH=${env.EXTERNAL_SERVER_CLOUD_PATH}",
-        "EXTERNAL_SERVER_LOG_PATH=${env.EXTERNAL_SERVER_LOG_PATH}",
+        "EXTERNAL_SERVER_LOGS_PATH=${env.EXTERNAL_SERVER_LOGS_PATH}",
         "INTERNAL_SERVER_CONFIG_PATH=${env.INTERNAL_SERVER_CONFIG_PATH}",
         "INTERNAL_SERVER_CLOUD_PATH=${env.INTERNAL_SERVER_CLOUD_PATH}",
         "INTERNAL_SERVER_LOGS_PATH=${env.INTERNAL_SERVER_LOGS_PATH}",
@@ -288,7 +288,7 @@ def deployNewInstance() {
                 --network ${MONITORING_NETWORK} \\
                 -v ${EXTERNAL_SERVER_CONFIG_PATH}:${INTERNAL_SERVER_CONFIG_PATH} \\
                 -v ${EXTERNAL_SERVER_CLOUD_PATH}:${INTERNAL_SERVER_CLOUD_PATH} \\
-                -v ${EXTERNAL_SERVER_LOG_PATH}:${INTERNAL_SERVER_LOGS_PATH} \\
+                -v ${EXTERNAL_SERVER_LOGS_PATH}:${INTERNAL_SERVER_LOGS_PATH} \\
                 -e LOG_PATH=${INTERNAL_SERVER_LOGS_PATH} \\
                 -e SPRING_PROFILES_ACTIVE=${PROFILE} \\
                 ${IMAGE_NAME}:${DEPLOY_CONTAINER}
