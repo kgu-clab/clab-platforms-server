@@ -234,10 +234,12 @@ def determineContainers() {
 }
 
 def buildApplication() {
-    withEnv([
-        "PROFILE=${env.PROFILE}"
-    ]) {
-       sh './gradlew clean build -Pprofile=$PROFILE --stacktrace --info'
+    node {
+        withEnv([
+            "PROFILE=${env.PROFILE}"
+        ]) {
+            sh './gradlew clean build -Pprofile=$PROFILE --stacktrace --info'
+        }
     }
 }
 
