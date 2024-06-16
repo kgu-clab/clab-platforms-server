@@ -89,7 +89,9 @@ pipeline {
 
         stage('애플리케이션 빌드') {
             steps {
-                buildApplication()
+                script {
+                    buildApplication()
+                }
             }
         }
 
