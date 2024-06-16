@@ -292,8 +292,13 @@ def deployNewInstance() {
                 -e SPRING_PROFILES_ACTIVE=${PROFILE} \\
                 ${IMAGE_NAME}:${DEPLOY_CONTAINER}
 
-            echo "Connecting to monitoring network"
-            docker network connect ${MONITORING_NETWORK} ${DEPLOY_CONTAINER}
+            echo "Checking if monitoring network ${MONITORING_NETWORK} exists"
+            if docker network ls --format '{{.Name}}' | grep -q '^${MONITORING_NETWORK}\$'; then
+                echo "Connecting to monitoring network ${MONITORING_NETWORK}"
+                docker network connect ${MONITORING_NETWORK} ${DEPLOY_CONTAINER}
+            else
+                echo "Monitoring network ${MONITORING_NETWORK} does not exist. Skipping connection."
+            fi
 
             echo "Listing all containers"
             docker ps -a
