@@ -35,6 +35,9 @@ pipeline {
         PORT_A = credentials('port_a')
         PORT_B = credentials('port_b')
 
+        WHITELIST_ADMIN_USERNAME = credentials('whitelist_admin_username')
+        WHITELIST_ADMIN_PASSWORD = credentials('whitelist_admin_password')
+
         DOCKERFILE_PATH = "${env.WORKSPACE}/jenkins/Dockerfile"
         NGINX_CONTAINER_NAME = 'nginx'
         POSTGRESQL_CONTAINER_NAME = 'postgresql'
@@ -308,27 +311,37 @@ def deployNewInstance() {
 }
 
 def performHealthCheck() {
-    def PUBLIC_IP = sh(script: "curl -s ifconfig.me", returnStdout: true).trim()
-    echo "Public IP address: ${PUBLIC_IP}"
+    withEnv([
+        "WHITELIST_ADMIN_USERNAME=${env.WHITELIST_ADMIN_USERNAME}",
+        "WHITELIST_ADMIN_PASSWORD=${env.WHITELIST_ADMIN_PASSWORD}"
+    ]) {
+        def PUBLIC_IP = sh(script: "curl -s ifconfig.me", returnStdout: true).trim()
+        echo "Public IP address: ${PUBLIC_IP}"
 
-    def start_time = System.currentTimeMillis()
-    def timeout = start_time + 240000  // 4 minutes
+        def start_time = System.currentTimeMillis()
+        def timeout = start_time + 240000  // 4 minutes
 
-    while (System.currentTimeMillis() < timeout) {
-        def elapsed = (System.currentTimeMillis() - start_time) / 1000
-        echo "Checking health... ${elapsed} seconds elapsed."
-        if (sh(script: "curl -s http://${PUBLIC_IP}:${env.NEW_PORT}/actuator/health | grep 'UP'", returnStatus: true) == 0) {
-            echo "New application started successfully after ${elapsed} seconds."
-            break
+        while (System.currentTimeMillis() < timeout) {
+            def elapsed = (System.currentTimeMillis() - start_time) / 1000
+            echo "Checking health... ${elapsed} seconds elapsed."
+            def status = sh(
+                script: """curl -s -u ${WHITELIST_ADMIN_USERNAME}:${WHITELIST_ADMIN_PASSWORD} \
+                    http://${PUBLIC_IP}:${env.NEW_PORT}/actuator/health | grep 'UP'""",
+                returnStatus: true
+            )
+            if (status == 0) {
+                echo "New application started successfully after ${elapsed} seconds."
+                return
+            }
+            sleep 5
         }
-        sleep 1
-    }
 
-    if (System.currentTimeMillis() >= timeout) {
-        sendSlackNotification(":scream_cat: New Staging application did not start successfully within 4 minutes.", env.SLACK_COLOR_FAILURE)
-        sh "docker stop ${env.DEPLOY_CONTAINER}"
-        sh "docker rm ${env.DEPLOY_CONTAINER}"
-        error "Health check failed"
+        if (System.currentTimeMillis() >= timeout) {
+            sendSlackNotification(":scream_cat: New Staging application did not start successfully within 4 minutes.", env.SLACK_COLOR_FAILURE)
+            sh "docker stop ${env.DEPLOY_CONTAINER}"
+            sh "docker rm ${env.DEPLOY_CONTAINER}"
+            error "Health check failed"
+        }
     }
 }
 
