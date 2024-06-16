@@ -17,10 +17,10 @@ import java.util.Map;
 @Slf4j
 public class WhitelistService {
 
-    @Value("${security.swagger.whitelist.enabled}")
+    @Value("${security.whitelist.enabled}")
     private boolean whitelistEnabled;
 
-    @Value("${security.swagger.whitelist.path}")
+    @Value("${security.whitelist.path}")
     private String whitelistPath;
 
     public List<String> loadWhitelistIps() {
