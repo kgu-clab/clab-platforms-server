@@ -9,11 +9,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import page.clab.api.global.config.IPInfoConfig;
 import page.clab.api.global.util.HttpReqResUtil;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -21,6 +23,9 @@ import java.util.Objects;
 public class IpAuthenticationFilter implements Filter {
 
     private final IPinfo ipInfo;
+
+    @Value("${security.access.allowed-countries}")
+    private List<String> allowedCountries;
 
     public IpAuthenticationFilter(IPInfoConfig ipInfoConfig) {
         ipInfo = ipInfoConfig.ipInfo();
@@ -48,7 +53,7 @@ public class IpAuthenticationFilter implements Filter {
 
     private boolean isNonPermittedCountry(IPResponse ipResponse) {
         String country = ipResponse.getCountryCode();
-        return Objects.nonNull(country) && !country.equals("KR");
+        return Objects.nonNull(country) && !allowedCountries.contains(country);
     }
 
     @Override
