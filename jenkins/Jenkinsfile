@@ -14,18 +14,29 @@ pipeline {
         DOCKER_HUB_USER = credentials('dockerhub_user')
         DOCKER_HUB_PASSWORD = credentials('dockerhub_password')
 
-        SERVER_CONFIG = credentials('server_config')
-        SERVER_CLOUD = credentials('server_cloud')
+        EXTERNAL_SERVER_CONFIG_PATH = credentials('external_server_config_path')
+        EXTERNAL_SERVER_CLOUD_PATH = credentials('external_server_cloud_path')
+        EXTERNAL_SERVER_LOGS_PATH = credentials('external_server_logs_path')
+
+        INTERNAL_SERVER_CONFIG_PATH = credentials('internal_server_config_path')
+        INTERNAL_SERVER_CLOUD_PATH = credentials('internal_server_cloud_path')
+        INTERNAL_SERVER_LOGS_PATH = credentials('internal_server_logs_path')
 
         BLUE_CONTAINER = credentials('blue_container')
         GREEN_CONTAINER = credentials('green_container')
         BLUE_URL = credentials('blue_url')
         GREEN_URL = credentials('green_url')
         IMAGE_NAME = credentials('image_name')
-        NETWORK_NAME = credentials('network_name')
 
+        APPLICATION_NETWORK = credentials('application_network')
+        MONITORING_NETWORK = credentials('monitoring_network')
+
+        PROFILE = credentials('profile')
         PORT_A = credentials('port_a')
         PORT_B = credentials('port_b')
+
+        WHITELIST_ADMIN_USERNAME = credentials('whitelist_admin_username')
+        WHITELIST_ADMIN_PASSWORD = credentials('whitelist_admin_password')
 
         DOCKERFILE_PATH = "${env.WORKSPACE}/jenkins/Dockerfile"
         NGINX_CONTAINER_NAME = 'nginx'
@@ -81,7 +92,9 @@ pipeline {
 
         stage('애플리케이션 빌드') {
             steps {
-                sh './gradlew clean build -Penv=stage --stacktrace --info'
+                script {
+                    buildApplication()
+                }
             }
         }
 
@@ -134,7 +147,9 @@ pipeline {
 }
 
 def sendSlackNotification(message, color) {
-    withEnv(["SLACK_WEBHOOK_URL=${env.SLACK_WEBHOOK_URL}"]) {
+    withEnv([
+        "SLACK_WEBHOOK_URL=${env.SLACK_WEBHOOK_URL}"
+    ]) {
         def payload = """{
             "attachments": [
                 {
@@ -169,7 +184,12 @@ def getChangeLog() {
 
 def backupPostgres() {
     def BACKUP_FILE = "postgres_backup_${new Date().format('yyyy-MM-dd_HH-mm-ss')}.sql"
-    withEnv(["BACKUP_DIR=${env.BACKUP_DIR}", "POSTGRESQL_CONTAINER_NAME=${env.POSTGRESQL_CONTAINER_NAME}", "PG_PASSWORD=${env.PG_PASSWORD}", "PG_USER=${env.PG_USER}"]) {
+    withEnv([
+        "BACKUP_DIR=${env.BACKUP_DIR}",
+        "POSTGRESQL_CONTAINER_NAME=${env.POSTGRESQL_CONTAINER_NAME}",
+        "PG_PASSWORD=${env.PG_PASSWORD}",
+        "PG_USER=${env.PG_USER}"
+    ]) {
         sh """
             echo "Backing up PostgreSQL database to ${BACKUP_DIR}/${BACKUP_FILE}..."
             docker exec -e PGPASSWORD=${PG_PASSWORD} ${POSTGRESQL_CONTAINER_NAME} sh -c 'pg_dumpall -c -U ${PG_USER} > ${BACKUP_DIR}/${BACKUP_FILE}'
@@ -189,7 +209,14 @@ def dockerLogin() {
 
 def determineContainers() {
     script {
-        withEnv(["BLUE_CONTAINER=${env.BLUE_CONTAINER}", "GREEN_CONTAINER=${env.GREEN_CONTAINER}", "BLUE_URL=${env.BLUE_URL}", "GREEN_URL=${env.GREEN_URL}", "PORT_A=${env.PORT_A}", "PORT_B=${env.PORT_B}"]) {
+        withEnv([
+            "BLUE_CONTAINER=${env.BLUE_CONTAINER}",
+            "GREEN_CONTAINER=${env.GREEN_CONTAINER}",
+            "BLUE_URL=${env.BLUE_URL}",
+            "GREEN_URL=${env.GREEN_URL}",
+            "PORT_A=${env.PORT_A}",
+            "PORT_B=${env.PORT_B}"
+        ]) {
             def blueRunning = sh(script: "docker ps --filter 'name=${BLUE_CONTAINER}' --format '{{.Names}}' | grep -q '${BLUE_CONTAINER}'", returnStatus: true) == 0
             if (blueRunning) {
                 env.CURRENT_CONTAINER = BLUE_CONTAINER
@@ -209,8 +236,24 @@ def determineContainers() {
     }
 }
 
+def buildApplication() {
+    withEnv([
+        "PROFILE=${env.PROFILE}"
+    ]) {
+        sh """
+            echo "Building application with profile ${PROFILE}..."
+            ./gradlew clean build -Penv=${PROFILE} --stacktrace --info
+        """
+    }
+}
+
 def buildAndPushDockerImage() {
-    withEnv(["DOCKER_HUB_REPO=${env.DOCKER_HUB_REPO}", "DEPLOY_CONTAINER=${env.DEPLOY_CONTAINER}", "DOCKERFILE_PATH=${env.DOCKERFILE_PATH}", "IMAGE_NAME=${env.IMAGE_NAME}"]) {
+    withEnv([
+        "DOCKER_HUB_REPO=${env.DOCKER_HUB_REPO}",
+        "DEPLOY_CONTAINER=${env.DEPLOY_CONTAINER}",
+        "DOCKERFILE_PATH=${env.DOCKERFILE_PATH}",
+        "IMAGE_NAME=${env.IMAGE_NAME}"
+    ]) {
         sh """
             docker build -f ${DOCKERFILE_PATH} -t ${IMAGE_NAME}:${DEPLOY_CONTAINER} .
             docker tag ${IMAGE_NAME}:${DEPLOY_CONTAINER} ${DOCKER_HUB_REPO}:${DEPLOY_CONTAINER}
@@ -220,7 +263,20 @@ def buildAndPushDockerImage() {
 }
 
 def deployNewInstance() {
-    withEnv(["NEW_PORT=${env.NEW_PORT}", "NETWORK_NAME=${env.NETWORK_NAME}", "SERVER_CONFIG=${env.SERVER_CONFIG}", "SERVER_CLOUD=${env.SERVER_CLOUD}", "DEPLOY_CONTAINER=${env.DEPLOY_CONTAINER}", "IMAGE_NAME=${env.IMAGE_NAME}"]) {
+    withEnv([
+        "PROFILE=${env.PROFILE}",
+        "NEW_PORT=${env.NEW_PORT}",
+        "APPLICATION_NETWORK=${env.APPLICATION_NETWORK}",
+        "MONITORING_NETWORK=${env.MONITORING_NETWORK}",
+        "EXTERNAL_SERVER_CONFIG_PATH=${env.EXTERNAL_SERVER_CONFIG_PATH}",
+        "EXTERNAL_SERVER_CLOUD_PATH=${env.EXTERNAL_SERVER_CLOUD_PATH}",
+        "EXTERNAL_SERVER_LOGS_PATH=${env.EXTERNAL_SERVER_LOGS_PATH}",
+        "INTERNAL_SERVER_CONFIG_PATH=${env.INTERNAL_SERVER_CONFIG_PATH}",
+        "INTERNAL_SERVER_CLOUD_PATH=${env.INTERNAL_SERVER_CLOUD_PATH}",
+        "INTERNAL_SERVER_LOGS_PATH=${env.INTERNAL_SERVER_LOGS_PATH}",
+        "DEPLOY_CONTAINER=${env.DEPLOY_CONTAINER}",
+        "IMAGE_NAME=${env.IMAGE_NAME}"
+    ]) {
         sh """
             echo "Stopping and removing existing container if it exists"
             if docker ps | grep -q ${DEPLOY_CONTAINER}; then
@@ -231,10 +287,21 @@ def deployNewInstance() {
             echo "Running new container ${DEPLOY_CONTAINER} with image ${IMAGE_NAME}:${DEPLOY_CONTAINER}"
             docker run -d --name ${DEPLOY_CONTAINER} \\
                 -p ${NEW_PORT}:8080 \\
-                --network ${NETWORK_NAME} \\
-                -v ${SERVER_CONFIG}:/config \\
-                -v ${SERVER_CLOUD}:/cloud \\
+                --network ${APPLICATION_NETWORK} \\
+                -v ${EXTERNAL_SERVER_CONFIG_PATH}:${INTERNAL_SERVER_CONFIG_PATH} \\
+                -v ${EXTERNAL_SERVER_CLOUD_PATH}:${INTERNAL_SERVER_CLOUD_PATH} \\
+                -v ${EXTERNAL_SERVER_LOGS_PATH}:${INTERNAL_SERVER_LOGS_PATH} \\
+                -e LOG_PATH=${INTERNAL_SERVER_LOGS_PATH} \\
+                -e SPRING_PROFILES_ACTIVE=${PROFILE} \\
                 ${IMAGE_NAME}:${DEPLOY_CONTAINER}
+
+            echo "Checking if monitoring network ${MONITORING_NETWORK} exists"
+            if docker network ls --format '{{.Name}}' | grep -q '^${MONITORING_NETWORK}\$'; then
+                echo "Connecting to monitoring network ${MONITORING_NETWORK}"
+                docker network connect ${MONITORING_NETWORK} ${DEPLOY_CONTAINER}
+            else
+                echo "Monitoring network ${MONITORING_NETWORK} does not exist. Skipping connection."
+            fi
 
             echo "Listing all containers"
             docker ps -a
@@ -244,32 +311,49 @@ def deployNewInstance() {
 }
 
 def performHealthCheck() {
-    def PUBLIC_IP = sh(script: "curl -s ifconfig.me", returnStdout: true).trim()
-    echo "Public IP address: ${PUBLIC_IP}"
+    withEnv([
+        "WHITELIST_ADMIN_USERNAME=${env.WHITELIST_ADMIN_USERNAME}",
+        "WHITELIST_ADMIN_PASSWORD=${env.WHITELIST_ADMIN_PASSWORD}"
+    ]) {
+        def PUBLIC_IP = sh(script: "curl -s ifconfig.me", returnStdout: true).trim()
+        echo "Public IP address: ${PUBLIC_IP}"
 
-    def start_time = System.currentTimeMillis()
-    def timeout = start_time + 240000  // 4 minutes
+        def start_time = System.currentTimeMillis()
+        def timeout = start_time + 240000  // 4 minutes
 
-    while (System.currentTimeMillis() < timeout) {
-        def elapsed = (System.currentTimeMillis() - start_time) / 1000
-        echo "Checking health... ${elapsed} seconds elapsed."
-        if (sh(script: "curl -s http://${PUBLIC_IP}:${env.NEW_PORT}/actuator/health | grep 'UP'", returnStatus: true) == 0) {
-            echo "New application started successfully after ${elapsed} seconds."
-            break
+        while (System.currentTimeMillis() < timeout) {
+            def elapsed = (System.currentTimeMillis() - start_time) / 1000
+            echo "Checking health... ${elapsed} seconds elapsed."
+            def status = sh(
+                script: """curl -s -u ${WHITELIST_ADMIN_USERNAME}:${WHITELIST_ADMIN_PASSWORD} \
+                    http://${PUBLIC_IP}:${env.NEW_PORT}/actuator/health | grep 'UP'""",
+                returnStatus: true
+            )
+            if (status == 0) {
+                echo "New application started successfully after ${elapsed} seconds."
+                return
+            }
+            sleep 5
         }
-        sleep 1
-    }
 
-    if (System.currentTimeMillis() >= timeout) {
-        sendSlackNotification(":scream_cat: New Staging application did not start successfully within 4 minutes.", env.SLACK_COLOR_FAILURE)
-        sh "docker stop ${env.DEPLOY_CONTAINER}"
-        sh "docker rm ${env.DEPLOY_CONTAINER}"
-        error "Health check failed"
+        if (System.currentTimeMillis() >= timeout) {
+            sendSlackNotification(":scream_cat: New Staging application did not start successfully within 4 minutes.", env.SLACK_COLOR_FAILURE)
+            sh "docker stop ${env.DEPLOY_CONTAINER}"
+            sh "docker rm ${env.DEPLOY_CONTAINER}"
+            error "Health check failed"
+        }
     }
 }
 
 def switchTrafficAndCleanup() {
-    withEnv(["NEW_PORT=${env.NEW_PORT}", "OLD_PORT=${env.OLD_PORT}", "NEW_TARGET=${env.NEW_TARGET}", "CURRENT_CONTAINER=${env.CURRENT_CONTAINER}", "DEPLOY_CONTAINER=${env.DEPLOY_CONTAINER}", "NGINX_CONTAINER_NAME=${env.NGINX_CONTAINER_NAME}"]) {
+    withEnv([
+        "NEW_PORT=${env.NEW_PORT}",
+        "OLD_PORT=${env.OLD_PORT}",
+        "NEW_TARGET=${env.NEW_TARGET}",
+        "CURRENT_CONTAINER=${env.CURRENT_CONTAINER}",
+        "DEPLOY_CONTAINER=${env.DEPLOY_CONTAINER}",
+        "NGINX_CONTAINER_NAME=${env.NGINX_CONTAINER_NAME}"
+    ]) {
         sh """
             echo "Switching traffic to ${DEPLOY_CONTAINER} on port ${NEW_PORT}."
             docker exec ${NGINX_CONTAINER_NAME} bash -c '

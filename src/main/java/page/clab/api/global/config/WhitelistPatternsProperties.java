@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 @Getter
 @Configuration
-@ConfigurationProperties(prefix = "security.swagger")
-public class OpenApiPatternsProperties {
+@ConfigurationProperties(prefix = "security.whitelist")
+public class WhitelistPatternsProperties {
 
     private String[] patterns;
 

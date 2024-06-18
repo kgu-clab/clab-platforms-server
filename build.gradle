@@ -41,12 +41,38 @@ repositories {
 
 dependencies {
     // Spring Project
-    implementation 'org.springframework.boot:spring-boot-starter-actuator' // 모니터링
     implementation 'org.springframework.boot:spring-boot-starter-web' // 웹 MVC
     implementation 'org.springframework.boot:spring-boot-starter-validation' // 유효성 검사
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 템플릿 엔진
     implementation 'org.springframework.boot:spring-boot-starter-webflux' // WebFlux
     developmentOnly 'org.springframework.boot:spring-boot-devtools' // 개발 도구
+
+    // Security
+    implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
+    implementation 'com.warrenstrange:googleauth:1.5.0' // Google Authenticator
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5' // JWT 라이브러리
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // JWT 구현체
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JWT Jackson 모듈
+
+    // Monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator' // Spring Boot Actuator
+    implementation 'io.micrometer:micrometer-registry-prometheus' // Prometheus
+    implementation 'ch.qos.logback:logback-classic:1.5.6' // Logback
+    implementation 'ch.qos.logback:logback-core:1.5.6' // Logback
+
+    // DB
+    implementation 'org.postgresql:postgresql:42.7.1' // PostgreSQL JDBC Driver
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis' // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
+    implementation 'org.springframework.boot:spring-boot-starter-validation' // Hibernate Validator
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final' // Bean Validation
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2' // Jakarta Bean Validation
+
+    // QueryDSL
+    implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
     // Util
     compileOnly 'org.projectlombok:lombok' // 롬복
@@ -67,28 +93,6 @@ dependencies {
     implementation 'com.slack.api:slack-api-model:1.39.0'
     implementation 'com.slack.api:slack-api-client:1.39.0'
     implementation 'com.slack.api:slack-app-backend:1.39.0'
-
-
-    // DB
-    implementation 'org.postgresql:postgresql:42.7.1' // PostgreSQL JDBC Driver
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis' // Redis
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
-    implementation 'org.springframework.boot:spring-boot-starter-validation' // Hibernate Validator
-    implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final' // Bean Validation
-    implementation 'jakarta.validation:jakarta.validation-api:3.0.2' // Jakarta Bean Validation
-
-    // QueryDSL
-    implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
-    annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
-    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-
-    // Security
-    implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
-    implementation 'com.warrenstrange:googleauth:1.5.0' // Google Authenticator
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5' // JWT 라이브러리
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // JWT 구현체
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JWT Jackson 모듈
 
     // XSS Filter
     implementation 'com.navercorp.lucy:lucy-xss-servlet:2.0.1' // Lucy XSS Servlet Filter
