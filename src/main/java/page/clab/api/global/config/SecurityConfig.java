@@ -59,9 +59,9 @@ public class SecurityConfig {
 
     private final AuthenticationConfig authenticationConfig;
 
-    private final OpenApiAccountProperties openApiAccountProperties;
+    private final WhitelistAccountProperties whitelistAccountProperties;
 
-    private final OpenApiPatternsProperties OpenApiPatternsProperties;
+    private final WhitelistPatternsProperties WhitelistPatternsProperties;
 
     private final IPInfoConfig ipInfoConfig;
 
@@ -115,7 +115,7 @@ public class SecurityConfig {
 
     private ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry configureRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequests) {
         return authorizeRequests
-                .requestMatchers(OpenApiPatternsProperties.getPatterns()).hasRole(openApiAccountProperties.getRole())
+                .requestMatchers(WhitelistPatternsProperties.getPatterns()).hasRole(whitelistAccountProperties.getRole())
                 .requestMatchers(SecurityConstants.PERMIT_ALL).permitAll()
                 .requestMatchers(HttpMethod.GET, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
                 .requestMatchers(HttpMethod.POST, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_POST).permitAll()

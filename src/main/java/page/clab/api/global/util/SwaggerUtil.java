@@ -3,7 +3,7 @@ package page.clab.api.global.util;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import page.clab.api.global.config.OpenApiPatternsProperties;
+import page.clab.api.global.config.WhitelistPatternsProperties;
 
 import java.util.regex.Pattern;
 
@@ -14,11 +14,11 @@ public class SwaggerUtil implements InitializingBean {
     private static String[] swaggerPatterns;
 
     @Autowired
-    private OpenApiPatternsProperties openApiPatternsProperties;
+    private WhitelistPatternsProperties whitelistPatternsProperties;
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        swaggerPatterns = openApiPatternsProperties.getPatterns();
+        swaggerPatterns = whitelistPatternsProperties.getPatterns();
     }
 
     public static boolean isSwaggerRequest(String path) {
