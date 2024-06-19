@@ -134,13 +134,13 @@ pipeline {
     post {
         failure {
             script {
-                sendSlackNotification(":scream_cat: Deployment failed.", env.SLACK_COLOR_FAILURE, true)
+                sendSlackBuildNotification(":scream_cat: Deployment failed.", env.SLACK_COLOR_FAILURE, true)
             }
         }
 
         success {
             script {
-                sendSlackNotification(":rocket: Deployment completed successfully", env.SLACK_COLOR_SUCCESS, false)
+                sendSlackBuildNotification(":rocket: Deployment completed successfully", env.SLACK_COLOR_SUCCESS, false)
             }
         }
     }
@@ -165,7 +165,7 @@ def sendSlackNotification(message, color) {
     }
 }
 
-def sendSlackNotification(String message, String color, boolean isFailure = false) {
+def sendSlackBuildNotification(String message, String color, boolean isFailure = false) {
     def jobUrl = "${env.BUILD_URL}"
     def consoleOutputUrl = "${jobUrl}console"
     def buildLog = isFailure ? getBuildLog(10) : ""
