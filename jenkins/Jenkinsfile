@@ -5,6 +5,7 @@ pipeline {
         githubPush()
     }
 
+
     environment {
         JENKINS_DOMAIN = credentials('jenkins_domain')
 
