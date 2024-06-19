@@ -197,7 +197,7 @@ def sendSlackBuildNotification(String message, String color, boolean isFailure =
                         type: "section",
                         text: [
                             type: "mrkdwn",
-                            text: "*Reason:*\n```${buildLog}```"
+                            text: "*Failed at stage:*\n```${env.CURRENT_STAGE}```"
                         ]
                     ] : null,
                     [
@@ -253,15 +253,6 @@ def getChangeLog() {
     }
 
     return changeLog
-}
-
-def getBuildLog(lines) {
-    def log = sh(
-        script: "tail -n ${lines} ${env.WORKSPACE}/target/build.log",
-        returnStdout: true
-    ).trim()
-
-    return log.replaceAll('"', '\\"').replaceAll('\n', '\\\\n')
 }
 
 def backupPostgres() {
