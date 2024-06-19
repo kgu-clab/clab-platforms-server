@@ -401,7 +401,7 @@ def performHealthCheck() {
         echo "Public IP address: ${PUBLIC_IP}"
 
         def start_time = System.currentTimeMillis()
-        def timeout = start_time + 240000  // 4 minutes
+        def timeout = start_time + 150000  // 2.5 minutes
 
         while (System.currentTimeMillis() < timeout) {
             def elapsed = (System.currentTimeMillis() - start_time) / 1000
