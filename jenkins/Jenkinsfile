@@ -136,13 +136,13 @@ pipeline {
     post {
         failure {
             script {
-                sendSlackBuildNotification(":scream_cat: Deployment failed.", env.SLACK_COLOR_FAILURE, true)
+                sendSlackBuildNotification(":scream_cat: Deployment failed.", env.SLACK_COLOR_FAILURE)
             }
         }
 
         success {
             script {
-                sendSlackBuildNotification(":rocket: Deployment completed successfully", env.SLACK_COLOR_SUCCESS, false)
+                sendSlackBuildNotification(":rocket: Deployment completed successfully", env.SLACK_COLOR_SUCCESS)
             }
         }
     }
@@ -167,10 +167,9 @@ def sendSlackNotification(message, color) {
     }
 }
 
-def sendSlackBuildNotification(String message, String color, boolean isFailure = false) {
+def sendSlackBuildNotification(String message, String color) {
     def jobUrl = "${env.JENKINS_DOMAIN}/job/${env.JOB_NAME}"
     def consoleOutputUrl = "${jobUrl}/${env.BUILD_NUMBER}/console"
-    def buildLog = isFailure ? getBuildLog(10) : ""
 
     def payload = [
         blocks: [
@@ -193,13 +192,6 @@ def sendSlackBuildNotification(String message, String color, boolean isFailure =
                             text: "*Change Log:*\n${env.GIT_CHANGELOG}"
                         ]
                     ],
-                    isFailure ? [
-                        type: "section",
-                        text: [
-                            type: "mrkdwn",
-                            text: "*Failed at stage:*\n```${env.CURRENT_STAGE}```"
-                        ]
-                    ] : null,
                     [
                         type: "actions",
                         elements: [
