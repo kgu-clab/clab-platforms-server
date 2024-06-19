@@ -2,6 +2,8 @@ pipeline {
     agent any
 
     environment {
+        JENKINS_DOMAIN = credentials('jenkins_domain')
+
         SLACK_WEBHOOK_URL = credentials('slack_webhook_url')
         SLACK_COLOR_SUCCESS = credentials('slack_color_success')
         SLACK_COLOR_FAILURE = credentials('slack_color_failure')
@@ -134,33 +136,96 @@ pipeline {
     post {
         failure {
             script {
-                sendSlackNotification("${env.GIT_CHANGELOG}\n:scream_cat: Deployment failed.", env.SLACK_COLOR_FAILURE)
+                sendSlackBuildNotification(":scream_cat: Deployment failed.", env.SLACK_COLOR_FAILURE)
             }
         }
 
         success {
             script {
-                sendSlackNotification("${env.GIT_CHANGELOG}\n:rocket: Deployment completed successfully.", env.SLACK_COLOR_SUCCESS)
+                sendSlackBuildNotification(":rocket: Deployment completed successfully", env.SLACK_COLOR_SUCCESS)
             }
         }
     }
 }
 
-def sendSlackNotification(message, color) {
-    withEnv([
-        "SLACK_WEBHOOK_URL=${env.SLACK_WEBHOOK_URL}"
-    ]) {
-        def payload = """{
-            "attachments": [
-                {
-                    "color": "${color}",
-                    "text": "${message.replaceAll('"', '\\"').replaceAll('\n', '\\\\n')}"
-                }
+def sendSlackNotification(String message, String color) {
+    def payload = [
+        attachments: [
+            [
+                color: color,
+                text: message.replaceAll('"', '\\"').replaceAll('\n', '\\\\n')
             ]
-        }"""
+        ]
+    ]
 
+    withEnv(["SLACK_WEBHOOK_URL=${env.SLACK_WEBHOOK_URL}"]) {
+        def payloadJson = groovy.json.JsonOutput.toJson(payload)
         sh """
-            curl -X POST --data-urlencode 'payload=${payload}' ${SLACK_WEBHOOK_URL}
+            curl -X POST -H 'Content-type: application/json' --data '${payloadJson}' ${SLACK_WEBHOOK_URL}
+        """
+    }
+}
+
+
+def sendSlackBuildNotification(String message, String color) {
+    def jobUrl = "${env.JENKINS_DOMAIN}/job/${env.JOB_NAME}"
+    def consoleOutputUrl = "${jobUrl}/${env.BUILD_NUMBER}/console"
+
+    def payload = [
+        blocks: [
+            [
+                type: "section",
+                text: [
+                    type: "mrkdwn",
+                    text: message
+                ]
+            ]
+        ],
+        attachments: [
+            [
+                color: color,
+                blocks: [
+                    [
+                        type: "section",
+                        text: [
+                            type: "mrkdwn",
+                            text: "*Change Log:*\n${env.GIT_CHANGELOG}"
+                        ]
+                    ],
+                    [
+                        type: "actions",
+                        elements: [
+                            [
+                                type: "button",
+                                text: [
+                                    type: "plain_text",
+                                    text: "Job",
+                                    emoji: true
+                                ],
+                                url: jobUrl,
+                                value: "click_job"
+                            ],
+                            [
+                                type: "button",
+                                text: [
+                                    type: "plain_text",
+                                    text: "Console Output",
+                                    emoji: true
+                                ],
+                                url: consoleOutputUrl,
+                                value: "click_console_output"
+                            ]
+                        ]
+                    ]
+                ].findAll { it != null }
+            ]
+        ]
+    ]
+
+    withEnv(["SLACK_WEBHOOK_URL=${env.SLACK_WEBHOOK_URL}"]) {
+        def payloadJson = groovy.json.JsonOutput.toJson(payload)
+        sh """
+            curl -X POST -H 'Content-type: application/json' --data '${payloadJson}' ${SLACK_WEBHOOK_URL}
         """
     }
 }
@@ -319,7 +384,7 @@ def performHealthCheck() {
         echo "Public IP address: ${PUBLIC_IP}"
 
         def start_time = System.currentTimeMillis()
-        def timeout = start_time + 240000  // 4 minutes
+        def timeout = start_time + 150000  // 2.5 minutes
 
         while (System.currentTimeMillis() < timeout) {
             def elapsed = (System.currentTimeMillis() - start_time) / 1000
