@@ -134,13 +134,13 @@ pipeline {
     post {
         failure {
             script {
-                sendSlackNotification("${env.GIT_CHANGELOG}\n:scream_cat: Deployment failed.", env.SLACK_COLOR_FAILURE)
+                sendSlackNotification(":scream_cat: Deployment failed.", env.SLACK_COLOR_FAILURE, true)
             }
         }
 
         success {
             script {
-                sendSlackNotification("${env.GIT_CHANGELOG}\n:rocket: Deployment completed successfully.", env.SLACK_COLOR_SUCCESS)
+                sendSlackNotification(":rocket: Deployment completed successfully", env.SLACK_COLOR_SUCCESS, false)
             }
         }
     }
@@ -165,6 +165,77 @@ def sendSlackNotification(message, color) {
     }
 }
 
+def sendSlackNotification(String message, String color, boolean isFailure = false) {
+    def jobUrl = "${env.BUILD_URL}"
+    def consoleOutputUrl = "${jobUrl}console"
+    def buildLog = isFailure ? getBuildLog(10) : ""
+
+    def payload = [
+        blocks: [
+            [
+                type: "section",
+                text: [
+                    type: "mrkdwn",
+                    text: message
+                ]
+            ]
+        ],
+        attachments: [
+            [
+                color: color,
+                blocks: [
+                    [
+                        type: "section",
+                        text: [
+                            type: "mrkdwn",
+                            text: "*Change Log:*\n${env.GIT_CHANGELOG}"
+                        ]
+                    ],
+                    isFailure ? [
+                        type: "section",
+                        text: [
+                            type: "mrkdwn",
+                            text: "*Reason:*\n```${buildLog}```"
+                        ]
+                    ] : null,
+                    [
+                        type: "actions",
+                        elements: [
+                            [
+                                type: "button",
+                                text: [
+                                    type: "plain_text",
+                                    text: "Job",
+                                    emoji: true
+                                ],
+                                url: jobUrl,
+                                value: "click_job"
+                            ],
+                            [
+                                type: "button",
+                                text: [
+                                    type: "plain_text",
+                                    text: "Console Output",
+                                    emoji: true
+                                ],
+                                url: consoleOutputUrl,
+                                value: "click_console_output"
+                            ]
+                        ]
+                    ]
+                ].findAll { it != null }
+            ]
+        ]
+    ]
+
+    withEnv(["SLACK_WEBHOOK_URL=${env.SLACK_WEBHOOK_URL}"]) {
+        def payloadJson = groovy.json.JsonOutput.toJson(payload)
+        sh """
+            curl -X POST -H 'Content-type: application/json' --data '${payloadJson}' ${SLACK_WEBHOOK_URL}
+        """
+    }
+}
+
 def getChangeLog() {
     def previousCommit = env.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: 'HEAD~1'
     def currentCommit = env.GIT_COMMIT ?: 'HEAD'
@@ -180,6 +251,15 @@ def getChangeLog() {
     }
 
     return changeLog
+}
+
+def getBuildLog(lines) {
+    def log = sh(
+        script: "tail -n ${lines} ${env.WORKSPACE}/target/build.log",
+        returnStdout: true
+    ).trim()
+
+    return log.replaceAll('"', '\\"').replaceAll('\n', '\\\\n')
 }
 
 def backupPostgres() {
