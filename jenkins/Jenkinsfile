@@ -148,24 +148,24 @@ pipeline {
     }
 }
 
-def sendSlackNotification(message, color) {
-    withEnv([
-        "SLACK_WEBHOOK_URL=${env.SLACK_WEBHOOK_URL}"
-    ]) {
-        def payload = """{
-            "attachments": [
-                {
-                    "color": "${color}",
-                    "text": "${message.replaceAll('"', '\\"').replaceAll('\n', '\\\\n')}"
-                }
+def sendSlackNotification(String message, String color) {
+    def payload = [
+        attachments: [
+            [
+                color: color,
+                text: message.replaceAll('"', '\\"').replaceAll('\n', '\\\\n')
             ]
-        }"""
+        ]
+    ]
 
+    withEnv(["SLACK_WEBHOOK_URL=${env.SLACK_WEBHOOK_URL}"]) {
+        def payloadJson = groovy.json.JsonOutput.toJson(payload)
         sh """
-            curl -X POST --data-urlencode 'payload=${payload}' ${SLACK_WEBHOOK_URL}
+            curl -X POST -H 'Content-type: application/json' --data '${payloadJson}' ${SLACK_WEBHOOK_URL}
         """
     }
 }
+
 
 def sendSlackBuildNotification(String message, String color) {
     def jobUrl = "${env.JENKINS_DOMAIN}/job/${env.JOB_NAME}"
