@@ -2,6 +2,7 @@ package page.clab.api.global.common.slack.domain;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import page.clab.api.global.common.slack.exception.AlertTypeNotFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class AlertTypeConverter implements AttributeConverter<AlertType, String>
         }
         AlertType alertType = CACHE.get(dbData);
         if (alertType == null) {
-            throw new IllegalArgumentException("Unknown alert type: " + dbData);
+            throw new AlertTypeNotFoundException(dbData);
         }
         return alertType;
     }
