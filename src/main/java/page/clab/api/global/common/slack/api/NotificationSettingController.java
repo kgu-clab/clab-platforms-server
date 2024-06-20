@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.slack.application.NotificationSettingService;
 import page.clab.api.global.common.slack.dto.request.NotificationSettingUpdateRequestDto;
+import page.clab.api.global.common.slack.dto.response.NotificationSettingResponseDto;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/notification-settings")
@@ -20,6 +24,14 @@ import page.clab.api.global.common.slack.dto.request.NotificationSettingUpdateRe
 public class NotificationSettingController {
 
     private final NotificationSettingService notificationSettingService;
+
+    @Operation(summary = "[S] 슬랙 알림 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    @GetMapping("")
+    public ApiResponse<Object> getNotificationSettings() {
+        List<NotificationSettingResponseDto> notificationSettings = notificationSettingService.getNotificationSettings();
+        return ApiResponse.success(notificationSettings);
+    }
 
     @Operation(summary = "[S] 슬랙 알림 설정 변경", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
