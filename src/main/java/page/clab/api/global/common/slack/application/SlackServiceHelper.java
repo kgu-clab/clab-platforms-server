@@ -210,7 +210,7 @@ public class SlackServiceHelper {
         String username = board.isWantAnonymous() ?
                 board.getNickname() : board.getMember().getId() + " " + board.getMember().getName();
 
-        blocks.add(section(section -> section.text(markdownText(":mag: *New Board*"))));
+        blocks.add(section(section -> section.text(markdownText(":writing_hand: *New Board*"))));
         blocks.add(section(section -> section.fields(Arrays.asList(
                 markdownText("*Title:*\n" + board.getTitle()),
                 markdownText("*Category:*\n" + board.getCategory().getDescription()),
