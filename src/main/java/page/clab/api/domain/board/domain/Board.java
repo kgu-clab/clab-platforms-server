@@ -69,6 +69,7 @@ public class Board extends BaseEntity {
 
     private String imageUrl;
 
+    @Getter
     @Column(nullable = false)
     private boolean wantAnonymous;
 

@@ -1,6 +1,5 @@
 package page.clab.api.domain.application.application;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -44,7 +43,7 @@ public class ApplicationService {
 
         notificationService.sendNotificationToAdmins(requestDto.getStudentId() + " " +
                 requestDto.getName() + "님이 동아리에 지원하였습니다.");
-        slackService.sendApplicationNotification(requestDto);
+        slackService.sendNewApplicationNotification(requestDto);
         return applicationRepository.save(application).getStudentId();
     }
 
