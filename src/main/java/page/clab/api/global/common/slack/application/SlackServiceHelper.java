@@ -21,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
+import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.slack.domain.AlertType;
 import page.clab.api.global.common.slack.domain.GeneralAlertType;
@@ -46,10 +47,15 @@ import java.util.stream.Collectors;
 public class SlackServiceHelper {
 
     private final Slack slack;
+
     private final String webhookUrl;
+
     private final String webUrl;
+
     private final String apiUrl;
+
     private final String color;
+
     private final Environment environment;
 
     private final AttributeStrategy attributeStrategy;
@@ -104,6 +110,11 @@ public class SlackServiceHelper {
                 case APPLICATION_CREATED:
                     if (additionalData instanceof ApplicationRequestDto) {
                         return createApplicationBlocks((ApplicationRequestDto) additionalData);
+                    }
+                    break;
+                case BOARD_CREATED:
+                    if (additionalData instanceof Board) {
+                        return createBoardBlocks((Board) additionalData);
                     }
                     break;
                 case SERVER_START:
@@ -191,6 +202,20 @@ public class SlackServiceHelper {
                             .actionId("click_github"))
             ))));
         }
+        return blocks;
+    }
+
+    private List<LayoutBlock> createBoardBlocks(Board board) {
+        List<LayoutBlock> blocks = new ArrayList<>();
+        String username = board.isWantAnonymous() ?
+                board.getNickname() : board.getMember().getId() + " " + board.getMember().getName();
+
+        blocks.add(section(section -> section.text(markdownText(":mag: *New Board*"))));
+        blocks.add(section(section -> section.fields(Arrays.asList(
+                markdownText("*Title:*\n" + board.getTitle()),
+                markdownText("*Category:*\n" + board.getCategory().getDescription()),
+                markdownText("*User:*\n" + username)
+        ))));
         return blocks;
     }
 
