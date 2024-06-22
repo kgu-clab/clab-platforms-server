@@ -18,7 +18,7 @@ import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.board.dto.response.BoardMyResponseDto;
 import page.clab.api.domain.comment.dao.CommentRepository;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -36,7 +36,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BoardService {
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final NotificationService notificationService;
 
@@ -54,7 +54,7 @@ public class BoardService {
 
     @Transactional
     public String createBoard(BoardRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         Board board = BoardRequestDto.toEntity(requestDto, currentMember, uploadedFiles);
         board.validateAccessPermissionForCreation(currentMember);
@@ -74,7 +74,7 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public BoardDetailsResponseDto getBoardDetails(Long boardId) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
         boolean hasLikeByMe = checkLikeStatus(board, currentMember);
         boolean isOwner = board.isOwner(currentMember);
@@ -83,7 +83,7 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardMyResponseDto> getMyBoards(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Board> boards = getBoardByMember(pageable, currentMember);
         return new PagedResponseDto<>(boards.map(BoardMyResponseDto::toDto));
     }
@@ -96,7 +96,7 @@ public class BoardService {
 
     @Transactional
     public String updateBoard(Long boardId, BoardUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
         board.validateAccessPermission(currentMember);
         board.update(requestDto);
@@ -106,7 +106,7 @@ public class BoardService {
 
     @Transactional
     public Long toggleLikeStatus(Long boardId) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
         Optional<BoardLike> boardLikeOpt = boardLikeRepository.findByBoardIdAndMemberId(board.getId(), currentMember.getId());
         if (boardLikeOpt.isPresent()) {
@@ -128,7 +128,7 @@ public class BoardService {
     }
 
     public String deleteBoard(Long boardId) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
         board.validateAccessPermission(currentMember);
         boardRepository.delete(board);

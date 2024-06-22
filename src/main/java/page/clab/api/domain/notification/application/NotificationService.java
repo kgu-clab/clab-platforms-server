@@ -1,13 +1,11 @@
 package page.clab.api.domain.notification.application;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.dao.NotificationRepository;
 import page.clab.api.domain.notification.domain.Notification;
@@ -25,20 +23,15 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private MemberService memberService;
+    private MemberLookupService memberLookupService;
 
     private final ValidationService validationService;
 
     private final NotificationRepository notificationRepository;
 
-    @Autowired
-    public void setMemberService(@Lazy MemberService memberService) {
-        this.memberService = memberService;
-    }
-
     @Transactional
     public Long createNotification(NotificationRequestDto requestDto) {
-        Member member = memberService.getMemberByIdOrThrow(requestDto.getMemberId());
+        Member member = memberLookupService.getMemberByIdOrThrow(requestDto.getMemberId());
         Notification notification = NotificationRequestDto.toEntity(requestDto, member);
         validationService.checkValid(notification);
         return notificationRepository.save(notification).getId();
@@ -46,7 +39,7 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<NotificationResponseDto> getNotifications(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Notification> notifications = getNotificationByMember(currentMember, pageable);
         return new PagedResponseDto<>(notifications.map(NotificationResponseDto::toDto));
     }
@@ -58,7 +51,7 @@ public class NotificationService {
     }
 
     public Long deleteNotification(Long notificationId) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Notification notification = getNotificationByIdOrThrow(notificationId);
         notification.validateAccessPermission(currentMember);
         notificationRepository.delete(notification);
@@ -66,7 +59,7 @@ public class NotificationService {
     }
 
     public void sendNotificationToAllMembers(String content) {
-        List<Notification> notifications = memberService.findAll().stream()
+        List<Notification> notifications = memberLookupService.findAllMembers().stream()
                 .map(member -> Notification.create(member, content))
                 .toList();
         notificationRepository.saveAll(notifications);
@@ -85,17 +78,17 @@ public class NotificationService {
     }
 
     public void sendNotificationToMember(String memberId, String content) {
-        Member member = memberService.getMemberByIdOrThrow(memberId);
+        Member member = memberLookupService.getMemberByIdOrThrow(memberId);
         Notification notification = Notification.create(member, content);
         notificationRepository.save(notification);
     }
 
     public void sendNotificationToAdmins(String content) {
-        sendNotificationToSpecificRole(memberService::getAdmins, content);
+        sendNotificationToSpecificRole(memberLookupService::getAdmins, content);
     }
 
     public void sendNotificationToSuperAdmins(String content) {
-        sendNotificationToSpecificRole(memberService::getSuperAdmins, content);
+        sendNotificationToSpecificRole(memberLookupService::getSuperAdmins, content);
     }
 
     private void sendNotificationToSpecificRole(Supplier<List<Member>> memberSupplier, String content) {

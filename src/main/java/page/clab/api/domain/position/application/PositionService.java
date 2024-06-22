@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.position.dao.PositionRepository;
 import page.clab.api.domain.position.domain.Position;
@@ -22,13 +22,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PositionService {
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final PositionRepository positionRepository;
 
     @Transactional
     public Long createPosition(PositionRequestDto requestDto) {
-        Member member = memberService.getMemberByIdOrThrow(requestDto.getMemberId());
+        Member member = memberLookupService.getMemberByIdOrThrow(requestDto.getMemberId());
         return positionRepository.findByMemberAndYearAndPositionType(member, requestDto.getYear(), requestDto.getPositionType())
                 .map(Position::getId)
                 .orElseGet(() -> {
@@ -45,7 +45,7 @@ public class PositionService {
 
     @Transactional(readOnly = true)
     public PositionMyResponseDto getMyPositionsByYear(String year) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         List<Position> positions = getPositionsByMemberAndYear(currentMember, year);
         if (positions.isEmpty()) {
             throw new NotFoundException("해당 멤버의 " + year + "년도 직책이 존재하지 않습니다.");

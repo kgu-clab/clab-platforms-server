@@ -13,7 +13,7 @@ import page.clab.api.domain.login.domain.AccountLockInfo;
 import page.clab.api.domain.login.dto.response.AccountLockInfoResponseDto;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.slack.application.SlackService;
@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 @Slf4j
 public class AccountLockInfoService {
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final SlackService slackService;
 
@@ -42,7 +42,7 @@ public class AccountLockInfoService {
 
     @Transactional
     public Long banMemberById(HttpServletRequest request, String memberId) {
-        Member member = memberService.getMemberById(memberId);
+        Member member = memberLookupService.getMemberById(memberId);
         AccountLockInfo accountLockInfo = ensureAccountLockInfo(member);
         accountLockInfo.banPermanently();
         redisTokenService.deleteRedisTokenByMemberId(memberId);
@@ -52,7 +52,7 @@ public class AccountLockInfoService {
 
     @Transactional
     public Long unbanMemberById(HttpServletRequest request, String memberId) {
-        Member member = memberService.getMemberById(memberId);
+        Member member = memberLookupService.getMemberById(memberId);
         AccountLockInfo accountLockInfo = ensureAccountLockInfo(member);
         accountLockInfo.unban();
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_UNBANNED, "ID: " + member.getId() + ", Name: " + member.getName());
@@ -76,7 +76,7 @@ public class AccountLockInfoService {
 
     @Transactional
     public void handleLoginFailure(HttpServletRequest request, String memberId) throws MemberLockedException, LoginFaliedException {
-        Member member = memberService.getMemberById(memberId);
+        Member member = memberLookupService.getMemberById(memberId);
         AccountLockInfo accountLockInfo = ensureAccountLockInfoForMemberId(memberId);
         validateAccountLockStatus(accountLockInfo);
         accountLockInfo.incrementLoginFailCount();
@@ -99,7 +99,10 @@ public class AccountLockInfoService {
     }
 
     private AccountLockInfo ensureAccountLockInfoForMemberId(String memberId) throws LoginFaliedException {
-        Member member = memberService.getMemberByIdOrThrowLoginFailed(memberId);
+        Member member = memberLookupService.getMemberById(memberId);
+        if (member == null) {
+            throw new LoginFaliedException();
+        }
         return ensureAccountLockInfo(member);
     }
 

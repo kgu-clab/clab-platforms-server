@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
@@ -28,7 +28,7 @@ import java.util.UUID;
 @Slf4j
 public class EmailService {
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final SpringTemplateEngine springTemplateEngine;
 
@@ -46,7 +46,7 @@ public class EmailService {
 
         emailDto.getTo().parallelStream().forEach(address -> {
             try {
-                Member recipient = memberService.getMemberByEmail(address);
+                Member recipient = memberLookupService.getMemberByEmail(address);
                 String emailContent = generateEmailContent(emailDto, recipient.getName());
                 emailAsyncService.sendEmailAsync(address, emailDto.getSubject(), emailContent, convertedFiles, emailDto.getEmailTemplateType());
                 successfulAddresses.add(address);
@@ -61,7 +61,7 @@ public class EmailService {
         List<File> convertedFiles = multipartFiles != null && !multipartFiles.isEmpty() ?
                 convertMultipartFiles(multipartFiles) : null;
 
-        List<MemberResponseDto> memberList = memberService.getMembers();
+        List<MemberResponseDto> memberList = memberLookupService.getMembers();
 
         List<String> successfulEmails = Collections.synchronizedList(new ArrayList<>());
 

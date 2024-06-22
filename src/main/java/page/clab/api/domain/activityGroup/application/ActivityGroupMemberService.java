@@ -31,7 +31,7 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyRespons
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.activityGroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -44,7 +44,7 @@ import java.util.List;
 @Slf4j
 public class ActivityGroupMemberService {
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final NotificationService notificationService;
 
@@ -69,7 +69,7 @@ public class ActivityGroupMemberService {
     @Transactional(readOnly = true)
     public Object getActivityGroup(Long activityGroupId) {
         ActivityGroupDetails details = activityGroupDetailsRepository.fetchActivityGroupDetails(activityGroupId);
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
 
         boolean isOwner = details.getGroupMembers().stream()
                 .anyMatch(groupMember -> groupMember.isOwnerAndLeader(currentMember));
@@ -85,7 +85,7 @@ public class ActivityGroupMemberService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupResponseDto> getMyActivityGroups(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         List<GroupMember> groupMembers = getGroupMemberByMember(currentMember);
 
         List<ActivityGroupResponseDto> activityGroups = groupMembers.stream()
@@ -134,7 +134,7 @@ public class ActivityGroupMemberService {
 
     @Transactional
     public Long applyActivityGroup(Long activityGroupId, ApplyFormRequestDto formRequestDto) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroup.validateForApplication();
         if (isGroupMember(activityGroup, currentMember)) {

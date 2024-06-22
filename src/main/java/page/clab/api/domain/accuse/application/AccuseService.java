@@ -23,7 +23,7 @@ import page.clab.api.domain.board.application.BoardService;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.application.CommentService;
 import page.clab.api.domain.comment.domain.Comment;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.review.application.ReviewService;
@@ -39,7 +39,7 @@ import java.util.List;
 @Slf4j
 public class AccuseService {
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final BoardService boardService;
 
@@ -59,7 +59,7 @@ public class AccuseService {
     public Long createAccuse(AccuseRequestDto requestDto) {
         TargetType type = requestDto.getTargetType();
         Long targetId = requestDto.getTargetId();
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
 
         validateAccuseRequest(type, targetId, currentMember);
 
@@ -84,7 +84,7 @@ public class AccuseService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<AccuseMyResponseDto> getMyAccuses(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Accuse> accuses = accuseRepository.findByMember(currentMember, pageable);
         return new PagedResponseDto<>(accuses.map(AccuseMyResponseDto::toDto));
     }

@@ -20,7 +20,7 @@ import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
@@ -43,7 +43,7 @@ public class LoginService {
 
     private final AccountLockInfoService accountLockInfoService;
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final LoginAttemptLogService loginAttemptLogService;
 
@@ -57,7 +57,7 @@ public class LoginService {
     public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFaliedException, MemberLockedException {
         authenticateAndCheckStatus(request, requestDto);
         logLoginAttempt(request, requestDto.getId(), true);
-        Member loginMember = memberService.getMemberByIdOrThrow(requestDto.getId());
+        Member loginMember = memberLookupService.getMemberByIdOrThrow(requestDto.getId());
         loginMember.updateLastLoginTime();
         return generateLoginResult(loginMember);
     }
@@ -65,7 +65,7 @@ public class LoginService {
     @Transactional
     public LoginResult authenticator(HttpServletRequest request, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
         String memberId = twoFactorAuthenticationRequestDto.getMemberId();
-        Member loginMember = memberService.getMemberById(memberId);
+        Member loginMember = memberLookupService.getMemberById(memberId);
         String totp = twoFactorAuthenticationRequestDto.getTotp();
 
         accountLockInfoService.handleAccountLockInfo(memberId);
@@ -82,7 +82,7 @@ public class LoginService {
     }
 
     public String revoke(String memberId) {
-        Member member = memberService.getMemberById(memberId);
+        Member member = memberLookupService.getMemberById(memberId);
         redisTokenService.deleteRedisTokenByMemberId(memberId);
         return member.getId();
     }
@@ -165,7 +165,7 @@ public class LoginService {
 
     private void validateMemberExistence(Authentication authentication) {
         String id = authentication.getName();
-        Member member = memberService.getMemberById(id);
+        Member member = memberLookupService.getMemberById(id);
         if (member == null) {
             throw new TokenForgeryException("존재하지 않는 회원에 대한 토큰입니다.");
         }

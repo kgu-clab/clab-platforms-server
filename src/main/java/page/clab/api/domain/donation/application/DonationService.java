@@ -10,7 +10,7 @@ import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.dto.request.DonationRequestDto;
 import page.clab.api.domain.donation.dto.request.DonationUpdateRequestDto;
 import page.clab.api.domain.donation.dto.response.DonationResponseDto;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
@@ -23,7 +23,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class DonationService {
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final ValidationService validationService;
 
@@ -31,7 +31,7 @@ public class DonationService {
 
     @Transactional
     public Long createDonation(DonationRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Donation donation = DonationRequestDto.toEntity(requestDto, currentMember);
         validationService.checkValid(donation);
         return donationRepository.save(donation).getId();
@@ -45,7 +45,7 @@ public class DonationService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<DonationResponseDto> getMyDonations(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Donation> donations = getDonationsByDonor(currentMember, pageable);
         return new PagedResponseDto<>(donations.map(DonationResponseDto::toDto));
     }
@@ -58,7 +58,7 @@ public class DonationService {
 
     @Transactional
     public Long updateDonation(Long donationId, DonationUpdateRequestDto donationUpdateRequestDto) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Donation donation = getDonationByIdOrThrow(donationId);
         validateDonationUpdatePermission(currentMember);
         donation.update(donationUpdateRequestDto);
@@ -67,7 +67,7 @@ public class DonationService {
     }
 
     public Long deleteDonation(Long donationId) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Donation donation = getDonationByIdOrThrow(donationId);
         validateDonationUpdatePermission(currentMember);
         donationRepository.delete(donation);

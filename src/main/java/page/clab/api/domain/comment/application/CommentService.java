@@ -1,6 +1,5 @@
 package page.clab.api.domain.comment.application;
 
-import java.util.Comparator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
@@ -19,7 +18,7 @@ import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
 import page.clab.api.domain.comment.dto.response.CommentResponseDto;
 import page.clab.api.domain.comment.dto.response.DeletedCommentResponseDto;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -27,6 +26,7 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.validation.ValidationService;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,7 +38,7 @@ public class CommentService {
 
     private final BoardService boardService;
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final NotificationService notificationService;
 
@@ -57,7 +57,7 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<CommentResponseDto> getAllComments(Long boardId, Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Comment> comments = getCommentByBoardIdAndParentIsNull(boardId, pageable);
         comments.forEach(comment -> {
             Hibernate.initialize(comment.getChildren());
@@ -69,7 +69,7 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<CommentMyResponseDto> getMyComments(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Comment> comments = getCommentByWriter(currentMember, pageable);
         List<CommentMyResponseDto> dtos = comments
                 .map(comment -> toCommentMyResponseDto(comment, currentMember))
@@ -81,14 +81,14 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<DeletedCommentResponseDto> getDeletedComments(Long boardId, Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Comment> comments = commentRepository.findAllByIsDeletedTrueAndBoardId(boardId, pageable);
         return new PagedResponseDto<>(comments.map(comment -> DeletedCommentResponseDto.toDto(comment, currentMember.getId())));
     }
 
     @Transactional
     public Long updateComment(Long commentId, CommentUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
         comment.validateAccessPermission(currentMember);
         comment.update(requestDto);
@@ -98,7 +98,7 @@ public class CommentService {
     }
 
     public Long deleteComment(Long commentId) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
         comment.validateAccessPermission(currentMember);
         comment.updateIsDeleted();
@@ -108,7 +108,7 @@ public class CommentService {
 
     @Transactional
     public Long toggleLikeStatus(Long commentId) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Comment comment = getCommentByIdOrThrow(commentId);
         Optional<CommentLike> commentLikeOpt = commentLikeRepository.findByCommentIdAndMemberId(comment.getId(), currentMember.getId());
         if (commentLikeOpt.isPresent()) {
@@ -136,7 +136,7 @@ public class CommentService {
     }
 
     private Comment createAndStoreComment(Long parentId, Long boardId, CommentRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Board board = boardService.getBoardByIdOrThrow(boardId);
         Comment parent = findParentComment(parentId);
         Comment comment = CommentRequestDto.toEntity(requestDto, board, currentMember, parent);

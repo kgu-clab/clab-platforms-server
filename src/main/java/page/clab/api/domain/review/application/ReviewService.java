@@ -11,7 +11,7 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.review.dao.ReviewRepository;
@@ -30,7 +30,7 @@ import page.clab.api.global.validation.ValidationService;
 @Slf4j
 public class ReviewService {
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final ActivityGroupMemberService activityGroupMemberService;
 
@@ -42,7 +42,7 @@ public class ReviewService {
 
     @Transactional
     public Long createReview(ReviewRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(requestDto.getActivityGroupId());
         validateReviewCreationPermission(activityGroup, currentMember);
         Review review = ReviewRequestDto.toEntity(requestDto, currentMember, activityGroup);
@@ -53,28 +53,28 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ReviewResponseDto> getReviewsByConditions(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Review> reviews = reviewRepository.findByConditions(memberId, memberName, activityId, isPublic, pageable);
         return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ReviewResponseDto> getMyReviews(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Review> reviews = getReviewByMember(currentMember, pageable);
         return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ReviewResponseDto> getDeletedReviews(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Review> reviews = reviewRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));
     }
 
     @Transactional
     public Long updateReview(Long reviewId, ReviewUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Review review = getReviewByIdOrThrow(reviewId);
         review.validateAccessPermission(currentMember);
         review.update(requestDto);
@@ -83,7 +83,7 @@ public class ReviewService {
     }
 
     public Long deleteReview(Long reviewId) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Review review = getReviewByIdOrThrow(reviewId);
         review.validateAccessPermission(currentMember);
         reviewRepository.delete(review);

@@ -11,7 +11,7 @@ import page.clab.api.domain.blog.dto.request.BlogRequestDto;
 import page.clab.api.domain.blog.dto.request.BlogUpdateRequestDto;
 import page.clab.api.domain.blog.dto.response.BlogDetailsResponseDto;
 import page.clab.api.domain.blog.dto.response.BlogResponseDto;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
@@ -22,7 +22,7 @@ import page.clab.api.global.validation.ValidationService;
 @RequiredArgsConstructor
 public class BlogService {
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final ValidationService validationService;
 
@@ -30,7 +30,7 @@ public class BlogService {
 
     @Transactional
     public Long createBlog(BlogRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Blog blog = BlogRequestDto.toEntity(requestDto, currentMember);
         validationService.checkValid(blog);
         return blogRepository.save(blog).getId();
@@ -44,7 +44,7 @@ public class BlogService {
 
     @Transactional(readOnly = true)
     public BlogDetailsResponseDto getBlogDetails(Long blogId) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
         boolean isOwner = blog.isOwner(currentMember);
         return BlogDetailsResponseDto.toDto(blog, isOwner);
@@ -52,7 +52,7 @@ public class BlogService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BlogDetailsResponseDto> getDeletedBlogs(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Blog> blogs = blogRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(blogs
                 .map(blog -> BlogDetailsResponseDto.toDto(blog, blog.isOwner(currentMember))));
@@ -60,7 +60,7 @@ public class BlogService {
 
     @Transactional
     public Long updateBlog(Long blogId, BlogUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
         blog.validateAccessPermission(currentMember);
         blog.update(requestDto);
@@ -69,7 +69,7 @@ public class BlogService {
     }
 
     public Long deleteBlog(Long blogId) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
         blog.validateAccessPermission(currentMember);
         blogRepository.delete(blog);

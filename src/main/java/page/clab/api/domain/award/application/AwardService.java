@@ -10,7 +10,7 @@ import page.clab.api.domain.award.domain.Award;
 import page.clab.api.domain.award.dto.request.AwardRequestDto;
 import page.clab.api.domain.award.dto.request.AwardUpdateRequestDto;
 import page.clab.api.domain.award.dto.response.AwardResponseDto;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
@@ -21,7 +21,7 @@ import page.clab.api.global.validation.ValidationService;
 @RequiredArgsConstructor
 public class AwardService {
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final ValidationService validationService;
 
@@ -29,7 +29,7 @@ public class AwardService {
 
     @Transactional
     public Long createAward(AwardRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Award award = AwardRequestDto.toEntity(requestDto, currentMember);
         validationService.checkValid(award);
         return awardRepository.save(award).getId();
@@ -43,14 +43,14 @@ public class AwardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<AwardResponseDto> getMyAwards(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Award> awards = getAwardByMember(pageable, currentMember);
         return new PagedResponseDto<>(awards.map(AwardResponseDto::toDto));
     }
 
     @Transactional
     public Long updateAward(Long awardId, AwardUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
         award.validateAccessPermission(currentMember);
         award.update(requestDto);
@@ -59,7 +59,7 @@ public class AwardService {
     }
 
     public Long deleteAward(Long awardId) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
         award.validateAccessPermission(currentMember);
         awardRepository.delete(award);

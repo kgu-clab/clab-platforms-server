@@ -16,7 +16,7 @@ import page.clab.api.domain.book.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.domain.book.exception.BookAlreadyAppliedForLoanException;
 import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -30,7 +30,7 @@ public class BookLoanRecordService {
 
     private final BookService bookService;
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final NotificationService notificationService;
 
@@ -43,7 +43,7 @@ public class BookLoanRecordService {
     @Transactional
     public Long requestBookLoan(BookLoanRecordRequestDto requestDto) throws CustomOptimisticLockingFailureException {
         try {
-            Member borrower = memberService.getCurrentMember();
+            Member borrower = memberLookupService.getCurrentMember();
             borrower.checkLoanSuspension();
 
             validateBorrowLimit(borrower);
@@ -63,7 +63,7 @@ public class BookLoanRecordService {
 
     @Transactional
     public Long returnBook(BookLoanRecordRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
         book.returnBook(currentMember);
         bookRepository.save(book);
@@ -78,7 +78,7 @@ public class BookLoanRecordService {
 
     @Transactional
     public Long extendBookLoan(BookLoanRecordRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
 
         book.validateCurrentBorrower(currentMember);
@@ -93,7 +93,7 @@ public class BookLoanRecordService {
 
     @Transactional
     public Long approveBookLoan(Long bookLoanRecordId) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         BookLoanRecord bookLoanRecord = getBookLoanRecordByIdOrThrow(bookLoanRecordId);
         Book book = bookService.getBookByIdOrThrow(bookLoanRecord.getBook().getId());
 

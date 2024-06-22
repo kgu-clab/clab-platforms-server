@@ -9,7 +9,7 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.sharedAccount.dao.SharedAccountUsageRepository;
 import page.clab.api.domain.sharedAccount.domain.SharedAccount;
@@ -33,7 +33,7 @@ public class SharedAccountUsageService {
 
     private final SharedAccountService sharedAccountService;
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final SharedAccountUsageRepository sharedAccountUsageRepository;
 
@@ -130,7 +130,7 @@ public class SharedAccountUsageService {
         LocalDateTime startTime = sharedAccountUsageRequestDto.getStartTime() != null ? sharedAccountUsageRequestDto.getStartTime() : currentTime;
         LocalDateTime endTime = sharedAccountUsageRequestDto.getEndTime();
 
-        String memberId = memberService.getCurrentMember().getId();
+        String memberId = memberLookupService.getCurrentMember().getId();
         SharedAccountUsage sharedAccountUsage = SharedAccountUsage.create(sharedAccount, memberId, startTime, endTime);
 
         sharedAccountUsage.validateUsageTimes(currentTime);
@@ -166,7 +166,7 @@ public class SharedAccountUsageService {
     }
 
     private void updateUsageStatus(SharedAccountUsage sharedAccountUsage, SharedAccountUsageStatus status) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         sharedAccountUsage.updateStatus(status, currentMember);
         sharedAccountUsageRepository.save(sharedAccountUsage);
         sharedAccountUsage.getSharedAccount().updateIsInUse(false);
