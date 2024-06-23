@@ -3,12 +3,11 @@ package page.clab.api.domain.member.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.member.application.MemberService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
@@ -26,15 +24,15 @@ import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
 import page.clab.api.domain.member.dto.response.MemberBirthdayResponseDto;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
-import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.verification.dto.request.VerificationRequestDto;
 import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.PermissionDeniedException;
-
-import java.util.List;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -144,6 +142,16 @@ public class MemberController {
             @Valid @RequestBody VerificationRequestDto requestDto
     ) {
         String id = memberService.verifyResetMemberPassword(requestDto);
+        return ApiResponse.success(id);
+    }
+
+    @Operation(summary = "[S] 멤버 정보 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Secured({"ROLE_SUPER"})
+    @DeleteMapping("/{memberId}")
+    public ApiResponse<String> deleteMember(
+            @PathVariable(name = "memberId") String memberId
+    ) {
+        String id = memberService.deleteMember(memberId);
         return ApiResponse.success(id);
     }
 

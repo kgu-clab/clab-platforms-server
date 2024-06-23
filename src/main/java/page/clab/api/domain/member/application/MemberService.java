@@ -2,6 +2,7 @@ package page.clab.api.domain.member.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +19,8 @@ import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
 import page.clab.api.domain.member.dto.response.MemberBirthdayResponseDto;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
+import page.clab.api.domain.member.event.MemberDeletedEvent;
+import page.clab.api.domain.member.event.MemberUpdatedEvent;
 import page.clab.api.domain.member.exception.DuplicateMemberContactException;
 import page.clab.api.domain.member.exception.DuplicateMemberEmailException;
 import page.clab.api.domain.member.exception.DuplicateMemberIdException;
@@ -62,6 +65,8 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     private final FileService fileService;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public String createMember(MemberRequestDto requestDto) {
@@ -113,7 +118,9 @@ public class MemberService {
         member.validateAccessPermission(currentMember);
         updateMember(requestDto, member);
         validationService.checkValid(member);
-        return memberRepository.save(member).getId();
+        memberRepository.save(member);
+        eventPublisher.publishEvent(new MemberUpdatedEvent(this, member.getId()));
+        return member.getId();
     }
 
     @Transactional
@@ -130,6 +137,13 @@ public class MemberService {
         Member member = memberLookupService.getMemberByIdOrThrow(requestDto.getMemberId());
         Verification verification = verificationService.validateVerificationCode(requestDto, member);
         updateMemberPasswordWithVerificationCode(verification.getVerificationCode(), member);
+        return member.getId();
+    }
+
+    public String deleteMember(String memberId) {
+        Member member = memberLookupService.getMemberByIdOrThrow(memberId);
+        memberRepository.delete(member);
+        eventPublisher.publishEvent(new MemberDeletedEvent(this, member.getId()));
         return member.getId();
     }
 
