@@ -21,6 +21,8 @@ public interface AccuseRepository extends JpaRepository<Accuse, Long> {
 
     Page<Accuse> findByMemberId(String memberId, Pageable pageable);
 
+    List<Accuse> findByMemberId(String memberId);
+
     List<Accuse> findByTarget(AccuseTarget target);
 
 }
