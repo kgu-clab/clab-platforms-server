@@ -3,6 +3,7 @@ package page.clab.api.domain.accuse.application;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.accuse.dao.AccuseRepository;
 import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.member.event.MemberEventProcessor;
@@ -24,9 +25,11 @@ public class AccuseEventProcessor implements MemberEventProcessor {
     }
 
     @Override
+    @Transactional
     public void processMemberDeleted(String memberId) {
         List<Accuse> accuses = accuseRepository.findByMemberId(memberId);
-        accuseRepository.deleteAll(accuses);
+        accuses.forEach(Accuse::delete);
+        accuseRepository.saveAll(accuses);
     }
 
     @Override

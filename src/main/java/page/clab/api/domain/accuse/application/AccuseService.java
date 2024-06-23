@@ -33,6 +33,7 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.validation.ValidationService;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -135,7 +136,7 @@ public class AccuseService {
     }
 
     private Accuse findOrCreateAccuse(AccuseRequestDto requestDto, String memberId, AccuseTarget target) {
-        return accuseRepository.findByMemberIdAndTarget(memberId, target)
+        return accuseRepository.findByMemberIdAndTarget(memberId, target.getTargetType(), target.getTargetReferenceId())
                 .map(existingAccuse -> {
                     existingAccuse.updateReason(requestDto.getReason());
                     return existingAccuse;
@@ -150,18 +151,22 @@ public class AccuseService {
     private List<AccuseResponseDto> convertTargetsToResponseDtos(Page<AccuseTarget> accuseTargets) {
         return accuseTargets.stream()
                 .map(accuseTarget -> {
-                    List<Accuse> accuses = accuseRepository.findByTargetOrderByCreatedAtDesc(accuseTarget);
+                    List<Accuse> accuses = accuseRepository.findByTargetOrderByCreatedAtDesc(accuseTarget.getTargetType(), accuseTarget.getTargetReferenceId());
+                    if (accuses.isEmpty()) {
+                        return null;
+                    }
                     List<AccuseMemberInfo> members = accuses.stream()
                             .map(accuse -> memberLookupService.getMemberById(accuse.getMemberId()))
                             .map(AccuseMemberInfo::create)
                             .toList();
                     return AccuseResponseDto.toDto(accuses.getFirst(), members);
                 })
+                .filter(Objects::nonNull)
                 .toList();
     }
 
     private void sendStatusUpdateNotifications(AccuseStatus status, AccuseTarget target) {
-        List<Member> members = accuseRepository.findByTarget(target).stream()
+        List<Member> members = accuseRepository.findByTarget(target.getTargetType(), target.getTargetReferenceId()).stream()
                 .map(accuse -> memberLookupService.getMemberById(accuse.getMemberId()))
                 .toList();
         notificationService.sendNotificationToMembers(members, "신고 상태가 " + status.getDescription() + "(으)로 변경되었습니다.");
