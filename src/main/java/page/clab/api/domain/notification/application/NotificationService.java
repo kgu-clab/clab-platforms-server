@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    private MemberLookupService memberLookupService;
+    private final MemberLookupService memberLookupService;
 
     private final ValidationService validationService;
 
