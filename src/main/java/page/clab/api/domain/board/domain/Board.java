@@ -109,6 +109,10 @@ public class Board extends BaseEntity {
         return this.member.isSameMember(member);
     }
 
+    public boolean isOwner(String memberId) {
+        return this.member.isSameMember(memberId);
+    }
+
     public void validateAccessPermission(Member member) throws PermissionDeniedException {
         if (!isOwner(member) && !member.isAdminRole()) {
             throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");

@@ -2,10 +2,9 @@ package page.clab.api.domain.accuse.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import page.clab.api.domain.accuse.domain.Accuse;
+import page.clab.api.domain.member.domain.Member;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Builder
@@ -17,17 +16,11 @@ public class AccuseMemberInfo {
 
     private LocalDateTime createdAt;
 
-    public static List<AccuseMemberInfo> create(List<Accuse> accuses) {
-        return accuses.stream()
-                .map(AccuseMemberInfo::create)
-                .toList();
-    }
-
-    public static AccuseMemberInfo create(Accuse accuse) {
+    public static AccuseMemberInfo create(Member member) {
         return AccuseMemberInfo.builder()
-                .memberId(accuse.getMember().getId())
-                .name(accuse.getMember().getName())
-                .createdAt(accuse.getCreatedAt())
+                .memberId(member.getId())
+                .name(member.getName())
+                .createdAt(member.getCreatedAt())
                 .build();
     }
 

@@ -47,6 +47,11 @@ public class MemberLookupServiceImpl implements MemberLookupService {
     }
 
     @Override
+    public String getCurrentMemberId() {
+        return AuthUtil.getAuthenticationInfoMemberId();
+    }
+
+    @Override
     public List<MemberResponseDto> getMembers() {
         List<Member> members = memberRepository.findAll();
         return members.stream()

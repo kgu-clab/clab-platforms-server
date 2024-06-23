@@ -60,14 +60,15 @@ public class AccuseService {
         TargetType type = requestDto.getTargetType();
         Long targetId = requestDto.getTargetId();
         Member currentMember = memberLookupService.getCurrentMember();
+        String memberId = currentMember.getId();
 
-        validateAccuseRequest(type, targetId, currentMember);
+        validateAccuseRequest(type, targetId, memberId);
 
         AccuseTarget target = getOrCreateAccuseTarget(requestDto, type, targetId);
         validationService.checkValid(target);
         accuseTargetRepository.save(target);
 
-        Accuse accuse = findOrCreateAccuse(requestDto, currentMember, target);
+        Accuse accuse = findOrCreateAccuse(requestDto, memberId, target);
         validationService.checkValid(accuse);
 
         notificationService.sendNotificationToMember(currentMember, "신고하신 내용이 접수되었습니다.");
@@ -84,8 +85,8 @@ public class AccuseService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<AccuseMyResponseDto> getMyAccuses(Pageable pageable) {
-        Member currentMember = memberLookupService.getCurrentMember();
-        Page<Accuse> accuses = accuseRepository.findByMember(currentMember, pageable);
+        String currentMemberId = memberLookupService.getCurrentMemberId();
+        Page<Accuse> accuses = accuseRepository.findByMemberId(currentMemberId, pageable);
         return new PagedResponseDto<>(accuses.map(AccuseMyResponseDto::toDto));
     }
 
@@ -103,23 +104,23 @@ public class AccuseService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 신고 대상입니다."));
     }
 
-    private void validateAccuseRequest(TargetType type, Long targetId, Member currentMember) {
+    private void validateAccuseRequest(TargetType type, Long targetId, String currentMemberId) {
         switch (type) {
             case BOARD:
                 Board board = boardService.getBoardByIdOrThrow(targetId);
-                if (board.isOwner(currentMember)) {
+                if (board.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 게시글은 신고할 수 없습니다.");
                 }
                 break;
             case COMMENT:
                 Comment comment = commentService.getCommentByIdOrThrow(targetId);
-                if (comment.isOwner(currentMember)) {
+                if (comment.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 댓글은 신고할 수 없습니다.");
                 }
                 break;
             case REVIEW:
                 Review review = reviewService.getReviewByIdOrThrow(targetId);
-                if (review.isOwner(currentMember)) {
+                if (review.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 리뷰는 신고할 수 없습니다.");
                 }
                 break;
@@ -133,15 +134,15 @@ public class AccuseService {
                 .orElseGet(() -> AccuseRequestDto.toTargetEntity(requestDto));
     }
 
-    private Accuse findOrCreateAccuse(AccuseRequestDto requestDto, Member currentMember, AccuseTarget target) {
-        return accuseRepository.findByMemberAndTarget(currentMember, target)
+    private Accuse findOrCreateAccuse(AccuseRequestDto requestDto, String memberId, AccuseTarget target) {
+        return accuseRepository.findByMemberIdAndTarget(memberId, target)
                 .map(existingAccuse -> {
                     existingAccuse.updateReason(requestDto.getReason());
                     return existingAccuse;
                 })
                 .orElseGet(() -> {
                     target.increaseAccuseCount();
-                    return AccuseRequestDto.toEntity(requestDto, currentMember, target);
+                    return AccuseRequestDto.toEntity(requestDto, memberId, target);
                 });
     }
 
@@ -150,7 +151,10 @@ public class AccuseService {
         return accuseTargets.stream()
                 .map(accuseTarget -> {
                     List<Accuse> accuses = accuseRepository.findByTargetOrderByCreatedAtDesc(accuseTarget);
-                    List<AccuseMemberInfo> members = AccuseMemberInfo.create(accuses);
+                    List<AccuseMemberInfo> members = accuses.stream()
+                            .map(accuse -> memberLookupService.getMemberById(accuse.getMemberId()))
+                            .map(AccuseMemberInfo::create)
+                            .toList();
                     return AccuseResponseDto.toDto(accuses.getFirst(), members);
                 })
                 .toList();
@@ -158,7 +162,7 @@ public class AccuseService {
 
     private void sendStatusUpdateNotifications(AccuseStatus status, AccuseTarget target) {
         List<Member> members = accuseRepository.findByTarget(target).stream()
-                .map(Accuse::getMember)
+                .map(accuse -> memberLookupService.getMemberById(accuse.getMemberId()))
                 .toList();
         notificationService.sendNotificationToMembers(members, "신고 상태가 " + status.getDescription() + "(으)로 변경되었습니다.");
     }

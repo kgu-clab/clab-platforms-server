@@ -17,6 +17,8 @@ public interface MemberLookupService {
 
     Member getCurrentMember();
 
+    String getCurrentMemberId();
+
     List<MemberResponseDto> getMembers();
 
     List<Member> findAllMembers();

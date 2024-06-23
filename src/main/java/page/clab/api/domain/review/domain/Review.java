@@ -64,6 +64,10 @@ public class Review extends BaseEntity {
         return this.member.isSameMember(member);
     }
 
+    public boolean isOwner(String memberId) {
+        return this.member.isSameMember(memberId);
+    }
+
     public void validateAccessPermission(Member member) throws PermissionDeniedException {
         if (!isOwner(member) && !member.isAdminRole()) {
             throw new PermissionDeniedException("해당 후기를 수정/삭제할 권한이 없습니다.");
