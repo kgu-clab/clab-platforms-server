@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.application.domain.ApplicationType;
 import page.clab.api.domain.recruitment.domain.Recruitment;
+import page.clab.api.domain.recruitment.domain.RecruitmentStatus;
 
 import java.time.LocalDateTime;
 
@@ -21,7 +22,7 @@ public class RecruitmentResponseDto {
 
     private String target;
 
-    private String status;
+    private RecruitmentStatus status;
 
     private LocalDateTime updatedAt;
 
