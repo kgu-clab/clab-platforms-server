@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.dao.BoardRepository;
 import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.event.MemberEventProcessor;
 import page.clab.api.domain.member.event.MemberEventProcessorRegistry;
 
@@ -26,14 +27,14 @@ public class BoardEventProcessor implements MemberEventProcessor {
 
     @Override
     @Transactional
-    public void processMemberDeleted(String memberId) {
-        List<Board> boards = boardRepository.findByMemberId(memberId);
+    public void processMemberDeleted(Member member) {
+        List<Board> boards = boardRepository.findByMemberId(member.getId());
         boards.forEach(Board::delete);
         boardRepository.saveAll(boards);
     }
 
     @Override
-    public void processMemberUpdated(String memberId) {
+    public void processMemberUpdated(Member member) {
         // do nothing
     }
 }

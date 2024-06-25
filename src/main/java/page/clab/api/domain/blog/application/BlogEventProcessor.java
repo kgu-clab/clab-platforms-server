@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.blog.dao.BlogRepository;
 import page.clab.api.domain.blog.domain.Blog;
+import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.event.MemberEventProcessor;
 import page.clab.api.domain.member.event.MemberEventProcessorRegistry;
 
@@ -26,14 +27,14 @@ public class BlogEventProcessor implements MemberEventProcessor {
 
     @Override
     @Transactional
-    public void processMemberDeleted(String memberId) {
-        List<Blog> blogs = blogRepository.findByMemberId(memberId);
+    public void processMemberDeleted(Member member) {
+        List<Blog> blogs = blogRepository.findByMemberId(member.getId());
         blogs.forEach(Blog::delete);
         blogRepository.saveAll(blogs);
     }
 
     @Override
-    public void processMemberUpdated(String memberId) {
+    public void processMemberUpdated(Member member) {
         // do nothing
     }
 }

@@ -14,11 +14,11 @@ public class MemberEventDispatcher {
 
     @EventListener
     public void handleMemberDeletedEvent(MemberDeletedEvent event) {
-        processors.forEach(processor -> processor.processMemberDeleted(event.getMemberId()));
+        processors.forEach(processor -> processor.processMemberDeleted(event.getMember()));
     }
 
     @EventListener
     public void handleMemberUpdatedEvent(MemberUpdatedEvent event) {
-        processors.forEach(processor -> processor.processMemberUpdated(event.getMemberId()));
+        processors.forEach(processor -> processor.processMemberUpdated(event.getMember()));
     }
 }
