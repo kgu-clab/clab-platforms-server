@@ -10,10 +10,10 @@ import org.springframework.stereotype.Repository;
 import page.clab.api.domain.award.domain.Award;
 import page.clab.api.domain.award.domain.QAward;
 import page.clab.api.domain.member.domain.QMember;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.time.LocalDate;
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class AwardRepositoryImpl implements AwardRepositoryCustom {
         QMember qMember = QMember.member;
 
         BooleanBuilder builder = new BooleanBuilder();
-        if (memberId != null) builder.and(qAward.member.id.eq(memberId));
+        if (memberId != null) builder.and(qAward.memberId.eq(memberId));
         if (year != null) {
             LocalDate startOfYear = LocalDate.of(year.intValue(), 1, 1);
             LocalDate endOfYear = LocalDate.of(year.intValue(), 12, 31);
@@ -35,7 +35,7 @@ public class AwardRepositoryImpl implements AwardRepositoryCustom {
         }
 
         List<Award> awards = queryFactory.selectFrom(qAward)
-                .leftJoin(qAward.member, qMember)
+                .leftJoin(qMember).on(qAward.memberId.eq(qMember.id))
                 .where(builder)
                 .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qAward))
                 .offset(pageable.getOffset())

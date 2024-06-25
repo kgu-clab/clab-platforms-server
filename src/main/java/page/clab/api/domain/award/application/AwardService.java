@@ -29,8 +29,8 @@ public class AwardService {
 
     @Transactional
     public Long createAward(AwardRequestDto requestDto) {
-        Member currentMember = memberLookupService.getCurrentMember();
-        Award award = AwardRequestDto.toEntity(requestDto, currentMember);
+        String currentMemberId = memberLookupService.getCurrentMemberId();
+        Award award = AwardRequestDto.toEntity(requestDto, currentMemberId);
         validationService.checkValid(award);
         return awardRepository.save(award).getId();
     }
@@ -43,8 +43,8 @@ public class AwardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<AwardResponseDto> getMyAwards(Pageable pageable) {
-        Member currentMember = memberLookupService.getCurrentMember();
-        Page<Award> awards = getAwardByMember(pageable, currentMember);
+        String currentMemberId = memberLookupService.getCurrentMemberId();
+        Page<Award> awards = getAwardByMemberId(pageable, currentMemberId);
         return new PagedResponseDto<>(awards.map(AwardResponseDto::toDto));
     }
 
@@ -77,8 +77,8 @@ public class AwardService {
                 .orElseThrow(() -> new NotFoundException("해당 수상 이력이 존재하지 않습니다."));
     }
 
-    private Page<Award> getAwardByMember(Pageable pageable, Member member) {
-        return awardRepository.findAllByMember(member, pageable);
+    private Page<Award> getAwardByMemberId(Pageable pageable, String memberId) {
+        return awardRepository.findByMemberId(memberId, pageable);
     }
 
 }
