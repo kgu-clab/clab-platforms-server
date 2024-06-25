@@ -3,6 +3,7 @@ package page.clab.api.domain.member.application;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 
 import java.util.List;
 
@@ -31,5 +32,7 @@ public interface MemberLookupService {
     MemberBasicInfoDto getMemberBasicInfoById(String memberId);
 
     MemberBasicInfoDto getCurrentMemberBasicInfo();
+
+    MemberDetailedInfoDto getCurrentMemberDetailedInfo();
 
 }

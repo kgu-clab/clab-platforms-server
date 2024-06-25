@@ -6,6 +6,7 @@ import page.clab.api.domain.member.dao.MemberRepository;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -93,6 +94,14 @@ public class MemberLookupServiceImpl implements MemberLookupService {
         String currentMemberId = getCurrentMemberId();
         return memberRepository.findById(currentMemberId)
                 .map(MemberBasicInfoDto::create)
+                .orElseThrow(() -> new NotFoundException("[Member] id: " + currentMemberId + "에 해당하는 멤버가 존재하지 않습니다."));
+    }
+
+    @Override
+    public MemberDetailedInfoDto getCurrentMemberDetailedInfo() {
+        String currentMemberId = getCurrentMemberId();
+        return memberRepository.findById(currentMemberId)
+                .map(MemberDetailedInfoDto::create)
                 .orElseThrow(() -> new NotFoundException("[Member] id: " + currentMemberId + "에 해당하는 멤버가 존재하지 않습니다."));
     }
 
