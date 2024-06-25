@@ -94,9 +94,9 @@ public class RecruitmentService {
         TransactionStatus transactionStatus = transactionManager.getTransaction(transactionDefinition);
         LocalDateTime now = LocalDateTime.now();
         RecruitmentStatus newStatus = RecruitmentStatus.OPEN;
-        if(now.isBefore(recruitment.getStartDate())){
+        if (now.isBefore(recruitment.getStartDate())) {
             newStatus = RecruitmentStatus.UPCOMING;
-        }else if(now.isAfter(recruitment.getEndDate())){
+        } else if(now.isAfter(recruitment.getEndDate())) {
             newStatus = RecruitmentStatus.CLOSED;
         }
         recruitment.updateStatus(newStatus);
