@@ -20,7 +20,8 @@ import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.board.dto.response.BoardMyResponseDto;
 import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.member.application.MemberLookupService;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.UploadedFileService;
@@ -55,54 +56,54 @@ public class BoardService {
 
     @Transactional
     public String createBoard(BoardRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberLookupService.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
-        Board board = BoardRequestDto.toEntity(requestDto, currentMember.getId(), uploadedFiles);
-        board.validateAccessPermissionForCreation(currentMember);
+        Board board = BoardRequestDto.toEntity(requestDto, currentMemberInfo.getMemberId(), uploadedFiles);
+        board.validateAccessPermissionForCreation(currentMemberInfo);
         validationService.checkValid(board);
-        if (board.shouldNotifyForNewBoard(currentMember)) {
-            notificationService.sendNotificationToMember(currentMember, "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.");
+        if (board.shouldNotifyForNewBoard(currentMemberInfo)) {
+            notificationService.sendNotificationToMember(currentMemberInfo.getMemberId(), "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.");
         }
-        SlackBoardInfo boardInfo = SlackBoardInfo.create(board, currentMember);
+        SlackBoardInfo boardInfo = SlackBoardInfo.create(board, currentMemberInfo);
         slackService.sendNewBoardNotification(boardInfo);
         return boardRepository.save(board).getCategory().getKey();
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardListResponseDto> getBoards(Pageable pageable) {
-        Member currentMember = memberLookupService.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Page<Board> boards = boardRepository.findAll(pageable);
-        return new PagedResponseDto<>(boards.map(board -> mapToBoardListResponseDto(board, currentMember)));
+        return new PagedResponseDto<>(boards.map(board -> mapToBoardListResponseDto(board, currentMemberInfo)));
     }
 
     @Transactional(readOnly = true)
     public BoardDetailsResponseDto getBoardDetails(Long boardId) {
-        Member currentMember = memberLookupService.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Board board = getBoardByIdOrThrow(boardId);
-        boolean hasLikeByMe = checkLikeStatus(board, currentMember);
-        boolean isOwner = board.isOwner(currentMember.getId());
-        return BoardDetailsResponseDto.toDto(board, currentMember, hasLikeByMe, isOwner);
+        boolean hasLikeByMe = checkLikeStatus(board, currentMemberInfo);
+        boolean isOwner = board.isOwner(currentMemberInfo.getMemberId());
+        return BoardDetailsResponseDto.toDto(board, currentMemberInfo, hasLikeByMe, isOwner);
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardMyResponseDto> getMyBoards(Pageable pageable) {
-        Member currentMember = memberLookupService.getCurrentMember();
-        Page<Board> boards = getBoardByMemberId(pageable, currentMember.getId());
-        return new PagedResponseDto<>(boards.map(board -> BoardMyResponseDto.toDto(board, currentMember)));
+        MemberBasicInfoDto currentMemberInfo = memberLookupService.getCurrentMemberBasicInfo();
+        Page<Board> boards = getBoardByMemberId(pageable, currentMemberInfo.getMemberId());
+        return new PagedResponseDto<>(boards.map(board -> BoardMyResponseDto.toDto(board, currentMemberInfo)));
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardCategoryResponseDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
-        Member currentMember = memberLookupService.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Page<Board> boards = getBoardByCategory(category, pageable);
-        return new PagedResponseDto<>(boards.map(board -> mapToBoardCategoryResponseDto(board, currentMember)));
+        return new PagedResponseDto<>(boards.map(board -> mapToBoardCategoryResponseDto(board, currentMemberInfo)));
     }
 
     @Transactional
     public String updateBoard(Long boardId, BoardUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberLookupService.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Board board = getBoardByIdOrThrow(boardId);
-        board.validateAccessPermission(currentMember);
+        board.validateAccessPermission(currentMemberInfo);
         board.update(requestDto);
         validationService.checkValid(board);
         return boardRepository.save(board).getCategory().getKey();
@@ -110,15 +111,15 @@ public class BoardService {
 
     @Transactional
     public Long toggleLikeStatus(Long boardId) {
-        Member currentMember = memberLookupService.getCurrentMember();
+        String currentMemberId = memberLookupService.getCurrentMemberId();
         Board board = getBoardByIdOrThrow(boardId);
-        Optional<BoardLike> boardLikeOpt = boardLikeRepository.findByBoardIdAndMemberId(board.getId(), currentMember.getId());
+        Optional<BoardLike> boardLikeOpt = boardLikeRepository.findByBoardIdAndMemberId(board.getId(), currentMemberId);
         if (boardLikeOpt.isPresent()) {
             board.decrementLikes();
             boardLikeRepository.delete(boardLikeOpt.get());
         } else {
             board.incrementLikes();
-            BoardLike newBoardLike = BoardLike.create(currentMember.getId(), board.getId());
+            BoardLike newBoardLike = BoardLike.create(currentMemberId, board.getId());
             validationService.checkValid(newBoardLike);
             boardLikeRepository.save(newBoardLike);
         }
@@ -127,29 +128,29 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardListResponseDto> getDeletedBoards(Pageable pageable) {
-        Member currentMember = memberLookupService.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Page<Board> boards = boardRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(boards.map(board -> mapToBoardListResponseDto(board, currentMember)));
+        return new PagedResponseDto<>(boards.map(board -> mapToBoardListResponseDto(board, currentMemberInfo)));
     }
 
     public String deleteBoard(Long boardId) throws PermissionDeniedException {
-        Member currentMember = memberLookupService.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Board board = getBoardByIdOrThrow(boardId);
-        board.validateAccessPermission(currentMember);
+        board.validateAccessPermission(currentMemberInfo);
         boardRepository.delete(board);
         return board.getCategory().getKey();
     }
 
     @NotNull
-    private BoardListResponseDto mapToBoardListResponseDto(Board board, Member member) {
+    private BoardListResponseDto mapToBoardListResponseDto(Board board, MemberDetailedInfoDto memberInfo) {
         Long commentCount = commentRepository.countByBoard(board);
-        return BoardListResponseDto.toDto(board, member, commentCount);
+        return BoardListResponseDto.toDto(board, memberInfo, commentCount);
     }
 
     @NotNull
-    private BoardCategoryResponseDto mapToBoardCategoryResponseDto(Board board, Member member) {
+    private BoardCategoryResponseDto mapToBoardCategoryResponseDto(Board board, MemberDetailedInfoDto memberInfo) {
         Long commentCount = commentRepository.countByBoard(board);
-        return BoardCategoryResponseDto.toDto(board, member, commentCount);
+        return BoardCategoryResponseDto.toDto(board, memberInfo, commentCount);
     }
 
     public Board getBoardByIdOrThrow(Long boardId) {
@@ -165,8 +166,8 @@ public class BoardService {
         return boardRepository.findAllByCategory(category, pageable);
     }
 
-    private boolean checkLikeStatus(Board board, Member member) {
-        return boardLikeRepository.existsByBoardIdAndMemberId(board.getId(), member.getId());
+    private boolean checkLikeStatus(Board board, MemberDetailedInfoDto memberInfo) {
+        return boardLikeRepository.existsByBoardIdAndMemberId(board.getId(), memberInfo.getMemberId());
     }
 
 }

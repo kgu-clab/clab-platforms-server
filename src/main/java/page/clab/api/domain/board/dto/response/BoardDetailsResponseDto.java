@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 
 import java.time.LocalDateTime;
@@ -43,8 +43,8 @@ public class BoardDetailsResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static BoardDetailsResponseDto toDto(Board board, Member member, boolean hasLikeByMe, boolean isOwner) {
-        WriterInfo writerInfo = WriterInfo.fromBoardDetails(board, member);
+    public static BoardDetailsResponseDto toDto(Board board, MemberDetailedInfoDto memberInfo, boolean hasLikeByMe, boolean isOwner) {
+        WriterInfo writerInfo = WriterInfo.fromBoardDetails(board, memberInfo);
         return BoardDetailsResponseDto.builder()
                 .id(board.getId())
                 .writerId(writerInfo.getId())

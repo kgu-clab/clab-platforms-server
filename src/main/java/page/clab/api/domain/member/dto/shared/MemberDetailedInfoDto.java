@@ -16,13 +16,20 @@ public class MemberDetailedInfoDto {
 
     private String imageUrl;
 
+    private boolean isGraduated;
+
     public static MemberDetailedInfoDto create(Member member) {
         return MemberDetailedInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())
                 .roleLevel(member.getRole().toRoleLevel())
                 .imageUrl(member.getImageUrl())
+                .isGraduated(member.isGraduated())
                 .build();
+    }
+
+    public boolean isAdminRole() {
+        return roleLevel >= 2;
     }
 
 }
