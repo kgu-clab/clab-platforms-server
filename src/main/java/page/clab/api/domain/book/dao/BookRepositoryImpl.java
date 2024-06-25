@@ -10,9 +10,9 @@ import org.springframework.stereotype.Repository;
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.QBook;
 import page.clab.api.domain.member.domain.QMember;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -33,7 +33,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
         if (borrowerName != null) builder.and(borrower.name.eq(borrowerName));
 
         List<Book> books = queryFactory.selectFrom(book)
-                .leftJoin(book.borrower, borrower)
+                .leftJoin(borrower).on(book.borrowerId.eq(borrower.id))
                 .where(builder)
                 .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, book))
                 .offset(pageable.getOffset())
@@ -41,7 +41,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
                 .fetch();
 
         long count = queryFactory.selectFrom(book)
-                .leftJoin(book.borrower, borrower)
+                .leftJoin(borrower).on(book.borrowerId.eq(borrower.id))
                 .where(builder)
                 .fetchCount();
 

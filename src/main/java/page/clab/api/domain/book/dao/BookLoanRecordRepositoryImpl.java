@@ -12,10 +12,10 @@ import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.domain.book.domain.QBookLoanRecord;
 import page.clab.api.domain.book.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,7 +29,7 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
 
         BooleanBuilder builder = new BooleanBuilder();
         if (bookId != null) builder.and(bookLoanRecord.book.id.eq(bookId));
-        if (borrowerId != null && !borrowerId.trim().isEmpty()) builder.and(bookLoanRecord.borrower.id.eq(borrowerId));
+        if (borrowerId != null && !borrowerId.trim().isEmpty()) builder.and(bookLoanRecord.borrowerId.eq(borrowerId));
         if (status != null) builder.and(bookLoanRecord.status.eq(status));
 
         List<BookLoanRecordResponseDto> results = queryFactory
@@ -39,8 +39,8 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
                         bookLoanRecord.book.id,
                         bookLoanRecord.book.title,
                         bookLoanRecord.book.imageUrl,
-                        bookLoanRecord.borrower.id,
-                        bookLoanRecord.borrower.name,
+                        bookLoanRecord.borrowerId,
+                        bookLoanRecord.borrowerName,
                         bookLoanRecord.borrowedAt,
                         bookLoanRecord.returnedAt,
                         bookLoanRecord.dueDate,
@@ -73,8 +73,8 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
                         BookLoanRecordOverdueResponseDto.class,
                         bookLoanRecord.book.id,
                         bookLoanRecord.book.title,
-                        bookLoanRecord.borrower.id,
-                        bookLoanRecord.borrower.name,
+                        bookLoanRecord.borrowerId,
+                        bookLoanRecord.borrowerName,
                         bookLoanRecord.borrowedAt,
                         bookLoanRecord.dueDate,
                         bookLoanRecord.status

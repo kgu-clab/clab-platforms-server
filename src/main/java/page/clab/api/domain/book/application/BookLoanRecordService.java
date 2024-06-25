@@ -46,10 +46,10 @@ public class BookLoanRecordService {
             Member borrower = memberLookupService.getCurrentMember();
             borrower.checkLoanSuspension();
 
-            validateBorrowLimit(borrower);
+            validateBorrowLimit(borrower.getId());
 
             Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
-            checkIfLoanAlreadyApplied(book, borrower);
+            checkIfLoanAlreadyApplied(book, borrower.getId());
 
             BookLoanRecord bookLoanRecord = BookLoanRecord.create(book, borrower);
             validationService.checkValid(bookLoanRecord);
@@ -64,41 +64,43 @@ public class BookLoanRecordService {
     @Transactional
     public Long returnBook(BookLoanRecordRequestDto requestDto) {
         Member currentMember = memberLookupService.getCurrentMember();
+        String currentMemberId = currentMember.getId();
         Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
-        book.returnBook(currentMember);
+        book.returnBook(currentMemberId);
         bookRepository.save(book);
 
         BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(book);
-        bookLoanRecord.markAsReturned();
+        bookLoanRecord.markAsReturned(currentMember);
         validationService.checkValid(bookLoanRecord);
 
-        notificationService.sendNotificationToMember(currentMember.getId(), "[" + book.getTitle() + "] 도서 반납이 완료되었습니다.");
+        notificationService.sendNotificationToMember(currentMemberId, "[" + book.getTitle() + "] 도서 반납이 완료되었습니다.");
         return bookLoanRecordRepository.save(bookLoanRecord).getId();
     }
 
     @Transactional
     public Long extendBookLoan(BookLoanRecordRequestDto requestDto) {
         Member currentMember = memberLookupService.getCurrentMember();
+        String currentMemberId = currentMember.getId();
         Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
 
-        book.validateCurrentBorrower(currentMember);
+        book.validateCurrentBorrower(currentMemberId);
         BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(book);
-        bookLoanRecord.extendLoan();
+        bookLoanRecord.extendLoan(currentMember);
         validationService.checkValid(bookLoanRecord);
 
-        notificationService.sendNotificationToMember(currentMember.getId(), "[" + book.getTitle() + "] 도서 대출 연장이 완료되었습니다.");
+        notificationService.sendNotificationToMember(currentMemberId, "[" + book.getTitle() + "] 도서 대출 연장이 완료되었습니다.");
 
         return bookLoanRecordRepository.save(bookLoanRecord).getId();
     }
 
     @Transactional
     public Long approveBookLoan(Long bookLoanRecordId) {
-        Member currentMember = memberLookupService.getCurrentMember();
+        String currentMemberId = memberLookupService.getCurrentMemberId();
         BookLoanRecord bookLoanRecord = getBookLoanRecordByIdOrThrow(bookLoanRecordId);
         Book book = bookService.getBookByIdOrThrow(bookLoanRecord.getBook().getId());
 
         book.validateBookIsNotBorrowed();
-        validateBorrowLimit(currentMember);
+        validateBorrowLimit(currentMemberId);
         bookLoanRecord.approve();
 
         validationService.checkValid(bookLoanRecord);
@@ -134,16 +136,16 @@ public class BookLoanRecordService {
                 .orElseThrow(() -> new NotFoundException("해당 도서 대출 기록이 없습니다."));
     }
 
-    private void validateBorrowLimit(Member borrower) {
-        int borrowedBookCount = bookService.getNumberOfBooksBorrowedByMember(borrower);
+    private void validateBorrowLimit(String borrowerId) {
+        int borrowedBookCount = bookService.getNumberOfBooksBorrowedByMember(borrowerId);
         int maxBorrowableBookCount = 3;
         if (borrowedBookCount >= maxBorrowableBookCount) {
             throw new MaxBorrowLimitExceededException("대출 가능한 도서의 수를 초과했습니다.");
         }
     }
 
-    private void checkIfLoanAlreadyApplied(Book book, Member borrower) {
-        bookLoanRecordRepository.findByBookAndBorrowerAndStatus(book, borrower, BookLoanStatus.PENDING)
+    private void checkIfLoanAlreadyApplied(Book book, String borrowerId) {
+        bookLoanRecordRepository.findByBookAndBorrowerIdAndStatus(book, borrowerId, BookLoanStatus.PENDING)
                 .ifPresent(bookLoanRecord -> {
                     throw new BookAlreadyAppliedForLoanException("이미 대출 신청한 도서입니다.");
                 });

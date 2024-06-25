@@ -38,8 +38,8 @@ public class BookDetailsResponseDto {
     public static BookDetailsResponseDto toDto(Book book, LocalDateTime dueDate) {
         return BookDetailsResponseDto.builder()
                 .id(book.getId())
-                .borrowerId(book.getBorrower() == null ? null : book.getBorrower().getId())
-                .borrowerName(book.getBorrower() == null ? null : book.getBorrower().getName())
+                .borrowerId(book.getBorrowerId() == null ? null : book.getBorrowerId())
+                .borrowerName(book.getBorrowerName() == null ? null : book.getBorrowerName())
                 .category(book.getCategory())
                 .title(book.getTitle())
                 .author(book.getAuthor())
