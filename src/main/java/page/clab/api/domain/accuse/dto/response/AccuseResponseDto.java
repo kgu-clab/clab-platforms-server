@@ -5,6 +5,7 @@ import lombok.Getter;
 import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.TargetType;
+import page.clab.api.domain.member.dto.shared.MemberInfoDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 @Builder
 public class AccuseResponseDto {
 
-    private List<AccuseMemberInfo> members;
+    private List<MemberInfoDto> members;
 
     private TargetType targetType;
 
@@ -27,7 +28,7 @@ public class AccuseResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static AccuseResponseDto toDto(Accuse accuse, List<AccuseMemberInfo> members) {
+    public static AccuseResponseDto toDto(Accuse accuse, List<MemberInfoDto> members) {
         return AccuseResponseDto.builder()
                 .members(members)
                 .targetType(accuse.getTarget().getTargetType())
@@ -35,7 +36,7 @@ public class AccuseResponseDto {
                 .reason(accuse.getReason())
                 .accuseStatus(accuse.getTarget().getAccuseStatus())
                 .accuseCount(accuse.getTarget().getAccuseCount())
-                .createdAt(accuse.getTarget().getCreatedAt())
+                .createdAt(accuse.getCreatedAt())
                 .build();
     }
 

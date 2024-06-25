@@ -15,7 +15,7 @@ import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.AccuseTargetId;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
-import page.clab.api.domain.accuse.dto.response.AccuseMemberInfo;
+import page.clab.api.domain.member.dto.shared.MemberInfoDto;
 import page.clab.api.domain.accuse.dto.response.AccuseMyResponseDto;
 import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
 import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
@@ -24,7 +24,6 @@ import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.application.CommentService;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.member.application.MemberLookupService;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.domain.review.application.ReviewService;
 import page.clab.api.domain.review.domain.Review;
@@ -155,9 +154,8 @@ public class AccuseService {
                     if (accuses.isEmpty()) {
                         return null;
                     }
-                    List<AccuseMemberInfo> members = accuses.stream()
-                            .map(accuse -> memberLookupService.getMemberById(accuse.getMemberId()))
-                            .map(AccuseMemberInfo::create)
+                    List<MemberInfoDto> members = accuses.stream()
+                            .map(accuse -> memberLookupService.getMemberInfoById(accuse.getMemberId()))
                             .toList();
                     return AccuseResponseDto.toDto(accuses.getFirst(), members);
                 })

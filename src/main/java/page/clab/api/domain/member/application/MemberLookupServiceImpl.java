@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.dao.MemberRepository;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.dto.shared.MemberInfoDto;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.exception.NotFoundException;
@@ -78,6 +79,13 @@ public class MemberLookupServiceImpl implements MemberLookupService {
                 .stream()
                 .filter(Member::isSuperAdminRole)
                 .toList();
+    }
+
+    @Override
+    public MemberInfoDto getMemberInfoById(String memberId) {
+        return memberRepository.findById(memberId)
+                .map(MemberInfoDto::create)
+                .orElseThrow(() -> new NotFoundException("[Member] id: " + memberId + "에 해당하는 멤버가 존재하지 않습니다."));
     }
 
 }
