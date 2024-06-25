@@ -47,15 +47,14 @@ public class BlogService {
         Member currentMember = memberLookupService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
         boolean isOwner = blog.isOwner(currentMember);
-        return BlogDetailsResponseDto.toDto(blog, currentMember, isOwner);
+        return BlogDetailsResponseDto.toDto(blog, currentMember.getId(), currentMember.getName(), isOwner);
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BlogDetailsResponseDto> getDeletedBlogs(Pageable pageable) {
         Member currentMember = memberLookupService.getCurrentMember();
         Page<Blog> blogs = blogRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(blogs
-                .map(blog -> BlogDetailsResponseDto.toDto(blog, currentMember, blog.isOwner(currentMember))));
+        return new PagedResponseDto<>(blogs.map(blog -> BlogDetailsResponseDto.toDto(blog, currentMember.getId(), currentMember.getName(), blog.isOwner(currentMember))));
     }
 
     @Transactional
@@ -68,6 +67,7 @@ public class BlogService {
         return blogRepository.save(blog).getId();
     }
 
+    @Transactional
     public Long deleteBlog(Long blogId) throws PermissionDeniedException {
         Member currentMember = memberLookupService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
