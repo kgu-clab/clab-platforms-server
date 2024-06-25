@@ -62,7 +62,8 @@ public class AwardService {
         Member currentMember = memberLookupService.getCurrentMember();
         Award award = getAwardByIdOrThrow(awardId);
         award.validateAccessPermission(currentMember);
-        awardRepository.delete(award);
+        award.delete();
+        awardRepository.save(award);
         return award.getId();
     }
 

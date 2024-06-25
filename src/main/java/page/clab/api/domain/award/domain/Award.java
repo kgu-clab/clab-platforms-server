@@ -65,12 +65,12 @@ public class Award extends BaseEntity {
         this.isDeleted = true;
     }
 
-    public boolean isOwner(String memberId) {
-        return this.memberId.equals(memberId);
+    public boolean isOwner(Member member) {
+        return member.isSameMember(memberId);
     }
 
     public void validateAccessPermission(Member member) throws PermissionDeniedException {
-        if (!isOwner(member.getId()) && !member.isAdminRole()) {
+        if (!isOwner(member) && !member.isAdminRole()) {
             throw new PermissionDeniedException("해당 게시글을 수정/삭제할 권한이 없습니다.");
         }
     }
