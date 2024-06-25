@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -37,9 +35,8 @@ public class Blog extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @Column(name = "member_id", nullable = false)
+    private String memberId;
 
     @Column(nullable = false)
     @Size(min = 1, max = 100, message = "{size.blog.title}")
@@ -64,8 +61,12 @@ public class Blog extends BaseEntity {
         Optional.ofNullable(requestDto.getHyperlink()).ifPresent(this::setHyperlink);
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     public boolean isOwner(Member member) {
-        return this.member.isSameMember(member);
+        return this.memberId.equals(member.getId());
     }
 
     public void validateAccessPermission(Member member) throws PermissionDeniedException {

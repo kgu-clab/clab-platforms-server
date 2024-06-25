@@ -10,9 +10,9 @@ import org.springframework.stereotype.Repository;
 import page.clab.api.domain.blog.domain.Blog;
 import page.clab.api.domain.blog.domain.QBlog;
 import page.clab.api.domain.member.domain.QMember;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class BlogRepositoryImpl implements BlogRepositoryCustom {
         if (memberName != null && !memberName.isBlank()) builder.and(qMember.name.eq(memberName));
 
         List<Blog> blogs = queryFactory.selectFrom(qBlog)
-                .leftJoin(qBlog.member, qMember)
+                .leftJoin(qMember).on(qBlog.memberId.eq(qMember.id))
                 .where(builder)
                 .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qBlog))
                 .offset(pageable.getOffset())
@@ -40,7 +40,7 @@ public class BlogRepositoryImpl implements BlogRepositoryCustom {
 
         long count = queryFactory
                 .selectFrom(qBlog)
-                .leftJoin(qBlog.member, qMember)
+                .leftJoin(qMember).on(qBlog.memberId.eq(qMember.id))
                 .where(builder)
                 .fetchCount();
 

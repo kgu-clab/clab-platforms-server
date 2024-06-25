@@ -30,8 +30,8 @@ public class BlogService {
 
     @Transactional
     public Long createBlog(BlogRequestDto requestDto) {
-        Member currentMember = memberLookupService.getCurrentMember();
-        Blog blog = BlogRequestDto.toEntity(requestDto, currentMember);
+        String currentMemberId = memberLookupService.getCurrentMemberId();
+        Blog blog = BlogRequestDto.toEntity(requestDto, currentMemberId);
         validationService.checkValid(blog);
         return blogRepository.save(blog).getId();
     }
@@ -47,7 +47,7 @@ public class BlogService {
         Member currentMember = memberLookupService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
         boolean isOwner = blog.isOwner(currentMember);
-        return BlogDetailsResponseDto.toDto(blog, isOwner);
+        return BlogDetailsResponseDto.toDto(blog, currentMember, isOwner);
     }
 
     @Transactional(readOnly = true)
@@ -55,7 +55,7 @@ public class BlogService {
         Member currentMember = memberLookupService.getCurrentMember();
         Page<Blog> blogs = blogRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(blogs
-                .map(blog -> BlogDetailsResponseDto.toDto(blog, blog.isOwner(currentMember))));
+                .map(blog -> BlogDetailsResponseDto.toDto(blog, currentMember, blog.isOwner(currentMember))));
     }
 
     @Transactional

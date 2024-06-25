@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.blog.domain.Blog;
-import page.clab.api.domain.member.domain.Member;
 
 @Getter
 @Setter
@@ -29,9 +28,9 @@ public class BlogRequestDto {
     @Schema(description = "하이퍼링크", example = "https://www.clab.page")
     private String hyperlink;
 
-    public static Blog toEntity(BlogRequestDto requestDto, Member member) {
+    public static Blog toEntity(BlogRequestDto requestDto, String memberId) {
         return Blog.builder()
-                .member(member)
+                .memberId(memberId)
                 .title(requestDto.getTitle())
                 .subTitle(requestDto.getSubTitle())
                 .content(requestDto.getContent())
