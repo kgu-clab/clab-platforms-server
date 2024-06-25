@@ -57,9 +57,6 @@ public class Book extends BaseEntity {
     @Column(name = "member_id")
     private String borrowerId;
 
-    @Column(name = "member_name")
-    private String borrowerName;
-
     @Version
     private Long version;
 
@@ -72,8 +69,8 @@ public class Book extends BaseEntity {
         Optional.ofNullable(requestDto.getReviewLinks()).ifPresent(this::setReviewLinks);
     }
 
-    public void updateIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted;
+    public void delete() {
+        this.isDeleted = true;
     }
 
     public boolean isBorrower(String borrowerId) {

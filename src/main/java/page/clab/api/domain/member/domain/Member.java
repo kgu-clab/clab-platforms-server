@@ -23,7 +23,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -218,25 +217,12 @@ public class Member extends BaseEntity implements UserDetails {
         lastLoginTime = LocalDateTime.now();
     }
 
+    public void updateLoanSuspensionDate(LocalDateTime loanSuspensionDate) {
+        this.loanSuspensionDate = loanSuspensionDate;
+    }
+
     public void clearImageUrl() {
         this.imageUrl = null;
-    }
-
-    public void checkLoanSuspension() {
-        if (loanSuspensionDate != null && LocalDateTime.now().isBefore(loanSuspensionDate)) {
-            throw new LoanSuspensionException("대출 정지 중입니다. 대출 정지일까지는 책을 대출할 수 없습니다.");
-        }
-    }
-
-    public void handleOverdueAndSuspension(long overdueDays) {
-        if (overdueDays > 0) {
-            LocalDateTime currentDate = LocalDateTime.now();
-            if (loanSuspensionDate == null || loanSuspensionDate.isBefore(currentDate)) {
-                loanSuspensionDate = LocalDateTime.now().plusDays(overdueDays * 7);;
-            } else {
-                loanSuspensionDate = loanSuspensionDate.plusDays(overdueDays * 7);
-            }
-        }
     }
 
 }

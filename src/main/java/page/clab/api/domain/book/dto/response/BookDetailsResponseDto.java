@@ -35,11 +35,11 @@ public class BookDetailsResponseDto {
 
     private LocalDateTime updatedAt;
 
-    public static BookDetailsResponseDto toDto(Book book, LocalDateTime dueDate) {
+    public static BookDetailsResponseDto toDto(Book book, String borrowerName, LocalDateTime dueDate) {
         return BookDetailsResponseDto.builder()
                 .id(book.getId())
                 .borrowerId(book.getBorrowerId() == null ? null : book.getBorrowerId())
-                .borrowerName(book.getBorrowerName() == null ? null : book.getBorrowerName())
+                .borrowerName(book.getBorrowerId() == null ? null : borrowerName)
                 .category(book.getCategory())
                 .title(book.getTitle())
                 .author(book.getAuthor())

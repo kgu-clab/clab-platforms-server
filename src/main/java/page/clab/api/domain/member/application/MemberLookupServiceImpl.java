@@ -5,11 +5,13 @@ import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.dao.MemberRepository;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
+import page.clab.api.domain.member.dto.shared.BookBorrowerInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.exception.NotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,11 +19,6 @@ import java.util.List;
 public class MemberLookupServiceImpl implements MemberLookupService {
 
     private final MemberRepository memberRepository;
-
-    @Override
-    public boolean existsMemberById(String memberId) {
-        return memberRepository.existsById(memberId);
-    }
 
     @Override
     public Member getMemberById(String memberId) {
@@ -103,6 +100,20 @@ public class MemberLookupServiceImpl implements MemberLookupService {
         return memberRepository.findById(currentMemberId)
                 .map(MemberDetailedInfoDto::create)
                 .orElseThrow(() -> new NotFoundException("[Member] id: " + currentMemberId + "에 해당하는 멤버가 존재하지 않습니다."));
+    }
+
+    @Override
+    public BookBorrowerInfoDto getCurrentMemberBorrowerInfo() {
+        String currentMemberId = getCurrentMemberId();
+        return memberRepository.findById(currentMemberId)
+                .map(BookBorrowerInfoDto::create)
+                .orElseThrow(() -> new NotFoundException("[Member] id: " + currentMemberId + "에 해당하는 멤버가 존재하지 않습니다."));
+    }
+
+    public void updateLoanSuspensionDate(String memberId, LocalDateTime loanSuspensionDate) {
+        Member member = getMemberById(memberId);
+        member.updateLoanSuspensionDate(loanSuspensionDate);
+        memberRepository.save(member);
     }
 
 }

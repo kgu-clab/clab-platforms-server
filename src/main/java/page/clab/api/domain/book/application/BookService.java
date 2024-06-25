@@ -15,6 +15,8 @@ import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
 import page.clab.api.domain.book.dto.response.BookDetailsResponseDto;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
+import page.clab.api.domain.member.application.MemberLookupService;
+import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -23,6 +25,8 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class BookService {
+
+    private final MemberLookupService memberLookupService;
 
     private final BookRepository bookRepository;
 
@@ -42,14 +46,16 @@ public class BookService {
 
     @Transactional(readOnly = true)
     public BookDetailsResponseDto getBookDetails(Long bookId) {
+        MemberBasicInfoDto currentMemberInfo = memberLookupService.getCurrentMemberBasicInfo();
         Book book = getBookByIdOrThrow(bookId);
-        return mapToBookDetailsResponseDto(book);
+        return mapToBookDetailsResponseDto(book, currentMemberInfo.getMemberName());
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BookDetailsResponseDto> getDeletedBooks(Pageable pageable) {
+        MemberBasicInfoDto currentMemberInfo = memberLookupService.getCurrentMemberBasicInfo();
         Page<Book> books = bookRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(books.map(this::mapToBookDetailsResponseDto));
+        return new PagedResponseDto<>(books.map((book) -> mapToBookDetailsResponseDto(book, currentMemberInfo.getMemberName())));
     }
 
     @Transactional
@@ -59,9 +65,10 @@ public class BookService {
         return bookRepository.save(book).getId();
     }
 
+    @Transactional
     public Long deleteBook(Long bookId) {
         Book book = getBookByIdOrThrow(bookId);
-        book.updateIsDeleted(true);
+        book.delete();
         bookRepository.save(book);
         return book.getId();
     }
@@ -87,14 +94,15 @@ public class BookService {
 
     @NotNull
     private BookResponseDto mapToBookResponseDto(Book book) {
+        MemberBasicInfoDto currentMemberInfo = memberLookupService.getCurrentMemberBasicInfo();
         LocalDateTime dueDate = getDueDateForBook(book);
-        return BookResponseDto.toDto(book, dueDate);
+        return BookResponseDto.toDto(book, currentMemberInfo.getMemberName(), dueDate);
     }
 
     @NotNull
-    private BookDetailsResponseDto mapToBookDetailsResponseDto(Book book) {
+    private BookDetailsResponseDto mapToBookDetailsResponseDto(Book book, String borrowerName) {
         LocalDateTime dueDate = getDueDateForBook(book);
-        return BookDetailsResponseDto.toDto(book, dueDate);
+        return BookDetailsResponseDto.toDto(book, borrowerName, dueDate);
     }
 
 }

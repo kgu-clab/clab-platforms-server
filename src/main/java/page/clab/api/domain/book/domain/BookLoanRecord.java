@@ -19,7 +19,7 @@ import page.clab.api.domain.book.exception.BookAlreadyReturnedException;
 import page.clab.api.domain.book.exception.LoanNotPendingException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.book.exception.OverdueException;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.dto.shared.BookBorrowerInfoDto;
 import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDateTime;
@@ -44,9 +44,6 @@ public class BookLoanRecord extends BaseEntity {
     @Column(name = "member_id", nullable = false)
     private String borrowerId;
 
-    @Column(name = "member_name", nullable = false)
-    private String borrowerName;
-
     private LocalDateTime borrowedAt;
 
     private LocalDateTime returnedAt;
@@ -58,24 +55,23 @@ public class BookLoanRecord extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private BookLoanStatus status;
 
-    public static BookLoanRecord create(Book book, Member borrower) {
+    public static BookLoanRecord create(Book book, BookBorrowerInfoDto borrowerInfo) {
         return BookLoanRecord.builder()
                 .book(book)
-                .borrowerId(borrower.getId())
-                .borrowerName(borrower.getName())
+                .borrowerId(borrowerInfo.getMemberId())
                 .loanExtensionCount(0L)
                 .status(BookLoanStatus.PENDING)
                 .build();
     }
 
-    public void markAsReturned(Member borrower) {
+    public void markAsReturned(BookBorrowerInfoDto borrowerInfo) {
         if (this.returnedAt != null) {
             throw new BookAlreadyReturnedException("이미 반납된 도서입니다.");
         }
         this.returnedAt = LocalDateTime.now();
         if (isOverdue(returnedAt)) {
             long overdueDays = ChronoUnit.DAYS.between(this.dueDate, this.returnedAt);
-            borrower.handleOverdueAndSuspension(overdueDays);
+            borrowerInfo.handleOverdueAndSuspension(overdueDays);
         }
         this.status = BookLoanStatus.RETURNED;
     }
@@ -84,13 +80,12 @@ public class BookLoanRecord extends BaseEntity {
         return returnedAt.isAfter(this.dueDate);
     }
 
-    public void extendLoan(Member borrower) {
+    public void extendLoan(BookBorrowerInfoDto borrowerInfo) {
         final long MAX_EXTENSIONS = 2;
         LocalDateTime now = LocalDateTime.now();
 
-        if (borrower.getLoanSuspensionDate() != null && now.isBefore(borrower.getLoanSuspensionDate())) {
-            throw new LoanSuspensionException("대출 정지 중입니다. 연장할 수 없습니다.");
-        }
+        borrowerInfo.checkLoanSuspension();
+
         if (now.isAfter(this.dueDate)) {
             throw new LoanSuspensionException("연체 중인 도서는 연장할 수 없습니다.");
         }
