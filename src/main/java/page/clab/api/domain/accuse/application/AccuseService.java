@@ -15,7 +15,7 @@ import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.AccuseTargetId;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
-import page.clab.api.domain.member.dto.shared.MemberInfoDto;
+import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.accuse.dto.response.AccuseMyResponseDto;
 import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
 import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
@@ -154,8 +154,8 @@ public class AccuseService {
                     if (accuses.isEmpty()) {
                         return null;
                     }
-                    List<MemberInfoDto> members = accuses.stream()
-                            .map(accuse -> memberLookupService.getMemberInfoById(accuse.getMemberId()))
+                    List<MemberBasicInfoDto> members = accuses.stream()
+                            .map(accuse -> memberLookupService.getMemberBasicInfoById(accuse.getMemberId()))
                             .toList();
                     return AccuseResponseDto.toDto(accuses.getFirst(), members);
                 })

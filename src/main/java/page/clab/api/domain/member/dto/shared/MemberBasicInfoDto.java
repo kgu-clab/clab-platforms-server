@@ -6,14 +6,14 @@ import page.clab.api.domain.member.domain.Member;
 
 @Getter
 @Builder
-public class MemberInfoDto {
+public class MemberBasicInfoDto {
 
     private String memberId;
 
     private String memberName;
 
-    public static MemberInfoDto create(Member member) {
-        return MemberInfoDto.builder()
+    public static MemberBasicInfoDto create(Member member) {
+        return MemberBasicInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())
                 .build();
