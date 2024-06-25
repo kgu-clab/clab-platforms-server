@@ -13,6 +13,7 @@ import page.clab.api.domain.blog.dto.response.BlogDetailsResponseDto;
 import page.clab.api.domain.blog.dto.response.BlogResponseDto;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.dto.shared.MemberInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -44,17 +45,17 @@ public class BlogService {
 
     @Transactional(readOnly = true)
     public BlogDetailsResponseDto getBlogDetails(Long blogId) {
-        Member currentMember = memberLookupService.getCurrentMember();
+        MemberInfoDto currentMemberInfo = memberLookupService.getCurrentMemberInfo();
         Blog blog = getBlogByIdOrThrow(blogId);
-        boolean isOwner = blog.isOwner(currentMember);
-        return BlogDetailsResponseDto.toDto(blog, currentMember.getId(), currentMember.getName(), isOwner);
+        boolean isOwner = blog.isOwner(currentMemberInfo.getMemberId());
+        return BlogDetailsResponseDto.toDto(blog, currentMemberInfo, isOwner);
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BlogDetailsResponseDto> getDeletedBlogs(Pageable pageable) {
-        Member currentMember = memberLookupService.getCurrentMember();
+        MemberInfoDto currentMemberInfo = memberLookupService.getCurrentMemberInfo();
         Page<Blog> blogs = blogRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(blogs.map(blog -> BlogDetailsResponseDto.toDto(blog, currentMember.getId(), currentMember.getName(), blog.isOwner(currentMember))));
+        return new PagedResponseDto<>(blogs.map(blog -> BlogDetailsResponseDto.toDto(blog, currentMemberInfo, blog.isOwner(currentMemberInfo.getMemberId()))));
     }
 
     @Transactional

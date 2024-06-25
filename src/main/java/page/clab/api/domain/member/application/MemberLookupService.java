@@ -1,8 +1,8 @@
 package page.clab.api.domain.member.application;
 
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.dto.shared.MemberInfoDto;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
+import page.clab.api.domain.member.dto.shared.MemberInfoDto;
 
 import java.util.List;
 
@@ -29,5 +29,7 @@ public interface MemberLookupService {
     List<Member> getSuperAdmins();
 
     MemberInfoDto getMemberInfoById(String memberId);
+
+    MemberInfoDto getCurrentMemberInfo();
 
 }
