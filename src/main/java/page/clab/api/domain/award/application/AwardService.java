@@ -11,7 +11,7 @@ import page.clab.api.domain.award.dto.request.AwardRequestDto;
 import page.clab.api.domain.award.dto.request.AwardUpdateRequestDto;
 import page.clab.api.domain.award.dto.response.AwardResponseDto;
 import page.clab.api.domain.member.application.MemberLookupService;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -50,18 +50,19 @@ public class AwardService {
 
     @Transactional
     public Long updateAward(Long awardId, AwardUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberLookupService.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Award award = getAwardByIdOrThrow(awardId);
-        award.validateAccessPermission(currentMember);
+        award.validateAccessPermission(currentMemberInfo);
         award.update(requestDto);
         validationService.checkValid(award);
         return awardRepository.save(award).getId();
     }
 
+    @Transactional
     public Long deleteAward(Long awardId) throws PermissionDeniedException {
-        Member currentMember = memberLookupService.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Award award = getAwardByIdOrThrow(awardId);
-        award.validateAccessPermission(currentMember);
+        award.validateAccessPermission(currentMemberInfo);
         award.delete();
         awardRepository.save(award);
         return award.getId();
