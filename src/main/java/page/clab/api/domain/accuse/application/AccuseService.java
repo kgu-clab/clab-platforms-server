@@ -34,6 +34,7 @@ import page.clab.api.global.validation.ValidationService;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -60,8 +61,7 @@ public class AccuseService {
     public Long createAccuse(AccuseRequestDto requestDto) {
         TargetType type = requestDto.getTargetType();
         Long targetId = requestDto.getTargetId();
-        Member currentMember = memberLookupService.getCurrentMember();
-        String memberId = currentMember.getId();
+        String memberId = memberLookupService.getCurrentMemberId();
 
         validateAccuseRequest(type, targetId, memberId);
 
@@ -72,8 +72,8 @@ public class AccuseService {
         Accuse accuse = findOrCreateAccuse(requestDto, memberId, target);
         validationService.checkValid(accuse);
 
-        notificationService.sendNotificationToMember(currentMember, "신고하신 내용이 접수되었습니다.");
-        notificationService.sendNotificationToSuperAdmins(currentMember.getName() + "님이 신고를 접수하였습니다. 확인해주세요.");
+        notificationService.sendNotificationToMember(memberId, "신고하신 내용이 접수되었습니다.");
+        notificationService.sendNotificationToSuperAdmins(memberId + "님이 신고를 접수하였습니다. 확인해주세요.");
         return accuseRepository.save(accuse).getId();
     }
 
@@ -166,10 +166,10 @@ public class AccuseService {
     }
 
     private void sendStatusUpdateNotifications(AccuseStatus status, AccuseTarget target) {
-        List<Member> members = accuseRepository.findByTarget(target.getTargetType(), target.getTargetReferenceId()).stream()
-                .map(accuse -> memberLookupService.getMemberById(accuse.getMemberId()))
-                .toList();
-        notificationService.sendNotificationToMembers(members, "신고 상태가 " + status.getDescription() + "(으)로 변경되었습니다.");
+        List<String> memberIds = accuseRepository.findByTarget(target.getTargetType(), target.getTargetReferenceId()).stream()
+                .map(Accuse::getMemberId)
+                .collect(Collectors.toList());
+        notificationService.sendNotificationToMembers(memberIds, "신고 상태가 " + status.getDescription() + "(으)로 변경되었습니다.");
     }
 
 }

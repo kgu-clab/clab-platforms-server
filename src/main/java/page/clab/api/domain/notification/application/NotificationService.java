@@ -70,8 +70,9 @@ public class NotificationService {
         notificationRepository.save(notification);
     }
 
-    public void sendNotificationToMembers(List<Member> members, String content) {
-        List<Notification> notifications = members.stream()
+    public void sendNotificationToMembers(List<String> memberIds, String content) {
+        List<Notification> notifications = memberIds.stream()
+                .map(memberLookupService::getMemberByIdOrThrow)
                 .map(member -> Notification.create(member, content))
                 .toList();
         notificationRepository.saveAll(notifications);
