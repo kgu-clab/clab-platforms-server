@@ -66,7 +66,7 @@ public class Blog extends BaseEntity {
     }
 
     public boolean isOwner(Member member) {
-        return this.memberId.equals(member.getId());
+        return member.isSameMember(memberId);
     }
 
     public void validateAccessPermission(Member member) throws PermissionDeniedException {

@@ -72,7 +72,8 @@ public class BlogService {
         Member currentMember = memberLookupService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
         blog.validateAccessPermission(currentMember);
-        blogRepository.delete(blog);
+        blog.delete();
+        blogRepository.save(blog);
         return blog.getId();
     }
 
