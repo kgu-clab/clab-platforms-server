@@ -9,7 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -22,7 +21,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.domain.Role;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -44,9 +42,8 @@ public class Board extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @Column(name = "member_id", nullable = false)
+    private String memberId;
 
     @Column(nullable = false)
     private String nickname;
@@ -83,6 +80,10 @@ public class Board extends BaseEntity {
         Optional.of(boardUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     public boolean isNotice() {
         return this.category.equals(BoardCategory.NOTICE);
     }
@@ -91,8 +92,8 @@ public class Board extends BaseEntity {
         return this.category.equals(BoardCategory.GRADUATED);
     }
 
-    public boolean shouldNotifyForNewBoard() {
-        return !this.member.getRole().equals(Role.USER) && this.category.equals(BoardCategory.NOTICE);
+    public boolean shouldNotifyForNewBoard(Member member) {
+        return member.isAdminRole() && this.category.equals(BoardCategory.NOTICE);
     }
 
     public void incrementLikes() {
@@ -105,16 +106,12 @@ public class Board extends BaseEntity {
         }
     }
 
-    public boolean isOwner(Member member) {
-        return this.member.isSameMember(member);
-    }
-
     public boolean isOwner(String memberId) {
-        return this.member.isSameMember(memberId);
+        return this.memberId.equals(memberId);
     }
 
     public void validateAccessPermission(Member member) throws PermissionDeniedException {
-        if (!isOwner(member) && !member.isAdminRole()) {
+        if (!isOwner(member.getId()) && !member.isAdminRole()) {
             throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
         }
     }

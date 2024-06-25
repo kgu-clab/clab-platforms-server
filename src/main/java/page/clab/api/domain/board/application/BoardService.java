@@ -11,6 +11,7 @@ import page.clab.api.domain.board.dao.BoardRepository;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.BoardCategory;
 import page.clab.api.domain.board.domain.BoardLike;
+import page.clab.api.domain.board.domain.SlackBoardInfo;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
@@ -56,20 +57,22 @@ public class BoardService {
     public String createBoard(BoardRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberLookupService.getCurrentMember();
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
-        Board board = BoardRequestDto.toEntity(requestDto, currentMember, uploadedFiles);
+        Board board = BoardRequestDto.toEntity(requestDto, currentMember.getId(), uploadedFiles);
         board.validateAccessPermissionForCreation(currentMember);
         validationService.checkValid(board);
-        if (board.shouldNotifyForNewBoard()) {
+        if (board.shouldNotifyForNewBoard(currentMember)) {
             notificationService.sendNotificationToMember(currentMember, "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.");
         }
-        slackService.sendNewBoardNotification(board);
+        SlackBoardInfo boardInfo = SlackBoardInfo.create(board, currentMember);
+        slackService.sendNewBoardNotification(boardInfo);
         return boardRepository.save(board).getCategory().getKey();
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardListResponseDto> getBoards(Pageable pageable) {
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Board> boards = boardRepository.findAll(pageable);
-        return new PagedResponseDto<>(boards.map(this::mapToBoardListResponseDto));
+        return new PagedResponseDto<>(boards.map(board -> mapToBoardListResponseDto(board, currentMember)));
     }
 
     @Transactional(readOnly = true)
@@ -77,21 +80,22 @@ public class BoardService {
         Member currentMember = memberLookupService.getCurrentMember();
         Board board = getBoardByIdOrThrow(boardId);
         boolean hasLikeByMe = checkLikeStatus(board, currentMember);
-        boolean isOwner = board.isOwner(currentMember);
-        return BoardDetailsResponseDto.toDto(board, hasLikeByMe, isOwner);
+        boolean isOwner = board.isOwner(currentMember.getId());
+        return BoardDetailsResponseDto.toDto(board, currentMember, hasLikeByMe, isOwner);
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardMyResponseDto> getMyBoards(Pageable pageable) {
         Member currentMember = memberLookupService.getCurrentMember();
-        Page<Board> boards = getBoardByMember(pageable, currentMember);
-        return new PagedResponseDto<>(boards.map(BoardMyResponseDto::toDto));
+        Page<Board> boards = getBoardByMemberId(pageable, currentMember.getId());
+        return new PagedResponseDto<>(boards.map(board -> BoardMyResponseDto.toDto(board, currentMember)));
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardCategoryResponseDto> getBoardsByCategory(BoardCategory category, Pageable pageable) {
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Board> boards = getBoardByCategory(category, pageable);
-        return new PagedResponseDto<>(boards.map(this::mapToBoardCategoryResponseDto));
+        return new PagedResponseDto<>(boards.map(board -> mapToBoardCategoryResponseDto(board, currentMember)));
     }
 
     @Transactional
@@ -123,8 +127,9 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<BoardListResponseDto> getDeletedBoards(Pageable pageable) {
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Board> boards = boardRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(boards.map(this::mapToBoardListResponseDto));
+        return new PagedResponseDto<>(boards.map(board -> mapToBoardListResponseDto(board, currentMember)));
     }
 
     public String deleteBoard(Long boardId) throws PermissionDeniedException {
@@ -136,15 +141,15 @@ public class BoardService {
     }
 
     @NotNull
-    private BoardListResponseDto mapToBoardListResponseDto(Board board) {
+    private BoardListResponseDto mapToBoardListResponseDto(Board board, Member member) {
         Long commentCount = commentRepository.countByBoard(board);
-        return BoardListResponseDto.toDto(board, commentCount);
+        return BoardListResponseDto.toDto(board, member, commentCount);
     }
 
     @NotNull
-    private BoardCategoryResponseDto mapToBoardCategoryResponseDto(Board board) {
+    private BoardCategoryResponseDto mapToBoardCategoryResponseDto(Board board, Member member) {
         Long commentCount = commentRepository.countByBoard(board);
-        return BoardCategoryResponseDto.toDto(board, commentCount);
+        return BoardCategoryResponseDto.toDto(board, member, commentCount);
     }
 
     public Board getBoardByIdOrThrow(Long boardId) {
@@ -152,8 +157,8 @@ public class BoardService {
                 .orElseThrow(() -> new NotFoundException("해당 게시글이 존재하지 않습니다."));
     }
 
-    private Page<Board> getBoardByMember(Pageable pageable, Member member) {
-        return boardRepository.findAllByMember(member, pageable);
+    private Page<Board> getBoardByMemberId(Pageable pageable, String memberId) {
+        return boardRepository.findAllByMemberId(memberId, pageable);
     }
 
     private Page<Board> getBoardByCategory(BoardCategory category, Pageable pageable) {

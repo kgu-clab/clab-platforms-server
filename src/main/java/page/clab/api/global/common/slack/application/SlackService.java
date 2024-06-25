@@ -8,7 +8,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
-import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.domain.SlackBoardInfo;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.slack.domain.GeneralAlertType;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
@@ -37,7 +37,7 @@ public class SlackService {
         eventPublisher.publishEvent(new NotificationEvent(this, GeneralAlertType.APPLICATION_CREATED, null, applicationRequestDto));
     }
 
-    public void sendNewBoardNotification(Board board) {
+    public void sendNewBoardNotification(SlackBoardInfo board) {
         eventPublisher.publishEvent(new NotificationEvent(this, GeneralAlertType.BOARD_CREATED, null, board));
     }
 

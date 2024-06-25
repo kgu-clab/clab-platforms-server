@@ -21,7 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
-import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.board.domain.SlackBoardInfo;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.slack.domain.AlertType;
 import page.clab.api.global.common.slack.domain.GeneralAlertType;
@@ -113,8 +113,8 @@ public class SlackServiceHelper {
                     }
                     break;
                 case BOARD_CREATED:
-                    if (additionalData instanceof Board) {
-                        return createBoardBlocks((Board) additionalData);
+                    if (additionalData instanceof SlackBoardInfo) {
+                        return createBoardBlocks((SlackBoardInfo) additionalData);
                     }
                     break;
                 case SERVER_START:
@@ -205,16 +205,14 @@ public class SlackServiceHelper {
         return blocks;
     }
 
-    private List<LayoutBlock> createBoardBlocks(Board board) {
+    private List<LayoutBlock> createBoardBlocks(SlackBoardInfo board) {
         List<LayoutBlock> blocks = new ArrayList<>();
-        String username = board.isWantAnonymous() ?
-                board.getNickname() : board.getMember().getId() + " " + board.getMember().getName();
 
         blocks.add(section(section -> section.text(markdownText(":writing_hand: *New Board*"))));
         blocks.add(section(section -> section.fields(Arrays.asList(
                 markdownText("*Title:*\n" + board.getTitle()),
-                markdownText("*Category:*\n" + board.getCategory().getDescription()),
-                markdownText("*User:*\n" + username)
+                markdownText("*Category:*\n" + board.getCategory()),
+                markdownText("*User:*\n" + board.getUsername())
         ))));
         return blocks;
     }

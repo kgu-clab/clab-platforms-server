@@ -153,7 +153,7 @@ public class CommentService {
 
     private void sendNotificationForNewComment(Comment comment) {
         Board board = comment.getBoard();
-        Member boardOwner = board.getMember();
+        Member boardOwner = memberLookupService.getMemberById(board.getMemberId());
         String notificationMessage = String.format("[%s] %s님이 게시글에 댓글을 남겼습니다.", board.getTitle(), comment.getWriterName());
         notificationService.sendNotificationToMember(boardOwner, notificationMessage);
     }
