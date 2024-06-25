@@ -9,7 +9,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 public class TransactionConfig {
 
     @Bean
-    public TransactionDefinition transactionDefinition(){
+    public TransactionDefinition transactionDefinition() {
         return new DefaultTransactionDefinition();
     }
 
