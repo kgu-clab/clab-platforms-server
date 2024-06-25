@@ -69,6 +69,7 @@ public class RecruitmentService {
         Recruitment recruitment = getRecruitmentByIdOrThrow(recruitmentId);
         recruitment.update(requestDto);
         validationService.checkValid(recruitment);
+        updateRecruitmentStatusByRecruitment(recruitment);
         return recruitmentRepository.save(recruitment).getId();
     }
 
@@ -92,9 +93,12 @@ public class RecruitmentService {
     public void updateRecruitmentStatusByRecruitment(Recruitment recruitment){
         TransactionStatus transactionStatus = transactionManager.getTransaction(transactionDefinition);
         LocalDateTime now = LocalDateTime.now();
-        RecruitmentStatus newStatus = now.isBefore(recruitment.getStartDate())
-                ? RecruitmentStatus.UPCOMING : now.isAfter(recruitment.getEndDate())
-                    ? RecruitmentStatus.CLOSED : RecruitmentStatus.OPEN;
+        RecruitmentStatus newStatus = RecruitmentStatus.OPEN;
+        if(now.isBefore(recruitment.getStartDate())){
+            newStatus = RecruitmentStatus.UPCOMING;
+        }else if(now.isAfter(recruitment.getEndDate())){
+            newStatus = RecruitmentStatus.CLOSED;
+        }
         recruitment.updateStatus(newStatus);
         entityManager.merge(recruitment);
         transactionManager.commit(transactionStatus);
