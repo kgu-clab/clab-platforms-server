@@ -1,12 +1,13 @@
 package page.clab.api.domain.comment.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.comment.domain.Comment;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -32,16 +33,16 @@ public class DeletedCommentResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static DeletedCommentResponseDto toDto(Comment comment, String currentMemberId) {
+    public static DeletedCommentResponseDto toDto(Comment comment, MemberDetailedInfoDto memberInfo, boolean isOwner) {
         return DeletedCommentResponseDto.builder()
                 .id(comment.getId())
-                .writerId(comment.isWantAnonymous() ? null : comment.getWriter().getId())
-                .writerName(comment.isWantAnonymous() ? comment.getNickname() : comment.getWriter().getName())
-                .writerImageUrl(comment.isWantAnonymous() ? null : comment.getWriter().getImageUrl())
-                .writerRoleLevel(comment.isWantAnonymous() ? null : comment.getWriter().getRole().toRoleLevel())
+                .writerId(comment.isWantAnonymous() ? null : memberInfo.getMemberId())
+                .writerName(comment.isWantAnonymous() ? comment.getNickname() : memberInfo.getMemberName())
+                .writerImageUrl(comment.isWantAnonymous() ? null : memberInfo.getImageUrl())
+                .writerRoleLevel(comment.isWantAnonymous() ? null : memberInfo.getRoleLevel())
                 .content(comment.getContent())
                 .likes(comment.getLikes())
-                .isOwner(comment.isOwner(currentMemberId))
+                .isOwner(isOwner)
                 .createdAt(comment.getCreatedAt())
                 .build();
     }

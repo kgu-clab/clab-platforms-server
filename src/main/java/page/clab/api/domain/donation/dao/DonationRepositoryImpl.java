@@ -10,10 +10,10 @@ import org.springframework.stereotype.Repository;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.domain.QDonation;
 import page.clab.api.domain.member.domain.QMember;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.time.LocalDate;
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,14 +27,14 @@ public class DonationRepositoryImpl implements DonationRepositoryCustom {
         QMember member = QMember.member;
 
         BooleanBuilder builder = new BooleanBuilder();
-        if (memberId != null && !memberId.isBlank()) builder.and(donation.donor.id.eq(memberId));
+        if (memberId != null && !memberId.isBlank()) builder.and(donation.memberId.eq(memberId));
         if (name != null && !name.isBlank()) builder.and(member.name.containsIgnoreCase(name));
         if (startDate != null) builder.and(donation.createdAt.goe(startDate.atStartOfDay()));
         if (endDate != null) builder.and(donation.createdAt.loe(endDate.plusDays(1).atStartOfDay()));
 
         List<Donation> results = queryFactory
                 .selectFrom(donation)
-                .leftJoin(donation.donor, member)
+                .leftJoin(member).on(donation.memberId.eq(member.id))
                 .where(builder)
                 .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, donation))
                 .offset(pageable.getOffset())
@@ -43,7 +43,7 @@ public class DonationRepositoryImpl implements DonationRepositoryCustom {
 
         long count = queryFactory
                 .selectFrom(donation)
-                .leftJoin(donation.donor, member)
+                .leftJoin(member).on(donation.memberId.eq(member.id))
                 .where(builder)
                 .fetchCount();
 

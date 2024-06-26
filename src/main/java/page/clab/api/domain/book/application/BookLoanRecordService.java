@@ -16,8 +16,8 @@ import page.clab.api.domain.book.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.domain.book.exception.BookAlreadyAppliedForLoanException;
 import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
-import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.application.MemberLookupService;
+import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
@@ -30,7 +30,7 @@ public class BookLoanRecordService {
 
     private final BookService bookService;
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final NotificationService notificationService;
 
@@ -43,18 +43,18 @@ public class BookLoanRecordService {
     @Transactional
     public Long requestBookLoan(BookLoanRecordRequestDto requestDto) throws CustomOptimisticLockingFailureException {
         try {
-            Member borrower = memberService.getCurrentMember();
-            borrower.checkLoanSuspension();
+            MemberBorrowerInfoDto borrowerInfo = memberLookupService.getCurrentMemberBorrowerInfo();
 
-            validateBorrowLimit(borrower);
+            borrowerInfo.checkLoanSuspension();
+            validateBorrowLimit(borrowerInfo.getMemberId());
 
             Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
-            checkIfLoanAlreadyApplied(book, borrower);
+            checkIfLoanAlreadyApplied(book, borrowerInfo.getMemberId());
 
-            BookLoanRecord bookLoanRecord = BookLoanRecord.create(book, borrower);
+            BookLoanRecord bookLoanRecord = BookLoanRecord.create(book, borrowerInfo);
             validationService.checkValid(bookLoanRecord);
 
-            notificationService.sendNotificationToMember(borrower.getId(), "[" + book.getTitle() + "] 도서 대출 신청이 완료되었습니다.");
+            notificationService.sendNotificationToMember(borrowerInfo.getMemberId(), "[" + book.getTitle() + "] 도서 대출 신청이 완료되었습니다.");
             return bookLoanRecordRepository.save(bookLoanRecord).getId();
         } catch (ObjectOptimisticLockingFailureException e) {
             throw new CustomOptimisticLockingFailureException("도서 대출 신청에 실패했습니다. 다시 시도해주세요.");
@@ -63,42 +63,46 @@ public class BookLoanRecordService {
 
     @Transactional
     public Long returnBook(BookLoanRecordRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
+        MemberBorrowerInfoDto borrowerInfo = memberLookupService.getCurrentMemberBorrowerInfo();
+        String currentMemberId = borrowerInfo.getMemberId();
         Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
-        book.returnBook(currentMember);
+        book.returnBook(currentMemberId);
         bookRepository.save(book);
 
         BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(book);
-        bookLoanRecord.markAsReturned();
+        bookLoanRecord.markAsReturned(borrowerInfo);
         validationService.checkValid(bookLoanRecord);
 
-        notificationService.sendNotificationToMember(currentMember.getId(), "[" + book.getTitle() + "] 도서 반납이 완료되었습니다.");
+        memberLookupService.updateLoanSuspensionDate(borrowerInfo.getMemberId(), borrowerInfo.getLoanSuspensionDate());
+
+        notificationService.sendNotificationToMember(currentMemberId, "[" + book.getTitle() + "] 도서 반납이 완료되었습니다.");
         return bookLoanRecordRepository.save(bookLoanRecord).getId();
     }
 
     @Transactional
     public Long extendBookLoan(BookLoanRecordRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
+        MemberBorrowerInfoDto borrowerInfo = memberLookupService.getCurrentMemberBorrowerInfo();
+        String currentMemberId = borrowerInfo.getMemberId();
         Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
 
-        book.validateCurrentBorrower(currentMember);
+        book.validateCurrentBorrower(currentMemberId);
         BookLoanRecord bookLoanRecord = getBookLoanRecordByBookAndReturnedAtIsNullOrThrow(book);
-        bookLoanRecord.extendLoan();
+        bookLoanRecord.extendLoan(borrowerInfo);
         validationService.checkValid(bookLoanRecord);
 
-        notificationService.sendNotificationToMember(currentMember.getId(), "[" + book.getTitle() + "] 도서 대출 연장이 완료되었습니다.");
+        notificationService.sendNotificationToMember(currentMemberId, "[" + book.getTitle() + "] 도서 대출 연장이 완료되었습니다.");
 
         return bookLoanRecordRepository.save(bookLoanRecord).getId();
     }
 
     @Transactional
     public Long approveBookLoan(Long bookLoanRecordId) {
-        Member currentMember = memberService.getCurrentMember();
+        String borrowerId = memberLookupService.getCurrentMemberId();
         BookLoanRecord bookLoanRecord = getBookLoanRecordByIdOrThrow(bookLoanRecordId);
         Book book = bookService.getBookByIdOrThrow(bookLoanRecord.getBook().getId());
 
         book.validateBookIsNotBorrowed();
-        validateBorrowLimit(currentMember);
+        validateBorrowLimit(borrowerId);
         bookLoanRecord.approve();
 
         validationService.checkValid(bookLoanRecord);
@@ -134,16 +138,16 @@ public class BookLoanRecordService {
                 .orElseThrow(() -> new NotFoundException("해당 도서 대출 기록이 없습니다."));
     }
 
-    private void validateBorrowLimit(Member borrower) {
-        int borrowedBookCount = bookService.getNumberOfBooksBorrowedByMember(borrower);
+    private void validateBorrowLimit(String borrowerId) {
+        int borrowedBookCount = bookService.getNumberOfBooksBorrowedByMember(borrowerId);
         int maxBorrowableBookCount = 3;
         if (borrowedBookCount >= maxBorrowableBookCount) {
             throw new MaxBorrowLimitExceededException("대출 가능한 도서의 수를 초과했습니다.");
         }
     }
 
-    private void checkIfLoanAlreadyApplied(Book book, Member borrower) {
-        bookLoanRecordRepository.findByBookAndBorrowerAndStatus(book, borrower, BookLoanStatus.PENDING)
+    private void checkIfLoanAlreadyApplied(Book book, String borrowerId) {
+        bookLoanRecordRepository.findByBookAndBorrowerIdAndStatus(book, borrowerId, BookLoanStatus.PENDING)
                 .ifPresent(bookLoanRecord -> {
                     throw new BookAlreadyAppliedForLoanException("이미 대출 신청한 도서입니다.");
                 });

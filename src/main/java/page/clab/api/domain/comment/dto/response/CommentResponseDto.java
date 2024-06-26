@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.comment.domain.Comment;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,33 +40,28 @@ public class CommentResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static CommentResponseDto toDto(Comment comment, String currentMemberId) {
+    public static CommentResponseDto toDto(Comment comment, MemberDetailedInfoDto memberInfo, boolean isOwner, List<CommentResponseDto> children) {
         if (comment.getIsDeleted()) {
             return CommentResponseDto.builder()
                     .id(comment.getId())
                     .isDeleted(true)
-                    .children(comment.getChildren().stream()
-                            .map(child -> CommentResponseDto.toDto(child, currentMemberId))
-                            .toList())
+                    .children(children)
                     .createdAt(comment.getCreatedAt())
                     .build();
         }
         return CommentResponseDto.builder()
                 .id(comment.getId())
                 .isDeleted(false)
-                .writerId(comment.isWantAnonymous() ? null : comment.getWriter().getId())
-                .writerName(comment.isWantAnonymous() ? comment.getNickname() : comment.getWriter().getName())
-                .writerImageUrl(comment.isWantAnonymous() ? null : comment.getWriter().getImageUrl())
-                .writerRoleLevel(comment.isWantAnonymous() ? null : comment.getWriter().getRole().toRoleLevel())
+                .writerId(comment.isWantAnonymous() ? null : comment.getWriterId())
+                .writerName(comment.isWantAnonymous() ? comment.getNickname() : memberInfo.getMemberName())
+                .writerImageUrl(comment.isWantAnonymous() ? null : memberInfo.getImageUrl())
+                .writerRoleLevel(comment.isWantAnonymous() ? null : memberInfo.getRoleLevel())
                 .content(comment.getContent())
-                .children(comment.getChildren().stream()
-                        .map(child -> CommentResponseDto.toDto(child, currentMemberId))
-                        .toList())
+                .children(children)
                 .likes(comment.getLikes())
-                .isOwner(comment.isOwner(currentMemberId))
+                .isOwner(isOwner)
                 .createdAt(comment.getCreatedAt())
                 .build();
-
     }
 
 }

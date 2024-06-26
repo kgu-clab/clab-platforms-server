@@ -1,18 +1,16 @@
 package page.clab.api.domain.login.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDateTime;
@@ -29,9 +27,8 @@ public class AccountLockInfo extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @Column(name = "member_id", nullable = false)
+    private String memberId;
 
     private Long loginFailCount;
 
@@ -39,9 +36,9 @@ public class AccountLockInfo extends BaseEntity {
 
     private LocalDateTime lockUntil;
 
-    public static AccountLockInfo create(Member member) {
+    public static AccountLockInfo create(String memberId) {
         return AccountLockInfo.builder()
-                .member(member)
+                .memberId(memberId)
                 .loginFailCount(0L)
                 .isLock(false)
                 .lockUntil(null)

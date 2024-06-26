@@ -5,8 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.application.MemberLookupService;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.membershipFee.dao.MembershipFeeRepository;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
@@ -23,7 +23,7 @@ import page.clab.api.global.validation.ValidationService;
 @RequiredArgsConstructor
 public class MembershipFeeService {
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final NotificationService notificationService;
 
@@ -33,8 +33,8 @@ public class MembershipFeeService {
 
     @Transactional
     public Long createMembershipFee(MembershipFeeRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
-        MembershipFee membershipFee = MembershipFeeRequestDto.toEntity(requestDto, currentMember);
+        String currentMemberId = memberLookupService.getCurrentMemberId();
+        MembershipFee membershipFee = MembershipFeeRequestDto.toEntity(requestDto, currentMemberId);
         validationService.checkValid(membershipFee);
         notificationService.sendNotificationToAdmins("새로운 회비 내역이 등록되었습니다.");
         return membershipFeeRepository.save(membershipFee).getId();
@@ -42,35 +42,40 @@ public class MembershipFeeService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<MembershipFeeResponseDto> getMembershipFeesByConditions(String memberId, String memberName, String category, MembershipFeeStatus status, Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
-        boolean isAdminOrSuper = currentMember.isAdminRole();
+        boolean isAdminRole = memberLookupService.getCurrentMemberDetailedInfo().isAdminRole();
         Page<MembershipFee> membershipFeesPage = membershipFeeRepository.findByConditions(memberId, memberName, category, status, pageable);
-        return new PagedResponseDto<>(membershipFeesPage.map(membershipFee -> MembershipFeeResponseDto.toDto(membershipFee, isAdminOrSuper)));
+        return new PagedResponseDto<>(membershipFeesPage.map(membershipFee -> {
+            String applicantName = memberLookupService.getMemberBasicInfoById(membershipFee.getMemberId()).getMemberName();
+            return MembershipFeeResponseDto.toDto(membershipFee, applicantName, isAdminRole);
+        }));
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<MembershipFeeResponseDto> getDeletedMembershipFees(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
-        boolean isAdminOrSuper = currentMember.isAdminRole();
+        boolean isAdminRole = memberLookupService.getCurrentMemberDetailedInfo().isAdminRole();
         Page<MembershipFee> membershipFees = membershipFeeRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(membershipFees.map(membershipFee -> MembershipFeeResponseDto.toDto(membershipFee, isAdminOrSuper)));
+        return new PagedResponseDto<>(membershipFees.map(membershipFee -> {
+            String applicantName = memberLookupService.getMemberBasicInfoById(membershipFee.getMemberId()).getMemberName();
+            return MembershipFeeResponseDto.toDto(membershipFee, applicantName, isAdminRole);
+        }));
     }
 
     @Transactional
     public Long updateMembershipFee(Long membershipFeeId, MembershipFeeUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         MembershipFee membershipFee = getMembershipFeeByIdOrThrow(membershipFeeId);
-        membershipFee.validateAccessPermission(currentMember);
+        membershipFee.validateAccessPermission(currentMemberInfo);
         membershipFee.update(requestDto);
         validationService.checkValid(membershipFee);
         return membershipFeeRepository.save(membershipFee).getId();
     }
 
     public Long deleteMembershipFee(Long membershipFeeId) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         MembershipFee membershipFee = getMembershipFeeByIdOrThrow(membershipFeeId);
-        membershipFee.validateAccessPermission(currentMember);
-        membershipFeeRepository.delete(membershipFee);
+        membershipFee.validateAccessPermission(currentMemberInfo);
+        membershipFee.delete();
+        membershipFeeRepository.save(membershipFee);
         return membershipFee.getId();
     }
 

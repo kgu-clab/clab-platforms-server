@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.blog.domain.Blog;
+import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 
 import java.time.LocalDateTime;
 
@@ -32,11 +33,11 @@ public class BlogDetailsResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static BlogDetailsResponseDto toDto(Blog blog, boolean isOwner) {
+    public static BlogDetailsResponseDto toDto(Blog blog, MemberBasicInfoDto memberInfo, boolean isOwner) {
         return BlogDetailsResponseDto.builder()
                 .id(blog.getId())
-                .memberId(blog.getMember().getId())
-                .name(blog.getMember().getName())
+                .memberId(memberInfo.getMemberId())
+                .name(memberInfo.getMemberName())
                 .title(blog.getTitle())
                 .subTitle(blog.getSubTitle())
                 .content(blog.getContent())

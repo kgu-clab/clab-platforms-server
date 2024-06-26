@@ -1,10 +1,9 @@
 package page.clab.api.domain.comment.application;
 
-import java.util.Comparator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +18,9 @@ import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
 import page.clab.api.domain.comment.dto.response.CommentResponseDto;
 import page.clab.api.domain.comment.dto.response.DeletedCommentResponseDto;
-import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.application.MemberLookupService;
+import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
@@ -38,7 +38,7 @@ public class CommentService {
 
     private final BoardService boardService;
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final NotificationService notificationService;
 
@@ -57,40 +57,43 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<CommentResponseDto> getAllComments(Long boardId, Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        String currentMemberId = memberLookupService.getCurrentMemberId();
         Page<Comment> comments = getCommentByBoardIdAndParentIsNull(boardId, pageable);
-        comments.forEach(comment -> {
-            Hibernate.initialize(comment.getChildren());
-            sortChildrenComments(comment);
-        });
-        Page<CommentResponseDto> commentDtos = comments.map(comment -> toCommentResponseDto(comment, currentMember));
-        return new PagedResponseDto<>(commentDtos);
+        List<CommentResponseDto> commentDtos = comments.stream()
+                .map(comment -> toCommentResponseDtoWithMemberInfo(comment, currentMemberId))
+                .toList();
+        return new PagedResponseDto<>(new PageImpl<>(commentDtos, pageable, comments.getTotalElements()));
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<CommentMyResponseDto> getMyComments(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
-        Page<Comment> comments = getCommentByWriter(currentMember, pageable);
-        List<CommentMyResponseDto> dtos = comments
-                .map(comment -> toCommentMyResponseDto(comment, currentMember))
-                .stream()
+        String currentMemberId = memberLookupService.getCurrentMemberId();
+        Page<Comment> comments = getCommentByWriterId(currentMemberId, pageable);
+        List<CommentMyResponseDto> dtos = comments.stream()
+                .map(comment -> toCommentMyResponseDto(comment, currentMemberId))
                 .filter(Objects::nonNull)
                 .toList();
-        return new PagedResponseDto<>(dtos, pageable, dtos.size());
+        return new PagedResponseDto<>(new PageImpl<>(dtos, pageable, comments.getTotalElements()));
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<DeletedCommentResponseDto> getDeletedComments(Long boardId, Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        String currentMemberId = memberLookupService.getCurrentMemberId();
         Page<Comment> comments = commentRepository.findAllByIsDeletedTrueAndBoardId(boardId, pageable);
-        return new PagedResponseDto<>(comments.map(comment -> DeletedCommentResponseDto.toDto(comment, currentMember.getId())));
+        List<DeletedCommentResponseDto> deletedCommentDtos = comments.stream()
+                .map(comment -> {
+                    MemberDetailedInfoDto memberInfo = memberLookupService.getMemberDetailedInfoById(comment.getWriterId());
+                    return DeletedCommentResponseDto.toDto(comment, memberInfo, comment.isOwner(currentMemberId));
+                })
+                .toList();
+        return new PagedResponseDto<>(new PageImpl<>(deletedCommentDtos, pageable, comments.getTotalElements()));
     }
 
     @Transactional
     public Long updateComment(Long commentId, CommentUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        MemberDetailedInfoDto memberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Comment comment = getCommentByIdOrThrow(commentId);
-        comment.validateAccessPermission(currentMember);
+        comment.validateAccessPermission(memberInfo);
         comment.update(requestDto);
         validationService.checkValid(comment);
         commentRepository.save(comment);
@@ -98,25 +101,25 @@ public class CommentService {
     }
 
     public Long deleteComment(Long commentId) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        MemberDetailedInfoDto memberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Comment comment = getCommentByIdOrThrow(commentId);
-        comment.validateAccessPermission(currentMember);
-        comment.updateIsDeleted();
+        comment.validateAccessPermission(memberInfo);
+        comment.delete();
         commentRepository.save(comment);
         return comment.getBoard().getId();
     }
 
     @Transactional
     public Long toggleLikeStatus(Long commentId) {
-        Member currentMember = memberService.getCurrentMember();
+        String currentMemberId = memberLookupService.getCurrentMemberId();
         Comment comment = getCommentByIdOrThrow(commentId);
-        Optional<CommentLike> commentLikeOpt = commentLikeRepository.findByCommentIdAndMemberId(comment.getId(), currentMember.getId());
+        Optional<CommentLike> commentLikeOpt = commentLikeRepository.findByCommentIdAndMemberId(comment.getId(), currentMemberId);
         if (commentLikeOpt.isPresent()) {
             comment.decrementLikes();
             commentLikeRepository.delete(commentLikeOpt.get());
         } else {
             comment.incrementLikes();
-            CommentLike newLike = CommentLike.create(currentMember.getId(), comment.getId());
+            CommentLike newLike = CommentLike.create(currentMemberId, comment.getId());
             commentLikeRepository.save(newLike);
         }
         return comment.getLikes();
@@ -131,15 +134,15 @@ public class CommentService {
         return commentRepository.findAllByBoardIdAndParentIsNull(boardId, pageable);
     }
 
-    private Page<Comment> getCommentByWriter(Member member, Pageable pageable) {
-        return commentRepository.findAllByWriter(member, pageable);
+    private Page<Comment> getCommentByWriterId(String memberId, Pageable pageable) {
+        return commentRepository.findAllByWriterId(memberId, pageable);
     }
 
     private Comment createAndStoreComment(Long parentId, Long boardId, CommentRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
+        String currentMemberId = memberLookupService.getCurrentMemberId();
         Board board = boardService.getBoardByIdOrThrow(boardId);
         Comment parent = findParentComment(parentId);
-        Comment comment = CommentRequestDto.toEntity(requestDto, board, currentMember, parent);
+        Comment comment = CommentRequestDto.toEntity(requestDto, board, currentMemberId, parent);
         if (parent != null) {
             parent.addChildComment(comment);
         }
@@ -153,37 +156,28 @@ public class CommentService {
 
     private void sendNotificationForNewComment(Comment comment) {
         Board board = comment.getBoard();
-        Member boardOwner = board.getMember();
-        String notificationMessage = String.format("[%s] %s님이 게시글에 댓글을 남겼습니다.", board.getTitle(), comment.getWriterName());
-        notificationService.sendNotificationToMember(boardOwner, notificationMessage);
+        MemberBasicInfoDto memberInfo = memberLookupService.getMemberBasicInfoById(comment.getWriterId());
+        String notificationMessage = String.format("[%s] %s님이 게시글에 댓글을 남겼습니다.", board.getTitle(), memberInfo.getMemberName());
+        notificationService.sendNotificationToMember(board.getMemberId(), notificationMessage);
     }
 
-    private CommentResponseDto toCommentResponseDto(Comment comment, Member currentMember) {
-        Boolean hasLikeByMe = checkLikeStatus(comment.getId(), currentMember.getId());
-        CommentResponseDto responseDto = CommentResponseDto.toDto(comment, currentMember.getId());
-        responseDto.getChildren().forEach(childDto -> setLikeStatusForChildren(childDto, currentMember));
-        if (!responseDto.getIsDeleted()) {
-            responseDto.setHasLikeByMe(hasLikeByMe);
-        }
-        return responseDto;
+    private CommentResponseDto toCommentResponseDtoWithMemberInfo(Comment comment, String currentMemberId) {
+        MemberDetailedInfoDto memberInfo = memberLookupService.getMemberDetailedInfoById(comment.getWriterId());
+        List<CommentResponseDto> childrenDtos = comment.getChildren().stream()
+                .map(child -> toCommentResponseDtoWithMemberInfo(child, currentMemberId))
+                .toList();
+        boolean isOwner = comment.isOwner(currentMemberId);
+        return CommentResponseDto.toDto(comment, memberInfo, isOwner, childrenDtos);
     }
 
     private boolean checkLikeStatus(Long commentId, String memberId) {
         return commentLikeRepository.existsByCommentIdAndMemberId(commentId, memberId);
     }
 
-    private void setLikeStatusForChildren(CommentResponseDto responseDto, Member member) {
-        responseDto.setHasLikeByMe(checkLikeStatus(responseDto.getId(), member.getId()));
-        responseDto.getChildren().forEach(childDto -> setLikeStatusForChildren(childDto, member));
-    }
-
-    private CommentMyResponseDto toCommentMyResponseDto(Comment comment, Member currentMember) {
-        boolean hasLikeByMe = checkLikeStatus(comment.getId(), currentMember.getId());
-        return CommentMyResponseDto.toDto(comment, hasLikeByMe);
-    }
-
-    private void sortChildrenComments(Comment comment) {
-        comment.getChildren().sort(Comparator.comparing(Comment::getCreatedAt));
+    private CommentMyResponseDto toCommentMyResponseDto(Comment comment, String currentMemberId) {
+        boolean hasLikeByMe = checkLikeStatus(comment.getId(), currentMemberId);
+        MemberDetailedInfoDto memberInfo = memberLookupService.getMemberDetailedInfoById(comment.getWriterId());
+        return CommentMyResponseDto.toDto(comment, memberInfo, hasLikeByMe);
     }
 
 }

@@ -11,7 +11,7 @@ import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.dao.ScheduleRepository;
 import page.clab.api.domain.schedule.domain.Schedule;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ScheduleService {
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final ActivityGroupMemberService activityGroupMemberService;
 
@@ -44,7 +44,7 @@ public class ScheduleService {
 
     @Transactional
     public Long createSchedule(ScheduleRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         ActivityGroup activityGroup = resolveActivityGroupForSchedule(requestDto, currentMember);
         Schedule schedule = ScheduleRequestDto.toEntity(requestDto, currentMember, activityGroup);
         schedule.validateAccessPermissionForCreation(currentMember);
@@ -53,7 +53,7 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> getSchedulesWithinDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByMember(currentMember);
         List<ActivityGroup> myGroups = getMyActivityGroups(groupMembers);
         Page<Schedule> schedules = scheduleRepository.findByDateRangeAndMember(startDate, endDate, myGroups, pageable);
@@ -71,7 +71,7 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> getActivitySchedules(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Page<Schedule> schedules = scheduleRepository.findActivitySchedulesByDateRangeAndMember(startDate, endDate, currentMember, pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
@@ -83,7 +83,7 @@ public class ScheduleService {
     }
 
     public Long deleteSchedule(Long scheduleId) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = memberLookupService.getCurrentMember();
         Schedule schedule = getScheduleById(scheduleId);
         schedule.validateAccessPermission(currentMember);
         scheduleRepository.delete(schedule);

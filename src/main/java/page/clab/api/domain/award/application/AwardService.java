@@ -10,8 +10,8 @@ import page.clab.api.domain.award.domain.Award;
 import page.clab.api.domain.award.dto.request.AwardRequestDto;
 import page.clab.api.domain.award.dto.request.AwardUpdateRequestDto;
 import page.clab.api.domain.award.dto.response.AwardResponseDto;
-import page.clab.api.domain.member.application.MemberService;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.application.MemberLookupService;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -21,7 +21,7 @@ import page.clab.api.global.validation.ValidationService;
 @RequiredArgsConstructor
 public class AwardService {
 
-    private final MemberService memberService;
+    private final MemberLookupService memberLookupService;
 
     private final ValidationService validationService;
 
@@ -29,8 +29,8 @@ public class AwardService {
 
     @Transactional
     public Long createAward(AwardRequestDto requestDto) {
-        Member currentMember = memberService.getCurrentMember();
-        Award award = AwardRequestDto.toEntity(requestDto, currentMember);
+        String currentMemberId = memberLookupService.getCurrentMemberId();
+        Award award = AwardRequestDto.toEntity(requestDto, currentMemberId);
         validationService.checkValid(award);
         return awardRepository.save(award).getId();
     }
@@ -43,26 +43,28 @@ public class AwardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<AwardResponseDto> getMyAwards(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
-        Page<Award> awards = getAwardByMember(pageable, currentMember);
+        String currentMemberId = memberLookupService.getCurrentMemberId();
+        Page<Award> awards = getAwardByMemberId(pageable, currentMemberId);
         return new PagedResponseDto<>(awards.map(AwardResponseDto::toDto));
     }
 
     @Transactional
     public Long updateAward(Long awardId, AwardUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Award award = getAwardByIdOrThrow(awardId);
-        award.validateAccessPermission(currentMember);
+        award.validateAccessPermission(currentMemberInfo);
         award.update(requestDto);
         validationService.checkValid(award);
         return awardRepository.save(award).getId();
     }
 
+    @Transactional
     public Long deleteAward(Long awardId) throws PermissionDeniedException {
-        Member currentMember = memberService.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Award award = getAwardByIdOrThrow(awardId);
-        award.validateAccessPermission(currentMember);
-        awardRepository.delete(award);
+        award.validateAccessPermission(currentMemberInfo);
+        award.delete();
+        awardRepository.save(award);
         return award.getId();
     }
 
@@ -77,8 +79,8 @@ public class AwardService {
                 .orElseThrow(() -> new NotFoundException("해당 수상 이력이 존재하지 않습니다."));
     }
 
-    private Page<Award> getAwardByMember(Pageable pageable, Member member) {
-        return awardRepository.findAllByMember(member, pageable);
+    private Page<Award> getAwardByMemberId(Pageable pageable, String memberId) {
+        return awardRepository.findByMemberId(memberId, pageable);
     }
 
 }

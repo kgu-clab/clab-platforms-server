@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.BoardCategory;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.util.RandomNicknameUtil;
 
@@ -38,9 +37,9 @@ public class BoardRequestDto {
     @Schema(description = "익명 사용 여부", example = "false", required = true)
     private boolean wantAnonymous;
 
-    public static Board toEntity(BoardRequestDto requestDto, Member member, List<UploadedFile> uploadedFiles) {
+    public static Board toEntity(BoardRequestDto requestDto, String memberId, List<UploadedFile> uploadedFiles) {
         return Board.builder()
-                .member(member)
+                .memberId(memberId)
                 .nickname(RandomNicknameUtil.makeRandomNickname())
                 .category(requestDto.getCategory())
                 .title(requestDto.getTitle())

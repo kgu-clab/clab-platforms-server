@@ -16,7 +16,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.member.domain.Member;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.global.common.domain.BaseEntity;
 
 @Entity
@@ -26,15 +27,16 @@ import page.clab.api.global.common.domain.BaseEntity;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode(callSuper = false)
+@SQLDelete(sql = "UPDATE accuse SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 public class Accuse extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @Column(name = "member_id", nullable = false)
+    private String memberId;
 
     @ManyToOne
     @JoinColumns({
@@ -49,6 +51,10 @@ public class Accuse extends BaseEntity {
 
     public void updateReason(String reason) {
         this.reason = reason;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
     }
 
 }

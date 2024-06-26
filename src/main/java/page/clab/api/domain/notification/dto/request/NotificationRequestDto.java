@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.domain.Notification;
 
 @Getter
@@ -19,10 +18,10 @@ public class NotificationRequestDto {
     @Schema(description = "내용", example = "알림 내용", required = true)
     private String content;
 
-    public static Notification toEntity(NotificationRequestDto requestDto, Member member) {
+    public static Notification toEntity(NotificationRequestDto requestDto) {
         return Notification.builder()
                 .content(requestDto.getContent())
-                .member(member)
+                .memberId(requestDto.getMemberId())
                 .build();
     }
 

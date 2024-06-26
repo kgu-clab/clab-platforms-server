@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,7 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.workExperience.dto.request.WorkExperienceUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -51,8 +50,8 @@ public class WorkExperience extends BaseEntity {
     @Column(nullable = false)
     private LocalDate endDate;
 
-    @ManyToOne
-    private Member member;
+    @Column(name = "member_id", nullable = false)
+    private String memberId;
 
     public void update(WorkExperienceUpdateRequestDto workExperienceUpdateRequestDto) {
         Optional.ofNullable(workExperienceUpdateRequestDto.getCompanyName()).ifPresent(this::setCompanyName);
@@ -61,12 +60,16 @@ public class WorkExperience extends BaseEntity {
         Optional.ofNullable(workExperienceUpdateRequestDto.getEndDate()).ifPresent(this::setEndDate);
     }
 
-    public boolean isOwner(Member member) {
-        return this.member.isSameMember(member);
+    public void delete() {
+        this.isDeleted = true;
     }
 
-    public void validateAccessPermission(Member member) throws PermissionDeniedException {
-        if (!isOwner(member) && !member.isSuperAdminRole()) {
+    public boolean isOwner(String memberId) {
+        return this.memberId.equals(memberId);
+    }
+
+    public void validateAccessPermission(MemberDetailedInfoDto memberInfo) throws PermissionDeniedException {
+        if (!isOwner(memberInfo.getMemberId()) && !memberInfo.isSuperAdminRole()) {
             throw new PermissionDeniedException("해당 경력사항을 수정/삭제할 권한이 없습니다.");
         }
     }

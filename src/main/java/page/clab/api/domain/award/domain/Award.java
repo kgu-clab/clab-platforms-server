@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,7 +15,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.award.dto.request.AwardUpdateRequestDto;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -53,9 +51,8 @@ public class Award extends BaseEntity {
     @Column(nullable = false)
     private LocalDate awardDate;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @Column(name = "member_id", nullable = false)
+    private String memberId;
 
     public void update(AwardUpdateRequestDto requestDto) {
         Optional.ofNullable(requestDto.getCompetitionName()).ifPresent(this::setCompetitionName);
@@ -64,12 +61,16 @@ public class Award extends BaseEntity {
         Optional.ofNullable(requestDto.getAwardDate()).ifPresent(this::setAwardDate);
     }
 
-    public boolean isOwner(Member member) {
-        return this.member.isSameMember(member);
+    public void delete() {
+        this.isDeleted = true;
     }
 
-    public void validateAccessPermission(Member member) throws PermissionDeniedException {
-        if (!isOwner(member) && !member.isAdminRole()) {
+    public boolean isOwner(String memberId) {
+        return this.memberId.equals(memberId);
+    }
+
+    public void validateAccessPermission(MemberDetailedInfoDto memberInfo) throws PermissionDeniedException {
+        if (!isOwner(memberInfo.getMemberId()) && !memberInfo.isAdminRole()) {
             throw new PermissionDeniedException("해당 게시글을 수정/삭제할 권한이 없습니다.");
         }
     }

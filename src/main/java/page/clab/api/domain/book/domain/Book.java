@@ -6,8 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,7 +17,6 @@ import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
 import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.book.exception.InvalidBorrowerException;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.util.StringJsonConverter;
 
@@ -57,9 +54,8 @@ public class Book extends BaseEntity {
     @Convert(converter = StringJsonConverter.class)
     private List<String> reviewLinks;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member borrower;
+    @Column(name = "member_id")
+    private String borrowerId;
 
     @Version
     private Long version;
@@ -73,23 +69,27 @@ public class Book extends BaseEntity {
         Optional.ofNullable(requestDto.getReviewLinks()).ifPresent(this::setReviewLinks);
     }
 
-    public void updateIsDeleted(Boolean isDeleted) {
-        this.isDeleted = isDeleted;
+    public void delete() {
+        this.isDeleted = true;
+    }
+
+    public boolean isBorrower(String borrowerId) {
+        return this.borrowerId == null || !this.borrowerId.equals(borrowerId);
     }
 
     public void validateBookIsNotBorrowed() {
-        if (this.borrower != null) {
+        if (this.borrowerId != null) {
             throw new BookAlreadyBorrowedException("이미 대출 중인 도서입니다.");
         }
     }
 
-    public void returnBook(Member currentMember) {
-        validateCurrentBorrower(currentMember);
-        this.borrower = null;
+    public void returnBook(String borrowerId) {
+        validateCurrentBorrower(borrowerId);
+        this.borrowerId = null;
     }
 
-    public void validateCurrentBorrower(Member currentMember) {
-        if (this.borrower == null || !this.borrower.equals(currentMember)) {
+    public void validateCurrentBorrower(String borrowerId) {
+        if (isBorrower(borrowerId)) {
             throw new InvalidBorrowerException("대출한 도서와 회원 정보가 일치하지 않습니다.");
         }
     }
