@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberLookupService;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.workExperience.dao.WorkExperienceRepository;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
 import page.clab.api.domain.workExperience.dto.request.WorkExperienceRequestDto;
@@ -29,23 +29,22 @@ public class WorkExperienceService {
 
     @Transactional
     public Long createWorkExperience(WorkExperienceRequestDto requestDto) {
-        Member currentMember = memberLookupService.getCurrentMember();
-        WorkExperience workExperience = WorkExperienceRequestDto.toEntity(requestDto, currentMember);
+        String currentMemberId = memberLookupService.getCurrentMemberId();
+        WorkExperience workExperience = WorkExperienceRequestDto.toEntity(requestDto, currentMemberId);
         validationService.checkValid(workExperience);
         return workExperienceRepository.save(workExperience).getId();
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<WorkExperienceResponseDto> getMyWorkExperience(Pageable pageable) {
-        Member currentMember = memberLookupService.getCurrentMember();
-        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMember(currentMember, pageable);
+        String currentMemberId = memberLookupService.getCurrentMemberId();
+        Page<WorkExperience> workExperiences = workExperienceRepository.findByMemberId(currentMemberId, pageable);
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<WorkExperienceResponseDto> getWorkExperiencesByConditions(String memberId, Pageable pageable) {
-        Member member = memberLookupService.getMemberByIdOrThrow(memberId);
-        Page<WorkExperience> workExperiences = workExperienceRepository.findAllByMember(member, pageable);
+        Page<WorkExperience> workExperiences = workExperienceRepository.findByMemberId(memberId, pageable);
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
     }
 
@@ -57,20 +56,21 @@ public class WorkExperienceService {
 
     @Transactional
     public Long updateWorkExperience(Long workExperienceId, WorkExperienceUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberLookupService.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
-        workExperience.validateAccessPermission(currentMember);
+        workExperience.validateAccessPermission(currentMemberInfo);
         workExperience.update(requestDto);
         validationService.checkValid(workExperience);
         return workExperienceRepository.save(workExperience).getId();
     }
 
+    @Transactional
     public Long deleteWorkExperience(Long workExperienceId) throws PermissionDeniedException {
-        Member currentMember = memberLookupService.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
-        workExperience.validateAccessPermission(currentMember);
-        workExperienceRepository.deleteById(workExperienceId);
-        return workExperience.getId();
+        workExperience.validateAccessPermission(currentMemberInfo);
+        workExperience.delete();
+        return workExperienceRepository.save(workExperience).getId();
     }
 
     private WorkExperience getWorkExperienceByIdOrThrow(Long workExperienceId) {
