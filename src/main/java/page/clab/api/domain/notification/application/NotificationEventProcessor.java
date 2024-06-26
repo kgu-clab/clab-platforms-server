@@ -4,7 +4,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.event.MemberEventProcessor;
 import page.clab.api.domain.member.event.MemberEventProcessorRegistry;
 import page.clab.api.domain.notification.dao.NotificationRepository;
@@ -27,14 +26,14 @@ public class NotificationEventProcessor implements MemberEventProcessor {
 
     @Override
     @Transactional
-    public void processMemberDeleted(Member member) {
-        List<Notification> notifications = notificationRepository.findByMemberId(member.getId());
+    public void processMemberDeleted(String memberId) {
+        List<Notification> notifications = notificationRepository.findByMemberId(memberId);
         notifications.forEach(Notification::delete);
         notificationRepository.saveAll(notifications);
     }
 
     @Override
-    public void processMemberUpdated(Member member) {
+    public void processMemberUpdated(String memberId) {
         // do nothing
     }
 

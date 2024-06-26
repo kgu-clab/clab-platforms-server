@@ -119,7 +119,7 @@ public class MemberService {
         updateMember(requestDto, member);
         validationService.checkValid(member);
         memberRepository.save(member);
-        eventPublisher.publishEvent(new MemberUpdatedEvent(this, member));
+        eventPublisher.publishEvent(new MemberUpdatedEvent(this, member.getId()));
         return member.getId();
     }
 
@@ -143,7 +143,7 @@ public class MemberService {
     public String deleteMember(String memberId) {
         Member member = memberLookupService.getMemberByIdOrThrow(memberId);
         memberRepository.delete(member);
-        eventPublisher.publishEvent(new MemberDeletedEvent(this, member));
+        eventPublisher.publishEvent(new MemberDeletedEvent(this, member.getId()));
         return member.getId();
     }
 

@@ -1,11 +1,9 @@
 package page.clab.api.domain.member.event;
 
-import page.clab.api.domain.member.domain.Member;
-
 public interface MemberEventProcessor {
 
-    void processMemberDeleted(Member member);
+    void processMemberDeleted(String memberId);
 
-    void processMemberUpdated(Member member);
+    void processMemberUpdated(String memberId);
 
 }

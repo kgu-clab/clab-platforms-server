@@ -2,16 +2,15 @@ package page.clab.api.domain.member.event;
 
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
-import page.clab.api.domain.member.domain.Member;
 
 @Getter
 public class MemberUpdatedEvent extends ApplicationEvent {
 
-    private final Member member;
+    private final String memberId;
 
-    public MemberUpdatedEvent(Object source, Member member) {
+    public MemberUpdatedEvent(Object source, String memberId) {
         super(source);
-        this.member = member;
+        this.memberId = memberId;
     }
 
 }

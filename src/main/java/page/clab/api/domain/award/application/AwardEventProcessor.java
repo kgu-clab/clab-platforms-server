@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.award.dao.AwardRepository;
 import page.clab.api.domain.award.domain.Award;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.event.MemberEventProcessor;
 import page.clab.api.domain.member.event.MemberEventProcessorRegistry;
 
@@ -27,14 +26,14 @@ public class AwardEventProcessor implements MemberEventProcessor {
 
     @Override
     @Transactional
-    public void processMemberDeleted(Member member) {
-        List<Award> awards = awardRepository.findByMemberId(member.getId());
+    public void processMemberDeleted(String memberId) {
+        List<Award> awards = awardRepository.findByMemberId(memberId);
         awards.forEach(Award::delete);
         awardRepository.saveAll(awards);
     }
 
     @Override
-    public void processMemberUpdated(Member member) {
+    public void processMemberUpdated(String memberId) {
         // do nothing
     }
 }
