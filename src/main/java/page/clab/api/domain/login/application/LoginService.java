@@ -21,7 +21,7 @@ import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberLookupService;
-import page.clab.api.domain.member.dto.shared.LoginMemberInfoDto;
+import page.clab.api.domain.member.dto.shared.MemberLoginInfoDto;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
@@ -57,7 +57,7 @@ public class LoginService {
     public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFaliedException, MemberLockedException {
         authenticateAndCheckStatus(request, requestDto);
         logLoginAttempt(request, requestDto.getId(), true);
-        LoginMemberInfoDto loginMember = memberLookupService.getLoginMemberInfoById(requestDto.getId());
+        MemberLoginInfoDto loginMember = memberLookupService.getMemberLoginInfoById(requestDto.getId());
         memberLookupService.updateLastLoginTime(requestDto.getId());
         return generateLoginResult(loginMember);
     }
@@ -65,7 +65,7 @@ public class LoginService {
     @Transactional
     public LoginResult authenticator(HttpServletRequest request, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
         String memberId = twoFactorAuthenticationRequestDto.getMemberId();
-        LoginMemberInfoDto loginMember = memberLookupService.getLoginMemberInfoById(memberId);
+        MemberLoginInfoDto loginMember = memberLookupService.getMemberLoginInfoById(memberId);
         String totp = twoFactorAuthenticationRequestDto.getTotp();
 
         accountLockInfoService.handleAccountLockInfo(memberId);
@@ -122,7 +122,7 @@ public class LoginService {
         loginAttemptLogService.createLoginAttemptLog(request, memberId, result);
     }
 
-    private LoginResult generateLoginResult(LoginMemberInfoDto loginMember) {
+    private LoginResult generateLoginResult(MemberLoginInfoDto loginMember) {
         String memberId = loginMember.getMemberId();
         String header;
         boolean isOtpEnabled = Optional.of(loginMember.isOtpEnabled()).orElse(false);
@@ -149,14 +149,14 @@ public class LoginService {
         loginAttemptLogService.createLoginAttemptLog(request, memberId, LoginAttemptResult.TOTP);
     }
 
-    private TokenInfo generateAndSaveToken(LoginMemberInfoDto memberInfo) {
+    private TokenInfo generateAndSaveToken(MemberLoginInfoDto memberInfo) {
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(memberInfo.getMemberId(), memberInfo.getRole());
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         redisTokenService.saveRedisToken(memberInfo.getMemberId(), memberInfo.getRole(), tokenInfo, clientIpAddress);
         return tokenInfo;
     }
 
-    private void sendAdminLoginNotification(HttpServletRequest request, LoginMemberInfoDto loginMember) {
+    private void sendAdminLoginNotification(HttpServletRequest request, MemberLoginInfoDto loginMember) {
         if (loginMember.isSuperAdminRole()) {
             slackService.sendAdminLoginNotification(request, loginMember);
         }

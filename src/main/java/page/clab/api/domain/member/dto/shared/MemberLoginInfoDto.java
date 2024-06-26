@@ -7,7 +7,7 @@ import page.clab.api.domain.member.domain.Role;
 
 @Getter
 @Builder
-public class LoginMemberInfoDto {
+public class MemberLoginInfoDto {
 
     private String memberId;
 
@@ -17,8 +17,8 @@ public class LoginMemberInfoDto {
 
     private boolean isOtpEnabled;
 
-    public static LoginMemberInfoDto create(Member member) {
-        return LoginMemberInfoDto.builder()
+    public static MemberLoginInfoDto create(Member member) {
+        return MemberLoginInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())
                 .role(member.getRole())

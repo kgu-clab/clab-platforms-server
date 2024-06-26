@@ -19,7 +19,7 @@ import page.clab.api.domain.book.exception.BookAlreadyReturnedException;
 import page.clab.api.domain.book.exception.LoanNotPendingException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.book.exception.OverdueException;
-import page.clab.api.domain.member.dto.shared.BookBorrowerInfoDto;
+import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
 import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDateTime;
@@ -55,7 +55,7 @@ public class BookLoanRecord extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private BookLoanStatus status;
 
-    public static BookLoanRecord create(Book book, BookBorrowerInfoDto borrowerInfo) {
+    public static BookLoanRecord create(Book book, MemberBorrowerInfoDto borrowerInfo) {
         return BookLoanRecord.builder()
                 .book(book)
                 .borrowerId(borrowerInfo.getMemberId())
@@ -64,7 +64,7 @@ public class BookLoanRecord extends BaseEntity {
                 .build();
     }
 
-    public void markAsReturned(BookBorrowerInfoDto borrowerInfo) {
+    public void markAsReturned(MemberBorrowerInfoDto borrowerInfo) {
         if (this.returnedAt != null) {
             throw new BookAlreadyReturnedException("이미 반납된 도서입니다.");
         }
@@ -80,7 +80,7 @@ public class BookLoanRecord extends BaseEntity {
         return returnedAt.isAfter(this.dueDate);
     }
 
-    public void extendLoan(BookBorrowerInfoDto borrowerInfo) {
+    public void extendLoan(MemberBorrowerInfoDto borrowerInfo) {
         final long MAX_EXTENSIONS = 2;
         LocalDateTime now = LocalDateTime.now();
 

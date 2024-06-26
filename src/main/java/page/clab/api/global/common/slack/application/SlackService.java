@@ -9,7 +9,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.board.domain.SlackBoardInfo;
-import page.clab.api.domain.member.dto.shared.LoginMemberInfoDto;
+import page.clab.api.domain.member.dto.shared.MemberLoginInfoDto;
 import page.clab.api.global.common.slack.domain.GeneralAlertType;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.common.slack.event.NotificationEvent;
@@ -29,7 +29,7 @@ public class SlackService {
         eventPublisher.publishEvent(new NotificationEvent(this, alertType, request, additionalMessage));
     }
 
-    public void sendAdminLoginNotification(HttpServletRequest request, LoginMemberInfoDto loginMember) {
+    public void sendAdminLoginNotification(HttpServletRequest request, MemberLoginInfoDto loginMember) {
         eventPublisher.publishEvent(new NotificationEvent(this, GeneralAlertType.ADMIN_LOGIN, request, loginMember));
     }
 

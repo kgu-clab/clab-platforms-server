@@ -17,7 +17,7 @@ import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.domain.book.exception.BookAlreadyAppliedForLoanException;
 import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.member.application.MemberLookupService;
-import page.clab.api.domain.member.dto.shared.BookBorrowerInfoDto;
+import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
 import page.clab.api.domain.notification.application.NotificationService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
@@ -43,7 +43,7 @@ public class BookLoanRecordService {
     @Transactional
     public Long requestBookLoan(BookLoanRecordRequestDto requestDto) throws CustomOptimisticLockingFailureException {
         try {
-            BookBorrowerInfoDto borrowerInfo = memberLookupService.getCurrentMemberBorrowerInfo();
+            MemberBorrowerInfoDto borrowerInfo = memberLookupService.getCurrentMemberBorrowerInfo();
 
             borrowerInfo.checkLoanSuspension();
             validateBorrowLimit(borrowerInfo.getMemberId());
@@ -63,7 +63,7 @@ public class BookLoanRecordService {
 
     @Transactional
     public Long returnBook(BookLoanRecordRequestDto requestDto) {
-        BookBorrowerInfoDto borrowerInfo = memberLookupService.getCurrentMemberBorrowerInfo();
+        MemberBorrowerInfoDto borrowerInfo = memberLookupService.getCurrentMemberBorrowerInfo();
         String currentMemberId = borrowerInfo.getMemberId();
         Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
         book.returnBook(currentMemberId);
@@ -81,7 +81,7 @@ public class BookLoanRecordService {
 
     @Transactional
     public Long extendBookLoan(BookLoanRecordRequestDto requestDto) {
-        BookBorrowerInfoDto borrowerInfo = memberLookupService.getCurrentMemberBorrowerInfo();
+        MemberBorrowerInfoDto borrowerInfo = memberLookupService.getCurrentMemberBorrowerInfo();
         String currentMemberId = borrowerInfo.getMemberId();
         Book book = bookService.getBookByIdOrThrow(requestDto.getBookId());
 

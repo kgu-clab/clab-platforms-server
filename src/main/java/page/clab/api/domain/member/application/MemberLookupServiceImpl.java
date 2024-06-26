@@ -5,10 +5,10 @@ import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.dao.MemberRepository;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
-import page.clab.api.domain.member.dto.shared.BookBorrowerInfoDto;
-import page.clab.api.domain.member.dto.shared.LoginMemberInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
+import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.member.dto.shared.MemberLoginInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberPositionInfoDto;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.exception.NotFoundException;
@@ -121,17 +121,17 @@ public class MemberLookupServiceImpl implements MemberLookupService {
     }
 
     @Override
-    public BookBorrowerInfoDto getCurrentMemberBorrowerInfo() {
+    public MemberBorrowerInfoDto getCurrentMemberBorrowerInfo() {
         String currentMemberId = getCurrentMemberId();
         return memberRepository.findById(currentMemberId)
-                .map(BookBorrowerInfoDto::create)
+                .map(MemberBorrowerInfoDto::create)
                 .orElseThrow(() -> new NotFoundException("[Member] id: " + currentMemberId + "에 해당하는 멤버가 존재하지 않습니다."));
     }
 
     @Override
-    public LoginMemberInfoDto getLoginMemberInfoById(String memberId) {
+    public MemberLoginInfoDto getMemberLoginInfoById(String memberId) {
         return memberRepository.findById(memberId)
-                .map(LoginMemberInfoDto::create)
+                .map(MemberLoginInfoDto::create)
                 .orElseThrow(() -> new NotFoundException("[Member] id: " + memberId + "에 해당하는 멤버가 존재하지 않습니다."));
     }
 

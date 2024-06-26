@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class BookBorrowerInfoDto {
+public class MemberBorrowerInfoDto {
 
     private String memberId;
 
@@ -17,8 +17,8 @@ public class BookBorrowerInfoDto {
 
     private LocalDateTime loanSuspensionDate;
 
-    public static BookBorrowerInfoDto create(Member member) {
-        return BookBorrowerInfoDto.builder()
+    public static MemberBorrowerInfoDto create(Member member) {
+        return MemberBorrowerInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())
                 .loanSuspensionDate(member.getLoanSuspensionDate())
