@@ -9,6 +9,7 @@ import page.clab.api.domain.member.dto.shared.BookBorrowerInfoDto;
 import page.clab.api.domain.member.dto.shared.LoginMemberInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.member.dto.shared.MemberPositionInfoDto;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -132,6 +133,14 @@ public class MemberLookupServiceImpl implements MemberLookupService {
         return memberRepository.findById(memberId)
                 .map(LoginMemberInfoDto::create)
                 .orElseThrow(() -> new NotFoundException("[Member] id: " + memberId + "에 해당하는 멤버가 존재하지 않습니다."));
+    }
+
+    @Override
+    public MemberPositionInfoDto getCurrentMemberPositionInfo() {
+        String currentMemberId = getCurrentMemberId();
+        return memberRepository.findById(currentMemberId)
+                .map(MemberPositionInfoDto::create)
+                .orElseThrow(() -> new NotFoundException("[Member] id: " + currentMemberId + "에 해당하는 멤버가 존재하지 않습니다."));
     }
 
     public void updateLoanSuspensionDate(String memberId, LocalDateTime loanSuspensionDate) {

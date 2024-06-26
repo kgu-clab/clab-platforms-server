@@ -6,6 +6,7 @@ import page.clab.api.domain.member.dto.shared.BookBorrowerInfoDto;
 import page.clab.api.domain.member.dto.shared.LoginMemberInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.member.dto.shared.MemberPositionInfoDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,6 +44,8 @@ public interface MemberLookupService {
     BookBorrowerInfoDto getCurrentMemberBorrowerInfo();
 
     LoginMemberInfoDto getLoginMemberInfoById(String memberId);
+
+    MemberPositionInfoDto getCurrentMemberPositionInfo();
 
     void updateLoanSuspensionDate(String memberId, LocalDateTime loanSuspensionDate);
 

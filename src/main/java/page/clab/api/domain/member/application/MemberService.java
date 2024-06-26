@@ -203,10 +203,10 @@ public class MemberService {
     }
 
     public void createPositionByMember(Member member) {
-        if (positionRepository.findByMemberAndYearAndPositionType(member, String.valueOf(LocalDate.now().getYear()), PositionType.MEMBER).isPresent()) {
+        if (positionRepository.findByMemberIdAndYearAndPositionType(member.getId(), String.valueOf(LocalDate.now().getYear()), PositionType.MEMBER).isPresent()) {
             return;
         }
-        Position position = Position.create(member);
+        Position position = Position.create(member.getId());
         positionRepository.save(position);
     }
 

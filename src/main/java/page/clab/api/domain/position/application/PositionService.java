@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberLookupService;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.dto.shared.MemberPositionInfoDto;
 import page.clab.api.domain.position.dao.PositionRepository;
 import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
@@ -28,8 +28,8 @@ public class PositionService {
 
     @Transactional
     public Long createPosition(PositionRequestDto requestDto) {
-        Member member = memberLookupService.getMemberByIdOrThrow(requestDto.getMemberId());
-        return positionRepository.findByMemberAndYearAndPositionType(member, requestDto.getYear(), requestDto.getPositionType())
+        memberLookupService.ensureMemberExists(requestDto.getMemberId());
+        return positionRepository.findByMemberIdAndYearAndPositionType(requestDto.getMemberId(), requestDto.getYear(), requestDto.getPositionType())
                 .map(Position::getId)
                 .orElseGet(() -> {
                     Position position = PositionRequestDto.toEntity(requestDto);
@@ -39,30 +39,33 @@ public class PositionService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<PositionResponseDto> getPositionsByConditions(String year, PositionType positionType, Pageable pageable) {
+        MemberPositionInfoDto currentMemberInfo = memberLookupService.getCurrentMemberPositionInfo();
         Page<Position> positions = positionRepository.findByConditions(year, positionType, pageable);
-        return new PagedResponseDto<>(positions.map(PositionResponseDto::toDto));
+        return new PagedResponseDto<>(positions.map(position -> PositionResponseDto.toDto(position, currentMemberInfo)));
     }
 
     @Transactional(readOnly = true)
     public PositionMyResponseDto getMyPositionsByYear(String year) {
-        Member currentMember = memberLookupService.getCurrentMember();
-        List<Position> positions = getPositionsByMemberAndYear(currentMember, year);
+        MemberPositionInfoDto currentMemberInfo = memberLookupService.getCurrentMemberPositionInfo();
+        List<Position> positions = getPositionsByMemberIdAndYear(currentMemberInfo.getMemberId(), year);
         if (positions.isEmpty()) {
             throw new NotFoundException("해당 멤버의 " + year + "년도 직책이 존재하지 않습니다.");
         }
-        return PositionMyResponseDto.toDto(positions);
+        return PositionMyResponseDto.toDto(positions, currentMemberInfo);
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<PositionResponseDto> getDeletedPositions(Pageable pageable) {
+        MemberPositionInfoDto currentMemberInfo = memberLookupService.getCurrentMemberPositionInfo();
         Page<Position> positions = positionRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(positions.map(PositionResponseDto::toDto));
+        return new PagedResponseDto<>(positions.map(position -> PositionResponseDto.toDto(position, currentMemberInfo)));
     }
 
+    @Transactional
     public Long deletePosition(Long positionId) {
         Position position = getPositionsByIdOrThrow(positionId);
-        positionRepository.delete(position);
-        return position.getId();
+        position.delete();
+        return positionRepository.save(position).getId();
     }
 
     private Position getPositionsByIdOrThrow(Long positionId) {
@@ -70,8 +73,8 @@ public class PositionService {
                 .orElseThrow(() -> new NotFoundException("해당 운영진이 존재하지 않습니다."));
     }
 
-    private List<Position> getPositionsByMemberAndYear(Member member, String year) {
-        return positionRepository.findAllByMemberAndYearOrderByPositionTypeAsc(member, year);
+    private List<Position> getPositionsByMemberIdAndYear(String memberId, String year) {
+        return positionRepository.findAllByMemberIdAndYearOrderByPositionTypeAsc(memberId, year);
     }
 
 }

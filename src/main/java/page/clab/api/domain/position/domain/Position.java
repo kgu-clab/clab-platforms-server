@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +13,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDate;
@@ -34,9 +31,8 @@ public class Position extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @Column(name = "member_id", nullable = false)
+    private String memberId;
 
     @Column(nullable = false)
     private PositionType positionType;
@@ -44,12 +40,16 @@ public class Position extends BaseEntity {
     @Column(nullable = false)
     private String year;
 
-    public static Position create(Member member) {
+    public static Position create(String memberId) {
         return Position.builder()
-                .member(member)
+                .memberId(memberId)
                 .positionType(PositionType.MEMBER)
                 .year(String.valueOf(LocalDate.now().getYear()))
                 .build();
+    }
+
+    public void delete() {
+        this.isDeleted = true;
     }
 
 }
