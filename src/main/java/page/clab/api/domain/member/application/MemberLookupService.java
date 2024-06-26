@@ -33,6 +33,8 @@ public interface MemberLookupService {
 
     MemberBasicInfoDto getCurrentMemberBasicInfo();
 
+    MemberDetailedInfoDto getMemberDetailedInfoById(String memberId);
+
     MemberDetailedInfoDto getCurrentMemberDetailedInfo();
 
     BookBorrowerInfoDto getCurrentMemberBorrowerInfo();

@@ -95,6 +95,13 @@ public class MemberLookupServiceImpl implements MemberLookupService {
     }
 
     @Override
+    public MemberDetailedInfoDto getMemberDetailedInfoById(String memberId) {
+        return memberRepository.findById(memberId)
+                .map(MemberDetailedInfoDto::create)
+                .orElseThrow(() -> new NotFoundException("[Member] id: " + memberId + "에 해당하는 멤버가 존재하지 않습니다."));
+    }
+
+    @Override
     public MemberDetailedInfoDto getCurrentMemberDetailedInfo() {
         String currentMemberId = getCurrentMemberId();
         return memberRepository.findById(currentMemberId)
