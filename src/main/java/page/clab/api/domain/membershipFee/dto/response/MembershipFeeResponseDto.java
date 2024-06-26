@@ -31,13 +31,13 @@ public class MembershipFeeResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static MembershipFeeResponseDto toDto(MembershipFee membershipFee, boolean isAdminOrSuper) {
+    public static MembershipFeeResponseDto toDto(MembershipFee membershipFee, String memberName, boolean isAdminRole) {
         return MembershipFeeResponseDto.builder()
                 .id(membershipFee.getId())
-                .memberId(membershipFee.getApplicant().getId())
-                .memberName(membershipFee.getApplicant().getName())
+                .memberId(membershipFee.getMemberId())
+                .memberName(memberName)
                 .category(membershipFee.getCategory())
-                .account(isAdminOrSuper ? membershipFee.getAccount() : null)
+                .account(isAdminRole ? membershipFee.getAccount() : null)
                 .amount(membershipFee.getAmount())
                 .content(membershipFee.getContent())
                 .imageUrl(membershipFee.getImageUrl())
