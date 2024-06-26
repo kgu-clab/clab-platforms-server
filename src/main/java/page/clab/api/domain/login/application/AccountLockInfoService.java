@@ -14,7 +14,7 @@ import page.clab.api.domain.login.dto.response.AccountLockInfoResponseDto;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.application.MemberLookupService;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
@@ -42,20 +42,20 @@ public class AccountLockInfoService {
 
     @Transactional
     public Long banMemberById(HttpServletRequest request, String memberId) {
-        Member member = memberLookupService.getMemberById(memberId);
-        AccountLockInfo accountLockInfo = ensureAccountLockInfo(member);
+        MemberBasicInfoDto memberInfo = memberLookupService.getMemberBasicInfoById(memberId);
+        AccountLockInfo accountLockInfo = ensureAccountLockInfo(memberInfo.getMemberId());
         accountLockInfo.banPermanently();
         redisTokenService.deleteRedisTokenByMemberId(memberId);
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_BANNED, "ID: " + member.getId() + ", Name: " + member.getName());
+        sendSlackBanNotification(request, memberId);
         return accountLockInfoRepository.save(accountLockInfo).getId();
     }
 
     @Transactional
     public Long unbanMemberById(HttpServletRequest request, String memberId) {
-        Member member = memberLookupService.getMemberById(memberId);
-        AccountLockInfo accountLockInfo = ensureAccountLockInfo(member);
+        MemberBasicInfoDto memberInfo = memberLookupService.getMemberBasicInfoById(memberId);
+        AccountLockInfo accountLockInfo = ensureAccountLockInfo(memberInfo.getMemberId());
         accountLockInfo.unban();
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_UNBANNED, "ID: " + member.getId() + ", Name: " + member.getName());
+        sendSlackUnbanNotification(request, memberId);
         return accountLockInfoRepository.save(accountLockInfo).getId();
     }
 
@@ -63,12 +63,16 @@ public class AccountLockInfoService {
     public PagedResponseDto<AccountLockInfoResponseDto> getBanMembers(Pageable pageable) {
         LocalDateTime banDate = LocalDateTime.of(9999, 12, 31, 23, 59);
         Page<AccountLockInfo> banMembers = accountLockInfoRepository.findByLockUntil(banDate, pageable);
-        return new PagedResponseDto<>(banMembers.map(AccountLockInfoResponseDto::toDto));
+        return new PagedResponseDto<>(banMembers.map(accountLockInfo -> {
+            String memberName = memberLookupService.getMemberBasicInfoById(accountLockInfo.getMemberId()).getMemberName();
+            return AccountLockInfoResponseDto.toDto(accountLockInfo, memberName);
+        }));
     }
 
     @Transactional
     public void handleAccountLockInfo(String memberId) throws MemberLockedException, LoginFaliedException {
-        AccountLockInfo accountLockInfo = ensureAccountLockInfoForMemberId(memberId);
+        ensureMemberExists(memberId);
+        AccountLockInfo accountLockInfo = ensureAccountLockInfo(memberId);
         validateAccountLockStatus(accountLockInfo);
         accountLockInfo.unlockAccount();
         accountLockInfoRepository.save(accountLockInfo);
@@ -76,34 +80,32 @@ public class AccountLockInfoService {
 
     @Transactional
     public void handleLoginFailure(HttpServletRequest request, String memberId) throws MemberLockedException, LoginFaliedException {
-        Member member = memberLookupService.getMemberById(memberId);
-        AccountLockInfo accountLockInfo = ensureAccountLockInfoForMemberId(memberId);
+        ensureMemberExists(memberId);
+        AccountLockInfo accountLockInfo = ensureAccountLockInfo(memberId);
         validateAccountLockStatus(accountLockInfo);
         accountLockInfo.incrementLoginFailCount();
         if (accountLockInfo.shouldBeLocked(maxLoginFailures)) {
             accountLockInfo.lockAccount(lockDurationMinutes);
-            sendSlackMessage(request, member);
+            sendSlackLoginFailureNotification(request, memberId);
         }
         accountLockInfoRepository.save(accountLockInfo);
     }
 
-    public AccountLockInfo createAccountLockInfo(Member member) {
-        AccountLockInfo accountLockInfo = AccountLockInfo.create(member);
+    public AccountLockInfo createAccountLockInfo(String memberId) {
+        AccountLockInfo accountLockInfo = AccountLockInfo.create(memberId);
         accountLockInfoRepository.save(accountLockInfo);
         return accountLockInfo;
     }
 
-    private AccountLockInfo ensureAccountLockInfo(Member member) {
-        return accountLockInfoRepository.findByMember(member)
-                .orElseGet(() -> createAccountLockInfo(member));
+    private AccountLockInfo ensureAccountLockInfo(String memberId) {
+        return accountLockInfoRepository.findByMemberId(memberId)
+                .orElseGet(() -> createAccountLockInfo(memberId));
     }
 
-    private AccountLockInfo ensureAccountLockInfoForMemberId(String memberId) throws LoginFaliedException {
-        Member member = memberLookupService.getMemberById(memberId);
-        if (member == null) {
+    private void ensureMemberExists(String memberId) throws LoginFaliedException {
+        if (memberLookupService.getMemberById(memberId) == null) {
             throw new LoginFaliedException();
         }
-        return ensureAccountLockInfo(member);
     }
 
     private void validateAccountLockStatus(AccountLockInfo accountLockInfo) throws MemberLockedException {
@@ -112,9 +114,20 @@ public class AccountLockInfoService {
         }
     }
 
-    private void sendSlackMessage(HttpServletRequest request, Member member) {
-        if (member.isAdminRole()) {
-            request.setAttribute("member", member.getId() + " " + member.getName());
+    private void sendSlackBanNotification(HttpServletRequest request, String memberId) {
+        String memberName = memberLookupService.getMemberBasicInfoById(memberId).getMemberName();
+        slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_BANNED, "ID: " + memberId + ", Name: " + memberName);
+    }
+
+    private void sendSlackUnbanNotification(HttpServletRequest request, String memberId) {
+        String memberName = memberLookupService.getMemberBasicInfoById(memberId).getMemberName();
+        slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_UNBANNED, "ID: " + memberId + ", Name: " + memberName);
+    }
+
+    private void sendSlackLoginFailureNotification(HttpServletRequest request, String memberId) {
+        String memberName = memberLookupService.getMemberBasicInfoById(memberId).getMemberName();
+        if (memberLookupService.getMemberDetailedInfoById(memberId).isAdminRole()) {
+            request.setAttribute("member", memberId + " " + memberName);
             slackService.sendSecurityAlertNotification(request, SecurityAlertType.REPEATED_LOGIN_FAILURES, "로그인 실패 횟수 초과로 계정이 잠겼습니다.");
         }
     }
