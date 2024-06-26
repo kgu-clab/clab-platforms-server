@@ -22,7 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.board.domain.SlackBoardInfo;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.dto.shared.LoginMemberInfoDto;
 import page.clab.api.global.common.slack.domain.AlertType;
 import page.clab.api.global.common.slack.domain.GeneralAlertType;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
@@ -103,8 +103,8 @@ public class SlackServiceHelper {
         } else if (alertType instanceof GeneralAlertType) {
             switch ((GeneralAlertType) alertType) {
                 case ADMIN_LOGIN:
-                    if (additionalData instanceof Member) {
-                        return createAdminLoginBlocks(request, (Member) additionalData);
+                    if (additionalData instanceof LoginMemberInfoDto) {
+                        return createAdminLoginBlocks(request, (LoginMemberInfoDto) additionalData);
                     }
                     break;
                 case APPLICATION_CREATED:
@@ -169,14 +169,14 @@ public class SlackServiceHelper {
         );
     }
 
-    private List<LayoutBlock> createAdminLoginBlocks(HttpServletRequest request, Member loginMember) {
+    private List<LayoutBlock> createAdminLoginBlocks(HttpServletRequest request, LoginMemberInfoDto loginMember) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String location = getLocation(request);
 
         return Arrays.asList(
                 section(section -> section.text(markdownText(String.format(":mechanic: *%s Login*", loginMember.getRole().getDescription())))),
                 section(section -> section.fields(Arrays.asList(
-                        markdownText("*User:*\n" + loginMember.getId() + " " + loginMember.getName()),
+                        markdownText("*User:*\n" + loginMember.getMemberId() + " " + loginMember.getMemberName()),
                         markdownText("*IP Address:*\n" + clientIpAddress),
                         markdownText("*Location:*\n" + location)
                 )))
