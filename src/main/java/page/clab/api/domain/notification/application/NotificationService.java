@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberLookupService;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.dao.NotificationRepository;
 import page.clab.api.domain.notification.domain.Notification;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
@@ -31,16 +30,16 @@ public class NotificationService {
 
     @Transactional
     public Long createNotification(NotificationRequestDto requestDto) {
-        Member member = memberLookupService.getMemberByIdOrThrow(requestDto.getMemberId());
-        Notification notification = NotificationRequestDto.toEntity(requestDto, member);
+        memberLookupService.ensureMemberExists(requestDto.getMemberId());
+        Notification notification = NotificationRequestDto.toEntity(requestDto);
         validationService.checkValid(notification);
         return notificationRepository.save(notification).getId();
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<NotificationResponseDto> getNotifications(Pageable pageable) {
-        Member currentMember = memberLookupService.getCurrentMember();
-        Page<Notification> notifications = getNotificationByMember(currentMember, pageable);
+        String currentMemberId = memberLookupService.getCurrentMemberId();
+        Page<Notification> notifications = getNotificationByMemberId(currentMemberId, pageable);
         return new PagedResponseDto<>(notifications.map(NotificationResponseDto::toDto));
     }
 
@@ -50,51 +49,46 @@ public class NotificationService {
         return new PagedResponseDto<>(notifications.map(NotificationResponseDto::toDto));
     }
 
+    @Transactional
     public Long deleteNotification(Long notificationId) throws PermissionDeniedException {
-        Member currentMember = memberLookupService.getCurrentMember();
+        String currentMemberId = memberLookupService.getCurrentMemberId();
         Notification notification = getNotificationByIdOrThrow(notificationId);
-        notification.validateAccessPermission(currentMember);
+        notification.validateAccessPermission(currentMemberId);
         notificationRepository.delete(notification);
         return notification.getId();
     }
 
     public void sendNotificationToAllMembers(String content) {
         List<Notification> notifications = memberLookupService.findAllMembers().stream()
-                .map(member -> Notification.create(member, content))
-                .toList();
-        notificationRepository.saveAll(notifications);
-    }
-
-    public void sendNotificationToMember(Member member, String content) {
-        Notification notification = Notification.create(member, content);
-        notificationRepository.save(notification);
-    }
-
-    public void sendNotificationToMembers(List<String> memberIds, String content) {
-        List<Notification> notifications = memberIds.stream()
-                .map(memberLookupService::getMemberByIdOrThrow)
-                .map(member -> Notification.create(member, content))
+                .map(member -> Notification.create(member.getId(), content))
                 .toList();
         notificationRepository.saveAll(notifications);
     }
 
     public void sendNotificationToMember(String memberId, String content) {
-        Member member = memberLookupService.getMemberByIdOrThrow(memberId);
-        Notification notification = Notification.create(member, content);
+        memberLookupService.ensureMemberExists(memberId);
+        Notification notification = Notification.create(memberId, content);
         notificationRepository.save(notification);
     }
 
+    public void sendNotificationToMembers(List<String> memberIds, String content) {
+        List<Notification> notifications = memberIds.stream()
+                .map(memberId -> Notification.create(memberId, content))
+                .toList();
+        notificationRepository.saveAll(notifications);
+    }
+
     public void sendNotificationToAdmins(String content) {
-        sendNotificationToSpecificRole(memberLookupService::getAdmins, content);
+        sendNotificationToSpecificRole(memberLookupService::getAdminIds, content);
     }
 
     public void sendNotificationToSuperAdmins(String content) {
-        sendNotificationToSpecificRole(memberLookupService::getSuperAdmins, content);
+        sendNotificationToSpecificRole(memberLookupService::getSuperAdminIds, content);
     }
 
-    private void sendNotificationToSpecificRole(Supplier<List<Member>> memberSupplier, String content) {
+    private void sendNotificationToSpecificRole(Supplier<List<String>> memberSupplier, String content) {
         List<Notification> notifications = memberSupplier.get().stream()
-                .map(member -> Notification.create(member, content))
+                .map(memberId -> Notification.create(memberId, content))
                 .toList();
         notificationRepository.saveAll(notifications);
     }
@@ -104,8 +98,8 @@ public class NotificationService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 알림입니다."));
     }
 
-    private Page<Notification> getNotificationByMember(Member member, Pageable pageable) {
-        return notificationRepository.findByMember(member, pageable);
+    private Page<Notification> getNotificationByMemberId(String memberId, Pageable pageable) {
+        return notificationRepository.findByMemberId(memberId, pageable);
     }
 
 }

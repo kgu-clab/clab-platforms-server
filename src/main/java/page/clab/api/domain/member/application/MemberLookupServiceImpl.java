@@ -22,6 +22,13 @@ public class MemberLookupServiceImpl implements MemberLookupService {
     private final MemberRepository memberRepository;
 
     @Override
+    public void ensureMemberExists(String memberId) {
+        if (!memberRepository.existsById(memberId)) {
+            throw new NotFoundException("[Member] id: " + memberId + "에 해당하는 멤버가 존재하지 않습니다.");
+        }
+    }
+
+    @Override
     public Member getMemberById(String memberId) {
         return memberRepository.findById(memberId)
                 .orElse(null);
@@ -65,18 +72,20 @@ public class MemberLookupServiceImpl implements MemberLookupService {
     }
 
     @Override
-    public List<Member> getAdmins() {
+    public List<String> getAdminIds() {
         return memberRepository.findAll()
                 .stream()
                 .filter(Member::isAdminRole)
+                .map(Member::getId)
                 .toList();
     }
 
     @Override
-    public List<Member> getSuperAdmins() {
+    public List<String> getSuperAdminIds() {
         return memberRepository.findAll()
                 .stream()
                 .filter(Member::isSuperAdminRole)
+                .map(Member::getId)
                 .toList();
     }
 

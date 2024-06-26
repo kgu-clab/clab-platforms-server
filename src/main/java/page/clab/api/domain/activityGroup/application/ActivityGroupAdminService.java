@@ -62,7 +62,7 @@ public class ActivityGroupAdminService {
         validationService.checkValid(groupLeader);
         activityGroupMemberService.save(groupLeader);
 
-        notificationService.sendNotificationToMember(currentMember, "활동 그룹 생성이 완료되었습니다. 활동 승인이 완료되면 활동 그룹을 이용할 수 있습니다.");
+        notificationService.sendNotificationToMember(currentMember.getId(), "활동 그룹 생성이 완료되었습니다. 활동 승인이 완료되면 활동 그룹을 이용할 수 있습니다.");
         return activityGroup.getId();
     }
 
@@ -87,7 +87,7 @@ public class ActivityGroupAdminService {
 
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
         if (groupLeader != null) {
-            notificationService.sendNotificationToMember(groupLeader.getMember(), "활동 그룹이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
+            notificationService.sendNotificationToMember(groupLeader.getMember().getId(), "활동 그룹이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
         }
         return activityGroup.getId();
     }
@@ -110,7 +110,7 @@ public class ActivityGroupAdminService {
         activityGroupRepository.delete(activityGroup);
 
         if (groupLeader != null) {
-            notificationService.sendNotificationToMember(groupLeader.getMember(), "활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다.");
+            notificationService.sendNotificationToMember(groupLeader.getMember().getId(), "활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다.");
         }
         return activityGroup.getId();
     }
@@ -180,7 +180,7 @@ public class ActivityGroupAdminService {
         groupMember.updateStatus(status);
         activityGroupMemberService.save(groupMember);
 
-        notificationService.sendNotificationToMember(member, "활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
+        notificationService.sendNotificationToMember(member.getId(), "활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
         return groupMember.getMember().getId();
     }
 

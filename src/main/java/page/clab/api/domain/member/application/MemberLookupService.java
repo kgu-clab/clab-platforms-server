@@ -12,6 +12,8 @@ import java.util.List;
 
 public interface MemberLookupService {
 
+    void ensureMemberExists(String memberId);
+
     Member getMemberById(String memberId);
 
     Member getMemberByIdOrThrow(String memberId);
@@ -26,9 +28,9 @@ public interface MemberLookupService {
 
     List<Member> findAllMembers();
 
-    List<Member> getAdmins();
+    List<String> getAdminIds();
 
-    List<Member> getSuperAdmins();
+    List<String> getSuperAdminIds();
 
     MemberBasicInfoDto getMemberBasicInfoById(String memberId);
 

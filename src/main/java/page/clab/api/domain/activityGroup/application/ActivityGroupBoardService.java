@@ -203,13 +203,13 @@ public class ActivityGroupBoardService {
             groupMembers
                     .forEach(gMember -> {
                         if (!gMember.isOwner(member)) {
-                            notificationService.sendNotificationToMember(gMember.getMember(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
+                            notificationService.sendNotificationToMember(gMember.getMember().getId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
                         }
                     });
         } else {
             GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
             if (groupLeader != null) {
-                notificationService.sendNotificationToMember(groupLeader.getMember(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
+                notificationService.sendNotificationToMember(groupLeader.getMember().getId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
             }
         }
     }
