@@ -22,7 +22,7 @@ public class AwardEventProcessor implements MemberEventProcessor {
 
     @PostConstruct
     public void init() {
-        processorRegistry.registerProcessor(this);
+        processorRegistry.register(this);
     }
 
     @Override

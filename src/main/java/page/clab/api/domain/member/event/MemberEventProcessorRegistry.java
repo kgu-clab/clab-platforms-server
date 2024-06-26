@@ -11,7 +11,7 @@ public class MemberEventProcessorRegistry {
 
     private final List<MemberEventProcessor> processors = new ArrayList<>();
 
-    public void registerProcessor(MemberEventProcessor processor) {
+    public void register(MemberEventProcessor processor) {
         processors.add(processor);
     }
 
