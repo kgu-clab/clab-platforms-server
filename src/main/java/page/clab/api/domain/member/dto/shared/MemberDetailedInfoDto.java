@@ -32,4 +32,8 @@ public class MemberDetailedInfoDto {
         return roleLevel >= 2;
     }
 
+    public boolean isSuperAdminRole() {
+        return roleLevel == 3;
+    }
+
 }

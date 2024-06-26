@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.donation.domain.Donation;
-import page.clab.api.domain.member.domain.Member;
 
 @Getter
 @Setter
@@ -19,9 +18,9 @@ public class DonationRequestDto {
     @Schema(description = "후원 메시지", example = "대회 상금 일부 후원", required = true)
     private String message;
 
-    public static Donation toEntity(DonationRequestDto requestDto, Member member) {
+    public static Donation toEntity(DonationRequestDto requestDto, String memberId) {
         return Donation.builder()
-                .donor(member)
+                .memberId(memberId)
                 .amount(requestDto.getAmount())
                 .message(requestDto.getMessage())
                 .build();
