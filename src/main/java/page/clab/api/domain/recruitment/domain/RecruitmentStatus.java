@@ -8,8 +8,8 @@ import lombok.Getter;
 public enum RecruitmentStatus {
 
     UPCOMING("UPCOMING", "모집 예정"),
-    OPEN("OPEN", "모집중"),
-    CLOSED("CLOSED", "모집 종료");
+    OPEN("OPEN", "진행중"),
+    CLOSED("CLOSED", "종료");
 
     private String key;
     private String description;
