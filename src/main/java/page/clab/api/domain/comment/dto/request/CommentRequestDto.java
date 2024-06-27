@@ -28,6 +28,7 @@ public class CommentRequestDto {
                 .content(requestDto.getContent())
                 .parent(parent)
                 .wantAnonymous(requestDto.isWantAnonymous())
+                .likes(0L)
                 .build();
     }
 

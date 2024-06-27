@@ -41,6 +41,7 @@ public class DeletedCommentResponseDto {
                 .writerImageUrl(comment.isWantAnonymous() ? null : memberInfo.getImageUrl())
                 .writerRoleLevel(comment.isWantAnonymous() ? null : memberInfo.getRoleLevel())
                 .content(comment.getContent())
+                .likes(comment.getLikes())
                 .isOwner(isOwner)
                 .createdAt(comment.getCreatedAt())
                 .build();

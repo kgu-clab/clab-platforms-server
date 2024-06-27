@@ -23,9 +23,13 @@ public class CommentMyResponseDto {
 
     private String content;
 
+    private Long likes;
+
+    private boolean hasLikeByMe;
+
     private LocalDateTime createdAt;
 
-    public static CommentMyResponseDto toDto(Comment comment, MemberDetailedInfoDto memberInfo) {
+    public static CommentMyResponseDto toDto(Comment comment, MemberDetailedInfoDto memberInfo, boolean hasLikeByMe) {
         if (comment.getBoard() == null || comment.getIsDeleted()) {
             return null;
         }
@@ -36,6 +40,8 @@ public class CommentMyResponseDto {
                 .writer(comment.isWantAnonymous() ? comment.getNickname() : memberInfo.getMemberName())
                 .writerImageUrl(comment.isWantAnonymous() ? null : memberInfo.getImageUrl())
                 .content(comment.getContent())
+                .likes(comment.getLikes())
+                .hasLikeByMe(hasLikeByMe)
                 .createdAt(comment.getCreatedAt())
                 .build();
     }

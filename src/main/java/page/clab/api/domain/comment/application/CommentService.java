@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.application.BoardService;
 import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.comment.dao.CommentLikeRepository;
 import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.comment.domain.Comment;
+import page.clab.api.domain.comment.domain.CommentLike;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
@@ -43,6 +45,8 @@ public class CommentService {
     private final ValidationService validationService;
 
     private final CommentRepository commentRepository;
+
+    private final CommentLikeRepository commentLikeRepository;
 
     @Transactional
     public Long createComment(Long parentId, Long boardId, CommentRequestDto requestDto) {
@@ -94,6 +98,22 @@ public class CommentService {
         validationService.checkValid(comment);
         commentRepository.save(comment);
         return comment.getBoard().getId();
+    }
+
+    @Transactional
+    public Long toggleLikeStatus(Long commentId) {
+        String currentMemberId = memberLookupService.getCurrentMemberId();
+        Comment comment = getCommentByIdOrThrow(commentId);
+        Optional<CommentLike> commentLikeOpt = commentLikeRepository.findByCommentIdAndMemberId(comment.getId(), currentMemberId);
+        if (commentLikeOpt.isPresent()) {
+            comment.decrementLikes();
+            commentLikeRepository.delete(commentLikeOpt.get());
+        } else {
+            comment.incrementLikes();
+            CommentLike newLike = CommentLike.create(currentMemberId, comment.getId());
+            commentLikeRepository.save(newLike);
+        }
+        return comment.getLikes();
     }
 
     public Long deleteComment(Long commentId) throws PermissionDeniedException {
@@ -150,9 +170,14 @@ public class CommentService {
         return CommentResponseDto.toDto(comment, memberInfo, isOwner, childrenDtos);
     }
 
+    private boolean checkLikeStatus(Long commentId, String memberId) {
+        return commentLikeRepository.existsByCommentIdAndMemberId(commentId, memberId);
+    }
+
     private CommentMyResponseDto toCommentMyResponseDto(Comment comment, String currentMemberId) {
+        boolean hasLikeByMe = checkLikeStatus(comment.getId(), currentMemberId);
         MemberDetailedInfoDto memberInfo = memberLookupService.getMemberDetailedInfoById(comment.getWriterId());
-        return CommentMyResponseDto.toDto(comment, memberInfo);
+        return CommentMyResponseDto.toDto(comment, memberInfo, hasLikeByMe);
     }
 
 }

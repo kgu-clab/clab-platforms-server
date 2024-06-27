@@ -65,6 +65,8 @@ public class Comment extends BaseEntity {
     @Column(nullable = false)
     private boolean wantAnonymous;
 
+    private Long likes;
+
     public void update(CommentUpdateRequestDto commentUpdateRequestDto) {
         Optional.ofNullable(commentUpdateRequestDto.getContent()).ifPresent(this::setContent);
         Optional.of(commentUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
@@ -82,6 +84,16 @@ public class Comment extends BaseEntity {
     public void validateAccessPermission(MemberDetailedInfoDto memberInfo) throws PermissionDeniedException {
         if (!isOwner(memberInfo.getMemberId()) && !memberInfo.isAdminRole()) {
             throw new PermissionDeniedException("해당 댓글을 수정/삭제할 권한이 없습니다.");
+        }
+    }
+
+    public void incrementLikes() {
+        this.likes++;
+    }
+
+    public void decrementLikes() {
+        if (this.likes > 0) {
+            this.likes--;
         }
     }
 
