@@ -34,16 +34,12 @@ public class BoardDetailsResponseDto {
 
     private String imageUrl;
 
-    private Long likes;
-
-    private boolean hasLikeByMe;
-
     @JsonProperty("isOwner")
     private Boolean isOwner;
 
     private LocalDateTime createdAt;
 
-    public static BoardDetailsResponseDto toDto(Board board, MemberDetailedInfoDto memberInfo, boolean hasLikeByMe, boolean isOwner) {
+    public static BoardDetailsResponseDto toDto(Board board, MemberDetailedInfoDto memberInfo, boolean isOwner) {
         WriterInfo writerInfo = WriterInfo.fromBoardDetails(board, memberInfo);
         return BoardDetailsResponseDto.builder()
                 .id(board.getId())
@@ -56,8 +52,6 @@ public class BoardDetailsResponseDto {
                 .content(board.getContent())
                 .files(UploadedFileResponseDto.toDto(board.getUploadedFiles()))
                 .imageUrl(board.getImageUrl())
-                .likes(board.getLikes())
-                .hasLikeByMe(hasLikeByMe)
                 .isOwner(isOwner)
                 .createdAt(board.getCreatedAt())
                 .build();

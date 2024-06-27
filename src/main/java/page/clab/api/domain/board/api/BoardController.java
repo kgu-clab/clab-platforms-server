@@ -132,16 +132,6 @@ public class BoardController {
         return ApiResponse.success(id);
     }
 
-    @PostMapping("/likes/{boardId}")
-    @Operation(summary = "[U] 커뮤니티 게시글 좋아요 누르기/취소하기", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ApiResponse<Long> toggleLikeStatus(
-            @PathVariable(name = "boardId") Long boardId
-    ) {
-        Long id = boardService.toggleLikeStatus(boardId);
-        return ApiResponse.success(id);
-    }
-
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 커뮤니티 게시글 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})

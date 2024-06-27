@@ -70,8 +70,6 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private boolean wantAnonymous;
 
-    private Long likes;
-
     public void update(BoardUpdateRequestDto boardUpdateRequestDto) {
         Optional.ofNullable(boardUpdateRequestDto.getCategory()).ifPresent(this::setCategory);
         Optional.ofNullable(boardUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
@@ -94,16 +92,6 @@ public class Board extends BaseEntity {
 
     public boolean shouldNotifyForNewBoard(MemberDetailedInfoDto memberInfo) {
         return memberInfo.isAdminRole() && this.category.equals(BoardCategory.NOTICE); // Assuming 2 is Admin role level
-    }
-
-    public void incrementLikes() {
-        this.likes++;
-    }
-
-    public void decrementLikes() {
-        if (this.likes > 0) {
-            this.likes--;
-        }
     }
 
     public boolean isOwner(String memberId) {

@@ -107,16 +107,6 @@ public class CommentController {
         return ApiResponse.success(id);
     }
 
-    @PostMapping("/likes/{commentId}")
-    @Operation(summary = "[U] 댓글 좋아요 누르기/취소하기", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ApiResponse<Long> toggleLikeStatus(
-            @PathVariable(name = "commentId") Long commentId
-    ) {
-        Long id = commentService.toggleLikeStatus(commentId);
-        return ApiResponse.success(id);
-    }
-
     @GetMapping("/deleted/{boardId}")
     @Operation(summary = "[S] 게시글의 삭제된 댓글 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})

@@ -6,11 +6,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.dao.BoardLikeRepository;
 import page.clab.api.domain.board.dao.BoardRepository;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.BoardCategory;
-import page.clab.api.domain.board.domain.BoardLike;
 import page.clab.api.domain.board.domain.SlackBoardInfo;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
@@ -50,8 +48,6 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
 
-    private final BoardLikeRepository boardLikeRepository;
-
     private final CommentRepository commentRepository;
 
     @Transactional
@@ -80,9 +76,8 @@ public class BoardService {
     public BoardDetailsResponseDto getBoardDetails(Long boardId) {
         MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Board board = getBoardByIdOrThrow(boardId);
-        boolean hasLikeByMe = checkLikeStatus(board, currentMemberInfo);
         boolean isOwner = board.isOwner(currentMemberInfo.getMemberId());
-        return BoardDetailsResponseDto.toDto(board, currentMemberInfo, hasLikeByMe, isOwner);
+        return BoardDetailsResponseDto.toDto(board, currentMemberInfo, isOwner);
     }
 
     @Transactional(readOnly = true)
@@ -107,23 +102,6 @@ public class BoardService {
         board.update(requestDto);
         validationService.checkValid(board);
         return boardRepository.save(board).getCategory().getKey();
-    }
-
-    @Transactional
-    public Long toggleLikeStatus(Long boardId) {
-        String currentMemberId = memberLookupService.getCurrentMemberId();
-        Board board = getBoardByIdOrThrow(boardId);
-        Optional<BoardLike> boardLikeOpt = boardLikeRepository.findByBoardIdAndMemberId(board.getId(), currentMemberId);
-        if (boardLikeOpt.isPresent()) {
-            board.decrementLikes();
-            boardLikeRepository.delete(boardLikeOpt.get());
-        } else {
-            board.incrementLikes();
-            BoardLike newBoardLike = BoardLike.create(currentMemberId, board.getId());
-            validationService.checkValid(newBoardLike);
-            boardLikeRepository.save(newBoardLike);
-        }
-        return board.getLikes();
     }
 
     @Transactional(readOnly = true)
@@ -164,10 +142,6 @@ public class BoardService {
 
     private Page<Board> getBoardByCategory(BoardCategory category, Pageable pageable) {
         return boardRepository.findAllByCategory(category, pageable);
-    }
-
-    private boolean checkLikeStatus(Board board, MemberDetailedInfoDto memberInfo) {
-        return boardLikeRepository.existsByBoardIdAndMemberId(board.getId(), memberInfo.getMemberId());
     }
 
 }

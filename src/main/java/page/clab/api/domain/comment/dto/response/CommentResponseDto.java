@@ -31,10 +31,6 @@ public class CommentResponseDto {
 
     private List<CommentResponseDto> children;
 
-    private Long likes;
-
-    private Boolean hasLikeByMe;
-
     @JsonProperty("isOwner")
     private Boolean isOwner;
 
@@ -58,7 +54,6 @@ public class CommentResponseDto {
                 .writerRoleLevel(comment.isWantAnonymous() ? null : memberInfo.getRoleLevel())
                 .content(comment.getContent())
                 .children(children)
-                .likes(comment.getLikes())
                 .isOwner(isOwner)
                 .createdAt(comment.getCreatedAt())
                 .build();
