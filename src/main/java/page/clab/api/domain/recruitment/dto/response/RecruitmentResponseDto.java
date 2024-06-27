@@ -22,7 +22,7 @@ public class RecruitmentResponseDto {
 
     private String target;
 
-    private RecruitmentStatus status;
+    private String status;
 
     private LocalDateTime updatedAt;
 
@@ -33,7 +33,7 @@ public class RecruitmentResponseDto {
                 .endDate(recruitment.getEndDate())
                 .applicationType(recruitment.getApplicationType())
                 .target(recruitment.getTarget())
-                .status(recruitment.getStatus())
+                .status(recruitment.getStatus().getDescription())
                 .updatedAt(recruitment.getUpdatedAt())
                 .build();
     }
