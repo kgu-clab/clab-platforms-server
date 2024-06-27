@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,6 +45,8 @@ public class BoardEmoji extends BaseEntity {
     @Column(name = "emoji", nullable = false)
     private String emoji;
 
+    private LocalDateTime deletedAt;
+
     public static BoardEmoji create(String memberId, Long boardId, String emoji) {
         return BoardEmoji.builder()
                 .memberId(memberId)
@@ -53,6 +56,11 @@ public class BoardEmoji extends BaseEntity {
     }
 
     public void toggleIsDeletedStatus() {
+        if (isDeleted) {
+            deletedAt = null;
+        } else {
+            deletedAt = LocalDateTime.now();
+        }
         this.isDeleted = !isDeleted;
     }
 

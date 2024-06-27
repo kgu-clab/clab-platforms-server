@@ -1,11 +1,14 @@
 package page.clab.api.domain.board.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.domain.BoardEmoji;
 import page.clab.api.domain.board.dto.response.BoardEmojiCountResponseDto;
 
@@ -21,5 +24,10 @@ public interface BoardEmojiRepository extends JpaRepository<BoardEmoji, Long> {
             "WHERE b.boardId = :boardId " +
             "GROUP BY b.emoji")
     List<BoardEmojiCountResponseDto> findEmojiClickCountsByBoardId(@Param("boardId") Long boardId, @Param("memberId") String memberId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM board_emoji b WHERE b.is_deleted = true AND b.deleted_at < :cutoffDate", nativeQuery = true)
+    void deleteOldSoftDeletedRecords(LocalDateTime cutoffDate);
 
 }

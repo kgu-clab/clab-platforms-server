@@ -1,10 +1,12 @@
 package page.clab.api.domain.board.application;
 
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.dao.BoardEmojiRepository;
@@ -167,6 +169,12 @@ public class BoardService {
 
     private List<BoardEmojiCountResponseDto> getBoardEmojiCountResponseDtoList(Long boardId, String memberId) {
         return boardEmojiRepository.findEmojiClickCountsByBoardId(boardId, memberId);
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void cleanUpOldSoftDeletedRecords() {
+        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(7);
+        boardEmojiRepository.deleteOldSoftDeletedRecords(cutoffDate);
     }
 
 }
