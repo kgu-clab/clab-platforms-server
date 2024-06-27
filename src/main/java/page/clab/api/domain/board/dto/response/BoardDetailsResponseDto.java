@@ -37,9 +37,11 @@ public class BoardDetailsResponseDto {
     @JsonProperty("isOwner")
     private Boolean isOwner;
 
+    private List<BoardEmojiCountResponseDto> boardEmojiCountResponseDtoList;
+
     private LocalDateTime createdAt;
 
-    public static BoardDetailsResponseDto toDto(Board board, MemberDetailedInfoDto memberInfo, boolean isOwner) {
+    public static BoardDetailsResponseDto toDto(Board board, MemberDetailedInfoDto memberInfo, boolean isOwner, List<BoardEmojiCountResponseDto> boardEmojiCountResponseDtoList) {
         WriterInfo writerInfo = WriterInfo.fromBoardDetails(board, memberInfo);
         return BoardDetailsResponseDto.builder()
                 .id(board.getId())
@@ -53,6 +55,7 @@ public class BoardDetailsResponseDto {
                 .files(UploadedFileResponseDto.toDto(board.getUploadedFiles()))
                 .imageUrl(board.getImageUrl())
                 .isOwner(isOwner)
+                .boardEmojiCountResponseDtoList(boardEmojiCountResponseDtoList)
                 .createdAt(board.getCreatedAt())
                 .build();
     }

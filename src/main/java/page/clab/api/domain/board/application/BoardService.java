@@ -17,6 +17,7 @@ import page.clab.api.domain.board.dto.request.BoardRequestDto;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
 import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
+import page.clab.api.domain.board.dto.response.BoardEmojiCountResponseDto;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.board.dto.response.BoardMyResponseDto;
 import page.clab.api.domain.comment.dao.CommentRepository;
@@ -80,7 +81,8 @@ public class BoardService {
         MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Board board = getBoardByIdOrThrow(boardId);
         boolean isOwner = board.isOwner(currentMemberInfo.getMemberId());
-        return BoardDetailsResponseDto.toDto(board, currentMemberInfo, isOwner);
+        List<BoardEmojiCountResponseDto> boardEmojiCountResponseDtoList = getBoardEmojiCountResponseDtoList(boardId, currentMemberInfo.getMemberId());
+        return BoardDetailsResponseDto.toDto(board, currentMemberInfo, isOwner, boardEmojiCountResponseDtoList);
     }
 
     @Transactional(readOnly = true)
@@ -107,17 +109,17 @@ public class BoardService {
         return boardRepository.save(board).getCategory().getKey();
     }
 
-    public String toggleEmojiStatus(Long boardId, String emojiUnicode) {
+    public String toggleEmojiStatus(Long boardId, String emoji) {
         MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         String memberId = currentMemberInfo.getMemberId();
         Board board = getBoardByIdOrThrow(boardId);
-        Optional<BoardEmoji> boardEmojiOpt = boardEmojiRepository.findByBoardIdAndMemberIdAndEmojiUniCode(boardId, memberId, emojiUnicode);
+        Optional<BoardEmoji> boardEmojiOpt = boardEmojiRepository.findByBoardIdAndMemberIdAndEmoji(boardId, memberId, emoji);
         BoardEmoji boardEmoji;
         if (boardEmojiOpt.isPresent()) {
             boardEmoji = boardEmojiOpt.get();
             boardEmoji.toggleIsDeletedStatus();
         } else {
-            boardEmoji = BoardEmoji.create(memberId, boardId, emojiUnicode);
+            boardEmoji = BoardEmoji.create(memberId, boardId, emoji);
         }
         boardEmojiRepository.save(boardEmoji);
         return board.getCategory().getKey();
@@ -161,6 +163,10 @@ public class BoardService {
 
     private Page<Board> getBoardByCategory(BoardCategory category, Pageable pageable) {
         return boardRepository.findAllByCategory(category, pageable);
+    }
+
+    private List<BoardEmojiCountResponseDto> getBoardEmojiCountResponseDtoList(Long boardId, String memberId) {
+        return boardEmojiRepository.findEmojiClickCountsByBoardId(boardId, memberId);
     }
 
 }

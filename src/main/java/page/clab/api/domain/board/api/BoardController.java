@@ -137,9 +137,9 @@ public class BoardController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     public ApiResponse<String> toggleEmojiStatus(
             @PathVariable(name = "boardId") Long boardId,
-            @PathVariable(name = "emoji") String emojiUniCode
+            @PathVariable(name = "emoji") String emoji
     ) {
-        String id = boardService.toggleEmojiStatus(boardId, emojiUniCode);
+        String id = boardService.toggleEmojiStatus(boardId, emoji);
         return ApiResponse.success(id);
     }
 
