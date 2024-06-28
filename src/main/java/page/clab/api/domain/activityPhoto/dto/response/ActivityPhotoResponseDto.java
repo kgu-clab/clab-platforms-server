@@ -31,5 +31,4 @@ public class ActivityPhotoResponseDto {
                 .isPublic(activityPhoto.getIsPublic())
                 .build();
     }
-
 }

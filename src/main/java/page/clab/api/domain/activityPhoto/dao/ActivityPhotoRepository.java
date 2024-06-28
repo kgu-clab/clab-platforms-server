@@ -9,7 +9,5 @@ import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 
 @Repository
 public interface ActivityPhotoRepository extends JpaRepository<ActivityPhoto, Long>, ActivityPhotoRepositoryCustom, QuerydslPredicateExecutor<ActivityPhoto> {
-
     Page<ActivityPhoto> findAllByOrderByCreatedAtDesc(Pageable pageable);
-
 }
