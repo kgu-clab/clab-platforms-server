@@ -46,5 +46,4 @@ public class AccuseTargetRepositoryImpl implements AccuseTargetRepositoryCustom 
 
         return new PageImpl<>(accuseTargets, pageable, total);
     }
-
 }

@@ -7,7 +7,5 @@ import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.TargetType;
 
 public interface AccuseTargetRepositoryCustom {
-
     Page<AccuseTarget> findByConditions(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable);
-
 }

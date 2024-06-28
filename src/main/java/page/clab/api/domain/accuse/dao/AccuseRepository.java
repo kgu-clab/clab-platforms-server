@@ -28,5 +28,4 @@ public interface AccuseRepository extends JpaRepository<Accuse, Long> {
 
     @Query("SELECT a FROM Accuse a WHERE a.isDeleted = false AND a.target.targetType = :targetType AND a.target.targetReferenceId = :targetReferenceId")
     List<Accuse> findByTarget(TargetType targetType, Long targetReferenceId);
-
 }

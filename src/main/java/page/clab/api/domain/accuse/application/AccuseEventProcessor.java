@@ -16,7 +16,6 @@ import java.util.List;
 public class AccuseEventProcessor implements MemberEventProcessor {
 
     private final AccuseRepository accuseRepository;
-
     private final MemberEventProcessorRegistry processorRegistry;
 
     @PostConstruct
@@ -36,5 +35,4 @@ public class AccuseEventProcessor implements MemberEventProcessor {
     public void processMemberUpdated(String memberId) {
         // do nothing
     }
-
 }
