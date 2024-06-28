@@ -1,11 +1,14 @@
 package page.clab.api.domain.board.application;
 
+
 import jakarta.persistence.Tuple;
 import jakarta.validation.constraints.NotNull;
+import java.text.BreakIterator;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -33,8 +36,10 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.slack.application.SlackService;
+import page.clab.api.global.exception.InvalidEmojiException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.util.EmojiUtils;
 import page.clab.api.global.validation.ValidationService;
 
 import java.util.List;
@@ -115,6 +120,9 @@ public class BoardService {
 
     @Transactional
     public String toggleEmojiStatus(Long boardId, String emoji) {
+        if (!EmojiUtils.isEmoji(emoji)) {
+            throw new InvalidEmojiException("지원하지 않는 이모지입니다.");
+        }
         MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         String memberId = currentMemberInfo.getMemberId();
         Board board = getBoardByIdOrThrow(boardId);

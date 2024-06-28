@@ -104,6 +104,9 @@ dependencies {
     implementation 'com.drewnoakes:metadata-extractor:2.14.0'
     implementation 'org.imgscalr:imgscalr-lib:4.2'
 
+    //Emoji
+    implementation 'com.ibm.icu:icu4j:72.1'
+
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot Test
     testImplementation 'org.springframework.security:spring-security-test' // Spring Security Test
