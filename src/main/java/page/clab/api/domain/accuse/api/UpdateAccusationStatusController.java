@@ -3,7 +3,6 @@ package page.clab.api.domain.accuse.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +18,6 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/accusations")
 @RequiredArgsConstructor
 @Tag(name = "Accusation", description = "신고")
-@Slf4j
 public class UpdateAccusationStatusController {
 
     private final UpdateAccusationStatusService updateAccusationStatusService;
