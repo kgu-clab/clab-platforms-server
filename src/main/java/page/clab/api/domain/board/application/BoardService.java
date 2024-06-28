@@ -1,8 +1,10 @@
 package page.clab.api.domain.board.application;
 
+import jakarta.persistence.Tuple;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -111,18 +113,17 @@ public class BoardService {
         return boardRepository.save(board).getCategory().getKey();
     }
 
+    @Transactional
     public String toggleEmojiStatus(Long boardId, String emoji) {
         MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         String memberId = currentMemberInfo.getMemberId();
         Board board = getBoardByIdOrThrow(boardId);
-        Optional<BoardEmoji> boardEmojiOpt = boardEmojiRepository.findByBoardIdAndMemberIdAndEmoji(boardId, memberId, emoji);
-        BoardEmoji boardEmoji;
-        if (boardEmojiOpt.isPresent()) {
-            boardEmoji = boardEmojiOpt.get();
-            boardEmoji.toggleIsDeletedStatus();
-        } else {
-            boardEmoji = BoardEmoji.create(memberId, boardId, emoji);
-        }
+        BoardEmoji boardEmoji = boardEmojiRepository.findByBoardIdAndMemberIdAndEmoji(boardId, memberId, emoji)
+                .map(existingEmoji -> {
+                    existingEmoji.toggleIsDeletedStatus();
+                    return existingEmoji;
+                })
+                .orElseGet(() -> BoardEmoji.create(memberId, boardId, emoji));
         boardEmojiRepository.save(boardEmoji);
         return board.getCategory().getKey();
     }
@@ -167,8 +168,19 @@ public class BoardService {
         return boardRepository.findAllByCategory(category, pageable);
     }
 
-    private List<BoardEmojiCountResponseDto> getBoardEmojiCountResponseDtoList(Long boardId, String memberId) {
-        return boardEmojiRepository.findEmojiClickCountsByBoardId(boardId, memberId);
+    @Transactional(readOnly = true)
+    public List<BoardEmojiCountResponseDto> getBoardEmojiCountResponseDtoList(Long boardId, String memberId) {
+        List<Tuple> results = boardEmojiRepository.findEmojiClickCountsByBoardId(boardId, memberId);
+        return convertToDtoList(results);
+    }
+
+    private List<BoardEmojiCountResponseDto> convertToDtoList(List<Tuple> results) {
+        return results.stream()
+                .map(result -> new BoardEmojiCountResponseDto(
+                        result.get("emoji", String.class),
+                        result.get("count", Long.class),
+                        result.get("isClicked", Boolean.class)))
+                .collect(Collectors.toList());
     }
 
     @Scheduled(cron = "0 0 0 * * ?")

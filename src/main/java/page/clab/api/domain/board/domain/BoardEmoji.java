@@ -56,12 +56,8 @@ public class BoardEmoji extends BaseEntity {
     }
 
     public void toggleIsDeletedStatus() {
-        if (isDeleted) {
-            deletedAt = null;
-        } else {
-            deletedAt = LocalDateTime.now();
-        }
-        this.isDeleted = !isDeleted;
+        this.isDeleted = !this.isDeleted;
+        this.deletedAt = this.isDeleted ? LocalDateTime.now() : null;
     }
 
 }
