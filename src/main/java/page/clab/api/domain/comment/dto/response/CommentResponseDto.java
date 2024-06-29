@@ -46,6 +46,7 @@ public class CommentResponseDto {
                     .id(comment.getId())
                     .isDeleted(true)
                     .children(children)
+                    .likes(comment.getLikes())
                     .createdAt(comment.getCreatedAt())
                     .build();
         }

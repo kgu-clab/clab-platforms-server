@@ -1,21 +1,30 @@
 package page.clab.api.domain.board.application;
 
+
+import jakarta.persistence.Tuple;
 import jakarta.validation.constraints.NotNull;
+import java.text.BreakIterator;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.dao.BoardLikeRepository;
+import page.clab.api.domain.board.dao.BoardEmojiRepository;
 import page.clab.api.domain.board.dao.BoardRepository;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.BoardCategory;
-import page.clab.api.domain.board.domain.BoardLike;
+import page.clab.api.domain.board.domain.BoardEmoji;
 import page.clab.api.domain.board.domain.SlackBoardInfo;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
 import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
+import page.clab.api.domain.board.dto.response.BoardEmojiCountResponseDto;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.board.dto.response.BoardMyResponseDto;
 import page.clab.api.domain.comment.dao.CommentRepository;
@@ -27,13 +36,13 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.slack.application.SlackService;
+import page.clab.api.global.exception.InvalidEmojiException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.util.EmojiUtils;
 import page.clab.api.global.validation.ValidationService;
 
 import java.util.List;
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -50,7 +59,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
 
-    private final BoardLikeRepository boardLikeRepository;
+    private final BoardEmojiRepository boardEmojiRepository;
 
     private final CommentRepository commentRepository;
 
@@ -80,9 +89,9 @@ public class BoardService {
     public BoardDetailsResponseDto getBoardDetails(Long boardId) {
         MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Board board = getBoardByIdOrThrow(boardId);
-        boolean hasLikeByMe = checkLikeStatus(board, currentMemberInfo);
         boolean isOwner = board.isOwner(currentMemberInfo.getMemberId());
-        return BoardDetailsResponseDto.toDto(board, currentMemberInfo, hasLikeByMe, isOwner);
+        List<BoardEmojiCountResponseDto> boardEmojiCountResponseDtoList = getBoardEmojiCountResponseDtoList(boardId, currentMemberInfo.getMemberId());
+        return BoardDetailsResponseDto.toDto(board, currentMemberInfo, isOwner, boardEmojiCountResponseDtoList);
     }
 
     @Transactional(readOnly = true)
@@ -110,20 +119,21 @@ public class BoardService {
     }
 
     @Transactional
-    public Long toggleLikeStatus(Long boardId) {
-        String currentMemberId = memberLookupService.getCurrentMemberId();
-        Board board = getBoardByIdOrThrow(boardId);
-        Optional<BoardLike> boardLikeOpt = boardLikeRepository.findByBoardIdAndMemberId(board.getId(), currentMemberId);
-        if (boardLikeOpt.isPresent()) {
-            board.decrementLikes();
-            boardLikeRepository.delete(boardLikeOpt.get());
-        } else {
-            board.incrementLikes();
-            BoardLike newBoardLike = BoardLike.create(currentMemberId, board.getId());
-            validationService.checkValid(newBoardLike);
-            boardLikeRepository.save(newBoardLike);
+    public String toggleEmojiStatus(Long boardId, String emoji) {
+        if (!EmojiUtils.isEmoji(emoji)) {
+            throw new InvalidEmojiException("지원하지 않는 이모지입니다.");
         }
-        return board.getLikes();
+        MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
+        String memberId = currentMemberInfo.getMemberId();
+        Board board = getBoardByIdOrThrow(boardId);
+        BoardEmoji boardEmoji = boardEmojiRepository.findByBoardIdAndMemberIdAndEmoji(boardId, memberId, emoji)
+                .map(existingEmoji -> {
+                    existingEmoji.toggleIsDeletedStatus();
+                    return existingEmoji;
+                })
+                .orElseGet(() -> BoardEmoji.create(memberId, boardId, emoji));
+        boardEmojiRepository.save(boardEmoji);
+        return board.getCategory().getKey();
     }
 
     @Transactional(readOnly = true)
@@ -166,8 +176,25 @@ public class BoardService {
         return boardRepository.findAllByCategory(category, pageable);
     }
 
-    private boolean checkLikeStatus(Board board, MemberDetailedInfoDto memberInfo) {
-        return boardLikeRepository.existsByBoardIdAndMemberId(board.getId(), memberInfo.getMemberId());
+    @Transactional(readOnly = true)
+    public List<BoardEmojiCountResponseDto> getBoardEmojiCountResponseDtoList(Long boardId, String memberId) {
+        List<Tuple> results = boardEmojiRepository.findEmojiClickCountsByBoardId(boardId, memberId);
+        return convertToDtoList(results);
+    }
+
+    private List<BoardEmojiCountResponseDto> convertToDtoList(List<Tuple> results) {
+        return results.stream()
+                .map(result -> new BoardEmojiCountResponseDto(
+                        result.get("emoji", String.class),
+                        result.get("count", Long.class),
+                        result.get("isClicked", Boolean.class)))
+                .collect(Collectors.toList());
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void cleanUpOldSoftDeletedRecords() {
+        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(7);
+        boardEmojiRepository.deleteOldSoftDeletedRecords(cutoffDate);
     }
 
 }

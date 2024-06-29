@@ -66,6 +66,7 @@ import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.DecryptionException;
 import page.clab.api.global.exception.EncryptionException;
 import page.clab.api.global.exception.InvalidColumnException;
+import page.clab.api.global.exception.InvalidEmojiException;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -96,7 +97,8 @@ public class GlobalExceptionHandler {
             NumberFormatException.class,
             SortingArgumentException.class,
             InvalidColumnException.class,
-            UnknownPathException.class
+            UnknownPathException.class,
+            InvalidEmojiException.class
     })
     public ErrorResponse badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);

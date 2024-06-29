@@ -132,13 +132,14 @@ public class BoardController {
         return ApiResponse.success(id);
     }
 
-    @PostMapping("/likes/{boardId}")
-    @Operation(summary = "[U] 커뮤니티 게시글 좋아요 누르기/취소하기", description = "ROLE_USER 이상의 권한이 필요함")
+    @PostMapping("/{boardId}/react/{emoji}")
+    @Operation(summary = "[U] 커뮤니티 게시글 이모지 누르기/취소하기", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ApiResponse<Long> toggleLikeStatus(
-            @PathVariable(name = "boardId") Long boardId
+    public ApiResponse<String> toggleEmojiStatus(
+            @PathVariable(name = "boardId") Long boardId,
+            @PathVariable(name = "emoji") String emoji
     ) {
-        Long id = boardService.toggleLikeStatus(boardId);
+        String id = boardService.toggleEmojiStatus(boardId, emoji);
         return ApiResponse.success(id);
     }
 

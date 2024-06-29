@@ -100,15 +100,6 @@ public class CommentService {
         return comment.getBoard().getId();
     }
 
-    public Long deleteComment(Long commentId) throws PermissionDeniedException {
-        MemberDetailedInfoDto memberInfo = memberLookupService.getCurrentMemberDetailedInfo();
-        Comment comment = getCommentByIdOrThrow(commentId);
-        comment.validateAccessPermission(memberInfo);
-        comment.delete();
-        commentRepository.save(comment);
-        return comment.getBoard().getId();
-    }
-
     @Transactional
     public Long toggleLikeStatus(Long commentId) {
         String currentMemberId = memberLookupService.getCurrentMemberId();
@@ -123,6 +114,15 @@ public class CommentService {
             commentLikeRepository.save(newLike);
         }
         return comment.getLikes();
+    }
+
+    public Long deleteComment(Long commentId) throws PermissionDeniedException {
+        MemberDetailedInfoDto memberInfo = memberLookupService.getCurrentMemberDetailedInfo();
+        Comment comment = getCommentByIdOrThrow(commentId);
+        comment.validateAccessPermission(memberInfo);
+        comment.delete();
+        commentRepository.save(comment);
+        return comment.getBoard().getId();
     }
 
     public Comment getCommentByIdOrThrow(Long id) {
