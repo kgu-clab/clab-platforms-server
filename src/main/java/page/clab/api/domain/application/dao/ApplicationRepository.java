@@ -21,5 +21,4 @@ public interface ApplicationRepository extends JpaRepository<Application, Applic
 
     @Query(value = "SELECT a.* FROM application a WHERE a.is_deleted = true", nativeQuery = true)
     Page<Application> findAllByIsDeletedTrue(Pageable pageable);
-
 }

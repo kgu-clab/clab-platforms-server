@@ -9,9 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.domain.QApplication;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -41,5 +41,4 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom {
 
         return new PageImpl<>(applications, pageable, count);
     }
-
 }

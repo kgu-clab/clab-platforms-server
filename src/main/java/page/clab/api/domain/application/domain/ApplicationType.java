@@ -13,5 +13,4 @@ public enum ApplicationType {
 
     private String key;
     private String description;
-
 }
