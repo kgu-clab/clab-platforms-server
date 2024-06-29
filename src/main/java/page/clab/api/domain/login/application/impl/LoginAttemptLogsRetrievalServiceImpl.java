@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.login.application.FetchLoginAttemptLogsService;
+import page.clab.api.domain.login.application.LoginAttemptLogsRetrievalService;
 import page.clab.api.domain.login.dao.LoginAttemptLogRepository;
 import page.clab.api.domain.login.domain.LoginAttemptLog;
 import page.clab.api.domain.login.dto.response.LoginAttemptLogResponseDto;
@@ -13,13 +13,13 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class FetchLoginAttemptLogsServiceImpl implements FetchLoginAttemptLogsService {
+public class LoginAttemptLogsRetrievalServiceImpl implements LoginAttemptLogsRetrievalService {
 
     private final LoginAttemptLogRepository loginAttemptLogRepository;
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<LoginAttemptLogResponseDto> getLoginAttemptLogs(String memberId, Pageable pageable) {
+    public PagedResponseDto<LoginAttemptLogResponseDto> retrieve(String memberId, Pageable pageable) {
         Page<LoginAttemptLog> loginAttemptLogs = loginAttemptLogRepository.findAllByMemberId(memberId, pageable);
         return new PagedResponseDto<>(loginAttemptLogs.map(LoginAttemptLogResponseDto::toDto));
     }

@@ -41,21 +41,21 @@ public class TokenManagementController {
     @Operation(summary = "[S] 멤버 토큰 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @DeleteMapping("/revoke/{memberId}")
     @Secured({"ROLE_SUPER"})
-    public ApiResponse<String> revoke(
+    public ApiResponse<String> revokeToken(
             @PathVariable(name = "memberId") String memberId
     ) {
-        String id = loginService.revoke(memberId);
+        String id = loginService.revokeToken(memberId);
         return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 멤버 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/reissue")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ApiResponse reissue(
+    public ApiResponse reissueToken(
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        TokenHeader headerData = loginService.reissue(request);
+        TokenHeader headerData = loginService.reissueToken(request);
         response.setHeader(authHeader, headerData.toJson());
         return ApiResponse.success();
     }
@@ -64,8 +64,8 @@ public class TokenManagementController {
             "Redis에 저장된 토큰을 조회하여 현재 로그인 중인 멤버를 조회합니다.")
     @GetMapping("/current")
     @Secured({"ROLE_SUPER"})
-    public ApiResponse<List<String>> getCurrentLoggedInUsers() {
-        List<String> currentLoggedInUsers = loginService.getCurrentLoggedInUsers();
+    public ApiResponse<List<String>> retrieveCurrentLoggedInUsers() {
+        List<String> currentLoggedInUsers = loginService.retrieveCurrentLoggedInUsers();
         return ApiResponse.success(currentLoggedInUsers);
     }
 }

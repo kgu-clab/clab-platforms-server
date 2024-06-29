@@ -104,7 +104,7 @@ public class UserLoginService implements LoginService {
     }
 
     @Override
-    public LoginResult authenticator(HttpServletRequest request, TwoFactorAuthenticationRequestDto requestDto) {
+    public LoginResult authenticate(HttpServletRequest request, TwoFactorAuthenticationRequestDto requestDto) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -114,17 +114,17 @@ public class UserLoginService implements LoginService {
     }
 
     @Override
-    public String revoke(String memberId) {
+    public String revokeToken(String memberId) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public TokenHeader reissue(HttpServletRequest request) {
+    public TokenHeader reissueToken(HttpServletRequest request) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<String> getCurrentLoggedInUsers() {
+    public List<String> retrieveCurrentLoggedInUsers() {
         throw new UnsupportedOperationException("Method not implemented");
     }
 }

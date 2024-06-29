@@ -37,7 +37,7 @@ public class TokenManagementService implements LoginService {
 
     @Transactional
     @Override
-    public TokenHeader reissue(HttpServletRequest request) {
+    public TokenHeader reissueToken(HttpServletRequest request) {
         String refreshToken = jwtTokenProvider.resolveToken(request);
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
         RedisToken redisToken = redisTokenService.getRedisTokenByRefreshToken(refreshToken);
@@ -51,7 +51,7 @@ public class TokenManagementService implements LoginService {
     }
 
     @Override
-    public List<String> getCurrentLoggedInUsers() {
+    public List<String> retrieveCurrentLoggedInUsers() {
         return redisTokenService.getCurrentLoggedInUsers();
     }
 
@@ -76,7 +76,7 @@ public class TokenManagementService implements LoginService {
     }
 
     @Override
-    public LoginResult authenticator(HttpServletRequest request, TwoFactorAuthenticationRequestDto requestDto) throws LoginFaliedException, MemberLockedException {
+    public LoginResult authenticate(HttpServletRequest request, TwoFactorAuthenticationRequestDto requestDto) throws LoginFaliedException, MemberLockedException {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
@@ -86,7 +86,7 @@ public class TokenManagementService implements LoginService {
     }
 
     @Override
-    public String revoke(String memberId) {
+    public String revokeToken(String memberId) {
         redisTokenService.deleteRedisTokenByMemberId(memberId);
         return memberId;
     }

@@ -42,12 +42,12 @@ public class TwoFactorAuthenticationController {
 
     @Operation(summary = "TOTP 인증", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("")
-    public ApiResponse<Boolean> authenticator(
+    public ApiResponse<Boolean> authenticate(
             HttpServletRequest request,
             HttpServletResponse response,
             @Valid @RequestBody TwoFactorAuthenticationRequestDto requestDto
     ) throws MemberLockedException, LoginFaliedException {
-        LoginResult result = loginService.authenticator(request, requestDto);
+        LoginResult result = loginService.authenticate(request, requestDto);
         response.setHeader(authHeader, result.getHeader());
         return ApiResponse.success(result.getBody());
     }
@@ -55,7 +55,7 @@ public class TwoFactorAuthenticationController {
     @Operation(summary = "[S] TOTP 초기화", description = "ROLE_SUPER 권한이 필요함")
     @DeleteMapping("/{memberId}")
     @Secured({"ROLE_SUPER"})
-    public ApiResponse<String> deleteAuthenticator(
+    public ApiResponse<String> resetAuthenticator(
             @PathVariable(name = "memberId") String memberId
     ) {
         String id = loginService.resetAuthenticator(memberId);

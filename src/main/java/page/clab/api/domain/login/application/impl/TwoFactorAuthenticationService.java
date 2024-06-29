@@ -47,7 +47,7 @@ public class TwoFactorAuthenticationService implements LoginService {
 
     @Transactional
     @Override
-    public LoginResult authenticator(HttpServletRequest request, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
+    public LoginResult authenticate(HttpServletRequest request, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
         String memberId = twoFactorAuthenticationRequestDto.getMemberId();
         MemberLoginInfoDto loginMember = memberLookupService.getMemberLoginInfoById(memberId);
         String totp = twoFactorAuthenticationRequestDto.getTotp();
@@ -94,17 +94,17 @@ public class TwoFactorAuthenticationService implements LoginService {
     }
 
     @Override
-    public String revoke(String memberId) {
+    public String revokeToken(String memberId) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public TokenHeader reissue(HttpServletRequest request) {
+    public TokenHeader reissueToken(HttpServletRequest request) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public List<String> getCurrentLoggedInUsers() {
+    public List<String> retrieveCurrentLoggedInUsers() {
         throw new UnsupportedOperationException("Method not implemented");
     }
 }

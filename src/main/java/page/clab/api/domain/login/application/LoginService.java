@@ -12,9 +12,9 @@ import java.util.List;
 
 public interface LoginService {
     LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFaliedException, MemberLockedException;
-    LoginResult authenticator(HttpServletRequest request, TwoFactorAuthenticationRequestDto requestDto) throws LoginFaliedException, MemberLockedException;
+    LoginResult authenticate(HttpServletRequest request, TwoFactorAuthenticationRequestDto requestDto) throws LoginFaliedException, MemberLockedException;
     String resetAuthenticator(String memberId);
-    String revoke(String memberId);
-    TokenHeader reissue(HttpServletRequest request);
-    List<String> getCurrentLoggedInUsers();
+    String revokeToken(String memberId);
+    TokenHeader reissueToken(HttpServletRequest request);
+    List<String> retrieveCurrentLoggedInUsers();
 }

@@ -21,13 +21,13 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RestController
 @RequestMapping("/api/v1/login")
 @Tag(name = "Login", description = "로그인")
-public class UserLoginController {
+public class MemberLoginController {
 
     private final LoginService loginService;
 
     private final String authHeader;
 
-    public UserLoginController(
+    public MemberLoginController(
             @Qualifier("userLoginService") LoginService loginService,
             @Value("${security.auth.header}") String authHeader
     ) {
