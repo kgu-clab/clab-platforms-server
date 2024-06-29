@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.workExperience.application.UpdateWorkExperienceService;
+import page.clab.api.domain.workExperience.application.WorkExperienceUpdateService;
 import page.clab.api.domain.workExperience.dao.WorkExperienceRepository;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
 import page.clab.api.domain.workExperience.dto.request.WorkExperienceUpdateRequestDto;
@@ -15,7 +15,7 @@ import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateWorkExperienceServiceImpl implements UpdateWorkExperienceService {
+public class WorkExperienceUpdateServiceImpl implements WorkExperienceUpdateService {
 
     private final MemberLookupService memberLookupService;
     private final ValidationService validationService;
@@ -23,7 +23,7 @@ public class UpdateWorkExperienceServiceImpl implements UpdateWorkExperienceServ
 
     @Override
     @Transactional
-    public Long updateWorkExperience(Long workExperienceId, WorkExperienceUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public Long update(Long workExperienceId, WorkExperienceUpdateRequestDto requestDto) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
         workExperience.validateAccessPermission(currentMemberInfo);

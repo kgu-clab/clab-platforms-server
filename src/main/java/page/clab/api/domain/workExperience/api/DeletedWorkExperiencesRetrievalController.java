@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.workExperience.application.FetchDeletedWorkExperiencesService;
+import page.clab.api.domain.workExperience.application.DeletedWorkExperiencesRetrievalService;
 import page.clab.api.domain.workExperience.dto.response.WorkExperienceResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -19,19 +19,19 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RequestMapping("/api/v1/work-experiences")
 @RequiredArgsConstructor
 @Tag(name = "WorkExperience", description = "경력사항")
-public class FetchDeletedWorkExperiencesController {
+public class DeletedWorkExperiencesRetrievalController {
 
-    private final FetchDeletedWorkExperiencesService fetchDeletedWorkExperiencesService;
+    private final DeletedWorkExperiencesRetrievalService deletedWorkExperiencesRetrievalService;
 
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 경력사항 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
-    public ApiResponse<PagedResponseDto<WorkExperienceResponseDto>> fetchDeletedWorkExperiences(
+    public ApiResponse<PagedResponseDto<WorkExperienceResponseDto>> retrieveDeletedWorkExperiences(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<WorkExperienceResponseDto> workExperiences = fetchDeletedWorkExperiencesService.fetchDeletedWorkExperiences(pageable);
+        PagedResponseDto<WorkExperienceResponseDto> workExperiences = deletedWorkExperiencesRetrievalService.retrieve(pageable);
         return ApiResponse.success(workExperiences);
     }
 }

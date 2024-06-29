@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.workExperience.application.DeleteWorkExperienceService;
+import page.clab.api.domain.workExperience.application.WorkExperienceRemoveService;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -16,18 +16,18 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RequestMapping("/api/v1/work-experiences")
 @RequiredArgsConstructor
 @Tag(name = "WorkExperience", description = "경력사항")
-public class DeleteWorkExperienceController {
+public class WorkExperienceRemoveController {
 
-    private final DeleteWorkExperienceService deleteWorkExperienceService;
+    private final WorkExperienceRemoveService workExperienceRemoveService;
 
     @Operation(summary = "[U] 경력사항 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{workExperienceId}")
-    public ApiResponse<Long> deleteWorkExperience(
+    public ApiResponse<Long> removeWorkExperience(
             @PathVariable(name = "workExperienceId") Long workExperienceId
     ) throws PermissionDeniedException {
-        Long id = deleteWorkExperienceService.deleteWorkExperience(workExperienceId);
+        Long id = workExperienceRemoveService.remove(workExperienceId);
         return ApiResponse.success(id);
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.workExperience.application.DeleteWorkExperienceService;
+import page.clab.api.domain.workExperience.application.WorkExperienceRemoveService;
 import page.clab.api.domain.workExperience.dao.WorkExperienceRepository;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
 import page.clab.api.global.exception.NotFoundException;
@@ -13,14 +13,14 @@ import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
-public class DeleteWorkExperienceServiceImpl implements DeleteWorkExperienceService {
+public class WorkExperienceRemoveServiceImpl implements WorkExperienceRemoveService {
 
     private final MemberLookupService memberLookupService;
     private final WorkExperienceRepository workExperienceRepository;
 
     @Override
     @Transactional
-    public Long deleteWorkExperience(Long workExperienceId) throws PermissionDeniedException {
+    public Long remove(Long workExperienceId) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         WorkExperience workExperience = getWorkExperienceByIdOrThrow(workExperienceId);
         workExperience.validateAccessPermission(currentMemberInfo);
