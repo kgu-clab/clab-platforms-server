@@ -36,5 +36,4 @@ public class PositionEventProcessor implements MemberEventProcessor {
     public void processMemberUpdated(String memberId) {
         // do nothing
     }
-
 }
