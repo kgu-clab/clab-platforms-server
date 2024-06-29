@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.award.application.FetchDeletedAwardsService;
+import page.clab.api.domain.award.application.DeletedAwardRetrievalService;
 import page.clab.api.domain.award.dto.response.AwardResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -21,19 +21,19 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RequiredArgsConstructor
 @Tag(name = "Award", description = "수상 이력")
 @Slf4j
-public class FetchDeletedAwardsController {
+public class DeletedAwardRetrievalController {
 
-    private final FetchDeletedAwardsService fetchDeletedAwardsService;
+    private final DeletedAwardRetrievalService deletedAwardRetrievalService;
 
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 수상이력 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
-    public ApiResponse<PagedResponseDto<AwardResponseDto>> getDeletedAwards(
+    public ApiResponse<PagedResponseDto<AwardResponseDto>> retrieveDeletedAwards(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AwardResponseDto> awards = fetchDeletedAwardsService.execute(pageable);
+        PagedResponseDto<AwardResponseDto> awards = deletedAwardRetrievalService.retrieveDeleted(pageable);
         return ApiResponse.success(awards);
     }
 }

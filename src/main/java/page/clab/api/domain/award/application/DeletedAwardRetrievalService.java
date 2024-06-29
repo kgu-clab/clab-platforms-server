@@ -4,6 +4,6 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.award.dto.response.AwardResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
-public interface FetchDeletedAwardsService {
-    PagedResponseDto<AwardResponseDto> execute(Pageable pageable);
+public interface DeletedAwardRetrievalService {
+    PagedResponseDto<AwardResponseDto> retrieveDeleted(Pageable pageable);
 }

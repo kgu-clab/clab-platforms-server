@@ -2,17 +2,14 @@ package page.clab.api.domain.award.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.award.application.UpdateAwardService;
-import page.clab.api.domain.award.dto.request.AwardUpdateRequestDto;
+import page.clab.api.domain.award.application.AwardRemoveService;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -21,19 +18,18 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RequiredArgsConstructor
 @Tag(name = "Award", description = "수상 이력")
 @Slf4j
-public class UpdateAwardController {
+public class AwardRemoveController {
 
-    private final UpdateAwardService updateAwardService;
+    private final AwardRemoveService awardRemoveService;
 
-    @Operation(summary = "[U] 수상 이력 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[U] 수상 이력 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    @PatchMapping("/{awardId}")
-    public ApiResponse<Long> updateAward(
-            @PathVariable(name = "awardId") Long awardId,
-            @Valid @RequestBody AwardUpdateRequestDto requestDto
+    @DeleteMapping("/{awardId}")
+    public ApiResponse<Long> removeAward(
+            @PathVariable(name = "awardId") Long awardId
     ) throws PermissionDeniedException {
-        Long id = updateAwardService.execute(awardId, requestDto);
+        Long id = awardRemoveService.remove(awardId);
         return ApiResponse.success(id);
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.award.application.CreateAwardService;
+import page.clab.api.domain.award.application.AwardRegisterService;
 import page.clab.api.domain.award.dto.request.AwardRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -17,17 +17,17 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/awards")
 @RequiredArgsConstructor
 @Tag(name = "Award", description = "수상 이력")
-public class CreateAwardController {
+public class AwardRegisterController {
 
-    private final CreateAwardService createAwardService;
+    private final AwardRegisterService awardRegisterService;
 
     @Operation(summary = "[U] 수상 이력 등록", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ApiResponse<Long> createAward(
+    public ApiResponse<Long> registerAward(
             @Valid @RequestBody AwardRequestDto requestDto
     ) {
-        Long id = createAwardService.execute(requestDto);
+        Long id = awardRegisterService.register(requestDto);
         return ApiResponse.success(id);
     }
 }
