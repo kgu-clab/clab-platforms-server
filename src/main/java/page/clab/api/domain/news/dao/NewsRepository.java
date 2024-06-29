@@ -16,5 +16,4 @@ public interface NewsRepository extends JpaRepository<News, Long>, NewsRepositor
 
     @Query(value = "SELECT n.* FROM news n WHERE n.is_deleted = true", nativeQuery = true)
     Page<News> findAllByIsDeletedTrue(Pageable pageable);
-
 }

@@ -78,4 +78,7 @@ public class News extends BaseEntity {
         Optional.ofNullable(newsUpdateRequestDto.getDate()).ifPresent(this::setDate);
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
 }
