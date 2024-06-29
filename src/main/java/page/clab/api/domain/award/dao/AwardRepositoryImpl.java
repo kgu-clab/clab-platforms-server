@@ -49,5 +49,4 @@ public class AwardRepositoryImpl implements AwardRepositoryCustom {
 
         return new PageImpl<>(awards, pageable, count);
     }
-
 }

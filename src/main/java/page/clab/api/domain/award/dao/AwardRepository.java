@@ -19,5 +19,4 @@ public interface AwardRepository extends JpaRepository<Award, Long>, AwardReposi
     Page<Award> findAllByIsDeletedTrue(Pageable pageable);
 
     List<Award> findByMemberId(String memberId);
-
 }
