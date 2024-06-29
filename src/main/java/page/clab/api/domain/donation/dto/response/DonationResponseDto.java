@@ -32,5 +32,4 @@ public class DonationResponseDto {
                 .createdAt(donation.getCreatedAt())
                 .build();
     }
-
 }

@@ -16,5 +16,4 @@ public interface DonationRepository extends JpaRepository<Donation, Long>, Donat
 
     @Query(value = "SELECT d.* FROM donation d WHERE d.is_deleted = true", nativeQuery = true)
     Page<Donation> findAllByIsDeletedTrue(Pageable pageable);
-
 }
