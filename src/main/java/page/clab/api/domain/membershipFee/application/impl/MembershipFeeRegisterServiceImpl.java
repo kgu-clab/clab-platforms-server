@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberLookupService;
-import page.clab.api.domain.membershipFee.application.CreateMembershipFeeService;
+import page.clab.api.domain.membershipFee.application.MembershipFeeRegisterService;
 import page.clab.api.domain.membershipFee.dao.MembershipFeeRepository;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
@@ -13,7 +13,7 @@ import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class CreateMembershipFeeServiceImpl implements CreateMembershipFeeService {
+public class MembershipFeeRegisterServiceImpl implements MembershipFeeRegisterService {
 
     private final MemberLookupService memberLookupService;
     private final NotificationSenderService notificationService;
@@ -22,7 +22,7 @@ public class CreateMembershipFeeServiceImpl implements CreateMembershipFeeServic
 
     @Transactional
     @Override
-    public Long execute(MembershipFeeRequestDto requestDto) {
+    public Long register(MembershipFeeRequestDto requestDto) {
         String currentMemberId = memberLookupService.getCurrentMemberId();
         MembershipFee membershipFee = MembershipFeeRequestDto.toEntity(requestDto, currentMemberId);
         validationService.checkValid(membershipFee);

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.membershipFee.application.UpdateMembershipFeeService;
+import page.clab.api.domain.membershipFee.application.MembershipFeeUpdateService;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeUpdateRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -19,9 +19,9 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RequestMapping("/api/v1/membership-fees")
 @RequiredArgsConstructor
 @Tag(name = "MembershipFee", description = "회비")
-public class UpdateMembershipFeeController {
+public class MembershipFeeUpdateController {
 
-    private final UpdateMembershipFeeService updateMembershipFeeService;
+    private final MembershipFeeUpdateService membershipFeeUpdateService;
 
     @Operation(summary = "[S] 회비 정보 수정", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
@@ -30,7 +30,7 @@ public class UpdateMembershipFeeController {
             @PathVariable(name = "membershipFeeId") Long membershipFeeId,
             @Valid @RequestBody MembershipFeeUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = updateMembershipFeeService.execute(membershipFeeId, requestDto);
+        Long id = membershipFeeUpdateService.update(membershipFeeId, requestDto);
         return ApiResponse.success(id);
     }
 }

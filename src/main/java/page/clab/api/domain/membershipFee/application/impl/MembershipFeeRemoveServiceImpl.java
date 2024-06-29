@@ -5,31 +5,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.membershipFee.application.UpdateMembershipFeeService;
+import page.clab.api.domain.membershipFee.application.MembershipFeeRemoveService;
 import page.clab.api.domain.membershipFee.dao.MembershipFeeRepository;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
-import page.clab.api.domain.membershipFee.dto.request.MembershipFeeUpdateRequestDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateMembershipFeeServiceImpl implements UpdateMembershipFeeService {
+public class MembershipFeeRemoveServiceImpl implements MembershipFeeRemoveService {
 
     private final MemberLookupService memberLookupService;
-    private final ValidationService validationService;
     private final MembershipFeeRepository membershipFeeRepository;
 
     @Transactional
     @Override
-    public Long execute(Long membershipFeeId, MembershipFeeUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public Long remove(Long membershipFeeId) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         MembershipFee membershipFee = getMembershipFeeByIdOrThrow(membershipFeeId);
         membershipFee.validateAccessPermission(currentMemberInfo);
-        membershipFee.update(requestDto);
-        validationService.checkValid(membershipFee);
-        return membershipFeeRepository.save(membershipFee).getId();
+        membershipFee.delete();
+        membershipFeeRepository.save(membershipFee);
+        return membershipFee.getId();
     }
 
     private MembershipFee getMembershipFeeByIdOrThrow(Long membershipFeeId) {

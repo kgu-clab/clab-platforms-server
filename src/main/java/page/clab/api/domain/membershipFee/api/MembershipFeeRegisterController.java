@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.membershipFee.application.CreateMembershipFeeService;
+import page.clab.api.domain.membershipFee.application.MembershipFeeRegisterService;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -17,17 +17,17 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/membership-fees")
 @RequiredArgsConstructor
 @Tag(name = "MembershipFee", description = "회비")
-public class CreateMembershipFeeController {
+public class MembershipFeeRegisterController {
 
-    private final CreateMembershipFeeService createMembershipFeeService;
+    private final MembershipFeeRegisterService membershipFeeRegisterService;
 
     @Operation(summary = "[U] 회비 신청", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ApiResponse<Long> createMembershipFee(
+    public ApiResponse<Long> registerMembershipFee(
             @Valid @RequestBody MembershipFeeRequestDto requestDto
     ) {
-        Long id = createMembershipFeeService.execute(requestDto);
+        Long id = membershipFeeRegisterService.register(requestDto);
         return ApiResponse.success(id);
     }
 }
