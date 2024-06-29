@@ -45,7 +45,7 @@ public class LoginService {
 
     private final MemberLookupService memberLookupService;
 
-    private final CreateLoginAttemptLogService createLoginAttemptLogService;
+    private final LoginAttemptLogManagementService loginAttemptLogManagementService;
 
     private final RedisTokenService redisTokenService;
 
@@ -119,7 +119,7 @@ public class LoginService {
 
     private void logLoginAttempt(HttpServletRequest request, String memberId, boolean isSuccess) {
         LoginAttemptResult result = isSuccess ? LoginAttemptResult.SUCCESS : LoginAttemptResult.FAILURE;
-        createLoginAttemptLogService.execute(request, memberId, result);
+        loginAttemptLogManagementService.createLoginAttemptLog(request, memberId, result);
     }
 
     private LoginResult generateLoginResult(MemberLoginInfoDto loginMember) {
@@ -142,11 +142,11 @@ public class LoginService {
 
     private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request) throws MemberLockedException, LoginFaliedException {
         if (!authenticatorService.isAuthenticatorValid(memberId, totp)) {
-            createLoginAttemptLogService.execute(request, memberId, LoginAttemptResult.FAILURE);
+            loginAttemptLogManagementService.createLoginAttemptLog(request, memberId, LoginAttemptResult.FAILURE);
             accountLockManagementService.handleLoginFailure(request, memberId);
             throw new LoginFaliedException("잘못된 인증번호입니다.");
         }
-        createLoginAttemptLogService.execute(request, memberId, LoginAttemptResult.TOTP);
+        loginAttemptLogManagementService.createLoginAttemptLog(request, memberId, LoginAttemptResult.TOTP);
     }
 
     private TokenInfo generateAndSaveToken(MemberLoginInfoDto memberInfo) {

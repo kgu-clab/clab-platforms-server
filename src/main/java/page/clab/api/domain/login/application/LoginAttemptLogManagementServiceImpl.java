@@ -13,13 +13,13 @@ import page.clab.api.global.util.IPInfoUtil;
 
 @Service
 @RequiredArgsConstructor
-public class CreateLoginAttemptLogServiceImpl implements CreateLoginAttemptLogService {
+public class LoginAttemptLogManagementServiceImpl implements LoginAttemptLogManagementService {
 
     private final LoginAttemptLogRepository loginAttemptLogRepository;
 
     @Transactional
     @Override
-    public void execute(HttpServletRequest request, String memberId, LoginAttemptResult loginAttemptResult) {
+    public void createLoginAttemptLog(HttpServletRequest request, String memberId, LoginAttemptResult loginAttemptResult) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         IPResponse ipResponse = HttpReqResUtil.isBogonRequest(clientIpAddress) ? null : IPInfoUtil.getIpInfo(request);
         LoginAttemptLog loginAttemptLog = LoginAttemptLog.create(memberId, request, clientIpAddress, ipResponse, loginAttemptResult);
