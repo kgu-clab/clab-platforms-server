@@ -19,5 +19,4 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewRep
 
     @Query(value = "SELECT r.* FROM review r WHERE r.is_deleted = true", nativeQuery = true)
     Page<Review> findAllByIsDeletedTrue(Pageable pageable);
-
 }

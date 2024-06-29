@@ -60,6 +60,10 @@ public class Review extends BaseEntity {
         Optional.ofNullable(requestDto.getIsPublic()).ifPresent(this::setIsPublic);
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     public boolean isOwner(Member member) {
         return this.member.isSameMember(member);
     }
@@ -73,5 +77,4 @@ public class Review extends BaseEntity {
             throw new PermissionDeniedException("해당 후기를 수정/삭제할 권한이 없습니다.");
         }
     }
-
 }

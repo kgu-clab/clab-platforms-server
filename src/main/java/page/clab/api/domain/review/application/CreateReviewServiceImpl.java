@@ -1,9 +1,6 @@
 package page.clab.api.domain.review.application;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService;
@@ -17,31 +14,22 @@ import page.clab.api.domain.notification.application.NotificationSenderService;
 import page.clab.api.domain.review.dao.ReviewRepository;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.domain.review.dto.request.ReviewRequestDto;
-import page.clab.api.domain.review.dto.request.ReviewUpdateRequestDto;
-import page.clab.api.domain.review.dto.response.ReviewResponseDto;
 import page.clab.api.domain.review.exception.AlreadyReviewedException;
-import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
-public class ReviewService {
+public class CreateReviewServiceImpl implements CreateReviewService {
 
     private final MemberLookupService memberLookupService;
-
     private final ActivityGroupMemberService activityGroupMemberService;
-
     private final NotificationSenderService notificationService;
-
     private final ValidationService validationService;
-
     private final ReviewRepository reviewRepository;
 
     @Transactional
-    public Long createReview(ReviewRequestDto requestDto) {
+    @Override
+    public Long execute(ReviewRequestDto requestDto) {
         Member currentMember = memberLookupService.getCurrentMember();
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(requestDto.getActivityGroupId());
         validateReviewCreationPermission(activityGroup, currentMember);
@@ -49,45 +37,6 @@ public class ReviewService {
         validationService.checkValid(review);
         notifyGroupLeaderOfNewReview(activityGroup, currentMember);
         return reviewRepository.save(review).getId();
-    }
-
-    @Transactional(readOnly = true)
-    public PagedResponseDto<ReviewResponseDto> getReviewsByConditions(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable) {
-        Member currentMember = memberLookupService.getCurrentMember();
-        Page<Review> reviews = reviewRepository.findByConditions(memberId, memberName, activityId, isPublic, pageable);
-        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));
-    }
-
-    @Transactional(readOnly = true)
-    public PagedResponseDto<ReviewResponseDto> getMyReviews(Pageable pageable) {
-        Member currentMember = memberLookupService.getCurrentMember();
-        Page<Review> reviews = getReviewByMember(currentMember, pageable);
-        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));
-    }
-
-    @Transactional(readOnly = true)
-    public PagedResponseDto<ReviewResponseDto> getDeletedReviews(Pageable pageable) {
-        Member currentMember = memberLookupService.getCurrentMember();
-        Page<Review> reviews = reviewRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));
-    }
-
-    @Transactional
-    public Long updateReview(Long reviewId, ReviewUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberLookupService.getCurrentMember();
-        Review review = getReviewByIdOrThrow(reviewId);
-        review.validateAccessPermission(currentMember);
-        review.update(requestDto);
-        validationService.checkValid(review);
-        return reviewRepository.save(review).getId();
-    }
-
-    public Long deleteReview(Long reviewId) throws PermissionDeniedException {
-        Member currentMember = memberLookupService.getCurrentMember();
-        Review review = getReviewByIdOrThrow(reviewId);
-        review.validateAccessPermission(currentMember);
-        reviewRepository.delete(review);
-        return reviewId;
     }
 
     private void validateReviewCreationPermission(ActivityGroup activityGroup, Member member) {
@@ -109,14 +58,4 @@ public class ReviewService {
     private boolean isExistsByMemberAndActivityGroup(Member member, ActivityGroup activityGroup) {
         return reviewRepository.existsByMemberAndActivityGroup(member, activityGroup);
     }
-
-    public Review getReviewByIdOrThrow(Long reviewId) {
-        return reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new NotFoundException("해당 리뷰가 없습니다."));
-    }
-
-    private Page<Review> getReviewByMember(Member member, Pageable pageable) {
-        return reviewRepository.findAllByMember(member, pageable);
-    }
-
 }

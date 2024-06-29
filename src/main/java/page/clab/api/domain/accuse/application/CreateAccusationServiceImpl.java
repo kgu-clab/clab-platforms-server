@@ -17,7 +17,7 @@ import page.clab.api.domain.comment.application.CommentService;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.notification.application.NotificationSenderService;
-import page.clab.api.domain.review.application.ReviewService;
+import page.clab.api.domain.review.application.ReviewLookupService;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.global.validation.ValidationService;
 
@@ -29,7 +29,7 @@ public class CreateAccusationServiceImpl implements CreateAccusationService {
     private final NotificationSenderService notificationService;
     private final BoardService boardService;
     private final CommentService commentService;
-    private final ReviewService reviewService;
+    private final ReviewLookupService reviewLookupService;
     private final ValidationService validationService;
     private final AccuseRepository accuseRepository;
     private final AccuseTargetRepository accuseTargetRepository;
@@ -70,7 +70,7 @@ public class CreateAccusationServiceImpl implements CreateAccusationService {
                 }
                 break;
             case REVIEW:
-                Review review = reviewService.getReviewByIdOrThrow(targetId);
+                Review review = reviewLookupService.getReviewByIdOrThrow(targetId);
                 if (review.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 리뷰는 신고할 수 없습니다.");
                 }
