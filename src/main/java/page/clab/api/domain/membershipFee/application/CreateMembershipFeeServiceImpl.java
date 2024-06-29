@@ -7,7 +7,7 @@ import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.membershipFee.dao.MembershipFeeRepository;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.application.NotificationSenderService;
 import page.clab.api.global.validation.ValidationService;
 
 @Service
@@ -15,7 +15,7 @@ import page.clab.api.global.validation.ValidationService;
 public class CreateMembershipFeeServiceImpl implements CreateMembershipFeeService {
 
     private final MemberLookupService memberLookupService;
-    private final NotificationService notificationService;
+    private final NotificationSenderService notificationService;
     private final ValidationService validationService;
     private final MembershipFeeRepository membershipFeeRepository;
 

@@ -23,7 +23,7 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberWithAp
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.application.NotificationSenderService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -41,7 +41,7 @@ public class ActivityGroupAdminService {
 
     private final ActivityGroupMemberService activityGroupMemberService;
 
-    private final NotificationService notificationService;
+    private final NotificationSenderService notificationService;
 
     private final ValidationService validationService;
 

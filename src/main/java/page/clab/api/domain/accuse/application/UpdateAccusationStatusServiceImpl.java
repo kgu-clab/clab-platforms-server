@@ -10,7 +10,7 @@ import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.AccuseTargetId;
 import page.clab.api.domain.accuse.domain.TargetType;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.application.NotificationSenderService;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.validation.ValidationService;
 
@@ -24,7 +24,7 @@ public class UpdateAccusationStatusServiceImpl implements UpdateAccusationStatus
     private final AccuseTargetRepository accuseTargetRepository;
     private final AccuseRepository accuseRepository;
     private final ValidationService validationService;
-    private final NotificationService notificationService;
+    private final NotificationSenderService notificationService;
 
     @Transactional
     @Override

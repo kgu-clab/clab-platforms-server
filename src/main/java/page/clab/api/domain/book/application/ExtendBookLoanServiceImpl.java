@@ -11,7 +11,7 @@ import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.application.NotificationSenderService;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.validation.ValidationService;
 
@@ -22,7 +22,7 @@ public class ExtendBookLoanServiceImpl implements ExtendBookLoanService {
     private final BookRepository bookRepository;
     private final BookLoanRecordRepository bookLoanRecordRepository;
     private final MemberLookupService memberLookupService;
-    private final NotificationService notificationService;
+    private final NotificationSenderService notificationService;
     private final ValidationService validationService;
 
     @Transactional

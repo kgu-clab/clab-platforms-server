@@ -23,7 +23,7 @@ import page.clab.api.domain.activityGroup.dto.response.FeedbackResponseDto;
 import page.clab.api.domain.activityGroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.application.NotificationSenderService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
@@ -47,7 +47,7 @@ public class ActivityGroupBoardService {
 
     private final ActivityGroupMemberService activityGroupMemberService;
 
-    private final NotificationService notificationService;
+    private final NotificationSenderService notificationService;
 
     private final ValidationService validationService;
 

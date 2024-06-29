@@ -16,5 +16,4 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     @Query(value = "SELECT n.* FROM notification n WHERE n.is_deleted = true", nativeQuery = true)
     Page<Notification> findAllByIsDeletedTrue(Pageable pageable);
-
 }

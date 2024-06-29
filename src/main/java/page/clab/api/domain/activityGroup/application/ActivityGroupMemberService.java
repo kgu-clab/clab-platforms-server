@@ -33,7 +33,7 @@ import page.clab.api.domain.activityGroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.application.NotificationSenderService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -46,7 +46,7 @@ public class ActivityGroupMemberService {
 
     private final MemberLookupService memberLookupService;
 
-    private final NotificationService notificationService;
+    private final NotificationSenderService notificationService;
 
     private final ActivityGroupRepository activityGroupRepository;
 

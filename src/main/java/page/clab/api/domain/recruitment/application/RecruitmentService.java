@@ -10,7 +10,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.application.NotificationSenderService;
 import page.clab.api.domain.recruitment.dao.RecruitmentRepository;
 import page.clab.api.domain.recruitment.domain.Recruitment;
 import page.clab.api.domain.recruitment.domain.RecruitmentStatus;
@@ -28,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RecruitmentService {
 
-    private final NotificationService notificationService;
+    private final NotificationSenderService notificationService;
 
     private final ValidationService validationService;
 

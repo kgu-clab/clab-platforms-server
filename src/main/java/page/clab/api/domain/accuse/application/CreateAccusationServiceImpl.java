@@ -16,7 +16,7 @@ import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.application.CommentService;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.member.application.MemberLookupService;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.application.NotificationSenderService;
 import page.clab.api.domain.review.application.ReviewService;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.global.validation.ValidationService;
@@ -26,7 +26,7 @@ import page.clab.api.global.validation.ValidationService;
 public class CreateAccusationServiceImpl implements CreateAccusationService {
 
     private final MemberLookupService memberLookupService;
-    private final NotificationService notificationService;
+    private final NotificationSenderService notificationService;
     private final BoardService boardService;
     private final CommentService commentService;
     private final ReviewService reviewService;

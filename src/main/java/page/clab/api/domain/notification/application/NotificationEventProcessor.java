@@ -36,5 +36,4 @@ public class NotificationEventProcessor implements MemberEventProcessor {
     public void processMemberUpdated(String memberId) {
         // do nothing
     }
-
 }

@@ -14,7 +14,7 @@ import page.clab.api.domain.book.exception.BookAlreadyAppliedForLoanException;
 import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.application.NotificationSenderService;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.validation.ValidationService;
@@ -26,7 +26,7 @@ public class RequestBookLoanServiceImpl implements RequestBookLoanService {
     private final BookRepository bookRepository;
     private final BookLoanRecordRepository bookLoanRecordRepository;
     private final MemberLookupService memberLookupService;
-    private final NotificationService notificationService;
+    private final NotificationSenderService notificationService;
     private final ValidationService validationService;
 
     @Transactional

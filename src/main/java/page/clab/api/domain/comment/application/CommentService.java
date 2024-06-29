@@ -21,7 +21,7 @@ import page.clab.api.domain.comment.dto.response.DeletedCommentResponseDto;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.application.NotificationSenderService;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -40,7 +40,7 @@ public class CommentService {
 
     private final MemberLookupService memberLookupService;
 
-    private final NotificationService notificationService;
+    private final NotificationSenderService notificationService;
 
     private final ValidationService validationService;
 

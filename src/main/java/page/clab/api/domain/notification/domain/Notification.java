@@ -58,5 +58,4 @@ public class Notification extends BaseEntity {
             throw new PermissionDeniedException("해당 알림을 수정/삭제할 권한이 없습니다.");
         }
     }
-
 }

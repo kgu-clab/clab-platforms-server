@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.application.dao.ApplicationRepository;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.application.NotificationSenderService;
 import page.clab.api.domain.recruitment.application.RecruitmentService;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.validation.ValidationService;
@@ -16,7 +16,7 @@ import page.clab.api.global.validation.ValidationService;
 public class CreateApplicationServiceImpl implements CreateApplicationService {
 
     private final RecruitmentService recruitmentService;
-    private final NotificationService notificationService;
+    private final NotificationSenderService notificationService;
     private final ValidationService validationService;
     private final SlackService slackService;
     private final ApplicationRepository applicationRepository;

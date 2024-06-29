@@ -13,7 +13,7 @@ import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.application.NotificationSenderService;
 import page.clab.api.domain.review.dao.ReviewRepository;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.domain.review.dto.request.ReviewRequestDto;
@@ -34,7 +34,7 @@ public class ReviewService {
 
     private final ActivityGroupMemberService activityGroupMemberService;
 
-    private final NotificationService notificationService;
+    private final NotificationSenderService notificationService;
 
     private final ValidationService validationService;
 
