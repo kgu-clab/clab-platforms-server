@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.jobPosting.application.FetchDeletedJobPostingsService;
+import page.clab.api.domain.jobPosting.application.DeletedJobPostingsRetrievalService;
 import page.clab.api.domain.jobPosting.dto.response.JobPostingDetailsResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -19,19 +19,19 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RequestMapping("/api/v1/job-postings")
 @RequiredArgsConstructor
 @Tag(name = "JobPosting", description = "채용 공고")
-public class FetchDeletedJobPostingsController {
+public class DeletedJobPostingsRetrievalController {
 
-    private final FetchDeletedJobPostingsService fetchDeletedJobPostingsService;
+    private final DeletedJobPostingsRetrievalService deletedJobPostingsRetrievalService;
 
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 채용 공고 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
-    public ApiResponse<PagedResponseDto<JobPostingDetailsResponseDto>> getDeletedJobPostings(
+    public ApiResponse<PagedResponseDto<JobPostingDetailsResponseDto>> retrieveDeletedJobPostings(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<JobPostingDetailsResponseDto> jobPostings = fetchDeletedJobPostingsService.execute(pageable);
+        PagedResponseDto<JobPostingDetailsResponseDto> jobPostings = deletedJobPostingsRetrievalService.retrieveDeleted(pageable);
         return ApiResponse.success(jobPostings);
     }
 }

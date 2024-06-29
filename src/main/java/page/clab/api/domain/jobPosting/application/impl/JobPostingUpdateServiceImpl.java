@@ -3,22 +3,26 @@ package page.clab.api.domain.jobPosting.application.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.jobPosting.application.DeleteJobPostingService;
+import page.clab.api.domain.jobPosting.application.JobPostingUpdateService;
 import page.clab.api.domain.jobPosting.dao.JobPostingRepository;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
+import page.clab.api.domain.jobPosting.dto.request.JobPostingUpdateRequestDto;
 import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class DeleteJobPostingServiceImpl implements DeleteJobPostingService {
+public class JobPostingUpdateServiceImpl implements JobPostingUpdateService {
 
+    private final ValidationService validationService;
     private final JobPostingRepository jobPostingRepository;
 
     @Transactional
     @Override
-    public Long execute(Long jobPostingId) {
+    public Long update(Long jobPostingId, JobPostingUpdateRequestDto requestDto) {
         JobPosting jobPosting = getJobPostingByIdOrThrow(jobPostingId);
-        jobPosting.delete();
+        jobPosting.update(requestDto);
+        validationService.checkValid(jobPosting);
         return jobPostingRepository.save(jobPosting).getId();
     }
 

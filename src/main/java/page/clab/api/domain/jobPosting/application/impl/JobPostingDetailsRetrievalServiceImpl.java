@@ -3,27 +3,23 @@ package page.clab.api.domain.jobPosting.application.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.jobPosting.application.UpdateJobPostingService;
+import page.clab.api.domain.jobPosting.application.JobPostingDetailsRetrievalService;
 import page.clab.api.domain.jobPosting.dao.JobPostingRepository;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
-import page.clab.api.domain.jobPosting.dto.request.JobPostingUpdateRequestDto;
+import page.clab.api.domain.jobPosting.dto.response.JobPostingDetailsResponseDto;
 import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateJobPostingServiceImpl implements UpdateJobPostingService {
+public class JobPostingDetailsRetrievalServiceImpl implements JobPostingDetailsRetrievalService {
 
-    private final ValidationService validationService;
     private final JobPostingRepository jobPostingRepository;
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
-    public Long execute(Long jobPostingId, JobPostingUpdateRequestDto requestDto) {
+    public JobPostingDetailsResponseDto retrieveDetails(Long jobPostingId) {
         JobPosting jobPosting = getJobPostingByIdOrThrow(jobPostingId);
-        jobPosting.update(requestDto);
-        validationService.checkValid(jobPosting);
-        return jobPostingRepository.save(jobPosting).getId();
+        return JobPostingDetailsResponseDto.toDto(jobPosting);
     }
 
     private JobPosting getJobPostingByIdOrThrow(Long jobPostingId) {

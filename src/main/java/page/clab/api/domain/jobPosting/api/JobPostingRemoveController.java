@@ -8,24 +8,24 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.jobPosting.application.DeleteJobPostingService;
+import page.clab.api.domain.jobPosting.application.JobPostingRemoveService;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/job-postings")
 @RequiredArgsConstructor
 @Tag(name = "JobPosting", description = "채용 공고")
-public class DeleteJobPostingController {
+public class JobPostingRemoveController {
 
-    private final DeleteJobPostingService deleteJobPostingService;
+    private final JobPostingRemoveService jobPostingRemoveService;
 
     @Operation(summary = "[A] 채용 공고 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{jobPostingId}")
-    public ApiResponse<Long> deleteJobPosting(
+    public ApiResponse<Long> removeJobPosting(
             @PathVariable(name = "jobPostingId") Long jobPostingId
     ) {
-        Long id = deleteJobPostingService.execute(jobPostingId);
+        Long id = jobPostingRemoveService.remove(jobPostingId);
         return ApiResponse.success(id);
     }
 }

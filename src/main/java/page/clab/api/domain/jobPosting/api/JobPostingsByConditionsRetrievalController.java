@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.jobPosting.application.FetchJobPostingsByConditionsService;
+import page.clab.api.domain.jobPosting.application.JobPostingsByConditionsRetrievalService;
 import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
@@ -26,9 +26,9 @@ import java.util.List;
 @RequestMapping("/api/v1/job-postings")
 @RequiredArgsConstructor
 @Tag(name = "JobPosting", description = "채용 공고")
-public class FetchJobPostingsByConditionsController {
+public class JobPostingsByConditionsRetrievalController {
 
-    private final FetchJobPostingsByConditionsService fetchJobPostingsByConditionsService;
+    private final JobPostingsByConditionsRetrievalService jobPostingsByConditionsRetrievalService;
 
     @Operation(summary = "[U] 채용 공고 목록 조회(공고명, 기업명, 경력, 근로 조건 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "4개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
@@ -36,7 +36,7 @@ public class FetchJobPostingsByConditionsController {
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ApiResponse<PagedResponseDto<JobPostingResponseDto>> getJobPostingsByConditions(
+    public ApiResponse<PagedResponseDto<JobPostingResponseDto>> retrieveJobPostingsByConditions(
             @RequestParam(name = "title", required = false) String title,
             @RequestParam(name = "companyName", required = false) String companyName,
             @RequestParam(name = "careerLevel", required = false) CareerLevel careerLevel,
@@ -47,7 +47,7 @@ public class FetchJobPostingsByConditionsController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, JobPosting.class);
-        PagedResponseDto<JobPostingResponseDto> jobPostings = fetchJobPostingsByConditionsService.execute(title, companyName, careerLevel, employmentType, pageable);
+        PagedResponseDto<JobPostingResponseDto> jobPostings = jobPostingsByConditionsRetrievalService.retrieveByConditions(title, companyName, careerLevel, employmentType, pageable);
         return ApiResponse.success(jobPostings);
     }
 }

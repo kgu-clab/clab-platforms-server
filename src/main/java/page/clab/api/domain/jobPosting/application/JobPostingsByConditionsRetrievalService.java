@@ -6,6 +6,6 @@ import page.clab.api.domain.jobPosting.domain.EmploymentType;
 import page.clab.api.domain.jobPosting.dto.response.JobPostingResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
-public interface FetchJobPostingsByConditionsService {
-    PagedResponseDto<JobPostingResponseDto> execute(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable);
+public interface JobPostingsByConditionsRetrievalService {
+    PagedResponseDto<JobPostingResponseDto> retrieveByConditions(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable);
 }

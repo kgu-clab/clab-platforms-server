@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.jobPosting.application.FetchJobPostingDetailsService;
+import page.clab.api.domain.jobPosting.application.JobPostingDetailsRetrievalService;
 import page.clab.api.domain.jobPosting.dto.response.JobPostingDetailsResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -16,17 +16,17 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/job-postings")
 @RequiredArgsConstructor
 @Tag(name = "JobPosting", description = "채용 공고")
-public class FetchJobPostingDetailsController {
+public class JobPostingDetailsRetrievalController {
 
-    private final FetchJobPostingDetailsService fetchJobPostingDetailsService;
+    private final JobPostingDetailsRetrievalService jobPostingDetailsRetrievalService;
 
     @Operation(summary = "[U] 채용 공고 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{jobPostingId}")
-    public ApiResponse<JobPostingDetailsResponseDto> getJobPosting(
+    public ApiResponse<JobPostingDetailsResponseDto> retrieveJobPostingDetails(
             @PathVariable(name = "jobPostingId") Long jobPostingId
     ) {
-        JobPostingDetailsResponseDto jobPosting = fetchJobPostingDetailsService.execute(jobPostingId);
+        JobPostingDetailsResponseDto jobPosting = jobPostingDetailsRetrievalService.retrieveDetails(jobPostingId);
         return ApiResponse.success(jobPosting);
     }
 }
