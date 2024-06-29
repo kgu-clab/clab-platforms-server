@@ -1,5 +1,6 @@
 package page.clab.api.global.common.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -22,6 +23,7 @@ public class BaseEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @JsonIgnore
     @Column(name = "is_deleted")
     protected Boolean isDeleted = Boolean.FALSE;
 

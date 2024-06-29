@@ -36,5 +36,4 @@ public class BlacklistIp extends BaseEntity {
                 .reason(reason)
                 .build();
     }
-
 }
