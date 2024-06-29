@@ -3,19 +3,19 @@ package page.clab.api.domain.position.application.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.position.application.DeletePositionService;
+import page.clab.api.domain.position.application.PositionRemoveService;
 import page.clab.api.domain.position.dao.PositionRepository;
 import page.clab.api.domain.position.domain.Position;
 import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor
-public class DeletePositionServiceImpl implements DeletePositionService {
+public class PositionRemoveServiceImpl implements PositionRemoveService {
 
     private final PositionRepository positionRepository;
 
     @Transactional
-    public Long execute(Long positionId) {
+    public Long remove(Long positionId) {
         Position position = getPositionByIdOrThrow(positionId);
         position.delete();
         return positionRepository.save(position).getId();

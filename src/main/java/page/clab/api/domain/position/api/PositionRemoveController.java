@@ -8,24 +8,24 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.position.application.DeletePositionService;
+import page.clab.api.domain.position.application.PositionRemoveService;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/positions")
 @RequiredArgsConstructor
 @Tag(name = "Position", description = "멤버 직책")
-public class DeletePositionController {
+public class PositionRemoveController {
 
-    private final DeletePositionService deletePositionService;
+    private final PositionRemoveService positionRemoveService;
 
     @Operation(summary = "[S] 직책 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("/{positionId}")
-    public ApiResponse<Long> deletePosition(
+    public ApiResponse<Long> removePosition(
             @PathVariable("positionId") Long positionId
     ) {
-        Long id = deletePositionService.execute(positionId);
+        Long id = positionRemoveService.remove(positionId);
         return ApiResponse.success(id);
     }
 }
