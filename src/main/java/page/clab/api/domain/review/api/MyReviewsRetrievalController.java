@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.review.application.FetchMyReviewsService;
+import page.clab.api.domain.review.application.MyReviewsRetrievalService;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.domain.review.dto.response.ReviewResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -24,22 +24,22 @@ import java.util.List;
 @RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
 @Tag(name = "Review", description = "리뷰")
-public class FetchMyReviewsController {
+public class MyReviewsRetrievalController {
 
-    private final FetchMyReviewsService fetchMyReviewsService;
+    private final MyReviewsRetrievalService myReviewsRetrievalService;
 
     @Operation(summary = "[U] 나의 리뷰 목록", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, activityGroupId, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/my")
-    public ApiResponse<PagedResponseDto<ReviewResponseDto>> fetchMyReviews(
+    public ApiResponse<PagedResponseDto<ReviewResponseDto>> retrieveMyReviews(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Review.class);
-        PagedResponseDto<ReviewResponseDto> myReviews = fetchMyReviewsService.execute(pageable);
+        PagedResponseDto<ReviewResponseDto> myReviews = myReviewsRetrievalService.retrieve(pageable);
         return ApiResponse.success(myReviews);
     }
 }

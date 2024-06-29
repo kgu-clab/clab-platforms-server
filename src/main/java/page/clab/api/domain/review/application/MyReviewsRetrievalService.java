@@ -4,6 +4,6 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.review.dto.response.ReviewResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
-public interface FetchMyReviewsService {
-    PagedResponseDto<ReviewResponseDto> execute(Pageable pageable);
+public interface MyReviewsRetrievalService {
+    PagedResponseDto<ReviewResponseDto> retrieve(Pageable pageable);
 }

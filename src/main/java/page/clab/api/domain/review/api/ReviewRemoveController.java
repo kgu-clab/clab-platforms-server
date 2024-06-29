@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.review.application.DeleteReviewService;
+import page.clab.api.domain.review.application.ReviewRemoveService;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -16,17 +16,17 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
 @Tag(name = "Review", description = "리뷰")
-public class DeleteReviewController {
+public class ReviewRemoveController {
 
-    private final DeleteReviewService deleteReviewService;
+    private final ReviewRemoveService reviewRemoveService;
 
     @Operation(summary = "[U] 리뷰 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @DeleteMapping("/{reviewId}")
-    public ApiResponse<Long> deleteReview(
+    public ApiResponse<Long> removeReview(
             @PathVariable(name = "reviewId") Long reviewId
     ) throws PermissionDeniedException {
-        Long id = deleteReviewService.execute(reviewId);
+        Long id = reviewRemoveService.remove(reviewId);
         return ApiResponse.success(id);
     }
 }

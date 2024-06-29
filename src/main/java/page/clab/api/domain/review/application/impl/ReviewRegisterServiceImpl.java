@@ -11,7 +11,7 @@ import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedExce
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationSenderService;
-import page.clab.api.domain.review.application.CreateReviewService;
+import page.clab.api.domain.review.application.ReviewRegisterService;
 import page.clab.api.domain.review.dao.ReviewRepository;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.domain.review.dto.request.ReviewRequestDto;
@@ -20,7 +20,7 @@ import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class CreateReviewServiceImpl implements CreateReviewService {
+public class ReviewRegisterServiceImpl implements ReviewRegisterService {
 
     private final MemberLookupService memberLookupService;
     private final ActivityGroupMemberService activityGroupMemberService;
@@ -30,7 +30,7 @@ public class CreateReviewServiceImpl implements CreateReviewService {
 
     @Transactional
     @Override
-    public Long execute(ReviewRequestDto requestDto) {
+    public Long register(ReviewRequestDto requestDto) {
         Member currentMember = memberLookupService.getCurrentMember();
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(requestDto.getActivityGroupId());
         validateReviewCreationPermission(activityGroup, currentMember);
