@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.schedule.application.FetchSchedulesByConditionsService;
+import page.clab.api.domain.schedule.application.SchedulesByConditionsRetrievalService;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
@@ -25,9 +25,9 @@ import java.util.List;
 @RequestMapping("/api/v1/schedules")
 @RequiredArgsConstructor
 @Tag(name = "Schedule", description = "일정")
-public class FetchSchedulesByConditionsController {
+public class SchedulesByConditionsRetrievalController {
 
-    private final FetchSchedulesByConditionsService fetchSchedulesByConditionsService;
+    private final SchedulesByConditionsRetrievalService schedulesByConditionsRetrievalService;
 
     @Operation(summary = "[U] 일정 조회(연도, 월, 중요도 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
@@ -35,7 +35,7 @@ public class FetchSchedulesByConditionsController {
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDateTime, startDateTime, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/conditions")
-    public ApiResponse<PagedResponseDto<ScheduleResponseDto>> getSchedulesByConditions(
+    public ApiResponse<PagedResponseDto<ScheduleResponseDto>> retrieveSchedulesByConditions(
             @RequestParam(name = "year", required = false) Integer year,
             @RequestParam(name = "month", required = false) Integer month,
             @RequestParam(name = "priority", required = false) SchedulePriority priority,
@@ -45,7 +45,7 @@ public class FetchSchedulesByConditionsController {
             @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Schedule.class);
-        PagedResponseDto<ScheduleResponseDto> schedules = fetchSchedulesByConditionsService.execute(year, month, priority, pageable);
+        PagedResponseDto<ScheduleResponseDto> schedules = schedulesByConditionsRetrievalService.retrieve(year, month, priority, pageable);
         return ApiResponse.success(schedules);
     }
 }

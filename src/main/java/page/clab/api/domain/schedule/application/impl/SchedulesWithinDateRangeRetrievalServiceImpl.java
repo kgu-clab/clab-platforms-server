@@ -10,7 +10,7 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.schedule.application.FetchSchedulesWithinDateRangeService;
+import page.clab.api.domain.schedule.application.SchedulesWithinDateRangeRetrievalService;
 import page.clab.api.domain.schedule.dao.ScheduleRepository;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class FetchSchedulesWithinDateRangeServiceImpl implements FetchSchedulesWithinDateRangeService {
+public class SchedulesWithinDateRangeRetrievalServiceImpl implements SchedulesWithinDateRangeRetrievalService {
 
     private final MemberLookupService memberLookupService;
     private final ActivityGroupMemberService activityGroupMemberService;
@@ -30,7 +30,7 @@ public class FetchSchedulesWithinDateRangeServiceImpl implements FetchSchedulesW
 
     @Override
     @Transactional(readOnly = true)
-    public PagedResponseDto<ScheduleResponseDto> execute(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    public PagedResponseDto<ScheduleResponseDto> retrieve(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Member currentMember = memberLookupService.getCurrentMember();
         List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByMember(currentMember);
         List<ActivityGroup> myGroups = getMyActivityGroups(groupMembers);

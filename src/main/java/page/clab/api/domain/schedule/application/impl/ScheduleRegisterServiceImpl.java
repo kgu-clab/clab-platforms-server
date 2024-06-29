@@ -10,7 +10,7 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.schedule.application.CreateScheduleService;
+import page.clab.api.domain.schedule.application.ScheduleRegisterService;
 import page.clab.api.domain.schedule.dao.ScheduleRepository;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.ScheduleType;
@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CreateScheduleServiceImpl implements CreateScheduleService {
+public class ScheduleRegisterServiceImpl implements ScheduleRegisterService {
 
     private final MemberLookupService memberLookupService;
     private final ActivityGroupMemberService activityGroupMemberService;
@@ -30,7 +30,7 @@ public class CreateScheduleServiceImpl implements CreateScheduleService {
 
     @Override
     @Transactional
-    public Long execute(ScheduleRequestDto requestDto) throws PermissionDeniedException {
+    public Long register(ScheduleRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = memberLookupService.getCurrentMember();
         ActivityGroup activityGroup = resolveActivityGroupForSchedule(requestDto, currentMember);
         Schedule schedule = ScheduleRequestDto.toEntity(requestDto, currentMember, activityGroup);

@@ -4,8 +4,6 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
-import java.time.LocalDate;
-
-public interface FetchActivitySchedulesService {
-    PagedResponseDto<ScheduleResponseDto> execute(LocalDate startDate, LocalDate endDate, Pageable pageable);
+public interface DeletedSchedulesRetrievalService {
+    PagedResponseDto<ScheduleResponseDto> retrieveDeleted(Pageable pageable);
 }

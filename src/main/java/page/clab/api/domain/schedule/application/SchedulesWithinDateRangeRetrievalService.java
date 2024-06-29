@@ -6,6 +6,6 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 
 import java.time.LocalDate;
 
-public interface FetchSchedulesWithinDateRangeService {
-    PagedResponseDto<ScheduleResponseDto> execute(LocalDate startDate, LocalDate endDate, Pageable pageable);
+public interface SchedulesWithinDateRangeRetrievalService {
+    PagedResponseDto<ScheduleResponseDto> retrieve(LocalDate startDate, LocalDate endDate, Pageable pageable);
 }

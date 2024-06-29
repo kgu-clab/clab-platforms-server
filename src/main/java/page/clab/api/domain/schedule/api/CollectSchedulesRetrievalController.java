@@ -7,7 +7,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.schedule.application.FetchCollectSchedulesService;
+import page.clab.api.domain.schedule.application.CollectSchedulesRetrievalService;
 import page.clab.api.domain.schedule.dto.response.ScheduleCollectResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -15,15 +15,15 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/schedules")
 @RequiredArgsConstructor
 @Tag(name = "Schedule", description = "일정")
-public class FetchCollectSchedulesController {
+public class CollectSchedulesRetrievalController {
 
-    private final FetchCollectSchedulesService fetchCollectSchedulesService;
+    private final CollectSchedulesRetrievalService collectSchedulesRetrievalService;
 
     @Operation(summary = "[U] 일정 모아보기", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/collect")
-    public ApiResponse<ScheduleCollectResponseDto> getCollectSchedules() {
-        ScheduleCollectResponseDto schedules = fetchCollectSchedulesService.execute();
+    public ApiResponse<ScheduleCollectResponseDto> retrieveCollectSchedules() {
+        ScheduleCollectResponseDto schedules = collectSchedulesRetrievalService.retrieve();
         return ApiResponse.success(schedules);
     }
 }

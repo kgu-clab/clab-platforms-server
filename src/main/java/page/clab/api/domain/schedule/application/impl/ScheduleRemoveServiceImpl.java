@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.schedule.application.DeleteScheduleService;
+import page.clab.api.domain.schedule.application.ScheduleRemoveService;
 import page.clab.api.domain.schedule.dao.ScheduleRepository;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.global.exception.NotFoundException;
@@ -13,14 +13,14 @@ import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
-public class DeleteScheduleServiceImpl implements DeleteScheduleService {
+public class ScheduleRemoveServiceImpl implements ScheduleRemoveService {
 
     private final MemberLookupService memberLookupService;
     private final ScheduleRepository scheduleRepository;
 
     @Override
     @Transactional
-    public Long execute(Long scheduleId) throws PermissionDeniedException {
+    public Long remove(Long scheduleId) throws PermissionDeniedException {
         Member currentMember = memberLookupService.getCurrentMember();
         Schedule schedule = getScheduleById(scheduleId);
         schedule.validateAccessPermission(currentMember);

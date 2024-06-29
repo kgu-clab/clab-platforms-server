@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.schedule.application.FetchActivitySchedulesService;
+import page.clab.api.domain.schedule.application.ActivitySchedulesRetrievalService;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -25,15 +25,15 @@ import java.util.List;
 @RequestMapping("/api/v1/schedules")
 @RequiredArgsConstructor
 @Tag(name = "Schedule", description = "일정")
-public class FetchActivitySchedulesController {
+public class ActivitySchedulesRetrievalController {
 
-    private final FetchActivitySchedulesService fetchActivitySchedulesService;
+    private final ActivitySchedulesRetrievalService activitySchedulesRetrievalService;
 
     @Operation(summary = "[U] 내 활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDateTime, startDateTime, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/activity")
-    public ApiResponse<PagedResponseDto<ScheduleResponseDto>> getActivitySchedules(
+    public ApiResponse<PagedResponseDto<ScheduleResponseDto>> retrieveActivitySchedules(
             @RequestParam(name = "startDate") LocalDate startDate,
             @RequestParam(name = "endDate") LocalDate endDate,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -42,7 +42,7 @@ public class FetchActivitySchedulesController {
             @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Schedule.class);
-        PagedResponseDto<ScheduleResponseDto> schedules = fetchActivitySchedulesService.execute(startDate, endDate, pageable);
+        PagedResponseDto<ScheduleResponseDto> schedules = activitySchedulesRetrievalService.retrieve(startDate, endDate, pageable);
         return ApiResponse.success(schedules);
     }
 }
