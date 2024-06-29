@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.blog.application.FetchBlogDetailsService;
+import page.clab.api.domain.blog.application.BlogDetailsRetrievalService;
 import page.clab.api.domain.blog.dto.response.BlogDetailsResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -16,17 +16,17 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/blogs")
 @RequiredArgsConstructor
 @Tag(name = "Blog", description = "블로그 포스트")
-public class FetchBlogDetailsController {
+public class BlogDetailsRetrievalController {
 
-    private final FetchBlogDetailsService fetchBlogDetailsService;
+    private final BlogDetailsRetrievalService blogDetailsRetrievalService;
 
     @Operation(summary = "[U] 블로그 포스트 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{blogId}")
-    public ApiResponse<BlogDetailsResponseDto> getBlogDetails(
+    public ApiResponse<BlogDetailsResponseDto> retrieveBlogDetails(
             @PathVariable(name = "blogId") Long blogId
     ) {
-        BlogDetailsResponseDto blog = fetchBlogDetailsService.execute(blogId);
+        BlogDetailsResponseDto blog = blogDetailsRetrievalService.retrieve(blogId);
         return ApiResponse.success(blog);
     }
 }

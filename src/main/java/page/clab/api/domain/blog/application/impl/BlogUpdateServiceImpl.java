@@ -3,28 +3,33 @@ package page.clab.api.domain.blog.application.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.blog.application.FetchBlogDetailsService;
+import page.clab.api.domain.blog.application.BlogUpdateService;
 import page.clab.api.domain.blog.dao.BlogRepository;
 import page.clab.api.domain.blog.domain.Blog;
-import page.clab.api.domain.blog.dto.response.BlogDetailsResponseDto;
+import page.clab.api.domain.blog.dto.request.BlogUpdateRequestDto;
 import page.clab.api.domain.member.application.MemberLookupService;
-import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
+import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class FetchBlogDetailsServiceImpl implements FetchBlogDetailsService {
+public class BlogUpdateServiceImpl implements BlogUpdateService {
 
     private final MemberLookupService memberLookupService;
+    private final ValidationService validationService;
     private final BlogRepository blogRepository;
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
-    public BlogDetailsResponseDto execute(Long blogId) {
-        MemberBasicInfoDto currentMemberInfo = memberLookupService.getCurrentMemberBasicInfo();
+    public Long update(Long blogId, BlogUpdateRequestDto requestDto) throws PermissionDeniedException {
+        Member currentMember = memberLookupService.getCurrentMember();
         Blog blog = getBlogByIdOrThrow(blogId);
-        boolean isOwner = blog.isOwner(currentMemberInfo.getMemberId());
-        return BlogDetailsResponseDto.toDto(blog, currentMemberInfo, isOwner);
+        blog.validateAccessPermission(currentMember);
+        blog.update(requestDto);
+        validationService.checkValid(blog);
+        return blogRepository.save(blog).getId();
     }
 
     private Blog getBlogByIdOrThrow(Long blogId) {
