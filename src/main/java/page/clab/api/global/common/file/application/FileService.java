@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activityGroup.dao.GroupMemberRepository;
-import page.clab.api.domain.member.application.FetchCloudUsageByMemberIdService;
+import page.clab.api.domain.member.application.CloudUsageRetrievalByMemberIdService;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.domain.UploadedFile;
@@ -37,7 +37,7 @@ public class FileService {
 
     private final MemberLookupService memberLookupService;
 
-    private final FetchCloudUsageByMemberIdService fetchCloudUsageByMemberIdService;
+    private final CloudUsageRetrievalByMemberIdService cloudUsageRetrievalByMemberIdService;
 
     private final UploadedFileService uploadedFileService;
 
@@ -139,7 +139,7 @@ public class FileService {
     private void validateMemberCloudUsage(MultipartFile multipartFile, String path) throws PermissionDeniedException {
         if (path.split(Pattern.quote(File.separator))[0].equals("members")) {
             String memberId = path.split(Pattern.quote(File.separator))[1];
-            double usage = fetchCloudUsageByMemberIdService.execute(memberId).getUsage();
+            double usage = cloudUsageRetrievalByMemberIdService.retrieve(memberId).getUsage();
             if (multipartFile.getSize() + usage > FileSystemUtil.convertToBytes(maxFileSize)) {
                 throw new CloudStorageNotEnoughException("클라우드 저장 공간이 부족합니다.");
             }
