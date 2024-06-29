@@ -44,5 +44,4 @@ public class WriterInfo {
         }
         return new WriterInfo(memberInfo.getMemberId(), memberInfo.getMemberName(), memberInfo.getRoleLevel(), memberInfo.getImageUrl());
     }
-
 }

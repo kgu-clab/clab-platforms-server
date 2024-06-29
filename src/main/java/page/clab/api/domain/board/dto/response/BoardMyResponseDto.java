@@ -33,5 +33,4 @@ public class BoardMyResponseDto {
                 .createdAt(board.getCreatedAt())
                 .build();
     }
-
 }

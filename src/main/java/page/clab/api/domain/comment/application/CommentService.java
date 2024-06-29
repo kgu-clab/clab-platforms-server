@@ -7,7 +7,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.application.BoardService;
+import page.clab.api.domain.board.application.BoardLookupService;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.dao.CommentLikeRepository;
 import page.clab.api.domain.comment.dao.CommentRepository;
@@ -36,7 +36,7 @@ import java.util.Optional;
 @Slf4j
 public class CommentService {
 
-    private final BoardService boardService;
+    private final BoardLookupService boardLookupService;
 
     private final MemberLookupService memberLookupService;
 
@@ -140,7 +140,7 @@ public class CommentService {
 
     private Comment createAndStoreComment(Long parentId, Long boardId, CommentRequestDto requestDto) {
         String currentMemberId = memberLookupService.getCurrentMemberId();
-        Board board = boardService.getBoardByIdOrThrow(boardId);
+        Board board = boardLookupService.getBoardByIdOrThrow(boardId);
         Comment parent = findParentComment(parentId);
         Comment comment = CommentRequestDto.toEntity(requestDto, board, currentMemberId, parent);
         if (parent != null) {

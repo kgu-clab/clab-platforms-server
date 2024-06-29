@@ -21,5 +21,4 @@ public class SlackBoardInfo {
                 .username(board.isWantAnonymous() ? board.getNickname() : memberInfo.getMemberId() + " " + memberInfo.getMemberName())
                 .build();
     }
-
 }

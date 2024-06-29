@@ -7,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +16,8 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.global.common.domain.BaseEntity;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -59,5 +60,4 @@ public class BoardEmoji extends BaseEntity {
         this.isDeleted = !this.isDeleted;
         this.deletedAt = this.isDeleted ? LocalDateTime.now() : null;
     }
-
 }

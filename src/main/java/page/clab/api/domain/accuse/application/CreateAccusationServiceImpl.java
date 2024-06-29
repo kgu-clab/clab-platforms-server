@@ -11,7 +11,7 @@ import page.clab.api.domain.accuse.domain.AccuseTargetId;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
-import page.clab.api.domain.board.application.BoardService;
+import page.clab.api.domain.board.application.BoardLookupService;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.application.CommentService;
 import page.clab.api.domain.comment.domain.Comment;
@@ -27,7 +27,7 @@ public class CreateAccusationServiceImpl implements CreateAccusationService {
 
     private final MemberLookupService memberLookupService;
     private final NotificationSenderService notificationService;
-    private final BoardService boardService;
+    private final BoardLookupService boardLookupService;
     private final CommentService commentService;
     private final ReviewLookupService reviewLookupService;
     private final ValidationService validationService;
@@ -58,7 +58,7 @@ public class CreateAccusationServiceImpl implements CreateAccusationService {
     private void validateAccusationRequest(TargetType type, Long targetId, String currentMemberId) {
         switch (type) {
             case BOARD:
-                Board board = boardService.getBoardByIdOrThrow(targetId);
+                Board board = boardLookupService.getBoardByIdOrThrow(targetId);
                 if (board.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 게시글은 신고할 수 없습니다.");
                 }

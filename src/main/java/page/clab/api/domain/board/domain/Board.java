@@ -112,5 +112,4 @@ public class Board extends BaseEntity {
             throw new PermissionDeniedException("졸업생 게시판은 졸업생만 작성할 수 있습니다.");
         }
     }
-
 }

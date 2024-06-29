@@ -48,8 +48,6 @@ import page.clab.api.domain.member.exception.DuplicateMemberContactException;
 import page.clab.api.domain.member.exception.DuplicateMemberEmailException;
 import page.clab.api.domain.member.exception.DuplicateMemberIdException;
 import page.clab.api.domain.review.exception.AlreadyReviewedException;
-import page.clab.api.domain.sharedAccount.exception.InvalidUsageTimeException;
-import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
 import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
@@ -70,12 +68,12 @@ import page.clab.api.global.exception.InvalidEmojiException;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.exception.SortingArgumentException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletionException;
-import page.clab.api.global.exception.SortingArgumentException;
 
 @RestControllerAdvice(basePackages = "page.clab.api")
 @RequiredArgsConstructor
@@ -173,8 +171,6 @@ public class GlobalExceptionHandler {
             OverdueException.class,
             LoanSuspensionException.class,
             LoanNotPendingException.class,
-            SharedAccountUsageStateException.class,
-            InvalidUsageTimeException.class,
     })
     public ErrorResponse conflictException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
