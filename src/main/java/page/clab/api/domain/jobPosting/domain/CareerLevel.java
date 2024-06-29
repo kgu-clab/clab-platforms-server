@@ -13,5 +13,4 @@ public enum CareerLevel {
 
     private final String key;
     private final String description;
-
 }

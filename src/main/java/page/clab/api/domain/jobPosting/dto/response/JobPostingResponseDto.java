@@ -36,5 +36,4 @@ public class JobPostingResponseDto {
                 .map(JobPostingResponseDto::toDto)
                 .toList();
     }
-
 }

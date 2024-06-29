@@ -15,5 +15,4 @@ public enum EmploymentType {
 
     private final String key;
     private final String description;
-
 }

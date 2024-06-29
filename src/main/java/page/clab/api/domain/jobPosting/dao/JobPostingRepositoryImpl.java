@@ -11,9 +11,9 @@ import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
 import page.clab.api.domain.jobPosting.domain.QJobPosting;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -44,5 +44,4 @@ public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
 
         return new PageImpl<>(jobPostings, pageable, total);
     }
-
 }
