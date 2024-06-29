@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.login.application.MemberBanService;
-import page.clab.api.domain.login.application.RedisTokenService;
+import page.clab.api.domain.login.application.RedisTokenManagementService;
 import page.clab.api.domain.login.dao.AccountLockInfoRepository;
 import page.clab.api.domain.login.domain.AccountLockInfo;
 import page.clab.api.domain.member.application.MemberLookupService;
@@ -18,7 +18,7 @@ import page.clab.api.global.common.slack.domain.SecurityAlertType;
 public class MemberBanServiceImpl implements MemberBanService {
 
     private final MemberLookupService memberLookupService;
-    private final RedisTokenService redisTokenService;
+    private final RedisTokenManagementService redisTokenManagementService;
     private final SlackService slackService;
     private final AccountLockInfoRepository accountLockInfoRepository;
 
@@ -28,7 +28,7 @@ public class MemberBanServiceImpl implements MemberBanService {
         MemberBasicInfoDto memberInfo = memberLookupService.getMemberBasicInfoById(memberId);
         AccountLockInfo accountLockInfo = ensureAccountLockInfo(memberInfo.getMemberId());
         accountLockInfo.banPermanently();
-        redisTokenService.deleteRedisTokenByMemberId(memberId);
+        redisTokenManagementService.deleteByMemberId(memberId);
         sendSlackBanNotification(request, memberId);
         return accountLockInfoRepository.save(accountLockInfo).getId();
     }

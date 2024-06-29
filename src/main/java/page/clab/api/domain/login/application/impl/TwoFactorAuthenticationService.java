@@ -9,7 +9,7 @@ import page.clab.api.domain.login.application.AccountLockManagementService;
 import page.clab.api.domain.login.application.AuthenticatorService;
 import page.clab.api.domain.login.application.LoginAttemptLogManagementService;
 import page.clab.api.domain.login.application.LoginService;
-import page.clab.api.domain.login.application.RedisTokenService;
+import page.clab.api.domain.login.application.RedisTokenManagementService;
 import page.clab.api.domain.login.domain.LoginAttemptResult;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
@@ -37,7 +37,7 @@ public class TwoFactorAuthenticationService implements LoginService {
 
     private final LoginAttemptLogManagementService loginAttemptLogManagementService;
 
-    private final RedisTokenService redisTokenService;
+    private final RedisTokenManagementService redisTokenManagementService;
 
     private final AuthenticatorService authenticatorService;
 
@@ -63,17 +63,17 @@ public class TwoFactorAuthenticationService implements LoginService {
 
     private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request) throws MemberLockedException, LoginFaliedException {
         if (!authenticatorService.isAuthenticatorValid(memberId, totp)) {
-            loginAttemptLogManagementService.createLoginAttemptLog(request, memberId, LoginAttemptResult.FAILURE);
+            loginAttemptLogManagementService.logLoginAttempt(request, memberId, LoginAttemptResult.FAILURE);
             accountLockManagementService.handleLoginFailure(request, memberId);
             throw new LoginFaliedException("잘못된 인증번호입니다.");
         }
-        loginAttemptLogManagementService.createLoginAttemptLog(request, memberId, LoginAttemptResult.TOTP);
+        loginAttemptLogManagementService.logLoginAttempt(request, memberId, LoginAttemptResult.TOTP);
     }
 
     private TokenInfo generateAndSaveToken(MemberLoginInfoDto memberInfo) {
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(memberInfo.getMemberId(), memberInfo.getRole());
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        redisTokenService.saveRedisToken(memberInfo.getMemberId(), memberInfo.getRole(), tokenInfo, clientIpAddress);
+        redisTokenManagementService.saveToken(memberInfo.getMemberId(), memberInfo.getRole(), tokenInfo, clientIpAddress);
         return tokenInfo;
     }
 

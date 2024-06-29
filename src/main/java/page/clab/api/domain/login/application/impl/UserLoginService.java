@@ -12,7 +12,7 @@ import page.clab.api.domain.login.application.AccountLockManagementService;
 import page.clab.api.domain.login.application.AuthenticatorService;
 import page.clab.api.domain.login.application.LoginAttemptLogManagementService;
 import page.clab.api.domain.login.application.LoginService;
-import page.clab.api.domain.login.application.RedisTokenService;
+import page.clab.api.domain.login.application.RedisTokenManagementService;
 import page.clab.api.domain.login.domain.LoginAttemptResult;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
@@ -46,7 +46,7 @@ public class UserLoginService implements LoginService {
 
     private final LoginAttemptLogManagementService loginAttemptLogManagementService;
 
-    private final RedisTokenService redisTokenService;
+    private final RedisTokenManagementService redisTokenManagementService;
 
     private final AuthenticatorService authenticatorService;
 
@@ -75,7 +75,7 @@ public class UserLoginService implements LoginService {
 
     private void logLoginAttempt(HttpServletRequest request, String memberId, boolean isSuccess) {
         LoginAttemptResult result = isSuccess ? LoginAttemptResult.SUCCESS : LoginAttemptResult.FAILURE;
-        loginAttemptLogManagementService.createLoginAttemptLog(request, memberId, result);
+        loginAttemptLogManagementService.logLoginAttempt(request, memberId, result);
     }
 
     private LoginResult generateLoginResult(MemberLoginInfoDto loginMember) {
@@ -99,7 +99,7 @@ public class UserLoginService implements LoginService {
     private TokenInfo generateAndSaveToken(MemberLoginInfoDto memberInfo) {
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(memberInfo.getMemberId(), memberInfo.getRole());
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        redisTokenService.saveRedisToken(memberInfo.getMemberId(), memberInfo.getRole(), tokenInfo, clientIpAddress);
+        redisTokenManagementService.saveToken(memberInfo.getMemberId(), memberInfo.getRole(), tokenInfo, clientIpAddress);
         return tokenInfo;
     }
 

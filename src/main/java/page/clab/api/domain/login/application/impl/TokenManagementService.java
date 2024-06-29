@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.login.application.LoginService;
-import page.clab.api.domain.login.application.RedisTokenService;
+import page.clab.api.domain.login.application.RedisTokenManagementService;
 import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
@@ -33,26 +33,26 @@ public class TokenManagementService implements LoginService {
 
     private final MemberLookupService memberLookupService;
 
-    private final RedisTokenService redisTokenService;
+    private final RedisTokenManagementService redisTokenManagementService;
 
     @Transactional
     @Override
     public TokenHeader reissueToken(HttpServletRequest request) {
         String refreshToken = jwtTokenProvider.resolveToken(request);
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
-        RedisToken redisToken = redisTokenService.getRedisTokenByRefreshToken(refreshToken);
+        RedisToken redisToken = redisTokenManagementService.findByRefreshToken(refreshToken);
 
         validateMemberExistence(authentication);
         validateToken(redisToken);
 
         TokenInfo newTokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
-        redisTokenService.saveRedisToken(redisToken.getId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
+        redisTokenManagementService.saveToken(redisToken.getId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
         return TokenHeader.create(newTokenInfo);
     }
 
     @Override
     public List<String> retrieveCurrentLoggedInUsers() {
-        return redisTokenService.getCurrentLoggedInUsers();
+        return redisTokenManagementService.getCurrentLoggedInUsers();
     }
 
     private void validateMemberExistence(Authentication authentication) {
@@ -65,7 +65,7 @@ public class TokenManagementService implements LoginService {
     private void validateToken(RedisToken redisToken) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         if (!redisToken.isSameIp(clientIpAddress)) {
-            redisTokenService.deleteRedisTokenByAccessToken(redisToken.getAccessToken());
+            redisTokenManagementService.deleteByAccessToken(redisToken.getAccessToken());
             throw new TokenMisuseException("[" + clientIpAddress + "] 토큰 발급 IP와 다른 IP에서 발급을 시도하여 토큰을 삭제하였습니다.");
         }
     }
@@ -87,7 +87,7 @@ public class TokenManagementService implements LoginService {
 
     @Override
     public String revokeToken(String memberId) {
-        redisTokenService.deleteRedisTokenByMemberId(memberId);
+        redisTokenManagementService.deleteByMemberId(memberId);
         return memberId;
     }
 }
