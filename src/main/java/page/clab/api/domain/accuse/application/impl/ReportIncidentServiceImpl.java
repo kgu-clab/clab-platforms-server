@@ -3,7 +3,7 @@ package page.clab.api.domain.accuse.application.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.accuse.application.CreateAccusationService;
+import page.clab.api.domain.accuse.application.ReportIncidentService;
 import page.clab.api.domain.accuse.dao.AccuseRepository;
 import page.clab.api.domain.accuse.dao.AccuseTargetRepository;
 import page.clab.api.domain.accuse.domain.Accuse;
@@ -24,7 +24,7 @@ import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class CreateAccusationServiceImpl implements CreateAccusationService {
+public class ReportIncidentServiceImpl implements ReportIncidentService {
 
     private final MemberLookupService memberLookupService;
     private final NotificationSenderService notificationService;
@@ -37,7 +37,7 @@ public class CreateAccusationServiceImpl implements CreateAccusationService {
 
     @Transactional
     @Override
-    public Long execute(AccuseRequestDto requestDto) {
+    public Long reportIncident(AccuseRequestDto requestDto) {
         TargetType type = requestDto.getTargetType();
         Long targetId = requestDto.getTargetId();
         String memberId = memberLookupService.getCurrentMemberId();

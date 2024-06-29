@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.accuse.application.UpdateAccusationStatusService;
+import page.clab.api.domain.accuse.application.ChangeAccusationStatusService;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -18,19 +18,19 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/accusations")
 @RequiredArgsConstructor
 @Tag(name = "Accusation", description = "신고")
-public class UpdateAccusationStatusController {
+public class ChangeAccusationStatusController {
 
-    private final UpdateAccusationStatusService updateAccusationStatusService;
+    private final ChangeAccusationStatusService changeAccusationStatusService;
 
     @Operation(summary = "[A] 신고 상태 변경", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
     @PatchMapping("/{targetType}/{targetId}")
-    public ApiResponse<Long> updateAccusationStatus(
+    public ApiResponse<Long> changeAccusationStatus(
             @PathVariable(name = "targetType") TargetType type,
             @PathVariable(name = "targetId") Long targetId,
             @RequestParam(name = "accuseStatus") AccuseStatus status
     ) {
-        Long id = updateAccusationStatusService.execute(type, targetId, status);
+        Long id = changeAccusationStatusService.changeAccusationStatus(type, targetId, status);
         return ApiResponse.success(id);
     }
 }

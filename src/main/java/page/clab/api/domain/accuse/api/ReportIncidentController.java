@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.accuse.application.CreateAccusationService;
+import page.clab.api.domain.accuse.application.ReportIncidentService;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -17,17 +17,17 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/accusations")
 @RequiredArgsConstructor
 @Tag(name = "Accusation", description = "신고")
-public class CreateAccusationController {
+public class ReportIncidentController {
 
-    private final CreateAccusationService createAccusationService;
+    private final ReportIncidentService reportIncidentService;
 
-    @Operation(summary = "[U] 신고하기", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 신고 접수", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ApiResponse<Long> createAccusation(
+    public ApiResponse<Long> reportIncident(
             @Valid @RequestBody AccuseRequestDto requestDto
     ) {
-        Long id = createAccusationService.execute(requestDto);
+        Long id = reportIncidentService.reportIncident(requestDto);
         return ApiResponse.success(id);
     }
 }

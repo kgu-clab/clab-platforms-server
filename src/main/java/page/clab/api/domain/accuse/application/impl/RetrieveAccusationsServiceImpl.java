@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.accuse.application.FetchAccusationsService;
+import page.clab.api.domain.accuse.application.RetrieveAccusationsService;
 import page.clab.api.domain.accuse.dao.AccuseRepository;
 import page.clab.api.domain.accuse.dao.AccuseTargetRepository;
 import page.clab.api.domain.accuse.domain.Accuse;
@@ -22,7 +22,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class FetchAccusationsServiceImpl implements FetchAccusationsService {
+public class RetrieveAccusationsServiceImpl implements RetrieveAccusationsService {
 
     private final AccuseRepository accuseRepository;
     private final AccuseTargetRepository accuseTargetRepository;
@@ -30,7 +30,7 @@ public class FetchAccusationsServiceImpl implements FetchAccusationsService {
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<AccuseResponseDto> execute(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable) {
+    public PagedResponseDto<AccuseResponseDto> retrieveAccusations(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable) {
         Page<AccuseTarget> accuseTargets = accuseTargetRepository.findByConditions(type, status, countOrder, pageable);
         List<AccuseResponseDto> responseDtos = convertTargetsToResponseDtos(accuseTargets);
         return new PagedResponseDto<>(responseDtos, pageable, responseDtos.size());
