@@ -7,7 +7,7 @@ import page.clab.api.domain.application.dao.ApplicationRepository;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.notification.application.NotificationSenderService;
-import page.clab.api.domain.recruitment.application.RecruitmentService;
+import page.clab.api.domain.recruitment.application.RecruitmentLookupService;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.validation.ValidationService;
 
@@ -15,7 +15,7 @@ import page.clab.api.global.validation.ValidationService;
 @RequiredArgsConstructor
 public class CreateApplicationServiceImpl implements CreateApplicationService {
 
-    private final RecruitmentService recruitmentService;
+    private final RecruitmentLookupService recruitmentLookupService;
     private final NotificationSenderService notificationService;
     private final ValidationService validationService;
     private final SlackService slackService;
@@ -24,7 +24,7 @@ public class CreateApplicationServiceImpl implements CreateApplicationService {
     @Transactional
     @Override
     public String execute(ApplicationRequestDto requestDto) {
-        recruitmentService.getRecruitmentByIdOrThrow(requestDto.getRecruitmentId());
+        recruitmentLookupService.getRecruitmentByIdOrThrow(requestDto.getRecruitmentId());
         Application application = ApplicationRequestDto.toEntity(requestDto);
         validationService.checkValid(application);
 

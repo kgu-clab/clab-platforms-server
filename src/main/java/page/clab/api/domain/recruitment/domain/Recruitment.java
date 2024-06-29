@@ -62,6 +62,10 @@ public class Recruitment extends BaseEntity {
         Optional.ofNullable(recruitmentUpdateRequestDto.getTarget()).ifPresent(this::setTarget);
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     public void updateStatus(RecruitmentStatus status) { this.status = status; }
 
 }
