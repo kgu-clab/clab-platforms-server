@@ -22,5 +22,4 @@ public class BlogUpdateRequestDto {
 
     @Schema(description = "하이퍼링크", example = "https://www.clab.page")
     private String hyperlink;
-
 }

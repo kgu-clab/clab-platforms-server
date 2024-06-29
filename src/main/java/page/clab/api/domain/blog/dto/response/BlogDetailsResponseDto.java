@@ -47,5 +47,4 @@ public class BlogDetailsResponseDto {
                 .createdAt(blog.getCreatedAt())
                 .build();
     }
-
 }
