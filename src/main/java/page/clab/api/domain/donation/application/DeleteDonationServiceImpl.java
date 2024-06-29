@@ -24,8 +24,7 @@ public class DeleteDonationServiceImpl implements DeleteDonationService {
         Donation donation = getDonationByIdOrThrow(donationId);
         donation.validateAccessPermission(currentMemberInfo.isSuperAdminRole());
         donation.delete();
-        donationRepository.save(donation);
-        return donation.getId();
+        return donationRepository.save(donation).getId();
     }
 
     private Donation getDonationByIdOrThrow(Long donationId) {
