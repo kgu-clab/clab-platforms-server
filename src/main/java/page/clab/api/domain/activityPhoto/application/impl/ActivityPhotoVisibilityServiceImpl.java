@@ -3,14 +3,14 @@ package page.clab.api.domain.activityPhoto.application.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.activityPhoto.application.UpdateActivityPhotoVisibilityService;
+import page.clab.api.domain.activityPhoto.application.ActivityPhotoVisibilityService;
 import page.clab.api.domain.activityPhoto.dao.ActivityPhotoRepository;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateActivityPhotoVisibilityServiceImpl implements UpdateActivityPhotoVisibilityService {
+public class ActivityPhotoVisibilityServiceImpl implements ActivityPhotoVisibilityService {
 
     private final ActivityPhotoRepository activityPhotoRepository;
 

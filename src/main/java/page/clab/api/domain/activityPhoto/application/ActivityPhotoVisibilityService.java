@@ -1,5 +1,5 @@
 package page.clab.api.domain.activityPhoto.application;
 
-public interface UpdateActivityPhotoVisibilityService {
+public interface ActivityPhotoVisibilityService {
     Long updateVisibility(Long activityPhotoId);
 }

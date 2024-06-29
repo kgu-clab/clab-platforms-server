@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.activityPhoto.application.RegisterActivityPhotoService;
+import page.clab.api.domain.activityPhoto.application.ActivityPhotoRegisterService;
 import page.clab.api.domain.activityPhoto.dto.request.ActivityPhotoRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -17,9 +17,9 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/activity-photos")
 @RequiredArgsConstructor
 @Tag(name = "ActivityPhoto", description = "활동 사진")
-public class RegisterActivityPhotoController {
+public class ActivityPhotoRegisterController {
 
-    private final RegisterActivityPhotoService registerActivityPhotoService;
+    private final ActivityPhotoRegisterService activityPhotoRegisterService;
 
     @Operation(summary = "[A] 활동 사진 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -27,7 +27,7 @@ public class RegisterActivityPhotoController {
     public ApiResponse<Long> registerActivityPhoto(
             @Valid @RequestBody ActivityPhotoRequestDto requestDto
     ) {
-        Long id = registerActivityPhotoService.registerPhoto(requestDto);
+        Long id = activityPhotoRegisterService.registerPhoto(requestDto);
         return ApiResponse.success(id);
     }
 }
