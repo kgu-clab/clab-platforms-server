@@ -23,6 +23,7 @@ public class AuthenticatorServiceImpl implements AuthenticatorService {
     private final EncryptionUtil encryptionUtil;
 
     @Transactional
+    @Override
     public String generateSecretKey(String memberId) {
         GoogleAuthenticatorKey key = googleAuthenticator.createCredentials();
         String secretKey = key.getKey();
@@ -30,6 +31,7 @@ public class AuthenticatorServiceImpl implements AuthenticatorService {
         return secretKey;
     }
 
+    @Override
     public boolean isAuthenticatorValid(String memberId, String totp) {
         Authenticator authenticator = getAuthenticatorById(memberId);
         return authenticator != null && validateTotp(authenticator, totp);
@@ -40,6 +42,7 @@ public class AuthenticatorServiceImpl implements AuthenticatorService {
         return googleAuthenticator.authorize(secretKey, Integer.parseInt(totp));
     }
 
+    @Override
     public String resetAuthenticator(String memberId) {
         Authenticator authenticator = getAuthenticatorByIdOrThrow(memberId);
         authenticatorRepository.delete(authenticator);
@@ -60,8 +63,8 @@ public class AuthenticatorServiceImpl implements AuthenticatorService {
         authenticatorRepository.save(authenticator);
     }
 
+    @Override
     public boolean isAuthenticatorExist(String memberId) {
         return authenticatorRepository.existsById(memberId);
     }
-
 }
