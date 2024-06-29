@@ -47,5 +47,4 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 
         return new PageImpl<>(books, pageable, count);
     }
-
 }

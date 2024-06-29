@@ -12,5 +12,4 @@ public interface BookLoanRecordRepository extends JpaRepository<BookLoanRecord, 
     Optional<BookLoanRecord> findByBookAndReturnedAtIsNullAndStatus(Book book, BookLoanStatus bookLoanStatus);
 
     Optional<Object> findByBookAndBorrowerIdAndStatus(Book book, String borrowerId, BookLoanStatus bookLoanStatus);
-
 }

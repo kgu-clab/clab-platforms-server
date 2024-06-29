@@ -17,5 +17,4 @@ public interface BookRepository extends JpaRepository<Book, Long>, BookRepositor
 
     @Query(value = "SELECT b.* FROM book b WHERE b.is_deleted = true", nativeQuery = true)
     Page<Book> findAllByIsDeletedTrue(Pageable pageable);
-
 }
