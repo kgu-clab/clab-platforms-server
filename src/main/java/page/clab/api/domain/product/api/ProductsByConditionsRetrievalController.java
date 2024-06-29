@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.product.application.FetchProductsByConditionsService;
+import page.clab.api.domain.product.application.ProductsByConditionsRetrievalService;
 import page.clab.api.domain.product.domain.Product;
 import page.clab.api.domain.product.dto.response.ProductResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -24,16 +24,16 @@ import java.util.List;
 @RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
 @Tag(name = "Product", description = "서비스")
-public class FetchProductsByConditionsController {
+public class ProductsByConditionsRetrievalController {
 
-    private final FetchProductsByConditionsService fetchProductsByConditionsService;
+    private final ProductsByConditionsRetrievalService productsByConditionsRetrievalService;
 
     @Operation(summary = "[U] 서비스 조회", description = "ROLE_USER 이상의 권한이 필요함<br> " +
             "서비스명을 입력하지 않으면 전체 조회됨<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ApiResponse<PagedResponseDto<ProductResponseDto>> fetchProductsByConditions(
+    public ApiResponse<PagedResponseDto<ProductResponseDto>> retrieveProductsByConditions(
             @RequestParam(required = false) String productName,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
@@ -41,7 +41,7 @@ public class FetchProductsByConditionsController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Product.class);
-        PagedResponseDto<ProductResponseDto> products = fetchProductsByConditionsService.execute(productName, pageable);
+        PagedResponseDto<ProductResponseDto> products = productsByConditionsRetrievalService.retrieveByConditions(productName, pageable);
         return ApiResponse.success(products);
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.product.application.UpdateProductService;
+import page.clab.api.domain.product.application.ProductUpdateService;
 import page.clab.api.domain.product.dto.request.ProductUpdateRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -18,9 +18,9 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
 @Tag(name = "Product", description = "서비스")
-public class UpdateProductController {
+public class ProductUpdateController {
 
-    private final UpdateProductService updateProductService;
+    private final ProductUpdateService productUpdateService;
 
     @Operation(summary = "[A] 서비스 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -29,7 +29,7 @@ public class UpdateProductController {
             @PathVariable(name = "productId") Long productId,
             @Valid @RequestBody ProductUpdateRequestDto requestDto
     ) {
-        Long id = updateProductService.execute(productId, requestDto);
+        Long id = productUpdateService.update(productId, requestDto);
         return ApiResponse.success(id);
     }
 }
