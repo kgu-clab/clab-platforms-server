@@ -3,7 +3,7 @@ package page.clab.api.domain.activityPhoto.application.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.activityPhoto.application.CreateActivityPhotoService;
+import page.clab.api.domain.activityPhoto.application.RegisterActivityPhotoService;
 import page.clab.api.domain.activityPhoto.dao.ActivityPhotoRepository;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.domain.activityPhoto.dto.request.ActivityPhotoRequestDto;
@@ -14,14 +14,14 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CreateActivityPhotoServiceImpl implements CreateActivityPhotoService {
+public class RegisterActivityPhotoServiceImpl implements RegisterActivityPhotoService {
 
     private final ActivityPhotoRepository activityPhotoRepository;
     private final UploadedFileService uploadedFileService;
 
     @Transactional
     @Override
-    public Long execute(ActivityPhotoRequestDto requestDto) {
+    public Long registerPhoto(ActivityPhotoRequestDto requestDto) {
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         ActivityPhoto activityPhoto = ActivityPhotoRequestDto.toEntity(requestDto, uploadedFiles);
         return activityPhotoRepository.save(activityPhoto).getId();

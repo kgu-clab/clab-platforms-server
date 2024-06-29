@@ -3,22 +3,22 @@ package page.clab.api.domain.activityPhoto.application.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.activityPhoto.application.DeleteActivityPhotoService;
+import page.clab.api.domain.activityPhoto.application.UpdateActivityPhotoVisibilityService;
 import page.clab.api.domain.activityPhoto.dao.ActivityPhotoRepository;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor
-public class DeleteActivityPhotoServiceImpl implements DeleteActivityPhotoService {
+public class UpdateActivityPhotoVisibilityServiceImpl implements UpdateActivityPhotoVisibilityService {
 
     private final ActivityPhotoRepository activityPhotoRepository;
 
     @Transactional
     @Override
-    public Long execute(Long activityPhotoId) {
+    public Long updateVisibility(Long activityPhotoId) {
         ActivityPhoto activityPhoto = getActivityPhotoByIdOrThrow(activityPhotoId);
-        activityPhoto.delete();
+        activityPhoto.togglePublicStatus();
         return activityPhotoRepository.save(activityPhoto).getId();
     }
 
