@@ -72,6 +72,10 @@ public class Comment extends BaseEntity {
         Optional.of(commentUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     public void addChildComment(Comment child) {
         this.children.add(child);
         child.setParent(this);
@@ -96,9 +100,4 @@ public class Comment extends BaseEntity {
             this.likes--;
         }
     }
-
-    public void delete() {
-        this.isDeleted = true;
-    }
-
 }

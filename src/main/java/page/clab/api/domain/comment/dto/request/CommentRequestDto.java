@@ -31,5 +31,4 @@ public class CommentRequestDto {
                 .likes(0L)
                 .build();
     }
-
 }

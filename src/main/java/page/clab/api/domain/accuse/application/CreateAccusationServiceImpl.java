@@ -13,7 +13,7 @@ import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.board.application.BoardLookupService;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.comment.application.CommentService;
+import page.clab.api.domain.comment.application.CommentLookupService;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.member.application.MemberLookupService;
 import page.clab.api.domain.notification.application.NotificationSenderService;
@@ -28,7 +28,7 @@ public class CreateAccusationServiceImpl implements CreateAccusationService {
     private final MemberLookupService memberLookupService;
     private final NotificationSenderService notificationService;
     private final BoardLookupService boardLookupService;
-    private final CommentService commentService;
+    private final CommentLookupService commentLookupService;
     private final ReviewLookupService reviewLookupService;
     private final ValidationService validationService;
     private final AccuseRepository accuseRepository;
@@ -64,7 +64,7 @@ public class CreateAccusationServiceImpl implements CreateAccusationService {
                 }
                 break;
             case COMMENT:
-                Comment comment = commentService.getCommentByIdOrThrow(targetId);
+                Comment comment = commentLookupService.getCommentByIdOrThrow(targetId);
                 if (comment.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 댓글은 신고할 수 없습니다.");
                 }

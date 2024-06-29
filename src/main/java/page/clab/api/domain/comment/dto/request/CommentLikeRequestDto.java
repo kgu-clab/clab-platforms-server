@@ -12,5 +12,4 @@ public class CommentLikeRequestDto {
     @NotNull(message = "{notNull.commentLike.commentId}")
     @Schema(description = "댓글 아이디", example = "1", required = true)
     private Long commentId;
-
 }
