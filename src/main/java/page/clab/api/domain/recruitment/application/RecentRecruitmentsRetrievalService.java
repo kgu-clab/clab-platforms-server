@@ -4,6 +4,6 @@ import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
 
 import java.util.List;
 
-public interface FetchRecentRecruitmentsService {
-    List<RecruitmentResponseDto> execute();
+public interface RecentRecruitmentsRetrievalService {
+    List<RecruitmentResponseDto> retrieve();
 }

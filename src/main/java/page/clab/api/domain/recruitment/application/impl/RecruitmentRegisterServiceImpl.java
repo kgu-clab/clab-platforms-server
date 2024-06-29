@@ -9,7 +9,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.notification.application.NotificationSenderService;
-import page.clab.api.domain.recruitment.application.CreateRecruitmentService;
+import page.clab.api.domain.recruitment.application.RecruitmentRegisterService;
 import page.clab.api.domain.recruitment.dao.RecruitmentRepository;
 import page.clab.api.domain.recruitment.domain.Recruitment;
 import page.clab.api.domain.recruitment.domain.RecruitmentStatus;
@@ -21,7 +21,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CreateRecruitmentServiceImpl implements CreateRecruitmentService {
+public class RecruitmentRegisterServiceImpl implements RecruitmentRegisterService {
 
     private final NotificationSenderService notificationService;
     private final ValidationService validationService;
@@ -32,7 +32,7 @@ public class CreateRecruitmentServiceImpl implements CreateRecruitmentService {
 
     @Transactional
     @Override
-    public Long execute(RecruitmentRequestDto requestDto) {
+    public Long register(RecruitmentRequestDto requestDto) {
         Recruitment recruitment = RecruitmentRequestDto.toEntity(requestDto);
         updateRecruitmentStatusByRecruitment(recruitment);
         validationService.checkValid(recruitment);

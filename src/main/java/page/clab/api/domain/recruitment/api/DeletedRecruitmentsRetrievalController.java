@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.recruitment.application.FetchDeletedRecruitmentsService;
+import page.clab.api.domain.recruitment.application.DeletedRecruitmentsRetrievalService;
 import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -19,19 +19,19 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RequestMapping("/api/v1/recruitments")
 @RequiredArgsConstructor
 @Tag(name = "Recruitment", description = "모집 공고")
-public class FetchDeletedRecruitmentsController {
+public class DeletedRecruitmentsRetrievalController {
 
-    private final FetchDeletedRecruitmentsService fetchDeletedRecruitmentsService;
+    private final DeletedRecruitmentsRetrievalService deletedRecruitmentsRetrievalService;
 
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 모집 공고 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
-    public ApiResponse<PagedResponseDto<RecruitmentResponseDto>> fetchDeletedRecruitments(
+    public ApiResponse<PagedResponseDto<RecruitmentResponseDto>> retrieveDeletedRecruitments(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<RecruitmentResponseDto> recruitments = fetchDeletedRecruitmentsService.execute(pageable);
+        PagedResponseDto<RecruitmentResponseDto> recruitments = deletedRecruitmentsRetrievalService.retrieve(pageable);
         return ApiResponse.success(recruitments);
     }
 }
