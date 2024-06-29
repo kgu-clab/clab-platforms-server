@@ -51,4 +51,7 @@ public class Product extends BaseEntity {
         Optional.ofNullable(productUpdateRequestDto.getUrl()).ifPresent(this::setUrl);
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
 }

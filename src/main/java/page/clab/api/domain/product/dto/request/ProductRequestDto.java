@@ -28,5 +28,4 @@ public class ProductRequestDto {
                 .url(requestDto.getUrl())
                 .build();
     }
-
 }

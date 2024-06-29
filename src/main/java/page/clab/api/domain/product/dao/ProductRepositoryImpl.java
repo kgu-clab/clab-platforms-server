@@ -9,9 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.product.domain.Product;
 import page.clab.api.domain.product.domain.QProduct;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -41,5 +41,4 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
 
         return new PageImpl<>(products, pageable, count);
     }
-
 }

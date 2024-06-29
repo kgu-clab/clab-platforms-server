@@ -15,5 +15,4 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
 
     @Query(value = "SELECT p.* FROM product p WHERE p.is_deleted = true", nativeQuery = true)
     Page<Product> findAllByIsDeletedTrue(Pageable pageable);
-
 }
