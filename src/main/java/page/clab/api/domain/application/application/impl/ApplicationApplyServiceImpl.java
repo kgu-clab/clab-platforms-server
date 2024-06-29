@@ -3,7 +3,7 @@ package page.clab.api.domain.application.application.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.application.application.CreateApplicationService;
+import page.clab.api.domain.application.application.ApplicationApplyService;
 import page.clab.api.domain.application.dao.ApplicationRepository;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
@@ -14,7 +14,7 @@ import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class CreateApplicationServiceImpl implements CreateApplicationService {
+public class ApplicationApplyServiceImpl implements ApplicationApplyService {
 
     private final RecruitmentLookupService recruitmentLookupService;
     private final NotificationSenderService notificationService;
@@ -24,7 +24,7 @@ public class CreateApplicationServiceImpl implements CreateApplicationService {
 
     @Transactional
     @Override
-    public String execute(ApplicationRequestDto requestDto) {
+    public String apply(ApplicationRequestDto requestDto) {
         recruitmentLookupService.getRecruitmentByIdOrThrow(requestDto.getRecruitmentId());
         Application application = ApplicationRequestDto.toEntity(requestDto);
         validationService.checkValid(application);
