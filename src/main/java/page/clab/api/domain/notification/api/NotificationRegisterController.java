@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.notification.application.CreateNotificationService;
+import page.clab.api.domain.notification.application.NotificationRegisterService;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -17,17 +17,17 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/notifications")
 @RequiredArgsConstructor
 @Tag(name = "Notification", description = "알림")
-public class CreateNotificationController {
+public class NotificationRegisterController {
 
-    private final CreateNotificationService createNotificationService;
+    private final NotificationRegisterService notificationRegisterService;
 
     @Operation(summary = "[U] 알림 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("")
-    public ApiResponse<Long> createNotification(
+    public ApiResponse<Long> registerNotification(
             @Valid @RequestBody NotificationRequestDto requestDto
     ) {
-        Long id = createNotificationService.execute(requestDto);
+        Long id = notificationRegisterService.register(requestDto);
         return ApiResponse.success(id);
     }
 }

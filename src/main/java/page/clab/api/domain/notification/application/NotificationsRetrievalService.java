@@ -4,6 +4,6 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.notification.dto.response.NotificationResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
-public interface FetchNotificationsService {
-    PagedResponseDto<NotificationResponseDto> execute(Pageable pageable);
+public interface NotificationsRetrievalService {
+    PagedResponseDto<NotificationResponseDto> retrieve(Pageable pageable);
 }
