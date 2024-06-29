@@ -21,5 +21,4 @@ public class WorkExperienceUpdateRequestDto {
 
     @Schema(description = "종료일", example = "2023-12-31")
     private LocalDate endDate;
-
 }
