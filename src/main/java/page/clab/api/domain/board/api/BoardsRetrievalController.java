@@ -9,10 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.board.application.FetchBoardsByCategoryService;
+import page.clab.api.domain.board.application.BoardsRetrievalService;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.board.domain.BoardCategory;
-import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
+import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
@@ -25,23 +24,22 @@ import java.util.List;
 @RequestMapping("/api/v1/boards")
 @RequiredArgsConstructor
 @Tag(name = "Board", description = "커뮤니티 게시판")
-public class FetchBoardsByCategoryController {
+public class BoardsRetrievalController {
 
-    private final FetchBoardsByCategoryService fetchBoardsByCategoryService;
+    private final BoardsRetrievalService boardsRetrievalService;
 
-    @GetMapping("/category")
-    @Operation(summary = "[U] 커뮤니티 게시글 카테고리별 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+    @GetMapping("")
+    @Operation(summary = "[U] 커뮤니티 게시글 목록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ApiResponse<PagedResponseDto<BoardCategoryResponseDto>> getBoardsByCategory(
-            @RequestParam(name = "category") BoardCategory category,
+    public ApiResponse<PagedResponseDto<BoardListResponseDto>> retrieveBoards(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Board.class);
-        PagedResponseDto<BoardCategoryResponseDto> boards = fetchBoardsByCategoryService.fetchBoardsByCategory(category, pageable);
+        PagedResponseDto<BoardListResponseDto> boards = boardsRetrievalService.retrieve(pageable);
         return ApiResponse.success(boards);
     }
 }

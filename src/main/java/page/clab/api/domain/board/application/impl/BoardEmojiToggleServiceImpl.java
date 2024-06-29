@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.application.BoardLookupService;
-import page.clab.api.domain.board.application.ToggleEmojiStatusService;
+import page.clab.api.domain.board.application.BoardEmojiToggleService;
 import page.clab.api.domain.board.dao.BoardEmojiRepository;
 import page.clab.api.domain.board.dao.BoardRepository;
 import page.clab.api.domain.board.domain.Board;
@@ -16,7 +16,7 @@ import page.clab.api.global.util.EmojiUtils;
 
 @Service
 @RequiredArgsConstructor
-public class ToggleEmojiStatusServiceImpl implements ToggleEmojiStatusService {
+public class BoardEmojiToggleServiceImpl implements BoardEmojiToggleService {
 
     private final MemberLookupService memberLookupService;
     private final BoardLookupService boardLookupService;

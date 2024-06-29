@@ -3,7 +3,7 @@ package page.clab.api.domain.board.application.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.application.CreateBoardService;
+import page.clab.api.domain.board.application.BoardRegisterService;
 import page.clab.api.domain.board.dao.BoardRepository;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.SlackBoardInfo;
@@ -21,7 +21,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CreateBoardServiceImpl implements CreateBoardService {
+public class BoardRegisterServiceImpl implements BoardRegisterService {
 
     private final MemberLookupService memberLookupService;
     private final NotificationSenderService notificationService;
@@ -32,7 +32,7 @@ public class CreateBoardServiceImpl implements CreateBoardService {
 
     @Transactional
     @Override
-    public String createBoard(BoardRequestDto requestDto) throws PermissionDeniedException {
+    public String register(BoardRequestDto requestDto) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         Board board = BoardRequestDto.toEntity(requestDto, currentMemberInfo.getMemberId(), uploadedFiles);

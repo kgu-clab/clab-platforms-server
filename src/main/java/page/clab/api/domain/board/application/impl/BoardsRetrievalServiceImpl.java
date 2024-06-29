@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.application.FetchBoardsService;
+import page.clab.api.domain.board.application.BoardsRetrievalService;
 import page.clab.api.domain.board.dao.BoardRepository;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
@@ -17,7 +17,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class FetchBoardsServiceImpl implements FetchBoardsService {
+public class BoardsRetrievalServiceImpl implements BoardsRetrievalService {
 
     private final MemberLookupService memberLookupService;
     private final BoardRepository boardRepository;
@@ -25,7 +25,7 @@ public class FetchBoardsServiceImpl implements FetchBoardsService {
 
     @Transactional
     @Override
-    public PagedResponseDto<BoardListResponseDto> fetchBoards(Pageable pageable) {
+    public PagedResponseDto<BoardListResponseDto> retrieve(Pageable pageable) {
         MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Page<Board> boards = boardRepository.findAll(pageable);
         return new PagedResponseDto<>(boards.map(board -> mapToBoardListResponseDto(board, currentMemberInfo)));

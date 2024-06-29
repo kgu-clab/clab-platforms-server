@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.application.BoardLookupService;
-import page.clab.api.domain.board.application.FetchBoardDetailsService;
+import page.clab.api.domain.board.application.BoardDetailsRetrievalService;
 import page.clab.api.domain.board.dao.BoardEmojiRepository;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class FetchBoardDetailsServiceImpl implements FetchBoardDetailsService {
+public class BoardDetailsRetrievalServiceImpl implements BoardDetailsRetrievalService {
 
     private final MemberLookupService memberLookupService;
     private final BoardLookupService boardLookupService;
@@ -26,7 +26,7 @@ public class FetchBoardDetailsServiceImpl implements FetchBoardDetailsService {
 
     @Transactional
     @Override
-    public BoardDetailsResponseDto fetchBoardDetails(Long boardId) {
+    public BoardDetailsResponseDto retrieveDetails(Long boardId) {
         MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Board board = boardLookupService.getBoardByIdOrThrow(boardId);
         boolean isOwner = board.isOwner(currentMemberInfo.getMemberId());

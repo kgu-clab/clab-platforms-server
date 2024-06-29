@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.application.FetchDeletedBoardsService;
+import page.clab.api.domain.board.application.DeletedBoardsRetrievalService;
 import page.clab.api.domain.board.dao.BoardRepository;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
@@ -17,7 +17,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class FetchDeletedBoardsServiceImpl implements FetchDeletedBoardsService {
+public class DeletedBoardsRetrievalServiceImpl implements DeletedBoardsRetrievalService {
 
     private final MemberLookupService memberLookupService;
     private final BoardRepository boardRepository;
@@ -25,7 +25,7 @@ public class FetchDeletedBoardsServiceImpl implements FetchDeletedBoardsService 
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<BoardListResponseDto> fetchDeletedBoards(Pageable pageable) {
+    public PagedResponseDto<BoardListResponseDto> retrieveDeletedBoards(Pageable pageable) {
         MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Page<Board> boards = boardRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(boards.map(board -> mapToBoardListResponseDto(board, currentMemberInfo)));

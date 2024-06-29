@@ -4,6 +4,6 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.board.dto.response.BoardMyResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
-public interface FetchMyBoardsService {
-    PagedResponseDto<BoardMyResponseDto> fetchMyBoards(Pageable pageable);
+public interface MyBoardsRetrievalService {
+    PagedResponseDto<BoardMyResponseDto> retrieveMyBoards(Pageable pageable);
 }
