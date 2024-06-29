@@ -21,7 +21,7 @@ public class MyAccusationsServiceImpl implements MyAccusationsService {
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<AccuseMyResponseDto> retrieveMyAccusations(Pageable pageable) {
+    public PagedResponseDto<AccuseMyResponseDto> retrieve(Pageable pageable) {
         String currentMemberId = memberLookupService.getCurrentMemberId();
         Page<Accuse> accuses = accuseRepository.findByMemberId(currentMemberId, pageable);
         return new PagedResponseDto<>(accuses.map(AccuseMyResponseDto::toDto));

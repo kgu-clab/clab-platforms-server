@@ -31,7 +31,7 @@ public class DeletedProductsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ProductResponseDto> products = deletedProductsRetrievalService.retrieveDeleted(pageable);
+        PagedResponseDto<ProductResponseDto> products = deletedProductsRetrievalService.retrieve(pageable);
         return ApiResponse.success(products);
     }
 }

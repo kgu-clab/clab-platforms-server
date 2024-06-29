@@ -33,7 +33,7 @@ public class DeletedAwardRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AwardResponseDto> awards = deletedAwardRetrievalService.retrieveDeleted(pageable);
+        PagedResponseDto<AwardResponseDto> awards = deletedAwardRetrievalService.retrieve(pageable);
         return ApiResponse.success(awards);
     }
 }

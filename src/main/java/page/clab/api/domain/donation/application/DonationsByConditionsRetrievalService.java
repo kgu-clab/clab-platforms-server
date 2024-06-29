@@ -7,5 +7,5 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import java.time.LocalDate;
 
 public interface DonationsByConditionsRetrievalService {
-    PagedResponseDto<DonationResponseDto> retrieveByConditions(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable);
+    PagedResponseDto<DonationResponseDto> retrieve(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable);
 }

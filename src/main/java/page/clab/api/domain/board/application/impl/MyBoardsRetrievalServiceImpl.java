@@ -22,7 +22,7 @@ public class MyBoardsRetrievalServiceImpl implements MyBoardsRetrievalService {
 
     @Transactional
     @Override
-    public PagedResponseDto<BoardMyResponseDto> retrieveMyBoards(Pageable pageable) {
+    public PagedResponseDto<BoardMyResponseDto> retrieve(Pageable pageable) {
         MemberBasicInfoDto currentMemberInfo = memberLookupService.getCurrentMemberBasicInfo();
         Page<Board> boards = boardRepository.findAllByMemberId(currentMemberInfo.getMemberId(), pageable);
         return new PagedResponseDto<>(boards.map(board -> BoardMyResponseDto.toDto(board, currentMemberInfo)));

@@ -19,7 +19,7 @@ public class WorkExperiencesByConditionsRetrievalServiceImpl implements WorkExpe
 
     @Override
     @Transactional(readOnly = true)
-    public PagedResponseDto<WorkExperienceResponseDto> retrieveByConditions(String memberId, Pageable pageable) {
+    public PagedResponseDto<WorkExperienceResponseDto> retrieve(String memberId, Pageable pageable) {
         Page<WorkExperience> workExperiences = workExperienceRepository.findByMemberId(memberId, pageable);
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
     }

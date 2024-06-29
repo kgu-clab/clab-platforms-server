@@ -19,7 +19,7 @@ public class ApplicationRetrievalServiceImpl implements ApplicationRetrievalServ
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<ApplicationResponseDto> retrieveByConditions(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable) {
+    public PagedResponseDto<ApplicationResponseDto> retrieve(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable) {
         Page<Application> applications = applicationRepository.findByConditions(recruitmentId, studentId, isPass, pageable);
         return new PagedResponseDto<>(applications.map(ApplicationResponseDto::toDto));
     }

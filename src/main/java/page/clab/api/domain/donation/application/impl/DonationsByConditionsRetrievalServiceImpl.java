@@ -24,7 +24,7 @@ public class DonationsByConditionsRetrievalServiceImpl implements DonationsByCon
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<DonationResponseDto> retrieveByConditions(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    public PagedResponseDto<DonationResponseDto> retrieve(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Page<Donation> donations = donationRepository.findByConditions(memberId, name, startDate, endDate, pageable);
         return new PagedResponseDto<>(donations.map(donation -> {
             MemberBasicInfoDto memberInfo = memberLookupService.getMemberBasicInfoById(donation.getMemberId());

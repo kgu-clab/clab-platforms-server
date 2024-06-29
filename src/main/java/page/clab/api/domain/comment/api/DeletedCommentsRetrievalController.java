@@ -33,7 +33,7 @@ public class DeletedCommentsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<DeletedCommentResponseDto> comments = deletedCommentsRetrievalService.retrieveDeleted(boardId, pageable);
+        PagedResponseDto<DeletedCommentResponseDto> comments = deletedCommentsRetrievalService.retrieve(boardId, pageable);
         return ApiResponse.success(comments);
     }
 }

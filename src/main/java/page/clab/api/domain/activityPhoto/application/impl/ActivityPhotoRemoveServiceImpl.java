@@ -16,7 +16,7 @@ public class ActivityPhotoRemoveServiceImpl implements ActivityPhotoRemoveServic
 
     @Transactional
     @Override
-    public Long removePhoto(Long activityPhotoId) {
+    public Long remove(Long activityPhotoId) {
         ActivityPhoto activityPhoto = getActivityPhotoByIdOrThrow(activityPhotoId);
         activityPhoto.delete();
         return activityPhotoRepository.save(activityPhoto).getId();

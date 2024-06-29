@@ -19,7 +19,7 @@ public class ActivityPhotoRetrievalServiceImpl implements ActivityPhotoRetrieval
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<ActivityPhotoResponseDto> retrievePhotos(Boolean isPublic, Pageable pageable) {
+    public PagedResponseDto<ActivityPhotoResponseDto> retrieve(Boolean isPublic, Pageable pageable) {
         Page<ActivityPhoto> activityPhotos = activityPhotoRepository.findByConditions(isPublic, pageable);
         return new PagedResponseDto<>(activityPhotos.map(ActivityPhotoResponseDto::toDto));
     }

@@ -21,7 +21,7 @@ public class DeletedApplicationRetrievalServiceImpl implements DeletedApplicatio
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<ApplicationResponseDto> retrieveDeleted(Pageable pageable) {
+    public PagedResponseDto<ApplicationResponseDto> retrieve(Pageable pageable) {
         Page<Application> applications = applicationRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(applications.map(ApplicationResponseDto::toDto));
     }

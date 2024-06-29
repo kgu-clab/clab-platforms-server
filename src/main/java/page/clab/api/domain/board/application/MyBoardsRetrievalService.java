@@ -5,5 +5,5 @@ import page.clab.api.domain.board.dto.response.BoardMyResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface MyBoardsRetrievalService {
-    PagedResponseDto<BoardMyResponseDto> retrieveMyBoards(Pageable pageable);
+    PagedResponseDto<BoardMyResponseDto> retrieve(Pageable pageable);
 }

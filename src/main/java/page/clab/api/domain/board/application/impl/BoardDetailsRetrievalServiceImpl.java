@@ -26,7 +26,7 @@ public class BoardDetailsRetrievalServiceImpl implements BoardDetailsRetrievalSe
 
     @Transactional
     @Override
-    public BoardDetailsResponseDto retrieveDetails(Long boardId) {
+    public BoardDetailsResponseDto retrieve(Long boardId) {
         MemberDetailedInfoDto currentMemberInfo = memberLookupService.getCurrentMemberDetailedInfo();
         Board board = boardLookupService.getBoardByIdOrThrow(boardId);
         boolean isOwner = board.isOwner(currentMemberInfo.getMemberId());

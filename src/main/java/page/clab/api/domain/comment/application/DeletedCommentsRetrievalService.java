@@ -5,5 +5,5 @@ import page.clab.api.domain.comment.dto.response.DeletedCommentResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface DeletedCommentsRetrievalService {
-    PagedResponseDto<DeletedCommentResponseDto> retrieveDeleted(Long boardId, Pageable pageable);
+    PagedResponseDto<DeletedCommentResponseDto> retrieve(Long boardId, Pageable pageable);
 }

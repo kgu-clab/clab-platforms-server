@@ -19,7 +19,7 @@ public class DeletedProductsRetrievalServiceImpl implements DeletedProductsRetri
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<ProductResponseDto> retrieveDeleted(Pageable pageable) {
+    public PagedResponseDto<ProductResponseDto> retrieve(Pageable pageable) {
         Page<Product> products = productRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(products.map(ProductResponseDto::toDto));
     }

@@ -19,7 +19,7 @@ public class ProductsByConditionsRetrievalServiceImpl implements ProductsByCondi
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<ProductResponseDto> retrieveByConditions(String productName, Pageable pageable) {
+    public PagedResponseDto<ProductResponseDto> retrieve(String productName, Pageable pageable) {
         Page<Product> products = productRepository.findByConditions(productName, pageable);
         return new PagedResponseDto<>(products.map(ProductResponseDto::toDto));
     }

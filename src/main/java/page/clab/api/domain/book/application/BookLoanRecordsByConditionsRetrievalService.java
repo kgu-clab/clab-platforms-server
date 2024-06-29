@@ -6,5 +6,5 @@ import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface BookLoanRecordsByConditionsRetrievalService {
-    PagedResponseDto<BookLoanRecordResponseDto> retrieveByConditions(Long bookId, String borrowerId, BookLoanStatus status, Pageable pageable);
+    PagedResponseDto<BookLoanRecordResponseDto> retrieve(Long bookId, String borrowerId, BookLoanStatus status, Pageable pageable);
 }

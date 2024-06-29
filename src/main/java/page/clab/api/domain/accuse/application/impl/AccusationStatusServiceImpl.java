@@ -29,7 +29,7 @@ public class AccusationStatusServiceImpl implements AccusationStatusService {
 
     @Transactional
     @Override
-    public Long changeAccusationStatus(TargetType type, Long targetId, AccuseStatus status) {
+    public Long change(TargetType type, Long targetId, AccuseStatus status) {
         AccuseTarget target = getAccuseTargetByIdOrThrow(type, targetId);
         target.updateStatus(status);
         validationService.checkValid(target);

@@ -25,7 +25,7 @@ public class ActivityPhotoVisibilityController {
     public ApiResponse<Long> updateActivityPhotoVisibility(
             @PathVariable(name = "activityPhotoId") Long activityPhotoId
     ) {
-        Long id = activityPhotoVisibilityService.updateVisibility(activityPhotoId);
+        Long id = activityPhotoVisibilityService.update(activityPhotoId);
         return ApiResponse.success(id);
     }
 }

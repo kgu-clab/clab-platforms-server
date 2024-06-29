@@ -26,7 +26,7 @@ public class BoardDetailsRetrievalController {
     public ApiResponse<BoardDetailsResponseDto> retrieveBoardDetails(
             @PathVariable(name = "boardId") Long boardId
     ) {
-        BoardDetailsResponseDto board = boardDetailsRetrievalService.retrieveDetails(boardId);
+        BoardDetailsResponseDto board = boardDetailsRetrievalService.retrieve(boardId);
         return ApiResponse.success(board);
     }
 }

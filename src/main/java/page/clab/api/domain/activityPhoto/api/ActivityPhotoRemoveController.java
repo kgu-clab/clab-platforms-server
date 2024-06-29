@@ -25,7 +25,7 @@ public class ActivityPhotoRemoveController {
     public ApiResponse<Long> removeActivityPhoto(
             @PathVariable(name = "activityPhotoId") Long activityPhotoId
     ) {
-        Long id = activityPhotoRemoveService.removePhoto(activityPhotoId);
+        Long id = activityPhotoRemoveService.remove(activityPhotoId);
         return ApiResponse.success(id);
     }
 }

@@ -5,5 +5,5 @@ import page.clab.api.domain.notification.dto.response.NotificationResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface DeletedNotificationsRetrievalService {
-    PagedResponseDto<NotificationResponseDto> retrieveDeleted(Pageable pageable);
+    PagedResponseDto<NotificationResponseDto> retrieve(Pageable pageable);
 }

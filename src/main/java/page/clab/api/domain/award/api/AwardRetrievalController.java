@@ -43,7 +43,7 @@ public class AwardRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Award.class);
-        PagedResponseDto<AwardResponseDto> awards = awardRetrievalService.retrieveByConditions(memberId, year, pageable);
+        PagedResponseDto<AwardResponseDto> awards = awardRetrievalService.retrieve(memberId, year, pageable);
         return ApiResponse.success(awards);
     }
 }

@@ -7,5 +7,5 @@ import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface AccusationRetrievalService {
-    PagedResponseDto<AccuseResponseDto> retrieveAccusations(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable);
+    PagedResponseDto<AccuseResponseDto> retrieve(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable);
 }

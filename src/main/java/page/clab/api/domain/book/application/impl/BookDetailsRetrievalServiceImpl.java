@@ -27,7 +27,7 @@ public class BookDetailsRetrievalServiceImpl implements BookDetailsRetrievalServ
 
     @Transactional(readOnly = true)
     @Override
-    public BookDetailsResponseDto retrieveDetails(Long bookId) {
+    public BookDetailsResponseDto retrieve(Long bookId) {
         MemberBasicInfoDto currentMemberInfo = memberLookupService.getCurrentMemberBasicInfo();
         Book book = getBookByIdOrThrow(bookId);
         return mapToBookDetailsResponseDto(book, currentMemberInfo.getMemberName());

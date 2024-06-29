@@ -5,5 +5,5 @@ import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface DeletedSchedulesRetrievalService {
-    PagedResponseDto<ScheduleResponseDto> retrieveDeleted(Pageable pageable);
+    PagedResponseDto<ScheduleResponseDto> retrieve(Pageable pageable);
 }

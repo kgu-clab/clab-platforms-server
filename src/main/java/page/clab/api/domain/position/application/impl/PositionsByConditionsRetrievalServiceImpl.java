@@ -22,7 +22,7 @@ public class PositionsByConditionsRetrievalServiceImpl implements PositionsByCon
     private final MemberLookupService memberLookupService;
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<PositionResponseDto> retrieveByConditions(String year, PositionType positionType, Pageable pageable) {
+    public PagedResponseDto<PositionResponseDto> retrieve(String year, PositionType positionType, Pageable pageable) {
         MemberPositionInfoDto currentMemberInfo = memberLookupService.getCurrentMemberPositionInfo();
         Page<Position> positions = positionRepository.findByConditions(year, positionType, pageable);
         return new PagedResponseDto<>(positions.map(position -> PositionResponseDto.toDto(position, currentMemberInfo)));

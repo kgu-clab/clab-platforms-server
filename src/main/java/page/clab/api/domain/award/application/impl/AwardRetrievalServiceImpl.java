@@ -19,7 +19,7 @@ public class AwardRetrievalServiceImpl implements AwardRetrievalService {
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<AwardResponseDto> retrieveByConditions(String memberId, Long year, Pageable pageable) {
+    public PagedResponseDto<AwardResponseDto> retrieve(String memberId, Long year, Pageable pageable) {
         Page<Award> awards = awardRepository.findByConditions(memberId, year, pageable);
         return new PagedResponseDto<>(awards.map(AwardResponseDto::toDto));
     }

@@ -5,5 +5,5 @@ import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface DeletedBoardsRetrievalService {
-    PagedResponseDto<BoardListResponseDto> retrieveDeletedBoards(Pageable pageable);
+    PagedResponseDto<BoardListResponseDto> retrieve(Pageable pageable);
 }

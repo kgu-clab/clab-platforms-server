@@ -29,7 +29,7 @@ public class BooksByConditionsRetrievalServiceImpl implements BooksByConditionsR
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<BookResponseDto> retrieveByConditions(String title, String category, String publisher, String borrowerId, String borrowerName, Pageable pageable) {
+    public PagedResponseDto<BookResponseDto> retrieve(String title, String category, String publisher, String borrowerId, String borrowerName, Pageable pageable) {
         Page<Book> books = bookRepository.findByConditions(title, category, publisher, borrowerId, borrowerName, pageable);
         return new PagedResponseDto<>(books.map(this::mapToBookResponseDto));
     }

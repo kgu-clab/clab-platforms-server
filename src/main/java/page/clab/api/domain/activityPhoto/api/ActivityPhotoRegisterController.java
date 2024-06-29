@@ -27,7 +27,7 @@ public class ActivityPhotoRegisterController {
     public ApiResponse<Long> registerActivityPhoto(
             @Valid @RequestBody ActivityPhotoRequestDto requestDto
     ) {
-        Long id = activityPhotoRegisterService.registerPhoto(requestDto);
+        Long id = activityPhotoRegisterService.register(requestDto);
         return ApiResponse.success(id);
     }
 }

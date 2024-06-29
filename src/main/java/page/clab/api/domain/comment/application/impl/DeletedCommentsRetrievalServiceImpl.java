@@ -25,7 +25,7 @@ public class DeletedCommentsRetrievalServiceImpl implements DeletedCommentsRetri
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<DeletedCommentResponseDto> retrieveDeleted(Long boardId, Pageable pageable) {
+    public PagedResponseDto<DeletedCommentResponseDto> retrieve(Long boardId, Pageable pageable) {
         String currentMemberId = memberLookupService.getCurrentMemberId();
         Page<Comment> comments = commentRepository.findAllByIsDeletedTrueAndBoardId(boardId, pageable);
         List<DeletedCommentResponseDto> deletedCommentDtos = comments.stream()

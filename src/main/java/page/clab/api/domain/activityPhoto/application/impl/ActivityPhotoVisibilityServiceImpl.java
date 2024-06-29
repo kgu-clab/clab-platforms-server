@@ -16,7 +16,7 @@ public class ActivityPhotoVisibilityServiceImpl implements ActivityPhotoVisibili
 
     @Transactional
     @Override
-    public Long updateVisibility(Long activityPhotoId) {
+    public Long update(Long activityPhotoId) {
         ActivityPhoto activityPhoto = getActivityPhotoByIdOrThrow(activityPhotoId);
         activityPhoto.togglePublicStatus();
         return activityPhotoRepository.save(activityPhoto).getId();

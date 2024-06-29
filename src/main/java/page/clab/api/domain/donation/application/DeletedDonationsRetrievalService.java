@@ -5,5 +5,5 @@ import page.clab.api.domain.donation.dto.response.DonationResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface DeletedDonationsRetrievalService {
-    PagedResponseDto<DonationResponseDto> retrieveDeleted(Pageable pageable);
+    PagedResponseDto<DonationResponseDto> retrieve(Pageable pageable);
 }

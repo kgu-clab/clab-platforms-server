@@ -38,7 +38,7 @@ public class MemberBirthdayRetrievalThisMonthController {
             @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Member.class);
-        PagedResponseDto<MemberBirthdayResponseDto> birthdayMembers = memberBirthdayRetrievalThisMonthService.retrieveBirthdays(month, pageable);
+        PagedResponseDto<MemberBirthdayResponseDto> birthdayMembers = memberBirthdayRetrievalThisMonthService.retrieve(month, pageable);
         return ApiResponse.success(birthdayMembers);
     }
 }

@@ -19,7 +19,7 @@ public class BlogsRetrievalServiceImpl implements BlogsRetrievalService {
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<BlogResponseDto> retrieveByConditions(String title, String memberName, Pageable pageable) {
+    public PagedResponseDto<BlogResponseDto> retrieve(String title, String memberName, Pageable pageable) {
         Page<Blog> blogs = blogRepository.findByConditions(title, memberName, pageable);
         return new PagedResponseDto<>(blogs.map(BlogResponseDto::toDto));
     }

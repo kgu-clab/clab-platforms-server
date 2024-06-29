@@ -31,7 +31,7 @@ public class DeletedNotificationsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<NotificationResponseDto> notifications = deletedNotificationsRetrievalService.retrieveDeleted(pageable);
+        PagedResponseDto<NotificationResponseDto> notifications = deletedNotificationsRetrievalService.retrieve(pageable);
         return ApiResponse.success(notifications);
     }
 }

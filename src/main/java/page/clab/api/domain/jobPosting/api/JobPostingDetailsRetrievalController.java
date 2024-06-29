@@ -26,7 +26,7 @@ public class JobPostingDetailsRetrievalController {
     public ApiResponse<JobPostingDetailsResponseDto> retrieveJobPostingDetails(
             @PathVariable(name = "jobPostingId") Long jobPostingId
     ) {
-        JobPostingDetailsResponseDto jobPosting = jobPostingDetailsRetrievalService.retrieveDetails(jobPostingId);
+        JobPostingDetailsResponseDto jobPosting = jobPostingDetailsRetrievalService.retrieve(jobPostingId);
         return ApiResponse.success(jobPosting);
     }
 }

@@ -5,5 +5,5 @@ import page.clab.api.domain.application.dto.response.ApplicationResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface ApplicationRetrievalService {
-    PagedResponseDto<ApplicationResponseDto> retrieveByConditions(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable);
+    PagedResponseDto<ApplicationResponseDto> retrieve(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable);
 }

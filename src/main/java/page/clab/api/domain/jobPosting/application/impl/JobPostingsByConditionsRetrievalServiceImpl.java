@@ -21,7 +21,7 @@ public class JobPostingsByConditionsRetrievalServiceImpl implements JobPostingsB
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<JobPostingResponseDto> retrieveByConditions(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable) {
+    public PagedResponseDto<JobPostingResponseDto> retrieve(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable) {
         Page<JobPosting> jobPostings = jobPostingRepository.findByConditions(title, companyName, careerLevel, employmentType, pageable);
         return new PagedResponseDto<>(jobPostings.map(JobPostingResponseDto::toDto));
     }

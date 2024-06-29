@@ -31,7 +31,7 @@ public class DeletedApplicationRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ApplicationResponseDto> applications = deletedApplicationRetrievalService.retrieveDeleted(pageable);
+        PagedResponseDto<ApplicationResponseDto> applications = deletedApplicationRetrievalService.retrieve(pageable);
         return ApiResponse.success(applications);
     }
 }

@@ -5,5 +5,5 @@ import page.clab.api.domain.workExperience.dto.response.WorkExperienceResponseDt
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface WorkExperiencesByConditionsRetrievalService {
-    PagedResponseDto<WorkExperienceResponseDto> retrieveByConditions(String memberId, Pageable pageable);
+    PagedResponseDto<WorkExperienceResponseDto> retrieve(String memberId, Pageable pageable);
 }

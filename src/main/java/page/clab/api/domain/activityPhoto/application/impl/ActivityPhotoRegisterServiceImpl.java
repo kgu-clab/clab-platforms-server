@@ -21,7 +21,7 @@ public class ActivityPhotoRegisterServiceImpl implements ActivityPhotoRegisterSe
 
     @Transactional
     @Override
-    public Long registerPhoto(ActivityPhotoRequestDto requestDto) {
+    public Long register(ActivityPhotoRequestDto requestDto) {
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         ActivityPhoto activityPhoto = ActivityPhotoRequestDto.toEntity(requestDto, uploadedFiles);
         return activityPhotoRepository.save(activityPhoto).getId();

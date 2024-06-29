@@ -5,5 +5,5 @@ import page.clab.api.domain.product.dto.response.ProductResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface DeletedProductsRetrievalService {
-    PagedResponseDto<ProductResponseDto> retrieveDeleted(Pageable pageable);
+    PagedResponseDto<ProductResponseDto> retrieve(Pageable pageable);
 }

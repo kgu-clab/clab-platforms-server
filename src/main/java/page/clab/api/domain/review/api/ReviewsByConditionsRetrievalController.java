@@ -45,7 +45,7 @@ public class ReviewsByConditionsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Review.class);
-        PagedResponseDto<ReviewResponseDto> reviews = reviewsByConditionsRetrievalService.retrieveByConditions(memberId, memberName, activityId, isPublic, pageable);
+        PagedResponseDto<ReviewResponseDto> reviews = reviewsByConditionsRetrievalService.retrieve(memberId, memberName, activityId, isPublic, pageable);
         return ApiResponse.success(reviews);
     }
 }

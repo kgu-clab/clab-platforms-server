@@ -31,7 +31,7 @@ public class DeletedSchedulesRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ScheduleResponseDto> schedules = deletedSchedulesRetrievalService.retrieveDeleted(pageable);
+        PagedResponseDto<ScheduleResponseDto> schedules = deletedSchedulesRetrievalService.retrieve(pageable);
         return ApiResponse.success(schedules);
     }
 }
