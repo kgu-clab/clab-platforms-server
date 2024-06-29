@@ -41,7 +41,7 @@ public class LoginService {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    private final AccountLockInfoService accountLockInfoService;
+    private final AccountLockManagementService accountLockManagementService;
 
     private final MemberLookupService memberLookupService;
 
@@ -68,7 +68,7 @@ public class LoginService {
         MemberLoginInfoDto loginMember = memberLookupService.getMemberLoginInfoById(memberId);
         String totp = twoFactorAuthenticationRequestDto.getTotp();
 
-        accountLockInfoService.handleAccountLockInfo(memberId);
+        accountLockManagementService.handleAccountLockInfo(memberId);
         verifyTwoFactorAuthentication(memberId, totp, request);
 
         TokenInfo tokenInfo = generateAndSaveToken(loginMember);
@@ -109,10 +109,10 @@ public class LoginService {
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(loginRequestDto.getId(), loginRequestDto.getPassword());
             loginAuthenticationManager.authenticate(authenticationToken);
-            accountLockInfoService.handleAccountLockInfo(loginRequestDto.getId());
+            accountLockManagementService.handleAccountLockInfo(loginRequestDto.getId());
         } catch (BadCredentialsException e) {
             logLoginAttempt(httpServletRequest, loginRequestDto.getId(), false);
-            accountLockInfoService.handleLoginFailure(httpServletRequest, loginRequestDto.getId());
+            accountLockManagementService.handleLoginFailure(httpServletRequest, loginRequestDto.getId());
             throw new LoginFaliedException();
         }
     }
@@ -143,7 +143,7 @@ public class LoginService {
     private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request) throws MemberLockedException, LoginFaliedException {
         if (!authenticatorService.isAuthenticatorValid(memberId, totp)) {
             loginAttemptLogService.createLoginAttemptLog(request, memberId, LoginAttemptResult.FAILURE);
-            accountLockInfoService.handleLoginFailure(request, memberId);
+            accountLockManagementService.handleLoginFailure(request, memberId);
             throw new LoginFaliedException("잘못된 인증번호입니다.");
         }
         loginAttemptLogService.createLoginAttemptLog(request, memberId, LoginAttemptResult.TOTP);
