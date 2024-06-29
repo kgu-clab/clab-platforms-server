@@ -15,5 +15,4 @@ public interface AccountLockInfoRepository extends JpaRepository<AccountLockInfo
     Optional<AccountLockInfo> findByMemberId(String memberId);
 
     Page<AccountLockInfo> findByLockUntil(LocalDateTime banDate, Pageable pageable);
-
 }

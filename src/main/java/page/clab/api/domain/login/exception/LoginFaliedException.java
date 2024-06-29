@@ -11,5 +11,4 @@ public class LoginFaliedException extends Exception {
     public LoginFaliedException(String s) {
         super(s);
     }
-
 }

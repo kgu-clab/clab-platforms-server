@@ -29,5 +29,4 @@ public class Authenticator extends BaseEntity {
                 .secretKey(secretKey)
                 .build();
     }
-
 }

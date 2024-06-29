@@ -27,5 +27,4 @@ public class RedisQRKey {
                 .QRCodeKey(QRCodeKey)
                 .build();
     }
-
 }
