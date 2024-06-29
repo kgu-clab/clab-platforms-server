@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.donation.application.FetchDeletedDonationsService;
+import page.clab.api.domain.donation.application.DeletedDonationsRetrievalService;
 import page.clab.api.domain.donation.dto.response.DonationResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -19,19 +19,19 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RequestMapping("/api/v1/donations")
 @RequiredArgsConstructor
 @Tag(name = "Donation", description = "후원")
-public class FetchDeletedDonationsController {
+public class DeletedDonationsRetrievalController {
 
-    private final FetchDeletedDonationsService fetchDeletedDonationsService;
+    private final DeletedDonationsRetrievalService deletedDonationsRetrievalService;
 
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 후원 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
-    public ApiResponse<PagedResponseDto<DonationResponseDto>> getDeletedDonations(
+    public ApiResponse<PagedResponseDto<DonationResponseDto>> retrieveDeletedDonations(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<DonationResponseDto> donations = fetchDeletedDonationsService.execute(pageable);
+        PagedResponseDto<DonationResponseDto> donations = deletedDonationsRetrievalService.retrieveDeleted(pageable);
         return ApiResponse.success(donations);
     }
 }

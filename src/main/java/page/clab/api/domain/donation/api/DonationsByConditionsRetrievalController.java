@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.donation.application.FetchDonationsByConditionsService;
+import page.clab.api.domain.donation.application.DonationsByConditionsRetrievalService;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.dto.response.DonationResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -25,9 +25,9 @@ import java.util.List;
 @RequestMapping("/api/v1/donations")
 @RequiredArgsConstructor
 @Tag(name = "Donation", description = "후원")
-public class FetchDonationsByConditionsController {
+public class DonationsByConditionsRetrievalController {
 
-    private final FetchDonationsByConditionsService fetchDonationsByConditionsService;
+    private final DonationsByConditionsRetrievalService donationsByConditionsRetrievalService;
 
     @Operation(summary = "[U] 후원 목록 조회(멤버 ID, 멤버 이름, 기간 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
@@ -35,7 +35,7 @@ public class FetchDonationsByConditionsController {
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, memberId")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("")
-    public ApiResponse<PagedResponseDto<DonationResponseDto>> getDonationsByConditions(
+    public ApiResponse<PagedResponseDto<DonationResponseDto>> retrieveDonationsByConditions(
             @RequestParam(name = "memberId", required = false) String memberId,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "startDate", required = false) LocalDate startDate,
@@ -46,7 +46,7 @@ public class FetchDonationsByConditionsController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Donation.class);
-        PagedResponseDto<DonationResponseDto> donations = fetchDonationsByConditionsService.execute(memberId, name, startDate, endDate, pageable);
+        PagedResponseDto<DonationResponseDto> donations = donationsByConditionsRetrievalService.retrieveByConditions(memberId, name, startDate, endDate, pageable);
         return ApiResponse.success(donations);
     }
 }

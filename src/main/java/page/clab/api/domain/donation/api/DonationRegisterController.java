@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.donation.application.CreateDonationService;
+import page.clab.api.domain.donation.application.DonationRegisterService;
 import page.clab.api.domain.donation.dto.request.DonationRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -17,17 +17,17 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/donations")
 @RequiredArgsConstructor
 @Tag(name = "Donation", description = "후원")
-public class CreateDonationController {
+public class DonationRegisterController {
 
-    private final CreateDonationService createDonationService;
+    private final DonationRegisterService donationRegisterService;
 
     @Operation(summary = "[S] 후원 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
-    public ApiResponse<Long> createDonation(
+    public ApiResponse<Long> registerDonation(
             @Valid @RequestBody DonationRequestDto requestDto
     ) {
-        Long id = createDonationService.execute(requestDto);
+        Long id = donationRegisterService.register(requestDto);
         return ApiResponse.success(id);
     }
 }
