@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.comment.application.CreateCommentService;
+import page.clab.api.domain.comment.application.CommentRegisterService;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -19,19 +19,19 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/comments")
 @RequiredArgsConstructor
 @Tag(name = "Comment", description = "댓글")
-public class CreateCommentController {
+public class CommentRegisterController {
 
-    private final CreateCommentService createCommentService;
+    private final CommentRegisterService commentRegisterService;
 
     @Operation(summary = "[U] 댓글 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping("/{boardId}")
-    public ApiResponse<Long> createComment(
+    public ApiResponse<Long> registerComment(
             @RequestParam(name = "parentId", required = false) Long parentId,
             @PathVariable(name = "boardId") Long boardId,
             @Valid @RequestBody CommentRequestDto requestDto
     ) {
-        Long id = createCommentService.execute(parentId, boardId, requestDto);
+        Long id = commentRegisterService.register(parentId, boardId, requestDto);
         return ApiResponse.success(id);
     }
 }

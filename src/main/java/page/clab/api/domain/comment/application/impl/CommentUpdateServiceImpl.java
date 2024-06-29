@@ -3,7 +3,7 @@ package page.clab.api.domain.comment.application.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.comment.application.UpdateCommentService;
+import page.clab.api.domain.comment.application.CommentUpdateService;
 import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
@@ -14,7 +14,7 @@ import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateCommentServiceImpl implements UpdateCommentService {
+public class CommentUpdateServiceImpl implements CommentUpdateService {
 
     private final CommentRepository commentRepository;
     private final MemberLookupService memberLookupService;
@@ -22,7 +22,7 @@ public class UpdateCommentServiceImpl implements UpdateCommentService {
 
     @Transactional
     @Override
-    public Long execute(Long commentId, CommentUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public Long update(Long commentId, CommentUpdateRequestDto requestDto) throws PermissionDeniedException {
         Comment comment = getCommentByIdOrThrow(commentId);
         comment.validateAccessPermission(memberLookupService.getCurrentMemberDetailedInfo());
         comment.update(requestDto);

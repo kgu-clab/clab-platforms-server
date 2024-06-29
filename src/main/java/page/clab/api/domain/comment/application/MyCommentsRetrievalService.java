@@ -4,6 +4,6 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
-public interface FetchMyCommentsService {
-    PagedResponseDto<CommentMyResponseDto> execute(Pageable pageable);
+public interface MyCommentsRetrievalService {
+    PagedResponseDto<CommentMyResponseDto> retrieve(Pageable pageable);
 }

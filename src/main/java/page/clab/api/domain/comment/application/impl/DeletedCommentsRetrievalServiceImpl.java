@@ -6,7 +6,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.comment.application.FetchDeletedCommentsService;
+import page.clab.api.domain.comment.application.DeletedCommentsRetrievalService;
 import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.response.DeletedCommentResponseDto;
@@ -18,14 +18,14 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class FetchDeletedCommentsServiceImpl implements FetchDeletedCommentsService {
+public class DeletedCommentsRetrievalServiceImpl implements DeletedCommentsRetrievalService {
 
     private final CommentRepository commentRepository;
     private final MemberLookupService memberLookupService;
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<DeletedCommentResponseDto> execute(Long boardId, Pageable pageable) {
+    public PagedResponseDto<DeletedCommentResponseDto> retrieveDeleted(Long boardId, Pageable pageable) {
         String currentMemberId = memberLookupService.getCurrentMemberId();
         Page<Comment> comments = commentRepository.findAllByIsDeletedTrueAndBoardId(boardId, pageable);
         List<DeletedCommentResponseDto> deletedCommentDtos = comments.stream()

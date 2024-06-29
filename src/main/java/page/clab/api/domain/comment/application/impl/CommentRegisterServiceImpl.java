@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.application.BoardLookupService;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.comment.application.CreateCommentService;
+import page.clab.api.domain.comment.application.CommentRegisterService;
 import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
@@ -15,7 +15,7 @@ import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class CreateCommentServiceImpl implements CreateCommentService {
+public class CommentRegisterServiceImpl implements CommentRegisterService {
 
     private final BoardLookupService boardLookupService;
     private final MemberLookupService memberLookupService;
@@ -25,7 +25,7 @@ public class CreateCommentServiceImpl implements CreateCommentService {
 
     @Transactional
     @Override
-    public Long execute(Long parentId, Long boardId, CommentRequestDto requestDto) {
+    public Long register(Long parentId, Long boardId, CommentRequestDto requestDto) {
         Comment comment = createAndStoreComment(parentId, boardId, requestDto);
         sendNotificationForNewComment(comment);
         return boardId;

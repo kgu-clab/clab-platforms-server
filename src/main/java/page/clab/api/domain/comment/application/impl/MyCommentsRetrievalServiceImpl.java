@@ -6,7 +6,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.comment.application.FetchMyCommentsService;
+import page.clab.api.domain.comment.application.MyCommentsRetrievalService;
 import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
@@ -18,14 +18,14 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class FetchMyCommentsServiceImpl implements FetchMyCommentsService {
+public class MyCommentsRetrievalServiceImpl implements MyCommentsRetrievalService {
 
     private final CommentRepository commentRepository;
     private final MemberLookupService memberLookupService;
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<CommentMyResponseDto> execute(Pageable pageable) {
+    public PagedResponseDto<CommentMyResponseDto> retrieve(Pageable pageable) {
         String currentMemberId = memberLookupService.getCurrentMemberId();
         Page<Comment> comments = getCommentByWriterId(currentMemberId, pageable);
         List<CommentMyResponseDto> dtos = comments.stream()
