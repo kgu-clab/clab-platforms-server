@@ -5,29 +5,31 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.news.application.CreateNewsService;
-import page.clab.api.domain.news.dto.request.NewsRequestDto;
+import page.clab.api.domain.news.application.NewsUpdateService;
+import page.clab.api.domain.news.dto.request.NewsUpdateRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/news")
 @RequiredArgsConstructor
 @Tag(name = "News", description = "뉴스")
-public class CreateNewsController {
+public class NewsUpdateController {
 
-    private final CreateNewsService createNewsService;
+    private final NewsUpdateService newsUpdateService;
 
-    @Operation(summary = "뉴스 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @Operation(summary = "[A] 뉴스 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
-    @PostMapping("")
-    public ApiResponse<Long> createNews(
-            @Valid @RequestBody NewsRequestDto requestDto
+    @PatchMapping("/{newsId}")
+    public ApiResponse<Long> updateNews(
+            @PathVariable(name = "newsId") Long newsId,
+            @Valid @RequestBody NewsUpdateRequestDto requestDto
     ) {
-        Long id = createNewsService.execute(requestDto);
+        Long id = newsUpdateService.update(newsId, requestDto);
         return ApiResponse.success(id);
     }
 }

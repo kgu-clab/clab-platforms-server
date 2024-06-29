@@ -3,7 +3,7 @@ package page.clab.api.domain.news.application.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.news.application.CreateNewsService;
+import page.clab.api.domain.news.application.NewsRegisterService;
 import page.clab.api.domain.news.dao.NewsRepository;
 import page.clab.api.domain.news.domain.News;
 import page.clab.api.domain.news.dto.request.NewsRequestDto;
@@ -12,7 +12,7 @@ import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class CreateNewsServiceImpl implements CreateNewsService {
+public class NewsRegisterServiceImpl implements NewsRegisterService {
 
     private final UploadedFileService uploadedFileService;
     private final ValidationService validationService;
@@ -20,7 +20,7 @@ public class CreateNewsServiceImpl implements CreateNewsService {
 
     @Transactional
     @Override
-    public Long execute(NewsRequestDto requestDto) {
+    public Long register(NewsRequestDto requestDto) {
         News news = NewsRequestDto.toEntity(requestDto);
         validationService.checkValid(news);
         news.setUploadedFiles(uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList()));

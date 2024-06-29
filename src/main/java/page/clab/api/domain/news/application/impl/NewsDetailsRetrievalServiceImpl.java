@@ -3,27 +3,23 @@ package page.clab.api.domain.news.application.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.news.application.UpdateNewsService;
+import page.clab.api.domain.news.application.NewsDetailsRetrievalService;
 import page.clab.api.domain.news.dao.NewsRepository;
 import page.clab.api.domain.news.domain.News;
-import page.clab.api.domain.news.dto.request.NewsUpdateRequestDto;
+import page.clab.api.domain.news.dto.response.NewsDetailsResponseDto;
 import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateNewsServiceImpl implements UpdateNewsService {
+public class NewsDetailsRetrievalServiceImpl implements NewsDetailsRetrievalService {
 
-    private final ValidationService validationService;
     private final NewsRepository newsRepository;
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
-    public Long execute(Long newsId, NewsUpdateRequestDto requestDto) {
+    public NewsDetailsResponseDto retrieve(Long newsId) {
         News news = getNewsByIdOrThrow(newsId);
-        news.update(requestDto);
-        validationService.checkValid(news);
-        return newsRepository.save(news).getId();
+        return NewsDetailsResponseDto.toDto(news);
     }
 
     private News getNewsByIdOrThrow(Long newsId) {
@@ -31,4 +27,3 @@ public class UpdateNewsServiceImpl implements UpdateNewsService {
                 .orElseThrow(() -> new NotFoundException("해당 뉴스가 존재하지 않습니다."));
     }
 }
-

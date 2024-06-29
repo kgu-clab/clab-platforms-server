@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.news.application.FetchNewsDetailsService;
+import page.clab.api.domain.news.application.NewsDetailsRetrievalService;
 import page.clab.api.domain.news.dto.response.NewsDetailsResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -16,17 +16,17 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/news")
 @RequiredArgsConstructor
 @Tag(name = "News", description = "뉴스")
-public class FetchNewsDetailsController {
+public class NewsDetailsRetrievalController {
 
-    private final FetchNewsDetailsService fetchNewsDetailsService;
+    private final NewsDetailsRetrievalService newsDetailsRetrievalService;
 
     @Operation(summary = "[U] 뉴스 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/{newsId}")
-    public ApiResponse<NewsDetailsResponseDto> getNewsDetails(
+    public ApiResponse<NewsDetailsResponseDto> retrieveNewsDetails(
             @PathVariable(name = "newsId") Long newsId
     ) {
-        NewsDetailsResponseDto news = fetchNewsDetailsService.execute(newsId);
+        NewsDetailsResponseDto news = newsDetailsRetrievalService.retrieve(newsId);
         return ApiResponse.success(news);
     }
 }
