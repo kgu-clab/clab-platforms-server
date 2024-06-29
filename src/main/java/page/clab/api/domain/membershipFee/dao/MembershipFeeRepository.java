@@ -13,5 +13,4 @@ public interface MembershipFeeRepository extends JpaRepository<MembershipFee, Lo
 
     @Query(value = "SELECT m.* FROM membership_fee m WHERE m.is_deleted = true", nativeQuery = true)
     Page<MembershipFee> findAllByIsDeletedTrue(Pageable pageable);
-
 }

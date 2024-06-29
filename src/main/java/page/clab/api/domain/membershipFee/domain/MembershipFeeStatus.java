@@ -14,5 +14,4 @@ public enum MembershipFeeStatus {
 
     private String key;
     private String description;
-
 }

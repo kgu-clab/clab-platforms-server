@@ -40,5 +40,4 @@ public class MembershipFeeRequestDto {
                 .status(MembershipFeeStatus.PENDING)
                 .build();
     }
-
 }

@@ -11,9 +11,9 @@ import page.clab.api.domain.member.domain.QMember;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
 import page.clab.api.domain.membershipFee.domain.QMembershipFee;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -47,5 +47,4 @@ public class MembershipFeeRepositoryImpl implements MembershipFeeRepositoryCusto
 
         return new PageImpl<>(membershipFees, pageable, count);
     }
-
 }
