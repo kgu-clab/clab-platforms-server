@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.accuse.application.ChangeAccusationStatusService;
+import page.clab.api.domain.accuse.application.AccusationStatusService;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -18,9 +18,9 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/accusations")
 @RequiredArgsConstructor
 @Tag(name = "Accusation", description = "신고")
-public class ChangeAccusationStatusController {
+public class AccusationStatusController {
 
-    private final ChangeAccusationStatusService changeAccusationStatusService;
+    private final AccusationStatusService accusationStatusService;
 
     @Operation(summary = "[A] 신고 상태 변경", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -30,7 +30,7 @@ public class ChangeAccusationStatusController {
             @PathVariable(name = "targetId") Long targetId,
             @RequestParam(name = "accuseStatus") AccuseStatus status
     ) {
-        Long id = changeAccusationStatusService.changeAccusationStatus(type, targetId, status);
+        Long id = accusationStatusService.changeAccusationStatus(type, targetId, status);
         return ApiResponse.success(id);
     }
 }

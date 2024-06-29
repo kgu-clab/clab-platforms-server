@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.accuse.application.RetrieveAccusationsService;
+import page.clab.api.domain.accuse.application.AccusationRetrievalService;
 import page.clab.api.domain.accuse.dao.AccuseRepository;
 import page.clab.api.domain.accuse.dao.AccuseTargetRepository;
 import page.clab.api.domain.accuse.domain.Accuse;
@@ -22,7 +22,7 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class RetrieveAccusationsServiceImpl implements RetrieveAccusationsService {
+public class AccusationRetrievalServiceImpl implements AccusationRetrievalService {
 
     private final AccuseRepository accuseRepository;
     private final AccuseTargetRepository accuseTargetRepository;

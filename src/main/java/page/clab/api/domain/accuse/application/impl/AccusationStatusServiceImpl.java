@@ -3,7 +3,7 @@ package page.clab.api.domain.accuse.application.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.accuse.application.ChangeAccusationStatusService;
+import page.clab.api.domain.accuse.application.AccusationStatusService;
 import page.clab.api.domain.accuse.dao.AccuseRepository;
 import page.clab.api.domain.accuse.dao.AccuseTargetRepository;
 import page.clab.api.domain.accuse.domain.Accuse;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ChangeAccusationStatusServiceImpl implements ChangeAccusationStatusService {
+public class AccusationStatusServiceImpl implements AccusationStatusService {
 
     private final AccuseTargetRepository accuseTargetRepository;
     private final AccuseRepository accuseRepository;

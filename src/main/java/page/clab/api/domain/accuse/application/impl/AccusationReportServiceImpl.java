@@ -3,7 +3,7 @@ package page.clab.api.domain.accuse.application.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.accuse.application.ReportIncidentService;
+import page.clab.api.domain.accuse.application.AccusationReportService;
 import page.clab.api.domain.accuse.dao.AccuseRepository;
 import page.clab.api.domain.accuse.dao.AccuseTargetRepository;
 import page.clab.api.domain.accuse.domain.Accuse;
@@ -24,7 +24,7 @@ import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class ReportIncidentServiceImpl implements ReportIncidentService {
+public class AccusationReportServiceImpl implements AccusationReportService {
 
     private final MemberLookupService memberLookupService;
     private final NotificationSenderService notificationService;
