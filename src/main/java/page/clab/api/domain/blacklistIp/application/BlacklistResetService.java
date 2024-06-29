@@ -4,6 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
-public interface ClearBlacklistService {
-    List<String> execute(HttpServletRequest request);
+public interface BlacklistResetService {
+    List<String> reset(HttpServletRequest request);
 }

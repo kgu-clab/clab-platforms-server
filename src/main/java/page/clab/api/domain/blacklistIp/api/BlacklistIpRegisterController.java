@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.blacklistIp.application.AddBlacklistIpService;
+import page.clab.api.domain.blacklistIp.application.BlacklistIpRegisterService;
 import page.clab.api.domain.blacklistIp.dto.request.BlacklistIpRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -18,18 +18,18 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RequestMapping("/api/v1/blacklists")
 @RequiredArgsConstructor
 @Tag(name = "Blacklist IP", description = "블랙리스트 IP")
-public class AddBlacklistIpController {
+public class BlacklistIpRegisterController {
 
-    private final AddBlacklistIpService addBlacklistIpService;
+    private final BlacklistIpRegisterService blacklistIpRegisterService;
 
     @Operation(summary = "[S] 블랙리스트 IP 추가", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PostMapping("")
-    public ApiResponse<String> addBlacklistedIp(
+    public ApiResponse<String> registerBlacklistIp(
             HttpServletRequest request,
             @Valid @RequestBody BlacklistIpRequestDto requestDto
     ) {
-        String addedIp = addBlacklistIpService.execute(request, requestDto);
+        String addedIp = blacklistIpRegisterService.register(request, requestDto);
         return ApiResponse.success(addedIp);
     }
 }

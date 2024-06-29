@@ -9,25 +9,25 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.blacklistIp.application.RemoveBlacklistIpService;
+import page.clab.api.domain.blacklistIp.application.BlacklistIpRemoveService;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/blacklists")
 @RequiredArgsConstructor
 @Tag(name = "Blacklist IP", description = "블랙리스트 IP")
-public class RemoveBlacklistIpController {
+public class BlacklistIpRemoveController {
 
-    private final RemoveBlacklistIpService removeBlacklistIpService;
+    private final BlacklistIpRemoveService blacklistIpRemoveService;
 
     @Operation(summary = "[S] 블랙리스트 IP 제거", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @DeleteMapping("")
-    public ApiResponse<String> removeBlacklistedIp(
+    public ApiResponse<String> removeBlacklistIp(
             HttpServletRequest request,
             @RequestParam(name = "ipAddress") String ipAddress
     ) {
-        String deletedIp = removeBlacklistIpService.execute(request, ipAddress);
+        String deletedIp = blacklistIpRemoveService.remove(request, ipAddress);
         return ApiResponse.success(deletedIp);
     }
 }

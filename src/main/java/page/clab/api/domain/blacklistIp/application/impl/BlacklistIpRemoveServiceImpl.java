@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.blacklistIp.application.RemoveBlacklistIpService;
+import page.clab.api.domain.blacklistIp.application.BlacklistIpRemoveService;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
 import page.clab.api.global.common.slack.application.SlackService;
@@ -13,14 +13,14 @@ import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor
-public class RemoveBlacklistIpServiceImpl implements RemoveBlacklistIpService {
+public class BlacklistIpRemoveServiceImpl implements BlacklistIpRemoveService {
 
     private final BlacklistIpRepository blacklistIpRepository;
     private final SlackService slackService;
 
     @Transactional
     @Override
-    public String execute(HttpServletRequest request, String ipAddress) {
+    public String remove(HttpServletRequest request, String ipAddress) {
         BlacklistIp blacklistIp = getBlacklistIpByIpAddressOrThrow(ipAddress);
         blacklistIpRepository.delete(blacklistIp);
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_REMOVED, "Deleted IP: " + ipAddress);
