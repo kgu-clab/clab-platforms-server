@@ -36,5 +36,4 @@ public class ScheduleResponseDto {
                 .priority(schedule.getPriority())
                 .build();
     }
-
 }
