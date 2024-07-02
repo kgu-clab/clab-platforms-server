@@ -49,6 +49,6 @@ public class WorkExperiencePersistenceAdapter implements
 
     @Override
     public WorkExperience findWorkExperienceByIdOrThrow(Long id) {
-        return findById(id).orElseThrow(() -> new NotFoundException("Work experience not found"));
+        return findById(id).orElseThrow(() -> new NotFoundException("[WorkExperience] id: " + id + "에 해당하는 경력사항이 존재하지 않습니다."));
     }
 }
