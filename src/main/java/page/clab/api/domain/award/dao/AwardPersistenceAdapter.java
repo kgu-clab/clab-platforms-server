@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import page.clab.api.domain.award.application.port.out.LoadAwardPort;
 import page.clab.api.domain.award.application.port.out.RegisterAwardPort;
 import page.clab.api.domain.award.application.port.out.RemoveAwardPort;
-import page.clab.api.domain.award.application.port.out.RetrieveAwardByIdPort;
 import page.clab.api.domain.award.application.port.out.RetrieveAwardsByConditionsPort;
 import page.clab.api.domain.award.application.port.out.RetrieveDeletedAwardsPort;
 import page.clab.api.domain.award.application.port.out.RetrieveMyAwardsPort;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AwardPersistenceAdapter implements
         RegisterAwardPort,
-        RetrieveAwardByIdPort,
+        LoadAwardPort,
         RemoveAwardPort,
         RetrieveAwardsByConditionsPort,
         RetrieveDeletedAwardsPort,

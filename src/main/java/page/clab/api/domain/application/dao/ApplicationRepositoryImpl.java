@@ -21,21 +21,21 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom {
 
     @Override
     public Page<Application> findByConditions(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable) {
-        QApplication qApplication = QApplication.application;
+        QApplication application = QApplication.application;
         BooleanBuilder builder = new BooleanBuilder();
 
-        if (recruitmentId != null) builder.and(qApplication.recruitmentId.eq(recruitmentId));
-        if (studentId != null && !studentId.isEmpty()) builder.and(qApplication.studentId.eq(studentId));
-        if (isPass != null) builder.and(qApplication.isPass.eq(isPass));
+        if (recruitmentId != null) builder.and(application.recruitmentId.eq(recruitmentId));
+        if (studentId != null && !studentId.isEmpty()) builder.and(application.studentId.eq(studentId));
+        if (isPass != null) builder.and(application.isPass.eq(isPass));
 
-        List<Application> applications = queryFactory.selectFrom(qApplication)
+        List<Application> applications = queryFactory.selectFrom(application)
                 .where(builder.getValue())
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qApplication))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, application))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long count = queryFactory.from(qApplication)
+        long count = queryFactory.from(application)
                 .where(builder)
                 .fetchCount();
 

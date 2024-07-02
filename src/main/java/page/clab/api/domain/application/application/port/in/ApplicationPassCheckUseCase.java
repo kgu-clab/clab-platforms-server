@@ -1,4 +1,4 @@
-package page.clab.api.domain.application.application;
+package page.clab.api.domain.application.application.port.in;
 
 import page.clab.api.domain.application.dto.response.ApplicationPassResponseDto;
 

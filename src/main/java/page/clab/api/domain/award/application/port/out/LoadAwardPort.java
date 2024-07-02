@@ -4,7 +4,7 @@ import page.clab.api.domain.award.domain.Award;
 
 import java.util.Optional;
 
-public interface RetrieveAwardByIdPort {
+public interface LoadAwardPort {
     Optional<Award> findById(Long awardId);
     Award findByIdOrThrow(Long awardId);
 }

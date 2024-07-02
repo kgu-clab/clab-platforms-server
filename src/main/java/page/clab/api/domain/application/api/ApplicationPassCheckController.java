@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.application.application.ApplicationPassCheckUseCase;
+import page.clab.api.domain.application.application.port.in.ApplicationPassCheckUseCase;
 import page.clab.api.domain.application.dto.response.ApplicationPassResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 

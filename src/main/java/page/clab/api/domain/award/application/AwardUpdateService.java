@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.award.application.port.in.AwardUpdateUseCase;
+import page.clab.api.domain.award.application.port.out.LoadAwardPort;
 import page.clab.api.domain.award.application.port.out.RegisterAwardPort;
-import page.clab.api.domain.award.application.port.out.RetrieveAwardByIdPort;
 import page.clab.api.domain.award.domain.Award;
 import page.clab.api.domain.award.dto.request.AwardUpdateRequestDto;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
@@ -17,7 +17,7 @@ import page.clab.api.global.validation.ValidationService;
 @RequiredArgsConstructor
 public class AwardUpdateService implements AwardUpdateUseCase {
 
-    private final RetrieveAwardByIdPort retrieveAwardByIdPort;
+    private final LoadAwardPort loadAwardPort;
     private final RegisterAwardPort registerAwardPort;
     private final MemberLookupUseCase memberLookupUseCase;
     private final ValidationService validationService;
@@ -26,7 +26,7 @@ public class AwardUpdateService implements AwardUpdateUseCase {
     @Override
     public Long update(Long awardId, AwardUpdateRequestDto requestDto) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberDetailedInfo();
-        Award award = retrieveAwardByIdPort.findByIdOrThrow(awardId);
+        Award award = loadAwardPort.findByIdOrThrow(awardId);
         award.validateAccessPermission(currentMemberInfo);
         award.update(requestDto);
         validationService.checkValid(award);

@@ -13,8 +13,6 @@ import java.util.Optional;
 
 public interface ApplicationRepository extends JpaRepository<Application, ApplicationId>, ApplicationRepositoryCustom, QuerydslPredicateExecutor<Application> {
 
-    Page<Application> findAllByOrderByCreatedAtDesc(Pageable pageable);
-
     List<Application> findByRecruitmentIdAndIsPass(Long recruitmentId, Boolean isPass);
 
     Optional<Application> findByRecruitmentIdAndStudentId(Long recruitmentId, String studentId);

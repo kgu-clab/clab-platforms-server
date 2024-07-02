@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.application.application.ApplicationApprovalToggleUseCase;
+import page.clab.api.domain.application.application.port.in.ApplicationApprovalToggleUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
