@@ -1,4 +1,4 @@
-package page.clab.api.domain.notification.application.port.in;
+package page.clab.api.domain.notification.event;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

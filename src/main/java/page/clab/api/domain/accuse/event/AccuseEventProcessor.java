@@ -1,4 +1,4 @@
-package page.clab.api.domain.accuse.application.port.in;
+package page.clab.api.domain.accuse.event;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
