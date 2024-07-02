@@ -1,4 +1,4 @@
-package page.clab.api.domain.schedule.application.impl;
+package page.clab.api.domain.schedule.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.schedule.application.ActivitySchedulesRetrievalUseCase;
-import page.clab.api.domain.schedule.dao.ScheduleRepository;
+import page.clab.api.domain.schedule.application.port.in.ActivitySchedulesRetrievalUseCase;
+import page.clab.api.domain.schedule.application.port.out.RetrieveActivitySchedulesPort;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -20,13 +20,13 @@ import java.time.LocalDate;
 public class ActivitySchedulesRetrievalService implements ActivitySchedulesRetrievalUseCase {
 
     private final MemberLookupUseCase memberLookupUseCase;
-    private final ScheduleRepository scheduleRepository;
+    private final RetrieveActivitySchedulesPort retrieveActivitySchedulesPort;
 
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> retrieve(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Member currentMember = memberLookupUseCase.getCurrentMember();
-        Page<Schedule> schedules = scheduleRepository.findActivitySchedulesByDateRangeAndMember(startDate, endDate, currentMember, pageable);
+        Page<Schedule> schedules = retrieveActivitySchedulesPort.findActivitySchedulesByDateRangeAndMember(startDate, endDate, currentMember, pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
 }

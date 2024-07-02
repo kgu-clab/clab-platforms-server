@@ -1,4 +1,4 @@
-package page.clab.api.domain.schedule.application.impl;
+package page.clab.api.domain.schedule.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,8 +10,8 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.schedule.application.ScheduleRegisterUseCase;
-import page.clab.api.domain.schedule.dao.ScheduleRepository;
+import page.clab.api.domain.schedule.application.port.in.ScheduleRegisterUseCase;
+import page.clab.api.domain.schedule.application.port.out.RegisterSchedulePort;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.ScheduleType;
 import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
@@ -26,7 +26,7 @@ public class ScheduleRegisterService implements ScheduleRegisterUseCase {
     private final MemberLookupUseCase memberLookupUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
     private final ActivityGroupAdminService activityGroupAdminService;
-    private final ScheduleRepository scheduleRepository;
+    private final RegisterSchedulePort registerSchedulePort;
 
     @Override
     @Transactional
@@ -35,7 +35,7 @@ public class ScheduleRegisterService implements ScheduleRegisterUseCase {
         ActivityGroup activityGroup = resolveActivityGroupForSchedule(requestDto, currentMember);
         Schedule schedule = ScheduleRequestDto.toEntity(requestDto, currentMember, activityGroup);
         schedule.validateAccessPermissionForCreation(currentMember);
-        return scheduleRepository.save(schedule).getId();
+        return registerSchedulePort.save(schedule).getId();
     }
 
     private ActivityGroup resolveActivityGroupForSchedule(ScheduleRequestDto requestDto, Member member) throws PermissionDeniedException {

@@ -1,4 +1,4 @@
-package page.clab.api.domain.schedule.application.impl;
+package page.clab.api.domain.schedule.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,8 +10,8 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.schedule.application.SchedulesWithinDateRangeRetrievalUseCase;
-import page.clab.api.domain.schedule.dao.ScheduleRepository;
+import page.clab.api.domain.schedule.application.port.in.SchedulesWithinDateRangeRetrievalUseCase;
+import page.clab.api.domain.schedule.application.port.out.RetrieveSchedulesWithinDateRangePort;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -26,7 +26,7 @@ public class SchedulesWithinDateRangeRetrievalService implements SchedulesWithin
 
     private final MemberLookupUseCase memberLookupUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
-    private final ScheduleRepository scheduleRepository;
+    private final RetrieveSchedulesWithinDateRangePort retrieveSchedulesWithinDateRangePort;
 
     @Override
     @Transactional(readOnly = true)
@@ -34,7 +34,7 @@ public class SchedulesWithinDateRangeRetrievalService implements SchedulesWithin
         Member currentMember = memberLookupUseCase.getCurrentMember();
         List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByMember(currentMember);
         List<ActivityGroup> myGroups = getMyActivityGroups(groupMembers);
-        Page<Schedule> schedules = scheduleRepository.findByDateRangeAndMember(startDate, endDate, myGroups, pageable);
+        Page<Schedule> schedules = retrieveSchedulesWithinDateRangePort.findByDateRangeAndMember(startDate, endDate, myGroups, pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
 

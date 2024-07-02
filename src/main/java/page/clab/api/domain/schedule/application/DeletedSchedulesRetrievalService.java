@@ -1,12 +1,12 @@
-package page.clab.api.domain.schedule.application.impl;
+package page.clab.api.domain.schedule.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.schedule.application.DeletedSchedulesRetrievalUseCase;
-import page.clab.api.domain.schedule.dao.ScheduleRepository;
+import page.clab.api.domain.schedule.application.port.in.DeletedSchedulesRetrievalUseCase;
+import page.clab.api.domain.schedule.application.port.out.RetrieveDeletedSchedulesPort;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -15,12 +15,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RequiredArgsConstructor
 public class DeletedSchedulesRetrievalService implements DeletedSchedulesRetrievalUseCase {
 
-    private final ScheduleRepository scheduleRepository;
+    private final RetrieveDeletedSchedulesPort retrieveDeletedSchedulesPort;
 
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> retrieve(Pageable pageable) {
-        Page<Schedule> schedules = scheduleRepository.findAllByIsDeletedTrue(pageable);
+        Page<Schedule> schedules = retrieveDeletedSchedulesPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
 }

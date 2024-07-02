@@ -1,4 +1,4 @@
-package page.clab.api.domain.schedule.application;
+package page.clab.api.domain.schedule.application.port.in;
 
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
