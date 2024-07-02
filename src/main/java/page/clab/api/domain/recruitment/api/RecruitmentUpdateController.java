@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.recruitment.application.RecruitmentUpdateUseCase;
+import page.clab.api.domain.recruitment.application.port.in.RecruitmentUpdateUseCase;
 import page.clab.api.domain.recruitment.dto.request.RecruitmentUpdateRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 

@@ -8,7 +8,7 @@ import page.clab.api.domain.application.dao.ApplicationRepository;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.notification.application.NotificationSenderUseCase;
-import page.clab.api.domain.recruitment.application.RecruitmentLookupUseCase;
+import page.clab.api.domain.recruitment.application.port.in.RecruitmentLookupUseCase;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.validation.ValidationService;
 

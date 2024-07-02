@@ -1,11 +1,10 @@
-package page.clab.api.domain.recruitment.application.impl;
+package page.clab.api.domain.recruitment.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.recruitment.application.RecentRecruitmentsRetrievalUseCase;
-import page.clab.api.domain.recruitment.dao.RecruitmentRepository;
-import page.clab.api.domain.recruitment.domain.Recruitment;
+import page.clab.api.domain.recruitment.application.port.in.RecentRecruitmentsRetrievalUseCase;
+import page.clab.api.domain.recruitment.application.port.out.RetrieveRecentRecruitmentsPort;
 import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
 
 import java.util.List;
@@ -14,13 +13,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RecentRecruitmentsRetrievalService implements RecentRecruitmentsRetrievalUseCase {
 
-    private final RecruitmentRepository recruitmentRepository;
+    private final RetrieveRecentRecruitmentsPort retrieveRecentRecruitmentsPort;
 
     @Transactional(readOnly = true)
     @Override
     public List<RecruitmentResponseDto> retrieve() {
-        List<Recruitment> recruitments = recruitmentRepository.findTop5ByOrderByCreatedAtDesc();
-        return recruitments.stream()
+        return retrieveRecentRecruitmentsPort.findTop5ByOrderByCreatedAtDesc().stream()
                 .map(RecruitmentResponseDto::toDto)
                 .toList();
     }
