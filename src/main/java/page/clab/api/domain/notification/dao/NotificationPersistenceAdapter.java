@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.notification.application.port.out.LoadNotificationPort;
-import page.clab.api.domain.notification.application.port.out.RegisterNotificationPort;
-import page.clab.api.domain.notification.application.port.out.RemoveNotificationPort;
+import page.clab.api.domain.notification.application.port.out.*;
 import page.clab.api.domain.notification.domain.Notification;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -16,8 +14,10 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class NotificationPersistenceAdapter implements
-        RegisterNotificationPort,
         LoadNotificationPort,
+        RetrieveNotificationsByMemberIdPort,
+        RetrieveDeletedNotificationsPort,
+        RegisterNotificationPort,
         RemoveNotificationPort {
 
     private final NotificationRepository repository;
