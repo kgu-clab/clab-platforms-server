@@ -5,5 +5,5 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
 
 public interface RetrieveWorkExperienceByConditionsPort {
-    Page<WorkExperience> findByMemberId(String memberId, Pageable pageable);
+    Page<WorkExperience> findByConditions(String memberId, Pageable pageable);
 }
