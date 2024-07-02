@@ -12,6 +12,7 @@ import page.clab.api.domain.member.application.MemberLookupUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationSenderUseCase;
 import page.clab.api.domain.review.application.port.in.ReviewRegisterUseCase;
+import page.clab.api.domain.review.application.port.out.CheckReviewExistencePort;
 import page.clab.api.domain.review.application.port.out.RegisterReviewPort;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.domain.review.dto.request.ReviewRequestDto;
@@ -27,6 +28,7 @@ public class ReviewRegisterService implements ReviewRegisterUseCase {
     private final NotificationSenderUseCase notificationService;
     private final ValidationService validationService;
     private final RegisterReviewPort registerReviewPort;
+    private final CheckReviewExistencePort checkReviewExistencePort;
 
     @Transactional
     @Override
@@ -57,6 +59,6 @@ public class ReviewRegisterService implements ReviewRegisterUseCase {
     }
 
     private boolean isExistsByMemberAndActivityGroup(Member member, ActivityGroup activityGroup) {
-        return registerReviewPort.existsByMemberAndActivityGroup(member, activityGroup);
+        return checkReviewExistencePort.existsByMemberAndActivityGroup(member, activityGroup);
     }
 }
