@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.board.application.BoardEmojiToggleUseCase;
+import page.clab.api.domain.board.application.port.in.BoardEmojiToggleUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController

@@ -3,7 +3,7 @@ package page.clab.api.domain.comment.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.application.BoardLookupUseCase;
+import page.clab.api.domain.board.application.port.in.BoardLookupUseCase;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.application.port.in.CommentRegisterUseCase;
 import page.clab.api.domain.comment.application.port.out.LoadCommentPort;

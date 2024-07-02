@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.comment.application.port.out.CountCommentsByBoardPort;
 import page.clab.api.domain.comment.application.port.out.LoadCommentLikeByCommentIdAndMemberIdPort;
 import page.clab.api.domain.comment.application.port.out.LoadCommentPort;
 import page.clab.api.domain.comment.application.port.out.RegisterCommentLikePort;
@@ -28,6 +30,7 @@ public class CommentPersistenceAdapter implements
         RetrieveDeletedCommentsPort,
         RetrieveCommentsByBoardIdAndParentIsNullPort,
         RetrieveCommentsByWriterIdPort,
+        CountCommentsByBoardPort,
         RegisterCommentLikePort,
         RemoveCommentLikePort,
         LoadCommentLikeByCommentIdAndMemberIdPort {
@@ -84,5 +87,10 @@ public class CommentPersistenceAdapter implements
     @Override
     public Optional<CommentLike> findByCommentIdAndMemberId(Long commentId, String memberId) {
         return commentLikeRepository.findByCommentIdAndMemberId(commentId, memberId);
+    }
+
+    @Override
+    public Long countByBoard(Board board) {
+        return commentRepository.countByBoard(board);
     }
 }

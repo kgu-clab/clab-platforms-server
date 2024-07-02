@@ -1,12 +1,12 @@
-package page.clab.api.domain.board.application.impl;
+package page.clab.api.domain.board.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.application.BoardsByCategoryRetrievalUseCase;
-import page.clab.api.domain.board.dao.BoardRepository;
+import page.clab.api.domain.board.application.port.in.BoardsByCategoryRetrievalUseCase;
+import page.clab.api.domain.board.application.port.out.RetrieveBoardsByCategoryPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.BoardCategory;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
@@ -19,13 +19,13 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class BoardsByCategoryRetrievalService implements BoardsByCategoryRetrievalUseCase {
 
     private final MemberLookupUseCase memberLookupUseCase;
-    private final BoardRepository boardRepository;
+    private final RetrieveBoardsByCategoryPort retrieveBoardsByCategoryPort;
 
     @Transactional
     @Override
     public PagedResponseDto<BoardCategoryResponseDto> retrieve(BoardCategory category, Pageable pageable) {
         MemberDetailedInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberDetailedInfo();
-        Page<Board> boards = boardRepository.findAllByCategory(category, pageable);
+        Page<Board> boards = retrieveBoardsByCategoryPort.findAllByCategory(category, pageable);
         return new PagedResponseDto<>(boards.map(board -> BoardCategoryResponseDto.toDto(board, currentMemberInfo, 0L))); // Update the comment count accordingly
     }
 }

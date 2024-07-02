@@ -1,4 +1,4 @@
-package page.clab.api.domain.board.application;
+package page.clab.api.domain.board.application.port.in;
 
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.board.dto.response.BoardMyResponseDto;

@@ -12,7 +12,7 @@ import page.clab.api.domain.accuse.domain.AccuseTargetId;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
-import page.clab.api.domain.board.application.BoardLookupUseCase;
+import page.clab.api.domain.board.application.port.in.BoardLookupUseCase;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.application.port.in.CommentLookupUseCase;
 import page.clab.api.domain.comment.domain.Comment;

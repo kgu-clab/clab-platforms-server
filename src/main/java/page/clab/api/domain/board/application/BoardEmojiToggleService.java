@@ -1,12 +1,12 @@
-package page.clab.api.domain.board.application.impl;
+package page.clab.api.domain.board.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.application.BoardEmojiToggleUseCase;
-import page.clab.api.domain.board.application.BoardLookupUseCase;
-import page.clab.api.domain.board.dao.BoardEmojiRepository;
-import page.clab.api.domain.board.dao.BoardRepository;
+import page.clab.api.domain.board.application.port.in.BoardEmojiToggleUseCase;
+import page.clab.api.domain.board.application.port.out.LoadBoardEmojiPort;
+import page.clab.api.domain.board.application.port.out.LoadBoardPort;
+import page.clab.api.domain.board.application.port.out.RegisterBoardEmojiPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.BoardEmoji;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
@@ -19,9 +19,9 @@ import page.clab.api.global.util.EmojiUtils;
 public class BoardEmojiToggleService implements BoardEmojiToggleUseCase {
 
     private final MemberLookupUseCase memberLookupUseCase;
-    private final BoardLookupUseCase boardLookupUseCase;
-    private final BoardRepository boardRepository;
-    private final BoardEmojiRepository boardEmojiRepository;
+    private final LoadBoardPort loadBoardPort;
+    private final LoadBoardEmojiPort loadBoardEmojiPort;
+    private final RegisterBoardEmojiPort registerBoardEmojiPort;
 
     @Transactional
     @Override
@@ -31,14 +31,14 @@ public class BoardEmojiToggleService implements BoardEmojiToggleUseCase {
         }
         MemberDetailedInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberDetailedInfo();
         String memberId = currentMemberInfo.getMemberId();
-        Board board = boardLookupUseCase.getBoardByIdOrThrow(boardId);
-        BoardEmoji boardEmoji = boardEmojiRepository.findByBoardIdAndMemberIdAndEmoji(boardId, memberId, emoji)
+        Board board = loadBoardPort.findByIdOrThrow(boardId);
+        BoardEmoji boardEmoji = loadBoardEmojiPort.findByBoardIdAndMemberIdAndEmoji(boardId, memberId, emoji)
                 .map(existingEmoji -> {
                     existingEmoji.toggleIsDeletedStatus();
                     return existingEmoji;
                 })
                 .orElseGet(() -> BoardEmoji.create(memberId, boardId, emoji));
-        boardEmojiRepository.save(boardEmoji);
+        registerBoardEmojiPort.save(boardEmoji);
         return board.getCategory().getKey();
     }
 }

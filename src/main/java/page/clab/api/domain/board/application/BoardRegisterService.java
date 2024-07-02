@@ -1,10 +1,10 @@
-package page.clab.api.domain.board.application.impl;
+package page.clab.api.domain.board.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.application.BoardRegisterUseCase;
-import page.clab.api.domain.board.dao.BoardRepository;
+import page.clab.api.domain.board.application.port.in.BoardRegisterUseCase;
+import page.clab.api.domain.board.application.port.out.RegisterBoardPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.SlackBoardInfo;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
@@ -28,7 +28,7 @@ public class BoardRegisterService implements BoardRegisterUseCase {
     private final UploadedFileService uploadedFileService;
     private final ValidationService validationService;
     private final SlackService slackService;
-    private final BoardRepository boardRepository;
+    private final RegisterBoardPort registerBoardPort;
 
     @Transactional
     @Override
@@ -43,6 +43,6 @@ public class BoardRegisterService implements BoardRegisterUseCase {
         }
         SlackBoardInfo boardInfo = SlackBoardInfo.create(board, currentMemberInfo);
         slackService.sendNewBoardNotification(boardInfo);
-        return boardRepository.save(board).getCategory().getKey();
+        return registerBoardPort.save(board).getCategory().getKey();
     }
 }

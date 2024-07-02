@@ -1,11 +1,11 @@
-package page.clab.api.domain.board.application.impl;
+package page.clab.api.domain.board.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.application.BoardLookupUseCase;
-import page.clab.api.domain.board.application.BoardUpdateUseCase;
-import page.clab.api.domain.board.dao.BoardRepository;
+import page.clab.api.domain.board.application.port.in.BoardLookupUseCase;
+import page.clab.api.domain.board.application.port.in.BoardUpdateUseCase;
+import page.clab.api.domain.board.application.port.out.RegisterBoardPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
@@ -20,7 +20,7 @@ public class BoardUpdateService implements BoardUpdateUseCase {
     private final MemberLookupUseCase memberLookupUseCase;
     private final BoardLookupUseCase boardLookupUseCase;
     private final ValidationService validationService;
-    private final BoardRepository boardRepository;
+    private final RegisterBoardPort registerBoardPort;
 
     @Transactional
     @Override
@@ -30,6 +30,6 @@ public class BoardUpdateService implements BoardUpdateUseCase {
         board.validateAccessPermission(currentMemberInfo);
         board.update(requestDto);
         validationService.checkValid(board);
-        return boardRepository.save(board).getCategory().getKey();
+        return registerBoardPort.save(board).getCategory().getKey();
     }
 }

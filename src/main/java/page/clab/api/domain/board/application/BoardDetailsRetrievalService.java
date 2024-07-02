@@ -1,12 +1,12 @@
-package page.clab.api.domain.board.application.impl;
+package page.clab.api.domain.board.application;
 
 import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.application.BoardDetailsRetrievalUseCase;
-import page.clab.api.domain.board.application.BoardLookupUseCase;
-import page.clab.api.domain.board.dao.BoardEmojiRepository;
+import page.clab.api.domain.board.application.port.in.BoardDetailsRetrievalUseCase;
+import page.clab.api.domain.board.application.port.out.LoadBoardEmojiPort;
+import page.clab.api.domain.board.application.port.out.LoadBoardPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.board.dto.response.BoardEmojiCountResponseDto;
@@ -21,14 +21,14 @@ import java.util.stream.Collectors;
 public class BoardDetailsRetrievalService implements BoardDetailsRetrievalUseCase {
 
     private final MemberLookupUseCase memberLookupUseCase;
-    private final BoardLookupUseCase boardLookupUseCase;
-    private final BoardEmojiRepository boardEmojiRepository;
+    private final LoadBoardPort loadBoardPort;
+    private final LoadBoardEmojiPort loadBoardEmojiPort;
 
     @Transactional
     @Override
     public BoardDetailsResponseDto retrieve(Long boardId) {
         MemberDetailedInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberDetailedInfo();
-        Board board = boardLookupUseCase.getBoardByIdOrThrow(boardId);
+        Board board = loadBoardPort.findByIdOrThrow(boardId);
         boolean isOwner = board.isOwner(currentMemberInfo.getMemberId());
         List<BoardEmojiCountResponseDto> emojiInfos = getBoardEmojiCountResponseDtoList(boardId, currentMemberInfo.getMemberId());
         return BoardDetailsResponseDto.toDto(board, currentMemberInfo, isOwner, emojiInfos);
@@ -36,7 +36,7 @@ public class BoardDetailsRetrievalService implements BoardDetailsRetrievalUseCas
 
     @Transactional(readOnly = true)
     public List<BoardEmojiCountResponseDto> getBoardEmojiCountResponseDtoList(Long boardId, String memberId) {
-        List<Tuple> results = boardEmojiRepository.findEmojiClickCountsByBoardId(boardId, memberId);
+        List<Tuple> results = loadBoardEmojiPort.findEmojiClickCountsByBoardId(boardId, memberId);
         return results.stream()
                 .map(result -> new BoardEmojiCountResponseDto(
                         result.get("emoji", String.class),
