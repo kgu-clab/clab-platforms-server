@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.news.application.NewsDetailsRetrievalUseCase;
+import page.clab.api.domain.news.application.port.in.NewsDetailsRetrievalUseCase;
 import page.clab.api.domain.news.dto.response.NewsDetailsResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 

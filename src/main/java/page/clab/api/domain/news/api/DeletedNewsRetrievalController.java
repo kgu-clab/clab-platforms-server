@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.news.application.DeletedNewsRetrievalUseCase;
+import page.clab.api.domain.news.application.port.in.DeletedNewsRetrievalUseCase;
 import page.clab.api.domain.news.dto.response.NewsDetailsResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;

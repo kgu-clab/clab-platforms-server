@@ -1,10 +1,10 @@
-package page.clab.api.domain.news.application.impl;
+package page.clab.api.domain.news.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.news.application.NewsRegisterUseCase;
-import page.clab.api.domain.news.dao.NewsRepository;
+import page.clab.api.domain.news.application.port.in.NewsRegisterUseCase;
+import page.clab.api.domain.news.application.port.out.RegisterNewsPort;
 import page.clab.api.domain.news.domain.News;
 import page.clab.api.domain.news.dto.request.NewsRequestDto;
 import page.clab.api.global.common.file.application.UploadedFileService;
@@ -16,7 +16,7 @@ public class NewsRegisterService implements NewsRegisterUseCase {
 
     private final UploadedFileService uploadedFileService;
     private final ValidationService validationService;
-    private final NewsRepository newsRepository;
+    private final RegisterNewsPort registerNewsPort;
 
     @Transactional
     @Override
@@ -24,6 +24,6 @@ public class NewsRegisterService implements NewsRegisterUseCase {
         News news = NewsRequestDto.toEntity(requestDto);
         validationService.checkValid(news);
         news.setUploadedFiles(uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList()));
-        return newsRepository.save(news).getId();
+        return registerNewsPort.save(news).getId();
     }
 }

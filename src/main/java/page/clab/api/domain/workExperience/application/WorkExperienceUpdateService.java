@@ -26,7 +26,7 @@ public class WorkExperienceUpdateService implements WorkExperienceUpdateUseCase 
     @Transactional
     public Long update(Long workExperienceId, WorkExperienceUpdateRequestDto requestDto) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberDetailedInfo();
-        WorkExperience workExperience = loadWorkExperiencePort.findWorkExperienceByIdOrThrow(workExperienceId);
+        WorkExperience workExperience = loadWorkExperiencePort.findByIdOrThrow(workExperienceId);
         workExperience.validateAccessPermission(currentMemberInfo);
         workExperience.update(requestDto);
         validationService.checkValid(workExperience);

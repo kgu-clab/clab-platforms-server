@@ -1,13 +1,13 @@
-package page.clab.api.domain.news.application.impl;
+package page.clab.api.domain.news.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.news.application.NewsUpdateUseCase;
-import page.clab.api.domain.news.dao.NewsRepository;
+import page.clab.api.domain.news.application.port.in.NewsUpdateUseCase;
+import page.clab.api.domain.news.application.port.out.LoadNewsPort;
+import page.clab.api.domain.news.application.port.out.UpdateNewsPort;
 import page.clab.api.domain.news.domain.News;
 import page.clab.api.domain.news.dto.request.NewsUpdateRequestDto;
-import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.validation.ValidationService;
 
 @Service
@@ -15,20 +15,15 @@ import page.clab.api.global.validation.ValidationService;
 public class NewsUpdateService implements NewsUpdateUseCase {
 
     private final ValidationService validationService;
-    private final NewsRepository newsRepository;
+    private final LoadNewsPort loadNewsPort;
+    private final UpdateNewsPort updateNewsPort;
 
     @Transactional
     @Override
     public Long update(Long newsId, NewsUpdateRequestDto requestDto) {
-        News news = getNewsByIdOrThrow(newsId);
+        News news = loadNewsPort.findByIdOrThrow(newsId);
         news.update(requestDto);
         validationService.checkValid(news);
-        return newsRepository.save(news).getId();
-    }
-
-    private News getNewsByIdOrThrow(Long newsId) {
-        return newsRepository.findById(newsId)
-                .orElseThrow(() -> new NotFoundException("해당 뉴스가 존재하지 않습니다."));
+        return updateNewsPort.update(news).getId();
     }
 }
-

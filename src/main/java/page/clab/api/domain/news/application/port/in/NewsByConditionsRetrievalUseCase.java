@@ -1,4 +1,4 @@
-package page.clab.api.domain.news.application;
+package page.clab.api.domain.news.application.port.in;
 
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.news.dto.response.NewsResponseDto;

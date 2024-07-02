@@ -11,9 +11,6 @@ import page.clab.api.domain.news.domain.News;
 
 @Repository
 public interface NewsRepository extends JpaRepository<News, Long>, NewsRepositoryCustom, QuerydslPredicateExecutor<News> {
-
-    Page<News> findAllByOrderByCreatedAtDesc(Pageable pageable);
-
     @Query(value = "SELECT n.* FROM news n WHERE n.is_deleted = true", nativeQuery = true)
     Page<News> findAllByIsDeletedTrue(Pageable pageable);
 }

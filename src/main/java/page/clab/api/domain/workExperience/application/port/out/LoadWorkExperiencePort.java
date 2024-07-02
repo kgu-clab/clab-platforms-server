@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface LoadWorkExperiencePort {
     Optional<WorkExperience> findById(Long id);
-    WorkExperience findWorkExperienceByIdOrThrow(Long id);
+    WorkExperience findByIdOrThrow(Long id);
 }

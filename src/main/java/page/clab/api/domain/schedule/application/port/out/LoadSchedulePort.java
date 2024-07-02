@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface LoadSchedulePort {
     Optional<Schedule> findById(Long id);
-    Schedule findScheduleByIdOrThrow(Long id);
+    Schedule findByIdOrThrow(Long id);
 }

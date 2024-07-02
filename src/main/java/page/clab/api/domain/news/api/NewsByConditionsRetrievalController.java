@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.news.application.NewsByConditionsRetrievalUseCase;
+import page.clab.api.domain.news.application.port.in.NewsByConditionsRetrievalUseCase;
 import page.clab.api.domain.news.domain.News;
 import page.clab.api.domain.news.dto.response.NewsResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
