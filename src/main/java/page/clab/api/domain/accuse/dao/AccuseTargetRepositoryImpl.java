@@ -11,9 +11,9 @@ import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.QAccuseTarget;
 import page.clab.api.domain.accuse.domain.TargetType;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -23,24 +23,24 @@ public class AccuseTargetRepositoryImpl implements AccuseTargetRepositoryCustom 
 
     @Override
     public Page<AccuseTarget> findByConditions(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable) {
-        QAccuseTarget qAccuseTarget = QAccuseTarget.accuseTarget;
-        BooleanExpression predicate = qAccuseTarget.isNotNull();
+        QAccuseTarget accuseTarget = QAccuseTarget.accuseTarget;
+        BooleanExpression predicate = accuseTarget.isNotNull();
 
         if (type != null) {
-            predicate = predicate.and(qAccuseTarget.targetType.eq(type));
+            predicate = predicate.and(accuseTarget.targetType.eq(type));
         }
         if (status != null) {
-            predicate = predicate.and(qAccuseTarget.accuseStatus.eq(status));
+            predicate = predicate.and(accuseTarget.accuseStatus.eq(status));
         }
 
-        List<AccuseTarget> accuseTargets = queryFactory.selectFrom(qAccuseTarget)
+        List<AccuseTarget> accuseTargets = queryFactory.selectFrom(accuseTarget)
                 .where(predicate)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qAccuseTarget))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, accuseTarget))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long total = queryFactory.selectFrom(qAccuseTarget)
+        long total = queryFactory.selectFrom(accuseTarget)
                 .where(predicate)
                 .fetchCount();
 

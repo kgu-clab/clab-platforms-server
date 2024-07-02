@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.accuse.application.AccusationReportUseCase;
+import page.clab.api.domain.accuse.application.port.in.AccusationReportUseCase;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
