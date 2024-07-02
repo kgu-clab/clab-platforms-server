@@ -1,0 +1,7 @@
+package page.clab.api.domain.book.application;
+
+import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
+
+public interface BookReturnUseCase {
+    Long returnBook(BookLoanRecordRequestDto requestDto);
+}

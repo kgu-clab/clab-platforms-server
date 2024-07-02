@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.jobPosting.application.JobPostingUpdateService;
+import page.clab.api.domain.jobPosting.application.JobPostingUpdateUseCase;
 import page.clab.api.domain.jobPosting.dto.request.JobPostingUpdateRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -20,7 +20,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "JobPosting", description = "채용 공고")
 public class JobPostingUpdateController {
 
-    private final JobPostingUpdateService jobPostingUpdateService;
+    private final JobPostingUpdateUseCase jobPostingUpdateUseCase;
 
     @Operation(summary = "[A] 채용 공고 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -29,7 +29,7 @@ public class JobPostingUpdateController {
             @PathVariable(name = "jobPostingId") Long jobPostingId,
             @Valid @RequestBody JobPostingUpdateRequestDto requestDto
     ) {
-        Long id = jobPostingUpdateService.update(jobPostingId, requestDto);
+        Long id = jobPostingUpdateUseCase.update(jobPostingId, requestDto);
         return ApiResponse.success(id);
     }
 }

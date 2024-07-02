@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.review.application.ReviewRegisterService;
+import page.clab.api.domain.review.application.ReviewRegisterUseCase;
 import page.clab.api.domain.review.dto.request.ReviewRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -19,7 +19,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Review", description = "리뷰")
 public class ReviewRegisterController {
 
-    private final ReviewRegisterService reviewRegisterService;
+    private final ReviewRegisterUseCase reviewRegisterUseCase;
 
     @Operation(summary = "[U] 리뷰 등록", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
@@ -27,7 +27,7 @@ public class ReviewRegisterController {
     public ApiResponse<Long> registerReview(
             @Valid @RequestBody ReviewRequestDto requestDto
     ) {
-        Long id = reviewRegisterService.register(requestDto);
+        Long id = reviewRegisterUseCase.register(requestDto);
         return ApiResponse.success(id);
     }
 }

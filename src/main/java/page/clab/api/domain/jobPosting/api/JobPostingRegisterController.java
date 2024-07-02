@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.jobPosting.application.JobPostingRegisterService;
+import page.clab.api.domain.jobPosting.application.JobPostingRegisterUseCase;
 import page.clab.api.domain.jobPosting.dto.request.JobPostingRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -19,7 +19,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "JobPosting", description = "채용 공고")
 public class JobPostingRegisterController {
 
-    private final JobPostingRegisterService jobPostingRegisterService;
+    private final JobPostingRegisterUseCase jobPostingRegisterUseCase;
 
     @Operation(summary = "[A] 채용 공고 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -27,7 +27,7 @@ public class JobPostingRegisterController {
     public ApiResponse<Long> registerJobPosting(
             @Valid @RequestBody JobPostingRequestDto requestDto
     ) {
-        Long id = jobPostingRegisterService.register(requestDto);
+        Long id = jobPostingRegisterUseCase.register(requestDto);
         return ApiResponse.success(id);
     }
 }

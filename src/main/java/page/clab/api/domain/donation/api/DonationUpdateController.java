@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.donation.application.DonationUpdateService;
+import page.clab.api.domain.donation.application.DonationUpdateUseCase;
 import page.clab.api.domain.donation.dto.request.DonationUpdateRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -21,7 +21,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @Tag(name = "Donation", description = "후원")
 public class DonationUpdateController {
 
-    private final DonationUpdateService donationUpdateService;
+    private final DonationUpdateUseCase donationUpdateUseCase;
 
     @Operation(summary = "[S] 후원 정보 수정", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
@@ -30,7 +30,7 @@ public class DonationUpdateController {
             @PathVariable(name = "donationId") Long donationId,
             @Valid @RequestBody DonationUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = donationUpdateService.update(donationId, requestDto);
+        Long id = donationUpdateUseCase.update(donationId, requestDto);
         return ApiResponse.success(id);
     }
 }

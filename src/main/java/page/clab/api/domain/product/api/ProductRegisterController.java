@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.product.application.ProductRegisterService;
+import page.clab.api.domain.product.application.ProductRegisterUseCase;
 import page.clab.api.domain.product.dto.request.ProductRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -19,7 +19,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Product", description = "서비스")
 public class ProductRegisterController {
 
-    private final ProductRegisterService productRegisterService;
+    private final ProductRegisterUseCase productRegisterUseCase;
 
     @Operation(summary = "[A] 서비스 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -27,7 +27,7 @@ public class ProductRegisterController {
     public ApiResponse<Long> registerProduct(
             @Valid @RequestBody ProductRequestDto requestDto
     ) {
-        Long id = productRegisterService.register(requestDto);
+        Long id = productRegisterUseCase.register(requestDto);
         return ApiResponse.success(id);
     }
 }

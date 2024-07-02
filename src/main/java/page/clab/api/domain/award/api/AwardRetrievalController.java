@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.award.application.AwardRetrievalService;
+import page.clab.api.domain.award.application.AwardRetrievalUseCase;
 import page.clab.api.domain.award.domain.Award;
 import page.clab.api.domain.award.dto.response.AwardResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -26,7 +26,7 @@ import java.util.List;
 @Tag(name = "Award", description = "수상 이력")
 public class AwardRetrievalController {
 
-    private final AwardRetrievalService awardRetrievalService;
+    private final AwardRetrievalUseCase awardRetrievalUseCase;
 
     @Operation(summary = "[U] 수상 이력 조회(학번, 연도 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "2개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
@@ -43,7 +43,7 @@ public class AwardRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Award.class);
-        PagedResponseDto<AwardResponseDto> awards = awardRetrievalService.retrieve(memberId, year, pageable);
+        PagedResponseDto<AwardResponseDto> awards = awardRetrievalUseCase.retrieve(memberId, year, pageable);
         return ApiResponse.success(awards);
     }
 }

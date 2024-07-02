@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.activityPhoto.application.ActivityPhotoRetrievalService;
+import page.clab.api.domain.activityPhoto.application.ActivityPhotoRetrievalUseCase;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.domain.activityPhoto.dto.response.ActivityPhotoResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -25,7 +25,7 @@ import java.util.List;
 @Tag(name = "ActivityPhoto", description = "활동 사진")
 public class ActivityPhotoRetrievalController {
 
-    private final ActivityPhotoRetrievalService activityPhotoRetrievalService;
+    private final ActivityPhotoRetrievalUseCase activityPhotoRetrievalUseCase;
 
     @Operation(summary = "활동 사진 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br> " +
             "공개 여부를 입력하지 않으면 전체 조회됨<br>" +
@@ -39,7 +39,7 @@ public class ActivityPhotoRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityPhoto.class);
-        PagedResponseDto<ActivityPhotoResponseDto> activityPhotos = activityPhotoRetrievalService.retrieve(isPublic, pageable);
+        PagedResponseDto<ActivityPhotoResponseDto> activityPhotos = activityPhotoRetrievalUseCase.retrieve(isPublic, pageable);
         return ApiResponse.success(activityPhotos);
     }
 }

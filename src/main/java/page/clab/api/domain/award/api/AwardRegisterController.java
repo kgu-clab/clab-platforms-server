@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.award.application.AwardRegisterService;
+import page.clab.api.domain.award.application.AwardRegisterUseCase;
 import page.clab.api.domain.award.dto.request.AwardRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -19,7 +19,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Award", description = "수상 이력")
 public class AwardRegisterController {
 
-    private final AwardRegisterService awardRegisterService;
+    private final AwardRegisterUseCase awardRegisterUseCase;
 
     @Operation(summary = "[U] 수상 이력 등록", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
@@ -27,7 +27,7 @@ public class AwardRegisterController {
     public ApiResponse<Long> registerAward(
             @Valid @RequestBody AwardRequestDto requestDto
     ) {
-        Long id = awardRegisterService.register(requestDto);
+        Long id = awardRegisterUseCase.register(requestDto);
         return ApiResponse.success(id);
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.news.application.NewsRegisterService;
+import page.clab.api.domain.news.application.NewsRegisterUseCase;
 import page.clab.api.domain.news.dto.request.NewsRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -19,7 +19,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "News", description = "뉴스")
 public class NewsRegisterController {
 
-    private final NewsRegisterService newsRegisterService;
+    private final NewsRegisterUseCase newsRegisterUseCase;
 
     @Operation(summary = "뉴스 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -27,7 +27,7 @@ public class NewsRegisterController {
     public ApiResponse<Long> registerNews(
             @Valid @RequestBody NewsRequestDto requestDto
     ) {
-        Long id = newsRegisterService.register(requestDto);
+        Long id = newsRegisterUseCase.register(requestDto);
         return ApiResponse.success(id);
     }
 }

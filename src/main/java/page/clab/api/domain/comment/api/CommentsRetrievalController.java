@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.comment.application.CommentsRetrievalService;
+import page.clab.api.domain.comment.application.CommentsRetrievalUseCase;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.response.CommentResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -27,7 +27,7 @@ import java.util.List;
 @Tag(name = "Comment", description = "댓글")
 public class CommentsRetrievalController {
 
-    private final CommentsRetrievalService commentsRetrievalService;
+    private final CommentsRetrievalUseCase commentsRetrievalUseCase;
 
     @Operation(summary = "[U] 댓글 목록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, boardId, likes, parentId, memberId")
@@ -41,7 +41,7 @@ public class CommentsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Comment.class);
-        PagedResponseDto<CommentResponseDto> comments = commentsRetrievalService.retrieve(boardId, pageable);
+        PagedResponseDto<CommentResponseDto> comments = commentsRetrievalUseCase.retrieve(boardId, pageable);
         return ApiResponse.success(comments);
     }
 }

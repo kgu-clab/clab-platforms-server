@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.schedule.application.ScheduleRemoveService;
+import page.clab.api.domain.schedule.application.ScheduleRemoveUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -18,7 +18,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @Tag(name = "Schedule", description = "일정")
 public class ScheduleRemoveController {
 
-    private final ScheduleRemoveService scheduleRemoveService;
+    private final ScheduleRemoveUseCase scheduleRemoveUseCase;
 
     @Operation(summary = "[U] 일정 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
@@ -26,7 +26,7 @@ public class ScheduleRemoveController {
     public ApiResponse<Long> removeSchedule(
             @PathVariable(name = "scheduleId") Long scheduleId
     ) throws PermissionDeniedException {
-        Long id = scheduleRemoveService.remove(scheduleId);
+        Long id = scheduleRemoveUseCase.remove(scheduleId);
         return ApiResponse.success(id);
     }
 }

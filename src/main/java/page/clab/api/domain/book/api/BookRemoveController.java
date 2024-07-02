@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.book.application.BookRemoveService;
+import page.clab.api.domain.book.application.BookRemoveUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
@@ -17,7 +17,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Book", description = "도서")
 public class BookRemoveController {
 
-    private final BookRemoveService bookRemoveService;
+    private final BookRemoveUseCase bookRemoveUseCase;
 
     @Operation(summary = "[A] 도서 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -25,7 +25,7 @@ public class BookRemoveController {
     public ApiResponse<Long> removeBook(
             @PathVariable(name = "bookId") Long bookId
     ) {
-        Long id = bookRemoveService.remove(bookId);
+        Long id = bookRemoveUseCase.remove(bookId);
         return ApiResponse.success(id);
     }
 }

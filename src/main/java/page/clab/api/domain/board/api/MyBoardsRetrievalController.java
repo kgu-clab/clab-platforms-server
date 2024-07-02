@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.board.application.MyBoardsRetrievalService;
+import page.clab.api.domain.board.application.MyBoardsRetrievalUseCase;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.dto.response.BoardMyResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -26,7 +26,7 @@ import java.util.List;
 @Tag(name = "Board", description = "커뮤니티 게시판")
 public class MyBoardsRetrievalController {
 
-    private final MyBoardsRetrievalService myBoardsRetrievalService;
+    private final MyBoardsRetrievalUseCase myBoardsRetrievalUseCase;
 
     @GetMapping("/my-boards")
     @Operation(summary = "[U] 내가 쓴 커뮤니티 게시글 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
@@ -39,7 +39,7 @@ public class MyBoardsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Board.class);
-        PagedResponseDto<BoardMyResponseDto> board = myBoardsRetrievalService.retrieve(pageable);
+        PagedResponseDto<BoardMyResponseDto> board = myBoardsRetrievalUseCase.retrieve(pageable);
         return ApiResponse.success(board);
     }
 }

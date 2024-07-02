@@ -9,8 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activityGroup.dao.GroupMemberRepository;
-import page.clab.api.domain.member.application.CloudUsageRetrievalByMemberIdService;
-import page.clab.api.domain.member.application.MemberLookupService;
+import page.clab.api.domain.member.application.CloudUsageRetrievalByMemberIdUseCase;
+import page.clab.api.domain.member.application.MemberLookupUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
@@ -35,9 +35,9 @@ public class FileService {
 
     private final FileHandler fileHandler;
 
-    private final MemberLookupService memberLookupService;
+    private final MemberLookupUseCase memberLookupUseCase;
 
-    private final CloudUsageRetrievalByMemberIdService cloudUsageRetrievalByMemberIdService;
+    private final CloudUsageRetrievalByMemberIdUseCase cloudUsageRetrievalByMemberIdUseCase;
 
     private final UploadedFileService uploadedFileService;
 
@@ -57,7 +57,7 @@ public class FileService {
     private String maxFileSize;
 
     public String saveQRCodeImage(byte[] QRCodeImage, String path, long storagePeriod, String nowDateTime) throws IOException {
-        Member currentMember = memberLookupService.getCurrentMember();
+        Member currentMember = memberLookupUseCase.getCurrentMember();
         String extension = "png";
         String originalFileName = path.replace(File.separator, "-") + nowDateTime;
         String saveFilename = fileHandler.makeFileName(extension);
@@ -80,7 +80,7 @@ public class FileService {
     }
 
     public UploadedFileResponseDto saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws IOException, PermissionDeniedException {
-        Member currentMember = memberLookupService.getCurrentMember();
+        Member currentMember = memberLookupUseCase.getCurrentMember();
 
         validatePathVariable(path);
         validateMemberCloudUsage(multipartFile, path);
@@ -96,7 +96,7 @@ public class FileService {
     }
 
     public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) throws PermissionDeniedException {
-        Member currentMember = memberLookupService.getCurrentMember();
+        Member currentMember = memberLookupUseCase.getCurrentMember();
         UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(deleteFileRequestDto.getUrl());
         String filePath = uploadedFile.getSavedPath();
         File storedFile = new File(filePath);
@@ -109,7 +109,7 @@ public class FileService {
     }
 
     public String buildPath(String baseDirectory, Long... additionalSegments) {
-        Member currentMember = memberLookupService.getCurrentMember();
+        Member currentMember = memberLookupUseCase.getCurrentMember();
         StringBuilder pathBuilder = new StringBuilder(baseDirectory);
         for (Long segment : additionalSegments) {
             pathBuilder.append(File.separator).append(segment);
@@ -123,7 +123,7 @@ public class FileService {
             Long activityGroupId = Long.parseLong(path.split(Pattern.quote(File.separator))[1]);
             Long activityGroupBoardId = Long.parseLong(path.split(Pattern.quote(File.separator))[2]);
             String memberId = path.split(Pattern.quote(File.separator))[3];
-            Member assignmentWriter = memberLookupService.getMemberById(memberId);
+            Member assignmentWriter = memberLookupUseCase.getMemberById(memberId);
             if (!activityGroupRepository.existsById(activityGroupId)) {
                 throw new AssignmentFileUploadFailException("해당 활동은 존재하지 않습니다.");
             }
@@ -139,7 +139,7 @@ public class FileService {
     private void validateMemberCloudUsage(MultipartFile multipartFile, String path) throws PermissionDeniedException {
         if (path.split(Pattern.quote(File.separator))[0].equals("members")) {
             String memberId = path.split(Pattern.quote(File.separator))[1];
-            double usage = cloudUsageRetrievalByMemberIdService.retrieve(memberId).getUsage();
+            double usage = cloudUsageRetrievalByMemberIdUseCase.retrieve(memberId).getUsage();
             if (multipartFile.getSize() + usage > FileSystemUtil.convertToBytes(maxFileSize)) {
                 throw new CloudStorageNotEnoughException("클라우드 저장 공간이 부족합니다.");
             }

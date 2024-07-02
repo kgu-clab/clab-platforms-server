@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.member.application.MembersByRecruitmentRegisterService;
+import page.clab.api.domain.member.application.MembersByRecruitmentRegisterUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 import java.util.List;
@@ -18,14 +18,14 @@ import java.util.List;
 @Tag(name = "Member", description = "멤버")
 public class MembersByRecruitmentRegisterController {
 
-    private final MembersByRecruitmentRegisterService membersByRecruitmentRegisterService;
+    private final MembersByRecruitmentRegisterUseCase membersByRecruitmentRegisterUseCase;
 
     @Operation(summary = "[S] 모집 단위별 합격자 멤버 통합 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
     @PostMapping("/{recruitmentId}")
     public ApiResponse<List<String>> registerMembersByRecruitmentId(
             @PathVariable(name = "recruitmentId") Long recruitmentId
     ) {
-        List<String> ids = membersByRecruitmentRegisterService.register(recruitmentId);
+        List<String> ids = membersByRecruitmentRegisterUseCase.register(recruitmentId);
         return ApiResponse.success(ids);
     }
 
@@ -35,7 +35,7 @@ public class MembersByRecruitmentRegisterController {
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "memberId") String memberId
     ) {
-        String id = membersByRecruitmentRegisterService.register(recruitmentId, memberId);
+        String id = membersByRecruitmentRegisterUseCase.register(recruitmentId, memberId);
         return ApiResponse.success(id);
     }
 }

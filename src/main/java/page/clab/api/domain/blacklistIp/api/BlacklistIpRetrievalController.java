@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.blacklistIp.application.BlacklistIpRetrievalService;
+import page.clab.api.domain.blacklistIp.application.BlacklistIpRetrievalUseCase;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -25,7 +25,7 @@ import java.util.List;
 @Tag(name = "Blacklist IP", description = "블랙리스트 IP")
 public class BlacklistIpRetrievalController {
 
-    private final BlacklistIpRetrievalService blacklistIpRetrievalService;
+    private final BlacklistIpRetrievalUseCase blacklistIpRetrievalUseCase;
 
     @Operation(summary = "[A] 블랙리스트 IP 목록 조회", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, ipAddress")
@@ -38,7 +38,7 @@ public class BlacklistIpRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, BlacklistIp.class);
-        PagedResponseDto<BlacklistIp> blacklistedIps = blacklistIpRetrievalService.retrieve(pageable);
+        PagedResponseDto<BlacklistIp> blacklistedIps = blacklistIpRetrievalUseCase.retrieve(pageable);
         return ApiResponse.success(blacklistedIps);
     }
 }

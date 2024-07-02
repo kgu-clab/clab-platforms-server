@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.blacklistIp.application.BlacklistIpRegisterService;
+import page.clab.api.domain.blacklistIp.application.BlacklistIpRegisterUseCase;
 import page.clab.api.domain.blacklistIp.dto.request.BlacklistIpRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -20,7 +20,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Blacklist IP", description = "블랙리스트 IP")
 public class BlacklistIpRegisterController {
 
-    private final BlacklistIpRegisterService blacklistIpRegisterService;
+    private final BlacklistIpRegisterUseCase blacklistIpRegisterUseCase;
 
     @Operation(summary = "[S] 블랙리스트 IP 추가", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
@@ -29,7 +29,7 @@ public class BlacklistIpRegisterController {
             HttpServletRequest request,
             @Valid @RequestBody BlacklistIpRequestDto requestDto
     ) {
-        String addedIp = blacklistIpRegisterService.register(request, requestDto);
+        String addedIp = blacklistIpRegisterUseCase.register(request, requestDto);
         return ApiResponse.success(addedIp);
     }
 }

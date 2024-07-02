@@ -5,11 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.login.application.AccountLockManagementService;
-import page.clab.api.domain.login.application.AuthenticatorService;
-import page.clab.api.domain.login.application.LoginAttemptLogManagementService;
-import page.clab.api.domain.login.application.LoginService;
-import page.clab.api.domain.login.application.RedisTokenManagementService;
+import page.clab.api.domain.login.application.AccountLockManagementUseCase;
+import page.clab.api.domain.login.application.AuthenticatorUseCase;
+import page.clab.api.domain.login.application.LoginAttemptLogManagementUseCase;
+import page.clab.api.domain.login.application.LoginUseCase;
+import page.clab.api.domain.login.application.RedisTokenManagementUseCase;
 import page.clab.api.domain.login.domain.LoginAttemptResult;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
@@ -18,7 +18,7 @@ import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.domain.member.application.MemberLookupService;
+import page.clab.api.domain.member.application.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberLoginInfoDto;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
@@ -29,17 +29,17 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Qualifier("twoFactorAuthenticationService")
-public class TwoFactorAuthenticationService implements LoginService {
+public class TwoFactorAuthenticationService implements LoginUseCase {
 
-    private final AccountLockManagementService accountLockManagementService;
+    private final AccountLockManagementUseCase accountLockManagementUseCase;
 
-    private final MemberLookupService memberLookupService;
+    private final MemberLookupUseCase memberLookupUseCase;
 
-    private final LoginAttemptLogManagementService loginAttemptLogManagementService;
+    private final LoginAttemptLogManagementUseCase loginAttemptLogManagementUseCase;
 
-    private final RedisTokenManagementService redisTokenManagementService;
+    private final RedisTokenManagementUseCase redisTokenManagementUseCase;
 
-    private final AuthenticatorService authenticatorService;
+    private final AuthenticatorUseCase authenticatorUseCase;
 
     private final SlackService slackService;
 
@@ -49,10 +49,10 @@ public class TwoFactorAuthenticationService implements LoginService {
     @Override
     public LoginResult authenticate(HttpServletRequest request, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFaliedException, MemberLockedException {
         String memberId = twoFactorAuthenticationRequestDto.getMemberId();
-        MemberLoginInfoDto loginMember = memberLookupService.getMemberLoginInfoById(memberId);
+        MemberLoginInfoDto loginMember = memberLookupUseCase.getMemberLoginInfoById(memberId);
         String totp = twoFactorAuthenticationRequestDto.getTotp();
 
-        accountLockManagementService.handleAccountLockInfo(memberId);
+        accountLockManagementUseCase.handleAccountLockInfo(memberId);
         verifyTwoFactorAuthentication(memberId, totp, request);
 
         TokenInfo tokenInfo = generateAndSaveToken(loginMember);
@@ -62,18 +62,18 @@ public class TwoFactorAuthenticationService implements LoginService {
     }
 
     private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request) throws MemberLockedException, LoginFaliedException {
-        if (!authenticatorService.isAuthenticatorValid(memberId, totp)) {
-            loginAttemptLogManagementService.logLoginAttempt(request, memberId, LoginAttemptResult.FAILURE);
-            accountLockManagementService.handleLoginFailure(request, memberId);
+        if (!authenticatorUseCase.isAuthenticatorValid(memberId, totp)) {
+            loginAttemptLogManagementUseCase.logLoginAttempt(request, memberId, LoginAttemptResult.FAILURE);
+            accountLockManagementUseCase.handleLoginFailure(request, memberId);
             throw new LoginFaliedException("잘못된 인증번호입니다.");
         }
-        loginAttemptLogManagementService.logLoginAttempt(request, memberId, LoginAttemptResult.TOTP);
+        loginAttemptLogManagementUseCase.logLoginAttempt(request, memberId, LoginAttemptResult.TOTP);
     }
 
     private TokenInfo generateAndSaveToken(MemberLoginInfoDto memberInfo) {
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(memberInfo.getMemberId(), memberInfo.getRole());
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        redisTokenManagementService.saveToken(memberInfo.getMemberId(), memberInfo.getRole(), tokenInfo, clientIpAddress);
+        redisTokenManagementUseCase.saveToken(memberInfo.getMemberId(), memberInfo.getRole(), tokenInfo, clientIpAddress);
         return tokenInfo;
     }
 
@@ -90,7 +90,7 @@ public class TwoFactorAuthenticationService implements LoginService {
 
     @Override
     public String resetAuthenticator(String memberId) {
-        return authenticatorService.resetAuthenticator(memberId);
+        return authenticatorUseCase.resetAuthenticator(memberId);
     }
 
     @Override

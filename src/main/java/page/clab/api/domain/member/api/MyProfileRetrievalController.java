@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.member.application.MyProfileRetrievalService;
+import page.clab.api.domain.member.application.MyProfileRetrievalUseCase;
 import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -16,12 +16,12 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Member", description = "멤버")
 public class MyProfileRetrievalController {
 
-    private final MyProfileRetrievalService myProfileRetrievalService;
+    private final MyProfileRetrievalUseCase myProfileRetrievalUseCase;
 
     @Operation(summary = "[U] 내 프로필 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/my-profile")
     public ApiResponse<MyProfileResponseDto> retrieveMyProfile() {
-        MyProfileResponseDto myProfile = myProfileRetrievalService.retrieve();
+        MyProfileResponseDto myProfile = myProfileRetrievalUseCase.retrieve();
         return ApiResponse.success(myProfile);
     }
 }

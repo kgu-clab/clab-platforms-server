@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.member.application.FilesInMemberDirectoryRetrievalService;
+import page.clab.api.domain.member.application.FilesInMemberDirectoryRetrievalUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.dto.response.FileInfo;
@@ -22,7 +22,7 @@ import page.clab.api.global.common.file.dto.response.FileInfo;
 @Tag(name = "Member Cloud", description = "멤버 클라우드")
 public class FilesInMemberDirectoryRetrievalController {
 
-    private final FilesInMemberDirectoryRetrievalService filesInMemberDirectoryRetrievalService;
+    private final FilesInMemberDirectoryRetrievalUseCase filesInMemberDirectoryRetrievalUseCase;
 
     @Operation(summary = "[U] 멤버 업로드 파일 리스트 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 정보만 조회 가능")
@@ -34,7 +34,7 @@ public class FilesInMemberDirectoryRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<FileInfo> files = filesInMemberDirectoryRetrievalService.retrieve(memberId, pageable);
+        PagedResponseDto<FileInfo> files = filesInMemberDirectoryRetrievalUseCase.retrieve(memberId, pageable);
         return ApiResponse.success(files);
     }
 }

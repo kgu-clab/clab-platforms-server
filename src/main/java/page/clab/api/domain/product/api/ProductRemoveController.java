@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.product.application.ProductRemoveService;
+import page.clab.api.domain.product.application.ProductRemoveUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
@@ -17,7 +17,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Product", description = "서비스")
 public class ProductRemoveController {
 
-    private final ProductRemoveService productRemoveService;
+    private final ProductRemoveUseCase productRemoveUseCase;
 
     @Operation(summary = "[A] 서비스 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -25,7 +25,7 @@ public class ProductRemoveController {
     public ApiResponse<Long> removeProduct(
             @RequestParam Long productId
     ) {
-        Long id = productRemoveService.remove(productId);
+        Long id = productRemoveUseCase.remove(productId);
         return ApiResponse.success(id);
     }
 }

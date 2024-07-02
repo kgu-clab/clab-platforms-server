@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.schedule.application.SchedulesWithinDateRangeRetrievalService;
+import page.clab.api.domain.schedule.application.SchedulesWithinDateRangeRetrievalUseCase;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -27,7 +27,7 @@ import java.util.List;
 @Tag(name = "Schedule", description = "일정")
 public class SchedulesWithinDateRangeRetrievalController {
 
-    private final SchedulesWithinDateRangeRetrievalService schedulesWithinDateRangeRetrievalService;
+    private final SchedulesWithinDateRangeRetrievalUseCase schedulesWithinDateRangeRetrievalUseCase;
 
     @Operation(summary = "[U] 일정 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDateTime, startDateTime, memberId")
@@ -42,7 +42,7 @@ public class SchedulesWithinDateRangeRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Schedule.class);
-        PagedResponseDto<ScheduleResponseDto> schedules = schedulesWithinDateRangeRetrievalService.retrieve(startDate, endDate, pageable);
+        PagedResponseDto<ScheduleResponseDto> schedules = schedulesWithinDateRangeRetrievalUseCase.retrieve(startDate, endDate, pageable);
         return ApiResponse.success(schedules);
     }
 }

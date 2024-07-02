@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.news.application.DeletedNewsRetrievalService;
+import page.clab.api.domain.news.application.DeletedNewsRetrievalUseCase;
 import page.clab.api.domain.news.dto.response.NewsDetailsResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -21,7 +21,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @Tag(name = "News", description = "뉴스")
 public class DeletedNewsRetrievalController {
 
-    private final DeletedNewsRetrievalService deletedNewsRetrievalService;
+    private final DeletedNewsRetrievalUseCase deletedNewsRetrievalUseCase;
 
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 뉴스 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
@@ -31,7 +31,7 @@ public class DeletedNewsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<NewsDetailsResponseDto> pagedNews = deletedNewsRetrievalService.retrieve(pageable);
+        PagedResponseDto<NewsDetailsResponseDto> pagedNews = deletedNewsRetrievalUseCase.retrieve(pageable);
         return ApiResponse.success(pagedNews);
     }
 }

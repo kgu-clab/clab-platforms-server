@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.recruitment.application.RecruitmentRegisterService;
+import page.clab.api.domain.recruitment.application.RecruitmentRegisterUseCase;
 import page.clab.api.domain.recruitment.dto.request.RecruitmentRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -19,7 +19,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Recruitment", description = "모집 공고")
 public class RecruitmentRegisterController {
 
-    private final RecruitmentRegisterService recruitmentRegisterService;
+    private final RecruitmentRegisterUseCase recruitmentRegisterUseCase;
 
     @Operation(summary = "[S] 모집 공고 등록", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
@@ -27,7 +27,7 @@ public class RecruitmentRegisterController {
     public ApiResponse<Long> registerRecruitment(
             @Valid @RequestBody RecruitmentRequestDto requestDto
     ) {
-        Long id = recruitmentRegisterService.register(requestDto);
+        Long id = recruitmentRegisterUseCase.register(requestDto);
         return ApiResponse.success(id);
     }
 }

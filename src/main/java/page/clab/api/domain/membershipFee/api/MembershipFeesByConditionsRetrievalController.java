@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.membershipFee.application.MembershipFeesByConditionsRetrievalService;
+import page.clab.api.domain.membershipFee.application.MembershipFeesByConditionsRetrievalUseCase;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
 import page.clab.api.domain.membershipFee.dto.response.MembershipFeeResponseDto;
@@ -27,7 +27,7 @@ import java.util.List;
 @Tag(name = "MembershipFee", description = "회비")
 public class MembershipFeesByConditionsRetrievalController {
 
-    private final MembershipFeesByConditionsRetrievalService membershipFeesByConditionsRetrievalService;
+    private final MembershipFeesByConditionsRetrievalUseCase membershipFeesByConditionsRetrievalUseCase;
 
     @Operation(summary = "[U] 회비 정보 조회(멤버 ID, 멤버 이름, 카테고리, 상태 기준)", description = "ROLE_USER 이상의 권한이 필요함<br> " +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
@@ -47,7 +47,7 @@ public class MembershipFeesByConditionsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, MembershipFee.class);
-        PagedResponseDto<MembershipFeeResponseDto> membershipFees = membershipFeesByConditionsRetrievalService.retrieve(memberId, memberName, category, status, pageable);
+        PagedResponseDto<MembershipFeeResponseDto> membershipFees = membershipFeesByConditionsRetrievalUseCase.retrieve(memberId, memberName, category, status, pageable);
         return ApiResponse.success(membershipFees);
     }
 }

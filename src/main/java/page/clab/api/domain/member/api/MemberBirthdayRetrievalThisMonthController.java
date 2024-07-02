@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.member.application.MemberBirthdayRetrievalThisMonthService;
+import page.clab.api.domain.member.application.MemberBirthdayRetrievalThisMonthUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.MemberBirthdayResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -25,7 +25,7 @@ import java.util.List;
 @Tag(name = "Member", description = "멤버")
 public class MemberBirthdayRetrievalThisMonthController {
 
-    private final MemberBirthdayRetrievalThisMonthService memberBirthdayRetrievalThisMonthService;
+    private final MemberBirthdayRetrievalThisMonthUseCase memberBirthdayRetrievalThisMonthUseCase;
 
     @Operation(summary = "이달의 생일자 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, birth, grade, lastLoginTime, loanSuspensionDate")
@@ -38,7 +38,7 @@ public class MemberBirthdayRetrievalThisMonthController {
             @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Member.class);
-        PagedResponseDto<MemberBirthdayResponseDto> birthdayMembers = memberBirthdayRetrievalThisMonthService.retrieve(month, pageable);
+        PagedResponseDto<MemberBirthdayResponseDto> birthdayMembers = memberBirthdayRetrievalThisMonthUseCase.retrieve(month, pageable);
         return ApiResponse.success(birthdayMembers);
     }
 }

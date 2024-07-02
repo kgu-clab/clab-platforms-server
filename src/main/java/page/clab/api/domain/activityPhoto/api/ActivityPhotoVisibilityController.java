@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.activityPhoto.application.ActivityPhotoVisibilityService;
+import page.clab.api.domain.activityPhoto.application.ActivityPhotoVisibilityUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
@@ -17,7 +17,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "ActivityPhoto", description = "활동 사진")
 public class ActivityPhotoVisibilityController {
 
-    private final ActivityPhotoVisibilityService activityPhotoVisibilityService;
+    private final ActivityPhotoVisibilityUseCase activityPhotoVisibilityUseCase;
 
     @Operation(summary = "활동 사진 고정/해제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -25,7 +25,7 @@ public class ActivityPhotoVisibilityController {
     public ApiResponse<Long> updateActivityPhotoVisibility(
             @PathVariable(name = "activityPhotoId") Long activityPhotoId
     ) {
-        Long id = activityPhotoVisibilityService.update(activityPhotoId);
+        Long id = activityPhotoVisibilityUseCase.update(activityPhotoId);
         return ApiResponse.success(id);
     }
 }

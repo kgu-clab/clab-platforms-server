@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.accuse.application.AccusationRetrievalService;
+import page.clab.api.domain.accuse.application.AccusationRetrievalUseCase;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.TargetType;
@@ -28,7 +28,7 @@ import java.util.List;
 @Tag(name = "Accusation", description = "신고")
 public class AccusationRetrievalController {
 
-    private final AccusationRetrievalService accusationRetrievalService;
+    private final AccusationRetrievalUseCase accusationRetrievalUsecase;
 
     @Operation(summary = "[A] 신고 내역 조회(신고 대상, 처리 상태 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "2개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
@@ -47,7 +47,7 @@ public class AccusationRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, AccuseTarget.class);
-        PagedResponseDto<AccuseResponseDto> accuses = accusationRetrievalService.retrieve(type, status, countOrder, pageable);
+        PagedResponseDto<AccuseResponseDto> accuses = accusationRetrievalUsecase.retrieve(type, status, countOrder, pageable);
         return ApiResponse.success(accuses);
     }
 }

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.login.application.LoginService;
+import page.clab.api.domain.login.application.LoginUseCase;
 import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -26,15 +26,15 @@ import java.util.List;
 @Slf4j
 public class TokenManagementController {
 
-    private final LoginService loginService;
+    private final LoginUseCase loginUseCase;
 
     private final String authHeader;
 
     public TokenManagementController(
-            @Qualifier("tokenManagementService") LoginService loginService,
+            @Qualifier("tokenManagementService") LoginUseCase loginUseCase,
             @Value("${security.auth.header}") String authHeader
     ) {
-        this.loginService = loginService;
+        this.loginUseCase = loginUseCase;
         this.authHeader = authHeader;
     }
 
@@ -44,7 +44,7 @@ public class TokenManagementController {
     public ApiResponse<String> revokeToken(
             @PathVariable(name = "memberId") String memberId
     ) {
-        String id = loginService.revokeToken(memberId);
+        String id = loginUseCase.revokeToken(memberId);
         return ApiResponse.success(id);
     }
 
@@ -55,7 +55,7 @@ public class TokenManagementController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        TokenHeader headerData = loginService.reissueToken(request);
+        TokenHeader headerData = loginUseCase.reissueToken(request);
         response.setHeader(authHeader, headerData.toJson());
         return ApiResponse.success();
     }
@@ -65,7 +65,7 @@ public class TokenManagementController {
     @GetMapping("/current")
     @Secured({"ROLE_SUPER"})
     public ApiResponse<List<String>> retrieveCurrentLoggedInUsers() {
-        List<String> currentLoggedInUsers = loginService.retrieveCurrentLoggedInUsers();
+        List<String> currentLoggedInUsers = loginUseCase.retrieveCurrentLoggedInUsers();
         return ApiResponse.success(currentLoggedInUsers);
     }
 }

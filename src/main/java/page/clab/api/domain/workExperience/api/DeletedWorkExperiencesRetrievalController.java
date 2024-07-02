@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.workExperience.application.DeletedWorkExperiencesRetrievalService;
+import page.clab.api.domain.workExperience.application.DeletedWorkExperiencesRetrievalUseCase;
 import page.clab.api.domain.workExperience.dto.response.WorkExperienceResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -21,7 +21,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @Tag(name = "WorkExperience", description = "경력사항")
 public class DeletedWorkExperiencesRetrievalController {
 
-    private final DeletedWorkExperiencesRetrievalService deletedWorkExperiencesRetrievalService;
+    private final DeletedWorkExperiencesRetrievalUseCase deletedWorkExperiencesRetrievalUseCase;
 
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 경력사항 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
@@ -31,7 +31,7 @@ public class DeletedWorkExperiencesRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<WorkExperienceResponseDto> workExperiences = deletedWorkExperiencesRetrievalService.retrieve(pageable);
+        PagedResponseDto<WorkExperienceResponseDto> workExperiences = deletedWorkExperiencesRetrievalUseCase.retrieve(pageable);
         return ApiResponse.success(workExperiences);
     }
 }

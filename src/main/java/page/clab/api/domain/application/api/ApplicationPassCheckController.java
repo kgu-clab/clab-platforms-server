@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.application.application.ApplicationPassCheckService;
+import page.clab.api.domain.application.application.ApplicationPassCheckUseCase;
 import page.clab.api.domain.application.dto.response.ApplicationPassResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -17,7 +17,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Application", description = "동아리 지원")
 public class ApplicationPassCheckController {
 
-    private final ApplicationPassCheckService applicationPassCheckService;
+    private final ApplicationPassCheckUseCase applicationPassCheckUseCase;
 
     @Operation(summary = "합격 여부 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/{recruitmentId}/{studentId}")
@@ -25,7 +25,7 @@ public class ApplicationPassCheckController {
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "studentId") String studentId
     ) {
-        ApplicationPassResponseDto pass = applicationPassCheckService.checkPassStatus(recruitmentId, studentId);
+        ApplicationPassResponseDto pass = applicationPassCheckUseCase.checkPassStatus(recruitmentId, studentId);
         return ApiResponse.success(pass);
     }
 }

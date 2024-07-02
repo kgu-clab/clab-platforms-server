@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.book.application.BooksByConditionsRetrievalService;
+import page.clab.api.domain.book.application.BooksByConditionsRetrievalUseCase;
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -26,7 +26,7 @@ import java.util.List;
 @Tag(name = "Book", description = "도서")
 public class BooksByConditionsRetrievalController {
 
-    private final BooksByConditionsRetrievalService booksByConditionsRetrievalService;
+    private final BooksByConditionsRetrievalUseCase booksByConditionsRetrievalUseCase;
 
     @Operation(summary = "[U] 도서 목록 조회(제목, 카테고리, 출판사, 대여자 ID, 대여자 이름 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "5개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
@@ -46,7 +46,7 @@ public class BooksByConditionsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Book.class);
-        PagedResponseDto<BookResponseDto> books = booksByConditionsRetrievalService.retrieve(title, category, publisher, borrowerId, borrowerName, pageable);
+        PagedResponseDto<BookResponseDto> books = booksByConditionsRetrievalUseCase.retrieve(title, category, publisher, borrowerId, borrowerName, pageable);
         return ApiResponse.success(books);
     }
 }

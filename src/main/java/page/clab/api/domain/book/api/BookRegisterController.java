@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.book.application.BookRegisterService;
+import page.clab.api.domain.book.application.BookRegisterUseCase;
 import page.clab.api.domain.book.dto.request.BookRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -19,7 +19,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Book", description = "도서")
 public class BookRegisterController {
 
-    private final BookRegisterService bookRegisterService;
+    private final BookRegisterUseCase bookRegisterUseCase;
 
     @Operation(summary = "[A] 도서 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -27,7 +27,7 @@ public class BookRegisterController {
     public ApiResponse<Long> registerBook(
             @Valid @RequestBody BookRequestDto requestDto
     ) {
-        Long id = bookRegisterService.register(requestDto);
+        Long id = bookRegisterUseCase.register(requestDto);
         return ApiResponse.success(id);
     }
 }

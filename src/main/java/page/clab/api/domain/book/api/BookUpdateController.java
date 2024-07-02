@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.book.application.BookUpdateService;
+import page.clab.api.domain.book.application.BookUpdateUseCase;
 import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -22,7 +22,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Slf4j
 public class BookUpdateController {
 
-    private final BookUpdateService bookUpdateService;
+    private final BookUpdateUseCase bookUpdateUseCase;
 
     @Operation(summary = "[A] 도서 정보 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -31,7 +31,7 @@ public class BookUpdateController {
             @RequestParam(name = "bookId") Long bookId,
             @Valid @RequestBody BookUpdateRequestDto requestDto
     ) {
-        Long id = bookUpdateService.update(bookId, requestDto);
+        Long id = bookUpdateUseCase.update(bookId, requestDto);
         return ApiResponse.success(id);
     }
 }

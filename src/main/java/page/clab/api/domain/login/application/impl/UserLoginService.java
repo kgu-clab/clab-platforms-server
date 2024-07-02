@@ -8,11 +8,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.login.application.AccountLockManagementService;
-import page.clab.api.domain.login.application.AuthenticatorService;
-import page.clab.api.domain.login.application.LoginAttemptLogManagementService;
-import page.clab.api.domain.login.application.LoginService;
-import page.clab.api.domain.login.application.RedisTokenManagementService;
+import page.clab.api.domain.login.application.AccountLockManagementUseCase;
+import page.clab.api.domain.login.application.AuthenticatorUseCase;
+import page.clab.api.domain.login.application.LoginAttemptLogManagementUseCase;
+import page.clab.api.domain.login.application.LoginUseCase;
+import page.clab.api.domain.login.application.RedisTokenManagementUseCase;
 import page.clab.api.domain.login.domain.LoginAttemptResult;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
@@ -22,7 +22,7 @@ import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.exception.LoginFaliedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.domain.member.application.MemberLookupService;
+import page.clab.api.domain.member.application.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberLoginInfoDto;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.util.HttpReqResUtil;
@@ -33,30 +33,30 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Qualifier("userLoginService")
-public class UserLoginService implements LoginService {
+public class UserLoginService implements LoginUseCase {
 
     @Qualifier("loginAuthenticationManager")
     private final AuthenticationManager loginAuthenticationManager;
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    private final AccountLockManagementService accountLockManagementService;
+    private final AccountLockManagementUseCase accountLockManagementUseCase;
 
-    private final MemberLookupService memberLookupService;
+    private final MemberLookupUseCase memberLookupUseCase;
 
-    private final LoginAttemptLogManagementService loginAttemptLogManagementService;
+    private final LoginAttemptLogManagementUseCase loginAttemptLogManagementUseCase;
 
-    private final RedisTokenManagementService redisTokenManagementService;
+    private final RedisTokenManagementUseCase redisTokenManagementUseCase;
 
-    private final AuthenticatorService authenticatorService;
+    private final AuthenticatorUseCase authenticatorUseCase;
 
     @Transactional
     @Override
     public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFaliedException, MemberLockedException {
         authenticateAndCheckStatus(request, requestDto);
         logLoginAttempt(request, requestDto.getId(), true);
-        MemberLoginInfoDto loginMember = memberLookupService.getMemberLoginInfoById(requestDto.getId());
-        memberLookupService.updateLastLoginTime(requestDto.getId());
+        MemberLoginInfoDto loginMember = memberLookupUseCase.getMemberLoginInfoById(requestDto.getId());
+        memberLookupUseCase.updateLastLoginTime(requestDto.getId());
         return generateLoginResult(loginMember);
     }
 
@@ -65,17 +65,17 @@ public class UserLoginService implements LoginService {
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(loginRequestDto.getId(), loginRequestDto.getPassword());
             loginAuthenticationManager.authenticate(authenticationToken);
-            accountLockManagementService.handleAccountLockInfo(loginRequestDto.getId());
+            accountLockManagementUseCase.handleAccountLockInfo(loginRequestDto.getId());
         } catch (BadCredentialsException e) {
             logLoginAttempt(httpServletRequest, loginRequestDto.getId(), false);
-            accountLockManagementService.handleLoginFailure(httpServletRequest, loginRequestDto.getId());
+            accountLockManagementUseCase.handleLoginFailure(httpServletRequest, loginRequestDto.getId());
             throw new LoginFaliedException();
         }
     }
 
     private void logLoginAttempt(HttpServletRequest request, String memberId, boolean isSuccess) {
         LoginAttemptResult result = isSuccess ? LoginAttemptResult.SUCCESS : LoginAttemptResult.FAILURE;
-        loginAttemptLogManagementService.logLoginAttempt(request, memberId, result);
+        loginAttemptLogManagementUseCase.logLoginAttempt(request, memberId, result);
     }
 
     private LoginResult generateLoginResult(MemberLoginInfoDto loginMember) {
@@ -83,8 +83,8 @@ public class UserLoginService implements LoginService {
         String header;
         boolean isOtpEnabled = Optional.of(loginMember.isOtpEnabled()).orElse(false);
         if (isOtpEnabled || loginMember.isAdminRole()) {
-            if (!authenticatorService.isAuthenticatorExist(memberId)) {
-                String secretKey = authenticatorService.generateSecretKey(memberId);
+            if (!authenticatorUseCase.isAuthenticatorExist(memberId)) {
+                String secretKey = authenticatorUseCase.generateSecretKey(memberId);
                 header = LoginHeader.create(secretKey).toJson();
                 return LoginResult.create(header, true);
             }
@@ -99,7 +99,7 @@ public class UserLoginService implements LoginService {
     private TokenInfo generateAndSaveToken(MemberLoginInfoDto memberInfo) {
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(memberInfo.getMemberId(), memberInfo.getRole());
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        redisTokenManagementService.saveToken(memberInfo.getMemberId(), memberInfo.getRole(), tokenInfo, clientIpAddress);
+        redisTokenManagementUseCase.saveToken(memberInfo.getMemberId(), memberInfo.getRole(), tokenInfo, clientIpAddress);
         return tokenInfo;
     }
 

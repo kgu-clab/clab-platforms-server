@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.login.application.LoginService;
+import page.clab.api.domain.login.application.LoginUseCase;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.response.LoginResult;
 import page.clab.api.domain.login.exception.LoginFaliedException;
@@ -23,15 +23,15 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Login", description = "로그인")
 public class MemberLoginController {
 
-    private final LoginService loginService;
+    private final LoginUseCase loginUseCase;
 
     private final String authHeader;
 
     public MemberLoginController(
-            @Qualifier("userLoginService") LoginService loginService,
+            @Qualifier("userLoginService") LoginUseCase loginUseCase,
             @Value("${security.auth.header}") String authHeader
     ) {
-        this.loginService = loginService;
+        this.loginUseCase = loginUseCase;
         this.authHeader = authHeader;
     }
 
@@ -42,7 +42,7 @@ public class MemberLoginController {
             HttpServletResponse response,
             @Valid @RequestBody LoginRequestDto requestDto
     ) throws MemberLockedException, LoginFaliedException {
-        LoginResult result = loginService.login(request, requestDto);
+        LoginResult result = loginUseCase.login(request, requestDto);
         response.setHeader(authHeader, result.getHeader());
         return ApiResponse.success(result.getBody());
     }

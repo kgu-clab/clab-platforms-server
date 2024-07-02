@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.member.application.ResetMemberPasswordRequestService;
+import page.clab.api.domain.member.application.ResetMemberPasswordRequestUseCase;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -17,14 +17,14 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Member", description = "멤버")
 public class ResetMemberPasswordRequestController {
 
-    private final ResetMemberPasswordRequestService resetMemberPasswordRequestService;
+    private final ResetMemberPasswordRequestUseCase resetMemberPasswordRequestUseCase;
 
     @Operation(summary = "멤버 비밀번호 재발급 요청", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/password-reset-requests")
     public ApiResponse<String> requestResetMemberPassword(
             @RequestBody MemberResetPasswordRequestDto requestDto
     ) {
-        String id = resetMemberPasswordRequestService.request(requestDto);
+        String id = resetMemberPasswordRequestUseCase.request(requestDto);
         return ApiResponse.success(id);
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.news.application.NewsRemoveService;
+import page.clab.api.domain.news.application.NewsRemoveUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
@@ -17,7 +17,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "News", description = "뉴스")
 public class NewsRemoveController {
 
-    private final NewsRemoveService newsRemoveService;
+    private final NewsRemoveUseCase newsRemoveUseCase;
 
     @Operation(summary = "[A] 뉴스 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -25,7 +25,7 @@ public class NewsRemoveController {
     public ApiResponse<Long> removeNews(
             @PathVariable(name = "newsId") Long newsId
     ) {
-        Long id = newsRemoveService.remove(newsId);
+        Long id = newsRemoveUseCase.remove(newsId);
         return ApiResponse.success(id);
     }
 }

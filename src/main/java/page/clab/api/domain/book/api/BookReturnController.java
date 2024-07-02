@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.book.application.BookReturnService;
+import page.clab.api.domain.book.application.BookReturnUseCase;
 import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -21,7 +21,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Slf4j
 public class BookReturnController {
 
-    private final BookReturnService bookReturnService;
+    private final BookReturnUseCase bookReturnUseCase;
 
     @Operation(summary = "[U] 도서 반납", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
@@ -29,7 +29,7 @@ public class BookReturnController {
     public ApiResponse<Long> returnBook(
             @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) {
-        Long id = bookReturnService.returnBook(requestDto);
+        Long id = bookReturnUseCase.returnBook(requestDto);
         return ApiResponse.success(id);
     }
 }

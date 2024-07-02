@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.member.application.MemberRegisterService;
+import page.clab.api.domain.member.application.MemberRegisterUseCase;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -17,14 +17,14 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Member", description = "멤버")
 public class MemberRegisterController {
 
-    private final MemberRegisterService memberRegisterService;
+    private final MemberRegisterUseCase memberRegisterUseCase;
 
     @Operation(summary = "[S] 신규 멤버 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
     @PostMapping("")
     public ApiResponse<String> registerMember(
             @RequestBody MemberRequestDto requestDto
     ) {
-        String id = memberRegisterService.register(requestDto);
+        String id = memberRegisterUseCase.register(requestDto);
         return ApiResponse.success(id);
     }
 }

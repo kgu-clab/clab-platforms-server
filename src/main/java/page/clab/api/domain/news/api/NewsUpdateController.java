@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.news.application.NewsUpdateService;
+import page.clab.api.domain.news.application.NewsUpdateUseCase;
 import page.clab.api.domain.news.dto.request.NewsUpdateRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -20,7 +20,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "News", description = "뉴스")
 public class NewsUpdateController {
 
-    private final NewsUpdateService newsUpdateService;
+    private final NewsUpdateUseCase newsUpdateUseCase;
 
     @Operation(summary = "[A] 뉴스 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -29,7 +29,7 @@ public class NewsUpdateController {
             @PathVariable(name = "newsId") Long newsId,
             @Valid @RequestBody NewsUpdateRequestDto requestDto
     ) {
-        Long id = newsUpdateService.update(newsId, requestDto);
+        Long id = newsUpdateUseCase.update(newsId, requestDto);
         return ApiResponse.success(id);
     }
 }

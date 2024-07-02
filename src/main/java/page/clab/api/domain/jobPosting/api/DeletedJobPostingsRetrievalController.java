@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.jobPosting.application.DeletedJobPostingsRetrievalService;
+import page.clab.api.domain.jobPosting.application.DeletedJobPostingsRetrievalUseCase;
 import page.clab.api.domain.jobPosting.dto.response.JobPostingDetailsResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -21,7 +21,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @Tag(name = "JobPosting", description = "채용 공고")
 public class DeletedJobPostingsRetrievalController {
 
-    private final DeletedJobPostingsRetrievalService deletedJobPostingsRetrievalService;
+    private final DeletedJobPostingsRetrievalUseCase deletedJobPostingsRetrievalUseCase;
 
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 채용 공고 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
@@ -31,7 +31,7 @@ public class DeletedJobPostingsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<JobPostingDetailsResponseDto> jobPostings = deletedJobPostingsRetrievalService.retrieve(pageable);
+        PagedResponseDto<JobPostingDetailsResponseDto> jobPostings = deletedJobPostingsRetrievalUseCase.retrieve(pageable);
         return ApiResponse.success(jobPostings);
     }
 }

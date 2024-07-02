@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.membershipFee.application.DeletedMembershipFeesRetrievalService;
+import page.clab.api.domain.membershipFee.application.DeletedMembershipFeesRetrievalUseCase;
 import page.clab.api.domain.membershipFee.dto.response.MembershipFeeResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -21,7 +21,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @Tag(name = "MembershipFee", description = "회비")
 public class DeletedMembershipFeesRetrievalController {
 
-    private final DeletedMembershipFeesRetrievalService deletedMembershipFeesRetrievalService;
+    private final DeletedMembershipFeesRetrievalUseCase deletedMembershipFeesRetrievalUseCase;
 
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 회비 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
@@ -31,7 +31,7 @@ public class DeletedMembershipFeesRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<MembershipFeeResponseDto> membershipFees = deletedMembershipFeesRetrievalService.retrieve(pageable);
+        PagedResponseDto<MembershipFeeResponseDto> membershipFees = deletedMembershipFeesRetrievalUseCase.retrieve(pageable);
         return ApiResponse.success(membershipFees);
     }
 }

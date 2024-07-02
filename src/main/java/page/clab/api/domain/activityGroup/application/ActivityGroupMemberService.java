@@ -31,9 +31,9 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyRespons
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.activityGroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
-import page.clab.api.domain.member.application.MemberLookupService;
+import page.clab.api.domain.member.application.MemberLookupUseCase;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.notification.application.NotificationSenderService;
+import page.clab.api.domain.notification.application.NotificationSenderUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -44,9 +44,9 @@ import java.util.List;
 @Slf4j
 public class ActivityGroupMemberService {
 
-    private final MemberLookupService memberLookupService;
+    private final MemberLookupUseCase memberLookupUseCase;
 
-    private final NotificationSenderService notificationService;
+    private final NotificationSenderUseCase notificationService;
 
     private final ActivityGroupRepository activityGroupRepository;
 
@@ -69,7 +69,7 @@ public class ActivityGroupMemberService {
     @Transactional(readOnly = true)
     public Object getActivityGroup(Long activityGroupId) {
         ActivityGroupDetails details = activityGroupDetailsRepository.fetchActivityGroupDetails(activityGroupId);
-        Member currentMember = memberLookupService.getCurrentMember();
+        Member currentMember = memberLookupUseCase.getCurrentMember();
 
         boolean isOwner = details.getGroupMembers().stream()
                 .anyMatch(groupMember -> groupMember.isOwnerAndLeader(currentMember));
@@ -85,7 +85,7 @@ public class ActivityGroupMemberService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupResponseDto> getMyActivityGroups(Pageable pageable) {
-        Member currentMember = memberLookupService.getCurrentMember();
+        Member currentMember = memberLookupUseCase.getCurrentMember();
         List<GroupMember> groupMembers = getGroupMemberByMember(currentMember);
 
         List<ActivityGroupResponseDto> activityGroups = groupMembers.stream()
@@ -134,7 +134,7 @@ public class ActivityGroupMemberService {
 
     @Transactional
     public Long applyActivityGroup(Long activityGroupId, ApplyFormRequestDto formRequestDto) {
-        Member currentMember = memberLookupService.getCurrentMember();
+        Member currentMember = memberLookupUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroup.validateForApplication();
         if (isGroupMember(activityGroup, currentMember)) {

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.book.application.BookLoanApprovalService;
+import page.clab.api.domain.book.application.BookLoanApprovalUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
@@ -17,7 +17,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "BookLoanRecord", description = "도서 대출")
 public class BookLoanApprovalController {
 
-    private final BookLoanApprovalService bookLoanApprovalService;
+    private final BookLoanApprovalUseCase bookLoanApprovalUseCase;
 
     @Operation(summary = "[A] 도서 대출 승인", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -25,7 +25,7 @@ public class BookLoanApprovalController {
     public ApiResponse<Long> approveBookLoan(
             @PathVariable(name = "bookLoanRecordId") Long bookLoanRecordId
     ) {
-        Long id = bookLoanApprovalService.approve(bookLoanRecordId);
+        Long id = bookLoanApprovalUseCase.approve(bookLoanRecordId);
         return ApiResponse.success(id);
     }
 }
