@@ -1,4 +1,4 @@
-package page.clab.api.domain.workExperience.application;
+package page.clab.api.domain.workExperience.event;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

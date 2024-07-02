@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.workExperience.application.MyWorkExperienceRetrievalUseCase;
+import page.clab.api.domain.workExperience.application.port.in.MyWorkExperienceRetrievalUseCase;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
 import page.clab.api.domain.workExperience.dto.response.WorkExperienceResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
