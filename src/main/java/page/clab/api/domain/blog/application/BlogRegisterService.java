@@ -1,10 +1,10 @@
-package page.clab.api.domain.blog.application.impl;
+package page.clab.api.domain.blog.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.blog.application.BlogRegisterUseCase;
-import page.clab.api.domain.blog.dao.BlogRepository;
+import page.clab.api.domain.blog.application.port.in.BlogRegisterUseCase;
+import page.clab.api.domain.blog.application.port.out.RegisterBlogPort;
 import page.clab.api.domain.blog.domain.Blog;
 import page.clab.api.domain.blog.dto.request.BlogRequestDto;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
@@ -16,7 +16,7 @@ public class BlogRegisterService implements BlogRegisterUseCase {
 
     private final MemberLookupUseCase memberLookupUseCase;
     private final ValidationService validationService;
-    private final BlogRepository blogRepository;
+    private final RegisterBlogPort registerBlogPort;
 
     @Transactional
     @Override
@@ -24,6 +24,6 @@ public class BlogRegisterService implements BlogRegisterUseCase {
         String currentMemberId = memberLookupUseCase.getCurrentMemberId();
         Blog blog = BlogRequestDto.toEntity(requestDto, currentMemberId);
         validationService.checkValid(blog);
-        return blogRepository.save(blog).getId();
+        return registerBlogPort.save(blog).getId();
     }
 }

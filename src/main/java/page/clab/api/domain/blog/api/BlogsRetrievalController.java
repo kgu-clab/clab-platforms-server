@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.blog.application.BlogsRetrievalUseCase;
+import page.clab.api.domain.blog.application.port.in.BlogsRetrievalUseCase;
 import page.clab.api.domain.blog.domain.Blog;
 import page.clab.api.domain.blog.dto.response.BlogResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
