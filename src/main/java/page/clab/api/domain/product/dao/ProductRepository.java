@@ -10,9 +10,6 @@ import page.clab.api.domain.product.domain.Product;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, ProductRepositoryCustom, QuerydslPredicateExecutor<Product> {
-
-    Page<Product> findAllByOrderByCreatedAtDesc(Pageable pageable);
-
     @Query(value = "SELECT p.* FROM product p WHERE p.is_deleted = true", nativeQuery = true)
     Page<Product> findAllByIsDeletedTrue(Pageable pageable);
 }

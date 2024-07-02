@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.product.application.ProductRegisterUseCase;
+import page.clab.api.domain.product.application.port.in.ProductRegisterUseCase;
 import page.clab.api.domain.product.dto.request.ProductRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
