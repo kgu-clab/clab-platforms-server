@@ -1,12 +1,12 @@
-package page.clab.api.domain.donation.application.impl;
+package page.clab.api.domain.donation.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.donation.application.DeletedDonationsRetrievalUseCase;
-import page.clab.api.domain.donation.dao.DonationRepository;
+import page.clab.api.domain.donation.application.port.in.DeletedDonationsRetrievalUseCase;
+import page.clab.api.domain.donation.application.port.out.RetrieveDeletedDonationsPort;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.dto.response.DonationResponseDto;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
@@ -17,13 +17,13 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RequiredArgsConstructor
 public class DeletedDonationsRetrievalService implements DeletedDonationsRetrievalUseCase {
 
-    private final DonationRepository donationRepository;
+    private final RetrieveDeletedDonationsPort retrieveDeletedDonationsPort;
     private final MemberLookupUseCase memberLookupUseCase;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<DonationResponseDto> retrieve(Pageable pageable) {
-        Page<Donation> donations = donationRepository.findAllByIsDeletedTrue(pageable);
+        Page<Donation> donations = retrieveDeletedDonationsPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(donations.map(donation -> {
             MemberBasicInfoDto memberInfo = memberLookupUseCase.getMemberBasicInfoById(donation.getMemberId());
             return DonationResponseDto.toDto(donation, memberInfo.getMemberName());

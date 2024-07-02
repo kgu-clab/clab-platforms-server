@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.donation.application.DeletedDonationsRetrievalUseCase;
+import page.clab.api.domain.donation.application.port.in.DeletedDonationsRetrievalUseCase;
 import page.clab.api.domain.donation.dto.response.DonationResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;

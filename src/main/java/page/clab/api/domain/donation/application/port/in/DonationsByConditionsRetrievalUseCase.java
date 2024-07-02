@@ -1,4 +1,4 @@
-package page.clab.api.domain.donation.application;
+package page.clab.api.domain.donation.application.port.in;
 
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.donation.dto.response.DonationResponseDto;

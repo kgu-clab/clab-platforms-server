@@ -1,4 +1,4 @@
-package page.clab.api.domain.donation.application;
+package page.clab.api.domain.donation.application.port.in;
 
 import page.clab.api.global.exception.PermissionDeniedException;
 

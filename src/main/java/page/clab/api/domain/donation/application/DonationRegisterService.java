@@ -1,10 +1,10 @@
-package page.clab.api.domain.donation.application.impl;
+package page.clab.api.domain.donation.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.donation.application.DonationRegisterUseCase;
-import page.clab.api.domain.donation.dao.DonationRepository;
+import page.clab.api.domain.donation.application.port.in.DonationRegisterUseCase;
+import page.clab.api.domain.donation.application.port.out.RegisterDonationPort;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.dto.request.DonationRequestDto;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
@@ -16,7 +16,7 @@ public class DonationRegisterService implements DonationRegisterUseCase {
 
     private final MemberLookupUseCase memberLookupUseCase;
     private final ValidationService validationService;
-    private final DonationRepository donationRepository;
+    private final RegisterDonationPort registerDonationPort;
 
     @Transactional
     @Override
@@ -24,6 +24,6 @@ public class DonationRegisterService implements DonationRegisterUseCase {
         String currentMemberId = memberLookupUseCase.getCurrentMemberId();
         Donation donation = DonationRequestDto.toEntity(requestDto, currentMemberId);
         validationService.checkValid(donation);
-        return donationRepository.save(donation).getId();
+        return registerDonationPort.save(donation).getId();
     }
 }
