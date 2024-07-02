@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.membershipFee.application.MembershipFeeUpdateUseCase;
+import page.clab.api.domain.membershipFee.application.port.in.MembershipFeeUpdateUseCase;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeUpdateRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;

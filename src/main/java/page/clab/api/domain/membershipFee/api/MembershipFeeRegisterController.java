@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.membershipFee.application.MembershipFeeRegisterUseCase;
+import page.clab.api.domain.membershipFee.application.port.in.MembershipFeeRegisterUseCase;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 

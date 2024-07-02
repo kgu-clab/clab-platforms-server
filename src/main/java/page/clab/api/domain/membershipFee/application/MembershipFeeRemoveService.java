@@ -1,14 +1,14 @@
-package page.clab.api.domain.membershipFee.application.impl;
+package page.clab.api.domain.membershipFee.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.membershipFee.application.MembershipFeeRemoveUseCase;
-import page.clab.api.domain.membershipFee.dao.MembershipFeeRepository;
+import page.clab.api.domain.membershipFee.application.port.in.MembershipFeeRemoveUseCase;
+import page.clab.api.domain.membershipFee.application.port.out.LoadMembershipFeePort;
+import page.clab.api.domain.membershipFee.application.port.out.RegisterMembershipFeePort;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
-import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
@@ -16,21 +16,17 @@ import page.clab.api.global.exception.PermissionDeniedException;
 public class MembershipFeeRemoveService implements MembershipFeeRemoveUseCase {
 
     private final MemberLookupUseCase memberLookupUseCase;
-    private final MembershipFeeRepository membershipFeeRepository;
+    private final LoadMembershipFeePort loadMembershipFeePort;
+    private final RegisterMembershipFeePort registerMembershipFeePort;
 
     @Transactional
     @Override
     public Long remove(Long membershipFeeId) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberDetailedInfo();
-        MembershipFee membershipFee = getMembershipFeeByIdOrThrow(membershipFeeId);
+        MembershipFee membershipFee = loadMembershipFeePort.findByIdOrThrow(membershipFeeId);
         membershipFee.validateAccessPermission(currentMemberInfo);
         membershipFee.delete();
-        membershipFeeRepository.save(membershipFee);
+        registerMembershipFeePort.save(membershipFee);
         return membershipFee.getId();
-    }
-
-    private MembershipFee getMembershipFeeByIdOrThrow(Long membershipFeeId) {
-        return membershipFeeRepository.findById(membershipFeeId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 회비 내역입니다."));
     }
 }
