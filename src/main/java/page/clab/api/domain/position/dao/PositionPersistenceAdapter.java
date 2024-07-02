@@ -6,7 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.position.application.port.out.LoadPositionPort;
 import page.clab.api.domain.position.application.port.out.RegisterPositionPort;
+import page.clab.api.domain.position.application.port.out.RetrieveAllPositionsByMemberIdAndYearPort;
 import page.clab.api.domain.position.application.port.out.RetrieveDeletedPositionsPort;
+import page.clab.api.domain.position.application.port.out.RetrievePositionByMemberIdAndYearAndPositionTypePort;
 import page.clab.api.domain.position.application.port.out.RetrievePositionsByConditionsPort;
 import page.clab.api.domain.position.application.port.out.UpdatePositionPort;
 import page.clab.api.domain.position.domain.Position;
@@ -20,6 +22,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PositionPersistenceAdapter implements
         RegisterPositionPort,
+        RetrievePositionByMemberIdAndYearAndPositionTypePort,
+        RetrieveAllPositionsByMemberIdAndYearPort,
         UpdatePositionPort,
         LoadPositionPort,
         RetrieveDeletedPositionsPort,

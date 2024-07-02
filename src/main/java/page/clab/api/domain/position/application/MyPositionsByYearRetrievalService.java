@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberPositionInfoDto;
 import page.clab.api.domain.position.application.port.in.MyPositionsByYearRetrievalUseCase;
-import page.clab.api.domain.position.application.port.out.LoadPositionPort;
+import page.clab.api.domain.position.application.port.out.RetrieveAllPositionsByMemberIdAndYearPort;
 import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.dto.response.PositionMyResponseDto;
 import page.clab.api.global.exception.NotFoundException;
@@ -18,12 +18,13 @@ import java.util.List;
 public class MyPositionsByYearRetrievalService implements MyPositionsByYearRetrievalUseCase {
 
     private final MemberLookupUseCase memberLookupUseCase;
-    private final LoadPositionPort loadPositionPort;
+    private final RetrieveAllPositionsByMemberIdAndYearPort retrieveAllPositionsByMemberIdAndYearPort;
 
     @Transactional(readOnly = true)
     public PositionMyResponseDto retrieve(String year) {
         MemberPositionInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberPositionInfo();
-        List<Position> positions = loadPositionPort.findAllByMemberIdAndYearOrderByPositionTypeAsc(currentMemberInfo.getMemberId(), year);
+        List<Position> positions = retrieveAllPositionsByMemberIdAndYearPort.findAllByMemberIdAndYearOrderByPositionTypeAsc(
+                currentMemberInfo.getMemberId(), year);
         if (positions.isEmpty()) {
             throw new NotFoundException("해당 멤버의 " + year + "년도 직책이 존재하지 않습니다.");
         }
