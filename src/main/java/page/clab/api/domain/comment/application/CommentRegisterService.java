@@ -1,12 +1,13 @@
-package page.clab.api.domain.comment.application.impl;
+package page.clab.api.domain.comment.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.application.BoardLookupUseCase;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.comment.application.CommentRegisterUseCase;
-import page.clab.api.domain.comment.dao.CommentRepository;
+import page.clab.api.domain.comment.application.port.in.CommentRegisterUseCase;
+import page.clab.api.domain.comment.application.port.out.LoadCommentPort;
+import page.clab.api.domain.comment.application.port.out.RegisterCommentPort;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
@@ -21,7 +22,8 @@ public class CommentRegisterService implements CommentRegisterUseCase {
     private final MemberLookupUseCase memberLookupUseCase;
     private final NotificationSenderUseCase notificationService;
     private final ValidationService validationService;
-    private final CommentRepository commentRepository;
+    private final RegisterCommentPort registerCommentPort;
+    private final LoadCommentPort loadCommentPort;
 
     @Transactional
     @Override
@@ -40,11 +42,11 @@ public class CommentRegisterService implements CommentRegisterUseCase {
             parent.addChildComment(comment);
         }
         validationService.checkValid(comment);
-        return commentRepository.save(comment);
+        return registerCommentPort.save(comment);
     }
 
     private Comment findParentComment(Long parentId) {
-        return parentId != null ? commentRepository.findById(parentId).orElse(null) : null;
+        return parentId != null ? loadCommentPort.findById(parentId).orElse(null) : null;
     }
 
     private void sendNotificationForNewComment(Comment comment) {

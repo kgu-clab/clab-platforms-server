@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.comment.application.MyCommentsRetrievalUseCase;
+import page.clab.api.domain.comment.application.port.in.MyCommentsRetrievalUseCase;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;

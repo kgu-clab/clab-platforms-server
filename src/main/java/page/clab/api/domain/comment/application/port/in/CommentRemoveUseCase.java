@@ -1,4 +1,4 @@
-package page.clab.api.domain.comment.application;
+package page.clab.api.domain.comment.application.port.in;
 
 import page.clab.api.global.exception.PermissionDeniedException;
 

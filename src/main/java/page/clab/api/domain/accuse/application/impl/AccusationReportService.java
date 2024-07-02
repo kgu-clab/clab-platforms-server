@@ -14,7 +14,7 @@ import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.board.application.BoardLookupUseCase;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.comment.application.CommentLookupUseCase;
+import page.clab.api.domain.comment.application.port.in.CommentLookupUseCase;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
 import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;

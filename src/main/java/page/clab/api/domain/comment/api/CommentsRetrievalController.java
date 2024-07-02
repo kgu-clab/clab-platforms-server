@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.comment.application.CommentsRetrievalUseCase;
+import page.clab.api.domain.comment.application.port.in.CommentsRetrievalUseCase;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.response.CommentResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
