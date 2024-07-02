@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.position.application.PositionRegisterUseCase;
+import page.clab.api.domain.position.application.port.in.PositionRegisterUseCase;
 import page.clab.api.domain.position.dto.request.PositionRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 

@@ -1,4 +1,4 @@
-package page.clab.api.domain.position.application;
+package page.clab.api.domain.position.application.port.in;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

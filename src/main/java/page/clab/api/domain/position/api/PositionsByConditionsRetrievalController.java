@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.position.application.PositionsByConditionsRetrievalUseCase;
+import page.clab.api.domain.position.application.port.in.PositionsByConditionsRetrievalUseCase;
 import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
 import page.clab.api.domain.position.dto.response.PositionResponseDto;

@@ -1,4 +1,4 @@
-package page.clab.api.domain.position.application;
+package page.clab.api.domain.position.application.port.in;
 
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.position.domain.PositionType;

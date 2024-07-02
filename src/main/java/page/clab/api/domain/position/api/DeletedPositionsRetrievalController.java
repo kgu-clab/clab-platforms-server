@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.position.application.DeletedPositionsRetrievalUseCase;
+import page.clab.api.domain.position.application.port.in.DeletedPositionsRetrievalUseCase;
 import page.clab.api.domain.position.dto.response.PositionResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
