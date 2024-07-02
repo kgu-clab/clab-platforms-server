@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.activityPhoto.application.ActivityPhotoRegisterUseCase;
+import page.clab.api.domain.activityPhoto.application.port.in.ActivityPhotoRegisterUseCase;
 import page.clab.api.domain.activityPhoto.dto.request.ActivityPhotoRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 

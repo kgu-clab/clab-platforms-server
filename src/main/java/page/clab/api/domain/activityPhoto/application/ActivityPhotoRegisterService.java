@@ -1,10 +1,10 @@
-package page.clab.api.domain.activityPhoto.application.impl;
+package page.clab.api.domain.activityPhoto.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.activityPhoto.application.ActivityPhotoRegisterUseCase;
-import page.clab.api.domain.activityPhoto.dao.ActivityPhotoRepository;
+import page.clab.api.domain.activityPhoto.application.port.in.ActivityPhotoRegisterUseCase;
+import page.clab.api.domain.activityPhoto.application.port.out.RegisterActivityPhotoPort;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.domain.activityPhoto.dto.request.ActivityPhotoRequestDto;
 import page.clab.api.global.common.file.application.UploadedFileService;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ActivityPhotoRegisterService implements ActivityPhotoRegisterUseCase {
 
-    private final ActivityPhotoRepository activityPhotoRepository;
+    private final RegisterActivityPhotoPort registerActivityPhotoPort;
     private final UploadedFileService uploadedFileService;
 
     @Transactional
@@ -24,6 +24,6 @@ public class ActivityPhotoRegisterService implements ActivityPhotoRegisterUseCas
     public Long register(ActivityPhotoRequestDto requestDto) {
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         ActivityPhoto activityPhoto = ActivityPhotoRequestDto.toEntity(requestDto, uploadedFiles);
-        return activityPhotoRepository.save(activityPhoto).getId();
+        return registerActivityPhotoPort.save(activityPhoto).getId();
     }
 }
