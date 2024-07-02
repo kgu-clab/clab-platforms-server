@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.jobPosting.application.JobPostingDetailsRetrievalUseCase;
+import page.clab.api.domain.jobPosting.application.port.in.JobPostingDetailsRetrievalUseCase;
 import page.clab.api.domain.jobPosting.dto.response.JobPostingDetailsResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 

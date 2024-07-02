@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.jobPosting.application.JobPostingRemoveUseCase;
+import page.clab.api.domain.jobPosting.application.port.in.JobPostingRemoveUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController

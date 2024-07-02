@@ -1,9 +1,9 @@
-package page.clab.api.domain.jobPosting.application.impl;
+package page.clab.api.domain.jobPosting.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.jobPosting.application.JobPostingUpdateUseCase;
+import page.clab.api.domain.jobPosting.application.port.in.JobPostingUpdateUseCase;
 import page.clab.api.domain.jobPosting.dao.JobPostingRepository;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
 import page.clab.api.domain.jobPosting.dto.request.JobPostingUpdateRequestDto;
