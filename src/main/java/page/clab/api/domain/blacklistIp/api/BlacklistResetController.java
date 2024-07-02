@@ -8,7 +8,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.blacklistIp.application.BlacklistResetUseCase;
+import page.clab.api.domain.blacklistIp.application.port.in.BlacklistResetUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 import java.util.List;

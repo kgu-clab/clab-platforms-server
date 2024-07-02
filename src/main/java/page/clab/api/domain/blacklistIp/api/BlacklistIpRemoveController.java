@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.blacklistIp.application.BlacklistIpRemoveUseCase;
+import page.clab.api.domain.blacklistIp.application.port.in.BlacklistIpRemoveUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController

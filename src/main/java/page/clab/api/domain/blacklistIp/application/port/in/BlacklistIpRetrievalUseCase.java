@@ -1,4 +1,4 @@
-package page.clab.api.domain.blacklistIp.application;
+package page.clab.api.domain.blacklistIp.application.port.in;
 
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;

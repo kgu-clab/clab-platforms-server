@@ -1,11 +1,12 @@
-package page.clab.api.domain.blacklistIp.application.impl;
+package page.clab.api.domain.blacklistIp.application;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.blacklistIp.application.BlacklistIpRegisterUseCase;
-import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
+import page.clab.api.domain.blacklistIp.application.port.in.BlacklistIpRegisterUseCase;
+import page.clab.api.domain.blacklistIp.application.port.out.RegisterBlacklistIpPort;
+import page.clab.api.domain.blacklistIp.application.port.out.RetrieveBlacklistIpByIpAddressPort;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
 import page.clab.api.domain.blacklistIp.dto.request.BlacklistIpRequestDto;
 import page.clab.api.global.common.slack.application.SlackService;
@@ -16,17 +17,18 @@ import page.clab.api.global.common.slack.domain.SecurityAlertType;
 public class BlacklistIpRegisterService implements BlacklistIpRegisterUseCase {
 
     private final SlackService slackService;
-    private final BlacklistIpRepository blacklistIpRepository;
+    private final RegisterBlacklistIpPort registerBlacklistIpPort;
+    private final RetrieveBlacklistIpByIpAddressPort retrieveBlacklistIpByIpAddressPort;
 
     @Transactional
     @Override
     public String register(HttpServletRequest request, BlacklistIpRequestDto requestDto) {
         String ipAddress = requestDto.getIpAddress();
-        return blacklistIpRepository.findByIpAddress(ipAddress)
+        return retrieveBlacklistIpByIpAddressPort.findByIpAddress(ipAddress)
                 .map(BlacklistIp::getIpAddress)
                 .orElseGet(() -> {
                     BlacklistIp blacklistIp = BlacklistIpRequestDto.toEntity(requestDto);
-                    blacklistIpRepository.save(blacklistIp);
+                    registerBlacklistIpPort.save(blacklistIp);
                     slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Added IP: " + ipAddress);
                     return ipAddress;
                 });
