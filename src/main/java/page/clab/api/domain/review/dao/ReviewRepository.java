@@ -15,8 +15,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewRep
 
     Page<Review> findAllByMember(Member member, Pageable pageable);
 
-    Page<Review> findAllByOrderByCreatedAtDesc(Pageable pageable);
-
     @Query(value = "SELECT r.* FROM review r WHERE r.is_deleted = true", nativeQuery = true)
     Page<Review> findAllByIsDeletedTrue(Pageable pageable);
 }

@@ -1,4 +1,4 @@
-package page.clab.api.domain.review.application.impl;
+package page.clab.api.domain.review.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,8 +11,8 @@ import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedExce
 import page.clab.api.domain.member.application.MemberLookupUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.NotificationSenderUseCase;
-import page.clab.api.domain.review.application.ReviewRegisterUseCase;
-import page.clab.api.domain.review.dao.ReviewRepository;
+import page.clab.api.domain.review.application.port.in.ReviewRegisterUseCase;
+import page.clab.api.domain.review.application.port.out.RegisterReviewPort;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.domain.review.dto.request.ReviewRequestDto;
 import page.clab.api.domain.review.exception.AlreadyReviewedException;
@@ -26,7 +26,7 @@ public class ReviewRegisterService implements ReviewRegisterUseCase {
     private final ActivityGroupMemberService activityGroupMemberService;
     private final NotificationSenderUseCase notificationService;
     private final ValidationService validationService;
-    private final ReviewRepository reviewRepository;
+    private final RegisterReviewPort registerReviewPort;
 
     @Transactional
     @Override
@@ -37,7 +37,7 @@ public class ReviewRegisterService implements ReviewRegisterUseCase {
         Review review = ReviewRequestDto.toEntity(requestDto, currentMember, activityGroup);
         validationService.checkValid(review);
         notifyGroupLeaderOfNewReview(activityGroup, currentMember);
-        return reviewRepository.save(review).getId();
+        return registerReviewPort.save(review).getId();
     }
 
     private void validateReviewCreationPermission(ActivityGroup activityGroup, Member member) {
@@ -57,6 +57,6 @@ public class ReviewRegisterService implements ReviewRegisterUseCase {
     }
 
     private boolean isExistsByMemberAndActivityGroup(Member member, ActivityGroup activityGroup) {
-        return reviewRepository.existsByMemberAndActivityGroup(member, activityGroup);
+        return registerReviewPort.existsByMemberAndActivityGroup(member, activityGroup);
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.review.application.ReviewsByConditionsRetrievalUseCase;
+import page.clab.api.domain.review.application.port.in.ReviewsByConditionsRetrievalUseCase;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.domain.review.dto.response.ReviewResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;

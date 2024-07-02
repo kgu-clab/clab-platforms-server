@@ -1,14 +1,13 @@
-package page.clab.api.domain.review.application.impl;
+package page.clab.api.domain.review.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.review.application.ReviewRemoveUseCase;
-import page.clab.api.domain.review.dao.ReviewRepository;
+import page.clab.api.domain.review.application.port.in.ReviewRemoveUseCase;
+import page.clab.api.domain.review.application.port.out.RemoveReviewPort;
 import page.clab.api.domain.review.domain.Review;
-import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
@@ -16,20 +15,15 @@ import page.clab.api.global.exception.PermissionDeniedException;
 public class ReviewRemoveService implements ReviewRemoveUseCase {
 
     private final MemberLookupUseCase memberLookupUseCase;
-    private final ReviewRepository reviewRepository;
+    private final RemoveReviewPort removeReviewPort;
 
     @Transactional
     @Override
     public Long remove(Long reviewId) throws PermissionDeniedException {
         Member currentMember = memberLookupUseCase.getCurrentMember();
-        Review review = getReviewByIdOrThrow(reviewId);
+        Review review = removeReviewPort.findByIdOrThrow(reviewId);
         review.validateAccessPermission(currentMember);
         review.delete();
-        return reviewRepository.save(review).getId();
-    }
-
-    private Review getReviewByIdOrThrow(Long reviewId) {
-        return reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new NotFoundException("해당 리뷰가 없습니다."));
+        return removeReviewPort.save(review).getId();
     }
 }
