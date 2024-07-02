@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.book.application.BookRemoveUseCase;
+import page.clab.api.domain.book.application.port.in.BookRemoveUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController

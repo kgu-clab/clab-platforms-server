@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.book.application.BooksByConditionsRetrievalUseCase;
+import page.clab.api.domain.book.application.port.in.BooksByConditionsRetrievalUseCase;
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
