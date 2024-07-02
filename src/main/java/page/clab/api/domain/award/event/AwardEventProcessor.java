@@ -1,4 +1,4 @@
-package page.clab.api.domain.award.application;
+package page.clab.api.domain.award.event;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

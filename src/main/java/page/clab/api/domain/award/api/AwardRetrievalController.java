@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.award.application.AwardRetrievalUseCase;
+import page.clab.api.domain.award.application.port.in.AwardRetrievalUseCase;
 import page.clab.api.domain.award.domain.Award;
 import page.clab.api.domain.award.dto.response.AwardResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;

@@ -1,4 +1,4 @@
-package page.clab.api.domain.award.application;
+package page.clab.api.domain.award.application.port.in;
 
 import page.clab.api.domain.award.dto.request.AwardRequestDto;
 
