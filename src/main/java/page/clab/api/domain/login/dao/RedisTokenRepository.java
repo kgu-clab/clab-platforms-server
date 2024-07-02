@@ -8,8 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface RedisTokenRepository extends CrudRepository<RedisToken, String> {
-
     Optional<RedisToken> findByAccessToken(String accessToken);
-
     Optional<RedisToken> findByRefreshToken(String refreshToken);
 }

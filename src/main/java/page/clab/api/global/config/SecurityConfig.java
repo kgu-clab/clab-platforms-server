@@ -21,7 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
-import page.clab.api.domain.login.application.RedisTokenManagementUseCase;
+import page.clab.api.domain.login.application.port.in.RedisTokenManagementUseCase;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;

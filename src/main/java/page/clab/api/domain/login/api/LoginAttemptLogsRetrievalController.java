@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.login.application.LoginAttemptLogsRetrievalUseCase;
+import page.clab.api.domain.login.application.port.in.LoginAttemptLogsRetrievalUseCase;
 import page.clab.api.domain.login.domain.LoginAttemptLog;
 import page.clab.api.domain.login.dto.response.LoginAttemptLogResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;

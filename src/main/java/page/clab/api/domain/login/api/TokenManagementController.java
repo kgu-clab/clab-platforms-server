@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.login.application.LoginUseCase;
+import page.clab.api.domain.login.application.port.in.LoginUseCase;
 import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.global.common.dto.ApiResponse;
 

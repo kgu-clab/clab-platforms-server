@@ -42,7 +42,7 @@ import page.clab.api.domain.book.exception.LoanNotPendingException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.book.exception.OverdueException;
-import page.clab.api.domain.login.exception.LoginFaliedException;
+import page.clab.api.domain.login.exception.LoginFailedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.exception.DuplicateMemberContactException;
 import page.clab.api.domain.member.exception.DuplicateMemberEmailException;
@@ -107,7 +107,7 @@ public class GlobalExceptionHandler {
             AuthenticationInfoNotFoundException.class,
             UnAuthorizeException.class,
             AccessDeniedException.class,
-            LoginFaliedException.class,
+            LoginFailedException.class,
             MemberLockedException.class,
             BadCredentialsException.class,
             TokenValidateException.class,

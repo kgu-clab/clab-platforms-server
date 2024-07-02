@@ -11,8 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface AccountLockInfoRepository extends JpaRepository<AccountLockInfo, Long> {
-
     Optional<AccountLockInfo> findByMemberId(String memberId);
-
     Page<AccountLockInfo> findByLockUntil(LocalDateTime banDate, Pageable pageable);
 }

@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
-import page.clab.api.domain.login.application.RedisTokenManagementUseCase;
+import page.clab.api.domain.login.application.port.in.RedisTokenManagementUseCase;
 import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
