@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.schedule.application.port.out.LoadSchedulePort;
 import page.clab.api.domain.schedule.application.port.out.RegisterSchedulePort;
 import page.clab.api.domain.schedule.application.port.out.RemoveSchedulePort;
 import page.clab.api.domain.schedule.application.port.out.RetrieveActivitySchedulesPort;
@@ -20,19 +21,42 @@ import page.clab.api.global.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class SchedulePersistenceAdapter implements
+        RegisterSchedulePort,
+        RemoveSchedulePort,
+        LoadSchedulePort,
         RetrieveActivitySchedulesPort,
         RetrieveCollectSchedulesPort,
         RetrieveDeletedSchedulesPort,
-        RegisterSchedulePort,
-        RemoveSchedulePort,
         RetrieveSchedulesByConditionsPort,
         RetrieveSchedulesWithinDateRangePort {
 
     private final ScheduleRepository repository;
+
+    @Override
+    public Schedule save(Schedule schedule) {
+        return repository.save(schedule);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        repository.deleteById(id);
+    }
+
+    @Override
+    public Optional<Schedule> findById(Long id) {
+        return repository.findById(id);
+    }
+
+    @Override
+    public Schedule findScheduleByIdOrThrow(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("[Schedule] id: " + id + "에 해당하는 스케줄이 존재하지 않습니다."));
+    }
 
     @Override
     public Page<Schedule> findActivitySchedulesByDateRangeAndMember(LocalDate startDate, LocalDate endDate, Member member, Pageable pageable) {
@@ -47,17 +71,6 @@ public class SchedulePersistenceAdapter implements
     @Override
     public Page<Schedule> findAllByIsDeletedTrue(Pageable pageable) {
         return repository.findAllByIsDeletedTrue(pageable);
-    }
-
-    @Override
-    public Schedule save(Schedule schedule) {
-        return repository.save(schedule);
-    }
-
-    @Override
-    public Schedule findScheduleByIdOrThrow(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("[Schedule] id: " + id + "에 해당하는 스케줄이 존재하지 않습니다."));
     }
 
     @Override
