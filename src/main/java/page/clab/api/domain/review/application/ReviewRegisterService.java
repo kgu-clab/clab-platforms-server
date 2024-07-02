@@ -10,7 +10,7 @@ import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.notification.application.NotificationSenderUseCase;
+import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.domain.review.application.port.in.ReviewRegisterUseCase;
 import page.clab.api.domain.review.application.port.out.CheckReviewExistencePort;
 import page.clab.api.domain.review.application.port.out.RegisterReviewPort;

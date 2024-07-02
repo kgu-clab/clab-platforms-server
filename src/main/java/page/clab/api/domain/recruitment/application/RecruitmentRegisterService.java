@@ -3,7 +3,7 @@ package page.clab.api.domain.recruitment.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.notification.application.NotificationSenderUseCase;
+import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.domain.recruitment.application.port.in.RecruitmentRegisterUseCase;
 import page.clab.api.domain.recruitment.application.port.out.RegisterRecruitmentPort;
 import page.clab.api.domain.recruitment.domain.Recruitment;

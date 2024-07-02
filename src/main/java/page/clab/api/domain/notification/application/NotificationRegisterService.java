@@ -1,11 +1,11 @@
-package page.clab.api.domain.notification.application.impl;
+package page.clab.api.domain.notification.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
-import page.clab.api.domain.notification.application.NotificationRegisterUseCase;
-import page.clab.api.domain.notification.dao.NotificationRepository;
+import page.clab.api.domain.notification.application.port.in.NotificationRegisterUseCase;
+import page.clab.api.domain.notification.application.port.out.RegisterNotificationPort;
 import page.clab.api.domain.notification.domain.Notification;
 import page.clab.api.domain.notification.dto.request.NotificationRequestDto;
 import page.clab.api.global.validation.ValidationService;
@@ -16,7 +16,7 @@ public class NotificationRegisterService implements NotificationRegisterUseCase 
 
     private final MemberLookupUseCase memberLookupUseCase;
     private final ValidationService validationService;
-    private final NotificationRepository notificationRepository;
+    private final RegisterNotificationPort registerNotificationPort;
 
     @Transactional
     @Override
@@ -24,6 +24,6 @@ public class NotificationRegisterService implements NotificationRegisterUseCase 
         memberLookupUseCase.ensureMemberExists(requestDto.getMemberId());
         Notification notification = NotificationRequestDto.toEntity(requestDto);
         validationService.checkValid(notification);
-        return notificationRepository.save(notification).getId();
+        return registerNotificationPort.save(notification).getId();
     }
 }

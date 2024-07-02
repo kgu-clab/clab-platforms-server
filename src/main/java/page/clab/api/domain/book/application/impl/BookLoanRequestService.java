@@ -15,7 +15,7 @@ import page.clab.api.domain.book.exception.BookAlreadyAppliedForLoanException;
 import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
-import page.clab.api.domain.notification.application.NotificationSenderUseCase;
+import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.validation.ValidationService;

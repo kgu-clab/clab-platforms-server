@@ -10,7 +10,7 @@ import page.clab.api.domain.comment.dao.CommentRepository;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.domain.member.application.MemberLookupUseCase;
-import page.clab.api.domain.notification.application.NotificationSenderUseCase;
+import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.global.validation.ValidationService;
 
 @Service

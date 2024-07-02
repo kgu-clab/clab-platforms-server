@@ -11,7 +11,7 @@ import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.AccuseTargetId;
 import page.clab.api.domain.accuse.domain.TargetType;
-import page.clab.api.domain.notification.application.NotificationSenderUseCase;
+import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.validation.ValidationService;
 

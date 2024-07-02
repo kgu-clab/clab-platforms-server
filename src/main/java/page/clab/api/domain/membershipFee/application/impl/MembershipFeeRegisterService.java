@@ -8,7 +8,7 @@ import page.clab.api.domain.membershipFee.application.MembershipFeeRegisterUseCa
 import page.clab.api.domain.membershipFee.dao.MembershipFeeRepository;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
-import page.clab.api.domain.notification.application.NotificationSenderUseCase;
+import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.global.validation.ValidationService;
 
 @Service

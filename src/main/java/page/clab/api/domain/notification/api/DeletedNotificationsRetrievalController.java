@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.notification.application.DeletedNotificationsRetrievalUseCase;
+import page.clab.api.domain.notification.application.port.in.DeletedNotificationsRetrievalUseCase;
 import page.clab.api.domain.notification.dto.response.NotificationResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;

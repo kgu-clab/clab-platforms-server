@@ -1,12 +1,12 @@
-package page.clab.api.domain.notification.application.impl;
+package page.clab.api.domain.notification.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.notification.application.DeletedNotificationsRetrievalUseCase;
-import page.clab.api.domain.notification.dao.NotificationRepository;
+import page.clab.api.domain.notification.application.port.in.DeletedNotificationsRetrievalUseCase;
+import page.clab.api.domain.notification.application.port.out.LoadNotificationPort;
 import page.clab.api.domain.notification.domain.Notification;
 import page.clab.api.domain.notification.dto.response.NotificationResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -15,12 +15,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RequiredArgsConstructor
 public class DeletedNotificationsRetrievalService implements DeletedNotificationsRetrievalUseCase {
 
-    private final NotificationRepository notificationRepository;
+    private final LoadNotificationPort loadNotificationPort;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<NotificationResponseDto> retrieve(Pageable pageable) {
-        Page<Notification> notifications = notificationRepository.findAllByIsDeletedTrue(pageable);
+        Page<Notification> notifications = loadNotificationPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(notifications.map(NotificationResponseDto::toDto));
     }
 }
