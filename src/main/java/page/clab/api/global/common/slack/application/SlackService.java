@@ -33,6 +33,10 @@ public class SlackService {
         eventPublisher.publishEvent(new NotificationEvent(this, GeneralAlertType.ADMIN_LOGIN, request, loginMember));
     }
 
+    public void sendSwaggerAccessNotification(HttpServletRequest request, String additionalMessage) {
+        eventPublisher.publishEvent(new NotificationEvent(this, GeneralAlertType.SWAGGER_ACCESS, request, additionalMessage));
+    }
+
     public void sendNewApplicationNotification(ApplicationRequestDto applicationRequestDto) {
         eventPublisher.publishEvent(new NotificationEvent(this, GeneralAlertType.APPLICATION_CREATED, null, applicationRequestDto));
     }
