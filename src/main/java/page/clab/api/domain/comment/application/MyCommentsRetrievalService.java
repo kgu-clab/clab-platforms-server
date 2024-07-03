@@ -10,7 +10,8 @@ import page.clab.api.domain.comment.application.port.in.MyCommentsRetrievalUseCa
 import page.clab.api.domain.comment.application.port.out.RetrieveCommentsByWriterIdPort;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 import java.util.List;
@@ -21,12 +22,13 @@ import java.util.Objects;
 public class MyCommentsRetrievalService implements MyCommentsRetrievalUseCase {
 
     private final RetrieveCommentsByWriterIdPort retrieveCommentsByWriterIdPort;
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<CommentMyResponseDto> retrieve(Pageable pageable) {
-        String currentMemberId = memberLookupUseCase.getCurrentMemberId();
+        String currentMemberId = memberRetrievalUseCase.getCurrentMemberId();
         Page<Comment> comments = retrieveCommentsByWriterIdPort.findAllByWriterId(currentMemberId, pageable);
         List<CommentMyResponseDto> dtos = comments.stream()
                 .map(this::toCommentMyResponseDto)
@@ -36,6 +38,6 @@ public class MyCommentsRetrievalService implements MyCommentsRetrievalUseCase {
     }
 
     private CommentMyResponseDto toCommentMyResponseDto(Comment comment) {
-        return CommentMyResponseDto.toDto(comment, memberLookupUseCase.getMemberDetailedInfoById(comment.getWriterId()), false);
+        return CommentMyResponseDto.toDto(comment, memberInfoRetrievalUseCase.getMemberDetailedInfoById(comment.getWriterId()), false);
     }
 }

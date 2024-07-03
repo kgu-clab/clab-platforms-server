@@ -9,7 +9,7 @@ import page.clab.api.domain.board.application.port.in.MyBoardsRetrievalUseCase;
 import page.clab.api.domain.board.application.port.out.RetrieveMyBoardsPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.dto.response.BoardMyResponseDto;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
@@ -17,13 +17,13 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RequiredArgsConstructor
 public class MyBoardsRetrievalService implements MyBoardsRetrievalUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final RetrieveMyBoardsPort retrieveMyBoardsPort;
 
     @Transactional
     @Override
     public PagedResponseDto<BoardMyResponseDto> retrieve(Pageable pageable) {
-        MemberBasicInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberBasicInfo();
+        MemberBasicInfoDto currentMemberInfo = memberInfoRetrievalUseCase.getCurrentMemberBasicInfo();
         Page<Board> boards = retrieveMyBoardsPort.findAllByMemberId(currentMemberInfo.getMemberId(), pageable);
         return new PagedResponseDto<>(boards.map(board -> BoardMyResponseDto.toDto(board, currentMemberInfo)));
     }

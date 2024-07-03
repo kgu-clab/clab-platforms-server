@@ -16,7 +16,7 @@ import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.exception.LoginFailedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
@@ -29,11 +29,9 @@ import java.util.List;
 @Qualifier("tokenManagementService")
 public class TokenManagementService implements LoginUseCase {
 
-    private final JwtTokenProvider jwtTokenProvider;
-
-    private final MemberLookupUseCase memberLookupUseCase;
-
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
     private final RedisTokenManagementUseCase redisTokenManagementUseCase;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
     @Override
@@ -57,7 +55,7 @@ public class TokenManagementService implements LoginUseCase {
 
     private void validateMemberExistence(Authentication authentication) {
         String id = authentication.getName();
-        if (memberLookupUseCase.findById(id).isEmpty()) {
+        if (memberRetrievalUseCase.findById(id).isEmpty()) {
             throw new TokenForgeryException("존재하지 않는 회원에 대한 토큰입니다.");
         }
     }

@@ -6,7 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.MemberInfoUpdateUseCase;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.domain.member.application.port.out.LoadMemberPort;
 import page.clab.api.domain.member.application.port.out.UpdateMemberPort;
 import page.clab.api.domain.member.domain.Member;
@@ -21,7 +21,7 @@ import page.clab.api.global.validation.ValidationService;
 @RequiredArgsConstructor
 public class MemberInfoUpdateService implements MemberInfoUpdateUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
     private final LoadMemberPort loadMemberPort;
     private final UpdateMemberPort updateMemberPort;
     private final ValidationService validationService;
@@ -32,7 +32,7 @@ public class MemberInfoUpdateService implements MemberInfoUpdateUseCase {
     @Transactional
     @Override
     public String update(String memberId, MemberUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberLookupUseCase.getCurrentMember();
+        Member currentMember = memberRetrievalUseCase.getCurrentMember();
         Member member = loadMemberPort.findByIdOrThrow(memberId);
         member.validateAccessPermission(currentMember);
         updateMember(requestDto, member);

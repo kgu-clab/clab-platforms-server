@@ -7,7 +7,7 @@ import page.clab.api.domain.comment.application.port.in.CommentRemoveUseCase;
 import page.clab.api.domain.comment.application.port.out.LoadCommentPort;
 import page.clab.api.domain.comment.application.port.out.RegisterCommentPort;
 import page.clab.api.domain.comment.domain.Comment;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
@@ -16,13 +16,13 @@ public class CommentRemoveService implements CommentRemoveUseCase {
 
     private final LoadCommentPort loadCommentPort;
     private final RegisterCommentPort registerCommentPort;
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
 
     @Transactional
     @Override
     public Long remove(Long commentId) throws PermissionDeniedException {
         Comment comment = loadCommentPort.findByIdOrThrow(commentId);
-        comment.validateAccessPermission(memberLookupUseCase.getCurrentMemberDetailedInfo());
+        comment.validateAccessPermission(memberInfoRetrievalUseCase.getCurrentMemberDetailedInfo());
         comment.delete();
         registerCommentPort.save(comment);
         return comment.getBoard().getId();

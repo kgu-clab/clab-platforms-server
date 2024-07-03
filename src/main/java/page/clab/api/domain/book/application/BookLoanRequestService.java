@@ -15,7 +15,7 @@ import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
 import page.clab.api.domain.book.exception.BookAlreadyAppliedForLoanException;
 import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
 import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
@@ -29,7 +29,7 @@ public class BookLoanRequestService implements BookLoanRequestUseCase {
     private final LoadBookLoanRecordByBookAndStatusPort loadBookLoanRecordByBookAndStatusPort;
     private final RegisterBookLoanRecordPort registerBookLoanRecordPort;
     private final CountBooksByBorrowerPort countBooksByBorrowerPort;
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final NotificationSenderUseCase notificationService;
     private final ValidationService validationService;
 
@@ -37,7 +37,7 @@ public class BookLoanRequestService implements BookLoanRequestUseCase {
     @Override
     public Long request(BookLoanRecordRequestDto requestDto) throws CustomOptimisticLockingFailureException {
         try {
-            MemberBorrowerInfoDto borrowerInfo = memberLookupUseCase.getCurrentMemberBorrowerInfo();
+            MemberBorrowerInfoDto borrowerInfo = memberInfoRetrievalUseCase.getCurrentMemberBorrowerInfo();
 
             borrowerInfo.checkLoanSuspension();
             validateBorrowLimit(borrowerInfo.getMemberId());

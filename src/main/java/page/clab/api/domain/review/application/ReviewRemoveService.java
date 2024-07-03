@@ -3,7 +3,7 @@ package page.clab.api.domain.review.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.review.application.port.in.ReviewRemoveUseCase;
 import page.clab.api.domain.review.application.port.out.LoadReviewPort;
@@ -15,14 +15,14 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RequiredArgsConstructor
 public class ReviewRemoveService implements ReviewRemoveUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
     private final LoadReviewPort loadReviewPort;
     private final RegisterReviewPort registerReviewPort;
 
     @Transactional
     @Override
     public Long remove(Long reviewId) throws PermissionDeniedException {
-        Member currentMember = memberLookupUseCase.getCurrentMember();
+        Member currentMember = memberRetrievalUseCase.getCurrentMember();
         Review review = loadReviewPort.findByIdOrThrow(reviewId);
         review.validateAccessPermission(currentMember);
         review.delete();

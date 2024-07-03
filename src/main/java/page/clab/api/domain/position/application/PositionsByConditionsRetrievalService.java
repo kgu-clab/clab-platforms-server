@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberPositionInfoDto;
 import page.clab.api.domain.position.application.port.in.PositionsByConditionsRetrievalUseCase;
 import page.clab.api.domain.position.application.port.out.RetrievePositionsByConditionsPort;
@@ -19,11 +19,11 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class PositionsByConditionsRetrievalService implements PositionsByConditionsRetrievalUseCase {
 
     private final RetrievePositionsByConditionsPort retrievePositionsByConditionsPort;
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
 
     @Transactional(readOnly = true)
     public PagedResponseDto<PositionResponseDto> retrieve(String year, PositionType positionType, Pageable pageable) {
-        MemberPositionInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberPositionInfo();
+        MemberPositionInfoDto currentMemberInfo = memberInfoRetrievalUseCase.getCurrentMemberPositionInfo();
         Page<Position> positions = retrievePositionsByConditionsPort.findByConditions(year, positionType, pageable);
         return new PagedResponseDto<>(positions.map(position -> PositionResponseDto.toDto(position, currentMemberInfo)));
     }

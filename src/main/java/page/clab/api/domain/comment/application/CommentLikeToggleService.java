@@ -10,7 +10,7 @@ import page.clab.api.domain.comment.application.port.out.RegisterCommentLikePort
 import page.clab.api.domain.comment.application.port.out.RemoveCommentLikePort;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.domain.CommentLike;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +20,13 @@ public class CommentLikeToggleService implements CommentLikeToggleUseCase {
     private final LoadCommentLikeByCommentIdAndMemberIdPort loadCommentLikeByCommentIdAndMemberIdPort;
     private final RegisterCommentLikePort registerCommentLikePort;
     private final RemoveCommentLikePort removeCommentLikePort;
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
+
 
     @Transactional
     @Override
     public Long toggle(Long commentId) {
-        String currentMemberId = memberLookupUseCase.getCurrentMemberId();
+        String currentMemberId = memberRetrievalUseCase.getCurrentMemberId();
         Comment comment = loadCommentPort.findByIdOrThrow(commentId);
         return loadCommentLikeByCommentIdAndMemberIdPort.findByCommentIdAndMemberId(comment.getId(), currentMemberId)
                 .map(commentLike -> {

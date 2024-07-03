@@ -10,7 +10,7 @@ import page.clab.api.domain.board.application.port.out.RetrieveBoardsByCategoryP
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.BoardCategory;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
@@ -18,13 +18,13 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RequiredArgsConstructor
 public class BoardsByCategoryRetrievalService implements BoardsByCategoryRetrievalUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final RetrieveBoardsByCategoryPort retrieveBoardsByCategoryPort;
 
     @Transactional
     @Override
     public PagedResponseDto<BoardCategoryResponseDto> retrieve(BoardCategory category, Pageable pageable) {
-        MemberDetailedInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberDetailedInfo();
+        MemberDetailedInfoDto currentMemberInfo = memberInfoRetrievalUseCase.getCurrentMemberDetailedInfo();
         Page<Board> boards = retrieveBoardsByCategoryPort.findAllByCategory(category, pageable);
         return new PagedResponseDto<>(boards.map(board -> BoardCategoryResponseDto.toDto(board, currentMemberInfo, 0L))); // Update the comment count accordingly
     }

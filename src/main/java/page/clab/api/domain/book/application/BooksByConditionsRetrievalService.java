@@ -13,7 +13,7 @@ import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class BooksByConditionsRetrievalService implements BooksByConditionsRetrievalUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final RetrieveBooksByConditionsPort retrieveBooksByConditionsPort;
     private final LoadBookLoanRecordByBookAndStatusPort loadBookLoanRecordByBookAndStatusPort;
 
@@ -36,7 +36,7 @@ public class BooksByConditionsRetrievalService implements BooksByConditionsRetri
 
     @NotNull
     private BookResponseDto mapToBookResponseDto(Book book) {
-        MemberBasicInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberBasicInfo();
+        MemberBasicInfoDto currentMemberInfo = memberInfoRetrievalUseCase.getCurrentMemberBasicInfo();
         LocalDateTime dueDate = getDueDateForBook(book);
         return BookResponseDto.toDto(book, currentMemberInfo.getMemberName(), dueDate);
     }

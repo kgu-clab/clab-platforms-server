@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.CloudUsageRetrievalByMemberIdUseCase;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.domain.member.application.port.out.LoadMemberPort;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
@@ -18,7 +18,7 @@ import java.io.File;
 @RequiredArgsConstructor
 public class CloudUsageRetrievalByMemberIdService implements CloudUsageRetrievalByMemberIdUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
     private final LoadMemberPort loadMemberPort;
 
     @Value("${resource.file.path}")
@@ -27,7 +27,7 @@ public class CloudUsageRetrievalByMemberIdService implements CloudUsageRetrieval
     @Override
     @Transactional(readOnly = true)
     public CloudUsageInfo retrieve(String memberId) throws PermissionDeniedException {
-        Member currentMember = memberLookupUseCase.getCurrentMember();
+        Member currentMember = memberRetrievalUseCase.getCurrentMember();
         Member targetMember = loadMemberPort.findByIdOrThrow(memberId);
         targetMember.validateAccessPermissionForCloud(currentMember);
         File directory = getMemberDirectory(targetMember.getId());

@@ -18,7 +18,7 @@ import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.exception.LoginFailedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberLoginInfoDto;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
@@ -32,24 +32,18 @@ import java.util.List;
 public class TwoFactorAuthenticationService implements LoginUseCase {
 
     private final AccountLockManagementUseCase accountLockManagementUseCase;
-
-    private final MemberLookupUseCase memberLookupUseCase;
-
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final LoginAttemptLogManagementUseCase loginAttemptLogManagementUseCase;
-
     private final RedisTokenManagementUseCase redisTokenManagementUseCase;
-
     private final AuthenticatorUseCase authenticatorUseCase;
-
     private final SlackService slackService;
-
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
     @Override
     public LoginResult authenticate(HttpServletRequest request, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFailedException, MemberLockedException {
         String memberId = twoFactorAuthenticationRequestDto.getMemberId();
-        MemberLoginInfoDto loginMember = memberLookupUseCase.getMemberLoginInfoById(memberId);
+        MemberLoginInfoDto loginMember = memberInfoRetrievalUseCase.getMemberLoginInfoById(memberId);
         String totp = twoFactorAuthenticationRequestDto.getTotp();
 
         accountLockManagementUseCase.handleAccountLockInfo(memberId);

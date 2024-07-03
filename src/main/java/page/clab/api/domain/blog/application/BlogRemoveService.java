@@ -7,7 +7,7 @@ import page.clab.api.domain.blog.application.port.in.BlogRemoveUseCase;
 import page.clab.api.domain.blog.application.port.out.LoadBlogPort;
 import page.clab.api.domain.blog.application.port.out.RegisterBlogPort;
 import page.clab.api.domain.blog.domain.Blog;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -15,14 +15,14 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RequiredArgsConstructor
 public class BlogRemoveService implements BlogRemoveUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
     private final LoadBlogPort loadBlogPort;
     private final RegisterBlogPort registerBlogPort;
 
     @Transactional
     @Override
     public Long remove(Long blogId) throws PermissionDeniedException {
-        Member currentMember = memberLookupUseCase.getCurrentMember();
+        Member currentMember = memberRetrievalUseCase.getCurrentMember();
         Blog blog = loadBlogPort.findByIdOrThrow(blogId);
         blog.validateAccessPermission(currentMember);
         blog.delete();

@@ -9,7 +9,7 @@ import page.clab.api.domain.donation.application.port.in.DonationsByConditionsRe
 import page.clab.api.domain.donation.application.port.out.RetrieveDonationsByConditionsPort;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.dto.response.DonationResponseDto;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
@@ -20,14 +20,14 @@ import java.time.LocalDate;
 public class DonationsByConditionsRetrievalService implements DonationsByConditionsRetrievalUseCase {
 
     private final RetrieveDonationsByConditionsPort retrieveDonationsByConditionsPort;
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<DonationResponseDto> retrieve(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Page<Donation> donations = retrieveDonationsByConditionsPort.findByConditions(memberId, name, startDate, endDate, pageable);
         return new PagedResponseDto<>(donations.map(donation -> {
-            MemberBasicInfoDto memberInfo = memberLookupUseCase.getMemberBasicInfoById(donation.getMemberId());
+            MemberBasicInfoDto memberInfo = memberInfoRetrievalUseCase.getMemberBasicInfoById(donation.getMemberId());
             return DonationResponseDto.toDto(donation, memberInfo.getMemberName());
         }));
     }

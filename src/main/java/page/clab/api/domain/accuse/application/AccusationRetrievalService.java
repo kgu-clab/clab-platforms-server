@@ -13,7 +13,7 @@ import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
@@ -26,7 +26,7 @@ public class AccusationRetrievalService implements AccusationRetrievalUseCase {
 
     private final RetrieveAccuseTargetsByConditionsPort retrieveAccuseTargetsByConditionsPort;
     private final RetrieveAccuseByTargetPort retrieveAccuseByTargetPort;
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
 
     @Transactional(readOnly = true)
     @Override
@@ -44,7 +44,7 @@ public class AccusationRetrievalService implements AccusationRetrievalUseCase {
                         return null;
                     }
                     List<MemberBasicInfoDto> members = accuses.stream()
-                            .map(accuse -> memberLookupUseCase.getMemberBasicInfoById(accuse.getMemberId()))
+                            .map(accuse -> memberInfoRetrievalUseCase.getMemberBasicInfoById(accuse.getMemberId()))
                             .toList();
                     return AccuseResponseDto.toDto(accuses.getFirst(), members);
                 })

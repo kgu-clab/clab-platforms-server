@@ -10,7 +10,7 @@ import page.clab.api.domain.comment.application.port.out.LoadCommentPort;
 import page.clab.api.domain.comment.application.port.out.RegisterCommentPort;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.global.validation.ValidationService;
 
@@ -19,7 +19,7 @@ import page.clab.api.global.validation.ValidationService;
 public class CommentRegisterService implements CommentRegisterUseCase {
 
     private final BoardLookupUseCase boardLookupUseCase;
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
     private final NotificationSenderUseCase notificationService;
     private final ValidationService validationService;
     private final RegisterCommentPort registerCommentPort;
@@ -34,7 +34,7 @@ public class CommentRegisterService implements CommentRegisterUseCase {
     }
 
     private Comment createAndStoreComment(Long parentId, Long boardId, CommentRequestDto requestDto) {
-        String currentMemberId = memberLookupUseCase.getCurrentMemberId();
+        String currentMemberId = memberRetrievalUseCase.getCurrentMemberId();
         Board board = boardLookupUseCase.getBoardByIdOrThrow(boardId);
         Comment parent = findParentComment(parentId);
         Comment comment = CommentRequestDto.toEntity(requestDto, board, currentMemberId, parent);

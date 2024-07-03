@@ -3,7 +3,7 @@ package page.clab.api.domain.review.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.review.application.port.in.ReviewUpdateUseCase;
 import page.clab.api.domain.review.application.port.out.LoadReviewPort;
@@ -17,7 +17,7 @@ import page.clab.api.global.validation.ValidationService;
 @RequiredArgsConstructor
 public class ReviewUpdateService implements ReviewUpdateUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
     private final LoadReviewPort loadReviewPort;
     private final RegisterReviewPort registerReviewPort;
     private final ValidationService validationService;
@@ -25,7 +25,7 @@ public class ReviewUpdateService implements ReviewUpdateUseCase {
     @Transactional
     @Override
     public Long update(Long reviewId, ReviewUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberLookupUseCase.getCurrentMember();
+        Member currentMember = memberRetrievalUseCase.getCurrentMember();
         Review review = loadReviewPort.findByIdOrThrow(reviewId);
         review.validateAccessPermission(currentMember);
         review.update(requestDto);

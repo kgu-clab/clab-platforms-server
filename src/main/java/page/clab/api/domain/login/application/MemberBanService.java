@@ -9,7 +9,7 @@ import page.clab.api.domain.login.application.port.in.RedisTokenManagementUseCas
 import page.clab.api.domain.login.application.port.out.LoadAccountLockInfoPort;
 import page.clab.api.domain.login.application.port.out.RegisterAccountLockInfoPort;
 import page.clab.api.domain.login.domain.AccountLockInfo;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
@@ -18,7 +18,7 @@ import page.clab.api.global.common.slack.domain.SecurityAlertType;
 @RequiredArgsConstructor
 public class MemberBanService implements MemberBanUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final RedisTokenManagementUseCase redisTokenManagementUseCase;
     private final SlackService slackService;
     private final LoadAccountLockInfoPort loadAccountLockInfoPort;
@@ -27,7 +27,7 @@ public class MemberBanService implements MemberBanUseCase {
     @Transactional
     @Override
     public Long ban(HttpServletRequest request, String memberId) {
-        MemberBasicInfoDto memberInfo = memberLookupUseCase.getMemberBasicInfoById(memberId);
+        MemberBasicInfoDto memberInfo = memberInfoRetrievalUseCase.getMemberBasicInfoById(memberId);
         AccountLockInfo accountLockInfo = ensureAccountLockInfo(memberInfo.getMemberId());
         accountLockInfo.banPermanently();
         redisTokenManagementUseCase.deleteByMemberId(memberId);
@@ -47,7 +47,7 @@ public class MemberBanService implements MemberBanUseCase {
     }
 
     private void sendSlackBanNotification(HttpServletRequest request, String memberId) {
-        String memberName = memberLookupUseCase.getMemberBasicInfoById(memberId).getMemberName();
+        String memberName = memberInfoRetrievalUseCase.getMemberBasicInfoById(memberId).getMemberName();
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_BANNED, "ID: " + memberId + ", Name: " + memberName);
     }
 }

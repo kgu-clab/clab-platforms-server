@@ -9,7 +9,7 @@ import page.clab.api.domain.donation.application.port.in.DeletedDonationsRetriev
 import page.clab.api.domain.donation.application.port.out.RetrieveDeletedDonationsPort;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.dto.response.DonationResponseDto;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
@@ -18,14 +18,14 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class DeletedDonationsRetrievalService implements DeletedDonationsRetrievalUseCase {
 
     private final RetrieveDeletedDonationsPort retrieveDeletedDonationsPort;
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<DonationResponseDto> retrieve(Pageable pageable) {
         Page<Donation> donations = retrieveDeletedDonationsPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(donations.map(donation -> {
-            MemberBasicInfoDto memberInfo = memberLookupUseCase.getMemberBasicInfoById(donation.getMemberId());
+            MemberBasicInfoDto memberInfo = memberInfoRetrievalUseCase.getMemberBasicInfoById(donation.getMemberId());
             return DonationResponseDto.toDto(donation, memberInfo.getMemberName());
         }));
     }

@@ -1,30 +1,32 @@
 package page.clab.api.domain.member.application;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.MemberRemoveUseCase;
+import page.clab.api.domain.member.application.port.in.MemberUpdateUseCase;
 import page.clab.api.domain.member.application.port.out.LoadMemberPort;
 import page.clab.api.domain.member.application.port.out.RegisterMemberPort;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.event.MemberDeletedEvent;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class MemberRemoveService implements MemberRemoveUseCase {
+public class MemberUpdateService implements MemberUpdateUseCase {
 
     private final LoadMemberPort loadMemberPort;
     private final RegisterMemberPort registerMemberPort;
-    private final ApplicationEventPublisher eventPublisher;
 
-    @Transactional
     @Override
-    public String remove(String memberId) {
+    public void updateLoanSuspensionDate(String memberId, LocalDateTime loanSuspensionDate) {
         Member member = loadMemberPort.findByIdOrThrow(memberId);
-        member.delete();
+        member.updateLoanSuspensionDate(loanSuspensionDate);
         registerMemberPort.save(member);
-        eventPublisher.publishEvent(new MemberDeletedEvent(this, member.getId()));
-        return member.getId();
+    }
+
+    @Override
+    public void updateLastLoginTime(String memberId) {
+        Member member = loadMemberPort.findByIdOrThrow(memberId);
+        member.updateLastLoginTime();
+        registerMemberPort.save(member);
     }
 }

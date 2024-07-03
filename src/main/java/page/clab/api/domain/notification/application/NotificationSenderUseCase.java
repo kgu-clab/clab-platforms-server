@@ -3,7 +3,8 @@ package page.clab.api.domain.notification.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberExistenceUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.notification.application.port.out.RegisterNotificationPort;
 import page.clab.api.domain.notification.domain.Notification;
 
@@ -14,13 +15,14 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class NotificationSenderUseCase implements page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberExistenceUseCase memberExistenceUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final RegisterNotificationPort registerNotificationPort;
 
     @Override
     @Transactional
     public void sendNotificationToAllMembers(String content) {
-        List<Notification> notifications = memberLookupUseCase.getMemberIds().stream()
+        List<Notification> notifications = memberInfoRetrievalUseCase.getMemberIds().stream()
                 .map(memberId -> Notification.create(memberId, content))
                 .toList();
         registerNotificationPort.saveAll(notifications);
@@ -29,7 +31,7 @@ public class NotificationSenderUseCase implements page.clab.api.domain.notificat
     @Override
     @Transactional
     public void sendNotificationToMember(String memberId, String content) {
-        memberLookupUseCase.ensureMemberExists(memberId);
+        memberExistenceUseCase.ensureMemberExists(memberId);
         Notification notification = Notification.create(memberId, content);
         registerNotificationPort.save(notification);
     }
@@ -46,13 +48,13 @@ public class NotificationSenderUseCase implements page.clab.api.domain.notificat
     @Override
     @Transactional
     public void sendNotificationToAdmins(String content) {
-        sendNotificationToSpecificRole(memberLookupUseCase::getAdminIds, content);
+        sendNotificationToSpecificRole(memberInfoRetrievalUseCase::getAdminIds, content);
     }
 
     @Override
     @Transactional
     public void sendNotificationToSuperAdmins(String content) {
-        sendNotificationToSpecificRole(memberLookupUseCase::getSuperAdminIds, content);
+        sendNotificationToSpecificRole(memberInfoRetrievalUseCase::getSuperAdminIds, content);
     }
 
     private void sendNotificationToSpecificRole(Supplier<List<String>> memberSupplier, String content) {

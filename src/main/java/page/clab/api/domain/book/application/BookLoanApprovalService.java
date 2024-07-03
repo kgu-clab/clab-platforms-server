@@ -11,14 +11,14 @@ import page.clab.api.domain.book.application.port.out.RegisterBookLoanRecordPort
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
 public class BookLoanApprovalService implements BookLoanApprovalUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
     private final LoadBookPort loadBookPort;
     private final LoadBookLoanRecordPort loadBookLoanRecordPort;
     private final RegisterBookLoanRecordPort registerBookLoanRecordPort;
@@ -28,7 +28,7 @@ public class BookLoanApprovalService implements BookLoanApprovalUseCase {
     @Transactional
     @Override
     public Long approve(Long bookLoanRecordId) {
-        String borrowerId = memberLookupUseCase.getCurrentMemberId();
+        String borrowerId = memberRetrievalUseCase.getCurrentMemberId();
         BookLoanRecord bookLoanRecord = loadBookLoanRecordPort.findByIdOrThrow(bookLoanRecordId);
         Book book = loadBookPort.findByIdOrThrow(bookLoanRecord.getBook().getId());
 

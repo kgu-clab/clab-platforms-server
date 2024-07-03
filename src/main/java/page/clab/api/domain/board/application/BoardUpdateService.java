@@ -8,7 +8,7 @@ import page.clab.api.domain.board.application.port.in.BoardUpdateUseCase;
 import page.clab.api.domain.board.application.port.out.RegisterBoardPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.validation.ValidationService;
@@ -17,7 +17,7 @@ import page.clab.api.global.validation.ValidationService;
 @RequiredArgsConstructor
 public class BoardUpdateService implements BoardUpdateUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final BoardLookupUseCase boardLookupUseCase;
     private final ValidationService validationService;
     private final RegisterBoardPort registerBoardPort;
@@ -25,7 +25,7 @@ public class BoardUpdateService implements BoardUpdateUseCase {
     @Transactional
     @Override
     public String update(Long boardId, BoardUpdateRequestDto requestDto) throws PermissionDeniedException {
-        MemberDetailedInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberDetailedInfo();
+        MemberDetailedInfoDto currentMemberInfo = memberInfoRetrievalUseCase.getCurrentMemberDetailedInfo();
         Board board = boardLookupUseCase.getBoardByIdOrThrow(boardId);
         board.validateAccessPermission(currentMemberInfo);
         board.update(requestDto);

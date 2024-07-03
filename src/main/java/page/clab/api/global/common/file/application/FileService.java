@@ -10,7 +10,7 @@ import page.clab.api.domain.activityGroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activityGroup.dao.GroupMemberRepository;
 import page.clab.api.domain.member.application.port.in.CloudUsageRetrievalByMemberIdUseCase;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
@@ -35,17 +35,11 @@ import java.util.regex.Pattern;
 public class FileService {
 
     private final FileHandler fileHandler;
-
-    private final MemberLookupUseCase memberLookupUseCase;
-
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
     private final CloudUsageRetrievalByMemberIdUseCase cloudUsageRetrievalByMemberIdUseCase;
-
     private final UploadedFileService uploadedFileService;
-
     private final ActivityGroupRepository activityGroupRepository;
-
     private final GroupMemberRepository groupMemberRepository;
-
     private final ActivityGroupBoardRepository activityGroupBoardRepository;
 
     @Value("${resource.file.url}")
@@ -58,7 +52,7 @@ public class FileService {
     private String maxFileSize;
 
     public String saveQRCodeImage(byte[] QRCodeImage, String path, long storagePeriod, String nowDateTime) throws IOException {
-        Member currentMember = memberLookupUseCase.getCurrentMember();
+        Member currentMember = memberRetrievalUseCase.getCurrentMember();
         String extension = "png";
         String originalFileName = path.replace(File.separator, "-") + nowDateTime;
         String saveFilename = fileHandler.makeFileName(extension);
@@ -81,7 +75,7 @@ public class FileService {
     }
 
     public UploadedFileResponseDto saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws IOException, PermissionDeniedException {
-        Member currentMember = memberLookupUseCase.getCurrentMember();
+        Member currentMember = memberRetrievalUseCase.getCurrentMember();
 
         validatePathVariable(path);
         validateMemberCloudUsage(multipartFile, path);
@@ -97,7 +91,7 @@ public class FileService {
     }
 
     public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) throws PermissionDeniedException {
-        Member currentMember = memberLookupUseCase.getCurrentMember();
+        Member currentMember = memberRetrievalUseCase.getCurrentMember();
         UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(deleteFileRequestDto.getUrl());
         String filePath = uploadedFile.getSavedPath();
         File storedFile = new File(filePath);
@@ -110,7 +104,7 @@ public class FileService {
     }
 
     public String buildPath(String baseDirectory, Long... additionalSegments) {
-        Member currentMember = memberLookupUseCase.getCurrentMember();
+        Member currentMember = memberRetrievalUseCase.getCurrentMember();
         StringBuilder pathBuilder = new StringBuilder(baseDirectory);
         for (Long segment : additionalSegments) {
             pathBuilder.append(File.separator).append(segment);
@@ -124,7 +118,7 @@ public class FileService {
             Long activityGroupId = Long.parseLong(path.split(Pattern.quote(File.separator))[1]);
             Long activityGroupBoardId = Long.parseLong(path.split(Pattern.quote(File.separator))[2]);
             String memberId = path.split(Pattern.quote(File.separator))[3];
-            Optional<Member> assignmentWriterOpt = memberLookupUseCase.findById(memberId);
+            Optional<Member> assignmentWriterOpt = memberRetrievalUseCase.findById(memberId);
             if (!activityGroupRepository.existsById(activityGroupId)) {
                 throw new AssignmentFileUploadFailException("해당 활동은 존재하지 않습니다.");
             }

@@ -22,7 +22,8 @@ import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.exception.LoginFailedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.MemberUpdateUseCase;
 import page.clab.api.domain.member.dto.shared.MemberLoginInfoDto;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.util.HttpReqResUtil;
@@ -39,15 +40,11 @@ public class UserLoginService implements LoginUseCase {
     private final AuthenticationManager loginAuthenticationManager;
 
     private final JwtTokenProvider jwtTokenProvider;
-
     private final AccountLockManagementUseCase accountLockManagementUseCase;
-
-    private final MemberLookupUseCase memberLookupUseCase;
-
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
+    private final MemberUpdateUseCase memberUpdateUseCase;
     private final LoginAttemptLogManagementUseCase loginAttemptLogManagementUseCase;
-
     private final RedisTokenManagementUseCase redisTokenManagementUseCase;
-
     private final AuthenticatorUseCase authenticatorUseCase;
 
     @Transactional
@@ -55,8 +52,8 @@ public class UserLoginService implements LoginUseCase {
     public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFailedException, MemberLockedException {
         authenticateAndCheckStatus(request, requestDto);
         logLoginAttempt(request, requestDto.getId(), true);
-        MemberLoginInfoDto loginMember = memberLookupUseCase.getMemberLoginInfoById(requestDto.getId());
-        memberLookupUseCase.updateLastLoginTime(requestDto.getId());
+        MemberLoginInfoDto loginMember = memberInfoRetrievalUseCase.getMemberLoginInfoById(requestDto.getId());
+        memberUpdateUseCase.updateLastLoginTime(requestDto.getId());
         return generateLoginResult(loginMember);
     }
 

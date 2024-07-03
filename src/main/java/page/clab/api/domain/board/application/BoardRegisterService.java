@@ -8,7 +8,7 @@ import page.clab.api.domain.board.application.port.out.RegisterBoardPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.SlackBoardInfo;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.global.common.file.application.UploadedFileService;
@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardRegisterService implements BoardRegisterUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final NotificationSenderUseCase notificationService;
     private final UploadedFileService uploadedFileService;
     private final ValidationService validationService;
@@ -33,7 +33,7 @@ public class BoardRegisterService implements BoardRegisterUseCase {
     @Transactional
     @Override
     public String register(BoardRequestDto requestDto) throws PermissionDeniedException {
-        MemberDetailedInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberDetailedInfo();
+        MemberDetailedInfoDto currentMemberInfo = memberInfoRetrievalUseCase.getCurrentMemberDetailedInfo();
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         Board board = BoardRequestDto.toEntity(requestDto, currentMemberInfo.getMemberId(), uploadedFiles);
         board.validateAccessPermissionForCreation(currentMemberInfo);

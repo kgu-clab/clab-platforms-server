@@ -11,7 +11,9 @@ import page.clab.api.domain.login.application.port.out.RegisterAccountLockInfoPo
 import page.clab.api.domain.login.domain.AccountLockInfo;
 import page.clab.api.domain.login.exception.LoginFailedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 
@@ -19,7 +21,8 @@ import page.clab.api.global.common.slack.domain.SecurityAlertType;
 @RequiredArgsConstructor
 public class AccountLockManagementService implements AccountLockManagementUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final SlackService slackService;
     private final LoadAccountLockInfoPort loadAccountLockInfoPort;
     private final RegisterAccountLockInfoPort registerAccountLockInfoPort;
@@ -60,7 +63,7 @@ public class AccountLockManagementService implements AccountLockManagementUseCas
     }
 
     private void ensureMemberExists(String memberId) throws LoginFailedException {
-        if (memberLookupUseCase.findById(memberId).isEmpty()) {
+        if (memberRetrievalUseCase.findById(memberId).isEmpty()) {
             throw new LoginFailedException();
         }
     }
@@ -72,8 +75,9 @@ public class AccountLockManagementService implements AccountLockManagementUseCas
     }
 
     private void sendSlackLoginFailureNotification(HttpServletRequest request, String memberId) {
-        String memberName = memberLookupUseCase.getMemberBasicInfoById(memberId).getMemberName();
-        if (memberLookupUseCase.getMemberDetailedInfoById(memberId).isAdminRole()) {
+        MemberDetailedInfoDto memberInfo = memberInfoRetrievalUseCase.getMemberDetailedInfoById(memberId);
+        String memberName = memberInfo.getMemberName();
+        if (memberInfo.isAdminRole()) {
             request.setAttribute("member", memberId + " " + memberName);
             slackService.sendSecurityAlertNotification(request, SecurityAlertType.REPEATED_LOGIN_FAILURES, "로그인 실패 횟수 초과로 계정이 잠겼습니다.");
         }

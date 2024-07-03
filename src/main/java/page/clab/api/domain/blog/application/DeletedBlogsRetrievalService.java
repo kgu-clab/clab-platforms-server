@@ -9,7 +9,7 @@ import page.clab.api.domain.blog.application.port.in.DeletedBlogsRetrievalUseCas
 import page.clab.api.domain.blog.application.port.out.RetrieveDeletedBlogsPort;
 import page.clab.api.domain.blog.domain.Blog;
 import page.clab.api.domain.blog.dto.response.BlogDetailsResponseDto;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
@@ -17,13 +17,13 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RequiredArgsConstructor
 public class DeletedBlogsRetrievalService implements DeletedBlogsRetrievalUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final RetrieveDeletedBlogsPort retrieveDeletedBlogsPort;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<BlogDetailsResponseDto> retrieve(Pageable pageable) {
-        MemberBasicInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberBasicInfo();
+        MemberBasicInfoDto currentMemberInfo = memberInfoRetrievalUseCase.getCurrentMemberBasicInfo();
         Page<Blog> blogs = retrieveDeletedBlogsPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(blogs.map(blog -> BlogDetailsResponseDto.toDto(blog, currentMemberInfo, blog.isOwner(currentMemberInfo.getMemberId()))));
     }

@@ -18,7 +18,7 @@ import page.clab.api.domain.board.application.port.out.LoadBoardPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.application.port.out.LoadCommentPort;
 import page.clab.api.domain.comment.domain.Comment;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.domain.review.application.port.out.LoadReviewPort;
 import page.clab.api.domain.review.domain.Review;
@@ -28,7 +28,7 @@ import page.clab.api.global.validation.ValidationService;
 @RequiredArgsConstructor
 public class AccusationReportService implements AccusationReportUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
     private final NotificationSenderUseCase notificationService;
     private final RegisterAccusePort registerAccusePort;
     private final RegisterAccuseTargetPort registerAccuseTargetPort;
@@ -44,7 +44,7 @@ public class AccusationReportService implements AccusationReportUseCase {
     public Long reportIncident(AccuseRequestDto requestDto) {
         TargetType type = requestDto.getTargetType();
         Long targetId = requestDto.getTargetId();
-        String memberId = memberLookupUseCase.getCurrentMemberId();
+        String memberId = memberRetrievalUseCase.getCurrentMemberId();
 
         validateAccusationRequest(type, targetId, memberId);
 

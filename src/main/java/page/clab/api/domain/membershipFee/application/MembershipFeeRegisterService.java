@@ -3,7 +3,7 @@ package page.clab.api.domain.membershipFee.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.domain.membershipFee.application.port.in.MembershipFeeRegisterUseCase;
 import page.clab.api.domain.membershipFee.application.port.out.RegisterMembershipFeePort;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
@@ -15,7 +15,7 @@ import page.clab.api.global.validation.ValidationService;
 @RequiredArgsConstructor
 public class MembershipFeeRegisterService implements MembershipFeeRegisterUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
     private final NotificationSenderUseCase notificationService;
     private final ValidationService validationService;
     private final RegisterMembershipFeePort registerMembershipFeePort;
@@ -23,7 +23,7 @@ public class MembershipFeeRegisterService implements MembershipFeeRegisterUseCas
     @Transactional
     @Override
     public Long register(MembershipFeeRequestDto requestDto) {
-        String currentMemberId = memberLookupUseCase.getCurrentMemberId();
+        String currentMemberId = memberRetrievalUseCase.getCurrentMemberId();
         MembershipFee membershipFee = MembershipFeeRequestDto.toEntity(requestDto, currentMemberId);
         validationService.checkValid(membershipFee);
         notificationService.sendNotificationToAdmins("새로운 회비 내역이 등록되었습니다.");

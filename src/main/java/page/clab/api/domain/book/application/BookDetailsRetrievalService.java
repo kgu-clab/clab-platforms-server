@@ -11,7 +11,7 @@ import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.domain.book.dto.response.BookDetailsResponseDto;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 
 import java.time.LocalDateTime;
@@ -20,14 +20,14 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class BookDetailsRetrievalService implements BookDetailsRetrievalUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final LoadBookPort loadBookPort;
     private final LoadBookLoanRecordByBookAndStatusPort loadBookLoanRecordByBookAndStatusPort;
 
     @Transactional(readOnly = true)
     @Override
     public BookDetailsResponseDto retrieve(Long bookId) {
-        MemberBasicInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberBasicInfo();
+        MemberBasicInfoDto currentMemberInfo = memberInfoRetrievalUseCase.getCurrentMemberBasicInfo();
         Book book = loadBookPort.findByIdOrThrow(bookId);
         return mapToBookDetailsResponseDto(book, currentMemberInfo.getMemberName());
     }

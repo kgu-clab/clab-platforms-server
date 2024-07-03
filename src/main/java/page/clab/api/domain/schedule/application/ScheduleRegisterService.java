@@ -8,7 +8,7 @@ import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.application.port.in.ScheduleRegisterUseCase;
 import page.clab.api.domain.schedule.application.port.out.RegisterSchedulePort;
@@ -23,7 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ScheduleRegisterService implements ScheduleRegisterUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
     private final ActivityGroupAdminService activityGroupAdminService;
     private final RegisterSchedulePort registerSchedulePort;
@@ -31,7 +31,7 @@ public class ScheduleRegisterService implements ScheduleRegisterUseCase {
     @Override
     @Transactional
     public Long register(ScheduleRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberLookupUseCase.getCurrentMember();
+        Member currentMember = memberRetrievalUseCase.getCurrentMember();
         ActivityGroup activityGroup = resolveActivityGroupForSchedule(requestDto, currentMember);
         Schedule schedule = ScheduleRequestDto.toEntity(requestDto, currentMember, activityGroup);
         schedule.validateAccessPermissionForCreation(currentMember);

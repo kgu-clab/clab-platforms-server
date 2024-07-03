@@ -3,7 +3,7 @@ package page.clab.api.domain.position.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberPositionInfoDto;
 import page.clab.api.domain.position.application.port.in.MyPositionsByYearRetrievalUseCase;
 import page.clab.api.domain.position.application.port.out.RetrieveAllPositionsByMemberIdAndYearPort;
@@ -17,12 +17,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MyPositionsByYearRetrievalService implements MyPositionsByYearRetrievalUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final RetrieveAllPositionsByMemberIdAndYearPort retrieveAllPositionsByMemberIdAndYearPort;
 
     @Transactional(readOnly = true)
     public PositionMyResponseDto retrieve(String year) {
-        MemberPositionInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberPositionInfo();
+        MemberPositionInfoDto currentMemberInfo = memberInfoRetrievalUseCase.getCurrentMemberPositionInfo();
         List<Position> positions = retrieveAllPositionsByMemberIdAndYearPort.findAllByMemberIdAndYearOrderByPositionTypeAsc(
                 currentMemberInfo.getMemberId(), year);
         if (positions.isEmpty()) {

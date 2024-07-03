@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.shared.MemberEmailInfoDto;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
@@ -28,10 +29,9 @@ import java.util.UUID;
 @Slf4j
 public class EmailService {
 
-    private final MemberLookupUseCase memberLookupUseCase;
-
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final SpringTemplateEngine springTemplateEngine;
-
     private final EmailAsyncService emailAsyncService;
 
     @Value("${resource.file.path}")
@@ -46,7 +46,7 @@ public class EmailService {
 
         emailDto.getTo().parallelStream().forEach(address -> {
             try {
-                Member recipient = memberLookupUseCase.findByEmail(address);
+                Member recipient = memberRetrievalUseCase.findByEmail(address);
                 String emailContent = generateEmailContent(emailDto, recipient.getName());
                 emailAsyncService.sendEmailAsync(address, emailDto.getSubject(), emailContent, convertedFiles, emailDto.getEmailTemplateType());
                 successfulAddresses.add(address);
@@ -61,7 +61,7 @@ public class EmailService {
         List<File> convertedFiles = multipartFiles != null && !multipartFiles.isEmpty() ?
                 convertMultipartFiles(multipartFiles) : null;
 
-        List<MemberEmailInfoDto> memberInfos = memberLookupUseCase.getMembers();
+        List<MemberEmailInfoDto> memberInfos = memberInfoRetrievalUseCase.getMembers();
 
         List<String> successfulEmails = Collections.synchronizedList(new ArrayList<>());
 

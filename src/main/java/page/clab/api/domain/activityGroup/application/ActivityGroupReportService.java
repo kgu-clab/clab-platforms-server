@@ -14,7 +14,7 @@ import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportRequest
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupReportResponseDto;
 import page.clab.api.domain.activityGroup.exception.DuplicateReportException;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
@@ -26,16 +26,13 @@ import page.clab.api.global.validation.ValidationService;
 public class ActivityGroupReportService {
 
     private final ActivityGroupAdminService activityGroupAdminService;
-
-    private final MemberLookupUseCase memberLookupUseCase;
-
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
     private final ValidationService validationService;
-
     private final ActivityGroupReportRepository activityGroupReportRepository;
 
     @Transactional
     public Long writeReport(ActivityGroupReportRequestDto requestDto) throws PermissionDeniedException, IllegalAccessException {
-        Member currentMember = memberLookupUseCase.getCurrentMember();
+        Member currentMember = memberRetrievalUseCase.getCurrentMember();
         Long activityGroupId = requestDto.getActivityGroupId();
         ActivityGroup activityGroup = activityGroupAdminService.validateAndGetActivityGroupForReporting(activityGroupId, currentMember);
         ActivityGroupReport report = validateReportCreationPermission(requestDto, activityGroup);
@@ -59,7 +56,7 @@ public class ActivityGroupReportService {
 
     @Transactional
     public Long updateReport(Long reportId, Long activityGroupId, ActivityGroupReportUpdateRequestDto requestDto) throws PermissionDeniedException, IllegalAccessException {
-        Member currentMember = memberLookupUseCase.getCurrentMember();
+        Member currentMember = memberRetrievalUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
         validateReportUpdatePermission(activityGroupId, currentMember, activityGroup);
         ActivityGroupReport report = getReportByIdOrThrow(reportId);
@@ -69,7 +66,7 @@ public class ActivityGroupReportService {
     }
 
     public Long deleteReport(Long reportId) throws PermissionDeniedException {
-        Member currentMember = memberLookupUseCase.getCurrentMember();
+        Member currentMember = memberRetrievalUseCase.getCurrentMember();
         ActivityGroupReport report = validateReportDeletionPermission(reportId, currentMember);
         activityGroupReportRepository.delete(report);
         return report.getId();

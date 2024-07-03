@@ -8,7 +8,7 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.domain.review.application.port.in.ReviewRegisterUseCase;
@@ -23,7 +23,7 @@ import page.clab.api.global.validation.ValidationService;
 @RequiredArgsConstructor
 public class ReviewRegisterService implements ReviewRegisterUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberRetrievalUseCase memberRetrievalUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
     private final NotificationSenderUseCase notificationService;
     private final ValidationService validationService;
@@ -33,7 +33,7 @@ public class ReviewRegisterService implements ReviewRegisterUseCase {
     @Transactional
     @Override
     public Long register(ReviewRequestDto requestDto) {
-        Member currentMember = memberLookupUseCase.getCurrentMember();
+        Member currentMember = memberRetrievalUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(requestDto.getActivityGroupId());
         validateReviewCreationPermission(activityGroup, currentMember);
         Review review = ReviewRequestDto.toEntity(requestDto, currentMember, activityGroup);

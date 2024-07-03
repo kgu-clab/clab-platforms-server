@@ -3,7 +3,7 @@ package page.clab.api.domain.workExperience.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.workExperience.application.port.in.WorkExperienceRemoveUseCase;
 import page.clab.api.domain.workExperience.application.port.out.LoadWorkExperiencePort;
@@ -15,14 +15,14 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RequiredArgsConstructor
 public class WorkExperienceRemoveService implements WorkExperienceRemoveUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final LoadWorkExperiencePort loadWorkExperiencePort;
     private final RegisterWorkExperiencePort registerWorkExperiencePort;
 
     @Override
     @Transactional
     public Long remove(Long workExperienceId) throws PermissionDeniedException {
-        MemberDetailedInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberDetailedInfo();
+        MemberDetailedInfoDto currentMemberInfo = memberInfoRetrievalUseCase.getCurrentMemberDetailedInfo();
         WorkExperience workExperience = loadWorkExperiencePort.findByIdOrThrow(workExperienceId);
         workExperience.validateAccessPermission(currentMemberInfo);
         workExperience.delete();

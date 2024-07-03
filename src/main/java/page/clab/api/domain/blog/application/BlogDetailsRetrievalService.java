@@ -7,20 +7,20 @@ import page.clab.api.domain.blog.application.port.in.BlogDetailsRetrievalUseCase
 import page.clab.api.domain.blog.application.port.out.LoadBlogPort;
 import page.clab.api.domain.blog.domain.Blog;
 import page.clab.api.domain.blog.dto.response.BlogDetailsResponseDto;
-import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 
 @Service
 @RequiredArgsConstructor
 public class BlogDetailsRetrievalService implements BlogDetailsRetrievalUseCase {
 
-    private final MemberLookupUseCase memberLookupUseCase;
+    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final LoadBlogPort loadBlogPort;
 
     @Transactional(readOnly = true)
     @Override
     public BlogDetailsResponseDto retrieve(Long blogId) {
-        MemberBasicInfoDto currentMemberInfo = memberLookupUseCase.getCurrentMemberBasicInfo();
+        MemberBasicInfoDto currentMemberInfo = memberInfoRetrievalUseCase.getCurrentMemberBasicInfo();
         Blog blog = loadBlogPort.findByIdOrThrow(blogId);
         boolean isOwner = blog.isOwner(currentMemberInfo.getMemberId());
         return BlogDetailsResponseDto.toDto(blog, currentMemberInfo, isOwner);
