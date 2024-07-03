@@ -53,7 +53,7 @@ public class SchedulePersistenceAdapter implements
     }
 
     @Override
-    public Schedule findByIdOrThrow(Long id) {
+    public Schedule findScheduleByIdOrThrow(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("[Schedule] id: " + id + "에 해당하는 스케줄이 존재하지 않습니다."));
     }
