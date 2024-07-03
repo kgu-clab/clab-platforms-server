@@ -4,9 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.accuse.application.port.out.LoadAccuseTargetPort;
 import page.clab.api.domain.accuse.application.port.out.RegisterAccuseTargetPort;
-import page.clab.api.domain.accuse.application.port.out.RetrieveAccuseTargetsByConditionsPort;
+import page.clab.api.domain.accuse.application.port.out.RetrieveAccuseTargetPort;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.AccuseTargetId;
@@ -19,8 +18,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AccuseTargetPersistenceAdapter implements
         RegisterAccuseTargetPort,
-        LoadAccuseTargetPort,
-        RetrieveAccuseTargetsByConditionsPort {
+        RetrieveAccuseTargetPort {
 
     private final AccuseTargetRepository accuseTargetRepository;
 

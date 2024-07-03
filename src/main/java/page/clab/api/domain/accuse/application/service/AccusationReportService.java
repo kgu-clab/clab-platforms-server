@@ -1,13 +1,13 @@
-package page.clab.api.domain.accuse.application;
+package page.clab.api.domain.accuse.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.accuse.application.port.in.ReportAccusationUseCase;
-import page.clab.api.domain.accuse.application.port.out.LoadAccuseTargetPort;
 import page.clab.api.domain.accuse.application.port.out.RegisterAccusePort;
 import page.clab.api.domain.accuse.application.port.out.RegisterAccuseTargetPort;
-import page.clab.api.domain.accuse.application.port.out.RetrieveAccuseByMemberIdAndTargetPort;
+import page.clab.api.domain.accuse.application.port.out.RetrieveAccusePort;
+import page.clab.api.domain.accuse.application.port.out.RetrieveAccuseTargetPort;
 import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.AccuseTargetId;
@@ -32,8 +32,8 @@ public class AccusationReportService implements ReportAccusationUseCase {
     private final SendNotificationUseCase notificationService;
     private final RegisterAccusePort registerAccusePort;
     private final RegisterAccuseTargetPort registerAccuseTargetPort;
-    private final RetrieveAccuseByMemberIdAndTargetPort retrieveAccuseByMemberIdAndTargetPort;
-    private final LoadAccuseTargetPort loadAccuseTargetPort;
+    private final RetrieveAccusePort retrieveAccusePort;
+    private final RetrieveAccuseTargetPort retrieveAccuseTargetPort;
     private final RetrieveBoardsUseCase retrieveBoardsUseCase;
     private final RetrieveCommentsUseCase retrieveCommentsUseCase;
     private final RetrieveReviewUseCase retrieveReviewUseCase;
@@ -86,12 +86,12 @@ public class AccusationReportService implements ReportAccusationUseCase {
     }
 
     private AccuseTarget getOrCreateAccuseTarget(AccuseRequestDto requestDto, TargetType type, Long targetId) {
-        return loadAccuseTargetPort.findById(AccuseTargetId.create(type, targetId))
+        return retrieveAccuseTargetPort.findById(AccuseTargetId.create(type, targetId))
                 .orElseGet(() -> AccuseRequestDto.toTargetEntity(requestDto));
     }
 
     private Accuse findOrCreateAccusation(AccuseRequestDto requestDto, String memberId, AccuseTarget target) {
-        return retrieveAccuseByMemberIdAndTargetPort.findByMemberIdAndTarget(memberId, target.getTargetType(), target.getTargetReferenceId())
+        return retrieveAccusePort.findByMemberIdAndTarget(memberId, target.getTargetType(), target.getTargetReferenceId())
                 .map(existingAccuse -> {
                     existingAccuse.updateReason(requestDto.getReason());
                     return existingAccuse;

@@ -1,12 +1,12 @@
-package page.clab.api.domain.accuse.application;
+package page.clab.api.domain.accuse.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.accuse.application.port.in.ChangeAccusationStatusUseCase;
-import page.clab.api.domain.accuse.application.port.out.LoadAccuseTargetPort;
 import page.clab.api.domain.accuse.application.port.out.RegisterAccuseTargetPort;
-import page.clab.api.domain.accuse.application.port.out.RetrieveAccuseByTargetPort;
+import page.clab.api.domain.accuse.application.port.out.RetrieveAccusePort;
+import page.clab.api.domain.accuse.application.port.out.RetrieveAccuseTargetPort;
 import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.AccuseTarget;
@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AccusationStatusService implements ChangeAccusationStatusUseCase {
 
-    private final LoadAccuseTargetPort loadAccuseTargetPort;
-    private final RetrieveAccuseByTargetPort retrieveAccuseByTargetPort;
+    private final RetrieveAccusePort retrieveAccusePort;
+    private final RetrieveAccuseTargetPort retrieveAccuseTargetPort;
     private final RegisterAccuseTargetPort registerAccuseTargetPort;
     private final ValidationService validationService;
     private final SendNotificationUseCase notificationService;
@@ -31,7 +31,7 @@ public class AccusationStatusService implements ChangeAccusationStatusUseCase {
     @Transactional
     @Override
     public Long changeAccusationStatus(TargetType type, Long targetId, AccuseStatus status) {
-        AccuseTarget target = loadAccuseTargetPort.findByIdOrThrow(AccuseTargetId.create(type, targetId));
+        AccuseTarget target = retrieveAccuseTargetPort.findByIdOrThrow(AccuseTargetId.create(type, targetId));
         target.updateStatus(status);
         validationService.checkValid(target);
         sendStatusUpdateNotifications(status, target);
@@ -39,7 +39,7 @@ public class AccusationStatusService implements ChangeAccusationStatusUseCase {
     }
 
     private void sendStatusUpdateNotifications(AccuseStatus status, AccuseTarget target) {
-        List<String> memberIds = retrieveAccuseByTargetPort.findByTarget(target.getTargetType(), target.getTargetReferenceId()).stream()
+        List<String> memberIds = retrieveAccusePort.findByTarget(target.getTargetType(), target.getTargetReferenceId()).stream()
                 .map(Accuse::getMemberId)
                 .collect(Collectors.toList());
         notificationService.sendNotificationToMembers(memberIds, "신고 상태가 " + status.getDescription() + "(으)로 변경되었습니다.");

@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.accuse.application.port.out.RegisterAccusePort;
-import page.clab.api.domain.accuse.application.port.out.RetrieveAccuseByMemberIdAndTargetPort;
-import page.clab.api.domain.accuse.application.port.out.RetrieveAccuseByMemberIdPort;
-import page.clab.api.domain.accuse.application.port.out.RetrieveAccuseByTargetPort;
+import page.clab.api.domain.accuse.application.port.out.*;
 import page.clab.api.domain.accuse.domain.Accuse;
+import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.TargetType;
 
 import java.util.List;
@@ -18,9 +16,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AccusePersistenceAdapter implements
         RegisterAccusePort,
-        RetrieveAccuseByMemberIdAndTargetPort,
-        RetrieveAccuseByTargetPort,
-        RetrieveAccuseByMemberIdPort {
+        RetrieveAccusePort,
+        UpdateAccusePort,
+        RemoveAccusePort {
 
     private final AccuseRepository accuseRepository;
 
@@ -52,5 +50,15 @@ public class AccusePersistenceAdapter implements
     @Override
     public List<Accuse> findByMemberId(String memberId) {
         return accuseRepository.findByMemberId(memberId);
+    }
+
+    @Override
+    public Accuse update(Accuse accuse) {
+        return accuseRepository.save(accuse);
+    }
+
+    @Override
+    public void delete(Long accuseId) {
+        accuseRepository.deleteById(accuseId);
     }
 }
