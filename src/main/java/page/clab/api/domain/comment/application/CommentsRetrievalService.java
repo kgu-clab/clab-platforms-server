@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.comment.application.port.in.CommentsRetrievalUseCase;
+import page.clab.api.domain.comment.application.port.out.LoadCommentPort;
 import page.clab.api.domain.comment.application.port.out.RetrieveCommentsByBoardIdAndParentIsNullPort;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.response.CommentResponseDto;
@@ -24,11 +25,17 @@ public class CommentsRetrievalService implements CommentsRetrievalUseCase {
     private final RetrieveCommentsByBoardIdAndParentIsNullPort retrieveCommentsByBoardIdAndParentIsNullPort;
     private final MemberRetrievalUseCase memberRetrievalUseCase;
     private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
+    private final LoadCommentPort loadCommentPort;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<CommentResponseDto> retrieve(Long boardId, Pageable pageable) {
         return getAllComments(boardId, pageable);
+    }
+
+    @Override
+    public Comment findByIdOrThrow(Long commentId) {
+        return loadCommentPort.findByIdOrThrow(commentId);
     }
 
     @Transactional(readOnly = true)

@@ -8,7 +8,7 @@ import page.clab.api.domain.application.application.port.out.RegisterApplication
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
-import page.clab.api.domain.recruitment.application.port.in.RecruitmentLookupUseCase;
+import page.clab.api.domain.recruitment.application.port.in.RecruitmentRetrievalUseCase;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.validation.ValidationService;
 
@@ -16,7 +16,7 @@ import page.clab.api.global.validation.ValidationService;
 @RequiredArgsConstructor
 public class ApplicationApplyService implements ApplicationApplyUseCase {
 
-    private final RecruitmentLookupUseCase recruitmentLookupUseCase;
+    private final RecruitmentRetrievalUseCase recruitmentRetrievalUseCase;
     private final NotificationSenderUseCase notificationService;
     private final ValidationService validationService;
     private final SlackService slackService;
@@ -25,7 +25,7 @@ public class ApplicationApplyService implements ApplicationApplyUseCase {
     @Transactional
     @Override
     public String apply(ApplicationRequestDto requestDto) {
-        recruitmentLookupUseCase.getRecruitmentByIdOrThrow(requestDto.getRecruitmentId());
+        recruitmentRetrievalUseCase.findByIdOrThrow(requestDto.getRecruitmentId());
         Application application = ApplicationRequestDto.toEntity(requestDto);
         validationService.checkValid(application);
 

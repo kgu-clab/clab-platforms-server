@@ -14,13 +14,13 @@ import page.clab.api.domain.accuse.domain.AccuseTargetId;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
-import page.clab.api.domain.board.application.port.out.LoadBoardPort;
+import page.clab.api.domain.board.application.port.in.BoardsRetrievalUseCase;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.comment.application.port.out.LoadCommentPort;
+import page.clab.api.domain.comment.application.port.in.CommentsRetrievalUseCase;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
 import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
-import page.clab.api.domain.review.application.port.out.LoadReviewPort;
+import page.clab.api.domain.review.application.port.in.ReviewRetrievalUseCase;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.global.validation.ValidationService;
 
@@ -34,9 +34,9 @@ public class AccusationReportService implements AccusationReportUseCase {
     private final RegisterAccuseTargetPort registerAccuseTargetPort;
     private final RetrieveAccuseByMemberIdAndTargetPort retrieveAccuseByMemberIdAndTargetPort;
     private final LoadAccuseTargetPort loadAccuseTargetPort;
-    private final LoadBoardPort loadBoardPort;
-    private final LoadCommentPort loadCommentPort;
-    private final LoadReviewPort loadReviewPort;
+    private final BoardsRetrievalUseCase boardsRetrievalUseCase;
+    private final CommentsRetrievalUseCase commentsRetrievalUseCase;
+    private final ReviewRetrievalUseCase reviewRetrievalUseCase;
     private final ValidationService validationService;
 
     @Transactional
@@ -63,19 +63,19 @@ public class AccusationReportService implements AccusationReportUseCase {
     private void validateAccusationRequest(TargetType type, Long targetId, String currentMemberId) {
         switch (type) {
             case BOARD:
-                Board board = loadBoardPort.findByIdOrThrow(targetId);
+                Board board = boardsRetrievalUseCase.findByIdOrThrow(targetId);
                 if (board.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 게시글은 신고할 수 없습니다.");
                 }
                 break;
             case COMMENT:
-                Comment comment = loadCommentPort.findByIdOrThrow(targetId);
+                Comment comment = commentsRetrievalUseCase.findByIdOrThrow(targetId);
                 if (comment.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 댓글은 신고할 수 없습니다.");
                 }
                 break;
             case REVIEW:
-                Review review = loadReviewPort.findByIdOrThrow(targetId);
+                Review review = reviewRetrievalUseCase.findByIdOrThrow(targetId);
                 if (review.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 리뷰는 신고할 수 없습니다.");
                 }

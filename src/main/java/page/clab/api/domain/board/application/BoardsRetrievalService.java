@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.application.port.in.BoardsRetrievalUseCase;
+import page.clab.api.domain.board.application.port.out.LoadBoardPort;
 import page.clab.api.domain.board.application.port.out.RetrieveBoardsPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
@@ -22,6 +23,7 @@ public class BoardsRetrievalService implements BoardsRetrievalUseCase {
     private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
     private final RetrieveBoardsPort retrieveBoardsPort;
     private final CountCommentsByBoardPort countCommentsByBoardPort;
+    private final LoadBoardPort loadBoardPort;
 
     @Transactional
     @Override
@@ -29,6 +31,11 @@ public class BoardsRetrievalService implements BoardsRetrievalUseCase {
         MemberDetailedInfoDto currentMemberInfo = memberInfoRetrievalUseCase.getCurrentMemberDetailedInfo();
         Page<Board> boards = retrieveBoardsPort.findAll(pageable);
         return new PagedResponseDto<>(boards.map(board -> mapToBoardListResponseDto(board, currentMemberInfo)));
+    }
+
+    @Override
+    public Board findByIdOrThrow(Long boardId) {
+        return loadBoardPort.findByIdOrThrow(boardId);
     }
 
     @NotNull

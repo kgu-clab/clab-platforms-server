@@ -25,7 +25,6 @@ public class RedisTokenManagementService implements RedisTokenManagementUseCase 
     private final LoadRedisTokenPort loadRedisTokenPort;
     private final RemoveRedisTokenPort removeRedisTokenPort;
     private final RetrieveAllRedisTokensPort retrieveAllRedisTokensPort;
-
     private final JwtTokenProvider jwtTokenProvider;
 
     public RedisToken findByAccessToken(String accessToken) {

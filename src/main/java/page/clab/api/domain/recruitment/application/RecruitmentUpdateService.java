@@ -3,7 +3,7 @@ package page.clab.api.domain.recruitment.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.recruitment.application.port.in.RecruitmentLookupUseCase;
+import page.clab.api.domain.recruitment.application.port.in.RecruitmentRetrievalUseCase;
 import page.clab.api.domain.recruitment.application.port.in.RecruitmentUpdateUseCase;
 import page.clab.api.domain.recruitment.application.port.out.UpdateRecruitmentPort;
 import page.clab.api.domain.recruitment.domain.Recruitment;
@@ -14,7 +14,7 @@ import page.clab.api.global.validation.ValidationService;
 @RequiredArgsConstructor
 public class RecruitmentUpdateService implements RecruitmentUpdateUseCase {
 
-    private final RecruitmentLookupUseCase recruitmentLookupUseCase;
+    private final RecruitmentRetrievalUseCase recruitmentRetrievalUseCase;
     private final ValidationService validationService;
     private final UpdateRecruitmentPort updateRecruitmentPort;
     private final RecruitmentStatusUpdater recruitmentStatusUpdater;
@@ -22,7 +22,7 @@ public class RecruitmentUpdateService implements RecruitmentUpdateUseCase {
     @Transactional
     @Override
     public Long update(Long recruitmentId, RecruitmentUpdateRequestDto requestDto) {
-        Recruitment recruitment = recruitmentLookupUseCase.getRecruitmentByIdOrThrow(recruitmentId);
+        Recruitment recruitment = recruitmentRetrievalUseCase.findByIdOrThrow(recruitmentId);
         recruitment.update(requestDto);
         recruitmentStatusUpdater.updateRecruitmentStatusByRecruitment(recruitment);
         validationService.checkValid(recruitment);

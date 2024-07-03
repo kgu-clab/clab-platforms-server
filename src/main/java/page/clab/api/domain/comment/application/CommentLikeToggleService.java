@@ -22,7 +22,6 @@ public class CommentLikeToggleService implements CommentLikeToggleUseCase {
     private final RemoveCommentLikePort removeCommentLikePort;
     private final MemberRetrievalUseCase memberRetrievalUseCase;
 
-
     @Transactional
     @Override
     public Long toggle(Long commentId) {
