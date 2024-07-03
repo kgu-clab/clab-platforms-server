@@ -24,10 +24,7 @@ import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.domain.login.application.RedisTokenService;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.application.WhitelistService;
-import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
-import page.clab.api.global.auth.filter.InvalidEndpointAccessFilter;
-import page.clab.api.global.auth.filter.IpAuthenticationFilter;
-import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
+import page.clab.api.global.auth.filter.*;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.filter.IPinfoSpringFilter;
@@ -70,7 +67,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         AuthenticationManager authenticationManager = authenticationConfig.authenticationManager();
+
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagement ->
@@ -91,6 +90,10 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(
                         new InvalidEndpointAccessFilter(blacklistIpRepository, slackService, fileURL),
+                        UsernamePasswordAuthenticationFilter.class
+                )
+                .addFilterBefore(
+                        new ApiDocsAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository, whitelistService, slackService),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
