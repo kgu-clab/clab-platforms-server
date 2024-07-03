@@ -11,7 +11,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.dto.response.MemberResponseDto;
+import page.clab.api.domain.member.dto.shared.MemberEmailInfoDto;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.common.email.dto.request.EmailDto;
 import page.clab.api.global.common.email.exception.MessageSendingFailedException;
@@ -61,13 +61,13 @@ public class EmailService {
         List<File> convertedFiles = multipartFiles != null && !multipartFiles.isEmpty() ?
                 convertMultipartFiles(multipartFiles) : null;
 
-        List<MemberResponseDto> memberList = memberLookupUseCase.getMembers();
+        List<MemberEmailInfoDto> memberInfos = memberLookupUseCase.getMembers();
 
         List<String> successfulEmails = Collections.synchronizedList(new ArrayList<>());
 
-        memberList.parallelStream().forEach(member -> {
+        memberInfos.parallelStream().forEach(member -> {
             try {
-                String emailContent = generateEmailContent(emailDto, member.getName());
+                String emailContent = generateEmailContent(emailDto, member.getMemberName());
                 emailAsyncService.sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, convertedFiles, emailDto.getEmailTemplateType());
                 successfulEmails.add(member.getEmail());
             } catch (MessagingException e) {

@@ -20,8 +20,8 @@ public class NotificationSenderUseCase implements page.clab.api.domain.notificat
     @Override
     @Transactional
     public void sendNotificationToAllMembers(String content) {
-        List<Notification> notifications = memberLookupUseCase.findAllMembers().stream()
-                .map(member -> Notification.create(member.getId(), content))
+        List<Notification> notifications = memberLookupUseCase.getMemberIds().stream()
+                .map(memberId -> Notification.create(memberId, content))
                 .toList();
         registerNotificationPort.saveAll(notifications);
     }

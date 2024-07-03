@@ -8,10 +8,10 @@ import page.clab.api.domain.member.application.port.out.LoadMemberByEmailPort;
 import page.clab.api.domain.member.application.port.out.LoadMemberPort;
 import page.clab.api.domain.member.application.port.out.RegisterMemberPort;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.member.dto.shared.MemberEmailInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberLoginInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberPositionInfoDto;
 import page.clab.api.global.auth.util.AuthUtil;
@@ -19,6 +19,7 @@ import page.clab.api.global.exception.NotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,14 +33,13 @@ public class MemberLookupService implements MemberLookupUseCase {
     @Override
     public void ensureMemberExists(String memberId) {
         if (!checkMemberExistencePort.existsById(memberId)) {
-            throw new NotFoundException("[Member] id: " + memberId + "에 해당하는 멤버가 존재하지 않습니다.");
+            throw new NotFoundException("[Member] id: " + memberId + "에 해당하는 회원이 존재하지 않습니다.");
         }
     }
 
     @Override
-    public Member getMemberById(String memberId) {
-        return loadMemberPort.findById(memberId)
-                .orElse(null);
+    public Optional<Member> getMemberById(String memberId) {
+        return loadMemberPort.findById(memberId);
     }
 
     @Override
@@ -64,16 +64,19 @@ public class MemberLookupService implements MemberLookupUseCase {
     }
 
     @Override
-    public List<MemberResponseDto> getMembers() {
+    public List<MemberEmailInfoDto> getMembers() {
         List<Member> members = loadMemberPort.findAll();
         return members.stream()
-                .map(MemberResponseDto::toDto)
+                .map(MemberEmailInfoDto::create)
                 .toList();
     }
 
     @Override
-    public List<Member> findAllMembers() {
-        return loadMemberPort.findAll();
+    public List<String> getMemberIds() {
+        return loadMemberPort.findAll()
+                .stream()
+                .map(Member::getId)
+                .toList();
     }
 
     @Override

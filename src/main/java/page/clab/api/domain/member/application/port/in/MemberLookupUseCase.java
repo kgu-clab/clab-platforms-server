@@ -1,21 +1,22 @@
 package page.clab.api.domain.member.application.port.in;
 
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.member.dto.shared.MemberEmailInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberLoginInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberPositionInfoDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberLookupUseCase {
 
     void ensureMemberExists(String memberId);
 
-    Member getMemberById(String memberId);
+    Optional<Member> getMemberById(String memberId);
 
     Member getMemberByIdOrThrow(String memberId);
 
@@ -25,9 +26,9 @@ public interface MemberLookupUseCase {
 
     String getCurrentMemberId();
 
-    List<MemberResponseDto> getMembers();
+    List<MemberEmailInfoDto> getMembers();
 
-    List<Member> findAllMembers();
+    List<String> getMemberIds();
 
     List<String> getAdminIds();
 

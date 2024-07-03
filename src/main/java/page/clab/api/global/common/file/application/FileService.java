@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
@@ -123,11 +124,11 @@ public class FileService {
             Long activityGroupId = Long.parseLong(path.split(Pattern.quote(File.separator))[1]);
             Long activityGroupBoardId = Long.parseLong(path.split(Pattern.quote(File.separator))[2]);
             String memberId = path.split(Pattern.quote(File.separator))[3];
-            Member assignmentWriter = memberLookupUseCase.getMemberById(memberId);
+            Optional<Member> assignmentWriterOpt = memberLookupUseCase.getMemberById(memberId);
             if (!activityGroupRepository.existsById(activityGroupId)) {
                 throw new AssignmentFileUploadFailException("해당 활동은 존재하지 않습니다.");
             }
-            if (!groupMemberRepository.existsByMemberAndActivityGroupId(assignmentWriter, activityGroupId)) {
+            if (assignmentWriterOpt.isEmpty() || !groupMemberRepository.existsByMemberAndActivityGroupId(assignmentWriterOpt.get(), activityGroupId)) {
                 throw new AssignmentFileUploadFailException("해당 활동에 참여하고 있지 않은 멤버입니다.");
             }
             if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
