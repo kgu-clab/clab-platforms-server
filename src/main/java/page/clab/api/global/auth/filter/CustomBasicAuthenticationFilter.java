@@ -16,7 +16,6 @@ import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
-import page.clab.api.global.util.SwaggerUtil;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -46,11 +45,6 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        String path = request.getRequestURI();
-        if (!SwaggerUtil.isSwaggerRequest(path)) {
-            chain.doFilter(request, response);
-            return;
-        }
         if (!verifyIpAddressAccess(response)) {
             return;
         }

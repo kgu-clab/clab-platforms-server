@@ -42,11 +42,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        String path = httpServletRequest.getRequestURI();
-        if (SwaggerUtil.isSwaggerRequest(path)) {
-            chain.doFilter(request, response);
-            return;
-        }
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         if (!verifyIpAddressAccess(httpServletResponse, clientIpAddress)) {
             return;
