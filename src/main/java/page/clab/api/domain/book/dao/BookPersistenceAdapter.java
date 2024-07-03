@@ -4,12 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.book.application.port.out.CountBooksByBorrowerPort;
-import page.clab.api.domain.book.application.port.out.LoadBookPort;
 import page.clab.api.domain.book.application.port.out.RegisterBookPort;
 import page.clab.api.domain.book.application.port.out.RemoveBookPort;
-import page.clab.api.domain.book.application.port.out.RetrieveBooksByConditionsPort;
-import page.clab.api.domain.book.application.port.out.RetrieveDeletedBooksPort;
+import page.clab.api.domain.book.application.port.out.RetrieveBookPort;
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -20,10 +17,7 @@ import java.util.Optional;
 public class BookPersistenceAdapter implements
         RegisterBookPort,
         RemoveBookPort,
-        LoadBookPort,
-        RetrieveDeletedBooksPort,
-        RetrieveBooksByConditionsPort,
-        CountBooksByBorrowerPort {
+        RetrieveBookPort {
 
     private final BookRepository bookRepository;
 

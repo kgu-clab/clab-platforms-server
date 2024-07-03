@@ -4,10 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.activityPhoto.application.port.out.LoadActivityPhotoPort;
 import page.clab.api.domain.activityPhoto.application.port.out.RegisterActivityPhotoPort;
 import page.clab.api.domain.activityPhoto.application.port.out.RemoveActivityPhotoPort;
-import page.clab.api.domain.activityPhoto.application.port.out.RetrieveActivityPhotosByConditionsPort;
+import page.clab.api.domain.activityPhoto.application.port.out.RetrieveActivityPhotoPort;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -17,8 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ActivityPhotoPersistenceAdapter implements
         RegisterActivityPhotoPort,
-        LoadActivityPhotoPort,
-        RetrieveActivityPhotosByConditionsPort,
+        RetrieveActivityPhotoPort,
         RemoveActivityPhotoPort {
 
     private final ActivityPhotoRepository activityPhotoRepository;

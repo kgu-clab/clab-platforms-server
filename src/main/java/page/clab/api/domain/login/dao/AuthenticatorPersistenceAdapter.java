@@ -2,10 +2,9 @@ package page.clab.api.domain.login.dao;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.login.application.port.out.CheckAuthenticatorExistencePort;
-import page.clab.api.domain.login.application.port.out.LoadAuthenticatorPort;
 import page.clab.api.domain.login.application.port.out.RegisterAuthenticatorPort;
 import page.clab.api.domain.login.application.port.out.RemoveAuthenticatorPort;
+import page.clab.api.domain.login.application.port.out.RetrieveAuthenticatorPort;
 import page.clab.api.domain.login.domain.Authenticator;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -15,9 +14,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthenticatorPersistenceAdapter implements
         RegisterAuthenticatorPort,
-        LoadAuthenticatorPort,
-        RemoveAuthenticatorPort,
-        CheckAuthenticatorExistencePort {
+        RetrieveAuthenticatorPort,
+        RemoveAuthenticatorPort {
 
     private final AuthenticatorRepository authenticatorRepository;
 

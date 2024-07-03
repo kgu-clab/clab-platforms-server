@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.login.application.port.out.LoadAccountLockInfoPort;
 import page.clab.api.domain.login.application.port.out.RegisterAccountLockInfoPort;
 import page.clab.api.domain.login.application.port.out.RemoveAccountLockInfoPort;
+import page.clab.api.domain.login.application.port.out.RetrieveAccountLockInfoPort;
 import page.clab.api.domain.login.application.port.out.UpdateAccountLockInfoPort;
 import page.clab.api.domain.login.domain.AccountLockInfo;
 
@@ -17,7 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AccountLockInfoPersistenceAdapter implements
         RegisterAccountLockInfoPort,
-        LoadAccountLockInfoPort,
+        RetrieveAccountLockInfoPort,
         UpdateAccountLockInfoPort,
         RemoveAccountLockInfoPort {
 

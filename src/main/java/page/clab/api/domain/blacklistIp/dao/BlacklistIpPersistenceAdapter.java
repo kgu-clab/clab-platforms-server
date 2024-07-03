@@ -4,10 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.blacklistIp.application.port.out.LoadBlacklistIpsPort;
 import page.clab.api.domain.blacklistIp.application.port.out.RegisterBlacklistIpPort;
 import page.clab.api.domain.blacklistIp.application.port.out.RemoveBlacklistIpPort;
-import page.clab.api.domain.blacklistIp.application.port.out.RetrieveBlacklistIpByIpAddressPort;
+import page.clab.api.domain.blacklistIp.application.port.out.RetrieveBlacklistIpPort;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -18,9 +17,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BlacklistIpPersistenceAdapter implements
         RegisterBlacklistIpPort,
-        RetrieveBlacklistIpByIpAddressPort,
-        RemoveBlacklistIpPort,
-        LoadBlacklistIpsPort {
+        RetrieveBlacklistIpPort,
+        RemoveBlacklistIpPort {
 
     private final BlacklistIpRepository blacklistIpRepository;
 

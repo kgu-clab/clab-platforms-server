@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.blog.application.port.out.LoadBlogPort;
 import page.clab.api.domain.blog.application.port.out.RegisterBlogPort;
 import page.clab.api.domain.blog.application.port.out.RemoveBlogPort;
-import page.clab.api.domain.blog.application.port.out.RetrieveBlogsByConditionsPort;
-import page.clab.api.domain.blog.application.port.out.RetrieveDeletedBlogsPort;
+import page.clab.api.domain.blog.application.port.out.RetrieveBlogPort;
 import page.clab.api.domain.blog.domain.Blog;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -18,10 +16,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BlogPersistenceAdapter implements
         RegisterBlogPort,
-        RemoveBlogPort,
-        LoadBlogPort,
-        RetrieveBlogsByConditionsPort,
-        RetrieveDeletedBlogsPort {
+        RetrieveBlogPort,
+        RemoveBlogPort {
 
     private final BlogRepository blogRepository;
 

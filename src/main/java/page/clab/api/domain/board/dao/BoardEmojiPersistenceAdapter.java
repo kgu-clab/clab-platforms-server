@@ -3,8 +3,8 @@ package page.clab.api.domain.board.dao;
 import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.board.application.port.out.LoadBoardEmojiPort;
 import page.clab.api.domain.board.application.port.out.RegisterBoardEmojiPort;
+import page.clab.api.domain.board.application.port.out.RetrieveBoardEmojiPort;
 import page.clab.api.domain.board.domain.BoardEmoji;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class BoardEmojiPersistenceAdapter implements
-        LoadBoardEmojiPort,
+        RetrieveBoardEmojiPort,
         RegisterBoardEmojiPort {
 
     private final BoardEmojiRepository boardEmojiRepository;

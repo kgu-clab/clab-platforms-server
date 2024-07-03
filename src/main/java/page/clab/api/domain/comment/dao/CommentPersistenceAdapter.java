@@ -5,18 +5,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.comment.application.port.out.CountCommentsByBoardPort;
-import page.clab.api.domain.comment.application.port.out.LoadCommentLikeByCommentIdAndMemberIdPort;
-import page.clab.api.domain.comment.application.port.out.LoadCommentPort;
-import page.clab.api.domain.comment.application.port.out.RegisterCommentLikePort;
 import page.clab.api.domain.comment.application.port.out.RegisterCommentPort;
-import page.clab.api.domain.comment.application.port.out.RemoveCommentLikePort;
 import page.clab.api.domain.comment.application.port.out.RemoveCommentPort;
-import page.clab.api.domain.comment.application.port.out.RetrieveCommentsByBoardIdAndParentIsNullPort;
-import page.clab.api.domain.comment.application.port.out.RetrieveCommentsByWriterIdPort;
-import page.clab.api.domain.comment.application.port.out.RetrieveDeletedCommentsPort;
+import page.clab.api.domain.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.comment.domain.Comment;
-import page.clab.api.domain.comment.domain.CommentLike;
 import page.clab.api.global.exception.NotFoundException;
 
 import java.util.Optional;
@@ -26,17 +18,9 @@ import java.util.Optional;
 public class CommentPersistenceAdapter implements
         RegisterCommentPort,
         RemoveCommentPort,
-        LoadCommentPort,
-        RetrieveDeletedCommentsPort,
-        RetrieveCommentsByBoardIdAndParentIsNullPort,
-        RetrieveCommentsByWriterIdPort,
-        CountCommentsByBoardPort,
-        RegisterCommentLikePort,
-        RemoveCommentLikePort,
-        LoadCommentLikeByCommentIdAndMemberIdPort {
+        RetrieveCommentPort {
 
     private final CommentRepository commentRepository;
-    private final CommentLikeRepository commentLikeRepository;
 
     @Override
     public Comment save(Comment comment) {
@@ -72,21 +56,6 @@ public class CommentPersistenceAdapter implements
     @Override
     public Page<Comment> findAllByWriterId(String memberId, Pageable pageable) {
         return commentRepository.findAllByWriterId(memberId, pageable);
-    }
-
-    @Override
-    public CommentLike save(CommentLike commentLike) {
-        return commentLikeRepository.save(commentLike);
-    }
-
-    @Override
-    public void delete(CommentLike commentLike) {
-        commentLikeRepository.delete(commentLike);
-    }
-
-    @Override
-    public Optional<CommentLike> findByCommentIdAndMemberId(Long commentId, String memberId) {
-        return commentLikeRepository.findByCommentIdAndMemberId(commentId, memberId);
     }
 
     @Override

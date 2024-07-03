@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.application.application.port.out.LoadApplicationPort;
 import page.clab.api.domain.application.application.port.out.RegisterApplicationPort;
 import page.clab.api.domain.application.application.port.out.RemoveApplicationPort;
-import page.clab.api.domain.application.application.port.out.RetrieveApplicationsByConditionsPort;
-import page.clab.api.domain.application.application.port.out.RetrieveDeletedApplicationsPort;
+import page.clab.api.domain.application.application.port.out.RetrieveApplicationPort;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.domain.ApplicationId;
 import page.clab.api.global.exception.NotFoundException;
@@ -19,9 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ApplicationPersistenceAdapter implements
         RegisterApplicationPort,
-        LoadApplicationPort,
-        RetrieveApplicationsByConditionsPort,
-        RetrieveDeletedApplicationsPort,
+        RetrieveApplicationPort,
         RemoveApplicationPort {
 
     private final ApplicationRepository applicationRepository;

@@ -2,10 +2,9 @@ package page.clab.api.domain.login.dao;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.login.application.port.out.LoadRedisTokenPort;
 import page.clab.api.domain.login.application.port.out.RegisterRedisTokenPort;
 import page.clab.api.domain.login.application.port.out.RemoveRedisTokenPort;
-import page.clab.api.domain.login.application.port.out.RetrieveAllRedisTokensPort;
+import page.clab.api.domain.login.application.port.out.RetrieveRedisTokenPort;
 import page.clab.api.domain.login.domain.RedisToken;
 
 import java.util.List;
@@ -15,9 +14,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class RedisTokenPersistenceAdapter implements
         RegisterRedisTokenPort,
-        LoadRedisTokenPort,
-        RemoveRedisTokenPort,
-        RetrieveAllRedisTokensPort {
+        RetrieveRedisTokenPort,
+        RemoveRedisTokenPort {
 
     private final RedisTokenRepository redisTokenRepository;
 

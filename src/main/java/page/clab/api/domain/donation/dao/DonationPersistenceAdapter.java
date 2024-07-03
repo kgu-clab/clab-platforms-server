@@ -4,11 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.donation.application.port.out.LoadDonationPort;
 import page.clab.api.domain.donation.application.port.out.RegisterDonationPort;
-import page.clab.api.domain.donation.application.port.out.RetrieveDeletedDonationsPort;
-import page.clab.api.domain.donation.application.port.out.RetrieveDonationsByConditionsPort;
-import page.clab.api.domain.donation.application.port.out.RetrieveMyDonationsPort;
+import page.clab.api.domain.donation.application.port.out.RetrieveDonationPort;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -19,10 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DonationPersistenceAdapter implements
         RegisterDonationPort,
-        RetrieveDeletedDonationsPort,
-        RetrieveDonationsByConditionsPort,
-        LoadDonationPort,
-        RetrieveMyDonationsPort {
+        RetrieveDonationPort {
 
     private final DonationRepository repository;
 

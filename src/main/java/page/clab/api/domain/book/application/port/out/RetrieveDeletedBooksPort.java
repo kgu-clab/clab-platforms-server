@@ -7,4 +7,3 @@ import page.clab.api.domain.book.domain.Book;
 public interface RetrieveDeletedBooksPort {
     Page<Book> findAllByIsDeletedTrue(Pageable pageable);
 }
-

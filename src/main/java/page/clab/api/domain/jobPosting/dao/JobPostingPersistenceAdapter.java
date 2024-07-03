@@ -4,12 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.jobPosting.application.port.out.LoadJobPostingPort;
 import page.clab.api.domain.jobPosting.application.port.out.RegisterJobPostingPort;
 import page.clab.api.domain.jobPosting.application.port.out.RemoveJobPostingPort;
-import page.clab.api.domain.jobPosting.application.port.out.RetrieveDeletedJobPostingsPort;
-import page.clab.api.domain.jobPosting.application.port.out.RetrieveJobPostingByUrlPort;
-import page.clab.api.domain.jobPosting.application.port.out.RetrieveJobPostingsByConditionsPort;
+import page.clab.api.domain.jobPosting.application.port.out.RetrieveJobPostingPort;
 import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
@@ -21,11 +18,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class JobPostingPersistenceAdapter implements
         RegisterJobPostingPort,
-        RetrieveJobPostingByUrlPort,
-        RemoveJobPostingPort,
-        LoadJobPostingPort,
-        RetrieveDeletedJobPostingsPort,
-        RetrieveJobPostingsByConditionsPort {
+        RetrieveJobPostingPort,
+        RemoveJobPostingPort {
 
     private final JobPostingRepository repository;
 

@@ -4,13 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.board.application.port.out.LoadBoardPort;
 import page.clab.api.domain.board.application.port.out.RegisterBoardPort;
 import page.clab.api.domain.board.application.port.out.RemoveBoardPort;
-import page.clab.api.domain.board.application.port.out.RetrieveBoardsByCategoryPort;
-import page.clab.api.domain.board.application.port.out.RetrieveBoardsPort;
-import page.clab.api.domain.board.application.port.out.RetrieveDeletedBoardsPort;
-import page.clab.api.domain.board.application.port.out.RetrieveMyBoardsPort;
+import page.clab.api.domain.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.BoardCategory;
 import page.clab.api.global.exception.NotFoundException;
@@ -21,12 +17,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BoardPersistenceAdapter implements
         RegisterBoardPort,
-        RemoveBoardPort,
-        LoadBoardPort,
-        RetrieveBoardsByCategoryPort,
-        RetrieveDeletedBoardsPort,
-        RetrieveMyBoardsPort,
-        RetrieveBoardsPort {
+        RetrieveBoardPort,
+        RemoveBoardPort {
 
     private final BoardRepository boardRepository;
 
