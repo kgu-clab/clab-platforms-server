@@ -38,17 +38,17 @@ public class MemberLookupService implements MemberLookupUseCase {
     }
 
     @Override
-    public Optional<Member> getMemberById(String memberId) {
+    public Optional<Member> findById(String memberId) {
         return loadMemberPort.findById(memberId);
     }
 
     @Override
-    public Member getMemberByIdOrThrow(String memberId) {
+    public Member findByIdOrThrow(String memberId) {
         return loadMemberPort.findByIdOrThrow(memberId);
     }
 
     @Override
-    public Member getMemberByEmail(String email) {
+    public Member findByEmail(String email) {
         return LoadMemberByEmailPort.findByEmailOrThrow(email);
     }
 

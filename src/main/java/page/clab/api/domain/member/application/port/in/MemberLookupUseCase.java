@@ -16,11 +16,11 @@ public interface MemberLookupUseCase {
 
     void ensureMemberExists(String memberId);
 
-    Optional<Member> getMemberById(String memberId);
+    Optional<Member> findById(String memberId);
 
-    Member getMemberByIdOrThrow(String memberId);
+    Member findByIdOrThrow(String memberId);
 
-    Member getMemberByEmail(String email);
+    Member findByEmail(String email);
 
     Member getCurrentMember();
 

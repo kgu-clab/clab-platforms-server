@@ -124,7 +124,7 @@ public class FileService {
             Long activityGroupId = Long.parseLong(path.split(Pattern.quote(File.separator))[1]);
             Long activityGroupBoardId = Long.parseLong(path.split(Pattern.quote(File.separator))[2]);
             String memberId = path.split(Pattern.quote(File.separator))[3];
-            Optional<Member> assignmentWriterOpt = memberLookupUseCase.getMemberById(memberId);
+            Optional<Member> assignmentWriterOpt = memberLookupUseCase.findById(memberId);
             if (!activityGroupRepository.existsById(activityGroupId)) {
                 throw new AssignmentFileUploadFailException("해당 활동은 존재하지 않습니다.");
             }

@@ -46,7 +46,7 @@ public class EmailService {
 
         emailDto.getTo().parallelStream().forEach(address -> {
             try {
-                Member recipient = memberLookupUseCase.getMemberByEmail(address);
+                Member recipient = memberLookupUseCase.findByEmail(address);
                 String emailContent = generateEmailContent(emailDto, recipient.getName());
                 emailAsyncService.sendEmailAsync(address, emailDto.getSubject(), emailContent, convertedFiles, emailDto.getEmailTemplateType());
                 successfulAddresses.add(address);

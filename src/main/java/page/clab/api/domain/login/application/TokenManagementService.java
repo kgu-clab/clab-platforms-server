@@ -57,7 +57,7 @@ public class TokenManagementService implements LoginUseCase {
 
     private void validateMemberExistence(Authentication authentication) {
         String id = authentication.getName();
-        if (memberLookupUseCase.getMemberById(id).isEmpty()) {
+        if (memberLookupUseCase.findById(id).isEmpty()) {
             throw new TokenForgeryException("존재하지 않는 회원에 대한 토큰입니다.");
         }
     }

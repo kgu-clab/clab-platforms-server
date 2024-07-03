@@ -174,7 +174,7 @@ public class ActivityGroupAdminService {
             throw new PermissionDeniedException("해당 활동의 신청 멤버를 조회할 권한이 없습니다.");
         }
 
-        Member member = memberLookupUseCase.getMemberByIdOrThrow(memberId);
+        Member member = memberLookupUseCase.findByIdOrThrow(memberId);
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
         groupMember.validateAccessPermission();
         groupMember.updateStatus(status);

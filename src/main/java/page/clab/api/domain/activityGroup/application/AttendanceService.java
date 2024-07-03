@@ -107,7 +107,7 @@ public class AttendanceService {
 
     @Transactional
     public Long writeAbsentExcuse(AbsentRequestDto requestDto) throws IllegalAccessException, DuplicateAbsentExcuseException {
-        Member absentee = memberLookupUseCase.getMemberByIdOrThrow(requestDto.getAbsenteeId());
+        Member absentee = memberLookupUseCase.findByIdOrThrow(requestDto.getAbsenteeId());
         ActivityGroup activityGroup = getValidActivityGroup(requestDto.getActivityGroupId());
         validateAbsentExcuseConditions(absentee, activityGroup, requestDto.getAbsentDate());
         Absent absent = AbsentRequestDto.toEntity(requestDto, absentee, activityGroup);

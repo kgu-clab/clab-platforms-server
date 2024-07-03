@@ -60,7 +60,7 @@ public class AccountLockManagementService implements AccountLockManagementUseCas
     }
 
     private void ensureMemberExists(String memberId) throws LoginFailedException {
-        if (memberLookupUseCase.getMemberById(memberId).isEmpty()) {
+        if (memberLookupUseCase.findById(memberId).isEmpty()) {
             throw new LoginFailedException();
         }
     }
