@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.member.application.MemberRegisterUseCase;
+import page.clab.api.domain.member.application.port.in.MemberRegisterUseCase;
 import page.clab.api.domain.member.dto.request.MemberRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 

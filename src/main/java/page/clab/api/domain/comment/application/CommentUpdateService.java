@@ -8,7 +8,7 @@ import page.clab.api.domain.comment.application.port.out.LoadCommentPort;
 import page.clab.api.domain.comment.application.port.out.RegisterCommentPort;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.validation.ValidationService;
 

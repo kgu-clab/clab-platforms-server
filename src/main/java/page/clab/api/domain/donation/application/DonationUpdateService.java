@@ -8,7 +8,7 @@ import page.clab.api.domain.donation.application.port.out.LoadDonationPort;
 import page.clab.api.domain.donation.application.port.out.RegisterDonationPort;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.dto.request.DonationUpdateRequestDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.validation.ValidationService;

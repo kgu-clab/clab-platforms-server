@@ -8,7 +8,7 @@ import page.clab.api.domain.board.application.port.out.RegisterBoardPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.SlackBoardInfo;
 import page.clab.api.domain.board.dto.request.BoardRequestDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.global.common.file.application.UploadedFileService;

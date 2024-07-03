@@ -9,7 +9,7 @@ import page.clab.api.domain.donation.application.port.in.MyDonationsRetrievalUse
 import page.clab.api.domain.donation.application.port.out.RetrieveMyDonationsPort;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.dto.response.DonationResponseDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 

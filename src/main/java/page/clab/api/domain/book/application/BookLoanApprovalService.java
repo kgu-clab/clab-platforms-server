@@ -11,7 +11,7 @@ import page.clab.api.domain.book.application.port.out.RegisterBookLoanRecordPort
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.global.validation.ValidationService;
 
 @Service

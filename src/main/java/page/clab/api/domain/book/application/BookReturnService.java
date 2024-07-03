@@ -12,7 +12,7 @@ import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
 import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.global.validation.ValidationService;

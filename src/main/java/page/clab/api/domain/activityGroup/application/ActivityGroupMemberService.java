@@ -31,7 +31,7 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyRespons
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.activityGroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;

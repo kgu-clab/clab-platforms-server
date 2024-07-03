@@ -10,7 +10,7 @@ import page.clab.api.domain.comment.application.port.out.RegisterCommentLikePort
 import page.clab.api.domain.comment.application.port.out.RemoveCommentLikePort;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.domain.CommentLike;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 
 @Service
 @RequiredArgsConstructor

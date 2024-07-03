@@ -9,7 +9,7 @@ import page.clab.api.domain.accuse.application.port.in.MyAccusationsUseCase;
 import page.clab.api.domain.accuse.application.port.out.RetrieveAccuseByMemberIdPort;
 import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.dto.response.AccuseMyResponseDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

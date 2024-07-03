@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.membershipFee.application.port.in.MembershipFeesByConditionsRetrievalUseCase;
 import page.clab.api.domain.membershipFee.application.port.out.RetrieveMembershipFeesByConditionsPort;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;

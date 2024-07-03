@@ -9,7 +9,7 @@ import page.clab.api.domain.award.application.port.in.MyAwardRetrievalUseCase;
 import page.clab.api.domain.award.application.port.out.RetrieveMyAwardsPort;
 import page.clab.api.domain.award.domain.Award;
 import page.clab.api.domain.award.dto.response.AwardResponseDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

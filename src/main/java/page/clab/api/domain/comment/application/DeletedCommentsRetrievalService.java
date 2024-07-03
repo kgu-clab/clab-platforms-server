@@ -10,7 +10,7 @@ import page.clab.api.domain.comment.application.port.in.DeletedCommentsRetrieval
 import page.clab.api.domain.comment.application.port.out.RetrieveDeletedCommentsPort;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.response.DeletedCommentResponseDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 

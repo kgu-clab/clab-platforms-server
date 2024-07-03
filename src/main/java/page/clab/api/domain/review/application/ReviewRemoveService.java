@@ -3,7 +3,7 @@ package page.clab.api.domain.review.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.review.application.port.in.ReviewRemoveUseCase;
 import page.clab.api.domain.review.application.port.out.LoadReviewPort;

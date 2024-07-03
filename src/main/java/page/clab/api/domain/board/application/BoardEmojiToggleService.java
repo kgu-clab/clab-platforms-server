@@ -9,7 +9,7 @@ import page.clab.api.domain.board.application.port.out.LoadBoardPort;
 import page.clab.api.domain.board.application.port.out.RegisterBoardEmojiPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.BoardEmoji;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.exception.InvalidEmojiException;
 import page.clab.api.global.util.EmojiUtils;

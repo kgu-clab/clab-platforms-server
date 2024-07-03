@@ -9,7 +9,7 @@ import page.clab.api.domain.blog.application.port.in.DeletedBlogsRetrievalUseCas
 import page.clab.api.domain.blog.application.port.out.RetrieveDeletedBlogsPort;
 import page.clab.api.domain.blog.domain.Blog;
 import page.clab.api.domain.blog.dto.response.BlogDetailsResponseDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 

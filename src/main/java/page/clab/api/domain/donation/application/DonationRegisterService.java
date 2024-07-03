@@ -7,7 +7,7 @@ import page.clab.api.domain.donation.application.port.in.DonationRegisterUseCase
 import page.clab.api.domain.donation.application.port.out.RegisterDonationPort;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.dto.request.DonationRequestDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.global.validation.ValidationService;
 
 @Service

@@ -10,7 +10,7 @@ import page.clab.api.domain.board.application.port.out.RetrieveBoardsByCategoryP
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.BoardCategory;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 

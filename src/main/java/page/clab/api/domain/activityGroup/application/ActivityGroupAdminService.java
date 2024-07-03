@@ -21,7 +21,7 @@ import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberWithApplyReasonResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;

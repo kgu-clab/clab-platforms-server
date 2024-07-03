@@ -8,7 +8,7 @@ import page.clab.api.domain.award.application.port.out.LoadAwardPort;
 import page.clab.api.domain.award.application.port.out.RegisterAwardPort;
 import page.clab.api.domain.award.domain.Award;
 import page.clab.api.domain.award.dto.request.AwardUpdateRequestDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.validation.ValidationService;

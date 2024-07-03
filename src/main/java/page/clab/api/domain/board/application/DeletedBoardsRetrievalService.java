@@ -11,7 +11,7 @@ import page.clab.api.domain.board.application.port.out.RetrieveDeletedBoardsPort
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.domain.comment.application.port.out.CountCommentsByBoardPort;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 

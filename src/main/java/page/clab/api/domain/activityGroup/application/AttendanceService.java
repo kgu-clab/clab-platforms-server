@@ -23,7 +23,7 @@ import page.clab.api.domain.activityGroup.exception.DuplicateAbsentExcuseExcepti
 import page.clab.api.domain.activityGroup.exception.DuplicateAttendanceException;
 import page.clab.api.domain.login.dao.RedisQRKeyRepository;
 import page.clab.api.domain.login.domain.RedisQRKey;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.FileService;

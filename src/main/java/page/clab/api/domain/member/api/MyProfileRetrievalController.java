@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.member.application.MyProfileRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.MyProfileRetrievalUseCase;
 import page.clab.api.domain.member.dto.response.MyProfileResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 

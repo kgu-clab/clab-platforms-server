@@ -9,7 +9,7 @@ import page.clab.api.domain.login.application.port.in.BanMembersRetrievalUseCase
 import page.clab.api.domain.login.application.port.out.LoadAccountLockInfoPort;
 import page.clab.api.domain.login.domain.AccountLockInfo;
 import page.clab.api.domain.login.dto.response.AccountLockInfoResponseDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 import java.time.LocalDateTime;

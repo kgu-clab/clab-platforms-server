@@ -10,7 +10,7 @@ import page.clab.api.domain.board.application.port.out.LoadBoardPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.board.dto.response.BoardEmojiCountResponseDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 
 import java.util.List;

@@ -18,7 +18,7 @@ import page.clab.api.domain.board.application.port.out.LoadBoardPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.application.port.out.LoadCommentPort;
 import page.clab.api.domain.comment.domain.Comment;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
 import page.clab.api.domain.review.application.port.out.LoadReviewPort;
 import page.clab.api.domain.review.domain.Review;

@@ -9,7 +9,7 @@ import page.clab.api.domain.board.application.port.in.MyBoardsRetrievalUseCase;
 import page.clab.api.domain.board.application.port.out.RetrieveMyBoardsPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.dto.response.BoardMyResponseDto;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 

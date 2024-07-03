@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberPositionInfoDto;
 import page.clab.api.domain.position.application.port.in.PositionsByConditionsRetrievalUseCase;
 import page.clab.api.domain.position.application.port.out.RetrievePositionsByConditionsPort;

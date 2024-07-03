@@ -9,7 +9,7 @@ import page.clab.api.domain.login.application.port.in.RedisTokenManagementUseCas
 import page.clab.api.domain.login.application.port.out.LoadAccountLockInfoPort;
 import page.clab.api.domain.login.application.port.out.RegisterAccountLockInfoPort;
 import page.clab.api.domain.login.domain.AccountLockInfo;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;

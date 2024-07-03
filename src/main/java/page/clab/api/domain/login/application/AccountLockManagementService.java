@@ -11,7 +11,7 @@ import page.clab.api.domain.login.application.port.out.RegisterAccountLockInfoPo
 import page.clab.api.domain.login.domain.AccountLockInfo;
 import page.clab.api.domain.login.exception.LoginFailedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.domain.member.application.MemberLookupUseCase;
+import page.clab.api.domain.member.application.port.in.MemberLookupUseCase;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 
