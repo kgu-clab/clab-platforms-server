@@ -6,14 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.book.application.port.in.BooksByConditionsRetrievalUseCase;
+import page.clab.api.domain.book.application.port.in.RetrieveBooksByConditionsUseCase;
 import page.clab.api.domain.book.application.port.out.LoadBookLoanRecordByBookAndStatusPort;
 import page.clab.api.domain.book.application.port.out.RetrieveBooksByConditionsPort;
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.domain.book.dto.response.BookResponseDto;
-import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
@@ -21,9 +21,9 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class BooksByConditionsRetrievalService implements BooksByConditionsRetrievalUseCase {
+public class BooksByConditionsRetrievalService implements RetrieveBooksByConditionsUseCase {
 
-    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
+    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final RetrieveBooksByConditionsPort retrieveBooksByConditionsPort;
     private final LoadBookLoanRecordByBookAndStatusPort loadBookLoanRecordByBookAndStatusPort;
 
@@ -36,7 +36,7 @@ public class BooksByConditionsRetrievalService implements BooksByConditionsRetri
 
     @NotNull
     private BookResponseDto mapToBookResponseDto(Book book) {
-        MemberBasicInfoDto currentMemberInfo = memberInfoRetrievalUseCase.getCurrentMemberBasicInfo();
+        MemberBasicInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberBasicInfo();
         LocalDateTime dueDate = getDueDateForBook(book);
         return BookResponseDto.toDto(book, currentMemberInfo.getMemberName(), dueDate);
     }

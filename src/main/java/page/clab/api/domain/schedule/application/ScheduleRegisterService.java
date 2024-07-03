@@ -8,9 +8,9 @@ import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
-import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.schedule.application.port.in.ScheduleRegisterUseCase;
+import page.clab.api.domain.schedule.application.port.in.RegisterScheduleUseCase;
 import page.clab.api.domain.schedule.application.port.out.RegisterSchedulePort;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.ScheduleType;
@@ -21,9 +21,9 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ScheduleRegisterService implements ScheduleRegisterUseCase {
+public class ScheduleRegisterService implements RegisterScheduleUseCase {
 
-    private final MemberRetrievalUseCase memberRetrievalUseCase;
+    private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
     private final ActivityGroupAdminService activityGroupAdminService;
     private final RegisterSchedulePort registerSchedulePort;
@@ -31,7 +31,7 @@ public class ScheduleRegisterService implements ScheduleRegisterUseCase {
     @Override
     @Transactional
     public Long register(ScheduleRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberRetrievalUseCase.getCurrentMember();
+        Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = resolveActivityGroupForSchedule(requestDto, currentMember);
         Schedule schedule = ScheduleRequestDto.toEntity(requestDto, currentMember, activityGroup);
         schedule.validateAccessPermissionForCreation(currentMember);

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.review.application.port.in.ReviewUpdateUseCase;
+import page.clab.api.domain.review.application.port.in.UpdateReviewUseCase;
 import page.clab.api.domain.review.dto.request.ReviewUpdateRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -21,7 +21,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @Tag(name = "Review", description = "리뷰")
 public class ReviewUpdateController {
 
-    private final ReviewUpdateUseCase reviewUpdateUseCase;
+    private final UpdateReviewUseCase updateReviewUseCase;
 
     @Operation(summary = "[U] 리뷰 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
@@ -30,7 +30,7 @@ public class ReviewUpdateController {
             @PathVariable(name = "reviewId") Long reviewId,
             @Valid @RequestBody ReviewUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = reviewUpdateUseCase.update(reviewId, requestDto);
+        Long id = updateReviewUseCase.update(reviewId, requestDto);
         return ApiResponse.success(id);
     }
 }

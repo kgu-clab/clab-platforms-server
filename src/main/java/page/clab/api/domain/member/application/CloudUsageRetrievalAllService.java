@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.CloudUsageRetrievalAllUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveAllCloudUsageUseCase;
 import page.clab.api.domain.member.application.port.out.LoadMemberPort;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
@@ -17,7 +17,7 @@ import java.io.File;
 
 @Service
 @RequiredArgsConstructor
-public class CloudUsageRetrievalAllService implements CloudUsageRetrievalAllUseCase {
+public class CloudUsageRetrievalAllService implements RetrieveAllCloudUsageUseCase {
 
     private final LoadMemberPort loadMemberPort;
 

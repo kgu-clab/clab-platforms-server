@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.position.application.port.in.DeletedPositionsRetrievalUseCase;
+import page.clab.api.domain.position.application.port.in.RetrieveDeletedPositionsUseCase;
 import page.clab.api.domain.position.dto.response.PositionResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -21,7 +21,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @Tag(name = "Position", description = "멤버 직책")
 public class DeletedPositionsRetrievalController {
 
-    private final DeletedPositionsRetrievalUseCase deletedPositionsRetrievalUseCase;
+    private final RetrieveDeletedPositionsUseCase retrieveDeletedPositionsUseCase;
 
     @Operation(summary = "[S] 삭제된 직책 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
@@ -31,7 +31,7 @@ public class DeletedPositionsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<PositionResponseDto> positions = deletedPositionsRetrievalUseCase.retrieve(pageable);
+        PagedResponseDto<PositionResponseDto> positions = retrieveDeletedPositionsUseCase.retrieve(pageable);
         return ApiResponse.success(positions);
     }
 }

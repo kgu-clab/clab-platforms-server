@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.accuse.application.port.in.AccusationReportUseCase;
+import page.clab.api.domain.accuse.application.port.in.ReportAccusationUseCase;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -19,7 +19,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Accusation", description = "신고")
 public class AccusationReportController {
 
-    private final AccusationReportUseCase accusationReportUsecase;
+    private final ReportAccusationUseCase reportAccusationUsecase;
 
     @Operation(summary = "[U] 신고 접수", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
@@ -27,7 +27,7 @@ public class AccusationReportController {
     public ApiResponse<Long> reportIncident(
             @Valid @RequestBody AccuseRequestDto requestDto
     ) {
-        Long id = accusationReportUsecase.reportIncident(requestDto);
+        Long id = reportAccusationUsecase.reportIncident(requestDto);
         return ApiResponse.success(id);
     }
 }

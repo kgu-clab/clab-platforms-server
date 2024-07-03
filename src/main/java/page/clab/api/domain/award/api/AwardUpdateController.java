@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.award.application.port.in.AwardUpdateUseCase;
+import page.clab.api.domain.award.application.port.in.UpdateAwardUseCase;
 import page.clab.api.domain.award.dto.request.AwardUpdateRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -23,7 +23,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @Slf4j
 public class AwardUpdateController {
 
-    private final AwardUpdateUseCase awardUpdateUseCase;
+    private final UpdateAwardUseCase updateAwardUseCase;
 
     @Operation(summary = "[U] 수상 이력 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능")
@@ -33,7 +33,7 @@ public class AwardUpdateController {
             @PathVariable(name = "awardId") Long awardId,
             @Valid @RequestBody AwardUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = awardUpdateUseCase.update(awardId, requestDto);
+        Long id = updateAwardUseCase.update(awardId, requestDto);
         return ApiResponse.success(id);
     }
 }

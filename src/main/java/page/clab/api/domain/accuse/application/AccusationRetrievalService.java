@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.accuse.application.port.in.AccusationRetrievalUseCase;
+import page.clab.api.domain.accuse.application.port.in.RetrieveAccusationUseCase;
 import page.clab.api.domain.accuse.application.port.out.RetrieveAccuseByTargetPort;
 import page.clab.api.domain.accuse.application.port.out.RetrieveAccuseTargetsByConditionsPort;
 import page.clab.api.domain.accuse.domain.Accuse;
@@ -13,7 +13,7 @@ import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
-import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
@@ -22,11 +22,11 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class AccusationRetrievalService implements AccusationRetrievalUseCase {
+public class AccusationRetrievalService implements RetrieveAccusationUseCase {
 
     private final RetrieveAccuseTargetsByConditionsPort retrieveAccuseTargetsByConditionsPort;
     private final RetrieveAccuseByTargetPort retrieveAccuseByTargetPort;
-    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
+    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
 
     @Transactional(readOnly = true)
     @Override
@@ -44,7 +44,7 @@ public class AccusationRetrievalService implements AccusationRetrievalUseCase {
                         return null;
                     }
                     List<MemberBasicInfoDto> members = accuses.stream()
-                            .map(accuse -> memberInfoRetrievalUseCase.getMemberBasicInfoById(accuse.getMemberId()))
+                            .map(accuse -> retrieveMemberInfoUseCase.getMemberBasicInfoById(accuse.getMemberId()))
                             .toList();
                     return AccuseResponseDto.toDto(accuses.getFirst(), members);
                 })

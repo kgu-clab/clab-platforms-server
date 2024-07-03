@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.member.application.port.in.MemberRemoveUseCase;
+import page.clab.api.domain.member.application.port.in.RemoveMemberUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
@@ -16,14 +16,14 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Member", description = "멤버")
 public class MemberRemoveController {
 
-    private final MemberRemoveUseCase memberRemoveUseCase;
+    private final RemoveMemberUseCase removeMemberUseCase;
 
     @Operation(summary = "[S] 멤버 정보 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @DeleteMapping("/{memberId}")
     public ApiResponse<String> removeMember(
             @PathVariable(name = "memberId") String memberId
     ) {
-        String id = memberRemoveUseCase.remove(memberId);
+        String id = removeMemberUseCase.remove(memberId);
         return ApiResponse.success(id);
     }
 }

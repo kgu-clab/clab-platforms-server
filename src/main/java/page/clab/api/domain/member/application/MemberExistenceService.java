@@ -2,13 +2,13 @@ package page.clab.api.domain.member.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import page.clab.api.domain.member.application.port.in.MemberExistenceUseCase;
+import page.clab.api.domain.member.application.port.in.EnsureMemberExistenceUseCase;
 import page.clab.api.domain.member.application.port.out.CheckMemberExistencePort;
 import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor
-public class MemberExistenceService implements MemberExistenceUseCase {
+public class MemberExistenceService implements EnsureMemberExistenceUseCase {
 
     private final CheckMemberExistencePort checkMemberExistencePort;
 

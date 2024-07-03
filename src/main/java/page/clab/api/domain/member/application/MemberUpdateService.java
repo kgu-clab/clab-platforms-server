@@ -2,7 +2,7 @@ package page.clab.api.domain.member.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import page.clab.api.domain.member.application.port.in.MemberUpdateUseCase;
+import page.clab.api.domain.member.application.port.in.UpdateMemberUseCase;
 import page.clab.api.domain.member.application.port.out.LoadMemberPort;
 import page.clab.api.domain.member.application.port.out.RegisterMemberPort;
 import page.clab.api.domain.member.domain.Member;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class MemberUpdateService implements MemberUpdateUseCase {
+public class MemberUpdateService implements UpdateMemberUseCase {
 
     private final LoadMemberPort loadMemberPort;
     private final RegisterMemberPort registerMemberPort;

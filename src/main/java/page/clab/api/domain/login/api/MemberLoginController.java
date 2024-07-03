@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.login.application.port.in.LoginUseCase;
+import page.clab.api.domain.login.application.port.in.ManageLoginUseCase;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.response.LoginResult;
 import page.clab.api.domain.login.exception.LoginFailedException;
@@ -23,15 +23,15 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Login", description = "로그인")
 public class MemberLoginController {
 
-    private final LoginUseCase loginUseCase;
+    private final ManageLoginUseCase manageLoginUseCase;
 
     private final String authHeader;
 
     public MemberLoginController(
-            @Qualifier("userLoginService") LoginUseCase loginUseCase,
+            @Qualifier("userLoginService") ManageLoginUseCase manageLoginUseCase,
             @Value("${security.auth.header}") String authHeader
     ) {
-        this.loginUseCase = loginUseCase;
+        this.manageLoginUseCase = manageLoginUseCase;
         this.authHeader = authHeader;
     }
 
@@ -42,7 +42,7 @@ public class MemberLoginController {
             HttpServletResponse response,
             @Valid @RequestBody LoginRequestDto requestDto
     ) throws MemberLockedException, LoginFailedException {
-        LoginResult result = loginUseCase.login(request, requestDto);
+        LoginResult result = manageLoginUseCase.login(request, requestDto);
         response.setHeader(authHeader, result.getHeader());
         return ApiResponse.success(result.getBody());
     }

@@ -3,14 +3,14 @@ package page.clab.api.domain.application.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.application.application.port.in.ApplicationPassCheckUseCase;
+import page.clab.api.domain.application.application.port.in.CheckApplicationPassStatusUseCase;
 import page.clab.api.domain.application.application.port.out.LoadApplicationPort;
 import page.clab.api.domain.application.domain.ApplicationId;
 import page.clab.api.domain.application.dto.response.ApplicationPassResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class ApplicationPassCheckService implements ApplicationPassCheckUseCase {
+public class ApplicationPassCheckService implements CheckApplicationPassStatusUseCase {
 
     private final LoadApplicationPort loadApplicationPort;
 

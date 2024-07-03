@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.blog.application.port.in.BlogUpdateUseCase;
+import page.clab.api.domain.blog.application.port.in.UpdateBlogUseCase;
 import page.clab.api.domain.blog.dto.request.BlogUpdateRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -21,7 +21,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @Tag(name = "Blog", description = "블로그 포스트")
 public class BlogUpdateController {
 
-    private final BlogUpdateUseCase blogUpdateUseCase;
+    private final UpdateBlogUseCase updateBlogUseCase;
 
     @Operation(summary = "[A] 블로그 포스트 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -30,7 +30,7 @@ public class BlogUpdateController {
             @PathVariable(name = "blogId") Long blogId,
             @Valid @RequestBody BlogUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = blogUpdateUseCase.update(blogId, requestDto);
+        Long id = updateBlogUseCase.update(blogId, requestDto);
         return ApiResponse.success(id);
     }
 }

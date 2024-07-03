@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.blog.application.port.in.BlogsRetrievalUseCase;
+import page.clab.api.domain.blog.application.port.in.RetrieveBlogsUseCase;
 import page.clab.api.domain.blog.application.port.out.RetrieveBlogsByConditionsPort;
 import page.clab.api.domain.blog.domain.Blog;
 import page.clab.api.domain.blog.dto.response.BlogResponseDto;
@@ -13,7 +13,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class BlogsRetrievalService implements BlogsRetrievalUseCase {
+public class BlogsRetrievalService implements RetrieveBlogsUseCase {
 
     private final RetrieveBlogsByConditionsPort retrieveBlogsByConditionsPort;
 

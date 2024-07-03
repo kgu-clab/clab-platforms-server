@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.donation.application.port.in.DonationRemoveUseCase;
+import page.clab.api.domain.donation.application.port.in.RemoveDonationUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -18,7 +18,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @Tag(name = "Donation", description = "후원")
 public class DonationRemoveController {
 
-    private final DonationRemoveUseCase donationRemoveUseCase;
+    private final RemoveDonationUseCase removeDonationUseCase;
 
     @Operation(summary = "[S] 후원 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
@@ -26,7 +26,7 @@ public class DonationRemoveController {
     public ApiResponse<Long> removeDonation(
             @PathVariable(name = "donationId") Long donationId
     ) throws PermissionDeniedException {
-        Long id = donationRemoveUseCase.remove(donationId);
+        Long id = removeDonationUseCase.remove(donationId);
         return ApiResponse.success(id);
     }
 }

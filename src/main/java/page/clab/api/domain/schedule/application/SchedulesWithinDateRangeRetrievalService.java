@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
-import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.schedule.application.port.in.SchedulesWithinDateRangeRetrievalUseCase;
+import page.clab.api.domain.schedule.application.port.in.RetrieveSchedulesWithinDateRangeUseCase;
 import page.clab.api.domain.schedule.application.port.out.RetrieveSchedulesWithinDateRangePort;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
@@ -22,16 +22,16 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SchedulesWithinDateRangeRetrievalService implements SchedulesWithinDateRangeRetrievalUseCase {
+public class SchedulesWithinDateRangeRetrievalService implements RetrieveSchedulesWithinDateRangeUseCase {
 
-    private final MemberRetrievalUseCase memberRetrievalUseCase;
+    private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
     private final RetrieveSchedulesWithinDateRangePort retrieveSchedulesWithinDateRangePort;
 
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> retrieve(LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        Member currentMember = memberRetrievalUseCase.getCurrentMember();
+        Member currentMember = retrieveMemberUseCase.getCurrentMember();
         List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByMember(currentMember);
         List<ActivityGroup> myGroups = getMyActivityGroups(groupMembers);
         Page<Schedule> schedules = retrieveSchedulesWithinDateRangePort.findByDateRangeAndMember(startDate, endDate, myGroups, pageable);

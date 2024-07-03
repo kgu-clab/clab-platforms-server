@@ -2,7 +2,7 @@ package page.clab.api.domain.login.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import page.clab.api.domain.login.application.port.in.RedisTokenManagementUseCase;
+import page.clab.api.domain.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.domain.login.application.port.out.LoadRedisTokenPort;
 import page.clab.api.domain.login.application.port.out.RegisterRedisTokenPort;
 import page.clab.api.domain.login.application.port.out.RemoveRedisTokenPort;
@@ -19,7 +19,7 @@ import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
-public class RedisTokenManagementService implements RedisTokenManagementUseCase {
+public class RedisTokenManagementService implements ManageRedisTokenUseCase {
 
     private final RegisterRedisTokenPort registerRedisTokenPort;
     private final LoadRedisTokenPort loadRedisTokenPort;

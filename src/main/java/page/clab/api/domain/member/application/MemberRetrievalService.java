@@ -2,7 +2,7 @@ package page.clab.api.domain.member.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.application.port.out.LoadMemberByEmailPort;
 import page.clab.api.domain.member.application.port.out.LoadMemberPort;
 import page.clab.api.domain.member.domain.Member;
@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class MemberRetrievalService implements MemberRetrievalUseCase {
+public class MemberRetrievalService implements RetrieveMemberUseCase {
 
     private final LoadMemberPort loadMemberPort;
     private final LoadMemberByEmailPort loadMemberByEmailPort;

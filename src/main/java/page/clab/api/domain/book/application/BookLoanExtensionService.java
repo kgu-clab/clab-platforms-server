@@ -3,7 +3,7 @@ package page.clab.api.domain.book.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.book.application.port.in.BookLoanExtensionUseCase;
+import page.clab.api.domain.book.application.port.in.ExtendBookLoanUseCase;
 import page.clab.api.domain.book.application.port.out.LoadBookLoanRecordByBookAndStatusPort;
 import page.clab.api.domain.book.application.port.out.LoadBookPort;
 import page.clab.api.domain.book.application.port.out.RegisterBookLoanRecordPort;
@@ -11,26 +11,26 @@ import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
-import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
-import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
+import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
 import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class BookLoanExtensionService implements BookLoanExtensionUseCase {
+public class BookLoanExtensionService implements ExtendBookLoanUseCase {
 
     private final LoadBookPort loadBookPort;
     private final LoadBookLoanRecordByBookAndStatusPort loadBookLoanRecordByBookAndStatusPort;
     private final RegisterBookLoanRecordPort registerBookLoanRecordPort;
-    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
-    private final NotificationSenderUseCase notificationService;
+    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
+    private final SendNotificationUseCase notificationService;
     private final ValidationService validationService;
 
     @Transactional
     @Override
     public Long extend(BookLoanRecordRequestDto requestDto) {
-        MemberBorrowerInfoDto borrowerInfo = memberInfoRetrievalUseCase.getCurrentMemberBorrowerInfo();
+        MemberBorrowerInfoDto borrowerInfo = retrieveMemberInfoUseCase.getCurrentMemberBorrowerInfo();
         String currentMemberId = borrowerInfo.getMemberId();
         Book book = loadBookPort.findByIdOrThrow(requestDto.getBookId());
 

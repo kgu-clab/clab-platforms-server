@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.schedule.application.port.in.SchedulesByConditionsRetrievalUseCase;
+import page.clab.api.domain.schedule.application.port.in.RetrieveSchedulesByConditionsUseCase;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
@@ -27,7 +27,7 @@ import java.util.List;
 @Tag(name = "Schedule", description = "일정")
 public class SchedulesByConditionsRetrievalController {
 
-    private final SchedulesByConditionsRetrievalUseCase schedulesByConditionsRetrievalUseCase;
+    private final RetrieveSchedulesByConditionsUseCase retrieveSchedulesByConditionsUseCase;
 
     @Operation(summary = "[U] 일정 조회(연도, 월, 중요도 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
@@ -45,7 +45,7 @@ public class SchedulesByConditionsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Schedule.class);
-        PagedResponseDto<ScheduleResponseDto> schedules = schedulesByConditionsRetrievalUseCase.retrieve(year, month, priority, pageable);
+        PagedResponseDto<ScheduleResponseDto> schedules = retrieveSchedulesByConditionsUseCase.retrieve(year, month, priority, pageable);
         return ApiResponse.success(schedules);
     }
 }

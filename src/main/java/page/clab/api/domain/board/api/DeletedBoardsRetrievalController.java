@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.board.application.port.in.DeletedBoardsRetrievalUseCase;
+import page.clab.api.domain.board.application.port.in.RetrieveDeletedBoardsUseCase;
 import page.clab.api.domain.board.dto.response.BoardListResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -21,7 +21,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @Tag(name = "Board", description = "커뮤니티 게시판")
 public class DeletedBoardsRetrievalController {
 
-    private final DeletedBoardsRetrievalUseCase deletedBoardsRetrievalUseCase;
+    private final RetrieveDeletedBoardsUseCase retrieveDeletedBoardsUseCase;
 
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 커뮤니티 게시글 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
@@ -31,7 +31,7 @@ public class DeletedBoardsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BoardListResponseDto> boards = deletedBoardsRetrievalUseCase.retrieve(pageable);
+        PagedResponseDto<BoardListResponseDto> boards = retrieveDeletedBoardsUseCase.retrieve(pageable);
         return ApiResponse.success(boards);
     }
 }

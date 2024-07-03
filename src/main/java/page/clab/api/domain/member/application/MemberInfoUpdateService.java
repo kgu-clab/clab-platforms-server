@@ -5,8 +5,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.MemberInfoUpdateUseCase;
-import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.member.application.port.in.UpdateMemberInfoUseCase;
 import page.clab.api.domain.member.application.port.out.LoadMemberPort;
 import page.clab.api.domain.member.application.port.out.UpdateMemberPort;
 import page.clab.api.domain.member.domain.Member;
@@ -19,9 +19,9 @@ import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class MemberInfoUpdateService implements MemberInfoUpdateUseCase {
+public class MemberInfoUpdateService implements UpdateMemberInfoUseCase {
 
-    private final MemberRetrievalUseCase memberRetrievalUseCase;
+    private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final LoadMemberPort loadMemberPort;
     private final UpdateMemberPort updateMemberPort;
     private final ValidationService validationService;
@@ -32,7 +32,7 @@ public class MemberInfoUpdateService implements MemberInfoUpdateUseCase {
     @Transactional
     @Override
     public String update(String memberId, MemberUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberRetrievalUseCase.getCurrentMember();
+        Member currentMember = retrieveMemberUseCase.getCurrentMember();
         Member member = loadMemberPort.findByIdOrThrow(memberId);
         member.validateAccessPermission(currentMember);
         updateMember(requestDto, member);

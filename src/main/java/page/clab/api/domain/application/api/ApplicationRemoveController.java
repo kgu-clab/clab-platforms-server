@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.application.application.port.in.ApplicationRemoveUseCase;
+import page.clab.api.domain.application.application.port.in.RemoveApplicationUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
@@ -17,7 +17,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Application", description = "동아리 지원")
 public class ApplicationRemoveController {
 
-    private final ApplicationRemoveUseCase applicationRemoveUseCase;
+    private final RemoveApplicationUseCase removeApplicationUseCase;
 
     @Operation(summary = "[S] 지원서 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
@@ -26,7 +26,7 @@ public class ApplicationRemoveController {
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "studentId") String studentId
     ) {
-        String id = applicationRemoveUseCase.remove(recruitmentId, studentId);
+        String id = removeApplicationUseCase.remove(recruitmentId, studentId);
         return ApiResponse.success(id);
     }
 }

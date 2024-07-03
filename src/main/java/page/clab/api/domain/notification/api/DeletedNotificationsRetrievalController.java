@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.notification.application.port.in.DeletedNotificationsRetrievalUseCase;
+import page.clab.api.domain.notification.application.port.in.RetrieveDeletedNotificationsUseCase;
 import page.clab.api.domain.notification.dto.response.NotificationResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -21,7 +21,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @Tag(name = "Notification", description = "알림")
 public class DeletedNotificationsRetrievalController {
 
-    private final DeletedNotificationsRetrievalUseCase deletedNotificationsRetrievalUseCase;
+    private final RetrieveDeletedNotificationsUseCase retrieveDeletedNotificationsUseCase;
 
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 알림 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
@@ -31,7 +31,7 @@ public class DeletedNotificationsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<NotificationResponseDto> notifications = deletedNotificationsRetrievalUseCase.retrieve(pageable);
+        PagedResponseDto<NotificationResponseDto> notifications = retrieveDeletedNotificationsUseCase.retrieve(pageable);
         return ApiResponse.success(notifications);
     }
 }

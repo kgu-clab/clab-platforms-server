@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.award.application.port.in.AwardRemoveUseCase;
+import page.clab.api.domain.award.application.port.in.RemoveAwardUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -20,7 +20,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @Slf4j
 public class AwardRemoveController {
 
-    private final AwardRemoveUseCase awardRemoveUseCase;
+    private final RemoveAwardUseCase removeAwardUseCase;
 
     @Operation(summary = "[U] 수상 이력 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능")
@@ -29,7 +29,7 @@ public class AwardRemoveController {
     public ApiResponse<Long> removeAward(
             @PathVariable(name = "awardId") Long awardId
     ) throws PermissionDeniedException {
-        Long id = awardRemoveUseCase.remove(awardId);
+        Long id = removeAwardUseCase.remove(awardId);
         return ApiResponse.success(id);
     }
 }

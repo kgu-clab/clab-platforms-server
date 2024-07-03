@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.blog.application.port.in.BlogRegisterUseCase;
+import page.clab.api.domain.blog.application.port.in.RegisterBlogUseCase;
 import page.clab.api.domain.blog.dto.request.BlogRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -19,7 +19,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Blog", description = "블로그 포스트")
 public class BlogRegisterController {
 
-    private final BlogRegisterUseCase blogRegisterUseCase;
+    private final RegisterBlogUseCase registerBlogUseCase;
 
     @Operation(summary = "[A] 블로그 포스트 생성", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -27,7 +27,7 @@ public class BlogRegisterController {
     public ApiResponse<Long> registerBlog(
             @Valid @RequestBody BlogRequestDto requestDto
     ) {
-        Long id = blogRegisterUseCase.register(requestDto);
+        Long id = registerBlogUseCase.register(requestDto);
         return ApiResponse.success(id);
     }
 }

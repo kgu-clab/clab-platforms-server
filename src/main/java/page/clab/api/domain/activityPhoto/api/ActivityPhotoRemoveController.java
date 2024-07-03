@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.activityPhoto.application.port.in.ActivityPhotoRemoveUseCase;
+import page.clab.api.domain.activityPhoto.application.port.in.RemoveActivityPhotoUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
@@ -17,7 +17,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "ActivityPhoto", description = "활동 사진")
 public class ActivityPhotoRemoveController {
 
-    private final ActivityPhotoRemoveUseCase activityPhotoRemoveUseCase;
+    private final RemoveActivityPhotoUseCase removeActivityPhotoUseCase;
 
     @Operation(summary = "[A] 활동 사진 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
@@ -25,7 +25,7 @@ public class ActivityPhotoRemoveController {
     public ApiResponse<Long> removeActivityPhoto(
             @PathVariable(name = "activityPhotoId") Long activityPhotoId
     ) {
-        Long id = activityPhotoRemoveUseCase.remove(activityPhotoId);
+        Long id = removeActivityPhotoUseCase.remove(activityPhotoId);
         return ApiResponse.success(id);
     }
 }

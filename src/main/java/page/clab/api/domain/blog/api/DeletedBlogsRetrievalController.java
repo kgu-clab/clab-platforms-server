@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.blog.application.port.in.DeletedBlogsRetrievalUseCase;
+import page.clab.api.domain.blog.application.port.in.RetrieveDeletedBlogsUseCase;
 import page.clab.api.domain.blog.dto.response.BlogDetailsResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -21,7 +21,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @Tag(name = "Blog", description = "블로그 포스트")
 public class DeletedBlogsRetrievalController {
 
-    private final DeletedBlogsRetrievalUseCase deletedBlogsRetrievalUseCase;
+    private final RetrieveDeletedBlogsUseCase retrieveDeletedBlogsUseCase;
 
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 블로그 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
@@ -31,7 +31,7 @@ public class DeletedBlogsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BlogDetailsResponseDto> blogs = deletedBlogsRetrievalUseCase.retrieve(pageable);
+        PagedResponseDto<BlogDetailsResponseDto> blogs = retrieveDeletedBlogsUseCase.retrieve(pageable);
         return ApiResponse.success(blogs);
     }
 }

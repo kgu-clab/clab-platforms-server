@@ -3,7 +3,7 @@ package page.clab.api.domain.member.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.ResetMemberPasswordRequestUseCase;
+import page.clab.api.domain.member.application.port.in.RequestResetMemberPasswordUseCase;
 import page.clab.api.domain.member.application.port.out.LoadMemberPort;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.request.MemberResetPasswordRequestDto;
@@ -13,7 +13,7 @@ import page.clab.api.global.exception.InvalidInformationException;
 
 @Service
 @RequiredArgsConstructor
-public class ResetMemberPasswordRequestService implements ResetMemberPasswordRequestUseCase {
+public class ResetMemberPasswordRequestService implements RequestResetMemberPasswordUseCase {
 
     private final LoadMemberPort loadMemberPort;
     private final VerificationService verificationService;

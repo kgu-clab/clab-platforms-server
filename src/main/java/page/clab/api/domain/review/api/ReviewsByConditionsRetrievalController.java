@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.review.application.port.in.ReviewsByConditionsRetrievalUseCase;
+import page.clab.api.domain.review.application.port.in.RetrieveReviewsByConditionsUseCase;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.domain.review.dto.response.ReviewResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -26,7 +26,7 @@ import java.util.List;
 @Tag(name = "Review", description = "리뷰")
 public class ReviewsByConditionsRetrievalController {
 
-    private final ReviewsByConditionsRetrievalUseCase reviewsByConditionsRetrievalUseCase;
+    private final RetrieveReviewsByConditionsUseCase retrieveReviewsByConditionsUseCase;
 
     @Operation(summary = "[U] 리뷰 목록 조회(멤버 ID, 멤버 이름, 활동 ID, 공개 여부 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "4개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
@@ -45,7 +45,7 @@ public class ReviewsByConditionsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Review.class);
-        PagedResponseDto<ReviewResponseDto> reviews = reviewsByConditionsRetrievalUseCase.retrieve(memberId, memberName, activityId, isPublic, pageable);
+        PagedResponseDto<ReviewResponseDto> reviews = retrieveReviewsByConditionsUseCase.retrieve(memberId, memberName, activityId, isPublic, pageable);
         return ApiResponse.success(reviews);
     }
 }

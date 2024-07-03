@@ -3,7 +3,7 @@ package page.clab.api.domain.book.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.book.application.port.in.BookLoanApprovalUseCase;
+import page.clab.api.domain.book.application.port.in.ApproveBookLoanUseCase;
 import page.clab.api.domain.book.application.port.out.CountBooksByBorrowerPort;
 import page.clab.api.domain.book.application.port.out.LoadBookLoanRecordPort;
 import page.clab.api.domain.book.application.port.out.LoadBookPort;
@@ -11,14 +11,14 @@ import page.clab.api.domain.book.application.port.out.RegisterBookLoanRecordPort
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
-import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class BookLoanApprovalService implements BookLoanApprovalUseCase {
+public class BookLoanApprovalService implements ApproveBookLoanUseCase {
 
-    private final MemberRetrievalUseCase memberRetrievalUseCase;
+    private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final LoadBookPort loadBookPort;
     private final LoadBookLoanRecordPort loadBookLoanRecordPort;
     private final RegisterBookLoanRecordPort registerBookLoanRecordPort;
@@ -28,7 +28,7 @@ public class BookLoanApprovalService implements BookLoanApprovalUseCase {
     @Transactional
     @Override
     public Long approve(Long bookLoanRecordId) {
-        String borrowerId = memberRetrievalUseCase.getCurrentMemberId();
+        String borrowerId = retrieveMemberUseCase.getCurrentMemberId();
         BookLoanRecord bookLoanRecord = loadBookLoanRecordPort.findByIdOrThrow(bookLoanRecordId);
         Book book = loadBookPort.findByIdOrThrow(bookLoanRecord.getBook().getId());
 

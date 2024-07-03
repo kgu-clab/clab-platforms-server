@@ -3,21 +3,21 @@ package page.clab.api.domain.application.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.application.application.port.in.ApplicationApplyUseCase;
+import page.clab.api.domain.application.application.port.in.ApplyForApplicationUseCase;
 import page.clab.api.domain.application.application.port.out.RegisterApplicationPort;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
-import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
-import page.clab.api.domain.recruitment.application.port.in.RecruitmentRetrievalUseCase;
+import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
+import page.clab.api.domain.recruitment.application.port.in.RetrieveRecruitmentUseCase;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class ApplicationApplyService implements ApplicationApplyUseCase {
+public class ApplicationApplyService implements ApplyForApplicationUseCase {
 
-    private final RecruitmentRetrievalUseCase recruitmentRetrievalUseCase;
-    private final NotificationSenderUseCase notificationService;
+    private final RetrieveRecruitmentUseCase retrieveRecruitmentUseCase;
+    private final SendNotificationUseCase notificationService;
     private final ValidationService validationService;
     private final SlackService slackService;
     private final RegisterApplicationPort registerApplicationPort;
@@ -25,7 +25,7 @@ public class ApplicationApplyService implements ApplicationApplyUseCase {
     @Transactional
     @Override
     public String apply(ApplicationRequestDto requestDto) {
-        recruitmentRetrievalUseCase.findByIdOrThrow(requestDto.getRecruitmentId());
+        retrieveRecruitmentUseCase.findByIdOrThrow(requestDto.getRecruitmentId());
         Application application = ApplicationRequestDto.toEntity(requestDto);
         validationService.checkValid(application);
 

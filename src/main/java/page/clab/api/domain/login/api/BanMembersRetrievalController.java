@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.login.application.port.in.BanMembersRetrievalUseCase;
+import page.clab.api.domain.login.application.port.in.RetrieveBannedMembersUseCase;
 import page.clab.api.domain.login.dto.response.AccountLockInfoResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -21,7 +21,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @Tag(name = "Login", description = "로그인")
 public class BanMembersRetrievalController {
 
-    private final BanMembersRetrievalUseCase banMembersRetrievalUseCase;
+    private final RetrieveBannedMembersUseCase retrieveBannedMembersUseCase;
 
     @Operation(summary = "[S] 밴 멤버 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
@@ -31,7 +31,7 @@ public class BanMembersRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AccountLockInfoResponseDto> banMembers = banMembersRetrievalUseCase.retrieve(pageable);
+        PagedResponseDto<AccountLockInfoResponseDto> banMembers = retrieveBannedMembersUseCase.retrieve(pageable);
         return ApiResponse.success(banMembers);
     }
 }

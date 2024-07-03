@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.book.application.port.in.BookLoanRequestUseCase;
+import page.clab.api.domain.book.application.port.in.RequestBookLoanUseCase;
 import page.clab.api.domain.book.dto.request.BookLoanRecordRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
@@ -20,7 +20,7 @@ import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 @Tag(name = "BookLoanRecord", description = "도서 대출")
 public class BookLoanRequestController {
 
-     private final BookLoanRequestUseCase bookLoanRequestUseCase;
+     private final RequestBookLoanUseCase requestBookLoanUseCase;
 
     @Operation(summary = "[U] 도서 대출 요청", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
@@ -28,7 +28,7 @@ public class BookLoanRequestController {
     public ApiResponse<Long> requestBookLoan(
             @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) throws CustomOptimisticLockingFailureException {
-        Long id = bookLoanRequestUseCase.request(requestDto);
+        Long id = requestBookLoanUseCase.request(requestDto);
         return ApiResponse.success(id);
     }
 }

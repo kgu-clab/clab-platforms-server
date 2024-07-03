@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.schedule.application.port.in.DeletedSchedulesRetrievalUseCase;
+import page.clab.api.domain.schedule.application.port.in.RetrieveDeletedSchedulesUseCase;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -21,7 +21,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @Tag(name = "Schedule", description = "일정")
 public class DeletedSchedulesRetrievalController {
 
-    private final DeletedSchedulesRetrievalUseCase deletedSchedulesRetrievalUseCase;
+    private final RetrieveDeletedSchedulesUseCase retrieveDeletedSchedulesUseCase;
 
     @Operation(summary = "[S] 삭제된 일정 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
@@ -31,7 +31,7 @@ public class DeletedSchedulesRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ScheduleResponseDto> schedules = deletedSchedulesRetrievalUseCase.retrieve(pageable);
+        PagedResponseDto<ScheduleResponseDto> schedules = retrieveDeletedSchedulesUseCase.retrieve(pageable);
         return ApiResponse.success(schedules);
     }
 }

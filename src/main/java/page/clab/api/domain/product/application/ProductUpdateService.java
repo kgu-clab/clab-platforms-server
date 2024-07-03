@@ -3,7 +3,7 @@ package page.clab.api.domain.product.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.product.application.port.in.ProductUpdateUseCase;
+import page.clab.api.domain.product.application.port.in.UpdateProductUseCase;
 import page.clab.api.domain.product.application.port.out.LoadProductPort;
 import page.clab.api.domain.product.application.port.out.UpdateProductPort;
 import page.clab.api.domain.product.domain.Product;
@@ -12,7 +12,7 @@ import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class ProductUpdateService implements ProductUpdateUseCase {
+public class ProductUpdateService implements UpdateProductUseCase {
 
     private final ValidationService validationService;
     private final LoadProductPort loadProductPort;

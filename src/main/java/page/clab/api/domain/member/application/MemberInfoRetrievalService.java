@@ -2,7 +2,7 @@ package page.clab.api.domain.member.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.member.application.port.out.LoadMemberPort;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class MemberInfoRetrievalService implements MemberInfoRetrievalUseCase {
+public class MemberInfoRetrievalService implements RetrieveMemberInfoUseCase {
 
     private final LoadMemberPort loadMemberPort;
 

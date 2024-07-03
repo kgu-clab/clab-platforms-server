@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.membershipFee.application.port.in.MembershipFeeRemoveUseCase;
+import page.clab.api.domain.membershipFee.application.port.in.RemoveMembershipFeeUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -18,7 +18,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @Tag(name = "MembershipFee", description = "회비")
 public class MembershipFeeRemoveController {
 
-    private final MembershipFeeRemoveUseCase membershipFeeRemoveUseCase;
+    private final RemoveMembershipFeeUseCase removeMembershipFeeUseCase;
 
     @Operation(summary = "[S] 회비 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
@@ -26,7 +26,7 @@ public class MembershipFeeRemoveController {
     public ApiResponse<Long> removeMembershipFee(
             @PathVariable(name = "membershipFeeId") Long membershipFeeId
     ) throws PermissionDeniedException {
-        Long id = membershipFeeRemoveUseCase.remove(membershipFeeId);
+        Long id = removeMembershipFeeUseCase.remove(membershipFeeId);
         return ApiResponse.success(id);
     }
 }

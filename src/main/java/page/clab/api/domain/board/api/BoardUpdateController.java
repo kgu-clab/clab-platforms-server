@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.board.application.port.in.BoardUpdateUseCase;
+import page.clab.api.domain.board.application.port.in.UpdateBoardUseCase;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -21,7 +21,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @Tag(name = "Board", description = "커뮤니티 게시판")
 public class BoardUpdateController {
 
-    private final BoardUpdateUseCase boardUpdateUseCase;
+    private final UpdateBoardUseCase updateBoardUseCase;
 
     @PatchMapping("/{boardId}")
     @Operation(summary = "[U] 커뮤니티 게시글 수정", description = "ROLE_USER 이상의 권한이 필요함")
@@ -30,7 +30,7 @@ public class BoardUpdateController {
             @PathVariable(name = "boardId") Long boardId,
             @Valid @RequestBody BoardUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        String id = boardUpdateUseCase.update(boardId, requestDto);
+        String id = updateBoardUseCase.update(boardId, requestDto);
         return ApiResponse.success(id);
     }
 }

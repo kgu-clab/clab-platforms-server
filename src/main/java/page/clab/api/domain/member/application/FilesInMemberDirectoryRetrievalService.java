@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.FilesInMemberDirectoryRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveFilesInMemberDirectoryUseCase;
 import page.clab.api.domain.member.application.port.out.LoadMemberPort;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class FilesInMemberDirectoryRetrievalService implements FilesInMemberDirectoryRetrievalUseCase {
+public class FilesInMemberDirectoryRetrievalService implements RetrieveFilesInMemberDirectoryUseCase {
 
     private final LoadMemberPort loadMemberPort;
 

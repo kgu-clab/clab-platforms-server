@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.book.application.port.in.OverdueBookLoanRecordsRetrievalUseCase;
+import page.clab.api.domain.book.application.port.in.RetrieveOverdueBookLoanRecordsUseCase;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -26,7 +26,7 @@ import java.util.List;
 @Tag(name = "BookLoanRecord", description = "도서 대출")
 public class OverdueBookLoanRecordsRetrievalController {
 
-    private final OverdueBookLoanRecordsRetrievalUseCase overdueBookLoanRecordsRetrievalUseCase;
+    private final RetrieveOverdueBookLoanRecordsUseCase retrieveOverdueBookLoanRecordsUseCase;
 
     @Operation(summary = "[A] 도서 연체자 조회", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, bookId, borrowedAt, dueDate, loanExtensionCount, returnedAt, memberId")
@@ -39,7 +39,7 @@ public class OverdueBookLoanRecordsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, BookLoanRecord.class);
-        PagedResponseDto<BookLoanRecordOverdueResponseDto> overdueRecords = overdueBookLoanRecordsRetrievalUseCase.retrieve(pageable);
+        PagedResponseDto<BookLoanRecordOverdueResponseDto> overdueRecords = retrieveOverdueBookLoanRecordsUseCase.retrieve(pageable);
         return ApiResponse.success(overdueRecords);
     }
 }

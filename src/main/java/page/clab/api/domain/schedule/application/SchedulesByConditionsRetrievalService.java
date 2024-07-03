@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.schedule.application.port.in.SchedulesByConditionsRetrievalUseCase;
+import page.clab.api.domain.schedule.application.port.in.RetrieveSchedulesByConditionsUseCase;
 import page.clab.api.domain.schedule.application.port.out.RetrieveSchedulesByConditionsPort;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
@@ -14,7 +14,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class SchedulesByConditionsRetrievalService implements SchedulesByConditionsRetrievalUseCase {
+public class SchedulesByConditionsRetrievalService implements RetrieveSchedulesByConditionsUseCase {
 
     private final RetrieveSchedulesByConditionsPort retrieveSchedulesByConditionsPort;
 

@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.application.application.port.in.DeletedApplicationRetrievalUseCase;
+import page.clab.api.domain.application.application.port.in.RetrieveDeletedApplicationsUseCase;
 import page.clab.api.domain.application.application.port.out.RetrieveDeletedApplicationsPort;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.dto.response.ApplicationResponseDto;
@@ -15,7 +15,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class DeletedApplicationRetrievalService implements DeletedApplicationRetrievalUseCase {
+public class DeletedApplicationRetrievalService implements RetrieveDeletedApplicationsUseCase {
 
     private final RetrieveDeletedApplicationsPort retrieveDeletedApplicationsPort;
 

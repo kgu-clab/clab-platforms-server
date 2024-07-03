@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.blacklistIp.application.port.in.BlacklistIpRegisterUseCase;
+import page.clab.api.domain.blacklistIp.application.port.in.RegisterBlacklistIpUseCase;
 import page.clab.api.domain.blacklistIp.application.port.out.RegisterBlacklistIpPort;
 import page.clab.api.domain.blacklistIp.application.port.out.RetrieveBlacklistIpByIpAddressPort;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
@@ -14,7 +14,7 @@ import page.clab.api.global.common.slack.domain.SecurityAlertType;
 
 @Service
 @RequiredArgsConstructor
-public class BlacklistIpRegisterService implements BlacklistIpRegisterUseCase {
+public class BlacklistIpRegisterService implements RegisterBlacklistIpUseCase {
 
     private final SlackService slackService;
     private final RegisterBlacklistIpPort registerBlacklistIpPort;

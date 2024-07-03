@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.workExperience.application.port.in.WorkExperiencesByConditionsRetrievalUseCase;
+import page.clab.api.domain.workExperience.application.port.in.RetrieveWorkExperiencesByConditionsUseCase;
 import page.clab.api.domain.workExperience.application.port.out.RetrieveWorkExperienceByConditionsPort;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
 import page.clab.api.domain.workExperience.dto.response.WorkExperienceResponseDto;
@@ -13,7 +13,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class WorkExperiencesByConditionsRetrievalService implements WorkExperiencesByConditionsRetrievalUseCase {
+public class WorkExperiencesByConditionsRetrievalService implements RetrieveWorkExperiencesByConditionsUseCase {
 
     private final RetrieveWorkExperienceByConditionsPort retrieveWorkExperienceByConditionsPort;
 

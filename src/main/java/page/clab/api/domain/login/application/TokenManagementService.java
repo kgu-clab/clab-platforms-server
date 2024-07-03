@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.login.application.port.in.LoginUseCase;
-import page.clab.api.domain.login.application.port.in.RedisTokenManagementUseCase;
+import page.clab.api.domain.login.application.port.in.ManageLoginUseCase;
+import page.clab.api.domain.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
@@ -16,7 +16,7 @@ import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.exception.LoginFailedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
@@ -27,10 +27,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Qualifier("tokenManagementService")
-public class TokenManagementService implements LoginUseCase {
+public class TokenManagementService implements ManageLoginUseCase {
 
-    private final MemberRetrievalUseCase memberRetrievalUseCase;
-    private final RedisTokenManagementUseCase redisTokenManagementUseCase;
+    private final RetrieveMemberUseCase retrieveMemberUseCase;
+    private final ManageRedisTokenUseCase manageRedisTokenUseCase;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
@@ -38,24 +38,24 @@ public class TokenManagementService implements LoginUseCase {
     public TokenHeader reissueToken(HttpServletRequest request) {
         String refreshToken = jwtTokenProvider.resolveToken(request);
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
-        RedisToken redisToken = redisTokenManagementUseCase.findByRefreshToken(refreshToken);
+        RedisToken redisToken = manageRedisTokenUseCase.findByRefreshToken(refreshToken);
 
         validateMemberExistence(authentication);
         validateToken(redisToken);
 
         TokenInfo newTokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
-        redisTokenManagementUseCase.saveToken(redisToken.getId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
+        manageRedisTokenUseCase.saveToken(redisToken.getId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
         return TokenHeader.create(newTokenInfo);
     }
 
     @Override
     public List<String> retrieveCurrentLoggedInUsers() {
-        return redisTokenManagementUseCase.getCurrentLoggedInUsers();
+        return manageRedisTokenUseCase.getCurrentLoggedInUsers();
     }
 
     private void validateMemberExistence(Authentication authentication) {
         String id = authentication.getName();
-        if (memberRetrievalUseCase.findById(id).isEmpty()) {
+        if (retrieveMemberUseCase.findById(id).isEmpty()) {
             throw new TokenForgeryException("존재하지 않는 회원에 대한 토큰입니다.");
         }
     }
@@ -63,7 +63,7 @@ public class TokenManagementService implements LoginUseCase {
     private void validateToken(RedisToken redisToken) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         if (!redisToken.isSameIp(clientIpAddress)) {
-            redisTokenManagementUseCase.deleteByAccessToken(redisToken.getAccessToken());
+            manageRedisTokenUseCase.deleteByAccessToken(redisToken.getAccessToken());
             throw new TokenMisuseException("[" + clientIpAddress + "] 토큰 발급 IP와 다른 IP에서 발급을 시도하여 토큰을 삭제하였습니다.");
         }
     }
@@ -85,7 +85,7 @@ public class TokenManagementService implements LoginUseCase {
 
     @Override
     public String revokeToken(String memberId) {
-        redisTokenManagementUseCase.deleteByMemberId(memberId);
+        manageRedisTokenUseCase.deleteByMemberId(memberId);
         return memberId;
     }
 }

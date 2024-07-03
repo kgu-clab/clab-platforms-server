@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.award.application.port.in.AwardRetrievalUseCase;
+import page.clab.api.domain.award.application.port.in.RetrieveAwardsUseCase;
 import page.clab.api.domain.award.application.port.out.RetrieveAwardsByConditionsPort;
 import page.clab.api.domain.award.domain.Award;
 import page.clab.api.domain.award.dto.response.AwardResponseDto;
@@ -13,7 +13,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class AwardRetrievalService implements AwardRetrievalUseCase {
+public class AwardRetrievalService implements RetrieveAwardsUseCase {
 
     private final RetrieveAwardsByConditionsPort retrieveAwardsByConditionsPort;
 

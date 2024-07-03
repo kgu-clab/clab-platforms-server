@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.board.application.port.in.BoardDetailsRetrievalUseCase;
+import page.clab.api.domain.board.application.port.in.RetrieveBoardDetailsUseCase;
 import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -18,7 +18,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Board", description = "커뮤니티 게시판")
 public class BoardDetailsRetrievalController {
 
-    private final BoardDetailsRetrievalUseCase boardDetailsRetrievalUseCase;
+    private final RetrieveBoardDetailsUseCase retrieveBoardDetailsUseCase;
 
     @GetMapping("/{boardId}")
     @Operation(summary = "[U] 커뮤니티 게시글 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
@@ -26,7 +26,7 @@ public class BoardDetailsRetrievalController {
     public ApiResponse<BoardDetailsResponseDto> retrieveBoardDetails(
             @PathVariable(name = "boardId") Long boardId
     ) {
-        BoardDetailsResponseDto board = boardDetailsRetrievalUseCase.retrieve(boardId);
+        BoardDetailsResponseDto board = retrieveBoardDetailsUseCase.retrieve(boardId);
         return ApiResponse.success(board);
     }
 }

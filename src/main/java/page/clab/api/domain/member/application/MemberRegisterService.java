@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.MemberRegisterUseCase;
+import page.clab.api.domain.member.application.port.in.RegisterMemberUseCase;
 import page.clab.api.domain.member.application.port.out.CheckMemberExistencePort;
 import page.clab.api.domain.member.application.port.out.RegisterMemberPort;
 import page.clab.api.domain.member.domain.Member;
@@ -26,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class MemberRegisterService implements MemberRegisterUseCase {
+public class MemberRegisterService implements RegisterMemberUseCase {
 
     private final VerificationService verificationService;
     private final ValidationService validationService;

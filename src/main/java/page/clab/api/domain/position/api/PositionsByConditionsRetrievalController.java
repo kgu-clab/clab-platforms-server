@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.position.application.port.in.PositionsByConditionsRetrievalUseCase;
+import page.clab.api.domain.position.application.port.in.RetrievePositionsByConditionsUseCase;
 import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
 import page.clab.api.domain.position.dto.response.PositionResponseDto;
@@ -27,7 +27,7 @@ import java.util.List;
 @Tag(name = "Position", description = "멤버 직책")
 public class PositionsByConditionsRetrievalController {
 
-    private final PositionsByConditionsRetrievalUseCase positionsByConditionsRetrievalUseCase;
+    private final RetrievePositionsByConditionsUseCase retrievePositionsByConditionsUseCase;
 
     @Operation(summary = "[U] 연도/직책별 목록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "2개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
@@ -44,7 +44,7 @@ public class PositionsByConditionsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc, asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Position.class);
-        PagedResponseDto<PositionResponseDto> positions = positionsByConditionsRetrievalUseCase.retrieve(year, positionType, pageable);
+        PagedResponseDto<PositionResponseDto> positions = retrievePositionsByConditionsUseCase.retrieve(year, positionType, pageable);
         return ApiResponse.success(positions);
     }
 }

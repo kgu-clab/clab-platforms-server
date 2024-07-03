@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.blacklistIp.application.port.in.BlacklistResetUseCase;
+import page.clab.api.domain.blacklistIp.application.port.in.ResetBlacklistUseCase;
 import page.clab.api.domain.blacklistIp.application.port.out.LoadBlacklistIpsPort;
 import page.clab.api.domain.blacklistIp.application.port.out.RemoveBlacklistIpPort;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class BlacklistResetService implements BlacklistResetUseCase {
+public class BlacklistResetService implements ResetBlacklistUseCase {
 
     private final LoadBlacklistIpsPort loadBlacklistIpsPort;
     private final RemoveBlacklistIpPort removeBlacklistIpPort;

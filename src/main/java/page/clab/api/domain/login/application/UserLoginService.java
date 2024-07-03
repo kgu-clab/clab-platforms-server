@@ -8,11 +8,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.login.application.port.in.AccountLockManagementUseCase;
-import page.clab.api.domain.login.application.port.in.AuthenticatorUseCase;
-import page.clab.api.domain.login.application.port.in.LoginAttemptLogManagementUseCase;
-import page.clab.api.domain.login.application.port.in.LoginUseCase;
-import page.clab.api.domain.login.application.port.in.RedisTokenManagementUseCase;
+import page.clab.api.domain.login.application.port.in.ManageAccountLockUseCase;
+import page.clab.api.domain.login.application.port.in.ManageAuthenticatorUseCase;
+import page.clab.api.domain.login.application.port.in.ManageLoginAttemptLogUseCase;
+import page.clab.api.domain.login.application.port.in.ManageLoginUseCase;
+import page.clab.api.domain.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.domain.login.domain.LoginAttemptResult;
 import page.clab.api.domain.login.dto.request.LoginRequestDto;
 import page.clab.api.domain.login.dto.request.TwoFactorAuthenticationRequestDto;
@@ -22,8 +22,8 @@ import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.domain.login.dto.response.TokenInfo;
 import page.clab.api.domain.login.exception.LoginFailedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
-import page.clab.api.domain.member.application.port.in.MemberUpdateUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.domain.member.application.port.in.UpdateMemberUseCase;
 import page.clab.api.domain.member.dto.shared.MemberLoginInfoDto;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.util.HttpReqResUtil;
@@ -34,26 +34,26 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Qualifier("userLoginService")
-public class UserLoginService implements LoginUseCase {
+public class UserLoginService implements ManageLoginUseCase {
 
     @Qualifier("loginAuthenticationManager")
     private final AuthenticationManager loginAuthenticationManager;
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final AccountLockManagementUseCase accountLockManagementUseCase;
-    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
-    private final MemberUpdateUseCase memberUpdateUseCase;
-    private final LoginAttemptLogManagementUseCase loginAttemptLogManagementUseCase;
-    private final RedisTokenManagementUseCase redisTokenManagementUseCase;
-    private final AuthenticatorUseCase authenticatorUseCase;
+    private final ManageAccountLockUseCase manageAccountLockUseCase;
+    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
+    private final UpdateMemberUseCase updateMemberUseCase;
+    private final ManageLoginAttemptLogUseCase manageLoginAttemptLogUseCase;
+    private final ManageRedisTokenUseCase manageRedisTokenUseCase;
+    private final ManageAuthenticatorUseCase manageAuthenticatorUseCase;
 
     @Transactional
     @Override
     public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFailedException, MemberLockedException {
         authenticateAndCheckStatus(request, requestDto);
         logLoginAttempt(request, requestDto.getId(), true);
-        MemberLoginInfoDto loginMember = memberInfoRetrievalUseCase.getMemberLoginInfoById(requestDto.getId());
-        memberUpdateUseCase.updateLastLoginTime(requestDto.getId());
+        MemberLoginInfoDto loginMember = retrieveMemberInfoUseCase.getMemberLoginInfoById(requestDto.getId());
+        updateMemberUseCase.updateLastLoginTime(requestDto.getId());
         return generateLoginResult(loginMember);
     }
 
@@ -62,17 +62,17 @@ public class UserLoginService implements LoginUseCase {
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(loginRequestDto.getId(), loginRequestDto.getPassword());
             loginAuthenticationManager.authenticate(authenticationToken);
-            accountLockManagementUseCase.handleAccountLockInfo(loginRequestDto.getId());
+            manageAccountLockUseCase.handleAccountLockInfo(loginRequestDto.getId());
         } catch (BadCredentialsException e) {
             logLoginAttempt(httpServletRequest, loginRequestDto.getId(), false);
-            accountLockManagementUseCase.handleLoginFailure(httpServletRequest, loginRequestDto.getId());
+            manageAccountLockUseCase.handleLoginFailure(httpServletRequest, loginRequestDto.getId());
             throw new LoginFailedException();
         }
     }
 
     private void logLoginAttempt(HttpServletRequest request, String memberId, boolean isSuccess) {
         LoginAttemptResult result = isSuccess ? LoginAttemptResult.SUCCESS : LoginAttemptResult.FAILURE;
-        loginAttemptLogManagementUseCase.logLoginAttempt(request, memberId, result);
+        manageLoginAttemptLogUseCase.logLoginAttempt(request, memberId, result);
     }
 
     private LoginResult generateLoginResult(MemberLoginInfoDto loginMember) {
@@ -80,8 +80,8 @@ public class UserLoginService implements LoginUseCase {
         String header;
         boolean isOtpEnabled = Optional.of(loginMember.isOtpEnabled()).orElse(false);
         if (isOtpEnabled || loginMember.isAdminRole()) {
-            if (!authenticatorUseCase.isAuthenticatorExist(memberId)) {
-                String secretKey = authenticatorUseCase.generateSecretKey(memberId);
+            if (!manageAuthenticatorUseCase.isAuthenticatorExist(memberId)) {
+                String secretKey = manageAuthenticatorUseCase.generateSecretKey(memberId);
                 header = LoginHeader.create(secretKey).toJson();
                 return LoginResult.create(header, true);
             }
@@ -96,7 +96,7 @@ public class UserLoginService implements LoginUseCase {
     private TokenInfo generateAndSaveToken(MemberLoginInfoDto memberInfo) {
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(memberInfo.getMemberId(), memberInfo.getRole());
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        redisTokenManagementUseCase.saveToken(memberInfo.getMemberId(), memberInfo.getRole(), tokenInfo, clientIpAddress);
+        manageRedisTokenUseCase.saveToken(memberInfo.getMemberId(), memberInfo.getRole(), tokenInfo, clientIpAddress);
         return tokenInfo;
     }
 

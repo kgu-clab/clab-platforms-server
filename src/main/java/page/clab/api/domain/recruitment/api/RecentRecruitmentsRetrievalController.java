@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.recruitment.application.port.in.RecentRecruitmentsRetrievalUseCase;
+import page.clab.api.domain.recruitment.application.port.in.RetrieveRecentRecruitmentsUseCase;
 import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -18,13 +18,13 @@ import java.util.List;
 @Tag(name = "Recruitment", description = "모집 공고")
 public class RecentRecruitmentsRetrievalController {
 
-    private final RecentRecruitmentsRetrievalUseCase recentRecruitmentsRetrievalUseCase;
+    private final RetrieveRecentRecruitmentsUseCase retrieveRecentRecruitmentsUseCase;
 
     @Operation(summary = "모집 공고 목록(최근 5건)", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
             "최근 5건의 모집 공고를 조회")
     @GetMapping("")
     public ApiResponse<List<RecruitmentResponseDto>> retrieveRecentRecruitments() {
-        List<RecruitmentResponseDto> recruitments = recentRecruitmentsRetrievalUseCase.retrieve();
+        List<RecruitmentResponseDto> recruitments = retrieveRecentRecruitmentsUseCase.retrieve();
         return ApiResponse.success(recruitments);
     }
 }

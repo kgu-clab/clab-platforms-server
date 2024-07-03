@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.CloudUsageRetrievalByMemberIdUseCase;
-import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveCloudUsageByMemberIdUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.application.port.out.LoadMemberPort;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
@@ -16,9 +16,9 @@ import java.io.File;
 
 @Service
 @RequiredArgsConstructor
-public class CloudUsageRetrievalByMemberIdService implements CloudUsageRetrievalByMemberIdUseCase {
+public class CloudUsageRetrievalByMemberIdService implements RetrieveCloudUsageByMemberIdUseCase {
 
-    private final MemberRetrievalUseCase memberRetrievalUseCase;
+    private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final LoadMemberPort loadMemberPort;
 
     @Value("${resource.file.path}")
@@ -27,7 +27,7 @@ public class CloudUsageRetrievalByMemberIdService implements CloudUsageRetrieval
     @Override
     @Transactional(readOnly = true)
     public CloudUsageInfo retrieve(String memberId) throws PermissionDeniedException {
-        Member currentMember = memberRetrievalUseCase.getCurrentMember();
+        Member currentMember = retrieveMemberUseCase.getCurrentMember();
         Member targetMember = loadMemberPort.findByIdOrThrow(memberId);
         targetMember.validateAccessPermissionForCloud(currentMember);
         File directory = getMemberDirectory(targetMember.getId());

@@ -3,7 +3,7 @@ package page.clab.api.domain.accuse.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.accuse.application.port.in.AccusationReportUseCase;
+import page.clab.api.domain.accuse.application.port.in.ReportAccusationUseCase;
 import page.clab.api.domain.accuse.application.port.out.LoadAccuseTargetPort;
 import page.clab.api.domain.accuse.application.port.out.RegisterAccusePort;
 import page.clab.api.domain.accuse.application.port.out.RegisterAccuseTargetPort;
@@ -14,29 +14,29 @@ import page.clab.api.domain.accuse.domain.AccuseTargetId;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.accuse.dto.request.AccuseRequestDto;
 import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
-import page.clab.api.domain.board.application.port.in.BoardsRetrievalUseCase;
+import page.clab.api.domain.board.application.port.in.RetrieveBoardsUseCase;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.comment.application.port.in.CommentsRetrievalUseCase;
+import page.clab.api.domain.comment.application.port.in.RetrieveCommentsUseCase;
 import page.clab.api.domain.comment.domain.Comment;
-import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
-import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
-import page.clab.api.domain.review.application.port.in.ReviewRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
+import page.clab.api.domain.review.application.port.in.RetrieveReviewUseCase;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class AccusationReportService implements AccusationReportUseCase {
+public class AccusationReportService implements ReportAccusationUseCase {
 
-    private final MemberRetrievalUseCase memberRetrievalUseCase;
-    private final NotificationSenderUseCase notificationService;
+    private final RetrieveMemberUseCase retrieveMemberUseCase;
+    private final SendNotificationUseCase notificationService;
     private final RegisterAccusePort registerAccusePort;
     private final RegisterAccuseTargetPort registerAccuseTargetPort;
     private final RetrieveAccuseByMemberIdAndTargetPort retrieveAccuseByMemberIdAndTargetPort;
     private final LoadAccuseTargetPort loadAccuseTargetPort;
-    private final BoardsRetrievalUseCase boardsRetrievalUseCase;
-    private final CommentsRetrievalUseCase commentsRetrievalUseCase;
-    private final ReviewRetrievalUseCase reviewRetrievalUseCase;
+    private final RetrieveBoardsUseCase retrieveBoardsUseCase;
+    private final RetrieveCommentsUseCase retrieveCommentsUseCase;
+    private final RetrieveReviewUseCase retrieveReviewUseCase;
     private final ValidationService validationService;
 
     @Transactional
@@ -44,7 +44,7 @@ public class AccusationReportService implements AccusationReportUseCase {
     public Long reportIncident(AccuseRequestDto requestDto) {
         TargetType type = requestDto.getTargetType();
         Long targetId = requestDto.getTargetId();
-        String memberId = memberRetrievalUseCase.getCurrentMemberId();
+        String memberId = retrieveMemberUseCase.getCurrentMemberId();
 
         validateAccusationRequest(type, targetId, memberId);
 
@@ -63,19 +63,19 @@ public class AccusationReportService implements AccusationReportUseCase {
     private void validateAccusationRequest(TargetType type, Long targetId, String currentMemberId) {
         switch (type) {
             case BOARD:
-                Board board = boardsRetrievalUseCase.findByIdOrThrow(targetId);
+                Board board = retrieveBoardsUseCase.findByIdOrThrow(targetId);
                 if (board.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 게시글은 신고할 수 없습니다.");
                 }
                 break;
             case COMMENT:
-                Comment comment = commentsRetrievalUseCase.findByIdOrThrow(targetId);
+                Comment comment = retrieveCommentsUseCase.findByIdOrThrow(targetId);
                 if (comment.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 댓글은 신고할 수 없습니다.");
                 }
                 break;
             case REVIEW:
-                Review review = reviewRetrievalUseCase.findByIdOrThrow(targetId);
+                Review review = retrieveReviewUseCase.findByIdOrThrow(targetId);
                 if (review.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 리뷰는 신고할 수 없습니다.");
                 }

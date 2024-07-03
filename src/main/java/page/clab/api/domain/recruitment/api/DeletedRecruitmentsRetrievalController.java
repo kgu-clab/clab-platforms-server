@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.recruitment.application.port.in.DeletedRecruitmentsRetrievalUseCase;
+import page.clab.api.domain.recruitment.application.port.in.RetrieveDeletedRecruitmentsUseCase;
 import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -21,7 +21,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @Tag(name = "Recruitment", description = "모집 공고")
 public class DeletedRecruitmentsRetrievalController {
 
-    private final DeletedRecruitmentsRetrievalUseCase deletedRecruitmentsRetrievalUseCase;
+    private final RetrieveDeletedRecruitmentsUseCase retrieveDeletedRecruitmentsUseCase;
 
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 모집 공고 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
@@ -31,7 +31,7 @@ public class DeletedRecruitmentsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<RecruitmentResponseDto> recruitments = deletedRecruitmentsRetrievalUseCase.retrieve(pageable);
+        PagedResponseDto<RecruitmentResponseDto> recruitments = retrieveDeletedRecruitmentsUseCase.retrieve(pageable);
         return ApiResponse.success(recruitments);
     }
 }

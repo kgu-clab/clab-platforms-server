@@ -3,7 +3,7 @@ package page.clab.api.domain.news.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.news.application.port.in.NewsRegisterUseCase;
+import page.clab.api.domain.news.application.port.in.RegisterNewsUseCase;
 import page.clab.api.domain.news.application.port.out.RegisterNewsPort;
 import page.clab.api.domain.news.domain.News;
 import page.clab.api.domain.news.dto.request.NewsRequestDto;
@@ -12,7 +12,7 @@ import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class NewsRegisterService implements NewsRegisterUseCase {
+public class NewsRegisterService implements RegisterNewsUseCase {
 
     private final UploadedFileService uploadedFileService;
     private final ValidationService validationService;

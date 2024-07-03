@@ -5,24 +5,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.login.application.port.in.AccountLockManagementUseCase;
+import page.clab.api.domain.login.application.port.in.ManageAccountLockUseCase;
 import page.clab.api.domain.login.application.port.out.LoadAccountLockInfoPort;
 import page.clab.api.domain.login.application.port.out.RegisterAccountLockInfoPort;
 import page.clab.api.domain.login.domain.AccountLockInfo;
 import page.clab.api.domain.login.exception.LoginFailedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.domain.member.application.port.in.MemberInfoRetrievalUseCase;
-import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 
 @Service
 @RequiredArgsConstructor
-public class AccountLockManagementService implements AccountLockManagementUseCase {
+public class AccountLockManagementService implements ManageAccountLockUseCase {
 
-    private final MemberRetrievalUseCase memberRetrievalUseCase;
-    private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
+    private final RetrieveMemberUseCase retrieveMemberUseCase;
+    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final SlackService slackService;
     private final LoadAccountLockInfoPort loadAccountLockInfoPort;
     private final RegisterAccountLockInfoPort registerAccountLockInfoPort;
@@ -63,7 +63,7 @@ public class AccountLockManagementService implements AccountLockManagementUseCas
     }
 
     private void ensureMemberExists(String memberId) throws LoginFailedException {
-        if (memberRetrievalUseCase.findById(memberId).isEmpty()) {
+        if (retrieveMemberUseCase.findById(memberId).isEmpty()) {
             throw new LoginFailedException();
         }
     }
@@ -75,7 +75,7 @@ public class AccountLockManagementService implements AccountLockManagementUseCas
     }
 
     private void sendSlackLoginFailureNotification(HttpServletRequest request, String memberId) {
-        MemberDetailedInfoDto memberInfo = memberInfoRetrievalUseCase.getMemberDetailedInfoById(memberId);
+        MemberDetailedInfoDto memberInfo = retrieveMemberInfoUseCase.getMemberDetailedInfoById(memberId);
         String memberName = memberInfo.getMemberName();
         if (memberInfo.isAdminRole()) {
             request.setAttribute("member", memberId + " " + memberName);

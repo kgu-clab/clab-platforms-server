@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.notification.application.port.in.NotificationRemoveUseCase;
+import page.clab.api.domain.notification.application.port.in.RemoveNotificationUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -18,7 +18,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @Tag(name = "Notification", description = "알림")
 public class NotificationRemoveController {
 
-    private final NotificationRemoveUseCase notificationRemoveUseCase;
+    private final RemoveNotificationUseCase removeNotificationUseCase;
 
     @Operation(summary = "[U] 알림 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
@@ -26,7 +26,7 @@ public class NotificationRemoveController {
     public ApiResponse<Long> removeNotification(
             @PathVariable(name = "notificationId") Long notificationId
     ) throws PermissionDeniedException {
-        Long id = notificationRemoveUseCase.remove(notificationId);
+        Long id = removeNotificationUseCase.remove(notificationId);
         return ApiResponse.success(id);
     }
 }

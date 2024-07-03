@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.book.application.port.in.DeletedBooksRetrievalUseCase;
+import page.clab.api.domain.book.application.port.in.RetrieveDeletedBooksUseCase;
 import page.clab.api.domain.book.dto.response.BookDetailsResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -21,7 +21,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @Tag(name = "Book", description = "도서")
 public class DeletedBooksRetrievalController {
 
-    private final DeletedBooksRetrievalUseCase deletedBooksRetrievalUseCase;
+    private final RetrieveDeletedBooksUseCase retrieveDeletedBooksUseCase;
 
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 도서 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
@@ -31,7 +31,7 @@ public class DeletedBooksRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BookDetailsResponseDto> books = deletedBooksRetrievalUseCase.retrieve(pageable);
+        PagedResponseDto<BookDetailsResponseDto> books = retrieveDeletedBooksUseCase.retrieve(pageable);
         return ApiResponse.success(books);
     }
 }

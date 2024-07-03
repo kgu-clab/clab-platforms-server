@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.activityPhoto.application.port.in.ActivityPhotoRetrievalUseCase;
+import page.clab.api.domain.activityPhoto.application.port.in.RetrieveActivityPhotoUseCase;
 import page.clab.api.domain.activityPhoto.application.port.out.RetrieveActivityPhotosByConditionsPort;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.domain.activityPhoto.dto.response.ActivityPhotoResponseDto;
@@ -13,7 +13,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class ActivityPhotoRetrievalService implements ActivityPhotoRetrievalUseCase {
+public class ActivityPhotoRetrievalService implements RetrieveActivityPhotoUseCase {
 
     private final RetrieveActivityPhotosByConditionsPort retrieveActivityPhotosByConditionsPort;
 

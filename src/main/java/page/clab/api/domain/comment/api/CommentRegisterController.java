@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.comment.application.port.in.CommentRegisterUseCase;
+import page.clab.api.domain.comment.application.port.in.RegisterCommentUseCase;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -21,7 +21,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Comment", description = "댓글")
 public class CommentRegisterController {
 
-    private final CommentRegisterUseCase commentRegisterUseCase;
+    private final RegisterCommentUseCase registerCommentUseCase;
 
     @Operation(summary = "[U] 댓글 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
@@ -31,7 +31,7 @@ public class CommentRegisterController {
             @PathVariable(name = "boardId") Long boardId,
             @Valid @RequestBody CommentRequestDto requestDto
     ) {
-        Long id = commentRegisterUseCase.register(parentId, boardId, requestDto);
+        Long id = registerCommentUseCase.register(parentId, boardId, requestDto);
         return ApiResponse.success(id);
     }
 }

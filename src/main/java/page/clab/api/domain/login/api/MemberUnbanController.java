@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.login.application.port.in.MemberUnbanUseCase;
+import page.clab.api.domain.login.application.port.in.UnbanMemberUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
@@ -18,7 +18,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Login", description = "로그인")
 public class MemberUnbanController {
 
-    private final MemberUnbanUseCase memberUnbanUseCase;
+    private final UnbanMemberUseCase unbanMemberUseCase;
 
     @Operation(summary = "[S] 멤버 밴 해제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
@@ -27,7 +27,7 @@ public class MemberUnbanController {
             HttpServletRequest request,
             @PathVariable(name = "memberId") String memberId
     ) {
-        Long id = memberUnbanUseCase.unban(request, memberId);
+        Long id = unbanMemberUseCase.unban(request, memberId);
         return ApiResponse.success(id);
     }
 }

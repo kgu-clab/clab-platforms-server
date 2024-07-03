@@ -5,21 +5,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.application.port.out.LoadBoardPort;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.comment.application.port.in.CommentRegisterUseCase;
+import page.clab.api.domain.comment.application.port.in.RegisterCommentUseCase;
 import page.clab.api.domain.comment.application.port.out.LoadCommentPort;
 import page.clab.api.domain.comment.application.port.out.RegisterCommentPort;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.domain.comment.dto.request.CommentRequestDto;
-import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
-import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
 import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class CommentRegisterService implements CommentRegisterUseCase {
+public class CommentRegisterService implements RegisterCommentUseCase {
 
-    private final MemberRetrievalUseCase memberRetrievalUseCase;
-    private final NotificationSenderUseCase notificationService;
+    private final RetrieveMemberUseCase retrieveMemberUseCase;
+    private final SendNotificationUseCase notificationService;
     private final ValidationService validationService;
     private final RegisterCommentPort registerCommentPort;
     private final LoadBoardPort loadBoardPort;
@@ -34,7 +34,7 @@ public class CommentRegisterService implements CommentRegisterUseCase {
     }
 
     private Comment createAndStoreComment(Long parentId, Long boardId, CommentRequestDto requestDto) {
-        String currentMemberId = memberRetrievalUseCase.getCurrentMemberId();
+        String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         Board board = loadBoardPort.findByIdOrThrow(boardId);
         Comment parent = findParentComment(parentId);
         Comment comment = CommentRequestDto.toEntity(requestDto, board, currentMemberId, parent);

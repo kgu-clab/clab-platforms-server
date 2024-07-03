@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.login.application.port.in.LoginUseCase;
+import page.clab.api.domain.login.application.port.in.ManageLoginUseCase;
 import page.clab.api.domain.login.dto.response.TokenHeader;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -26,15 +26,15 @@ import java.util.List;
 @Slf4j
 public class TokenManagementController {
 
-    private final LoginUseCase loginUseCase;
+    private final ManageLoginUseCase manageLoginUseCase;
 
     private final String authHeader;
 
     public TokenManagementController(
-            @Qualifier("tokenManagementService") LoginUseCase loginUseCase,
+            @Qualifier("tokenManagementService") ManageLoginUseCase manageLoginUseCase,
             @Value("${security.auth.header}") String authHeader
     ) {
-        this.loginUseCase = loginUseCase;
+        this.manageLoginUseCase = manageLoginUseCase;
         this.authHeader = authHeader;
     }
 
@@ -44,7 +44,7 @@ public class TokenManagementController {
     public ApiResponse<String> revokeToken(
             @PathVariable(name = "memberId") String memberId
     ) {
-        String id = loginUseCase.revokeToken(memberId);
+        String id = manageLoginUseCase.revokeToken(memberId);
         return ApiResponse.success(id);
     }
 
@@ -55,7 +55,7 @@ public class TokenManagementController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        TokenHeader headerData = loginUseCase.reissueToken(request);
+        TokenHeader headerData = manageLoginUseCase.reissueToken(request);
         response.setHeader(authHeader, headerData.toJson());
         return ApiResponse.success();
     }
@@ -65,7 +65,7 @@ public class TokenManagementController {
     @GetMapping("/current")
     @Secured({"ROLE_SUPER"})
     public ApiResponse<List<String>> retrieveCurrentLoggedInUsers() {
-        List<String> currentLoggedInUsers = loginUseCase.retrieveCurrentLoggedInUsers();
+        List<String> currentLoggedInUsers = manageLoginUseCase.retrieveCurrentLoggedInUsers();
         return ApiResponse.success(currentLoggedInUsers);
     }
 }

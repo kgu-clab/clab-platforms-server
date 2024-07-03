@@ -3,14 +3,14 @@ package page.clab.api.domain.book.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.book.application.port.in.BookRemoveUseCase;
+import page.clab.api.domain.book.application.port.in.RemoveBookUseCase;
 import page.clab.api.domain.book.application.port.out.LoadBookPort;
 import page.clab.api.domain.book.application.port.out.RegisterBookPort;
 import page.clab.api.domain.book.domain.Book;
 
 @Service
 @RequiredArgsConstructor
-public class BookRemoveService implements BookRemoveUseCase {
+public class BookRemoveService implements RemoveBookUseCase {
 
     private final LoadBookPort loadBookPort;
     private final RegisterBookPort registerBookPort;

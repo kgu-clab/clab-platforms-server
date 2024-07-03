@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.MembersByConditionsRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMembersByConditionsUseCase;
 import page.clab.api.domain.member.application.port.out.RetrieveMembersByConditionsPort;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.MemberResponseDto;
@@ -13,7 +13,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class MembersByConditionsRetrievalService implements MembersByConditionsRetrievalUseCase {
+public class MembersByConditionsRetrievalService implements RetrieveMembersByConditionsUseCase {
 
     private final RetrieveMembersByConditionsPort retrieveMembersByConditionsPort;
 

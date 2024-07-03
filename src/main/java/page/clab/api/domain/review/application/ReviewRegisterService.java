@@ -8,10 +8,10 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
-import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
-import page.clab.api.domain.review.application.port.in.ReviewRegisterUseCase;
+import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
+import page.clab.api.domain.review.application.port.in.RegisterReviewUseCase;
 import page.clab.api.domain.review.application.port.out.CheckReviewExistencePort;
 import page.clab.api.domain.review.application.port.out.RegisterReviewPort;
 import page.clab.api.domain.review.domain.Review;
@@ -21,11 +21,11 @@ import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
-public class ReviewRegisterService implements ReviewRegisterUseCase {
+public class ReviewRegisterService implements RegisterReviewUseCase {
 
-    private final MemberRetrievalUseCase memberRetrievalUseCase;
+    private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
-    private final NotificationSenderUseCase notificationService;
+    private final SendNotificationUseCase notificationService;
     private final ValidationService validationService;
     private final RegisterReviewPort registerReviewPort;
     private final CheckReviewExistencePort checkReviewExistencePort;
@@ -33,7 +33,7 @@ public class ReviewRegisterService implements ReviewRegisterUseCase {
     @Transactional
     @Override
     public Long register(ReviewRequestDto requestDto) {
-        Member currentMember = memberRetrievalUseCase.getCurrentMember();
+        Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(requestDto.getActivityGroupId());
         validateReviewCreationPermission(activityGroup, currentMember);
         Review review = ReviewRequestDto.toEntity(requestDto, currentMember, activityGroup);

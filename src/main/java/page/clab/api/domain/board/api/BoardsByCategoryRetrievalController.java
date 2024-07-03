@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.board.application.port.in.BoardsByCategoryRetrievalUseCase;
+import page.clab.api.domain.board.application.port.in.RetrieveBoardsByCategoryUseCase;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.domain.BoardCategory;
 import page.clab.api.domain.board.dto.response.BoardCategoryResponseDto;
@@ -27,7 +27,7 @@ import java.util.List;
 @Tag(name = "Board", description = "커뮤니티 게시판")
 public class BoardsByCategoryRetrievalController {
 
-    private final BoardsByCategoryRetrievalUseCase boardsByCategoryRetrievalUseCase;
+    private final RetrieveBoardsByCategoryUseCase retrieveBoardsByCategoryUseCase;
 
     @GetMapping("/category")
     @Operation(summary = "[U] 커뮤니티 게시글 카테고리별 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
@@ -41,7 +41,7 @@ public class BoardsByCategoryRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Board.class);
-        PagedResponseDto<BoardCategoryResponseDto> boards = boardsByCategoryRetrievalUseCase.retrieve(category, pageable);
+        PagedResponseDto<BoardCategoryResponseDto> boards = retrieveBoardsByCategoryUseCase.retrieve(category, pageable);
         return ApiResponse.success(boards);
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.notification.application.port.in.DeletedNotificationsRetrievalUseCase;
+import page.clab.api.domain.notification.application.port.in.RetrieveDeletedNotificationsUseCase;
 import page.clab.api.domain.notification.application.port.out.RetrieveDeletedNotificationsPort;
 import page.clab.api.domain.notification.domain.Notification;
 import page.clab.api.domain.notification.dto.response.NotificationResponseDto;
@@ -13,7 +13,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class DeletedNotificationsRetrievalService implements DeletedNotificationsRetrievalUseCase {
+public class DeletedNotificationsRetrievalService implements RetrieveDeletedNotificationsUseCase {
 
     private final RetrieveDeletedNotificationsPort retrieveDeletedNotificationsPort;
 

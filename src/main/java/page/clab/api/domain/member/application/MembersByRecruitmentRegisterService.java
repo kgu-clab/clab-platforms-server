@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.application.dao.ApplicationRepository;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.exception.NotApprovedApplicationException;
-import page.clab.api.domain.member.application.port.in.MembersByRecruitmentRegisterUseCase;
+import page.clab.api.domain.member.application.port.in.RegisterMembersByRecruitmentUseCase;
 import page.clab.api.domain.member.application.port.out.LoadMemberPort;
 import page.clab.api.domain.member.application.port.out.RegisterMemberPort;
 import page.clab.api.domain.member.domain.Member;
@@ -27,7 +27,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class MembersByRecruitmentRegisterService implements MembersByRecruitmentRegisterUseCase {
+public class MembersByRecruitmentRegisterService implements RegisterMembersByRecruitmentUseCase {
 
     private final VerificationService verificationService;
     private final EmailService emailService;

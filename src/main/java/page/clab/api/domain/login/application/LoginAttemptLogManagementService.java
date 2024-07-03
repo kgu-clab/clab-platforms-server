@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.login.application.port.in.LoginAttemptLogManagementUseCase;
+import page.clab.api.domain.login.application.port.in.ManageLoginAttemptLogUseCase;
 import page.clab.api.domain.login.application.port.out.RegisterLoginAttemptLogPort;
 import page.clab.api.domain.login.domain.LoginAttemptLog;
 import page.clab.api.domain.login.domain.LoginAttemptResult;
@@ -14,7 +14,7 @@ import page.clab.api.global.util.IPInfoUtil;
 
 @Service
 @RequiredArgsConstructor
-public class LoginAttemptLogManagementService implements LoginAttemptLogManagementUseCase {
+public class LoginAttemptLogManagementService implements ManageLoginAttemptLogUseCase {
 
     private final RegisterLoginAttemptLogPort registerLoginAttemptLogPort;
 

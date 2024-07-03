@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.application.application.port.in.ApplicationApprovalToggleUseCase;
+import page.clab.api.domain.application.application.port.in.ToggleApplicationApprovalUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
@@ -17,7 +17,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @Tag(name = "Application", description = "동아리 지원")
 public class ApplicationApprovalToggleController {
 
-    private final ApplicationApprovalToggleUseCase applicationApprovalToggleUseCase;
+    private final ToggleApplicationApprovalUseCase toggleApplicationApprovalUseCase;
 
     @Operation(summary = "[S] 지원 합격/취소", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "승인/취소 상태가 반전됨")
@@ -27,7 +27,7 @@ public class ApplicationApprovalToggleController {
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "studentId") String studentId
     ) {
-        String id = applicationApprovalToggleUseCase.toggleStatus(recruitmentId, studentId);
+        String id = toggleApplicationApprovalUseCase.toggleStatus(recruitmentId, studentId);
         return ApiResponse.success(id);
     }
 }

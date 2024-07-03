@@ -21,9 +21,9 @@ import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupMemberWithApplyReasonResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
-import page.clab.api.domain.member.application.port.in.MemberRetrievalUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.notification.application.port.in.NotificationSenderUseCase;
+import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -37,9 +37,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ActivityGroupAdminService {
 
-    private final MemberRetrievalUseCase memberRetrievalUseCase;
+    private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
-    private final NotificationSenderUseCase notificationService;
+    private final SendNotificationUseCase notificationService;
     private final ValidationService validationService;
     private final ActivityGroupRepository activityGroupRepository;
     private final GroupScheduleRepository groupScheduleRepository;
@@ -47,7 +47,7 @@ public class ActivityGroupAdminService {
 
     @Transactional
     public Long createActivityGroup(ActivityGroupRequestDto requestDto) {
-        Member currentMember = memberRetrievalUseCase.getCurrentMember();
+        Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = ActivityGroupRequestDto.toEntity(requestDto);
         validationService.checkValid(activityGroup);
         activityGroupRepository.save(activityGroup);
@@ -62,7 +62,7 @@ public class ActivityGroupAdminService {
 
     @Transactional
     public Long updateActivityGroup(Long activityGroupId, ActivityGroupUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = memberRetrievalUseCase.getCurrentMember();
+        Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
             throw new PermissionDeniedException("해당 활동을 수정할 권한이 없습니다.");
@@ -111,7 +111,7 @@ public class ActivityGroupAdminService {
 
     @Transactional
     public Long updateProjectProgress(Long activityGroupId, Long progress) throws PermissionDeniedException {
-        Member currentMember = memberRetrievalUseCase.getCurrentMember();
+        Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
             throw new PermissionDeniedException("해당 활동을 수정할 권한이 없습니다.");
@@ -123,7 +123,7 @@ public class ActivityGroupAdminService {
 
     @Transactional
     public Long addSchedule(Long activityGroupId, List<GroupScheduleDto> scheduleDtos) throws PermissionDeniedException {
-        Member currentMember = memberRetrievalUseCase.getCurrentMember();
+        Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
             throw new PermissionDeniedException("해당 일정을 등록할 권한이 없습니다.");
@@ -137,7 +137,7 @@ public class ActivityGroupAdminService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupMemberWithApplyReasonResponseDto> getGroupMembersWithApplyReason(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
-        Member currentMember = memberRetrievalUseCase.getCurrentMember();
+        Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!(isMemberGroupLeaderRole(activityGroup, currentMember) || currentMember.isAdminRole())) {
             throw new PermissionDeniedException("해당 활동의 멤버를 조회할 권한이 없습니다.");
@@ -162,13 +162,13 @@ public class ActivityGroupAdminService {
 
     @Transactional
     public String manageGroupMemberStatus(Long activityGroupId, String memberId, GroupMemberStatus status) throws PermissionDeniedException {
-        Member currentMember = memberRetrievalUseCase.getCurrentMember();
+        Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
             throw new PermissionDeniedException("해당 활동의 신청 멤버를 조회할 권한이 없습니다.");
         }
 
-        Member member = memberRetrievalUseCase.findByIdOrThrow(memberId);
+        Member member = retrieveMemberUseCase.findByIdOrThrow(memberId);
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
         groupMember.validateAccessPermission();
         groupMember.updateStatus(status);

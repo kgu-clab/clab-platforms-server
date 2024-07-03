@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.workExperience.application.port.in.WorkExperiencesByConditionsRetrievalUseCase;
+import page.clab.api.domain.workExperience.application.port.in.RetrieveWorkExperiencesByConditionsUseCase;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
 import page.clab.api.domain.workExperience.dto.response.WorkExperienceResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -26,7 +26,7 @@ import java.util.List;
 @Tag(name = "WorkExperience", description = "경력사항")
 public class WorkExperiencesByConditionsRetrievalController {
 
-    private final WorkExperiencesByConditionsRetrievalUseCase workExperiencesByConditionsRetrievalUseCase;
+    private final RetrieveWorkExperiencesByConditionsUseCase retrieveWorkExperiencesByConditionsUseCase;
 
     @Operation(summary = "[U] 멤버의 경력사항 검색", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "입사일을 기준으로 내림차순 정렬하여 결과를 보여줌<br>" +
@@ -41,7 +41,7 @@ public class WorkExperiencesByConditionsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, WorkExperience.class);
-        PagedResponseDto<WorkExperienceResponseDto> workExperiences = workExperiencesByConditionsRetrievalUseCase.retrieve(memberId, pageable);
+        PagedResponseDto<WorkExperienceResponseDto> workExperiences = retrieveWorkExperiencesByConditionsUseCase.retrieve(memberId, pageable);
         return ApiResponse.success(workExperiences);
     }
 }

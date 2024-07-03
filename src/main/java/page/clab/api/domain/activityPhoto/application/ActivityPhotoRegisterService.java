@@ -3,7 +3,7 @@ package page.clab.api.domain.activityPhoto.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.activityPhoto.application.port.in.ActivityPhotoRegisterUseCase;
+import page.clab.api.domain.activityPhoto.application.port.in.RegisterActivityPhotoUseCase;
 import page.clab.api.domain.activityPhoto.application.port.out.RegisterActivityPhotoPort;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.domain.activityPhoto.dto.request.ActivityPhotoRequestDto;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ActivityPhotoRegisterService implements ActivityPhotoRegisterUseCase {
+public class ActivityPhotoRegisterService implements RegisterActivityPhotoUseCase {
 
     private final RegisterActivityPhotoPort registerActivityPhotoPort;
     private final UploadedFileService uploadedFileService;
