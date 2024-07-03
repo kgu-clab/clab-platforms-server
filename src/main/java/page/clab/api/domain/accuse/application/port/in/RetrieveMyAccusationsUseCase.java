@@ -5,5 +5,5 @@ import page.clab.api.domain.accuse.dto.response.AccuseMyResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveMyAccusationsUseCase {
-    PagedResponseDto<AccuseMyResponseDto> retrieve(Pageable pageable);
+    PagedResponseDto<AccuseMyResponseDto> retrieveMyAccusations(Pageable pageable);
 }

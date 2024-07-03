@@ -21,7 +21,7 @@ public class MyAccusationsService implements RetrieveMyAccusationsUseCase {
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<AccuseMyResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<AccuseMyResponseDto> retrieveMyAccusations(Pageable pageable) {
         String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         Page<Accuse> accuses = retrieveAccuseByMemberIdPort.findByMemberId(currentMemberId, pageable);
         return new PagedResponseDto<>(accuses.map(AccuseMyResponseDto::toDto));

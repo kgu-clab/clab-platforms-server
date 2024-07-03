@@ -4,5 +4,5 @@ import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.TargetType;
 
 public interface ChangeAccusationStatusUseCase {
-    Long change(TargetType type, Long targetId, AccuseStatus status);
+    Long changeAccusationStatus(TargetType type, Long targetId, AccuseStatus status);
 }

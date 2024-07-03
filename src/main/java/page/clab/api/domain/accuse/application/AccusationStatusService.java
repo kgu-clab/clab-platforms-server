@@ -30,7 +30,7 @@ public class AccusationStatusService implements ChangeAccusationStatusUseCase {
 
     @Transactional
     @Override
-    public Long change(TargetType type, Long targetId, AccuseStatus status) {
+    public Long changeAccusationStatus(TargetType type, Long targetId, AccuseStatus status) {
         AccuseTarget target = loadAccuseTargetPort.findByIdOrThrow(AccuseTargetId.create(type, targetId));
         target.updateStatus(status);
         validationService.checkValid(target);

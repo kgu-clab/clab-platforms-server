@@ -41,7 +41,7 @@ public class AccusationReportService implements ReportAccusationUseCase {
 
     @Transactional
     @Override
-    public Long reportIncident(AccuseRequestDto requestDto) {
+    public Long reportAccusation(AccuseRequestDto requestDto) {
         TargetType type = requestDto.getTargetType();
         Long targetId = requestDto.getTargetId();
         String memberId = retrieveMemberUseCase.getCurrentMemberId();

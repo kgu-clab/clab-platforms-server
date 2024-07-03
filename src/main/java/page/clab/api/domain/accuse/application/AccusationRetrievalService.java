@@ -30,7 +30,7 @@ public class AccusationRetrievalService implements RetrieveAccusationUseCase {
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<AccuseResponseDto> retrieve(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable) {
+    public PagedResponseDto<AccuseResponseDto> retrieveAccusations(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable) {
         Page<AccuseTarget> accuseTargets = retrieveAccuseTargetsByConditionsPort.findByConditions(type, status, countOrder, pageable);
         List<AccuseResponseDto> responseDtos = convertTargetsToResponseDtos(accuseTargets);
         return new PagedResponseDto<>(responseDtos, pageable, responseDtos.size());

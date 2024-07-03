@@ -30,7 +30,7 @@ public class AccusationStatusController {
             @PathVariable(name = "targetId") Long targetId,
             @RequestParam(name = "accuseStatus") AccuseStatus status
     ) {
-        Long id = changeAccusationStatusUsecase.change(type, targetId, status);
+        Long id = changeAccusationStatusUsecase.changeAccusationStatus(type, targetId, status);
         return ApiResponse.success(id);
     }
 }

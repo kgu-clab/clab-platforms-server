@@ -39,7 +39,7 @@ public class MyAccusationsController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Accuse.class);
-        PagedResponseDto<AccuseMyResponseDto> accuses = retrieveMyAccusationsUsecase.retrieve(pageable);
+        PagedResponseDto<AccuseMyResponseDto> accuses = retrieveMyAccusationsUsecase.retrieveMyAccusations(pageable);
         return ApiResponse.success(accuses);
     }
 }

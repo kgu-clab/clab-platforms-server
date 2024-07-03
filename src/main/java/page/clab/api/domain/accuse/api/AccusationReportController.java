@@ -27,7 +27,7 @@ public class AccusationReportController {
     public ApiResponse<Long> reportIncident(
             @Valid @RequestBody AccuseRequestDto requestDto
     ) {
-        Long id = reportAccusationUsecase.reportIncident(requestDto);
+        Long id = reportAccusationUsecase.reportAccusation(requestDto);
         return ApiResponse.success(id);
     }
 }
