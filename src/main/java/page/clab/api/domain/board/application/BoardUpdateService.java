@@ -3,8 +3,8 @@ package page.clab.api.domain.board.application;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.application.port.in.BoardLookupUseCase;
 import page.clab.api.domain.board.application.port.in.BoardUpdateUseCase;
+import page.clab.api.domain.board.application.port.out.LoadBoardPort;
 import page.clab.api.domain.board.application.port.out.RegisterBoardPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
@@ -18,7 +18,7 @@ import page.clab.api.global.validation.ValidationService;
 public class BoardUpdateService implements BoardUpdateUseCase {
 
     private final MemberInfoRetrievalUseCase memberInfoRetrievalUseCase;
-    private final BoardLookupUseCase boardLookupUseCase;
+    private final LoadBoardPort loadBoardPort;
     private final ValidationService validationService;
     private final RegisterBoardPort registerBoardPort;
 
@@ -26,7 +26,7 @@ public class BoardUpdateService implements BoardUpdateUseCase {
     @Override
     public String update(Long boardId, BoardUpdateRequestDto requestDto) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = memberInfoRetrievalUseCase.getCurrentMemberDetailedInfo();
-        Board board = boardLookupUseCase.getBoardByIdOrThrow(boardId);
+        Board board = loadBoardPort.findByIdOrThrow(boardId);
         board.validateAccessPermission(currentMemberInfo);
         board.update(requestDto);
         validationService.checkValid(board);
