@@ -14,8 +14,10 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.application.WhitelistService;
+import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
+import page.clab.api.global.util.SwaggerUtil;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -30,21 +32,30 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final WhitelistService whitelistService;
 
+    private final SlackService slackService;
+
     public CustomBasicAuthenticationFilter(
             AuthenticationManager authenticationManager,
             RedisIpAccessMonitorService redisIpAccessMonitorService,
             BlacklistIpRepository blacklistIpRepository,
-            WhitelistService whitelistService
+            WhitelistService whitelistService,
+            SlackService slackService
     ) {
         super(authenticationManager);
         this.redisIpAccessMonitorService = redisIpAccessMonitorService;
         this.blacklistIpRepository = blacklistIpRepository;
         this.whitelistService = whitelistService;
+        this.slackService = slackService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+        String path = request.getRequestURI();
+        if (!SwaggerUtil.isSwaggerRequest(path)) {
+            chain.doFilter(request, response);
+            return;
+        }
         if (!verifyIpAddressAccess(response)) {
             return;
         }
@@ -75,6 +86,10 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
             return false;
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        String path = request.getRequestURI();
+        if (path.equals("/core/back/swagger-ui/index.html")) {
+            sendApiDocsSuccessAlertSlackMessage(request);
+        }
         return true;
     }
 
@@ -97,6 +112,10 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
         String base64Credentials = authorizationHeader.substring("Basic ".length());
         String credentials = new String(Base64.getDecoder().decode(base64Credentials));
         return credentials.split(":", 2);
+    }
+
+    private void sendApiDocsSuccessAlertSlackMessage(HttpServletRequest request) {
+        slackService.sendSwaggerAccessNotification(request, "성공");
     }
 
 }

@@ -42,6 +42,11 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+        String path = httpServletRequest.getRequestURI();
+        if (SwaggerUtil.isSwaggerRequest(path)) {
+            chain.doFilter(request, response);
+            return;
+        }
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         if (!verifyIpAddressAccess(httpServletResponse, clientIpAddress)) {
             return;
@@ -72,7 +77,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             }
             if (!redisToken.getIp().equals(clientIpAddress)) {
                 redisTokenService.deleteRedisTokenByAccessToken(token);
-                sendSlackMessage(request, redisToken);
+                sendSecurityAlertSlackMessage(request, redisToken);
                 log.warn("[{}] 토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.", clientIpAddress);
                 ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
                 return false;
@@ -81,15 +86,23 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return true;
         } else {
+            String path = request.getRequestURI();
+            if (path.equals("/error") && response.getStatus() == 500) {
+                sendApiDocsFailureAlertSlackMessage(request);
+            }
             return true;
         }
     }
 
-    private void sendSlackMessage(HttpServletRequest request, RedisToken redisToken) {
+    private void sendSecurityAlertSlackMessage(HttpServletRequest request, RedisToken redisToken) {
         if (redisToken.isAdminToken()) {
             request.setAttribute("member", redisToken.getId());
             slackService.sendSecurityAlertNotification(request, SecurityAlertType.DUPLICATE_LOGIN, "토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
         }
+    }
+
+    private void sendApiDocsFailureAlertSlackMessage(HttpServletRequest request) {
+        slackService.sendSwaggerAccessNotification(request, "실패");
     }
 
 }
