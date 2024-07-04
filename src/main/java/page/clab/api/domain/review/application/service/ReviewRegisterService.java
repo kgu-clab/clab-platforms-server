@@ -32,7 +32,7 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
 
     @Transactional
     @Override
-    public Long register(ReviewRequestDto requestDto) {
+    public Long registerReview(ReviewRequestDto requestDto) {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(requestDto.getActivityGroupId());
         validateReviewCreationPermission(activityGroup, currentMember);

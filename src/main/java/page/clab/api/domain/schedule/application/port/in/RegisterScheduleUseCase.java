@@ -4,5 +4,5 @@ import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 public interface RegisterScheduleUseCase {
-    Long register(ScheduleRequestDto requestDto) throws PermissionDeniedException;
+    Long registerSchedule(ScheduleRequestDto requestDto) throws PermissionDeniedException;
 }

@@ -19,7 +19,7 @@ public class DeletedRecruitmentsRetrievalService implements RetrieveDeletedRecru
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<RecruitmentResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<RecruitmentResponseDto> retrieveDeletedRecruitments(Pageable pageable) {
         Page<Recruitment> recruitments = retrieveRecruitmentPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(recruitments.map(RecruitmentResponseDto::toDto));
     }

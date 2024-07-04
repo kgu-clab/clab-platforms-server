@@ -5,5 +5,5 @@ import page.clab.api.domain.news.dto.response.NewsDetailsResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveDeletedNewsUseCase {
-    PagedResponseDto<NewsDetailsResponseDto> retrieve(Pageable pageable);
+    PagedResponseDto<NewsDetailsResponseDto> retrieveDeletedNews(Pageable pageable);
 }

@@ -25,7 +25,7 @@ public class DeletedBoardsRetrievalService implements RetrieveDeletedBoardsUseCa
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<BoardListResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<BoardListResponseDto> retrieveDeletedBoards(Pageable pageable) {
         MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
         Page<Board> boards = retrieveBoardPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(boards.map(board -> mapToBoardListResponseDto(board, currentMemberInfo)));

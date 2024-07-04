@@ -134,7 +134,7 @@ public class FileService {
     private void validateMemberCloudUsage(MultipartFile multipartFile, String path) throws PermissionDeniedException {
         if (path.split(Pattern.quote(File.separator))[0].equals("members")) {
             String memberId = path.split(Pattern.quote(File.separator))[1];
-            double usage = retrieveCloudUsageByMemberIdUseCase.retrieve(memberId).getUsage();
+            double usage = retrieveCloudUsageByMemberIdUseCase.retrieveCloudUsage(memberId).getUsage();
             if (multipartFile.getSize() + usage > FileSystemUtil.convertToBytes(maxFileSize)) {
                 throw new CloudStorageNotEnoughException("클라우드 저장 공간이 부족합니다.");
             }

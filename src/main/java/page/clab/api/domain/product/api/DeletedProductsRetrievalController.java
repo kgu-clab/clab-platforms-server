@@ -31,7 +31,7 @@ public class DeletedProductsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ProductResponseDto> products = retrieveDeletedProductsUseCase.retrieve(pageable);
+        PagedResponseDto<ProductResponseDto> products = retrieveDeletedProductsUseCase.retrieveDeletedProducts(pageable);
         return ApiResponse.success(products);
     }
 }

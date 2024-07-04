@@ -21,7 +21,7 @@ public class ReviewRemoveService implements RemoveReviewUseCase {
 
     @Transactional
     @Override
-    public Long remove(Long reviewId) throws PermissionDeniedException {
+    public Long removeReview(Long reviewId) throws PermissionDeniedException {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         Review review = retrieveReviewPort.findByIdOrThrow(reviewId);
         review.validateAccessPermission(currentMember);

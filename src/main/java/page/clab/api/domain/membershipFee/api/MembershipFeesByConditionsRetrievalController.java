@@ -47,7 +47,8 @@ public class MembershipFeesByConditionsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, MembershipFee.class);
-        PagedResponseDto<MembershipFeeResponseDto> membershipFees = retrieveMembershipFeesByConditionsUseCase.retrieve(memberId, memberName, category, status, pageable);
+        PagedResponseDto<MembershipFeeResponseDto> membershipFees =
+                retrieveMembershipFeesByConditionsUseCase.retrieveMembershipFees(memberId, memberName, category, status, pageable);
         return ApiResponse.success(membershipFees);
     }
 }

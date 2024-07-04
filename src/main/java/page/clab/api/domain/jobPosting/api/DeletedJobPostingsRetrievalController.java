@@ -31,7 +31,8 @@ public class DeletedJobPostingsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<JobPostingDetailsResponseDto> jobPostings = retrieveDeletedJobPostingsUseCase.retrieve(pageable);
+        PagedResponseDto<JobPostingDetailsResponseDto> jobPostings =
+                retrieveDeletedJobPostingsUseCase.retrieveDeletedJobPostings(pageable);
         return ApiResponse.success(jobPostings);
     }
 }

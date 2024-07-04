@@ -21,7 +21,7 @@ public class DeletedPositionsRetrievalService implements RetrieveDeletedPosition
     private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<PositionResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<PositionResponseDto> retrieveDeletedPositions(Pageable pageable) {
         MemberPositionInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberPositionInfo();
         Page<Position> positions = retrievePositionPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(positions.map(position -> PositionResponseDto.toDto(position, currentMemberInfo)));

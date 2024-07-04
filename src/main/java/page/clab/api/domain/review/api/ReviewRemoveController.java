@@ -26,7 +26,7 @@ public class ReviewRemoveController {
     public ApiResponse<Long> removeReview(
             @PathVariable(name = "reviewId") Long reviewId
     ) throws PermissionDeniedException {
-        Long id = removeReviewUseCase.remove(reviewId);
+        Long id = removeReviewUseCase.removeReview(reviewId);
         return ApiResponse.success(id);
     }
 }

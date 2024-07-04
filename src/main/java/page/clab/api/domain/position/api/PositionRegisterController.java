@@ -27,7 +27,7 @@ public class PositionRegisterController {
     public ApiResponse<Long> registerPosition(
             @Valid @RequestBody PositionRequestDto requestDto
     ) {
-        Long id = registerPositionUseCase.register(requestDto);
+        Long id = registerPositionUseCase.registerPosition(requestDto);
         return ApiResponse.success(id);
     }
 }

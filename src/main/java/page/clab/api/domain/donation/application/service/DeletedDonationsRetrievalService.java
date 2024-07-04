@@ -22,7 +22,7 @@ public class DeletedDonationsRetrievalService implements RetrieveDeletedDonation
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<DonationResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<DonationResponseDto> retrieveDeletedDonations(Pageable pageable) {
         Page<Donation> donations = retrieveDonationPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(donations.map(donation -> {
             MemberBasicInfoDto memberInfo = retrieveMemberInfoUseCase.getMemberBasicInfoById(donation.getMemberId());

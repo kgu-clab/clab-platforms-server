@@ -19,7 +19,7 @@ public class DeletedNotificationsRetrievalService implements RetrieveDeletedNoti
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<NotificationResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<NotificationResponseDto> retrieveDeletedNotifications(Pageable pageable) {
         Page<Notification> notifications = retrieveNotificationPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(notifications.map(NotificationResponseDto::toDto));
     }

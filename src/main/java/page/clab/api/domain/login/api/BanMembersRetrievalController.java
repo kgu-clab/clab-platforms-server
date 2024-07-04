@@ -31,7 +31,7 @@ public class BanMembersRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AccountLockInfoResponseDto> banMembers = retrieveBannedMembersUseCase.retrieve(pageable);
+        PagedResponseDto<AccountLockInfoResponseDto> banMembers = retrieveBannedMembersUseCase.retrieveBanMembers(pageable);
         return ApiResponse.success(banMembers);
     }
 }

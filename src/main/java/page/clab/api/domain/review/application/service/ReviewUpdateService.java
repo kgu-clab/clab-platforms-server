@@ -24,7 +24,7 @@ public class ReviewUpdateService implements UpdateReviewUseCase {
 
     @Transactional
     @Override
-    public Long update(Long reviewId, ReviewUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public Long updateReview(Long reviewId, ReviewUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         Review review = retrieveReviewPort.findByIdOrThrow(reviewId);
         review.validateAccessPermission(currentMember);

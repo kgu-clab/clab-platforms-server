@@ -17,7 +17,7 @@ public class ActivityPhotoRemoveService implements RemoveActivityPhotoUseCase {
 
     @Transactional
     @Override
-    public Long remove(Long activityPhotoId) {
+    public Long removeActivityPhoto(Long activityPhotoId) {
         ActivityPhoto activityPhoto = retrieveActivityPhotoPort.findByIdOrThrow(activityPhotoId);
         activityPhoto.delete();
         return registerActivityPhotoPort.save(activityPhoto).getId();

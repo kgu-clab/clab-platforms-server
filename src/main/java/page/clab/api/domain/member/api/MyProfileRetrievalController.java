@@ -21,7 +21,7 @@ public class MyProfileRetrievalController {
     @Operation(summary = "[U] 내 프로필 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/my-profile")
     public ApiResponse<MyProfileResponseDto> retrieveMyProfile() {
-        MyProfileResponseDto myProfile = retrieveMyProfileUseCase.retrieve();
+        MyProfileResponseDto myProfile = retrieveMyProfileUseCase.retrieveMyProfile();
         return ApiResponse.success(myProfile);
     }
 }

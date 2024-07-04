@@ -19,7 +19,7 @@ public class MemberBirthdayRetrievalThisMonthService implements RetrieveMemberBi
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<MemberBirthdayResponseDto> retrieve(int month, Pageable pageable) {
+    public PagedResponseDto<MemberBirthdayResponseDto> retrieveBirthdaysThisMonth(int month, Pageable pageable) {
         Page<Member> birthdayMembers = retrieveMemberPort.findBirthdaysThisMonth(month, pageable);
         return new PagedResponseDto<>(birthdayMembers.map(MemberBirthdayResponseDto::toDto));
     }

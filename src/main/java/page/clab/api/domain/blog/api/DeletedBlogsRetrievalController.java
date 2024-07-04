@@ -31,7 +31,7 @@ public class DeletedBlogsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BlogDetailsResponseDto> blogs = retrieveDeletedBlogsUseCase.retrieve(pageable);
+        PagedResponseDto<BlogDetailsResponseDto> blogs = retrieveDeletedBlogsUseCase.retrieveDeletedBlogs(pageable);
         return ApiResponse.success(blogs);
     }
 }

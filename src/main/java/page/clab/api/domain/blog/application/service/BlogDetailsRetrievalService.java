@@ -19,7 +19,7 @@ public class BlogDetailsRetrievalService implements RetrieveBlogDetailsUseCase {
 
     @Transactional(readOnly = true)
     @Override
-    public BlogDetailsResponseDto retrieve(Long blogId) {
+    public BlogDetailsResponseDto retrieveBlogDetails(Long blogId) {
         MemberBasicInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberBasicInfo();
         Blog blog = retrieveBlogPort.findByIdOrThrow(blogId);
         boolean isOwner = blog.isOwner(currentMemberInfo.getMemberId());

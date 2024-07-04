@@ -31,7 +31,7 @@ public class DeletedNewsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<NewsDetailsResponseDto> pagedNews = retrieveDeletedNewsUseCase.retrieve(pageable);
+        PagedResponseDto<NewsDetailsResponseDto> pagedNews = retrieveDeletedNewsUseCase.retrieveDeletedNews(pageable);
         return ApiResponse.success(pagedNews);
     }
 }

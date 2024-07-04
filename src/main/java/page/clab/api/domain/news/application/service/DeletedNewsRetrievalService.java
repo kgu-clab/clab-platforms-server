@@ -19,7 +19,7 @@ public class DeletedNewsRetrievalService implements RetrieveDeletedNewsUseCase {
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<NewsDetailsResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<NewsDetailsResponseDto> retrieveDeletedNews(Pageable pageable) {
         Page<News> newsPage = retrieveNewsPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(newsPage.map(NewsDetailsResponseDto::toDto));
     }

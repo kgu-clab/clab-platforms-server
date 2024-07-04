@@ -24,7 +24,7 @@ public class ResetMemberPasswordVerificationController {
     public ApiResponse<String> verifyResetMemberPassword(
             @RequestBody VerificationRequestDto requestDto
     ) {
-        String id = verifyResetMemberPasswordUseCase.verify(requestDto);
+        String id = verifyResetMemberPasswordUseCase.verifyResetMemberPassword(requestDto);
         return ApiResponse.success(id);
     }
 }

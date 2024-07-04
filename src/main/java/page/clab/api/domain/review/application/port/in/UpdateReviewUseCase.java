@@ -4,5 +4,5 @@ import page.clab.api.domain.review.dto.request.ReviewUpdateRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 public interface UpdateReviewUseCase {
-    Long update(Long reviewId, ReviewUpdateRequestDto requestDto) throws PermissionDeniedException;
+    Long updateReview(Long reviewId, ReviewUpdateRequestDto requestDto) throws PermissionDeniedException;
 }

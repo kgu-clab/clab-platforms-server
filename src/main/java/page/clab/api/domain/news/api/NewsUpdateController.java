@@ -29,7 +29,7 @@ public class NewsUpdateController {
             @PathVariable(name = "newsId") Long newsId,
             @Valid @RequestBody NewsUpdateRequestDto requestDto
     ) {
-        Long id = updateNewsUseCase.update(newsId, requestDto);
+        Long id = updateNewsUseCase.updateNews(newsId, requestDto);
         return ApiResponse.success(id);
     }
 }

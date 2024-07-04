@@ -51,7 +51,7 @@ public class TokenManagementController {
     @Operation(summary = "[U] 멤버 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("/reissue")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
-    public ApiResponse reissueToken(
+    public ApiResponse<Void> reissueToken(
             HttpServletRequest request,
             HttpServletResponse response
     ) {

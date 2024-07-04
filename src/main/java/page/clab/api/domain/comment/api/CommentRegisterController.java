@@ -31,7 +31,7 @@ public class CommentRegisterController {
             @PathVariable(name = "boardId") Long boardId,
             @Valid @RequestBody CommentRequestDto requestDto
     ) {
-        Long id = registerCommentUseCase.register(parentId, boardId, requestDto);
+        Long id = registerCommentUseCase.registerComment(parentId, boardId, requestDto);
         return ApiResponse.success(id);
     }
 }

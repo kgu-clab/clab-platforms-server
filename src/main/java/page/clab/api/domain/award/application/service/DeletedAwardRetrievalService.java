@@ -19,7 +19,7 @@ public class DeletedAwardRetrievalService implements RetrieveDeletedAwardsUseCas
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<AwardResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<AwardResponseDto> retrieveDeletedAwards(Pageable pageable) {
         Page<Award> awards = retrieveAwardPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(awards.map(AwardResponseDto::toDto));
     }

@@ -18,7 +18,7 @@ public class NotificationRemoveService implements RemoveNotificationUseCase {
 
     @Transactional
     @Override
-    public Long remove(Long notificationId) throws PermissionDeniedException {
+    public Long removeNotification(Long notificationId) throws PermissionDeniedException {
         Notification notification = retrieveNotificationPort.findByIdOrThrow(notificationId);
         notification.validateAccessPermission(notification.getMemberId());
         notification.delete();

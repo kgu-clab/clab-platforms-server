@@ -30,7 +30,7 @@ public class BoardUpdateController {
             @PathVariable(name = "boardId") Long boardId,
             @Valid @RequestBody BoardUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        String id = updateBoardUseCase.update(boardId, requestDto);
+        String id = updateBoardUseCase.updateBoard(boardId, requestDto);
         return ApiResponse.success(id);
     }
 }

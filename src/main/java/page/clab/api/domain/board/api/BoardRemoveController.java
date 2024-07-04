@@ -26,7 +26,7 @@ public class BoardRemoveController {
     public ApiResponse<String> removeBoard(
             @PathVariable(name = "boardId") Long boardId
     ) throws PermissionDeniedException {
-        String id = removeBoardUseCase.remove(boardId);
+        String id = removeBoardUseCase.removeBoard(boardId);
         return ApiResponse.success(id);
     }
 }

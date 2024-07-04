@@ -19,7 +19,7 @@ public class LoginAttemptLogsRetrievalService implements RetrieveLoginAttemptLog
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<LoginAttemptLogResponseDto> retrieve(String memberId, Pageable pageable) {
+    public PagedResponseDto<LoginAttemptLogResponseDto> retrieveLoginAttemptLogs(String memberId, Pageable pageable) {
         Page<LoginAttemptLog> loginAttemptLogs = retrieveLoginAttemptLogPort.findAllByMemberId(memberId, pageable);
         return new PagedResponseDto<>(loginAttemptLogs.map(LoginAttemptLogResponseDto::toDto));
     }

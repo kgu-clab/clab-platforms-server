@@ -19,7 +19,7 @@ public class NewsByConditionsRetrievalService implements RetrieveNewsByCondition
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<NewsResponseDto> retrieve(String title, String category, Pageable pageable) {
+    public PagedResponseDto<NewsResponseDto> retrieveNews(String title, String category, Pageable pageable) {
         Page<News> newsPage = retrieveNewsPort.findByConditions(title, category, pageable);
         return new PagedResponseDto<>(newsPage.map(NewsResponseDto::toDto));
     }

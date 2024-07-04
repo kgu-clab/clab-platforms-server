@@ -27,7 +27,7 @@ public class MemberUnbanController {
             HttpServletRequest request,
             @PathVariable(name = "memberId") String memberId
     ) {
-        Long id = unbanMemberUseCase.unban(request, memberId);
+        Long id = unbanMemberUseCase.unbanMember(request, memberId);
         return ApiResponse.success(id);
     }
 }

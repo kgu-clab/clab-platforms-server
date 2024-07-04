@@ -23,7 +23,7 @@ public class BoardsByCategoryRetrievalService implements RetrieveBoardsByCategor
 
     @Transactional
     @Override
-    public PagedResponseDto<BoardCategoryResponseDto> retrieve(BoardCategory category, Pageable pageable) {
+    public PagedResponseDto<BoardCategoryResponseDto> retrieveBoardsByCategory(BoardCategory category, Pageable pageable) {
         MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
         Page<Board> boards = retrieveBoardPort.findAllByCategory(category, pageable);
         return new PagedResponseDto<>(boards.map(board -> BoardCategoryResponseDto.toDto(board, currentMemberInfo, 0L))); // Update the comment count accordingly

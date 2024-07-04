@@ -30,7 +30,7 @@ public class SchedulesWithinDateRangeRetrievalService implements RetrieveSchedul
 
     @Override
     @Transactional(readOnly = true)
-    public PagedResponseDto<ScheduleResponseDto> retrieve(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    public PagedResponseDto<ScheduleResponseDto> retrieveSchedulesWithinDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByMember(currentMember);
         List<ActivityGroup> myGroups = getMyActivityGroups(groupMembers);

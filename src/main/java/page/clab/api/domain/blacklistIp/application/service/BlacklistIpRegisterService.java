@@ -22,7 +22,7 @@ public class BlacklistIpRegisterService implements RegisterBlacklistIpUseCase {
 
     @Transactional
     @Override
-    public String register(HttpServletRequest request, BlacklistIpRequestDto requestDto) {
+    public String registerBlacklistIp(HttpServletRequest request, BlacklistIpRequestDto requestDto) {
         String ipAddress = requestDto.getIpAddress();
         return retrieveBlacklistIpPort.findByIpAddress(ipAddress)
                 .map(BlacklistIp::getIpAddress)

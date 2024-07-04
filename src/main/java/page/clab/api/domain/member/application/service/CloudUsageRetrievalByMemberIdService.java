@@ -26,7 +26,7 @@ public class CloudUsageRetrievalByMemberIdService implements RetrieveCloudUsageB
 
     @Override
     @Transactional(readOnly = true)
-    public CloudUsageInfo retrieve(String memberId) throws PermissionDeniedException {
+    public CloudUsageInfo retrieveCloudUsage(String memberId) throws PermissionDeniedException {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         Member targetMember = retrieveMemberPort.findByIdOrThrow(memberId);
         targetMember.validateAccessPermissionForCloud(currentMember);

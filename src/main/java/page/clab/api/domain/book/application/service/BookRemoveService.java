@@ -17,7 +17,7 @@ public class BookRemoveService implements RemoveBookUseCase {
 
     @Transactional
     @Override
-    public Long remove(Long bookId) {
+    public Long removeBook(Long bookId) {
         Book book = retrieveBookPort.findByIdOrThrow(bookId);
         book.delete();
         return registerBookPort.save(book).getId();

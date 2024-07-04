@@ -1,5 +1,5 @@
 package page.clab.api.domain.recruitment.application.port.in;
 
 public interface RemoveRecruitmentUseCase {
-    Long remove(Long recruitmentId);
+    Long removeRecruitment(Long recruitmentId);
 }

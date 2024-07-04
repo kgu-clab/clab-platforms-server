@@ -4,5 +4,5 @@ import jakarta.servlet.http.HttpServletRequest;
 import page.clab.api.domain.blacklistIp.dto.request.BlacklistIpRequestDto;
 
 public interface RegisterBlacklistIpUseCase {
-    String register(HttpServletRequest request, BlacklistIpRequestDto requestDto);
+    String registerBlacklistIp(HttpServletRequest request, BlacklistIpRequestDto requestDto);
 }

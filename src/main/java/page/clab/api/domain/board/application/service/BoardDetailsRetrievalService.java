@@ -26,7 +26,7 @@ public class BoardDetailsRetrievalService implements RetrieveBoardDetailsUseCase
 
     @Transactional
     @Override
-    public BoardDetailsResponseDto retrieve(Long boardId) {
+    public BoardDetailsResponseDto retrieveBoardDetails(Long boardId) {
         MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
         Board board = retrieveBoardPort.findByIdOrThrow(boardId);
         boolean isOwner = board.isOwner(currentMemberInfo.getMemberId());

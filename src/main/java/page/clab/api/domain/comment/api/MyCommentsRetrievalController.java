@@ -39,7 +39,7 @@ public class MyCommentsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Comment.class);
-        PagedResponseDto<CommentMyResponseDto> comments = retrieveMyCommentsUseCase.retrieve(pageable);
+        PagedResponseDto<CommentMyResponseDto> comments = retrieveMyCommentsUseCase.retrieveMyComments(pageable);
         return ApiResponse.success(comments);
     }
 }

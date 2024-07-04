@@ -19,7 +19,7 @@ public class BookLoanRejectionService implements RejectBookLoanUseCase {
 
     @Transactional
     @Override
-    public Long reject(Long bookLoanRecordId) {
+    public Long rejectBookLoan(Long bookLoanRecordId) {
         BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByIdOrThrow(bookLoanRecordId);
         bookLoanRecord.reject();
         validationService.checkValid(bookLoanRecord);

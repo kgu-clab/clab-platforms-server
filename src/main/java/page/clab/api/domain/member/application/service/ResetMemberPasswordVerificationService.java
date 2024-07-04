@@ -21,7 +21,7 @@ public class ResetMemberPasswordVerificationService implements VerifyResetMember
 
     @Transactional
     @Override
-    public String verify(VerificationRequestDto requestDto) {
+    public String verifyResetMemberPassword(VerificationRequestDto requestDto) {
         Member member = retrieveMemberPort.findByIdOrThrow(requestDto.getMemberId());
         Verification verification = verificationService.validateVerificationCode(requestDto, member);
         updateMemberPasswordWithVerificationCode(verification.getVerificationCode(), member);

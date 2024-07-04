@@ -22,7 +22,7 @@ public class MembershipFeeRegisterService implements RegisterMembershipFeeUseCas
 
     @Transactional
     @Override
-    public Long register(MembershipFeeRequestDto requestDto) {
+    public Long registerMembershipFee(MembershipFeeRequestDto requestDto) {
         String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         MembershipFee membershipFee = MembershipFeeRequestDto.toEntity(requestDto, currentMemberId);
         validationService.checkValid(membershipFee);

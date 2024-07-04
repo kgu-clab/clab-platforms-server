@@ -22,7 +22,7 @@ public class DeletedReviewsRetrievalService implements RetrieveDeletedReviewsUse
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<ReviewResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<ReviewResponseDto> retrieveDeletedReviews(Pageable pageable) {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         Page<Review> reviews = retrieveReviewPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));

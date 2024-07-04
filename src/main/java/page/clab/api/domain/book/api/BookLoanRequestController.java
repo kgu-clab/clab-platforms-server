@@ -28,7 +28,7 @@ public class BookLoanRequestController {
     public ApiResponse<Long> requestBookLoan(
             @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) throws CustomOptimisticLockingFailureException {
-        Long id = requestBookLoanUseCase.request(requestDto);
+        Long id = requestBookLoanUseCase.requestBookLoan(requestDto);
         return ApiResponse.success(id);
     }
 }

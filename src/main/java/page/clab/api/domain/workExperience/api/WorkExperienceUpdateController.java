@@ -31,7 +31,7 @@ public class WorkExperienceUpdateController {
             @PathVariable(name = "workExperienceId") Long workExperienceId,
             @Valid @RequestBody WorkExperienceUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = updateWorkExperienceUseCase.update(workExperienceId, requestDto);
+        Long id = updateWorkExperienceUseCase.updateWorkExperience(workExperienceId, requestDto);
         return ApiResponse.success(id);
     }
 }

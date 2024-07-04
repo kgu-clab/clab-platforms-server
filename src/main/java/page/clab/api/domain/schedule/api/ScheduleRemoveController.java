@@ -26,7 +26,7 @@ public class ScheduleRemoveController {
     public ApiResponse<Long> removeSchedule(
             @PathVariable(name = "scheduleId") Long scheduleId
     ) throws PermissionDeniedException {
-        Long id = removeScheduleUseCase.remove(scheduleId);
+        Long id = removeScheduleUseCase.removeSchedule(scheduleId);
         return ApiResponse.success(id);
     }
 }

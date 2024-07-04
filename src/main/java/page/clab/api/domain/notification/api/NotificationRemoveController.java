@@ -26,7 +26,7 @@ public class NotificationRemoveController {
     public ApiResponse<Long> removeNotification(
             @PathVariable(name = "notificationId") Long notificationId
     ) throws PermissionDeniedException {
-        Long id = removeNotificationUseCase.remove(notificationId);
+        Long id = removeNotificationUseCase.removeNotification(notificationId);
         return ApiResponse.success(id);
     }
 }

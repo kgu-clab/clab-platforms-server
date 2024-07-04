@@ -27,7 +27,7 @@ public class NewsRegisterController {
     public ApiResponse<Long> registerNews(
             @Valid @RequestBody NewsRequestDto requestDto
     ) {
-        Long id = registerNewsUseCase.register(requestDto);
+        Long id = registerNewsUseCase.registerNews(requestDto);
         return ApiResponse.success(id);
     }
 }

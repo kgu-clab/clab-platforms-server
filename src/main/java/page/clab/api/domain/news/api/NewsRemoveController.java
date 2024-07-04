@@ -25,7 +25,7 @@ public class NewsRemoveController {
     public ApiResponse<Long> removeNews(
             @PathVariable(name = "newsId") Long newsId
     ) {
-        Long id = removeNewsUseCase.remove(newsId);
+        Long id = removeNewsUseCase.removeNews(newsId);
         return ApiResponse.success(id);
     }
 }

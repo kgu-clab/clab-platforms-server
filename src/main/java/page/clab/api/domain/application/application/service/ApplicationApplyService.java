@@ -24,7 +24,7 @@ public class ApplicationApplyService implements ApplyForApplicationUseCase {
 
     @Transactional
     @Override
-    public String apply(ApplicationRequestDto requestDto) {
+    public String applyForClub(ApplicationRequestDto requestDto) {
         retrieveRecruitmentUseCase.findByIdOrThrow(requestDto.getRecruitmentId());
         Application application = ApplicationRequestDto.toEntity(requestDto);
         validationService.checkValid(application);

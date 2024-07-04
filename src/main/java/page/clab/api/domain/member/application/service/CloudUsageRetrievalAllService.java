@@ -26,7 +26,7 @@ public class CloudUsageRetrievalAllService implements RetrieveAllCloudUsageUseCa
 
     @Override
     @Transactional(readOnly = true)
-    public PagedResponseDto<CloudUsageInfo> retrieve(Pageable pageable) {
+    public PagedResponseDto<CloudUsageInfo> retrieveAllCloudUsages(Pageable pageable) {
         Page<Member> members = retrieveMemberPort.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(members.map(this::getCloudUsageForMember));
     }

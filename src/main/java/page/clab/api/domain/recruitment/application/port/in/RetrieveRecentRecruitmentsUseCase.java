@@ -5,5 +5,5 @@ import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
 import java.util.List;
 
 public interface RetrieveRecentRecruitmentsUseCase {
-    List<RecruitmentResponseDto> retrieve();
+    List<RecruitmentResponseDto> retrieveRecentRecruitments();
 }

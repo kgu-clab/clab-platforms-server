@@ -5,5 +5,5 @@ import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveMyCommentsUseCase {
-    PagedResponseDto<CommentMyResponseDto> retrieve(Pageable pageable);
+    PagedResponseDto<CommentMyResponseDto> retrieveMyComments(Pageable pageable);
 }

@@ -27,7 +27,7 @@ public class AwardRegisterController {
     public ApiResponse<Long> registerAward(
             @Valid @RequestBody AwardRequestDto requestDto
     ) {
-        Long id = registerAwardUseCase.register(requestDto);
+        Long id = registerAwardUseCase.registerAward(requestDto);
         return ApiResponse.success(id);
     }
 }

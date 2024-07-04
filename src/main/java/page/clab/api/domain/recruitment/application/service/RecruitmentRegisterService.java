@@ -21,7 +21,7 @@ public class RecruitmentRegisterService implements RegisterRecruitmentUseCase {
 
     @Transactional
     @Override
-    public Long register(RecruitmentRequestDto requestDto) {
+    public Long registerRecruitment(RecruitmentRequestDto requestDto) {
         Recruitment recruitment = RecruitmentRequestDto.toEntity(requestDto);
         recruitmentStatusUpdater.updateRecruitmentStatusByRecruitment(recruitment);
         validationService.checkValid(recruitment);

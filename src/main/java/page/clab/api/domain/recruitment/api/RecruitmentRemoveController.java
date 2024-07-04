@@ -25,7 +25,7 @@ public class RecruitmentRemoveController {
     public ApiResponse<Long> removeRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId
     ) {
-        Long id = removeRecruitmentUseCase.remove(recruitmentId);
+        Long id = removeRecruitmentUseCase.removeRecruitment(recruitmentId);
         return ApiResponse.success(id);
     }
 }

@@ -27,7 +27,7 @@ public class RecruitmentRegisterController {
     public ApiResponse<Long> registerRecruitment(
             @Valid @RequestBody RecruitmentRequestDto requestDto
     ) {
-        Long id = registerRecruitmentUseCase.register(requestDto);
+        Long id = registerRecruitmentUseCase.registerRecruitment(requestDto);
         return ApiResponse.success(id);
     }
 }

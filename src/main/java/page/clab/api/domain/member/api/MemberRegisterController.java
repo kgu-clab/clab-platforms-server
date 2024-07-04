@@ -24,7 +24,7 @@ public class MemberRegisterController {
     public ApiResponse<String> registerMember(
             @RequestBody MemberRequestDto requestDto
     ) {
-        String id = registerMemberUseCase.register(requestDto);
+        String id = registerMemberUseCase.registerMember(requestDto);
         return ApiResponse.success(id);
     }
 }

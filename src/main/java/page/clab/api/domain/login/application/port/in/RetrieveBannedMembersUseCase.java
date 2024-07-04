@@ -5,5 +5,5 @@ import page.clab.api.domain.login.dto.response.AccountLockInfoResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveBannedMembersUseCase {
-    PagedResponseDto<AccountLockInfoResponseDto> retrieve(Pageable pageable);
+    PagedResponseDto<AccountLockInfoResponseDto> retrieveBanMembers(Pageable pageable);
 }

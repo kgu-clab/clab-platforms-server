@@ -26,7 +26,7 @@ public class BookDetailsRetrievalController {
     public ApiResponse<BookDetailsResponseDto> retrieveBookDetails(
             @PathVariable(name = "bookId") Long bookId
     ) {
-        BookDetailsResponseDto book = retrieveBookDetailsUseCase.retrieve(bookId);
+        BookDetailsResponseDto book = retrieveBookDetailsUseCase.retrieveBookDetails(bookId);
         return ApiResponse.success(book);
     }
 }

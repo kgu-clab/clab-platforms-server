@@ -45,7 +45,8 @@ public class BookLoanRecordsByConditionsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc, asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, BookLoanRecord.class);
-        PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords = retrieveBookLoanRecordsByConditionsUseCase.retrieve(bookId, borrowerId, status, pageable);
+        PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords =
+                retrieveBookLoanRecordsByConditionsUseCase.retrieveBookLoanRecords(bookId, borrowerId, status, pageable);
         return ApiResponse.success(bookLoanRecords);
     }
 }

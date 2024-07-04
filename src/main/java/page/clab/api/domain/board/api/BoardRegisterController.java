@@ -28,7 +28,7 @@ public class BoardRegisterController {
     public ApiResponse<String> registerBoard(
             @Valid @RequestBody BoardRequestDto requestDto
     ) throws PermissionDeniedException {
-        String id = registerBoardUseCase.register(requestDto);
+        String id = registerBoardUseCase.registerBoard(requestDto);
         return ApiResponse.success(id);
     }
 }

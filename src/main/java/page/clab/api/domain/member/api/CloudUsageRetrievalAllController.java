@@ -31,7 +31,7 @@ public class CloudUsageRetrievalAllController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<CloudUsageInfo> cloudUsageInfos = retrieveAllCloudUsageUseCase.retrieve(pageable);
+        PagedResponseDto<CloudUsageInfo> cloudUsageInfos = retrieveAllCloudUsageUseCase.retrieveAllCloudUsages(pageable);
         return ApiResponse.success(cloudUsageInfos);
     }
 }

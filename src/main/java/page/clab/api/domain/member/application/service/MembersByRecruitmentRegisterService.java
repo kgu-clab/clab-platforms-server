@@ -40,7 +40,7 @@ public class MembersByRecruitmentRegisterService implements RegisterMembersByRec
 
     @Transactional
     @Override
-    public List<String> register(Long recruitmentId) {
+    public List<String> registerMembersByRecruitment(Long recruitmentId) {
         List<Application> applications = applicationRepository.findByRecruitmentIdAndIsPass(recruitmentId, true);
         return applications.stream()
                 .map(this::createMemberFromApplication)
@@ -49,7 +49,7 @@ public class MembersByRecruitmentRegisterService implements RegisterMembersByRec
 
     @Transactional
     @Override
-    public String register(Long recruitmentId, String memberId) {
+    public String registerMembersByRecruitment(Long recruitmentId, String memberId) {
         Application application = getApplicationByRecruitmentIdAndStudentIdOrThrow(recruitmentId, memberId);
         return createMemberFromApplication(application);
     }

@@ -27,7 +27,7 @@ public class BookRegisterController {
     public ApiResponse<Long> registerBook(
             @Valid @RequestBody BookRequestDto requestDto
     ) {
-        Long id = registerBookUseCase.register(requestDto);
+        Long id = registerBookUseCase.registerBook(requestDto);
         return ApiResponse.success(id);
     }
 }

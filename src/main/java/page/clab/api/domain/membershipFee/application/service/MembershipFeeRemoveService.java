@@ -21,7 +21,7 @@ public class MembershipFeeRemoveService implements RemoveMembershipFeeUseCase {
 
     @Transactional
     @Override
-    public Long remove(Long membershipFeeId) throws PermissionDeniedException {
+    public Long removeMembershipFee(Long membershipFeeId) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
         MembershipFee membershipFee = retrieveMembershipFeePort.findByIdOrThrow(membershipFeeId);
         membershipFee.validateAccessPermission(currentMemberInfo);

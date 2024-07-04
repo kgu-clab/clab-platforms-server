@@ -20,7 +20,7 @@ public class MemberRemoveService implements RemoveMemberUseCase {
 
     @Transactional
     @Override
-    public String remove(String memberId) {
+    public String removeMember(String memberId) {
         Member member = retrieveMemberPort.findByIdOrThrow(memberId);
         member.delete();
         registerMemberPort.save(member);

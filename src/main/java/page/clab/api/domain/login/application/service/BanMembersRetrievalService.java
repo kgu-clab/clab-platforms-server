@@ -23,7 +23,7 @@ public class BanMembersRetrievalService implements RetrieveBannedMembersUseCase 
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<AccountLockInfoResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<AccountLockInfoResponseDto> retrieveBanMembers(Pageable pageable) {
         LocalDateTime banDate = LocalDateTime.of(9999, 12, 31, 23, 59);
         Page<AccountLockInfo> banMembers = retrieveAccountLockInfoPort.findByLockUntil(banDate, pageable);
         return new PagedResponseDto<>(banMembers.map(accountLockInfo -> {

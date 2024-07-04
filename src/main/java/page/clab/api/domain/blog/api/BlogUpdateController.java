@@ -30,7 +30,7 @@ public class BlogUpdateController {
             @PathVariable(name = "blogId") Long blogId,
             @Valid @RequestBody BlogUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = updateBlogUseCase.update(blogId, requestDto);
+        Long id = updateBlogUseCase.updateBlog(blogId, requestDto);
         return ApiResponse.success(id);
     }
 }

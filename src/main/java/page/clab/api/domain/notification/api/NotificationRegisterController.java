@@ -27,8 +27,7 @@ public class NotificationRegisterController {
     public ApiResponse<Long> registerNotification(
             @Valid @RequestBody NotificationRequestDto requestDto
     ) {
-        Long id = registerNotificationUseCase.register(requestDto);
+        Long id = registerNotificationUseCase.registerNotification(requestDto);
         return ApiResponse.success(id);
     }
 }
-

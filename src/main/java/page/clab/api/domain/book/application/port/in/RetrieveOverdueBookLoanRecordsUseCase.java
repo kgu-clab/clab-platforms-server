@@ -5,5 +5,5 @@ import page.clab.api.domain.book.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveOverdueBookLoanRecordsUseCase {
-    PagedResponseDto<BookLoanRecordOverdueResponseDto> retrieve(Pageable pageable);
+    PagedResponseDto<BookLoanRecordOverdueResponseDto> retrieveOverdueBookLoanRecords(Pageable pageable);
 }

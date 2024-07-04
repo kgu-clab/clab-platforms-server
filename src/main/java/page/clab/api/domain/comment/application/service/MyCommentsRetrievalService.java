@@ -27,7 +27,7 @@ public class MyCommentsRetrievalService implements RetrieveMyCommentsUseCase {
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<CommentMyResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<CommentMyResponseDto> retrieveMyComments(Pageable pageable) {
         String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         Page<Comment> comments = retrieveCommentPort.findAllByWriterId(currentMemberId, pageable);
         List<CommentMyResponseDto> dtos = comments.stream()

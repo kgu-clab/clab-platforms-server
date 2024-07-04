@@ -32,7 +32,7 @@ public class BoardRegisterService implements RegisterBoardUseCase {
 
     @Transactional
     @Override
-    public String register(BoardRequestDto requestDto) throws PermissionDeniedException {
+    public String registerBoard(BoardRequestDto requestDto) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         Board board = BoardRequestDto.toEntity(requestDto, currentMemberInfo.getMemberId(), uploadedFiles);

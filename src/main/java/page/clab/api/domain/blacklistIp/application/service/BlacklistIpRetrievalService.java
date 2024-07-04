@@ -18,7 +18,7 @@ public class BlacklistIpRetrievalService implements RetrieveBlacklistIpsUseCase 
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<BlacklistIp> retrieve(Pageable pageable) {
+    public PagedResponseDto<BlacklistIp> retrieveBlacklistIps(Pageable pageable) {
         Page<BlacklistIp> blacklistedIps = retrieveBlacklistIpPort.findAll(pageable);
         return new PagedResponseDto<>(blacklistedIps);
     }

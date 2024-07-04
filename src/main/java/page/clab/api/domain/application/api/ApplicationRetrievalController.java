@@ -44,7 +44,7 @@ public class ApplicationRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Application.class);
-        PagedResponseDto<ApplicationResponseDto> applications = retrieveApplicationsUseCase.retrieve(recruitmentId, studentId, isPass, pageable);
+        PagedResponseDto<ApplicationResponseDto> applications = retrieveApplicationsUseCase.retrieveApplications(recruitmentId, studentId, isPass, pageable);
         return ApiResponse.success(applications);
     }
 }

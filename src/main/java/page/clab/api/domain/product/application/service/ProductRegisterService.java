@@ -18,7 +18,7 @@ public class ProductRegisterService implements RegisterProductUseCase {
 
     @Transactional
     @Override
-    public Long register(ProductRequestDto requestDto) {
+    public Long registerProduct(ProductRequestDto requestDto) {
         Product product = ProductRequestDto.toEntity(requestDto);
         validationService.checkValid(product);
         return registerProductPort.save(product).getId();

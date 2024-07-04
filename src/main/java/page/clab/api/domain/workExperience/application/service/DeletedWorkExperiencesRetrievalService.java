@@ -19,7 +19,7 @@ public class DeletedWorkExperiencesRetrievalService implements RetrieveDeletedWo
 
     @Override
     @Transactional(readOnly = true)
-    public PagedResponseDto<WorkExperienceResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<WorkExperienceResponseDto> retrieveDeletedWorkExperiences(Pageable pageable) {
         Page<WorkExperience> workExperiences = retrieveWorkExperiencePort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
     }

@@ -21,7 +21,7 @@ public class AwardRemoveService implements RemoveAwardUseCase {
 
     @Transactional
     @Override
-    public Long remove(Long awardId) throws PermissionDeniedException {
+    public Long removeAward(Long awardId) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
         Award award = retrieveAwardPort.findByIdOrThrow(awardId);
         award.validateAccessPermission(currentMemberInfo);

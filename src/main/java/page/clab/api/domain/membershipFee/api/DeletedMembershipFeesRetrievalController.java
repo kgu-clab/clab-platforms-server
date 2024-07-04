@@ -31,7 +31,8 @@ public class DeletedMembershipFeesRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<MembershipFeeResponseDto> membershipFees = retrieveDeletedMembershipFeesUseCase.retrieve(pageable);
+        PagedResponseDto<MembershipFeeResponseDto> membershipFees =
+                retrieveDeletedMembershipFeesUseCase.retrieveDeletedMembershipFees(pageable);
         return ApiResponse.success(membershipFees);
     }
 }

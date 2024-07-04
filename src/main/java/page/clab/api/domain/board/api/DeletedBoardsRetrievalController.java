@@ -31,7 +31,7 @@ public class DeletedBoardsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<BoardListResponseDto> boards = retrieveDeletedBoardsUseCase.retrieve(pageable);
+        PagedResponseDto<BoardListResponseDto> boards = retrieveDeletedBoardsUseCase.retrieveDeletedBoards(pageable);
         return ApiResponse.success(boards);
     }
 }

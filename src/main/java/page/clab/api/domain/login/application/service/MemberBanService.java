@@ -26,7 +26,7 @@ public class MemberBanService implements BanMemberUseCase {
 
     @Transactional
     @Override
-    public Long ban(HttpServletRequest request, String memberId) {
+    public Long banMember(HttpServletRequest request, String memberId) {
         MemberBasicInfoDto memberInfo = retrieveMemberInfoUseCase.getMemberBasicInfoById(memberId);
         AccountLockInfo accountLockInfo = ensureAccountLockInfo(memberInfo.getMemberId());
         accountLockInfo.banPermanently();

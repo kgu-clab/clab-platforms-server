@@ -24,7 +24,7 @@ public class ActivitySchedulesRetrievalService implements RetrieveActivitySchedu
 
     @Override
     @Transactional(readOnly = true)
-    public PagedResponseDto<ScheduleResponseDto> retrieve(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    public PagedResponseDto<ScheduleResponseDto> retrieveActivitySchedules(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         Page<Schedule> schedules = retrieveSchedulePort.findActivitySchedulesByDateRangeAndMember(startDate, endDate, currentMember, pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));

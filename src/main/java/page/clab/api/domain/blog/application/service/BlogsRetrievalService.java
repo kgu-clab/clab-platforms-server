@@ -19,7 +19,7 @@ public class BlogsRetrievalService implements RetrieveBlogsUseCase {
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<BlogResponseDto> retrieve(String title, String memberName, Pageable pageable) {
+    public PagedResponseDto<BlogResponseDto> retrieveBlogs(String title, String memberName, Pageable pageable) {
         Page<Blog> blogs = retrieveBlogPort.findByConditions(title, memberName, pageable);
         return new PagedResponseDto<>(blogs.map(BlogResponseDto::toDto));
     }

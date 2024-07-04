@@ -17,7 +17,7 @@ public class RecruitmentRemoveService implements RemoveRecruitmentUseCase {
 
     @Transactional
     @Override
-    public Long remove(Long recruitmentId) {
+    public Long removeRecruitment(Long recruitmentId) {
         Recruitment recruitment = retrieveRecruitmentUseCase.findByIdOrThrow(recruitmentId);
         recruitment.delete();
         return updateRecruitmentPort.update(recruitment).getId();

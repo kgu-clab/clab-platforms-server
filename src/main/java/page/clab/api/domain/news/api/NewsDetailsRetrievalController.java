@@ -26,7 +26,7 @@ public class NewsDetailsRetrievalController {
     public ApiResponse<NewsDetailsResponseDto> retrieveNewsDetails(
             @PathVariable(name = "newsId") Long newsId
     ) {
-        NewsDetailsResponseDto news = retrieveNewsDetailsUseCase.retrieve(newsId);
+        NewsDetailsResponseDto news = retrieveNewsDetailsUseCase.retrieveNewsDetails(newsId);
         return ApiResponse.success(news);
     }
 }

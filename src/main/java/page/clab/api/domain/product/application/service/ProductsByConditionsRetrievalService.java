@@ -19,7 +19,7 @@ public class ProductsByConditionsRetrievalService implements RetrieveProductsByC
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<ProductResponseDto> retrieve(String productName, Pageable pageable) {
+    public PagedResponseDto<ProductResponseDto> retrieveProducts(String productName, Pageable pageable) {
         Page<Product> products = retrieveProductPort.findByConditions(productName, pageable);
         return new PagedResponseDto<>(products.map(ProductResponseDto::toDto));
     }

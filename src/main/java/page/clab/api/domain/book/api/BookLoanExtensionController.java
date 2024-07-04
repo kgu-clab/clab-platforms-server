@@ -27,7 +27,7 @@ public class BookLoanExtensionController {
     public ApiResponse<Long> extendBookLoan(
             @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) {
-        Long id = extendBookLoanUseCase.extend(requestDto);
+        Long id = extendBookLoanUseCase.extendBookLoan(requestDto);
         return ApiResponse.success(id);
     }
 }

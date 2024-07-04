@@ -17,7 +17,7 @@ public class ProductRemoveService implements RemoveProductUseCase {
 
     @Transactional
     @Override
-    public Long remove(Long productId) {
+    public Long removeProduct(Long productId) {
         Product product = retrieveProductPort.findByIdOrThrow(productId);
         product.delete();
         return updateProductPort.update(product).getId();

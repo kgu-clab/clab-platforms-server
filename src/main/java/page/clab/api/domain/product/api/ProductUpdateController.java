@@ -29,7 +29,7 @@ public class ProductUpdateController {
             @PathVariable(name = "productId") Long productId,
             @Valid @RequestBody ProductUpdateRequestDto requestDto
     ) {
-        Long id = updateProductUseCase.update(productId, requestDto);
+        Long id = updateProductUseCase.updateProduct(productId, requestDto);
         return ApiResponse.success(id);
     }
 }

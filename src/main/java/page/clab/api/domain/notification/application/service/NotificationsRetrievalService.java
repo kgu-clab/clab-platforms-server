@@ -21,7 +21,7 @@ public class NotificationsRetrievalService implements RetrieveNotificationsUseCa
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<NotificationResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<NotificationResponseDto> retrieveNotifications(Pageable pageable) {
         String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         Page<Notification> notifications = retrieveNotificationPort.findByMemberId(currentMemberId, pageable);
         return new PagedResponseDto<>(notifications.map(NotificationResponseDto::toDto));

@@ -26,7 +26,7 @@ public class DonationRemoveController {
     public ApiResponse<Long> removeDonation(
             @PathVariable(name = "donationId") Long donationId
     ) throws PermissionDeniedException {
-        Long id = removeDonationUseCase.remove(donationId);
+        Long id = removeDonationUseCase.removeDonation(donationId);
         return ApiResponse.success(id);
     }
 }

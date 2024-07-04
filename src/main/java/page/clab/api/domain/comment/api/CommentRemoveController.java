@@ -26,7 +26,7 @@ public class CommentRemoveController {
     public ApiResponse<Long> removeComment(
             @PathVariable(name = "commentId") Long commentId
     ) throws PermissionDeniedException {
-        Long id = removeCommentUseCase.remove(commentId);
+        Long id = removeCommentUseCase.removeComment(commentId);
         return ApiResponse.success(id);
     }
 }

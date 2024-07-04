@@ -27,7 +27,7 @@ public class MembershipFeeRegisterController {
     public ApiResponse<Long> registerMembershipFee(
             @Valid @RequestBody MembershipFeeRequestDto requestDto
     ) {
-        Long id = registerMembershipFeeUseCase.register(requestDto);
+        Long id = registerMembershipFeeUseCase.registerMembershipFee(requestDto);
         return ApiResponse.success(id);
     }
 }

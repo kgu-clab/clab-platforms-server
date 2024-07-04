@@ -42,7 +42,8 @@ public class ActivitySchedulesRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Schedule.class);
-        PagedResponseDto<ScheduleResponseDto> schedules = retrieveActivitySchedulesUseCase.retrieve(startDate, endDate, pageable);
+        PagedResponseDto<ScheduleResponseDto> schedules =
+                retrieveActivitySchedulesUseCase.retrieveActivitySchedules(startDate, endDate, pageable);
         return ApiResponse.success(schedules);
     }
 }

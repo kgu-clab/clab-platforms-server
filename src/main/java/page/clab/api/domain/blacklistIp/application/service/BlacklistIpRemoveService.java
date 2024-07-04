@@ -21,7 +21,7 @@ public class BlacklistIpRemoveService implements RemoveBlacklistIpUseCase {
 
     @Transactional
     @Override
-    public String remove(HttpServletRequest request, String ipAddress) {
+    public String removeBlacklistIp(HttpServletRequest request, String ipAddress) {
         BlacklistIp blacklistIp = retrieveBlacklistIpPort.findByIpAddressOrThrow(ipAddress);
         removeBlacklistIpPort.delete(blacklistIp);
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_REMOVED, "Deleted IP: " + ipAddress);

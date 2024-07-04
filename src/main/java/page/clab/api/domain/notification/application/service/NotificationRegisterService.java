@@ -20,7 +20,7 @@ public class NotificationRegisterService implements RegisterNotificationUseCase 
 
     @Transactional
     @Override
-    public Long register(NotificationRequestDto requestDto) {
+    public Long registerNotification(NotificationRequestDto requestDto) {
         ensureMemberExistenceUseCase.ensureMemberExists(requestDto.getMemberId());
         Notification notification = NotificationRequestDto.toEntity(requestDto);
         validationService.checkValid(notification);

@@ -23,7 +23,7 @@ public class MemberRemoveController {
     public ApiResponse<String> removeMember(
             @PathVariable(name = "memberId") String memberId
     ) {
-        String id = removeMemberUseCase.remove(memberId);
+        String id = removeMemberUseCase.removeMember(memberId);
         return ApiResponse.success(id);
     }
 }

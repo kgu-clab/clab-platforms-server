@@ -25,7 +25,7 @@ public class BoardsRetrievalService implements RetrieveBoardsUseCase {
 
     @Transactional
     @Override
-    public PagedResponseDto<BoardListResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<BoardListResponseDto> retrieveBoards(Pageable pageable) {
         MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
         Page<Board> boards = retrieveBoardPort.findAll(pageable);
         return new PagedResponseDto<>(boards.map(board -> mapToBoardListResponseDto(board, currentMemberInfo)));

@@ -33,7 +33,7 @@ public class AwardUpdateController {
             @PathVariable(name = "awardId") Long awardId,
             @Valid @RequestBody AwardUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = updateAwardUseCase.update(awardId, requestDto);
+        Long id = updateAwardUseCase.updateAward(awardId, requestDto);
         return ApiResponse.success(id);
     }
 }

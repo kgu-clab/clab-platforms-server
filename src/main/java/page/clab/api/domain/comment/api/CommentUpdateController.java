@@ -30,7 +30,7 @@ public class CommentUpdateController {
             @PathVariable(name = "commentId") Long commentId,
             @Valid @RequestBody CommentUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = updateCommentUseCase.update(commentId, requestDto);
+        Long id = updateCommentUseCase.updateComment(commentId, requestDto);
         return ApiResponse.success(id);
     }
 }

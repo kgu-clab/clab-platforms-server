@@ -21,7 +21,7 @@ public class ResetMemberPasswordRequestService implements RequestResetMemberPass
 
     @Transactional
     @Override
-    public String request(MemberResetPasswordRequestDto requestDto) {
+    public String requestResetMemberPassword(MemberResetPasswordRequestDto requestDto) {
         Member member = validateResetPasswordRequest(requestDto);
         String code = verificationService.generateVerificationCode();
         verificationService.saveVerificationCode(member.getId(), code);

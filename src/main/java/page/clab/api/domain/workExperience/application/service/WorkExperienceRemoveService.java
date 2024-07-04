@@ -21,7 +21,7 @@ public class WorkExperienceRemoveService implements RemoveWorkExperienceUseCase 
 
     @Override
     @Transactional
-    public Long remove(Long workExperienceId) throws PermissionDeniedException {
+    public Long removeWorkExperience(Long workExperienceId) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
         WorkExperience workExperience = retrieveWorkExperiencePort.findByIdOrThrow(workExperienceId);
         workExperience.validateAccessPermission(currentMemberInfo);

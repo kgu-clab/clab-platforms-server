@@ -21,7 +21,7 @@ public class MyAwardRetrievalService implements RetrieveMyAwardsUseCase {
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<AwardResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<AwardResponseDto> retrieveMyAwards(Pageable pageable) {
         String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         Page<Award> awards = retrieveAwardPort.findByMemberId(currentMemberId, pageable);
         return new PagedResponseDto<>(awards.map(AwardResponseDto::toDto));

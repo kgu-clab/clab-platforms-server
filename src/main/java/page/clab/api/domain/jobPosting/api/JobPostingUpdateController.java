@@ -29,7 +29,7 @@ public class JobPostingUpdateController {
             @PathVariable(name = "jobPostingId") Long jobPostingId,
             @Valid @RequestBody JobPostingUpdateRequestDto requestDto
     ) {
-        Long id = updateJobPostingUseCase.update(jobPostingId, requestDto);
+        Long id = updateJobPostingUseCase.updateJobPosting(jobPostingId, requestDto);
         return ApiResponse.success(id);
     }
 }

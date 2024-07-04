@@ -33,7 +33,7 @@ public class BookLoanRequestService implements RequestBookLoanUseCase {
 
     @Transactional
     @Override
-    public Long request(BookLoanRecordRequestDto requestDto) throws CustomOptimisticLockingFailureException {
+    public Long requestBookLoan(BookLoanRecordRequestDto requestDto) throws CustomOptimisticLockingFailureException {
         try {
             MemberBorrowerInfoDto borrowerInfo = retrieveMemberInfoUseCase.getCurrentMemberBorrowerInfo();
 

@@ -19,7 +19,7 @@ public class DeletedJobPostingsRetrievalService implements RetrieveDeletedJobPos
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<JobPostingDetailsResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<JobPostingDetailsResponseDto> retrieveDeletedJobPostings(Pageable pageable) {
         Page<JobPosting> jobPostings = retrieveJobPostingPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(jobPostings.map(JobPostingDetailsResponseDto::toDto));
     }

@@ -21,7 +21,7 @@ public class RecruitmentUpdateService implements UpdateRecruitmentUseCase {
 
     @Transactional
     @Override
-    public Long update(Long recruitmentId, RecruitmentUpdateRequestDto requestDto) {
+    public Long updateRecruitment(Long recruitmentId, RecruitmentUpdateRequestDto requestDto) {
         Recruitment recruitment = retrieveRecruitmentUseCase.findByIdOrThrow(recruitmentId);
         recruitment.update(requestDto);
         recruitmentStatusUpdater.updateRecruitmentStatusByRecruitment(recruitment);

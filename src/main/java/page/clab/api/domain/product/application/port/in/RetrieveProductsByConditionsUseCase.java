@@ -5,5 +5,5 @@ import page.clab.api.domain.product.dto.response.ProductResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveProductsByConditionsUseCase {
-    PagedResponseDto<ProductResponseDto> retrieve(String productName, Pageable pageable);
+    PagedResponseDto<ProductResponseDto> retrieveProducts(String productName, Pageable pageable);
 }

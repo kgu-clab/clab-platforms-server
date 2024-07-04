@@ -5,5 +5,5 @@ import page.clab.api.domain.login.dto.response.LoginAttemptLogResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveLoginAttemptLogsUseCase {
-    PagedResponseDto<LoginAttemptLogResponseDto> retrieve(String memberId, Pageable pageable);
+    PagedResponseDto<LoginAttemptLogResponseDto> retrieveLoginAttemptLogs(String memberId, Pageable pageable);
 }

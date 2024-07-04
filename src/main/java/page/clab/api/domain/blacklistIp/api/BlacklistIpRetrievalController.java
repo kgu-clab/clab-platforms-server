@@ -38,7 +38,7 @@ public class BlacklistIpRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, BlacklistIp.class);
-        PagedResponseDto<BlacklistIp> blacklistedIps = retrieveBlacklistIpsUseCase.retrieve(pageable);
+        PagedResponseDto<BlacklistIp> blacklistedIps = retrieveBlacklistIpsUseCase.retrieveBlacklistIps(pageable);
         return ApiResponse.success(blacklistedIps);
     }
 }

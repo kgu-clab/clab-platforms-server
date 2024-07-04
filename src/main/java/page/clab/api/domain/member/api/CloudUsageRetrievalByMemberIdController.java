@@ -28,7 +28,7 @@ public class CloudUsageRetrievalByMemberIdController {
     public ApiResponse<CloudUsageInfo> retrieveCloudUsageByMemberId(
             @PathVariable(name = "memberId") String memberId
     ) throws PermissionDeniedException {
-        CloudUsageInfo usage = retrieveCloudUsageByMemberIdUseCase.retrieve(memberId);
+        CloudUsageInfo usage = retrieveCloudUsageByMemberIdUseCase.retrieveCloudUsage(memberId);
         return ApiResponse.success(usage);
     }
 }

@@ -18,7 +18,7 @@ public class BookRegisterService implements RegisterBookUseCase {
 
     @Transactional
     @Override
-    public Long register(BookRequestDto requestDto) {
+    public Long registerBook(BookRequestDto requestDto) {
         Book book = BookRequestDto.toEntity(requestDto);
         validationService.checkValid(book);
         return registerBookPort.save(book).getId();

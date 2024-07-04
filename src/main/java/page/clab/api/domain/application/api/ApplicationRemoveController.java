@@ -26,7 +26,7 @@ public class ApplicationRemoveController {
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "studentId") String studentId
     ) {
-        String id = removeApplicationUseCase.remove(recruitmentId, studentId);
+        String id = removeApplicationUseCase.removeApplication(recruitmentId, studentId);
         return ApiResponse.success(id);
     }
 }

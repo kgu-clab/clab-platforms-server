@@ -25,7 +25,7 @@ public class ProductRemoveController {
     public ApiResponse<Long> removeProduct(
             @RequestParam Long productId
     ) {
-        Long id = removeProductUseCase.remove(productId);
+        Long id = removeProductUseCase.removeProduct(productId);
         return ApiResponse.success(id);
     }
 }

@@ -24,7 +24,7 @@ public class BoardUpdateService implements UpdateBoardUseCase {
 
     @Transactional
     @Override
-    public String update(Long boardId, BoardUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public String updateBoard(Long boardId, BoardUpdateRequestDto requestDto) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
         Board board = retrieveBoardPort.findByIdOrThrow(boardId);
         board.validateAccessPermission(currentMemberInfo);

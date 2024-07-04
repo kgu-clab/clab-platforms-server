@@ -21,7 +21,7 @@ public class MyPositionsByYearRetrievalService implements RetrieveMyPositionsByY
     private final RetrievePositionPort retrievePositionPort;
 
     @Transactional(readOnly = true)
-    public PositionMyResponseDto retrieve(String year) {
+    public PositionMyResponseDto retrieveMyPositionsByYear(String year) {
         MemberPositionInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberPositionInfo();
         List<Position> positions = retrievePositionPort.findAllByMemberIdAndYearOrderByPositionTypeAsc(
                 currentMemberInfo.getMemberId(), year);

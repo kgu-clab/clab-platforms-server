@@ -24,7 +24,7 @@ public class CommentLikeToggleService implements ToggleCommentLikeUseCase {
 
     @Transactional
     @Override
-    public Long toggle(Long commentId) {
+    public Long toggleLikeStatus(Long commentId) {
         String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         Comment comment = retrieveCommentPort.findByIdOrThrow(commentId);
         return retrieveCommentLikePort.findByCommentIdAndMemberId(comment.getId(), currentMemberId)

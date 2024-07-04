@@ -29,7 +29,7 @@ public class BookLoanExtensionService implements ExtendBookLoanUseCase {
 
     @Transactional
     @Override
-    public Long extend(BookLoanRecordRequestDto requestDto) {
+    public Long extendBookLoan(BookLoanRecordRequestDto requestDto) {
         MemberBorrowerInfoDto borrowerInfo = retrieveMemberInfoUseCase.getCurrentMemberBorrowerInfo();
         String currentMemberId = borrowerInfo.getMemberId();
         Book book = retrieveBookPort.findByIdOrThrow(requestDto.getBookId());

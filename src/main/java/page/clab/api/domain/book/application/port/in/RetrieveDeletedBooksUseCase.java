@@ -5,5 +5,5 @@ import page.clab.api.domain.book.dto.response.BookDetailsResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveDeletedBooksUseCase {
-    PagedResponseDto<BookDetailsResponseDto> retrieve(Pageable pageable);
+    PagedResponseDto<BookDetailsResponseDto> retrieveDeletedBooks(Pageable pageable);
 }

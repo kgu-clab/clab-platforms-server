@@ -27,7 +27,7 @@ public class CommentRegisterService implements RegisterCommentUseCase {
 
     @Transactional
     @Override
-    public Long register(Long parentId, Long boardId, CommentRequestDto requestDto) {
+    public Long registerComment(Long parentId, Long boardId, CommentRequestDto requestDto) {
         Comment comment = createAndStoreComment(parentId, boardId, requestDto);
         sendNotificationForNewComment(comment);
         return boardId;

@@ -19,7 +19,7 @@ public class MembersByConditionsRetrievalService implements RetrieveMembersByCon
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<MemberResponseDto> retrieve(String id, String name, Pageable pageable) {
+    public PagedResponseDto<MemberResponseDto> retrieveMembers(String id, String name, Pageable pageable) {
         Page<Member> members = retrieveMemberPort.findByConditions(id, name, pageable);
         return new PagedResponseDto<>(members.map(MemberResponseDto::toDto));
     }

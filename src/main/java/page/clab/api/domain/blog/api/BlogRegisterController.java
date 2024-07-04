@@ -27,7 +27,7 @@ public class BlogRegisterController {
     public ApiResponse<Long> registerBlog(
             @Valid @RequestBody BlogRequestDto requestDto
     ) {
-        Long id = registerBlogUseCase.register(requestDto);
+        Long id = registerBlogUseCase.registerBlog(requestDto);
         return ApiResponse.success(id);
     }
 }

@@ -20,7 +20,7 @@ public class JobPostingRegisterService implements RegisterJobPostingUseCase {
 
     @Transactional
     @Override
-    public Long register(JobPostingRequestDto requestDto) {
+    public Long registerJobPosting(JobPostingRequestDto requestDto) {
         JobPosting jobPosting = retrieveJobPostingPort.findByJobPostingUrl(requestDto.getJobPostingUrl())
                 .map(existingJobPosting -> existingJobPosting.updateFromRequestDto(requestDto))
                 .orElseGet(() -> JobPostingRequestDto.toEntity(requestDto));

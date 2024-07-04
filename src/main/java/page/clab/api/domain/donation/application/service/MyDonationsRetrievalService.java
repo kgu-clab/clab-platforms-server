@@ -24,7 +24,7 @@ public class MyDonationsRetrievalService implements RetrieveMyDonationsUseCase {
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<DonationResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<DonationResponseDto> retrieveMyDonations(Pageable pageable) {
         String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         Page<Donation> donations = retrieveDonationPort.findByMemberId(currentMemberId, pageable);
         return new PagedResponseDto<>(donations.map(donation -> {

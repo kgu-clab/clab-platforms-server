@@ -1,5 +1,5 @@
 package page.clab.api.domain.book.application.port.in;
 
 public interface ApproveBookLoanUseCase {
-    Long approve(Long bookLoanRecordId);
+    Long approveBookLoan(Long bookLoanRecordId);
 }

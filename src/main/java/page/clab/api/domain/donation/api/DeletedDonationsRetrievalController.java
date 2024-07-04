@@ -31,7 +31,7 @@ public class DeletedDonationsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<DonationResponseDto> donations = retrieveDeletedDonationsUseCase.retrieve(pageable);
+        PagedResponseDto<DonationResponseDto> donations = retrieveDeletedDonationsUseCase.retrieveDeletedDonations(pageable);
         return ApiResponse.success(donations);
     }
 }

@@ -24,7 +24,7 @@ public class RecentRecruitmentsRetrievalController {
             "최근 5건의 모집 공고를 조회")
     @GetMapping("")
     public ApiResponse<List<RecruitmentResponseDto>> retrieveRecentRecruitments() {
-        List<RecruitmentResponseDto> recruitments = retrieveRecentRecruitmentsUseCase.retrieve();
+        List<RecruitmentResponseDto> recruitments = retrieveRecentRecruitmentsUseCase.retrieveRecentRecruitments();
         return ApiResponse.success(recruitments);
     }
 }

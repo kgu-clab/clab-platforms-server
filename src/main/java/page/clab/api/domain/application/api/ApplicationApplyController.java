@@ -25,7 +25,7 @@ public class ApplicationApplyController {
     public ApiResponse<String> applyForClub(
             @Valid @RequestBody ApplicationRequestDto requestDto
     ) {
-        String id = applyForApplicationUseCase.apply(requestDto);
+        String id = applyForApplicationUseCase.applyForClub(requestDto);
         return ApiResponse.success(id);
     }
 }

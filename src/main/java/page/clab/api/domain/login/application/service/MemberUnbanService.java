@@ -24,7 +24,7 @@ public class MemberUnbanService implements UnbanMemberUseCase {
 
     @Transactional
     @Override
-    public Long unban(HttpServletRequest request, String memberId) {
+    public Long unbanMember(HttpServletRequest request, String memberId) {
         MemberBasicInfoDto memberInfo = retrieveMemberInfoUseCase.getMemberBasicInfoById(memberId);
         AccountLockInfo accountLockInfo = ensureAccountLockInfo(memberInfo.getMemberId());
         accountLockInfo.unban();

@@ -21,7 +21,7 @@ public class DonationRemoveService implements RemoveDonationUseCase {
 
     @Transactional
     @Override
-    public Long remove(Long donationId) throws PermissionDeniedException {
+    public Long removeDonation(Long donationId) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
         Donation donation = retrieveDonationPort.findByIdOrThrow(donationId);
         donation.validateAccessPermission(currentMemberInfo.isSuperAdminRole());

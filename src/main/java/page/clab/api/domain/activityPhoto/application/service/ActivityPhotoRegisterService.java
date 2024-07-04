@@ -21,7 +21,7 @@ public class ActivityPhotoRegisterService implements RegisterActivityPhotoUseCas
 
     @Transactional
     @Override
-    public Long register(ActivityPhotoRequestDto requestDto) {
+    public Long registerActivityPhoto(ActivityPhotoRequestDto requestDto) {
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         ActivityPhoto activityPhoto = ActivityPhotoRequestDto.toEntity(requestDto, uploadedFiles);
         return registerActivityPhotoPort.save(activityPhoto).getId();

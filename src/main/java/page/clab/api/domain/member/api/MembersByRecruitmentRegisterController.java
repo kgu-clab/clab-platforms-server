@@ -22,20 +22,20 @@ public class MembersByRecruitmentRegisterController {
 
     @Operation(summary = "[S] 모집 단위별 합격자 멤버 통합 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
     @PostMapping("/{recruitmentId}")
-    public ApiResponse<List<String>> registerMembersByRecruitmentId(
+    public ApiResponse<List<String>> registerMembersByRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId
     ) {
-        List<String> ids = registerMembersByRecruitmentUseCase.register(recruitmentId);
+        List<String> ids = registerMembersByRecruitmentUseCase.registerMembersByRecruitment(recruitmentId);
         return ApiResponse.success(ids);
     }
 
     @Operation(summary = "[S] 모집 단위별 합격자 멤버 개별 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
     @PostMapping("/{recruitmentId}/{memberId}")
-    public ApiResponse<String> registerMemberByRecruitmentId(
+    public ApiResponse<String> registerMembersByRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "memberId") String memberId
     ) {
-        String id = registerMembersByRecruitmentUseCase.register(recruitmentId, memberId);
+        String id = registerMembersByRecruitmentUseCase.registerMembersByRecruitment(recruitmentId, memberId);
         return ApiResponse.success(id);
     }
 }

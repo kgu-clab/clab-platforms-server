@@ -30,7 +30,7 @@ public class MembershipFeeUpdateController {
             @PathVariable(name = "membershipFeeId") Long membershipFeeId,
             @Valid @RequestBody MembershipFeeUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = updateMembershipFeeUseCase.update(membershipFeeId, requestDto);
+        Long id = updateMembershipFeeUseCase.updateMembershipFee(membershipFeeId, requestDto);
         return ApiResponse.success(id);
     }
 }

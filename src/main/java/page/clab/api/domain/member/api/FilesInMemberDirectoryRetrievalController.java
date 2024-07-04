@@ -34,7 +34,7 @@ public class FilesInMemberDirectoryRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<FileInfo> files = retrieveFilesInMemberDirectoryUseCase.retrieve(memberId, pageable);
+        PagedResponseDto<FileInfo> files = retrieveFilesInMemberDirectoryUseCase.retrieveFilesInMemberDirectory(memberId, pageable);
         return ApiResponse.success(files);
     }
 }

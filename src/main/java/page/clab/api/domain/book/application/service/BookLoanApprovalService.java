@@ -25,7 +25,7 @@ public class BookLoanApprovalService implements ApproveBookLoanUseCase {
 
     @Transactional
     @Override
-    public Long approve(Long bookLoanRecordId) {
+    public Long approveBookLoan(Long bookLoanRecordId) {
         String borrowerId = retrieveMemberUseCase.getCurrentMemberId();
         BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByIdOrThrow(bookLoanRecordId);
         Book book = retrieveBookPort.findByIdOrThrow(bookLoanRecord.getBook().getId());

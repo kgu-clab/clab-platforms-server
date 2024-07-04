@@ -4,5 +4,5 @@ import page.clab.api.domain.award.dto.request.AwardUpdateRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 public interface UpdateAwardUseCase {
-    Long update(Long awardId, AwardUpdateRequestDto requestDto) throws PermissionDeniedException;
+    Long updateAward(Long awardId, AwardUpdateRequestDto requestDto) throws PermissionDeniedException;
 }

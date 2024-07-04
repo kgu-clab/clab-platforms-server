@@ -39,7 +39,7 @@ public class NotificationsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Notification.class);
-        PagedResponseDto<NotificationResponseDto> notifications = retrieveNotificationsUseCase.retrieve(pageable);
+        PagedResponseDto<NotificationResponseDto> notifications = retrieveNotificationsUseCase.retrieveNotifications(pageable);
         return ApiResponse.success(notifications);
     }
 }

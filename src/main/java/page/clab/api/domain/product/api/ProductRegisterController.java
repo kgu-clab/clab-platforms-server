@@ -27,7 +27,7 @@ public class ProductRegisterController {
     public ApiResponse<Long> registerProduct(
             @Valid @RequestBody ProductRequestDto requestDto
     ) {
-        Long id = registerProductUseCase.register(requestDto);
+        Long id = registerProductUseCase.registerProduct(requestDto);
         return ApiResponse.success(id);
     }
 }

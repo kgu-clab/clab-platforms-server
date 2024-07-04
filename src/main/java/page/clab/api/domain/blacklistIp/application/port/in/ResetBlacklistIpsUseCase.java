@@ -4,6 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
-public interface ResetBlacklistUseCase {
-    List<String> reset(HttpServletRequest request);
+public interface ResetBlacklistIpsUseCase {
+    List<String> resetBlacklistIps(HttpServletRequest request);
 }

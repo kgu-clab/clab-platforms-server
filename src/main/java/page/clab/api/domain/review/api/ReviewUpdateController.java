@@ -30,7 +30,7 @@ public class ReviewUpdateController {
             @PathVariable(name = "reviewId") Long reviewId,
             @Valid @RequestBody ReviewUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = updateReviewUseCase.update(reviewId, requestDto);
+        Long id = updateReviewUseCase.updateReview(reviewId, requestDto);
         return ApiResponse.success(id);
     }
 }

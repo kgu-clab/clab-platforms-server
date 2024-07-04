@@ -31,7 +31,7 @@ public class MemberInfoUpdateService implements UpdateMemberInfoUseCase {
 
     @Transactional
     @Override
-    public String update(String memberId, MemberUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public String updateMemberInfo(String memberId, MemberUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         Member member = retrieveMemberPort.findByIdOrThrow(memberId);
         member.validateAccessPermission(currentMember);

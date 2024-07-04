@@ -5,5 +5,5 @@ import page.clab.api.domain.membershipFee.dto.response.MembershipFeeResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveDeletedMembershipFeesUseCase {
-    PagedResponseDto<MembershipFeeResponseDto> retrieve(Pageable pageable);
+    PagedResponseDto<MembershipFeeResponseDto> retrieveDeletedMembershipFees(Pageable pageable);
 }

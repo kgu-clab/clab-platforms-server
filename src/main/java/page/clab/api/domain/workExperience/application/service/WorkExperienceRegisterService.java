@@ -20,7 +20,7 @@ public class WorkExperienceRegisterService implements RegisterWorkExperienceUseC
 
     @Override
     @Transactional
-    public Long register(WorkExperienceRequestDto requestDto) {
+    public Long registerWorkExperience(WorkExperienceRequestDto requestDto) {
         String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         WorkExperience workExperience = WorkExperienceRequestDto.toEntity(requestDto, currentMemberId);
         validationService.checkValid(workExperience);

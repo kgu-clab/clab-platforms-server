@@ -26,7 +26,7 @@ public class BlogRemoveController {
     public ApiResponse<Long> removeBlog(
             @PathVariable(name = "blogId") Long blogId
     ) throws PermissionDeniedException {
-        Long id = removeBlogUseCase.remove(blogId);
+        Long id = removeBlogUseCase.removeBlog(blogId);
         return ApiResponse.success(id);
     }
 }

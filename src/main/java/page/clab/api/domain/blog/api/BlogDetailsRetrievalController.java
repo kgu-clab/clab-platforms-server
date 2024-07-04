@@ -26,7 +26,7 @@ public class BlogDetailsRetrievalController {
     public ApiResponse<BlogDetailsResponseDto> retrieveBlogDetails(
             @PathVariable(name = "blogId") Long blogId
     ) {
-        BlogDetailsResponseDto blog = retrieveBlogDetailsUseCase.retrieve(blogId);
+        BlogDetailsResponseDto blog = retrieveBlogDetailsUseCase.retrieveBlogDetails(blogId);
         return ApiResponse.success(blog);
     }
 }

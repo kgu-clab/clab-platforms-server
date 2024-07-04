@@ -26,7 +26,7 @@ public class MyPositionsByYearRetrievalController {
     public ApiResponse<PositionMyResponseDto> retrieveMyPositionsByYear(
             @RequestParam(name = "year", required = false) String year
     ) {
-        PositionMyResponseDto positions = retrieveMyPositionsByYearUseCase.retrieve(year);
+        PositionMyResponseDto positions = retrieveMyPositionsByYearUseCase.retrieveMyPositionsByYear(year);
         return ApiResponse.success(positions);
     }
 }

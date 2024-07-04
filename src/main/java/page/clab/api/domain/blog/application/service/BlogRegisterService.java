@@ -20,7 +20,7 @@ public class BlogRegisterService implements RegisterBlogUseCase {
 
     @Transactional
     @Override
-    public Long register(BlogRequestDto requestDto) {
+    public Long registerBlog(BlogRequestDto requestDto) {
         String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         Blog blog = BlogRequestDto.toEntity(requestDto, currentMemberId);
         validationService.checkValid(blog);

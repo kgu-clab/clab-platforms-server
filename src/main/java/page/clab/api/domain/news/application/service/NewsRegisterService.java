@@ -20,7 +20,7 @@ public class NewsRegisterService implements RegisterNewsUseCase {
 
     @Transactional
     @Override
-    public Long register(NewsRequestDto requestDto) {
+    public Long registerNews(NewsRequestDto requestDto) {
         News news = NewsRequestDto.toEntity(requestDto);
         validationService.checkValid(news);
         news.setUploadedFiles(uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList()));

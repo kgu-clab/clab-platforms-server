@@ -31,7 +31,7 @@ public class DeletedReviewsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ReviewResponseDto> reviews = retrieveDeletedReviewsUseCase.retrieve(pageable);
+        PagedResponseDto<ReviewResponseDto> reviews = retrieveDeletedReviewsUseCase.retrieveDeletedReviews(pageable);
         return ApiResponse.success(reviews);
     }
 }

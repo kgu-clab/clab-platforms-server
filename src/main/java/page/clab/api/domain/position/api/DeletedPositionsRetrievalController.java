@@ -31,7 +31,7 @@ public class DeletedPositionsRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<PositionResponseDto> positions = retrieveDeletedPositionsUseCase.retrieve(pageable);
+        PagedResponseDto<PositionResponseDto> positions = retrieveDeletedPositionsUseCase.retrieveDeletedPositions(pageable);
         return ApiResponse.success(positions);
     }
 }

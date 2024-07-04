@@ -19,7 +19,7 @@ public class JobPostingUpdateService implements UpdateJobPostingUseCase {
 
     @Transactional
     @Override
-    public Long update(Long jobPostingId, JobPostingUpdateRequestDto requestDto) {
+    public Long updateJobPosting(Long jobPostingId, JobPostingUpdateRequestDto requestDto) {
         JobPosting jobPosting = getJobPostingByIdOrThrow(jobPostingId);
         jobPosting.update(requestDto);
         validationService.checkValid(jobPosting);

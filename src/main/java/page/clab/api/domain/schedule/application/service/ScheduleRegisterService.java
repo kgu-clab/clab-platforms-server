@@ -30,7 +30,7 @@ public class ScheduleRegisterService implements RegisterScheduleUseCase {
 
     @Override
     @Transactional
-    public Long register(ScheduleRequestDto requestDto) throws PermissionDeniedException {
+    public Long registerSchedule(ScheduleRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = resolveActivityGroupForSchedule(requestDto, currentMember);
         Schedule schedule = ScheduleRequestDto.toEntity(requestDto, currentMember, activityGroup);

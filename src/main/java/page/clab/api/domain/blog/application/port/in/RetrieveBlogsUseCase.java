@@ -5,5 +5,5 @@ import page.clab.api.domain.blog.dto.response.BlogResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveBlogsUseCase {
-    PagedResponseDto<BlogResponseDto> retrieve(String title, String memberName, Pageable pageable);
+    PagedResponseDto<BlogResponseDto> retrieveBlogs(String title, String memberName, Pageable pageable);
 }

@@ -7,5 +7,5 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import java.time.LocalDate;
 
 public interface RetrieveActivitySchedulesUseCase {
-    PagedResponseDto<ScheduleResponseDto> retrieve(LocalDate startDate, LocalDate endDate, Pageable pageable);
+    PagedResponseDto<ScheduleResponseDto> retrieveActivitySchedules(LocalDate startDate, LocalDate endDate, Pageable pageable);
 }

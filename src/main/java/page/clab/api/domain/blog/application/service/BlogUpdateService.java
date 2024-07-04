@@ -24,7 +24,7 @@ public class BlogUpdateService implements UpdateBlogUseCase {
 
     @Transactional
     @Override
-    public Long update(Long blogId, BlogUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public Long updateBlog(Long blogId, BlogUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         Blog blog = retrieveBlogPort.findByIdOrThrow(blogId);
         blog.validateAccessPermission(currentMember);

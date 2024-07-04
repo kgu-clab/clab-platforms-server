@@ -46,7 +46,7 @@ public class DonationsByConditionsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Donation.class);
-        PagedResponseDto<DonationResponseDto> donations = retrieveDonationsByConditionsUseCase.retrieve(memberId, name, startDate, endDate, pageable);
+        PagedResponseDto<DonationResponseDto> donations = retrieveDonationsByConditionsUseCase.retrieveDonations(memberId, name, startDate, endDate, pageable);
         return ApiResponse.success(donations);
     }
 }

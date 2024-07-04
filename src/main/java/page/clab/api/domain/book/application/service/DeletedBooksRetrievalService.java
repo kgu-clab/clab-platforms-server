@@ -29,7 +29,7 @@ public class DeletedBooksRetrievalService implements RetrieveDeletedBooksUseCase
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<BookDetailsResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<BookDetailsResponseDto> retrieveDeletedBooks(Pageable pageable) {
         MemberBasicInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberBasicInfo();
         Page<Book> books = retrieveBookPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(books.map((book) -> mapToBookDetailsResponseDto(book, currentMemberInfo.getMemberName())));

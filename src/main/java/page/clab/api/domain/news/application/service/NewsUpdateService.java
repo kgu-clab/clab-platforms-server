@@ -20,7 +20,7 @@ public class NewsUpdateService implements UpdateNewsUseCase {
 
     @Transactional
     @Override
-    public Long update(Long newsId, NewsUpdateRequestDto requestDto) {
+    public Long updateNews(Long newsId, NewsUpdateRequestDto requestDto) {
         News news = retrieveNewsPort.findByIdOrThrow(newsId);
         news.update(requestDto);
         validationService.checkValid(news);

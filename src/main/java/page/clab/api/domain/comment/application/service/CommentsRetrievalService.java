@@ -27,7 +27,7 @@ public class CommentsRetrievalService implements RetrieveCommentsUseCase {
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<CommentResponseDto> retrieve(Long boardId, Pageable pageable) {
+    public PagedResponseDto<CommentResponseDto> retrieveComments(Long boardId, Pageable pageable) {
         return getAllComments(boardId, pageable);
     }
 

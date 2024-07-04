@@ -38,7 +38,7 @@ public class MemberRegisterService implements RegisterMemberUseCase {
 
     @Transactional
     @Override
-    public String register(MemberRequestDto requestDto) {
+    public String registerMember(MemberRequestDto requestDto) {
         checkMemberUniqueness(requestDto);
         Member member = MemberRequestDto.toEntity(requestDto);
         validationService.checkValid(member);

@@ -26,7 +26,7 @@ public class MembershipFeeRemoveController {
     public ApiResponse<Long> removeMembershipFee(
             @PathVariable(name = "membershipFeeId") Long membershipFeeId
     ) throws PermissionDeniedException {
-        Long id = removeMembershipFeeUseCase.remove(membershipFeeId);
+        Long id = removeMembershipFeeUseCase.removeMembershipFee(membershipFeeId);
         return ApiResponse.success(id);
     }
 }

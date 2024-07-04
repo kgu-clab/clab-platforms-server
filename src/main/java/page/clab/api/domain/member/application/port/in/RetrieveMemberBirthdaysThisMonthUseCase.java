@@ -5,5 +5,5 @@ import page.clab.api.domain.member.dto.response.MemberBirthdayResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveMemberBirthdaysThisMonthUseCase {
-    PagedResponseDto<MemberBirthdayResponseDto> retrieve(int month, Pageable pageable);
+    PagedResponseDto<MemberBirthdayResponseDto> retrieveBirthdaysThisMonth(int month, Pageable pageable);
 }

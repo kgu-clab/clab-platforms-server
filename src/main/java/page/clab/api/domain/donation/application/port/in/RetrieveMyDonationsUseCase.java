@@ -5,5 +5,5 @@ import page.clab.api.domain.donation.dto.response.DonationResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveMyDonationsUseCase {
-    PagedResponseDto<DonationResponseDto> retrieve(Pageable pageable);
+    PagedResponseDto<DonationResponseDto> retrieveMyDonations(Pageable pageable);
 }

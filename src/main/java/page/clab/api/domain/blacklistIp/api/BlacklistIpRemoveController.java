@@ -27,7 +27,7 @@ public class BlacklistIpRemoveController {
             HttpServletRequest request,
             @RequestParam(name = "ipAddress") String ipAddress
     ) {
-        String deletedIp = removeBlacklistIpUseCase.remove(request, ipAddress);
+        String deletedIp = removeBlacklistIpUseCase.removeBlacklistIp(request, ipAddress);
         return ApiResponse.success(deletedIp);
     }
 }

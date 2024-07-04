@@ -25,7 +25,7 @@ public class BookLoanApprovalController {
     public ApiResponse<Long> approveBookLoan(
             @PathVariable(name = "bookLoanRecordId") Long bookLoanRecordId
     ) {
-        Long id = approveBookLoanUseCase.approve(bookLoanRecordId);
+        Long id = approveBookLoanUseCase.approveBookLoan(bookLoanRecordId);
         return ApiResponse.success(id);
     }
 }

@@ -25,7 +25,7 @@ public class BookRemoveController {
     public ApiResponse<Long> removeBook(
             @PathVariable(name = "bookId") Long bookId
     ) {
-        Long id = removeBookUseCase.remove(bookId);
+        Long id = removeBookUseCase.removeBook(bookId);
         return ApiResponse.success(id);
     }
 }

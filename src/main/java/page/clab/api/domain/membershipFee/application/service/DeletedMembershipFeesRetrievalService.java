@@ -22,7 +22,7 @@ public class DeletedMembershipFeesRetrievalService implements RetrieveDeletedMem
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<MembershipFeeResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<MembershipFeeResponseDto> retrieveDeletedMembershipFees(Pageable pageable) {
         MemberDetailedInfoDto memberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
         Page<MembershipFee> membershipFees = retrieveMembershipFeePort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(membershipFees.map(membershipFee ->

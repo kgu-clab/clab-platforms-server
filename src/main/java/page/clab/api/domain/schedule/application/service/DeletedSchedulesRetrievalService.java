@@ -19,7 +19,7 @@ public class DeletedSchedulesRetrievalService implements RetrieveDeletedSchedule
 
     @Override
     @Transactional(readOnly = true)
-    public PagedResponseDto<ScheduleResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<ScheduleResponseDto> retrieveDeletedSchedules(Pageable pageable) {
         Page<Schedule> schedules = retrieveSchedulePort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }

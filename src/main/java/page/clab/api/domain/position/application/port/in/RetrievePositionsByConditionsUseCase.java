@@ -6,5 +6,5 @@ import page.clab.api.domain.position.dto.response.PositionResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrievePositionsByConditionsUseCase {
-    PagedResponseDto<PositionResponseDto> retrieve(String year, PositionType positionType, Pageable pageable);
+    PagedResponseDto<PositionResponseDto> retrievePositions(String year, PositionType positionType, Pageable pageable);
 }

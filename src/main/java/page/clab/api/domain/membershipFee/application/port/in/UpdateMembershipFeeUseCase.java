@@ -4,5 +4,5 @@ import page.clab.api.domain.membershipFee.dto.request.MembershipFeeUpdateRequest
 import page.clab.api.global.exception.PermissionDeniedException;
 
 public interface UpdateMembershipFeeUseCase {
-    Long update(Long membershipFeeId, MembershipFeeUpdateRequestDto requestDto) throws PermissionDeniedException;
+    Long updateMembershipFee(Long membershipFeeId, MembershipFeeUpdateRequestDto requestDto) throws PermissionDeniedException;
 }

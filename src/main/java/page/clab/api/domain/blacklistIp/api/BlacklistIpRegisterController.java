@@ -29,7 +29,7 @@ public class BlacklistIpRegisterController {
             HttpServletRequest request,
             @Valid @RequestBody BlacklistIpRequestDto requestDto
     ) {
-        String addedIp = registerBlacklistIpUseCase.register(request, requestDto);
+        String addedIp = registerBlacklistIpUseCase.registerBlacklistIp(request, requestDto);
         return ApiResponse.success(addedIp);
     }
 }

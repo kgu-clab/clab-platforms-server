@@ -31,7 +31,7 @@ public class BookUpdateController {
             @RequestParam(name = "bookId") Long bookId,
             @Valid @RequestBody BookUpdateRequestDto requestDto
     ) {
-        Long id = updateBookUseCase.update(bookId, requestDto);
+        Long id = updateBookUseCase.updateBookInfo(bookId, requestDto);
         return ApiResponse.success(id);
     }
 }

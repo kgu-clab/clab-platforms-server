@@ -39,7 +39,7 @@ public class BoardsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Board.class);
-        PagedResponseDto<BoardListResponseDto> boards = retrieveBoardsUseCase.retrieve(pageable);
+        PagedResponseDto<BoardListResponseDto> boards = retrieveBoardsUseCase.retrieveBoards(pageable);
         return ApiResponse.success(boards);
     }
 }

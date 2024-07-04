@@ -39,7 +39,7 @@ public class MembersByConditionsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Member.class);
-        PagedResponseDto<MemberResponseDto> members = retrieveMembersByConditionsUseCase.retrieve(id, name, pageable);
+        PagedResponseDto<MemberResponseDto> members = retrieveMembersByConditionsUseCase.retrieveMembers(id, name, pageable);
         return ApiResponse.success(members);
     }
 }

@@ -25,7 +25,7 @@ public class CommentLikeToggleController {
     public ApiResponse<Long> toggleLikeStatus(
             @PathVariable(name = "commentId") Long commentId
     ) {
-        Long id = toggleCommentLikeUseCase.toggle(commentId);
+        Long id = toggleCommentLikeUseCase.toggleLikeStatus(commentId);
         return ApiResponse.success(id);
     }
 }

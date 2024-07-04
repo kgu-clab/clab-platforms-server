@@ -18,7 +18,7 @@ public class ApplicationRemoveService implements RemoveApplicationUseCase {
 
     @Transactional
     @Override
-    public String remove(Long recruitmentId, String studentId) {
+    public String removeApplication(Long recruitmentId, String studentId) {
         Application application = retrieveApplicationPort.findByIdOrThrow(ApplicationId.create(studentId, recruitmentId));
         application.delete();
         return registerApplicationPort.save(application).getStudentId();

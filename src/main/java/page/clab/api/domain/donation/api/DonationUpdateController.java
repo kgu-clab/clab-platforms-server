@@ -30,7 +30,7 @@ public class DonationUpdateController {
             @PathVariable(name = "donationId") Long donationId,
             @Valid @RequestBody DonationUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = updateDonationUseCase.update(donationId, requestDto);
+        Long id = updateDonationUseCase.updateDonation(donationId, requestDto);
         return ApiResponse.success(id);
     }
 }

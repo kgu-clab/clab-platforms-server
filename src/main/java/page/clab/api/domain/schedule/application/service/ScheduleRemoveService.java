@@ -21,7 +21,7 @@ public class ScheduleRemoveService implements RemoveScheduleUseCase {
 
     @Override
     @Transactional
-    public Long remove(Long scheduleId) throws PermissionDeniedException {
+    public Long removeSchedule(Long scheduleId) throws PermissionDeniedException {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         Schedule schedule = retrieveSchedulePort.findByIdOrThrow(scheduleId);
         schedule.validateAccessPermission(currentMember);

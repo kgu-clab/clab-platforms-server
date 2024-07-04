@@ -27,7 +27,7 @@ public class WorkExperienceRemoveController {
     public ApiResponse<Long> removeWorkExperience(
             @PathVariable(name = "workExperienceId") Long workExperienceId
     ) throws PermissionDeniedException {
-        Long id = removeWorkExperienceUseCase.remove(workExperienceId);
+        Long id = removeWorkExperienceUseCase.removeWorkExperience(workExperienceId);
         return ApiResponse.success(id);
     }
 }

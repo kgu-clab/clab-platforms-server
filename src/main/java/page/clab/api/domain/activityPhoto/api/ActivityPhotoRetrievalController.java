@@ -39,7 +39,7 @@ public class ActivityPhotoRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityPhoto.class);
-        PagedResponseDto<ActivityPhotoResponseDto> activityPhotos = retrieveActivityPhotoUseCase.retrieve(isPublic, pageable);
+        PagedResponseDto<ActivityPhotoResponseDto> activityPhotos = retrieveActivityPhotoUseCase.retrieveActivityPhotos(isPublic, pageable);
         return ApiResponse.success(activityPhotos);
     }
 }

@@ -24,7 +24,7 @@ public class AwardUpdateService implements UpdateAwardUseCase {
 
     @Transactional
     @Override
-    public Long update(Long awardId, AwardUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public Long updateAward(Long awardId, AwardUpdateRequestDto requestDto) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
         Award award = retrieveAwardPort.findByIdOrThrow(awardId);
         award.validateAccessPermission(currentMemberInfo);

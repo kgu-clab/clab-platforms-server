@@ -21,7 +21,7 @@ public class BoardRemoveService implements RemoveBoardUseCase {
 
     @Transactional
     @Override
-    public String remove(Long boardId) throws PermissionDeniedException {
+    public String removeBoard(Long boardId) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
         Board board = retrieveBoardPort.findByIdOrThrow(boardId);
         board.validateAccessPermission(currentMemberInfo);

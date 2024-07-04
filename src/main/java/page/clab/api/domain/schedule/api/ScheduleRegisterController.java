@@ -28,7 +28,7 @@ public class ScheduleRegisterController {
     public ApiResponse<Long> registerSchedule(
             @Valid @RequestBody ScheduleRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = registerScheduleUseCase.register(requestDto);
+        Long id = registerScheduleUseCase.registerSchedule(requestDto);
         return ApiResponse.success(id);
     }
 }

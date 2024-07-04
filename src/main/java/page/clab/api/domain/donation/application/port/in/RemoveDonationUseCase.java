@@ -3,5 +3,5 @@ package page.clab.api.domain.donation.application.port.in;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 public interface RemoveDonationUseCase {
-    Long remove(Long donationId) throws PermissionDeniedException;
+    Long removeDonation(Long donationId) throws PermissionDeniedException;
 }

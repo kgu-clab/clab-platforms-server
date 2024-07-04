@@ -20,7 +20,7 @@ public class CommentRemoveService implements RemoveCommentUseCase {
 
     @Transactional
     @Override
-    public Long remove(Long commentId) throws PermissionDeniedException {
+    public Long removeComment(Long commentId) throws PermissionDeniedException {
         Comment comment = retrieveCommentPort.findByIdOrThrow(commentId);
         comment.validateAccessPermission(retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo());
         comment.delete();

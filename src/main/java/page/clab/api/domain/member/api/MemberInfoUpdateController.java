@@ -28,7 +28,7 @@ public class MemberInfoUpdateController {
             @PathVariable(name = "memberId") String memberId,
             @RequestBody MemberUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        String id = updateMemberInfoUseCase.update(memberId, requestDto);
+        String id = updateMemberInfoUseCase.updateMemberInfo(memberId, requestDto);
         return ApiResponse.success(id);
     }
 }

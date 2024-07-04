@@ -23,7 +23,7 @@ public class MembershipFeesByConditionsRetrievalService implements RetrieveMembe
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<MembershipFeeResponseDto> retrieve(String memberId, String memberName, String category, MembershipFeeStatus status, Pageable pageable) {
+    public PagedResponseDto<MembershipFeeResponseDto> retrieveMembershipFees(String memberId, String memberName, String category, MembershipFeeStatus status, Pageable pageable) {
         MemberDetailedInfoDto memberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
         Page<MembershipFee> membershipFeesPage = retrieveMembershipFeePort.findByConditions(memberId, memberName, category, status, pageable);
         return new PagedResponseDto<>(membershipFeesPage.map(membershipFee ->

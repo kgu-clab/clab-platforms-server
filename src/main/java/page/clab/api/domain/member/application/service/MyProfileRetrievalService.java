@@ -16,7 +16,7 @@ public class MyProfileRetrievalService implements RetrieveMyProfileUseCase {
 
     @Transactional(readOnly = true)
     @Override
-    public MyProfileResponseDto retrieve() {
+    public MyProfileResponseDto retrieveMyProfile() {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         return MyProfileResponseDto.toDto(currentMember);
     }

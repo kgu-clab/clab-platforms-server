@@ -25,7 +25,7 @@ public class PositionRemoveController {
     public ApiResponse<Long> removePosition(
             @PathVariable("positionId") Long positionId
     ) {
-        Long id = removePositionUseCase.remove(positionId);
+        Long id = removePositionUseCase.removePosition(positionId);
         return ApiResponse.success(id);
     }
 }

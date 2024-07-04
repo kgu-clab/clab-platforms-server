@@ -19,7 +19,7 @@ public class PositionRegisterService implements RegisterPositionUseCase {
     private final RetrievePositionPort retrievePositionPort;
 
     @Transactional
-    public Long register(PositionRequestDto requestDto) {
+    public Long registerPosition(PositionRequestDto requestDto) {
         ensureMemberExistenceUseCase.ensureMemberExists(requestDto.getMemberId());
         return retrievePositionPort.findByMemberIdAndYearAndPositionType(
                         requestDto.getMemberId(), requestDto.getYear(), requestDto.getPositionType())

@@ -20,7 +20,7 @@ public class SchedulesByConditionsRetrievalService implements RetrieveSchedulesB
 
     @Override
     @Transactional(readOnly = true)
-    public PagedResponseDto<ScheduleResponseDto> retrieve(Integer year, Integer month, SchedulePriority priority, Pageable pageable) {
+    public PagedResponseDto<ScheduleResponseDto> retrieveSchedules(Integer year, Integer month, SchedulePriority priority, Pageable pageable) {
         Page<Schedule> schedules = retrieveSchedulePort.findByConditions(year, month, priority, pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }

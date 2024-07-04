@@ -42,7 +42,8 @@ public class SchedulesWithinDateRangeRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Schedule.class);
-        PagedResponseDto<ScheduleResponseDto> schedules = retrieveSchedulesWithinDateRangeUseCase.retrieve(startDate, endDate, pageable);
+        PagedResponseDto<ScheduleResponseDto> schedules =
+                retrieveSchedulesWithinDateRangeUseCase.retrieveSchedulesWithinDateRange(startDate, endDate, pageable);
         return ApiResponse.success(schedules);
     }
 }

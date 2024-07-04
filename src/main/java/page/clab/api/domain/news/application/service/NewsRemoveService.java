@@ -17,7 +17,7 @@ public class NewsRemoveService implements RemoveNewsUseCase {
 
     @Transactional
     @Override
-    public Long remove(Long newsId) {
+    public Long removeNews(Long newsId) {
         News news = retrieveNewsPort.findByIdOrThrow(newsId);
         news.delete();
         return registerNewsPort.save(news).getId();

@@ -20,7 +20,7 @@ public class DonationRegisterService implements RegisterDonationUseCase {
 
     @Transactional
     @Override
-    public Long register(DonationRequestDto requestDto) {
+    public Long registerDonation(DonationRequestDto requestDto) {
         String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         Donation donation = DonationRequestDto.toEntity(requestDto, currentMemberId);
         validationService.checkValid(donation);

@@ -17,7 +17,7 @@ public class JobPostingRemoveService implements RemoveJobPostingUseCase {
 
     @Transactional
     @Override
-    public Long remove(Long jobPostingId) {
+    public Long removeJobPosting(Long jobPostingId) {
         JobPosting jobPosting = retrieveJobPostingPort.findByIdOrThrow(jobPostingId);
         jobPosting.delete();
         return registerJobPostingPort.save(jobPosting).getId();

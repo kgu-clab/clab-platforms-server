@@ -43,7 +43,7 @@ public class BlogsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Blog.class);
-        PagedResponseDto<BlogResponseDto> blogs = retrieveBlogsUseCase.retrieve(title, memberName, pageable);
+        PagedResponseDto<BlogResponseDto> blogs = retrieveBlogsUseCase.retrieveBlogs(title, memberName, pageable);
         return ApiResponse.success(blogs);
     }
 }

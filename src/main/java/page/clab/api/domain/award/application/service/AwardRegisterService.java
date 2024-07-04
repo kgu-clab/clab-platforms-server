@@ -20,7 +20,7 @@ public class AwardRegisterService implements RegisterAwardUseCase {
 
     @Transactional
     @Override
-    public Long register(AwardRequestDto requestDto) {
+    public Long registerAward(AwardRequestDto requestDto) {
         String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         Award award = AwardRequestDto.toEntity(requestDto, currentMemberId);
         validationService.checkValid(award);

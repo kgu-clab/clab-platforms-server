@@ -26,7 +26,7 @@ public class FilesInMemberDirectoryRetrievalService implements RetrieveFilesInMe
 
     @Override
     @Transactional(readOnly = true)
-    public PagedResponseDto<FileInfo> retrieve(String memberId, Pageable pageable) {
+    public PagedResponseDto<FileInfo> retrieveFilesInMemberDirectory(String memberId, Pageable pageable) {
         Member member = retrieveMemberPort.findByIdOrThrow(memberId);
         File directory = getMemberDirectory(member.getId());
         List<File> files = FileSystemUtil.getFilesInDirectory(directory);

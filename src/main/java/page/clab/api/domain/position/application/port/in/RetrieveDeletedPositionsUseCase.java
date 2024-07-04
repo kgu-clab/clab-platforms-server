@@ -5,5 +5,5 @@ import page.clab.api.domain.position.dto.response.PositionResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveDeletedPositionsUseCase {
-    PagedResponseDto<PositionResponseDto> retrieve(Pageable pageable);
+    PagedResponseDto<PositionResponseDto> retrieveDeletedPositions(Pageable pageable);
 }

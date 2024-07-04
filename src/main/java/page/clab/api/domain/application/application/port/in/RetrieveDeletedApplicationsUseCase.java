@@ -5,5 +5,5 @@ import page.clab.api.domain.application.dto.response.ApplicationResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveDeletedApplicationsUseCase {
-    PagedResponseDto<ApplicationResponseDto> retrieve(Pageable pageable);
+    PagedResponseDto<ApplicationResponseDto> retrieveDeletedApplications(Pageable pageable);
 }

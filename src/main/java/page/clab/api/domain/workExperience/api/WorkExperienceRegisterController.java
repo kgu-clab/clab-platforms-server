@@ -27,7 +27,7 @@ public class WorkExperienceRegisterController {
     public ApiResponse<Long> registerWorkExperience(
             @Valid @RequestBody WorkExperienceRequestDto requestDto
     ) {
-        Long id = registerWorkExperienceUseCase.register(requestDto);
+        Long id = registerWorkExperienceUseCase.registerWorkExperience(requestDto);
         return ApiResponse.success(id);
     }
 }

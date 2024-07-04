@@ -22,7 +22,7 @@ public class ReviewsByConditionsRetrievalService implements RetrieveReviewsByCon
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<ReviewResponseDto> retrieve(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable) {
+    public PagedResponseDto<ReviewResponseDto> retrieveReviews(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable) {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         Page<Review> reviews = retrieveReviewPort.findByConditions(memberId, memberName, activityId, isPublic, pageable);
         return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));

@@ -22,7 +22,7 @@ public class ApplicationApprovalToggleService implements ToggleApplicationApprov
 
     @Transactional
     @Override
-    public String toggleStatus(Long recruitmentId, String studentId) {
+    public String toggleApprovalStatus(Long recruitmentId, String studentId) {
         Application application = retrieveApplicationPort.findByIdOrThrow(ApplicationId.create(studentId, recruitmentId));
         application.toggleApprovalStatus();
         validationService.checkValid(application);

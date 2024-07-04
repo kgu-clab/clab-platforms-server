@@ -23,7 +23,7 @@ public class CollectSchedulesRetrievalController {
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @GetMapping("/collect")
     public ApiResponse<ScheduleCollectResponseDto> retrieveCollectSchedules() {
-        ScheduleCollectResponseDto schedules = retrieveCollectSchedulesUseCase.retrieve();
+        ScheduleCollectResponseDto schedules = retrieveCollectSchedulesUseCase.retrieveCollectSchedules();
         return ApiResponse.success(schedules);
     }
 }

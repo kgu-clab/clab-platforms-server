@@ -45,7 +45,8 @@ public class SchedulesByConditionsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Schedule.class);
-        PagedResponseDto<ScheduleResponseDto> schedules = retrieveSchedulesByConditionsUseCase.retrieve(year, month, priority, pageable);
+        PagedResponseDto<ScheduleResponseDto> schedules =
+                retrieveSchedulesByConditionsUseCase.retrieveSchedules(year, month, priority, pageable);
         return ApiResponse.success(schedules);
     }
 }

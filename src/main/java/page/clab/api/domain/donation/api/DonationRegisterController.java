@@ -27,7 +27,7 @@ public class DonationRegisterController {
     public ApiResponse<Long> registerDonation(
             @Valid @RequestBody DonationRequestDto requestDto
     ) {
-        Long id = registerDonationUseCase.register(requestDto);
+        Long id = registerDonationUseCase.registerDonation(requestDto);
         return ApiResponse.success(id);
     }
 }

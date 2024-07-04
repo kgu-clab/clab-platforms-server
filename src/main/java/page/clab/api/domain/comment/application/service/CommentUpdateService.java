@@ -23,7 +23,7 @@ public class CommentUpdateService implements UpdateCommentUseCase {
 
     @Transactional
     @Override
-    public Long update(Long commentId, CommentUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public Long updateComment(Long commentId, CommentUpdateRequestDto requestDto) throws PermissionDeniedException {
         Comment comment = retrieveCommentPort.findByIdOrThrow(commentId);
         comment.validateAccessPermission(retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo());
         comment.update(requestDto);

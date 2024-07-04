@@ -29,7 +29,7 @@ public class AwardRemoveController {
     public ApiResponse<Long> removeAward(
             @PathVariable(name = "awardId") Long awardId
     ) throws PermissionDeniedException {
-        Long id = removeAwardUseCase.remove(awardId);
+        Long id = removeAwardUseCase.removeAward(awardId);
         return ApiResponse.success(id);
     }
 }

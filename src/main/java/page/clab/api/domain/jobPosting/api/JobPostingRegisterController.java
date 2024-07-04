@@ -27,7 +27,7 @@ public class JobPostingRegisterController {
     public ApiResponse<Long> registerJobPosting(
             @Valid @RequestBody JobPostingRequestDto requestDto
     ) {
-        Long id = registerJobPostingUseCase.register(requestDto);
+        Long id = registerJobPostingUseCase.registerJobPosting(requestDto);
         return ApiResponse.success(id);
     }
 }

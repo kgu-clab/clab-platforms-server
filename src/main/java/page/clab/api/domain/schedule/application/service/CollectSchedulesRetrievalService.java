@@ -15,7 +15,7 @@ public class CollectSchedulesRetrievalService implements RetrieveCollectSchedule
 
     @Override
     @Transactional(readOnly = true)
-    public ScheduleCollectResponseDto retrieve() {
+    public ScheduleCollectResponseDto retrieveCollectSchedules() {
         return retrieveSchedulePort.findCollectSchedules();
     }
 }

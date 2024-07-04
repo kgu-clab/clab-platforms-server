@@ -5,5 +5,5 @@ import page.clab.api.domain.activityPhoto.dto.response.ActivityPhotoResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveActivityPhotoUseCase {
-    PagedResponseDto<ActivityPhotoResponseDto> retrieve(Boolean isPublic, Pageable pageable);
+    PagedResponseDto<ActivityPhotoResponseDto> retrieveActivityPhotos(Boolean isPublic, Pageable pageable);
 }

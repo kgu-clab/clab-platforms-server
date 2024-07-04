@@ -5,5 +5,5 @@ import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveDeletedRecruitmentsUseCase {
-    PagedResponseDto<RecruitmentResponseDto> retrieve(Pageable pageable);
+    PagedResponseDto<RecruitmentResponseDto> retrieveDeletedRecruitments(Pageable pageable);
 }

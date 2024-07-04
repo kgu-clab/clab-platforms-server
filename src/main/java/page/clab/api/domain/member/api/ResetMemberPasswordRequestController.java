@@ -24,7 +24,7 @@ public class ResetMemberPasswordRequestController {
     public ApiResponse<String> requestResetMemberPassword(
             @RequestBody MemberResetPasswordRequestDto requestDto
     ) {
-        String id = requestResetMemberPasswordUseCase.request(requestDto);
+        String id = requestResetMemberPasswordUseCase.requestResetMemberPassword(requestDto);
         return ApiResponse.success(id);
     }
 }

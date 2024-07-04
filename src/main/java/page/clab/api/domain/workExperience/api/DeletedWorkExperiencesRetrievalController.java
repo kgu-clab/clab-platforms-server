@@ -31,7 +31,8 @@ public class DeletedWorkExperiencesRetrievalController {
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<WorkExperienceResponseDto> workExperiences = retrieveDeletedWorkExperiencesUseCase.retrieve(pageable);
+        PagedResponseDto<WorkExperienceResponseDto> workExperiences =
+                retrieveDeletedWorkExperiencesUseCase.retrieveDeletedWorkExperiences(pageable);
         return ApiResponse.success(workExperiences);
     }
 }

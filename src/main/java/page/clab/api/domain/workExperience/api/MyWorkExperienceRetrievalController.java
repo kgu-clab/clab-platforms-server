@@ -40,7 +40,7 @@ public class MyWorkExperienceRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, WorkExperience.class);
-        PagedResponseDto<WorkExperienceResponseDto> myWorkExperience = retrieveMyWorkExperienceUseCase.retrieve(pageable);
+        PagedResponseDto<WorkExperienceResponseDto> myWorkExperience = retrieveMyWorkExperienceUseCase.retrieveMyWorkExperience(pageable);
         return ApiResponse.success(myWorkExperience);
     }
 }

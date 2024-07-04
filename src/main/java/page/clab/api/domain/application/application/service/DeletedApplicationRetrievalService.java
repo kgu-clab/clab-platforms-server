@@ -21,7 +21,7 @@ public class DeletedApplicationRetrievalService implements RetrieveDeletedApplic
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<ApplicationResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<ApplicationResponseDto> retrieveDeletedApplications(Pageable pageable) {
         Page<Application> applications = retrieveApplicationPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(applications.map(ApplicationResponseDto::toDto));
     }

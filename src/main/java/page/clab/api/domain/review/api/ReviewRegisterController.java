@@ -27,7 +27,7 @@ public class ReviewRegisterController {
     public ApiResponse<Long> registerReview(
             @Valid @RequestBody ReviewRequestDto requestDto
     ) {
-        Long id = registerReviewUseCase.register(requestDto);
+        Long id = registerReviewUseCase.registerReview(requestDto);
         return ApiResponse.success(id);
     }
 }

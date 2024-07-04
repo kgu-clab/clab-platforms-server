@@ -5,5 +5,5 @@ import page.clab.api.domain.notification.dto.response.NotificationResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveNotificationsUseCase {
-    PagedResponseDto<NotificationResponseDto> retrieve(Pageable pageable);
+    PagedResponseDto<NotificationResponseDto> retrieveNotifications(Pageable pageable);
 }

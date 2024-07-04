@@ -27,7 +27,7 @@ public class MemberBanController {
             HttpServletRequest request,
             @PathVariable(name = "memberId") String memberId
     ) {
-        Long id = banMemberUseCase.ban(request, memberId);
+        Long id = banMemberUseCase.banMember(request, memberId);
         return ApiResponse.success(id);
     }
 }

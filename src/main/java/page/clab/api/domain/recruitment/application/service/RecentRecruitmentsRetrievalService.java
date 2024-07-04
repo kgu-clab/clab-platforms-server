@@ -17,7 +17,7 @@ public class RecentRecruitmentsRetrievalService implements RetrieveRecentRecruit
 
     @Transactional(readOnly = true)
     @Override
-    public List<RecruitmentResponseDto> retrieve() {
+    public List<RecruitmentResponseDto> retrieveRecentRecruitments() {
         return retrieveRecruitmentPort.findTop5ByOrderByCreatedAtDesc().stream()
                 .map(RecruitmentResponseDto::toDto)
                 .toList();

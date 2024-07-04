@@ -21,7 +21,7 @@ public class MyWorkExperienceRetrievalService implements RetrieveMyWorkExperienc
 
     @Override
     @Transactional(readOnly = true)
-    public PagedResponseDto<WorkExperienceResponseDto> retrieve(Pageable pageable) {
+    public PagedResponseDto<WorkExperienceResponseDto> retrieveMyWorkExperience(Pageable pageable) {
         String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         Page<WorkExperience> workExperiences = retrieveWorkExperiencePort.findByMemberId(currentMemberId, pageable);
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));

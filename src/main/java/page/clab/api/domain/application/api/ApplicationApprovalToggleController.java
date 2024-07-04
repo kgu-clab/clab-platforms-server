@@ -27,7 +27,7 @@ public class ApplicationApprovalToggleController {
             @PathVariable(name = "recruitmentId") Long recruitmentId,
             @PathVariable(name = "studentId") String studentId
     ) {
-        String id = toggleApplicationApprovalUseCase.toggleStatus(recruitmentId, studentId);
+        String id = toggleApplicationApprovalUseCase.toggleApprovalStatus(recruitmentId, studentId);
         return ApiResponse.success(id);
     }
 }
