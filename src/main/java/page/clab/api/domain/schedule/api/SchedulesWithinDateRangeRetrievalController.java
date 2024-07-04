@@ -31,7 +31,7 @@ public class SchedulesWithinDateRangeRetrievalController {
 
     @Operation(summary = "[U] 일정 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDateTime, startDateTime, memberId")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("")
     public ApiResponse<PagedResponseDto<ScheduleResponseDto>> retrieveSchedulesWithinDateRange(
             @RequestParam(name = "startDate") LocalDate startDate,

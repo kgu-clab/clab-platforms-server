@@ -36,7 +36,7 @@ import java.util.Optional;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @SQLDelete(sql = "UPDATE news SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
-@Table(indexes = {@Index(name = "idx_article_url", columnList = "articleUrl")})
+@Table(indexes = { @Index(name = "idx_article_url", columnList = "articleUrl") })
 public class News extends BaseEntity {
 
     @Id

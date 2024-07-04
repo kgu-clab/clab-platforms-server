@@ -20,7 +20,7 @@ public class BookLoanApprovalController {
     private final ApproveBookLoanUseCase approveBookLoanUseCase;
 
     @Operation(summary = "[A] 도서 대출 승인", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @PatchMapping("/approve/{bookLoanRecordId}")
     public ApiResponse<Long> approveBookLoan(
             @PathVariable(name = "bookLoanRecordId") Long bookLoanRecordId

@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.accuse.application.port.out.*;
+import page.clab.api.domain.accuse.application.port.out.RegisterAccusePort;
+import page.clab.api.domain.accuse.application.port.out.RemoveAccusePort;
+import page.clab.api.domain.accuse.application.port.out.RetrieveAccusePort;
+import page.clab.api.domain.accuse.application.port.out.UpdateAccusePort;
 import page.clab.api.domain.accuse.domain.Accuse;
-import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.TargetType;
 
 import java.util.List;

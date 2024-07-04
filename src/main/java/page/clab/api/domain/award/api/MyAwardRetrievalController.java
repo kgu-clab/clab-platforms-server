@@ -30,7 +30,7 @@ public class MyAwardRetrievalController {
 
     @Operation(summary = "[U] 나의 수상 이력 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, awardDate, grade, memberId")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/my")
     public ApiResponse<PagedResponseDto<AwardResponseDto>> retrieveMyAwards(
             @RequestParam(name = "page", defaultValue = "0") int page,

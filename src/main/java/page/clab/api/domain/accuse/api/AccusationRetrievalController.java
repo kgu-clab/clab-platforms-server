@@ -35,7 +35,7 @@ public class AccusationRetrievalController {
             "신고 대상, 처리 상태 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
             "누적 횟수 기준으로 정렬할지 여부를 선택할 수 있음<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, memberId, targetReferenceId")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("")
     public ApiResponse<PagedResponseDto<AccuseResponseDto>> retrieveAccusations(
             @RequestParam(name = "targetType", required = false) TargetType type,

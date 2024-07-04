@@ -20,7 +20,7 @@ public class ActivityPhotoVisibilityController {
     private final ToggleActivityPhotoVisibilityUseCase toggleActivityPhotoVisibilityUseCase;
 
     @Operation(summary = "활동 사진 고정/해제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @PatchMapping("/{activityPhotoId}")
     public ApiResponse<Long> toggleActivityPhotoVisibility(
             @PathVariable(name = "activityPhotoId") Long activityPhotoId

@@ -10,13 +10,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class OrderSpecifierUtil {
-    
+
     public static OrderSpecifier<?>[] getOrderSpecifiers(Pageable pageable, EntityPathBase<?> q) {
         return pageable.getSort().stream()
                 .map(order -> createOrderSpecifier(order, q))
                 .toArray(OrderSpecifier[]::new);
     }
-    
+
     private static OrderSpecifier<?> createOrderSpecifier(Sort.Order order, EntityPathBase<?> q) {
         Order direction = order.isAscending() ? Order.ASC : Order.DESC;
         String property = order.getProperty();

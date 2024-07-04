@@ -20,10 +20,10 @@ import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 @Tag(name = "BookLoanRecord", description = "도서 대출")
 public class BookLoanRequestController {
 
-     private final RequestBookLoanUseCase requestBookLoanUseCase;
+    private final RequestBookLoanUseCase requestBookLoanUseCase;
 
     @Operation(summary = "[U] 도서 대출 요청", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("")
     public ApiResponse<Long> requestBookLoan(
             @Valid @RequestBody BookLoanRecordRequestDto requestDto

@@ -31,7 +31,7 @@ public class BoardsRetrievalController {
     @GetMapping("")
     @Operation(summary = "[U] 커뮤니티 게시글 목록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, memberId")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     public ApiResponse<PagedResponseDto<BoardListResponseDto>> retrieveBoards(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,

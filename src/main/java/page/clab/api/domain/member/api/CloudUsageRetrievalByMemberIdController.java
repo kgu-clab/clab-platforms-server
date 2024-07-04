@@ -23,7 +23,7 @@ public class CloudUsageRetrievalByMemberIdController {
 
     @Operation(summary = "[U] 멤버의 클라우드 사용량 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/{memberId}")
     public ApiResponse<CloudUsageInfo> retrieveCloudUsageByMemberId(
             @PathVariable(name = "memberId") String memberId

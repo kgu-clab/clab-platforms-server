@@ -20,7 +20,7 @@ public class BookLoanRejectionController {
     private final RejectBookLoanUseCase rejectBookLoanUseCase;
 
     @Operation(summary = "[A] 도서 대출 거절", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @PatchMapping("/reject/{bookLoanRecordId}")
     public ApiResponse<Long> rejectBookLoan(
             @PathVariable(name = "bookLoanRecordId") Long bookLoanRecordId

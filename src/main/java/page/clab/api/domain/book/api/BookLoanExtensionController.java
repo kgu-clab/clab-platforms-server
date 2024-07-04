@@ -22,7 +22,7 @@ public class BookLoanExtensionController {
     private final ExtendBookLoanUseCase extendBookLoanUseCase;
 
     @Operation(summary = "[U] 도서 대출 연장", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("/extend")
     public ApiResponse<Long> extendBookLoan(
             @Valid @RequestBody BookLoanRecordRequestDto requestDto

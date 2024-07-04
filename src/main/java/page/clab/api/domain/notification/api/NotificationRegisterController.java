@@ -22,7 +22,7 @@ public class NotificationRegisterController {
     private final RegisterNotificationUseCase registerNotificationUseCase;
 
     @Operation(summary = "[U] 알림 생성", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("")
     public ApiResponse<Long> registerNotification(
             @Valid @RequestBody NotificationRequestDto requestDto

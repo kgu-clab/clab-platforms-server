@@ -23,7 +23,7 @@ public class BlacklistIpRegisterController {
     private final RegisterBlacklistIpUseCase registerBlacklistIpUseCase;
 
     @Operation(summary = "[S] 블랙리스트 IP 추가", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @PostMapping("")
     public ApiResponse<String> registerBlacklistIp(
             HttpServletRequest request,

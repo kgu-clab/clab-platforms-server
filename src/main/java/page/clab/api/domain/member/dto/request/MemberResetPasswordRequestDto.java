@@ -12,7 +12,7 @@ public class MemberResetPasswordRequestDto {
     @NotNull(message = "{notNull.member.id}")
     @Schema(description = "학번", example = "202310000", required = true)
     private String id;
-    
+
     @NotNull(message = "{notNull.member.name}")
     @Schema(description = "이름", example = "홍길동", required = true)
     private String name;

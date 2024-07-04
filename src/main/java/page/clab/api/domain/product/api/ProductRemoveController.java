@@ -20,7 +20,7 @@ public class ProductRemoveController {
     private final RemoveProductUseCase removeProductUseCase;
 
     @Operation(summary = "[A] 서비스 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @DeleteMapping("")
     public ApiResponse<Long> removeProduct(
             @RequestParam Long productId

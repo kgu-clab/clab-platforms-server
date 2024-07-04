@@ -24,7 +24,7 @@ public class DonationUpdateController {
     private final UpdateDonationUseCase updateDonationUseCase;
 
     @Operation(summary = "[S] 후원 정보 수정", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @PatchMapping("/{donationId}")
     public ApiResponse<Long> updateDonation(
             @PathVariable(name = "donationId") Long donationId,

@@ -22,7 +22,7 @@ public class JobPostingRegisterController {
     private final RegisterJobPostingUseCase registerJobPostingUseCase;
 
     @Operation(summary = "[A] 채용 공고 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("")
     public ApiResponse<Long> registerJobPosting(
             @Valid @RequestBody JobPostingRequestDto requestDto

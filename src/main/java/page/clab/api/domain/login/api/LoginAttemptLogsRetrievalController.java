@@ -33,7 +33,7 @@ public class LoginAttemptLogsRetrievalController {
 
     @Operation(summary = "[S] 계정별 로그인 시도 로그 조회", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, loginAttemptTime, memberId")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @GetMapping("/{memberId}")
     public ApiResponse<PagedResponseDto<LoginAttemptLogResponseDto>> retrieveLoginAttemptLogs(
             @PathVariable(name = "memberId") String memberId,

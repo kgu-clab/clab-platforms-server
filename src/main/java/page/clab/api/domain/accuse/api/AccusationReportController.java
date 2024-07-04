@@ -22,7 +22,7 @@ public class AccusationReportController {
     private final ReportAccusationUseCase reportAccusationUsecase;
 
     @Operation(summary = "[U] 신고 접수", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("")
     public ApiResponse<Long> reportIncident(
             @Valid @RequestBody AccuseRequestDto requestDto

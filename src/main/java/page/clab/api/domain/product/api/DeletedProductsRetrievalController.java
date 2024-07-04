@@ -24,7 +24,7 @@ public class DeletedProductsRetrievalController {
     private final RetrieveDeletedProductsUseCase retrieveDeletedProductsUseCase;
 
     @Operation(summary = "[S] 삭제된 서비스 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @GetMapping("/deleted")
     public ApiResponse<PagedResponseDto<ProductResponseDto>> retrieveDeletedProducts(
             @RequestParam(name = "page", defaultValue = "0") int page,

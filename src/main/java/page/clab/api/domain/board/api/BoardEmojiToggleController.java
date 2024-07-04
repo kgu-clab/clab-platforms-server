@@ -21,7 +21,7 @@ public class BoardEmojiToggleController {
 
     @PostMapping("/{boardId}/react/{emoji}")
     @Operation(summary = "[U] 커뮤니티 게시글 이모지 누르기/취소하기", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     public ApiResponse<String> toggleEmojiStatus(
             @PathVariable(name = "boardId") Long boardId,
             @PathVariable(name = "emoji") String emoji

@@ -23,7 +23,7 @@ public class ScheduleRegisterController {
     private final RegisterScheduleUseCase registerScheduleUseCase;
 
     @Operation(summary = "[U] 일정 등록", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("")
     public ApiResponse<Long> registerSchedule(
             @Valid @RequestBody ScheduleRequestDto requestDto

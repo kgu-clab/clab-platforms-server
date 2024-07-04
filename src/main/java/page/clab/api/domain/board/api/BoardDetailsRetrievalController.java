@@ -22,7 +22,7 @@ public class BoardDetailsRetrievalController {
 
     @GetMapping("/{boardId}")
     @Operation(summary = "[U] 커뮤니티 게시글 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     public ApiResponse<BoardDetailsResponseDto> retrieveBoardDetails(
             @PathVariable(name = "boardId") Long boardId
     ) {

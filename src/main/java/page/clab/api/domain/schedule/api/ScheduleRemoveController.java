@@ -21,7 +21,7 @@ public class ScheduleRemoveController {
     private final RemoveScheduleUseCase removeScheduleUseCase;
 
     @Operation(summary = "[U] 일정 삭제", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @DeleteMapping("/{scheduleId}")
     public ApiResponse<Long> removeSchedule(
             @PathVariable(name = "scheduleId") Long scheduleId

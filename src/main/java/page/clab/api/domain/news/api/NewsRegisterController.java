@@ -22,7 +22,7 @@ public class NewsRegisterController {
     private final RegisterNewsUseCase registerNewsUseCase;
 
     @Operation(summary = "뉴스 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("")
     public ApiResponse<Long> registerNews(
             @Valid @RequestBody NewsRequestDto requestDto

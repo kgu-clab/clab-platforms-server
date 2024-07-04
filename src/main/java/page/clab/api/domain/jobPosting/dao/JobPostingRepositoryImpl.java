@@ -27,7 +27,8 @@ public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
         BooleanBuilder builder = new BooleanBuilder();
 
         if (title != null && !title.isEmpty()) builder.and(jobPosting.title.containsIgnoreCase(title));
-        if (companyName != null && !companyName.isEmpty()) builder.and(jobPosting.companyName.containsIgnoreCase(companyName));
+        if (companyName != null && !companyName.isEmpty())
+            builder.and(jobPosting.companyName.containsIgnoreCase(companyName));
         if (careerLevel != null) builder.and(jobPosting.careerLevel.eq(careerLevel));
         if (employmentType != null) builder.and(jobPosting.employmentType.eq(employmentType));
 

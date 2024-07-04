@@ -21,7 +21,7 @@ public class BlacklistIpRemoveController {
     private final RemoveBlacklistIpUseCase removeBlacklistIpUseCase;
 
     @Operation(summary = "[S] 블랙리스트 IP 제거", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @DeleteMapping("")
     public ApiResponse<String> removeBlacklistIp(
             HttpServletRequest request,

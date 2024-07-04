@@ -24,7 +24,7 @@ public class ReviewUpdateController {
     private final UpdateReviewUseCase updateReviewUseCase;
 
     @Operation(summary = "[U] 리뷰 수정", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PatchMapping("/{reviewId}")
     public ApiResponse<Long> updateReview(
             @PathVariable(name = "reviewId") Long reviewId,

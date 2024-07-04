@@ -22,7 +22,7 @@ public class BlacklistResetController {
     private final ResetBlacklistIpsUseCase resetBlacklistIpsUseCase;
 
     @Operation(summary = "[S] 블랙리스트 IP 초기화", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @DeleteMapping("/clear")
     public ApiResponse<List<String>> resetBlacklistIps(
             HttpServletRequest request

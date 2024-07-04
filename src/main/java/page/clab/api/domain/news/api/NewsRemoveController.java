@@ -20,7 +20,7 @@ public class NewsRemoveController {
     private final RemoveNewsUseCase removeNewsUseCase;
 
     @Operation(summary = "[A] 뉴스 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @DeleteMapping("/{newsId}")
     public ApiResponse<Long> removeNews(
             @PathVariable(name = "newsId") Long newsId

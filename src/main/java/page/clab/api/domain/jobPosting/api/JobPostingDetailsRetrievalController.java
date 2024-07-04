@@ -21,7 +21,7 @@ public class JobPostingDetailsRetrievalController {
     private final RetrieveJobPostingDetailsUseCase retrieveJobPostingDetailsUseCase;
 
     @Operation(summary = "[U] 채용 공고 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/{jobPostingId}")
     public ApiResponse<JobPostingDetailsResponseDto> retrieveJobPostingDetails(
             @PathVariable(name = "jobPostingId") Long jobPostingId

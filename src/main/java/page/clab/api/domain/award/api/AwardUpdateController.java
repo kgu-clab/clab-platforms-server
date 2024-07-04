@@ -27,7 +27,7 @@ public class AwardUpdateController {
 
     @Operation(summary = "[U] 수상 이력 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PatchMapping("/{awardId}")
     public ApiResponse<Long> updateAward(
             @PathVariable(name = "awardId") Long awardId,

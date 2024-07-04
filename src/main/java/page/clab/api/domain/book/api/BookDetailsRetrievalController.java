@@ -21,7 +21,7 @@ public class BookDetailsRetrievalController {
     private final RetrieveBookDetailsUseCase retrieveBookDetailsUseCase;
 
     @Operation(summary = "[U] 도서 상세 정보", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/{bookId}")
     public ApiResponse<BookDetailsResponseDto> retrieveBookDetails(
             @PathVariable(name = "bookId") Long bookId

@@ -24,7 +24,7 @@ public class BookReturnController {
     private final ReturnBookUseCase returnBookUseCase;
 
     @Operation(summary = "[U] 도서 반납", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("/return")
     public ApiResponse<Long> returnBook(
             @Valid @RequestBody BookLoanRecordRequestDto requestDto

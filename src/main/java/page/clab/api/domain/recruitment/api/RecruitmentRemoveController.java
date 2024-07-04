@@ -20,7 +20,7 @@ public class RecruitmentRemoveController {
     private final RemoveRecruitmentUseCase removeRecruitmentUseCase;
 
     @Operation(summary = "[S] 모집 공고 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @DeleteMapping("/{recruitmentId}")
     public ApiResponse<Long> removeRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId

@@ -22,7 +22,7 @@ public class DonationRegisterController {
     private final RegisterDonationUseCase registerDonationUseCase;
 
     @Operation(summary = "[S] 후원 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @PostMapping("")
     public ApiResponse<Long> registerDonation(
             @Valid @RequestBody DonationRequestDto requestDto

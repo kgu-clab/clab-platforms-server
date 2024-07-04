@@ -20,7 +20,7 @@ public class ApplicationRemoveController {
     private final RemoveApplicationUseCase removeApplicationUseCase;
 
     @Operation(summary = "[S] 지원서 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @DeleteMapping("/{recruitmentId}/{studentId}")
     public ApiResponse<String> removeApplication(
             @PathVariable(name = "recruitmentId") Long recruitmentId,

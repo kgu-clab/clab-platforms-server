@@ -30,7 +30,7 @@ public class MyAccusationsController {
 
     @Operation(summary = "[U] 나의 신고 내역 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, memberId, targetReferenceId")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/my")
     public ApiResponse<PagedResponseDto<AccuseMyResponseDto>> retrieveMyAccusations(
             @RequestParam(name = "page", defaultValue = "0") int page,

@@ -21,7 +21,7 @@ public class DonationRemoveController {
     private final RemoveDonationUseCase removeDonationUseCase;
 
     @Operation(summary = "[S] 후원 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @DeleteMapping("/{donationId}")
     public ApiResponse<Long> removeDonation(
             @PathVariable(name = "donationId") Long donationId

@@ -31,7 +31,7 @@ public class ActivitySchedulesRetrievalController {
 
     @Operation(summary = "[U] 내 활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDateTime, startDateTime, memberId")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/activity")
     public ApiResponse<PagedResponseDto<ScheduleResponseDto>> retrieveActivitySchedules(
             @RequestParam(name = "startDate") LocalDate startDate,

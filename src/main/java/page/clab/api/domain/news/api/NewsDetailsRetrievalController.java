@@ -21,7 +21,7 @@ public class NewsDetailsRetrievalController {
     private final RetrieveNewsDetailsUseCase retrieveNewsDetailsUseCase;
 
     @Operation(summary = "[U] 뉴스 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/{newsId}")
     public ApiResponse<NewsDetailsResponseDto> retrieveNewsDetails(
             @PathVariable(name = "newsId") Long newsId

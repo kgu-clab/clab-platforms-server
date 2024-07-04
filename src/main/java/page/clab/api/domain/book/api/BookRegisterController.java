@@ -22,7 +22,7 @@ public class BookRegisterController {
     private final RegisterBookUseCase registerBookUseCase;
 
     @Operation(summary = "[A] 도서 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("")
     public ApiResponse<Long> registerBook(
             @Valid @RequestBody BookRequestDto requestDto

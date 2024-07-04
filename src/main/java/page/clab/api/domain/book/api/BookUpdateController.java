@@ -25,7 +25,7 @@ public class BookUpdateController {
     private final UpdateBookUseCase updateBookUseCase;
 
     @Operation(summary = "[A] 도서 정보 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @PatchMapping("")
     public ApiResponse<Long> updateBookInfo(
             @RequestParam(name = "bookId") Long bookId,

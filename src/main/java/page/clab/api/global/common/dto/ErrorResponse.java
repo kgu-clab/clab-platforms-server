@@ -16,16 +16,16 @@ public class ErrorResponse<T> {
 
     private String errorMessage;
 
+    public static <T> ErrorResponse<T> failure(Exception e) {
+        String exceptionName = e.getClass().getSimpleName();
+        return ErrorResponse.<T> builder()
+                .errorMessage(exceptionName.toUpperCase())
+                .build();
+    }
+
     public String toJson() {
         Gson gson = new GsonBuilder().serializeNulls().create();
         return gson.toJson(this);
-    }
-
-    public static <T> ErrorResponse<T> failure(Exception e) {
-        String exceptionName = e.getClass().getSimpleName();
-        return ErrorResponse.<T>builder()
-                .errorMessage(exceptionName.toUpperCase())
-                .build();
     }
 
 }

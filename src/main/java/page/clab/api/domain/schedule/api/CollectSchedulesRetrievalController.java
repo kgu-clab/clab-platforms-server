@@ -20,7 +20,7 @@ public class CollectSchedulesRetrievalController {
     private final RetrieveCollectSchedulesUseCase retrieveCollectSchedulesUseCase;
 
     @Operation(summary = "[U] 일정 모아보기", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/collect")
     public ApiResponse<ScheduleCollectResponseDto> retrieveCollectSchedules() {
         ScheduleCollectResponseDto schedules = retrieveCollectSchedulesUseCase.retrieveCollectSchedules();

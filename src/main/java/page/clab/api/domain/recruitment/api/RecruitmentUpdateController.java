@@ -23,7 +23,7 @@ public class RecruitmentUpdateController {
     private final UpdateRecruitmentUseCase updateRecruitmentUseCase;
 
     @Operation(summary = "[S] 모집 공고 수정", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @PatchMapping("/{recruitmentId}")
     public ApiResponse<Long> updateRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId,

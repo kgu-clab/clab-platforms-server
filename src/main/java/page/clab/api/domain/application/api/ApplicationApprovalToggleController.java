@@ -21,7 +21,7 @@ public class ApplicationApprovalToggleController {
 
     @Operation(summary = "[S] 지원 합격/취소", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "승인/취소 상태가 반전됨")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @PatchMapping("/{recruitmentId}/{studentId}")
     public ApiResponse<String> toggleApprovalStatus(
             @PathVariable(name = "recruitmentId") Long recruitmentId,

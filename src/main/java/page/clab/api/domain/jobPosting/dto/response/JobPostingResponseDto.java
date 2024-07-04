@@ -12,7 +12,7 @@ import java.util.List;
 public class JobPostingResponseDto {
 
     private Long id;
-    
+
     private String title;
 
     private String recruitmentPeriod;
@@ -20,7 +20,7 @@ public class JobPostingResponseDto {
     private String jobPostingUrl;
 
     private LocalDateTime createdAt;
-    
+
     public static JobPostingResponseDto toDto(JobPosting jobPosting) {
         return JobPostingResponseDto.builder()
                 .id(jobPosting.getId())

@@ -24,7 +24,7 @@ public class CloudUsageRetrievalAllController {
     private final RetrieveAllCloudUsageUseCase retrieveAllCloudUsageUseCase;
 
     @Operation(summary = "[S] 모든 멤버의 클라우드 사용량 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @GetMapping("")
     public ApiResponse<PagedResponseDto<CloudUsageInfo>> retrieveAllCloudUsages(
             @RequestParam(name = "page", defaultValue = "0") int page,

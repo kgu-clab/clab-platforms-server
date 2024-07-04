@@ -21,7 +21,7 @@ public class MemberUnbanController {
     private final UnbanMemberUseCase unbanMemberUseCase;
 
     @Operation(summary = "[S] 멤버 밴 해제", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @PostMapping("/unban/{memberId}")
     public ApiResponse<Long> unbanMember(
             HttpServletRequest request,

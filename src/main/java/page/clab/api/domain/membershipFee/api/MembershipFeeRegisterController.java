@@ -22,7 +22,7 @@ public class MembershipFeeRegisterController {
     private final RegisterMembershipFeeUseCase registerMembershipFeeUseCase;
 
     @Operation(summary = "[U] 회비 신청", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("")
     public ApiResponse<Long> registerMembershipFee(
             @Valid @RequestBody MembershipFeeRequestDto requestDto

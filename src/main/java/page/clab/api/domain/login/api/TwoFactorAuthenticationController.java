@@ -54,7 +54,7 @@ public class TwoFactorAuthenticationController {
 
     @Operation(summary = "[S] TOTP 초기화", description = "ROLE_SUPER 권한이 필요함")
     @DeleteMapping("/{memberId}")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     public ApiResponse<String> resetAuthenticator(
             @PathVariable(name = "memberId") String memberId
     ) {

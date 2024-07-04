@@ -21,7 +21,7 @@ public class MyPositionsByYearRetrievalController {
     private final RetrieveMyPositionsByYearUseCase retrieveMyPositionsByYearUseCase;
 
     @Operation(summary = "[U] 나의 직책 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/my-positions")
     public ApiResponse<PositionMyResponseDto> retrieveMyPositionsByYear(
             @RequestParam(name = "year", required = false) String year

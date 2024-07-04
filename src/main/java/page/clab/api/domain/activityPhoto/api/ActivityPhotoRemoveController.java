@@ -20,7 +20,7 @@ public class ActivityPhotoRemoveController {
     private final RemoveActivityPhotoUseCase removeActivityPhotoUseCase;
 
     @Operation(summary = "[A] 활동 사진 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @DeleteMapping("/{activityPhotoId}")
     public ApiResponse<Long> removeActivityPhoto(
             @PathVariable(name = "activityPhotoId") Long activityPhotoId

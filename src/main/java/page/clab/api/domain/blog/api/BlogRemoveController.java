@@ -21,7 +21,7 @@ public class BlogRemoveController {
     private final RemoveBlogUseCase removeBlogUseCase;
 
     @Operation(summary = "[A] 블로그 포스트 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @DeleteMapping("/{blogId}")
     public ApiResponse<Long> removeBlog(
             @PathVariable(name = "blogId") Long blogId

@@ -22,7 +22,7 @@ public class ActivityPhotoRegisterController {
     private final RegisterActivityPhotoUseCase registerActivityPhotoUseCase;
 
     @Operation(summary = "[A] 활동 사진 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("")
     public ApiResponse<Long> registerActivityPhoto(
             @Valid @RequestBody ActivityPhotoRequestDto requestDto

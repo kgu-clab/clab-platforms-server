@@ -33,15 +33,12 @@ import java.util.UUID;
 @Configuration
 public class FileHandler {
 
+    private final Set<String> disallowExtensions = new HashSet<>();
+    private final Set<String> compressibleImageExtensions = new HashSet<>();
     @Value("${resource.file.path}")
     private String filePath;
-
     @Value("${resource.file.image-quality}")
     private float imageQuality;
-
-    private final Set<String> disallowExtensions = new HashSet<>();
-
-    private final Set<String> compressibleImageExtensions = new HashSet<>();
 
     public FileHandler(
             @Value("${resource.file.disallow-extension}") String[] disallowExtensions,
@@ -81,8 +78,7 @@ public class FileHandler {
             if (isImageFile(multipartFile)) {
                 BufferedImage originalImage = adjustImageDirection(multipartFile);
                 ImageIO.write(originalImage, extension, file);
-            }
-            else {
+            } else {
                 multipartFile.transferTo(file);
             }
         } catch (Exception e) {

@@ -23,7 +23,7 @@ public class AccusationStatusController {
     private final ChangeAccusationStatusUseCase changeAccusationStatusUsecase;
 
     @Operation(summary = "[A] 신고 상태 변경", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @PatchMapping("/{targetType}/{targetId}")
     public ApiResponse<Long> changeAccusationStatus(
             @PathVariable(name = "targetType") TargetType type,

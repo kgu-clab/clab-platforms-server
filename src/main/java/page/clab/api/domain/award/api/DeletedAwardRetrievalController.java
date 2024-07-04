@@ -26,8 +26,8 @@ public class DeletedAwardRetrievalController {
     private final RetrieveDeletedAwardsUseCase retrieveDeletedAwardsUseCase;
 
     @GetMapping("/deleted")
+    @Secured({ "ROLE_SUPER" })
     @Operation(summary = "[S] 삭제된 수상이력 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
     public ApiResponse<PagedResponseDto<AwardResponseDto>> retrieveDeletedAwards(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size

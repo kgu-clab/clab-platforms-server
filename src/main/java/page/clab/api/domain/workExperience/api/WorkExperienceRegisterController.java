@@ -22,7 +22,7 @@ public class WorkExperienceRegisterController {
     private final RegisterWorkExperienceUseCase registerWorkExperienceUseCase;
 
     @Operation(summary = "[U] 경력사항 등록", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("")
     public ApiResponse<Long> registerWorkExperience(
             @Valid @RequestBody WorkExperienceRequestDto requestDto

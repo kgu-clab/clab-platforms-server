@@ -31,7 +31,7 @@ public class ProductsByConditionsRetrievalController {
     @Operation(summary = "[U] 서비스 조회", description = "ROLE_USER 이상의 권한이 필요함<br> " +
             "서비스명을 입력하지 않으면 전체 조회됨<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("")
     public ApiResponse<PagedResponseDto<ProductResponseDto>> retrieveProductsByConditions(
             @RequestParam(required = false) String productName,

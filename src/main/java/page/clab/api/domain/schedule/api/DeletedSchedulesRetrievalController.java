@@ -24,7 +24,7 @@ public class DeletedSchedulesRetrievalController {
     private final RetrieveDeletedSchedulesUseCase retrieveDeletedSchedulesUseCase;
 
     @Operation(summary = "[S] 삭제된 일정 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @GetMapping("/deleted")
     public ApiResponse<PagedResponseDto<ScheduleResponseDto>> retrieveDeletedSchedules(
             @RequestParam(name = "page", defaultValue = "0") int page,

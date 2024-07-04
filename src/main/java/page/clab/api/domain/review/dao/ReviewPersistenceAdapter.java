@@ -21,7 +21,7 @@ public class ReviewPersistenceAdapter implements
         RegisterReviewPort,
         UpdateReviewPort,
         RetrieveReviewPort,
-        RemoveReviewPort{
+        RemoveReviewPort {
 
     private final ReviewRepository repository;
 

@@ -20,7 +20,7 @@ public class PositionRemoveController {
     private final RemovePositionUseCase removePositionUseCase;
 
     @Operation(summary = "[S] 직책 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @DeleteMapping("/{positionId}")
     public ApiResponse<Long> removePosition(
             @PathVariable("positionId") Long positionId

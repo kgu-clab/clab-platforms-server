@@ -21,7 +21,7 @@ public class BlogDetailsRetrievalController {
     private final RetrieveBlogDetailsUseCase retrieveBlogDetailsUseCase;
 
     @Operation(summary = "[U] 블로그 포스트 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/{blogId}")
     public ApiResponse<BlogDetailsResponseDto> retrieveBlogDetails(
             @PathVariable(name = "blogId") Long blogId

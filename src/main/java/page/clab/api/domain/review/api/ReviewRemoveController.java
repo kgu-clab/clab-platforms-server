@@ -21,7 +21,7 @@ public class ReviewRemoveController {
     private final RemoveReviewUseCase removeReviewUseCase;
 
     @Operation(summary = "[U] 리뷰 삭제", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @DeleteMapping("/{reviewId}")
     public ApiResponse<Long> removeReview(
             @PathVariable(name = "reviewId") Long reviewId

@@ -22,7 +22,7 @@ public class ProductRegisterController {
     private final RegisterProductUseCase registerProductUseCase;
 
     @Operation(summary = "[A] 서비스 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("")
     public ApiResponse<Long> registerProduct(
             @Valid @RequestBody ProductRequestDto requestDto

@@ -32,7 +32,7 @@ public class ApplicationRetrievalController {
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
             "모집 일정 ID, 지원자 ID, 합격 여부 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, birth, grade, recruitmentId, studentId")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/conditions")
     public ApiResponse<PagedResponseDto<ApplicationResponseDto>> retrieveApplicationsByConditions(
             @RequestParam(name = "recruitmentId", required = false) Long recruitmentId,

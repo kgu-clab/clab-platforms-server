@@ -23,7 +23,7 @@ public class JobPostingUpdateController {
     private final UpdateJobPostingUseCase updateJobPostingUseCase;
 
     @Operation(summary = "[A] 채용 공고 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("/{jobPostingId}")
     public ApiResponse<Long> updateJobPosting(
             @PathVariable(name = "jobPostingId") Long jobPostingId,

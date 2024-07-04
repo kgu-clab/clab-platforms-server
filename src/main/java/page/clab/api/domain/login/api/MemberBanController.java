@@ -21,7 +21,7 @@ public class MemberBanController {
     private final BanMemberUseCase banMemberUseCase;
 
     @Operation(summary = "[S] 멤버 밴 등록", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @PostMapping("/ban/{memberId}")
     public ApiResponse<Long> banMember(
             HttpServletRequest request,

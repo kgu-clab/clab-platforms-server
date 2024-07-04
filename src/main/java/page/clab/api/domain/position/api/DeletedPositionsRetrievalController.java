@@ -24,7 +24,7 @@ public class DeletedPositionsRetrievalController {
     private final RetrieveDeletedPositionsUseCase retrieveDeletedPositionsUseCase;
 
     @Operation(summary = "[S] 삭제된 직책 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @GetMapping("/deleted")
     public ApiResponse<PagedResponseDto<PositionResponseDto>> retrieveDeletedPositions(
             @RequestParam(name = "page", defaultValue = "0") int page,

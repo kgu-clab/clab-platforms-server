@@ -24,7 +24,7 @@ public class BlogUpdateController {
     private final UpdateBlogUseCase updateBlogUseCase;
 
     @Operation(summary = "[A] 블로그 포스트 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @PatchMapping("/{blogId}")
     public ApiResponse<Long> updateBlog(
             @PathVariable(name = "blogId") Long blogId,

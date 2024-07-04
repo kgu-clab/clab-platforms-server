@@ -21,7 +21,7 @@ public class CommentRemoveController {
     private final RemoveCommentUseCase removeCommentUseCase;
 
     @Operation(summary = "[U] 댓글 삭제", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @DeleteMapping("/{commentId}")
     public ApiResponse<Long> removeComment(
             @PathVariable(name = "commentId") Long commentId

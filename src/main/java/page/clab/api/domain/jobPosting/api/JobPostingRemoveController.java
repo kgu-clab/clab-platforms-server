@@ -20,7 +20,7 @@ public class JobPostingRemoveController {
     private final RemoveJobPostingUseCase removeJobPostingUseCase;
 
     @Operation(summary = "[A] 채용 공고 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @DeleteMapping("/{jobPostingId}")
     public ApiResponse<Long> removeJobPosting(
             @PathVariable(name = "jobPostingId") Long jobPostingId

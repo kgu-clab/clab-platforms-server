@@ -23,7 +23,7 @@ public class ProductUpdateController {
     private final UpdateProductUseCase updateProductUseCase;
 
     @Operation(summary = "[A] 서비스 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @PatchMapping("/{productId}")
     public ApiResponse<Long> updateProduct(
             @PathVariable(name = "productId") Long productId,

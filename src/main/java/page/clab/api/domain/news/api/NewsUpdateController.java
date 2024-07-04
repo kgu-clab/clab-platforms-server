@@ -23,7 +23,7 @@ public class NewsUpdateController {
     private final UpdateNewsUseCase updateNewsUseCase;
 
     @Operation(summary = "[A] 뉴스 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @PatchMapping("/{newsId}")
     public ApiResponse<Long> updateNews(
             @PathVariable(name = "newsId") Long newsId,

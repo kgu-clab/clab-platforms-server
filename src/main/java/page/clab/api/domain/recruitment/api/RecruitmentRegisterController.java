@@ -22,7 +22,7 @@ public class RecruitmentRegisterController {
     private final RegisterRecruitmentUseCase registerRecruitmentUseCase;
 
     @Operation(summary = "[S] 모집 공고 등록", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @PostMapping("")
     public ApiResponse<Long> registerRecruitment(
             @Valid @RequestBody RecruitmentRequestDto requestDto

@@ -7,9 +7,9 @@ import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 @Getter
 public class WriterInfo {
 
-    private String id;
+    private final String id;
 
-    private String name;
+    private final String name;
 
     private Long roleLevel;
 

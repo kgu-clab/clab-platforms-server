@@ -20,7 +20,7 @@ public class BookRemoveController {
     private final RemoveBookUseCase removeBookUseCase;
 
     @Operation(summary = "[A] 도서 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({"ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @DeleteMapping("/{bookId}")
     public ApiResponse<Long> removeBook(
             @PathVariable(name = "bookId") Long bookId

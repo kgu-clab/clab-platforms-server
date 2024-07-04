@@ -1,7 +1,6 @@
 package page.clab.api.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.File;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,5 +65,4 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(apiLoggingInterceptor);
     }
-
 }

@@ -25,7 +25,7 @@ public class DeletedCommentsRetrievalController {
     private final RetrieveDeletedCommentsUseCase retrieveDeletedCommentsUseCase;
 
     @Operation(summary = "[S] 게시글의 삭제된 댓글 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @GetMapping("/deleted/{boardId}")
     public ApiResponse<PagedResponseDto<DeletedCommentResponseDto>> retrieveDeletedComments(
             @PathVariable(name = "boardId") Long boardId,

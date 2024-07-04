@@ -2,6 +2,7 @@ package page.clab.api.global.util;
 
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.lang.UProperty;
+
 import java.text.BreakIterator;
 
 public class EmojiUtils {
@@ -22,7 +23,7 @@ public class EmojiUtils {
             if (grapheme.length() == 1 && UCharacter.isDigit(grapheme.codePointAt(0)))
                 return false;
 
-            for (int i = 0; i < grapheme.length();) {
+            for (int i = 0; i < grapheme.length(); ) {
                 int codePoint = grapheme.codePointAt(i);
 
                 if (UCharacter.hasBinaryProperty(codePoint, UProperty.EMOJI) ||

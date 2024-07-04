@@ -22,7 +22,7 @@ public class AwardRegisterController {
     private final RegisterAwardUseCase registerAwardUseCase;
 
     @Operation(summary = "[U] 수상 이력 등록", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("")
     public ApiResponse<Long> registerAward(
             @Valid @RequestBody AwardRequestDto requestDto

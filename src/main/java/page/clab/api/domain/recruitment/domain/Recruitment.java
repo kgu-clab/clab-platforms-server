@@ -66,6 +66,7 @@ public class Recruitment extends BaseEntity {
         this.isDeleted = true;
     }
 
-    public void updateStatus(RecruitmentStatus status) { this.status = status; }
-
+    public void updateStatus(RecruitmentStatus status) {
+        this.status = status;
+    }
 }
