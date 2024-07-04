@@ -10,8 +10,12 @@ import java.util.Optional;
 
 public interface RetrieveAccusePort {
     Optional<Accuse> findByMemberIdAndTarget(String memberId, TargetType targetType, Long targetReferenceId);
+
     List<Accuse> findByTargetOrderByCreatedAtDesc(TargetType targetType, Long targetReferenceId);
+
     List<Accuse> findByTarget(TargetType targetType, Long targetReferenceId);
+
     Page<Accuse> findByMemberId(String memberId, Pageable pageable);
+
     List<Accuse> findByMemberId(String memberId);
 }

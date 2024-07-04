@@ -11,6 +11,8 @@ import java.util.Optional;
 
 public interface RetrieveAccuseTargetPort {
     Optional<AccuseTarget> findById(AccuseTargetId accuseTargetId);
+
     AccuseTarget findByIdOrThrow(AccuseTargetId accuseTargetId);
+
     Page<AccuseTarget> findByConditions(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable);
 }

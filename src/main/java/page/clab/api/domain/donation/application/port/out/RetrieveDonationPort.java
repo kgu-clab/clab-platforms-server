@@ -9,8 +9,12 @@ import java.util.Optional;
 
 public interface RetrieveDonationPort {
     Optional<Donation> findById(Long donationId);
+
     Donation findByIdOrThrow(Long donationId);
+
     Page<Donation> findAllByIsDeletedTrue(Pageable pageable);
+
     Page<Donation> findByConditions(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable);
+
     Page<Donation> findByMemberId(String memberId, Pageable pageable);
 }

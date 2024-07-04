@@ -10,9 +10,14 @@ import java.util.Optional;
 
 public interface RetrieveReviewPort {
     Optional<Review> findById(Long reviewId);
+
     Review findByIdOrThrow(Long reviewId);
+
     Page<Review> findAllByIsDeletedTrue(Pageable pageable);
+
     Page<Review> findAllByMember(Member member, Pageable pageable);
+
     Page<Review> findByConditions(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable);
+
     boolean existsByMemberAndActivityGroup(Member member, ActivityGroup activityGroup);
 }

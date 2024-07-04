@@ -9,7 +9,10 @@ import java.util.Optional;
 
 public interface RetrieveBlacklistIpPort {
     List<BlacklistIp> findAll();
+
     Page<BlacklistIp> findAll(Pageable pageable);
+
     Optional<BlacklistIp> findByIpAddress(String ipAddress);
+
     BlacklistIp findByIpAddressOrThrow(String ipAddress);
 }

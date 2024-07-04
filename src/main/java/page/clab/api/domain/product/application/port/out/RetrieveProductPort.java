@@ -8,7 +8,10 @@ import java.util.Optional;
 
 public interface RetrieveProductPort {
     Optional<Product> findById(Long productId);
+
     Product findByIdOrThrow(Long productId);
+
     Page<Product> findAllByIsDeletedTrue(Pageable pageable);
+
     Page<Product> findByConditions(String productName, Pageable pageable);
 }

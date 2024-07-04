@@ -9,9 +9,14 @@ import java.util.Optional;
 
 public interface RetrieveCommentPort {
     Optional<Comment> findById(Long commentId);
+
     Comment findByIdOrThrow(Long commentId);
+
     Page<Comment> findAllByIsDeletedTrueAndBoardId(Long boardId, Pageable pageable);
+
     Page<Comment> findAllByBoardIdAndParentIsNull(Long boardId, Pageable pageable);
+
     Page<Comment> findAllByWriterId(String memberId, Pageable pageable);
+
     Long countByBoard(Board board);
 }

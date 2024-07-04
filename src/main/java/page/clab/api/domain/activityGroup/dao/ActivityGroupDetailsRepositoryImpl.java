@@ -37,10 +37,10 @@ public class ActivityGroupDetailsRepositoryImpl implements ActivityGroupDetailsR
         BooleanBuilder boardCondition = new BooleanBuilder();
         if (activityGroupId != null) boardCondition.and(qActivityGroupBoard.activityGroup.id.eq(activityGroupId));
         if (activityGroupId != null) boardCondition.and(qActivityGroupBoard.category.in(
-                    ActivityGroupBoardCategory.NOTICE,
-                    ActivityGroupBoardCategory.WEEKLY_ACTIVITY,
-                    ActivityGroupBoardCategory.ASSIGNMENT)
-            );
+                ActivityGroupBoardCategory.NOTICE,
+                ActivityGroupBoardCategory.WEEKLY_ACTIVITY,
+                ActivityGroupBoardCategory.ASSIGNMENT)
+        );
 
         List<ActivityGroupBoard> boards = queryFactory.selectFrom(qActivityGroupBoard)
                 .where(boardCondition)

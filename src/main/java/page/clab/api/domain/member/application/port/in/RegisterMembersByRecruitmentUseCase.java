@@ -4,5 +4,6 @@ import java.util.List;
 
 public interface RegisterMembersByRecruitmentUseCase {
     List<String> registerMembersByRecruitment(Long recruitmentId);
+
     String registerMembersByRecruitment(Long recruitmentId, String memberId);
 }

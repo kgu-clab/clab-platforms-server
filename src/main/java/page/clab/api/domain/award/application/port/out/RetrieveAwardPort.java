@@ -8,8 +8,12 @@ import java.util.Optional;
 
 public interface RetrieveAwardPort {
     Optional<Award> findById(Long awardId);
+
     Award findByIdOrThrow(Long awardId);
+
     Page<Award> findByConditions(String memberId, Long year, Pageable pageable);
+
     Page<Award> findAllByIsDeletedTrue(Pageable pageable);
+
     Page<Award> findByMemberId(String memberId, Pageable pageable);
 }

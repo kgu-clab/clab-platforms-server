@@ -8,8 +8,12 @@ import java.util.Optional;
 
 public interface RetrieveWorkExperiencePort {
     Optional<WorkExperience> findById(Long id);
+
     WorkExperience findByIdOrThrow(Long id);
+
     Page<WorkExperience> findAllByIsDeletedTrue(Pageable pageable);
+
     Page<WorkExperience> findByMemberId(String memberId, Pageable pageable);
+
     Page<WorkExperience> findByConditions(String memberId, Pageable pageable);
 }

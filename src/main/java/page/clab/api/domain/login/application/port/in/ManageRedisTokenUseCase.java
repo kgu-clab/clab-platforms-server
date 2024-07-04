@@ -8,9 +8,14 @@ import java.util.List;
 
 public interface ManageRedisTokenUseCase {
     RedisToken findByAccessToken(String accessToken);
+
     RedisToken findByRefreshToken(String refreshToken);
+
     List<String> getCurrentLoggedInUsers();
+
     void saveToken(String memberId, Role role, TokenInfo tokenInfo, String ip);
+
     void deleteByAccessToken(String accessToken);
+
     void deleteByMemberId(String memberId);
 }

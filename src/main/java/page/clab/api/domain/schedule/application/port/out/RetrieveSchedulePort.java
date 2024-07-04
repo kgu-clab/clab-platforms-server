@@ -14,10 +14,16 @@ import java.util.Optional;
 
 public interface RetrieveSchedulePort {
     Optional<Schedule> findById(Long id);
+
     Schedule findByIdOrThrow(Long id);
+
     Page<Schedule> findAllByIsDeletedTrue(Pageable pageable);
+
     Page<Schedule> findByConditions(Integer year, Integer month, SchedulePriority priority, Pageable pageable);
+
     Page<Schedule> findActivitySchedulesByDateRangeAndMember(LocalDate startDate, LocalDate endDate, Member member, Pageable pageable);
+
     ScheduleCollectResponseDto findCollectSchedules();
+
     Page<Schedule> findByDateRangeAndMember(LocalDate startDate, LocalDate endDate, List<ActivityGroup> myGroups, Pageable pageable);
 }

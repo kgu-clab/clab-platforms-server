@@ -11,14 +11,24 @@ import java.util.List;
 
 public interface RetrieveMemberInfoUseCase {
     List<MemberEmailInfoDto> getMembers();
+
     List<String> getMemberIds();
+
     List<String> getAdminIds();
+
     List<String> getSuperAdminIds();
+
     MemberBasicInfoDto getMemberBasicInfoById(String memberId);
+
     MemberBasicInfoDto getCurrentMemberBasicInfo();
+
     MemberDetailedInfoDto getMemberDetailedInfoById(String memberId);
+
     MemberDetailedInfoDto getCurrentMemberDetailedInfo();
+
     MemberBorrowerInfoDto getCurrentMemberBorrowerInfo();
+
     MemberLoginInfoDto getMemberLoginInfoById(String memberId);
+
     MemberPositionInfoDto getCurrentMemberPositionInfo();
 }

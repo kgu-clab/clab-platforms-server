@@ -7,7 +7,10 @@ import java.util.Optional;
 
 public interface RetrieveRedisTokenPort {
     Optional<RedisToken> findById(String id);
+
     Optional<RedisToken> findByAccessToken(String accessToken);
+
     Optional<RedisToken> findByRefreshToken(String refreshToken);
+
     List<RedisToken> findAll();
 }

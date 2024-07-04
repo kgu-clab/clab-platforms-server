@@ -4,5 +4,6 @@ import java.time.LocalDateTime;
 
 public interface UpdateMemberUseCase {
     void updateLoanSuspensionDate(String memberId, LocalDateTime loanSuspensionDate);
+
     void updateLastLoginTime(String id);
 }

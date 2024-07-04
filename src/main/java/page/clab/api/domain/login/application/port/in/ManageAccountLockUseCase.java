@@ -6,5 +6,6 @@ import page.clab.api.domain.login.exception.MemberLockedException;
 
 public interface ManageAccountLockUseCase {
     void handleAccountLockInfo(String memberId) throws MemberLockedException, LoginFailedException;
+
     void handleLoginFailure(HttpServletRequest request, String memberId) throws MemberLockedException, LoginFailedException;
 }

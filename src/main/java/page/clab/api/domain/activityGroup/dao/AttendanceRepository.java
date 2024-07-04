@@ -11,7 +11,10 @@ import java.time.LocalDate;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
     Page<Attendance> findAllByMemberAndActivityGroup(Member member, ActivityGroup activityGroup, Pageable pageable);
+
     Page<Attendance> findAllByActivityGroup(ActivityGroup activityGroup, Pageable pageable);
+
     Attendance findByActivityGroupAndMemberAndActivityDate(ActivityGroup activityGroup, Member member, LocalDate activityDate);
+
     boolean existsByActivityGroupAndActivityDate(ActivityGroup activityGroup, LocalDate activityDate);
 }

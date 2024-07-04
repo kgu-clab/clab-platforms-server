@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public interface RetrieveAccountLockInfoPort {
     Optional<AccountLockInfo> findById(Long id);
+
     Optional<AccountLockInfo> findByMemberId(String memberId);
+
     Page<AccountLockInfo> findByLockUntil(LocalDateTime lockUntil, Pageable pageable);
 }

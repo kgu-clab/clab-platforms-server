@@ -9,7 +9,10 @@ import java.util.Optional;
 
 public interface RetrieveApplicationPort {
     Optional<Application> findById(ApplicationId applicationId);
+
     Application findByIdOrThrow(ApplicationId applicationId);
+
     Page<Application> findByConditions(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable);
+
     Page<Application> findAllByIsDeletedTrue(Pageable pageable);
 }

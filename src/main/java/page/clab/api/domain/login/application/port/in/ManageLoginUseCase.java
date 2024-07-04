@@ -12,9 +12,14 @@ import java.util.List;
 
 public interface ManageLoginUseCase {
     LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFailedException, MemberLockedException;
+
     LoginResult authenticate(HttpServletRequest request, TwoFactorAuthenticationRequestDto requestDto) throws LoginFailedException, MemberLockedException;
+
     String resetAuthenticator(String memberId);
+
     String revokeToken(String memberId);
+
     TokenHeader reissueToken(HttpServletRequest request);
+
     List<String> retrieveCurrentLoggedInUsers();
 }

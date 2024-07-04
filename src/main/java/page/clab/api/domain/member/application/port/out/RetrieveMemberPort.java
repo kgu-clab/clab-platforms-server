@@ -9,10 +9,16 @@ import java.util.Optional;
 
 public interface RetrieveMemberPort {
     Optional<Member> findById(String memberId);
+
     Member findByIdOrThrow(String memberId);
+
     List<Member> findAll();
+
     Page<Member> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
     Member findByEmailOrThrow(String email);
+
     Page<Member> findBirthdaysThisMonth(int month, Pageable pageable);
+
     Page<Member> findByConditions(String id, String name, Pageable pageable);
 }

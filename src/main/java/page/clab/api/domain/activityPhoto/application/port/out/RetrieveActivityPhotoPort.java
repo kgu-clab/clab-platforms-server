@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface RetrieveActivityPhotoPort {
     Optional<ActivityPhoto> findById(Long activityPhotoId);
+
     ActivityPhoto findByIdOrThrow(Long activityPhotoId);
+
     Page<ActivityPhoto> findByConditions(Boolean isPublic, Pageable pageable);
 }

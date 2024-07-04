@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface RetrieveBoardEmojiPort {
     List<Tuple> findEmojiClickCountsByBoardId(Long boardId, String memberId);
+
     Optional<BoardEmoji> findByBoardIdAndMemberIdAndEmoji(Long boardId, String memberId, String emoji);
 }

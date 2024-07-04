@@ -10,9 +10,14 @@ import java.util.Optional;
 
 public interface RetrievePositionPort {
     Optional<Position> findById(Long id);
+
     Position findByIdOrThrow(Long id);
+
     List<Position> findAllByMemberIdAndYearOrderByPositionTypeAsc(String memberId, String year);
+
     Page<Position> findAllByIsDeletedTrue(Pageable pageable);
+
     Optional<Position> findByMemberIdAndYearAndPositionType(String memberId, String year, PositionType positionType);
+
     Page<Position> findByConditions(String year, PositionType positionType, Pageable pageable);
 }

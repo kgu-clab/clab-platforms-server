@@ -4,5 +4,6 @@ import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
 
 public interface RemoveBlacklistIpPort {
     void delete(BlacklistIp blacklistIp);
+
     void deleteAll();
 }

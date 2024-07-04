@@ -9,9 +9,14 @@ import java.util.Optional;
 
 public interface RetrieveBoardPort {
     Optional<Board> findById(Long boardId);
+
     Board findByIdOrThrow(Long boardId);
+
     Page<Board> findAll(Pageable pageable);
+
     Page<Board> findAllByCategory(BoardCategory category, Pageable pageable);
+
     Page<Board> findAllByIsDeletedTrue(Pageable pageable);
+
     Page<Board> findAllByMemberId(String memberId, Pageable pageable);
 }

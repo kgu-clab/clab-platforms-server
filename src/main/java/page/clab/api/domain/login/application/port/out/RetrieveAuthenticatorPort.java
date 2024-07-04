@@ -6,6 +6,8 @@ import java.util.Optional;
 
 public interface RetrieveAuthenticatorPort {
     Optional<Authenticator> findById(String memberId);
+
     Authenticator findByIdOrThrow(String memberId);
+
     boolean existsById(String memberId);
 }

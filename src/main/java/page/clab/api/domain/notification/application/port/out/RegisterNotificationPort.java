@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface RegisterNotificationPort {
     Notification save(Notification notification);
+
     void saveAll(List<Notification> notifications);
 }

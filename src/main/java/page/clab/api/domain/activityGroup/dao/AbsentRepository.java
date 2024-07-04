@@ -13,5 +13,6 @@ import java.time.LocalDate;
 @Repository
 public interface AbsentRepository extends JpaRepository<Absent, Long> {
     Page<Absent> findAllByActivityGroup(ActivityGroup activityGroup, Pageable pageable);
+
     Absent findByActivityGroupAndAbsenteeAndAbsentDate(ActivityGroup activityGroup, Member absentee, LocalDate absentDate);
 }

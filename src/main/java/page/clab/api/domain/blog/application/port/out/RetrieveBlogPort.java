@@ -8,7 +8,10 @@ import java.util.Optional;
 
 public interface RetrieveBlogPort {
     Optional<Blog> findById(Long blogId);
+
     Blog findByIdOrThrow(Long blogId);
+
     Page<Blog> findByConditions(String title, String memberName, Pageable pageable);
+
     Page<Blog> findAllByIsDeletedTrue(Pageable pageable);
 }

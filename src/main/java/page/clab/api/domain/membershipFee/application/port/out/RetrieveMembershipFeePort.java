@@ -9,7 +9,10 @@ import java.util.Optional;
 
 public interface RetrieveMembershipFeePort {
     Optional<MembershipFee> findById(Long id);
+
     MembershipFee findByIdOrThrow(Long id);
+
     Page<MembershipFee> findAllByIsDeletedTrue(Pageable pageable);
+
     Page<MembershipFee> findByConditions(String memberId, String memberName, String category, MembershipFeeStatus status, Pageable pageable);
 }
