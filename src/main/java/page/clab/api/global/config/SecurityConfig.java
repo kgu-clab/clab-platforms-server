@@ -67,9 +67,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         AuthenticationManager authenticationManager = authenticationConfig.authenticationManager();
-
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagement ->
