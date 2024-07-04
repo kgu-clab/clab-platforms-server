@@ -98,7 +98,7 @@ public class GlobalExceptionHandler {
             UnknownPathException.class,
             InvalidEmojiException.class
     })
-    public ErrorResponse badRequestException(HttpServletResponse response, Exception e) {
+    public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
         return ErrorResponse.failure(e);
     }
@@ -116,7 +116,7 @@ public class GlobalExceptionHandler {
             TokenForgeryException.class,
             MessagingException.class,
     })
-    public ApiResponse unAuthorizeException(HttpServletResponse response, Exception e) {
+    public ApiResponse<Void> unAuthorizeException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         return ApiResponse.failure();
     }
@@ -125,7 +125,7 @@ public class GlobalExceptionHandler {
             PermissionDeniedException.class,
             InvalidBorrowerException.class,
     })
-    public ApiResponse deniedException(HttpServletResponse response, Exception e) {
+    public ApiResponse<Void> deniedException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         return ApiResponse.failure();
     }
@@ -136,7 +136,7 @@ public class GlobalExceptionHandler {
             NoSuchElementException.class,
             FileNotFoundException.class,
     })
-    public ErrorResponse notFoundException(HttpServletResponse response, Exception e) {
+    public ErrorResponse<Exception> notFoundException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
         return ErrorResponse.failure(e);
     }
@@ -144,7 +144,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             AssignmentFileUploadFailException.class
     })
-    public ApiResponse notFoundException(HttpServletResponse response, AssignmentFileUploadFailException e) {
+    public ApiResponse<Void> notFoundException(HttpServletResponse response, AssignmentFileUploadFailException e) {
         response.setStatus(HttpServletResponse.SC_OK);
         return ApiResponse.failure();
     }
@@ -172,7 +172,7 @@ public class GlobalExceptionHandler {
             LoanSuspensionException.class,
             LoanNotPendingException.class,
     })
-    public ErrorResponse conflictException(HttpServletResponse response, Exception e) {
+    public ErrorResponse<Exception> conflictException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
         return ErrorResponse.failure(e);
     }
@@ -196,7 +196,7 @@ public class GlobalExceptionHandler {
             MetadataException.class,
             Exception.class
     })
-    public ApiResponse serverException(HttpServletRequest request, HttpServletResponse response, Exception e) {
+    public ApiResponse<Void> serverException(HttpServletRequest request, HttpServletResponse response, Exception e) {
         slackService.sendServerErrorNotification(request, e);
         log.warn(e.getMessage());
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -207,7 +207,7 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException.class,
             ConstraintViolationException.class
     })
-    public ApiResponse handleValidationException(HttpServletResponse response, Exception e) {
+    public ApiResponse<Void> handleValidationException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return ApiResponse.failure();
     }

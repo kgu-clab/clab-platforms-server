@@ -80,7 +80,7 @@ public class FileController {
     @Operation(summary = "[U] 멤버 클라우드 파일 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
     @PostMapping(value = "/members", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse memberCloudUpload(
+    public ApiResponse<List<UploadedFileResponseDto>> memberCloudUpload(
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {

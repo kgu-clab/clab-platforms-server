@@ -28,7 +28,7 @@ public class NotificationSettingController {
     @Operation(summary = "[S] 슬랙 알림 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @GetMapping("")
-    public ApiResponse<Object> getNotificationSettings() {
+    public ApiResponse<List<NotificationSettingResponseDto>> getNotificationSettings() {
         List<NotificationSettingResponseDto> notificationSettings = notificationSettingService.getNotificationSettings();
         return ApiResponse.success(notificationSettings);
     }
@@ -36,7 +36,7 @@ public class NotificationSettingController {
     @Operation(summary = "[S] 슬랙 알림 설정 변경", description = "ROLE_SUPER 이상의 권한이 필요함")
     @Secured({"ROLE_SUPER"})
     @PutMapping("")
-    public ApiResponse<Object> updateNotificationSetting(
+    public ApiResponse<Void> updateNotificationSetting(
             @Valid @RequestBody NotificationSettingUpdateRequestDto requestDto
     ) {
         notificationSettingService.updateNotificationSetting(requestDto.getAlertType(), requestDto.isEnabled());
