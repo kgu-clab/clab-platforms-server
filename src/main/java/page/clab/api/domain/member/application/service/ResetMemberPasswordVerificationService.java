@@ -5,7 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.VerifyResetMemberPasswordUseCase;
-import page.clab.api.domain.member.application.port.out.LoadMemberPort;
+import page.clab.api.domain.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.verification.application.VerificationService;
 import page.clab.api.global.common.verification.domain.Verification;
@@ -15,14 +15,14 @@ import page.clab.api.global.common.verification.dto.request.VerificationRequestD
 @RequiredArgsConstructor
 public class ResetMemberPasswordVerificationService implements VerifyResetMemberPasswordUseCase {
 
-    private final LoadMemberPort loadMemberPort;
+    private final RetrieveMemberPort retrieveMemberPort;
     private final VerificationService verificationService;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
     @Override
     public String verify(VerificationRequestDto requestDto) {
-        Member member = loadMemberPort.findByIdOrThrow(requestDto.getMemberId());
+        Member member = retrieveMemberPort.findByIdOrThrow(requestDto.getMemberId());
         Verification verification = verificationService.validateVerificationCode(requestDto, member);
         updateMemberPasswordWithVerificationCode(verification.getVerificationCode(), member);
         return member.getId();

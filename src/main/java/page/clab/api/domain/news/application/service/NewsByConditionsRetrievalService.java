@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.news.application.port.in.RetrieveNewsByConditionsUseCase;
-import page.clab.api.domain.news.application.port.out.RetrieveNewsByConditionsPort;
+import page.clab.api.domain.news.application.port.out.RetrieveNewsPort;
 import page.clab.api.domain.news.domain.News;
 import page.clab.api.domain.news.dto.response.NewsResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -15,12 +15,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RequiredArgsConstructor
 public class NewsByConditionsRetrievalService implements RetrieveNewsByConditionsUseCase {
 
-    private final RetrieveNewsByConditionsPort retrieveNewsByConditionsPort;
+    private final RetrieveNewsPort retrieveNewsPort;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<NewsResponseDto> retrieve(String title, String category, Pageable pageable) {
-        Page<News> newsPage = retrieveNewsByConditionsPort.findByConditions(title, category, pageable);
+        Page<News> newsPage = retrieveNewsPort.findByConditions(title, category, pageable);
         return new PagedResponseDto<>(newsPage.map(NewsResponseDto::toDto));
     }
 }

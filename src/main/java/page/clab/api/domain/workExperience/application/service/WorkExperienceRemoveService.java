@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.workExperience.application.port.in.RemoveWorkExperienceUseCase;
-import page.clab.api.domain.workExperience.application.port.out.LoadWorkExperiencePort;
 import page.clab.api.domain.workExperience.application.port.out.RegisterWorkExperiencePort;
+import page.clab.api.domain.workExperience.application.port.out.RetrieveWorkExperiencePort;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -16,14 +16,14 @@ import page.clab.api.global.exception.PermissionDeniedException;
 public class WorkExperienceRemoveService implements RemoveWorkExperienceUseCase {
 
     private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
-    private final LoadWorkExperiencePort loadWorkExperiencePort;
+    private final RetrieveWorkExperiencePort retrieveWorkExperiencePort;
     private final RegisterWorkExperiencePort registerWorkExperiencePort;
 
     @Override
     @Transactional
     public Long remove(Long workExperienceId) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
-        WorkExperience workExperience = loadWorkExperiencePort.findByIdOrThrow(workExperienceId);
+        WorkExperience workExperience = retrieveWorkExperiencePort.findByIdOrThrow(workExperienceId);
         workExperience.validateAccessPermission(currentMemberInfo);
         workExperience.delete();
         return registerWorkExperiencePort.save(workExperience).getId();

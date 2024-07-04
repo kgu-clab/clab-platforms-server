@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.membershipFee.application.port.out.LoadMembershipFeePort;
 import page.clab.api.domain.membershipFee.application.port.out.RegisterMembershipFeePort;
 import page.clab.api.domain.membershipFee.application.port.out.RemoveMembershipFeePort;
-import page.clab.api.domain.membershipFee.application.port.out.RetrieveDeletedMembershipFeesPort;
-import page.clab.api.domain.membershipFee.application.port.out.RetrieveMembershipFeesByConditionsPort;
+import page.clab.api.domain.membershipFee.application.port.out.RetrieveMembershipFeePort;
 import page.clab.api.domain.membershipFee.application.port.out.UpdateMembershipFeePort;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
@@ -19,12 +17,10 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class MembershipFeePersistenceAdapter implements
-        LoadMembershipFeePort,
         RegisterMembershipFeePort,
         RemoveMembershipFeePort,
-        RetrieveDeletedMembershipFeesPort,
-        RetrieveMembershipFeesByConditionsPort,
-        UpdateMembershipFeePort {
+        UpdateMembershipFeePort,
+        RetrieveMembershipFeePort {
 
     private final MembershipFeeRepository repository;
 

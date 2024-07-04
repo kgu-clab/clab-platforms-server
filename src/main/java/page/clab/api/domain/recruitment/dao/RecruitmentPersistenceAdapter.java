@@ -4,10 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.recruitment.application.port.out.LoadRecruitmentPort;
 import page.clab.api.domain.recruitment.application.port.out.RegisterRecruitmentPort;
-import page.clab.api.domain.recruitment.application.port.out.RetrieveDeletedRecruitmentsPort;
-import page.clab.api.domain.recruitment.application.port.out.RetrieveRecentRecruitmentsPort;
+import page.clab.api.domain.recruitment.application.port.out.RetrieveRecruitmentPort;
 import page.clab.api.domain.recruitment.application.port.out.UpdateRecruitmentPort;
 import page.clab.api.domain.recruitment.domain.Recruitment;
 import page.clab.api.global.exception.NotFoundException;
@@ -20,9 +18,7 @@ import java.util.Optional;
 public class RecruitmentPersistenceAdapter implements
         RegisterRecruitmentPort,
         UpdateRecruitmentPort,
-        LoadRecruitmentPort,
-        RetrieveDeletedRecruitmentsPort,
-        RetrieveRecentRecruitmentsPort {
+        RetrieveRecruitmentPort {
 
     private final RecruitmentRepository repository;
 

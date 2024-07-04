@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.application.port.in.UpdateMemberInfoUseCase;
-import page.clab.api.domain.member.application.port.out.LoadMemberPort;
+import page.clab.api.domain.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.member.application.port.out.UpdateMemberPort;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
@@ -22,7 +22,7 @@ import page.clab.api.global.validation.ValidationService;
 public class MemberInfoUpdateService implements UpdateMemberInfoUseCase {
 
     private final RetrieveMemberUseCase retrieveMemberUseCase;
-    private final LoadMemberPort loadMemberPort;
+    private final RetrieveMemberPort retrieveMemberPort;
     private final UpdateMemberPort updateMemberPort;
     private final ValidationService validationService;
     private final PasswordEncoder passwordEncoder;
@@ -33,7 +33,7 @@ public class MemberInfoUpdateService implements UpdateMemberInfoUseCase {
     @Override
     public String update(String memberId, MemberUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
-        Member member = loadMemberPort.findByIdOrThrow(memberId);
+        Member member = retrieveMemberPort.findByIdOrThrow(memberId);
         member.validateAccessPermission(currentMember);
         updateMember(requestDto, member);
         validationService.checkValid(member);

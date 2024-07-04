@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.product.application.port.in.RetrieveDeletedProductsUseCase;
-import page.clab.api.domain.product.application.port.out.RetrieveDeletedProductsPort;
+import page.clab.api.domain.product.application.port.out.RetrieveProductPort;
 import page.clab.api.domain.product.domain.Product;
 import page.clab.api.domain.product.dto.response.ProductResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -15,12 +15,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RequiredArgsConstructor
 public class DeletedProductsRetrievalService implements RetrieveDeletedProductsUseCase {
 
-    private final RetrieveDeletedProductsPort retrieveDeletedProductsPort;
+    private final RetrieveProductPort retrieveProductPort;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<ProductResponseDto> retrieve(Pageable pageable) {
-        Page<Product> products = retrieveDeletedProductsPort.findAllByIsDeletedTrue(pageable);
+        Page<Product> products = retrieveProductPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(products.map(ProductResponseDto::toDto));
     }
 }

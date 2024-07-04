@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.recruitment.application.port.in.RetrieveDeletedRecruitmentsUseCase;
-import page.clab.api.domain.recruitment.application.port.out.RetrieveDeletedRecruitmentsPort;
+import page.clab.api.domain.recruitment.application.port.out.RetrieveRecruitmentPort;
 import page.clab.api.domain.recruitment.domain.Recruitment;
 import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -15,12 +15,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RequiredArgsConstructor
 public class DeletedRecruitmentsRetrievalService implements RetrieveDeletedRecruitmentsUseCase {
 
-    private final RetrieveDeletedRecruitmentsPort retrieveDeletedRecruitmentsPort;
+    private final RetrieveRecruitmentPort retrieveRecruitmentPort;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<RecruitmentResponseDto> retrieve(Pageable pageable) {
-        Page<Recruitment> recruitments = retrieveDeletedRecruitmentsPort.findAllByIsDeletedTrue(pageable);
+        Page<Recruitment> recruitments = retrieveRecruitmentPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(recruitments.map(RecruitmentResponseDto::toDto));
     }
 }

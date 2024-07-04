@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.membershipFee.application.port.in.RetrieveDeletedMembershipFeesUseCase;
-import page.clab.api.domain.membershipFee.application.port.out.RetrieveDeletedMembershipFeesPort;
+import page.clab.api.domain.membershipFee.application.port.out.RetrieveMembershipFeePort;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.dto.response.MembershipFeeResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -18,13 +18,13 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class DeletedMembershipFeesRetrievalService implements RetrieveDeletedMembershipFeesUseCase {
 
     private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
-    private final RetrieveDeletedMembershipFeesPort retrieveDeletedMembershipFeesPort;
+    private final RetrieveMembershipFeePort retrieveMembershipFeePort;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<MembershipFeeResponseDto> retrieve(Pageable pageable) {
         MemberDetailedInfoDto memberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
-        Page<MembershipFee> membershipFees = retrieveDeletedMembershipFeesPort.findAllByIsDeletedTrue(pageable);
+        Page<MembershipFee> membershipFees = retrieveMembershipFeePort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(membershipFees.map(membershipFee ->
                 MembershipFeeResponseDto.toDto(membershipFee, memberInfo.getMemberName(), memberInfo.isAdminRole())));
     }

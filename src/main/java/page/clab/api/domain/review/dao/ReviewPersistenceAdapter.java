@@ -6,14 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.review.application.port.out.CheckReviewExistencePort;
-import page.clab.api.domain.review.application.port.out.LoadReviewPort;
 import page.clab.api.domain.review.application.port.out.RegisterReviewPort;
 import page.clab.api.domain.review.application.port.out.RemoveReviewPort;
-import page.clab.api.domain.review.application.port.out.RetrieveDeletedReviewsPort;
-import page.clab.api.domain.review.application.port.out.RetrieveMyReviewsPort;
-import page.clab.api.domain.review.application.port.out.RetrieveReviewByIdPort;
-import page.clab.api.domain.review.application.port.out.RetrieveReviewsByConditionsPort;
+import page.clab.api.domain.review.application.port.out.RetrieveReviewPort;
 import page.clab.api.domain.review.application.port.out.UpdateReviewPort;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.global.exception.NotFoundException;
@@ -24,14 +19,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ReviewPersistenceAdapter implements
         RegisterReviewPort,
-        CheckReviewExistencePort,
-        RemoveReviewPort,
-        LoadReviewPort,
-        RetrieveDeletedReviewsPort,
-        RetrieveMyReviewsPort,
-        RetrieveReviewByIdPort,
-        RetrieveReviewsByConditionsPort,
-        UpdateReviewPort {
+        UpdateReviewPort,
+        RetrieveReviewPort,
+        RemoveReviewPort{
 
     private final ReviewRepository repository;
 

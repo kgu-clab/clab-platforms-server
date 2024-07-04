@@ -9,8 +9,8 @@ import page.clab.api.domain.application.dao.ApplicationRepository;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.exception.NotApprovedApplicationException;
 import page.clab.api.domain.member.application.port.in.RegisterMembersByRecruitmentUseCase;
-import page.clab.api.domain.member.application.port.out.LoadMemberPort;
 import page.clab.api.domain.member.application.port.out.RegisterMemberPort;
+import page.clab.api.domain.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.position.dao.PositionRepository;
 import page.clab.api.domain.position.domain.Position;
@@ -33,7 +33,7 @@ public class MembersByRecruitmentRegisterService implements RegisterMembersByRec
     private final EmailService emailService;
     private final ApplicationRepository applicationRepository;
     private final ValidationService validationService;
-    private final LoadMemberPort loadMemberPort;
+    private final RetrieveMemberPort retrieveMemberPort;
     private final RegisterMemberPort registerMemberPort;
     private final PositionRepository positionRepository;
     private final PasswordEncoder passwordEncoder;
@@ -71,7 +71,7 @@ public class MembersByRecruitmentRegisterService implements RegisterMembersByRec
     private Member createMemberByApplication(Application application) {
         Member member = Application.toMember(application);
         validationService.checkValid(member);
-        Member existingMember = loadMemberPort.findById(member.getId())
+        Member existingMember = retrieveMemberPort.findById(member.getId())
                 .orElse(null);
         if (existingMember != null) {
             return existingMember;

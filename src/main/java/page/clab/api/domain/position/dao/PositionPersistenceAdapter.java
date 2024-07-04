@@ -4,12 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.position.application.port.out.LoadPositionPort;
 import page.clab.api.domain.position.application.port.out.RegisterPositionPort;
-import page.clab.api.domain.position.application.port.out.RetrieveAllPositionsByMemberIdAndYearPort;
-import page.clab.api.domain.position.application.port.out.RetrieveDeletedPositionsPort;
-import page.clab.api.domain.position.application.port.out.RetrievePositionByMemberIdAndYearAndPositionTypePort;
-import page.clab.api.domain.position.application.port.out.RetrievePositionsByConditionsPort;
+import page.clab.api.domain.position.application.port.out.RetrievePositionPort;
 import page.clab.api.domain.position.application.port.out.UpdatePositionPort;
 import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
@@ -22,12 +18,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PositionPersistenceAdapter implements
         RegisterPositionPort,
-        RetrievePositionByMemberIdAndYearAndPositionTypePort,
-        RetrieveAllPositionsByMemberIdAndYearPort,
-        UpdatePositionPort,
-        LoadPositionPort,
-        RetrieveDeletedPositionsPort,
-        RetrievePositionsByConditionsPort {
+        RetrievePositionPort,
+        UpdatePositionPort {
 
     private final PositionRepository repository;
 

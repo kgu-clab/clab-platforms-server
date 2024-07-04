@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.RetrieveAllCloudUsageUseCase;
-import page.clab.api.domain.member.application.port.out.LoadMemberPort;
+import page.clab.api.domain.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.response.CloudUsageInfo;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -19,7 +19,7 @@ import java.io.File;
 @RequiredArgsConstructor
 public class CloudUsageRetrievalAllService implements RetrieveAllCloudUsageUseCase {
 
-    private final LoadMemberPort loadMemberPort;
+    private final RetrieveMemberPort retrieveMemberPort;
 
     @Value("${resource.file.path}")
     private String filePath;
@@ -27,7 +27,7 @@ public class CloudUsageRetrievalAllService implements RetrieveAllCloudUsageUseCa
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<CloudUsageInfo> retrieve(Pageable pageable) {
-        Page<Member> members = loadMemberPort.findAllByOrderByCreatedAtDesc(pageable);
+        Page<Member> members = retrieveMemberPort.findAllByOrderByCreatedAtDesc(pageable);
         return new PagedResponseDto<>(members.map(this::getCloudUsageForMember));
     }
 

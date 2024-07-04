@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.review.application.port.in.RetrieveMyReviewsUseCase;
-import page.clab.api.domain.review.application.port.out.RetrieveMyReviewsPort;
+import page.clab.api.domain.review.application.port.out.RetrieveReviewPort;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.domain.review.dto.response.ReviewResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -18,13 +18,13 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class MyReviewsRetrievalService implements RetrieveMyReviewsUseCase {
 
     private final RetrieveMemberUseCase retrieveMemberUseCase;
-    private final RetrieveMyReviewsPort retrieveMyReviewsPort;
+    private final RetrieveReviewPort retrieveReviewPort;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<ReviewResponseDto> retrieve(Pageable pageable) {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
-        Page<Review> reviews = retrieveMyReviewsPort.findAllByMember(currentMember, pageable);
+        Page<Review> reviews = retrieveReviewPort.findAllByMember(currentMember, pageable);
         return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));
     }
 }

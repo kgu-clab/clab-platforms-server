@@ -5,12 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.member.application.port.out.CheckMemberExistencePort;
-import page.clab.api.domain.member.application.port.out.LoadMemberByEmailPort;
-import page.clab.api.domain.member.application.port.out.LoadMemberPort;
 import page.clab.api.domain.member.application.port.out.RegisterMemberPort;
 import page.clab.api.domain.member.application.port.out.RemoveMemberPort;
-import page.clab.api.domain.member.application.port.out.RetrieveMembersByBirthdayPort;
-import page.clab.api.domain.member.application.port.out.RetrieveMembersByConditionsPort;
+import page.clab.api.domain.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.member.application.port.out.UpdateMemberPort;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.exception.NotFoundException;
@@ -25,10 +22,7 @@ public class MemberPersistenceAdapter implements
         RegisterMemberPort,
         UpdateMemberPort,
         RemoveMemberPort,
-        RetrieveMembersByConditionsPort,
-        LoadMemberPort,
-        LoadMemberByEmailPort,
-        RetrieveMembersByBirthdayPort {
+        RetrieveMemberPort {
 
     private final MemberRepository memberRepository;
 
@@ -86,11 +80,6 @@ public class MemberPersistenceAdapter implements
     @Override
     public Page<Member> findAllByOrderByCreatedAtDesc(Pageable pageable) {
         return memberRepository.findAllByOrderByCreatedAtDesc(pageable);
-    }
-
-    @Override
-    public Optional<Member> findByEmail(String email) {
-        return memberRepository.findByEmail(email);
     }
 
     @Override

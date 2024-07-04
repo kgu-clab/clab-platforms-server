@@ -3,7 +3,7 @@ package page.clab.api.domain.member.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.member.application.port.out.LoadMemberPort;
+import page.clab.api.domain.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MemberInfoRetrievalService implements RetrieveMemberInfoUseCase {
 
-    private final LoadMemberPort loadMemberPort;
+    private final RetrieveMemberPort retrieveMemberPort;
 
     @Override
     public List<MemberEmailInfoDto> getMembers() {
-        List<Member> members = loadMemberPort.findAll();
+        List<Member> members = retrieveMemberPort.findAll();
         return members.stream()
                 .map(MemberEmailInfoDto::create)
                 .collect(Collectors.toList());
@@ -32,7 +32,7 @@ public class MemberInfoRetrievalService implements RetrieveMemberInfoUseCase {
 
     @Override
     public List<String> getMemberIds() {
-        return loadMemberPort.findAll()
+        return retrieveMemberPort.findAll()
                 .stream()
                 .map(Member::getId)
                 .collect(Collectors.toList());
@@ -40,7 +40,7 @@ public class MemberInfoRetrievalService implements RetrieveMemberInfoUseCase {
 
     @Override
     public List<String> getAdminIds() {
-        return loadMemberPort.findAll()
+        return retrieveMemberPort.findAll()
                 .stream()
                 .filter(Member::isAdminRole)
                 .map(Member::getId)
@@ -49,7 +49,7 @@ public class MemberInfoRetrievalService implements RetrieveMemberInfoUseCase {
 
     @Override
     public List<String> getSuperAdminIds() {
-        return loadMemberPort.findAll()
+        return retrieveMemberPort.findAll()
                 .stream()
                 .filter(Member::isSuperAdminRole)
                 .map(Member::getId)
@@ -58,47 +58,47 @@ public class MemberInfoRetrievalService implements RetrieveMemberInfoUseCase {
 
     @Override
     public MemberBasicInfoDto getMemberBasicInfoById(String memberId) {
-        Member member = loadMemberPort.findByIdOrThrow(memberId);
+        Member member = retrieveMemberPort.findByIdOrThrow(memberId);
         return MemberBasicInfoDto.create(member);
     }
 
     @Override
     public MemberBasicInfoDto getCurrentMemberBasicInfo() {
         String currentMemberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = loadMemberPort.findByIdOrThrow(currentMemberId);
+        Member member = retrieveMemberPort.findByIdOrThrow(currentMemberId);
         return MemberBasicInfoDto.create(member);
     }
 
     @Override
     public MemberDetailedInfoDto getMemberDetailedInfoById(String memberId) {
-        Member member = loadMemberPort.findByIdOrThrow(memberId);
+        Member member = retrieveMemberPort.findByIdOrThrow(memberId);
         return MemberDetailedInfoDto.create(member);
     }
 
     @Override
     public MemberDetailedInfoDto getCurrentMemberDetailedInfo() {
         String currentMemberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = loadMemberPort.findByIdOrThrow(currentMemberId);
+        Member member = retrieveMemberPort.findByIdOrThrow(currentMemberId);
         return MemberDetailedInfoDto.create(member);
     }
 
     @Override
     public MemberBorrowerInfoDto getCurrentMemberBorrowerInfo() {
         String currentMemberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = loadMemberPort.findByIdOrThrow(currentMemberId);
+        Member member = retrieveMemberPort.findByIdOrThrow(currentMemberId);
         return MemberBorrowerInfoDto.create(member);
     }
 
     @Override
     public MemberLoginInfoDto getMemberLoginInfoById(String memberId) {
-        Member member = loadMemberPort.findByIdOrThrow(memberId);
+        Member member = retrieveMemberPort.findByIdOrThrow(memberId);
         return MemberLoginInfoDto.create(member);
     }
 
     @Override
     public MemberPositionInfoDto getCurrentMemberPositionInfo() {
         String currentMemberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = loadMemberPort.findByIdOrThrow(currentMemberId);
+        Member member = retrieveMemberPort.findByIdOrThrow(currentMemberId);
         return MemberPositionInfoDto.create(member);
     }
 }

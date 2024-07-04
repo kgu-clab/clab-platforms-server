@@ -4,12 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.workExperience.application.port.out.LoadWorkExperiencePort;
 import page.clab.api.domain.workExperience.application.port.out.RegisterWorkExperiencePort;
 import page.clab.api.domain.workExperience.application.port.out.RemoveWorkExperiencePort;
-import page.clab.api.domain.workExperience.application.port.out.RetrieveDeletedWorkExperiencePort;
-import page.clab.api.domain.workExperience.application.port.out.RetrieveMyWorkExperiencePort;
-import page.clab.api.domain.workExperience.application.port.out.RetrieveWorkExperienceByConditionsPort;
+import page.clab.api.domain.workExperience.application.port.out.RetrieveWorkExperiencePort;
 import page.clab.api.domain.workExperience.application.port.out.UpdateWorkExperiencePort;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
 import page.clab.api.global.exception.NotFoundException;
@@ -20,12 +17,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class WorkExperiencePersistenceAdapter implements
         RegisterWorkExperiencePort,
-        RemoveWorkExperiencePort,
-        RetrieveDeletedWorkExperiencePort,
-        RetrieveMyWorkExperiencePort,
-        RetrieveWorkExperienceByConditionsPort,
         UpdateWorkExperiencePort,
-        LoadWorkExperiencePort {
+        RetrieveWorkExperiencePort,
+        RemoveWorkExperiencePort {
 
     private final WorkExperienceRepository repository;
 

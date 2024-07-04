@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.workExperience.application.port.in.RetrieveDeletedWorkExperiencesUseCase;
-import page.clab.api.domain.workExperience.application.port.out.RetrieveDeletedWorkExperiencePort;
+import page.clab.api.domain.workExperience.application.port.out.RetrieveWorkExperiencePort;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
 import page.clab.api.domain.workExperience.dto.response.WorkExperienceResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -15,12 +15,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RequiredArgsConstructor
 public class DeletedWorkExperiencesRetrievalService implements RetrieveDeletedWorkExperiencesUseCase {
 
-    private final RetrieveDeletedWorkExperiencePort retrieveDeletedWorkExperiencePort;
+    private final RetrieveWorkExperiencePort retrieveWorkExperiencePort;
 
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<WorkExperienceResponseDto> retrieve(Pageable pageable) {
-        Page<WorkExperience> workExperiences = retrieveDeletedWorkExperiencePort.findAllByIsDeletedTrue(pageable);
+        Page<WorkExperience> workExperiences = retrieveWorkExperiencePort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
     }
 }

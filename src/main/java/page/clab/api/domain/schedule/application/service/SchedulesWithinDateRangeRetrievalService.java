@@ -11,7 +11,7 @@ import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.application.port.in.RetrieveSchedulesWithinDateRangeUseCase;
-import page.clab.api.domain.schedule.application.port.out.RetrieveSchedulesWithinDateRangePort;
+import page.clab.api.domain.schedule.application.port.out.RetrieveSchedulePort;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -26,7 +26,7 @@ public class SchedulesWithinDateRangeRetrievalService implements RetrieveSchedul
 
     private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
-    private final RetrieveSchedulesWithinDateRangePort retrieveSchedulesWithinDateRangePort;
+    private final RetrieveSchedulePort retrieveSchedulePort;
 
     @Override
     @Transactional(readOnly = true)
@@ -34,7 +34,7 @@ public class SchedulesWithinDateRangeRetrievalService implements RetrieveSchedul
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByMember(currentMember);
         List<ActivityGroup> myGroups = getMyActivityGroups(groupMembers);
-        Page<Schedule> schedules = retrieveSchedulesWithinDateRangePort.findByDateRangeAndMember(startDate, endDate, myGroups, pageable);
+        Page<Schedule> schedules = retrieveSchedulePort.findByDateRangeAndMember(startDate, endDate, myGroups, pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
 

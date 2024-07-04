@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.application.port.in.RetrieveActivitySchedulesUseCase;
-import page.clab.api.domain.schedule.application.port.out.RetrieveActivitySchedulesPort;
+import page.clab.api.domain.schedule.application.port.out.RetrieveSchedulePort;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -20,13 +20,13 @@ import java.time.LocalDate;
 public class ActivitySchedulesRetrievalService implements RetrieveActivitySchedulesUseCase {
 
     private final RetrieveMemberUseCase retrieveMemberUseCase;
-    private final RetrieveActivitySchedulesPort retrieveActivitySchedulesPort;
+    private final RetrieveSchedulePort retrieveSchedulePort;
 
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> retrieve(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
-        Page<Schedule> schedules = retrieveActivitySchedulesPort.findActivitySchedulesByDateRangeAndMember(startDate, endDate, currentMember, pageable);
+        Page<Schedule> schedules = retrieveSchedulePort.findActivitySchedulesByDateRangeAndMember(startDate, endDate, currentMember, pageable);
         return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
 }

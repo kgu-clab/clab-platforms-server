@@ -12,8 +12,8 @@ import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
 import page.clab.api.domain.review.application.port.in.RegisterReviewUseCase;
-import page.clab.api.domain.review.application.port.out.CheckReviewExistencePort;
 import page.clab.api.domain.review.application.port.out.RegisterReviewPort;
+import page.clab.api.domain.review.application.port.out.RetrieveReviewPort;
 import page.clab.api.domain.review.domain.Review;
 import page.clab.api.domain.review.dto.request.ReviewRequestDto;
 import page.clab.api.domain.review.exception.AlreadyReviewedException;
@@ -28,7 +28,7 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
     private final SendNotificationUseCase notificationService;
     private final ValidationService validationService;
     private final RegisterReviewPort registerReviewPort;
-    private final CheckReviewExistencePort checkReviewExistencePort;
+    private final RetrieveReviewPort retrieveReviewPort;
 
     @Transactional
     @Override
@@ -59,6 +59,6 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
     }
 
     private boolean isExistsByMemberAndActivityGroup(Member member, ActivityGroup activityGroup) {
-        return checkReviewExistencePort.existsByMemberAndActivityGroup(member, activityGroup);
+        return retrieveReviewPort.existsByMemberAndActivityGroup(member, activityGroup);
     }
 }

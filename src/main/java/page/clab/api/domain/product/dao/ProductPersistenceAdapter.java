@@ -4,10 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.product.application.port.out.LoadProductPort;
 import page.clab.api.domain.product.application.port.out.RegisterProductPort;
-import page.clab.api.domain.product.application.port.out.RetrieveDeletedProductsPort;
-import page.clab.api.domain.product.application.port.out.RetrieveProductsByConditionsPort;
+import page.clab.api.domain.product.application.port.out.RetrieveProductPort;
 import page.clab.api.domain.product.application.port.out.UpdateProductPort;
 import page.clab.api.domain.product.domain.Product;
 import page.clab.api.global.exception.NotFoundException;
@@ -19,9 +17,7 @@ import java.util.Optional;
 public class ProductPersistenceAdapter implements
         RegisterProductPort,
         UpdateProductPort,
-        LoadProductPort,
-        RetrieveDeletedProductsPort,
-        RetrieveProductsByConditionsPort {
+        RetrieveProductPort {
 
     private final ProductRepository repository;
 

@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.membershipFee.application.port.in.UpdateMembershipFeeUseCase;
-import page.clab.api.domain.membershipFee.application.port.out.LoadMembershipFeePort;
+import page.clab.api.domain.membershipFee.application.port.out.RetrieveMembershipFeePort;
 import page.clab.api.domain.membershipFee.application.port.out.UpdateMembershipFeePort;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.dto.request.MembershipFeeUpdateRequestDto;
@@ -19,14 +19,14 @@ public class MembershipFeeUpdateService implements UpdateMembershipFeeUseCase {
 
     private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final ValidationService validationService;
-    private final LoadMembershipFeePort loadMembershipFeePort;
+    private final RetrieveMembershipFeePort retrieveMembershipFeePort;
     private final UpdateMembershipFeePort updateMembershipFeePort;
 
     @Transactional
     @Override
     public Long update(Long membershipFeeId, MembershipFeeUpdateRequestDto requestDto) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
-        MembershipFee membershipFee = loadMembershipFeePort.findByIdOrThrow(membershipFeeId);
+        MembershipFee membershipFee = retrieveMembershipFeePort.findByIdOrThrow(membershipFeeId);
         membershipFee.validateAccessPermission(currentMemberInfo);
         membershipFee.update(requestDto);
         validationService.checkValid(membershipFee);

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
-import page.clab.api.domain.recruitment.application.port.out.LoadRecruitmentPort;
+import page.clab.api.domain.recruitment.application.port.out.RetrieveRecruitmentPort;
 import page.clab.api.domain.recruitment.domain.Recruitment;
 import page.clab.api.domain.recruitment.domain.RecruitmentStatus;
 
@@ -18,14 +18,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RecruitmentStatusUpdater {
 
-    private final LoadRecruitmentPort loadRecruitmentPort;
+    private final RetrieveRecruitmentPort retrieveRecruitmentPort;
     private final PlatformTransactionManager transactionManager;
     private final EntityManager entityManager;
     private final TransactionDefinition transactionDefinition;
 
     @Scheduled(cron = "0 * * * * *")
     public void updateRecruitmentStatus() {
-        List<Recruitment> recruitments = loadRecruitmentPort.findAll();
+        List<Recruitment> recruitments = retrieveRecruitmentPort.findAll();
         recruitments.forEach(this::updateRecruitmentStatusByRecruitment);
     }
 

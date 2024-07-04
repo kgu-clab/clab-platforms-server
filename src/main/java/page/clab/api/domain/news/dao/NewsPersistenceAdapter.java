@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.news.application.port.out.LoadNewsPort;
 import page.clab.api.domain.news.application.port.out.RegisterNewsPort;
 import page.clab.api.domain.news.application.port.out.RemoveNewsPort;
-import page.clab.api.domain.news.application.port.out.RetrieveDeletedNewsPort;
-import page.clab.api.domain.news.application.port.out.RetrieveNewsByConditionsPort;
+import page.clab.api.domain.news.application.port.out.RetrieveNewsPort;
 import page.clab.api.domain.news.application.port.out.UpdateNewsPort;
 import page.clab.api.domain.news.domain.News;
 import page.clab.api.global.exception.NotFoundException;
@@ -19,11 +17,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class NewsPersistenceAdapter implements
         RegisterNewsPort,
-        LoadNewsPort,
         RemoveNewsPort,
-        RetrieveDeletedNewsPort,
-        RetrieveNewsByConditionsPort,
-        UpdateNewsPort {
+        UpdateNewsPort,
+        RetrieveNewsPort {
 
     private final NewsRepository repository;
 

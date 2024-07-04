@@ -6,14 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.schedule.application.port.out.LoadSchedulePort;
 import page.clab.api.domain.schedule.application.port.out.RegisterSchedulePort;
 import page.clab.api.domain.schedule.application.port.out.RemoveSchedulePort;
-import page.clab.api.domain.schedule.application.port.out.RetrieveActivitySchedulesPort;
-import page.clab.api.domain.schedule.application.port.out.RetrieveCollectSchedulesPort;
-import page.clab.api.domain.schedule.application.port.out.RetrieveDeletedSchedulesPort;
-import page.clab.api.domain.schedule.application.port.out.RetrieveSchedulesByConditionsPort;
-import page.clab.api.domain.schedule.application.port.out.RetrieveSchedulesWithinDateRangePort;
+import page.clab.api.domain.schedule.application.port.out.RetrieveSchedulePort;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.dto.response.ScheduleCollectResponseDto;
@@ -27,13 +22,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SchedulePersistenceAdapter implements
         RegisterSchedulePort,
-        RemoveSchedulePort,
-        LoadSchedulePort,
-        RetrieveActivitySchedulesPort,
-        RetrieveCollectSchedulesPort,
-        RetrieveDeletedSchedulesPort,
-        RetrieveSchedulesByConditionsPort,
-        RetrieveSchedulesWithinDateRangePort {
+        RetrieveSchedulePort,
+        RemoveSchedulePort {
 
     private final ScheduleRepository repository;
 
@@ -53,7 +43,7 @@ public class SchedulePersistenceAdapter implements
     }
 
     @Override
-    public Schedule findScheduleByIdOrThrow(Long id) {
+    public Schedule findByIdOrThrow(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException("[Schedule] id: " + id + "에 해당하는 스케줄이 존재하지 않습니다."));
     }
