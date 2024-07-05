@@ -124,8 +124,6 @@ public class SlackServiceHelper {
                         return createErrorBlocks(request, (Exception) additionalData);
                     }
                     break;
-                case SWAGGER_ACCESS:
-                    return createSwaggerAccessBlocks(request, (GeneralAlertType) alertType, additionalData.toString());
                 default:
                     log.error("Unknown alert type: {}", alertType);
                     return List.of();
@@ -182,21 +180,6 @@ public class SlackServiceHelper {
                         markdownText("*IP Address:*\n" + clientIpAddress),
                         markdownText("*Location:*\n" + location)
                 )))
-        );
-    }
-
-    private List<LayoutBlock> createSwaggerAccessBlocks(HttpServletRequest request, GeneralAlertType alertType, String additionalMessage) {
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        String location = getLocation(request);
-
-        return Arrays.asList(
-                section(section -> section.text(markdownText(String.format(":page_with_curl: *%s*", alertType.getTitle())))),
-                section(section -> section.fields(Arrays.asList(
-                        markdownText("*IP Address:*\n" + clientIpAddress),
-                        markdownText("*Location:*\n" + location)
-                ))),
-                section(section -> section.text(markdownText("*Details:*\n" + alertType.getDefaultMessage()))),
-                section(section -> section.text(markdownText("*접근 성공 여부:*\n" + additionalMessage)))
         );
     }
 
