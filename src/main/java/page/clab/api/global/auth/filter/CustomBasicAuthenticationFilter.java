@@ -6,15 +6,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.stereotype.Component;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.common.slack.application.SlackService;
+import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
 import page.clab.api.global.util.SwaggerUtil;
@@ -23,6 +27,7 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 
+@Component
 @Slf4j
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
@@ -33,6 +38,9 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
     private final WhitelistService whitelistService;
 
     private final SlackService slackService;
+
+    @Value("${swagger.endpoint}")
+    private String swaggerEndpoint;
 
     public CustomBasicAuthenticationFilter(
             AuthenticationManager authenticationManager,
@@ -80,14 +88,19 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
         String username = credentials[0];
         String password = credentials[1];
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
-        Authentication authentication = getAuthenticationManager().authenticate(authRequest);
+        Authentication authentication = null;
+        try {
+            authentication = getAuthenticationManager().authenticate(authRequest);
+        } catch (BadCredentialsException e) {
+            sendApiDocsFailureAlertSlackMessage(request);
+        }
         if (authentication == null) {
             ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String path = request.getRequestURI();
-        if (path.equals("/core/back/swagger-ui/index.html")) {
+        if (path.equals(swaggerEndpoint)) {
             sendApiDocsSuccessAlertSlackMessage(request);
         }
         return true;
@@ -115,7 +128,11 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
     }
 
     private void sendApiDocsSuccessAlertSlackMessage(HttpServletRequest request) {
-        slackService.sendSwaggerAccessNotification(request, "성공");
+        slackService.sendSecurityAlertNotification(request, SecurityAlertType.SWAGGER_ACCESS, "성공");
+    }
+
+    private void sendApiDocsFailureAlertSlackMessage(HttpServletRequest request) {
+        slackService.sendSecurityAlertNotification(request, SecurityAlertType.SWAGGER_ACCESS,"실패");
     }
 
 }

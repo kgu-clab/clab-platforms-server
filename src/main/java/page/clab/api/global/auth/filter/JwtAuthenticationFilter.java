@@ -86,10 +86,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return true;
         } else {
-            String path = request.getRequestURI();
-            if (path.equals("/error") && response.getStatus() == 500) {
-                sendApiDocsFailureAlertSlackMessage(request);
-            }
             return true;
         }
     }
@@ -99,10 +95,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             request.setAttribute("member", redisToken.getId());
             slackService.sendSecurityAlertNotification(request, SecurityAlertType.DUPLICATE_LOGIN, "토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
         }
-    }
-
-    private void sendApiDocsFailureAlertSlackMessage(HttpServletRequest request) {
-        slackService.sendSwaggerAccessNotification(request, "실패");
     }
 
 }
