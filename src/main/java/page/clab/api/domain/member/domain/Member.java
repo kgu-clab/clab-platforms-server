@@ -16,12 +16,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.member.dto.request.MemberUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -38,6 +39,8 @@ import java.util.Optional;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@SQLDelete(sql = "UPDATE member SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 public class Member extends BaseEntity implements UserDetails {
 
     @Id
@@ -162,6 +165,10 @@ public class Member extends BaseEntity implements UserDetails {
         }
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     public boolean isAdminRole() {
         return role.equals(Role.ADMIN) || role.equals(Role.SUPER);
     }
@@ -214,25 +221,12 @@ public class Member extends BaseEntity implements UserDetails {
         lastLoginTime = LocalDateTime.now();
     }
 
+    public void updateLoanSuspensionDate(LocalDateTime loanSuspensionDate) {
+        this.loanSuspensionDate = loanSuspensionDate;
+    }
+
     public void clearImageUrl() {
         this.imageUrl = null;
-    }
-
-    public void checkLoanSuspension() {
-        if (loanSuspensionDate != null && LocalDateTime.now().isBefore(loanSuspensionDate)) {
-            throw new LoanSuspensionException("대출 정지 중입니다. 대출 정지일까지는 책을 대출할 수 없습니다.");
-        }
-    }
-
-    public void handleOverdueAndSuspension(long overdueDays) {
-        if (overdueDays > 0) {
-            LocalDateTime currentDate = LocalDateTime.now();
-            if (loanSuspensionDate == null || loanSuspensionDate.isBefore(currentDate)) {
-                loanSuspensionDate = LocalDateTime.now().plusDays(overdueDays * 7);;
-            } else {
-                loanSuspensionDate = loanSuspensionDate.plusDays(overdueDays * 7);
-            }
-        }
     }
 
 }

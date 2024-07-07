@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -43,9 +42,8 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member writer;
+    @Column(name = "member_id", nullable = false)
+    private String writerId;
 
     @Column(nullable = false)
     private String nickname;
@@ -74,25 +72,21 @@ public class Comment extends BaseEntity {
         Optional.of(commentUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     public void addChildComment(Comment child) {
         this.children.add(child);
         child.setParent(this);
     }
 
-    public String getWriterName() {
-        return this.wantAnonymous ? this.nickname : this.writer.getName();
-    }
-
-    public boolean isOwner(Member member) {
-        return this.writer.isSameMember(member);
-    }
-
     public boolean isOwner(String memberId) {
-        return this.writer.isSameMember(memberId);
+        return this.writerId.equals(memberId);
     }
 
-    public void validateAccessPermission(Member member) throws PermissionDeniedException {
-        if (!isOwner(member) && !member.isAdminRole()) {
+    public void validateAccessPermission(MemberDetailedInfoDto memberInfo) throws PermissionDeniedException {
+        if (!isOwner(memberInfo.getMemberId()) && !memberInfo.isAdminRole()) {
             throw new PermissionDeniedException("해당 댓글을 수정/삭제할 권한이 없습니다.");
         }
     }
@@ -106,9 +100,4 @@ public class Comment extends BaseEntity {
             this.likes--;
         }
     }
-
-    public void updateIsDeleted(){
-        this.isDeleted = true;
-    }
-
 }

@@ -43,5 +43,4 @@ public class JobPostingRequestDto {
                 .jobPostingUrl(requestDto.getJobPostingUrl())
                 .build();
     }
-
 }

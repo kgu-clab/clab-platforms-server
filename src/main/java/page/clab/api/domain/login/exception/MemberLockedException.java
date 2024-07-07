@@ -11,5 +11,4 @@ public class MemberLockedException extends Exception {
     public MemberLockedException(String s) {
         super(s);
     }
-
 }

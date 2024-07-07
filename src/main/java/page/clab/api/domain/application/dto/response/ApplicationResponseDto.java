@@ -64,5 +64,4 @@ public class ApplicationResponseDto {
                 .createdAt(application.getCreatedAt())
                 .build();
     }
-
 }

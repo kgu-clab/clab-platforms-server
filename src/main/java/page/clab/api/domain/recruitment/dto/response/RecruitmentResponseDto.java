@@ -32,9 +32,8 @@ public class RecruitmentResponseDto {
                 .endDate(recruitment.getEndDate())
                 .applicationType(recruitment.getApplicationType())
                 .target(recruitment.getTarget())
-                .status(recruitment.getStatus())
+                .status(recruitment.getStatus().getDescription())
                 .updatedAt(recruitment.getUpdatedAt())
                 .build();
     }
-
 }

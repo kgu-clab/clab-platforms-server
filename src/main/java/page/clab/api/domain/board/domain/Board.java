@@ -9,7 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -21,8 +20,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.board.dto.request.BoardUpdateRequestDto;
-import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.domain.Role;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -44,9 +42,8 @@ public class Board extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @Column(name = "member_id", nullable = false)
+    private String memberId;
 
     @Column(nullable = false)
     private String nickname;
@@ -69,10 +66,9 @@ public class Board extends BaseEntity {
 
     private String imageUrl;
 
+    @Getter
     @Column(nullable = false)
     private boolean wantAnonymous;
-
-    private Long likes;
 
     public void update(BoardUpdateRequestDto boardUpdateRequestDto) {
         Optional.ofNullable(boardUpdateRequestDto.getCategory()).ifPresent(this::setCategory);
@@ -80,6 +76,10 @@ public class Board extends BaseEntity {
         Optional.ofNullable(boardUpdateRequestDto.getContent()).ifPresent(this::setContent);
         Optional.ofNullable(boardUpdateRequestDto.getImageUrl()).ifPresent(this::setImageUrl);
         Optional.of(boardUpdateRequestDto.isWantAnonymous()).ifPresent(this::setWantAnonymous);
+    }
+
+    public void delete() {
+        this.isDeleted = true;
     }
 
     public boolean isNotice() {
@@ -90,37 +90,26 @@ public class Board extends BaseEntity {
         return this.category.equals(BoardCategory.GRADUATED);
     }
 
-    public boolean shouldNotifyForNewBoard() {
-        return !this.member.getRole().equals(Role.USER) && this.category.equals(BoardCategory.NOTICE);
+    public boolean shouldNotifyForNewBoard(MemberDetailedInfoDto memberInfo) {
+        return memberInfo.isAdminRole() && this.category.equals(BoardCategory.NOTICE); // Assuming 2 is Admin role level
     }
 
-    public void incrementLikes() {
-        this.likes++;
+    public boolean isOwner(String memberId) {
+        return this.memberId.equals(memberId);
     }
 
-    public void decrementLikes() {
-        if (this.likes > 0) {
-            this.likes--;
-        }
-    }
-
-    public boolean isOwner(Member member) {
-        return this.member.isSameMember(member);
-    }
-
-    public void validateAccessPermission(Member member) throws PermissionDeniedException {
-        if (!isOwner(member) && !member.isAdminRole()) {
+    public void validateAccessPermission(MemberDetailedInfoDto memberInfo) throws PermissionDeniedException {
+        if (!isOwner(memberInfo.getMemberId()) && !memberInfo.isAdminRole()) {
             throw new PermissionDeniedException("해당 게시글을 수정할 권한이 없습니다.");
         }
     }
 
-    public void validateAccessPermissionForCreation(Member currentMember) throws PermissionDeniedException {
-        if (this.isNotice() && !currentMember.isAdminRole()) {
+    public void validateAccessPermissionForCreation(MemberDetailedInfoDto currentMemberInfo) throws PermissionDeniedException {
+        if (this.isNotice() && !currentMemberInfo.isAdminRole()) {
             throw new PermissionDeniedException("공지사항은 관리자만 작성할 수 있습니다.");
         }
-        if (this.isGraduated() && !currentMember.isGraduated()) {
+        if (this.isGraduated() && !currentMemberInfo.isGraduated()) {
             throw new PermissionDeniedException("졸업생 게시판은 졸업생만 작성할 수 있습니다.");
         }
     }
-
 }

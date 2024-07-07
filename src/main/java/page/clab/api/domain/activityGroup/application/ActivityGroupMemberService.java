@@ -31,9 +31,9 @@ import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStudyRespons
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.activityGroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
-import page.clab.api.domain.member.application.MemberService;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.notification.application.NotificationService;
+import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -44,20 +44,13 @@ import java.util.List;
 @Slf4j
 public class ActivityGroupMemberService {
 
-    private final MemberService memberService;
-
-    private final NotificationService notificationService;
-
+    private final RetrieveMemberUseCase retrieveMemberUseCase;
+    private final SendNotificationUseCase notificationService;
     private final ActivityGroupRepository activityGroupRepository;
-
     private final GroupScheduleRepository groupScheduleRepository;
-
     private final GroupMemberRepository groupMemberRepository;
-
     private final ActivityGroupBoardRepository activityGroupBoardRepository;
-
     private final ApplyFormRepository applyFormRepository;
-
     private final ActivityGroupDetailsRepository activityGroupDetailsRepository;
 
     @Transactional(readOnly = true)
@@ -69,7 +62,7 @@ public class ActivityGroupMemberService {
     @Transactional(readOnly = true)
     public Object getActivityGroup(Long activityGroupId) {
         ActivityGroupDetails details = activityGroupDetailsRepository.fetchActivityGroupDetails(activityGroupId);
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = retrieveMemberUseCase.getCurrentMember();
 
         boolean isOwner = details.getGroupMembers().stream()
                 .anyMatch(groupMember -> groupMember.isOwnerAndLeader(currentMember));
@@ -85,7 +78,7 @@ public class ActivityGroupMemberService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupResponseDto> getMyActivityGroups(Pageable pageable) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = retrieveMemberUseCase.getCurrentMember();
         List<GroupMember> groupMembers = getGroupMemberByMember(currentMember);
 
         List<ActivityGroupResponseDto> activityGroups = groupMembers.stream()
@@ -134,7 +127,7 @@ public class ActivityGroupMemberService {
 
     @Transactional
     public Long applyActivityGroup(Long activityGroupId, ApplyFormRequestDto formRequestDto) {
-        Member currentMember = memberService.getCurrentMember();
+        Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroup.validateForApplication();
         if (isGroupMember(activityGroup, currentMember)) {
@@ -149,7 +142,7 @@ public class ActivityGroupMemberService {
 
         GroupMember groupLeader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         if (groupLeader != null) {
-            notificationService.sendNotificationToMember(groupLeader.getMember(), "[" + activityGroup.getName() + "] " + currentMember.getName() + "님이 활동 참가 신청을 하였습니다.");
+            notificationService.sendNotificationToMember(groupLeader.getMember().getId(), "[" + activityGroup.getName() + "] " + currentMember.getName() + "님이 활동 참가 신청을 하였습니다.");
         }
         return activityGroup.getId();
     }

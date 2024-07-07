@@ -27,5 +27,4 @@ public class BookUpdateRequestDto {
 
     @Schema(description = "리뷰 링크", example = "[\"https://www.yes24.com/Product/Goods/7516911\",\"https://www.aladin.co.kr/shop/wproduct.aspx?ISBN=8960773433&start=pnaver_02\"]")
     private List<String> reviewLinks;
-
 }

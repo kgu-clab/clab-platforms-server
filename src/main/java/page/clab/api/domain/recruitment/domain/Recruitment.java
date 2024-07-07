@@ -52,15 +52,21 @@ public class Recruitment extends BaseEntity {
     private String target;
 
     @Column(nullable = false)
-    @Size(min = 1, message = "{size.recruitment.status}")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private RecruitmentStatus status;
 
     public void update(RecruitmentUpdateRequestDto recruitmentUpdateRequestDto) {
         Optional.ofNullable(recruitmentUpdateRequestDto.getStartDate()).ifPresent(this::setStartDate);
         Optional.ofNullable(recruitmentUpdateRequestDto.getEndDate()).ifPresent(this::setEndDate);
         Optional.ofNullable(recruitmentUpdateRequestDto.getApplicationType()).ifPresent(this::setApplicationType);
         Optional.ofNullable(recruitmentUpdateRequestDto.getTarget()).ifPresent(this::setTarget);
-        Optional.ofNullable(recruitmentUpdateRequestDto.getStatus()).ifPresent(this::setStatus);
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
+    public void updateStatus(RecruitmentStatus status) {
+        this.status = status;
+    }
 }

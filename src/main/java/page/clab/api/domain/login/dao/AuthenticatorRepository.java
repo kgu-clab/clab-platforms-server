@@ -6,5 +6,4 @@ import page.clab.api.domain.login.domain.Authenticator;
 
 @Repository
 public interface AuthenticatorRepository extends JpaRepository<Authenticator, String> {
-
 }

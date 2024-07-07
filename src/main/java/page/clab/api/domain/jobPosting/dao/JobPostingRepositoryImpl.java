@@ -11,9 +11,9 @@ import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
 import page.clab.api.domain.jobPosting.domain.QJobPosting;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -23,26 +23,26 @@ public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
 
     @Override
     public Page<JobPosting> findByConditions(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable) {
-        QJobPosting qJobPosting = QJobPosting.jobPosting;
+        QJobPosting jobPosting = QJobPosting.jobPosting;
         BooleanBuilder builder = new BooleanBuilder();
 
-        if (title != null && !title.isEmpty()) builder.and(qJobPosting.title.containsIgnoreCase(title));
-        if (companyName != null && !companyName.isEmpty()) builder.and(qJobPosting.companyName.containsIgnoreCase(companyName));
-        if (careerLevel != null) builder.and(qJobPosting.careerLevel.eq(careerLevel));
-        if (employmentType != null) builder.and(qJobPosting.employmentType.eq(employmentType));
+        if (title != null && !title.isEmpty()) builder.and(jobPosting.title.containsIgnoreCase(title));
+        if (companyName != null && !companyName.isEmpty())
+            builder.and(jobPosting.companyName.containsIgnoreCase(companyName));
+        if (careerLevel != null) builder.and(jobPosting.careerLevel.eq(careerLevel));
+        if (employmentType != null) builder.and(jobPosting.employmentType.eq(employmentType));
 
-        List<JobPosting> jobPostings = queryFactory.selectFrom(qJobPosting)
+        List<JobPosting> jobPostings = queryFactory.selectFrom(jobPosting)
                 .where(builder)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qJobPosting))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, jobPosting))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long total = queryFactory.query().from(qJobPosting)
+        long total = queryFactory.query().from(jobPosting)
                 .where(builder)
                 .fetchCount();
 
         return new PageImpl<>(jobPostings, pageable, total);
     }
-
 }

@@ -38,5 +38,4 @@ public class ActivityPhotoRepositoryImpl implements ActivityPhotoRepositoryCusto
 
         return new PageImpl<>(photos, pageable, total);
     }
-
 }

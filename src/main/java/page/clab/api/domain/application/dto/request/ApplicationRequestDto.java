@@ -83,5 +83,4 @@ public class ApplicationRequestDto {
                 .isPass(false)
                 .build();
     }
-
 }

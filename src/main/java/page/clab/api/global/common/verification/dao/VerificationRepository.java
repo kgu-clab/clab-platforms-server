@@ -8,7 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface VerificationRepository extends CrudRepository<Verification, String> {
-    
     Optional<Verification> findByVerificationCode(String verificationCode);
-
 }

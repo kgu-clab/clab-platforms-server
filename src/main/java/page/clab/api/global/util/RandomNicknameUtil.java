@@ -6,9 +6,7 @@ import java.util.List;
 public class RandomNicknameUtil {
 
     private static final int ADJECTIVE_SIZE = 15;
-
     private static final int COLOR_SIZE = 15;
-
     private static final int NOUN_SIZE = 25;
 
     public static String makeRandomNickname() {
@@ -32,11 +30,10 @@ public class RandomNicknameUtil {
                 "어셈블리어", "SQL", "사탕", "떡볶이", "치킨"
         );
 
-        String adjective = adjectiveArray.get((int)(Math.random() * ADJECTIVE_SIZE));
-        String color = colorArray.get((int)(Math.random() * COLOR_SIZE));
-        String noun = nounArray.get((int)(Math.random() * NOUN_SIZE));
+        String adjective = adjectiveArray.get((int) (Math.random() * ADJECTIVE_SIZE));
+        String color = colorArray.get((int) (Math.random() * COLOR_SIZE));
+        String noun = nounArray.get((int) (Math.random() * NOUN_SIZE));
 
         return (adjective + color + noun);
     }
-
 }

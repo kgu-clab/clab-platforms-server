@@ -7,15 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import page.clab.api.domain.donation.domain.Donation;
-import page.clab.api.domain.member.domain.Member;
 
 public interface DonationRepository extends JpaRepository<Donation, Long>, DonationRepositoryCustom, QuerydslPredicateExecutor<Donation> {
 
-    Page<Donation> findAllByOrderByCreatedAtDesc(Pageable pageable);
-
-    Page<Donation> findByDonor(Member member, Pageable pageable);
+    Page<Donation> findByMemberId(String memberId, Pageable pageable);
 
     @Query(value = "SELECT d.* FROM donation d WHERE d.is_deleted = true", nativeQuery = true)
     Page<Donation> findAllByIsDeletedTrue(Pageable pageable);
-
 }

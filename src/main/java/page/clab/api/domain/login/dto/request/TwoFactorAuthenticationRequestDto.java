@@ -16,5 +16,4 @@ public class TwoFactorAuthenticationRequestDto {
     @NotNull(message = "{notNull.twoFactorAuthenticationRequestDto.totp}")
     @Schema(description = "TOTP", example = "123456", required = true)
     private String totp;
-
 }

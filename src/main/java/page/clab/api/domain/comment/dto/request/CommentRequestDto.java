@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.domain.Comment;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.util.RandomNicknameUtil;
 
 @Getter
@@ -21,10 +20,10 @@ public class CommentRequestDto {
     @Schema(description = "익명 사용 여부", example = "false", required = true)
     private boolean wantAnonymous;
 
-    public static Comment toEntity(CommentRequestDto requestDto, Board board, Member member, Comment parent) {
+    public static Comment toEntity(CommentRequestDto requestDto, Board board, String writerId, Comment parent) {
         return Comment.builder()
                 .board(board)
-                .writer(member)
+                .writerId(writerId)
                 .nickname(RandomNicknameUtil.makeRandomNickname())
                 .content(requestDto.getContent())
                 .parent(parent)
@@ -32,5 +31,4 @@ public class CommentRequestDto {
                 .likes(0L)
                 .build();
     }
-
 }

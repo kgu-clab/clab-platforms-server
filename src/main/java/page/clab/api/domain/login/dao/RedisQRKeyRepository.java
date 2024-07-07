@@ -6,7 +6,5 @@ import page.clab.api.domain.login.domain.RedisQRKey;
 
 @Repository
 public interface RedisQRKeyRepository extends CrudRepository<RedisQRKey, String> {
-
     boolean existsByQRCodeKey(String qrCodeData);
-
 }

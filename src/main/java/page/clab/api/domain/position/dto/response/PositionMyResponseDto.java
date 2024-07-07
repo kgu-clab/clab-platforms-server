@@ -2,7 +2,7 @@ package page.clab.api.domain.position.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.dto.shared.MemberPositionInfoDto;
 import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
 
@@ -28,21 +28,19 @@ public class PositionMyResponseDto {
 
     private Map<String, List<PositionType>> positionTypes;
 
-    public static PositionMyResponseDto toDto(List<Position> positions) {
-        Member member = positions.getFirst().getMember();
+    public static PositionMyResponseDto toDto(List<Position> positions, MemberPositionInfoDto memberInfo) {
         Map<String, List<PositionType>> positionTypesByYear = positions.stream()
                 .collect(Collectors.groupingBy(
                         Position::getYear,
                         Collectors.mapping(Position::getPositionType, Collectors.toList())
                 ));
         return PositionMyResponseDto.builder()
-                .name(member.getName())
-                .email(member.getEmail())
-                .imageUrl(member.getImageUrl())
-                .interests(member.getInterests())
-                .githubUrl(member.getGithubUrl())
+                .name(memberInfo.getMemberName())
+                .email(memberInfo.getEmail())
+                .imageUrl(memberInfo.getImageUrl())
+                .interests(memberInfo.getInterests())
+                .githubUrl(memberInfo.getGithubUrl())
                 .positionTypes(positionTypesByYear)
                 .build();
     }
-
 }

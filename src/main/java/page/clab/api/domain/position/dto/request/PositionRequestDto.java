@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
 
@@ -26,10 +25,9 @@ public class PositionRequestDto {
 
     public static Position toEntity(PositionRequestDto positionRequestDto) {
         return Position.builder()
-                .member(Member.builder().id(positionRequestDto.getMemberId()).build())
+                .memberId(positionRequestDto.getMemberId())
                 .positionType(positionRequestDto.getPositionType())
                 .year(positionRequestDto.getYear())
                 .build();
     }
-
 }

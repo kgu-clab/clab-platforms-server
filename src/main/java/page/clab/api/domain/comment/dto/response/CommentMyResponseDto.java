@@ -2,8 +2,8 @@ package page.clab.api.domain.comment.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import page.clab.api.domain.board.domain.BoardCategory;
 import page.clab.api.domain.comment.domain.Comment;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 
 import java.time.LocalDateTime;
 
@@ -29,7 +29,7 @@ public class CommentMyResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static CommentMyResponseDto toDto(Comment comment, boolean hasLikeByMe) {
+    public static CommentMyResponseDto toDto(Comment comment, MemberDetailedInfoDto memberInfo, boolean hasLikeByMe) {
         if (comment.getBoard() == null || comment.getIsDeleted()) {
             return null;
         }
@@ -37,13 +37,12 @@ public class CommentMyResponseDto {
                 .id(comment.getId())
                 .boardId(comment.getBoard().getId())
                 .boardCategory(comment.getBoard().getCategory().getKey())
-                .writer(comment.isWantAnonymous() ? comment.getNickname() : comment.getWriter().getName())
-                .writerImageUrl(comment.isWantAnonymous() ? null : comment.getWriter().getImageUrl())
+                .writer(comment.isWantAnonymous() ? comment.getNickname() : memberInfo.getMemberName())
+                .writerImageUrl(comment.isWantAnonymous() ? null : memberInfo.getImageUrl())
                 .content(comment.getContent())
                 .likes(comment.getLikes())
                 .hasLikeByMe(hasLikeByMe)
                 .createdAt(comment.getCreatedAt())
                 .build();
     }
-
 }

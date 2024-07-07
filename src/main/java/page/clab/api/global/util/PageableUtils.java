@@ -1,15 +1,15 @@
 package page.clab.api.global.util;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import page.clab.api.global.exception.InvalidColumnException;
-import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.SortingArgumentException;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Component
 public class PageableUtils {
@@ -49,5 +49,4 @@ public class PageableUtils {
     private static boolean isValidateSortDirection(String direction) {
         return "asc".equalsIgnoreCase(direction) || "desc".equalsIgnoreCase(direction);
     }
-
 }

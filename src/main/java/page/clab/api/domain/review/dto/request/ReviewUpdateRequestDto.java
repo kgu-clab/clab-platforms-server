@@ -13,5 +13,4 @@ public class ReviewUpdateRequestDto {
 
     @Schema(description = "공개 여부", example = "false")
     private Boolean isPublic;
-
 }

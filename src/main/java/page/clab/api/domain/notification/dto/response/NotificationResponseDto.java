@@ -23,5 +23,4 @@ public class NotificationResponseDto {
                 .createdAt(notification.getCreatedAt())
                 .build();
     }
-
 }

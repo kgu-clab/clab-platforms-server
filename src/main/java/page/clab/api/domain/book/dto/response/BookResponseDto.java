@@ -32,11 +32,11 @@ public class BookResponseDto {
 
     private LocalDateTime updatedAt;
 
-    public static BookResponseDto toDto(Book book, LocalDateTime dueDate) {
+    public static BookResponseDto toDto(Book book, String borrowerName, LocalDateTime dueDate) {
         return BookResponseDto.builder()
                 .id(book.getId())
-                .borrowerId(book.getBorrower() == null ? null : book.getBorrower().getId())
-                .borrowerName(book.getBorrower() == null ? null : book.getBorrower().getName())
+                .borrowerId(book.getBorrowerId() == null ? null : book.getBorrowerId())
+                .borrowerName(book.getBorrowerId() == null ? null : borrowerName)
                 .category(book.getCategory())
                 .title(book.getTitle())
                 .author(book.getAuthor())
@@ -47,5 +47,4 @@ public class BookResponseDto {
                 .updatedAt(book.getUpdatedAt())
                 .build();
     }
-
 }

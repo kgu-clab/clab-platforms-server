@@ -35,5 +35,4 @@ public class TokenHeader {
         Gson gson = new GsonBuilder().serializeNulls().create();
         return gson.toJson(this);
     }
-
 }

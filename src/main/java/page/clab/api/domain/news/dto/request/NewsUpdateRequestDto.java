@@ -27,5 +27,4 @@ public class NewsUpdateRequestDto {
 
     @Schema(description = "날짜", example = "2021-08-31")
     private LocalDate date;
-
 }

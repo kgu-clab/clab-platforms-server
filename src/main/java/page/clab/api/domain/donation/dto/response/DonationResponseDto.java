@@ -12,9 +12,9 @@ public class DonationResponseDto {
 
     private Long id;
 
-    private String donorId;
+    private String memberId;
 
-    private String name;
+    private String memberName;
 
     private Double amount;
 
@@ -22,15 +22,14 @@ public class DonationResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static DonationResponseDto toDto(Donation donation) {
+    public static DonationResponseDto toDto(Donation donation, String memberName) {
         return DonationResponseDto.builder()
                 .id(donation.getId())
-                .donorId(donation.getDonor().getId())
-                .name(donation.getDonor().getName())
+                .memberId(donation.getMemberId())
+                .memberName(memberName)
                 .amount(donation.getAmount())
                 .message(donation.getMessage())
                 .createdAt(donation.getCreatedAt())
                 .build();
     }
-
 }

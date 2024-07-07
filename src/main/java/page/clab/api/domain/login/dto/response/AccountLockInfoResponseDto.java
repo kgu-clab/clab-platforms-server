@@ -12,11 +12,10 @@ public class AccountLockInfoResponseDto {
 
     private String name;
 
-    public static AccountLockInfoResponseDto toDto(AccountLockInfo accountLockInfo) {
+    public static AccountLockInfoResponseDto toDto(AccountLockInfo accountLockInfo, String memberName) {
         return AccountLockInfoResponseDto.builder()
-                .id(accountLockInfo.getMember().getId())
-                .name(accountLockInfo.getMember().getName())
+                .id(accountLockInfo.getMemberId())
+                .name(memberName)
                 .build();
     }
-
 }

@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
@@ -18,8 +16,8 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.donation.dto.request.DonationUpdateRequestDto;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.util.Optional;
 
@@ -37,9 +35,8 @@ public class Donation extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member donor;
+    @Column(name = "member_id", nullable = false)
+    private String memberId;
 
     @Column(nullable = false)
     @Min(value = 1, message = "{min.donation.amount}")
@@ -54,4 +51,13 @@ public class Donation extends BaseEntity {
         Optional.ofNullable(donationUpdateRequestDto.getMessage()).ifPresent(this::setMessage);
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
+    public void validateAccessPermission(boolean isSuperAdmin) throws PermissionDeniedException {
+        if (!isSuperAdmin) {
+            throw new PermissionDeniedException("해당 후원 정보를 수정할 권한이 없습니다.");
+        }
+    }
 }

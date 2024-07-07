@@ -29,18 +29,12 @@ public class RecruitmentRequestDto {
     @Schema(description = "대상", example = "2~3학년", required = true)
     private String target;
 
-    @NotNull(message = "{notNull.recruitment.status}")
-    @Schema(description = "상태", example = "종료", required = true)
-    private String status;
-
     public static Recruitment toEntity(RecruitmentRequestDto requestDto) {
         return Recruitment.builder()
                 .startDate(requestDto.getStartDate())
                 .endDate(requestDto.getEndDate())
                 .applicationType(requestDto.getApplicationType())
                 .target(requestDto.getTarget())
-                .status(requestDto.getStatus())
                 .build();
     }
-
 }

@@ -9,9 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.review.domain.QReview;
 import page.clab.api.domain.review.domain.Review;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -42,5 +42,4 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
 
         return new PageImpl<>(reviews, pageable, count);
     }
-
 }

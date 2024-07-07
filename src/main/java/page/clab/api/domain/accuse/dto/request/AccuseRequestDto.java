@@ -8,7 +8,6 @@ import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.TargetType;
-import page.clab.api.domain.member.domain.Member;
 
 @Getter
 @Setter
@@ -26,9 +25,9 @@ public class AccuseRequestDto {
     @Schema(description = "신고 사유", example = "부적절한 게시글입니다.", required = true)
     private String reason;
 
-    public static Accuse toEntity(AccuseRequestDto requestDto, Member member, AccuseTarget target) {
+    public static Accuse toEntity(AccuseRequestDto requestDto, String memberId, AccuseTarget target) {
         return Accuse.builder()
-                .member(member)
+                .memberId(memberId)
                 .target(target)
                 .reason(requestDto.getReason())
                 .build();

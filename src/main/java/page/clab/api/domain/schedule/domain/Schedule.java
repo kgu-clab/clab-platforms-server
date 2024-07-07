@@ -68,6 +68,10 @@ public class Schedule extends BaseEntity {
     @JoinColumn(name = "activityGroup")
     private ActivityGroup activityGroup;
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     public boolean isOwner(Member member) {
         return this.scheduleWriter.isSameMember(member);
     }
@@ -87,5 +91,4 @@ public class Schedule extends BaseEntity {
             throw new PermissionDeniedException("동아리 공통 일정은 ADMIN 이상의 권한만 추가할 수 있습니다.");
         }
     }
-
 }

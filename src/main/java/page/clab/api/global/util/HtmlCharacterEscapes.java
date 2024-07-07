@@ -7,9 +7,8 @@ import org.apache.commons.text.StringEscapeUtils;
 
 public class HtmlCharacterEscapes extends CharacterEscapes {
 
-    private final int[] asciiEscapes;
-
     private static final char ZERO_WIDTH_JOINER = 0x200D;
+    private final int[] asciiEscapes;
 
     public HtmlCharacterEscapes() {
         asciiEscapes = CharacterEscapes.standardAsciiEscapesForJSON();
@@ -29,12 +28,11 @@ public class HtmlCharacterEscapes extends CharacterEscapes {
 
     @Override
     public SerializableString getEscapeSequence(int ch) {
-        char charAt = (char)ch;
+        char charAt = (char) ch;
         if (Character.isHighSurrogate(charAt) || Character.isLowSurrogate(charAt) || charAt == ZERO_WIDTH_JOINER) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("\\u");
-            sb.append(String.format("%04x", ch));
-            return new SerializedString(sb.toString());
+            String sb = "\\u" +
+                    String.format("%04x", ch);
+            return new SerializedString(sb);
         } else {
             return new SerializedString(StringEscapeUtils.escapeHtml4(Character.toString(charAt)));
         }

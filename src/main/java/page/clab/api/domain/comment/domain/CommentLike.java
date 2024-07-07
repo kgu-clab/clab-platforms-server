@@ -37,5 +37,4 @@ public class CommentLike extends BaseEntity {
                 .commentId(commentId)
                 .build();
     }
-
 }

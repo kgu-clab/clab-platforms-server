@@ -13,7 +13,4 @@ public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> 
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<CommentLike> findByCommentIdAndMemberId(Long commentId, String memberId);
-
-    boolean existsByCommentIdAndMemberId(Long commentId, String memberId);
-
 }

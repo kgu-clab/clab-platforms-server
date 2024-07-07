@@ -8,6 +8,8 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.blog.domain.Blog;
 
+import java.util.List;
+
 @Repository
 public interface BlogRepository extends JpaRepository<Blog, Long>, BlogRepositoryCustom, QuerydslPredicateExecutor<Blog> {
 
@@ -16,4 +18,5 @@ public interface BlogRepository extends JpaRepository<Blog, Long>, BlogRepositor
     @Query(value = "SELECT b.* FROM blog b WHERE b.is_deleted = true", nativeQuery = true)
     Page<Blog> findAllByIsDeletedTrue(Pageable pageable);
 
+    List<Blog> findByMemberId(String memberId);
 }

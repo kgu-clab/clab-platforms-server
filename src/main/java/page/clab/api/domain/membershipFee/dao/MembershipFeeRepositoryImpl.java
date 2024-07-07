@@ -11,9 +11,9 @@ import page.clab.api.domain.member.domain.QMember;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
 import page.clab.api.domain.membershipFee.domain.QMembershipFee;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -23,29 +23,28 @@ public class MembershipFeeRepositoryImpl implements MembershipFeeRepositoryCusto
 
     @Override
     public Page<MembershipFee> findByConditions(String memberId, String memberName, String category, MembershipFeeStatus status, Pageable pageable) {
-        QMembershipFee qMembershipFee = QMembershipFee.membershipFee;
-        QMember qMember = QMember.member;
+        QMembershipFee membershipFee = QMembershipFee.membershipFee;
+        QMember member = QMember.member;
         BooleanBuilder builder = new BooleanBuilder();
 
-        if (memberId != null && !memberId.isEmpty()) builder.and(qMembershipFee.applicant.id.eq(memberId));
-        if (memberName != null && !memberName.isEmpty()) builder.and(qMember.name.eq(memberName));
-        if (category != null && !category.isEmpty()) builder.and(qMembershipFee.category.eq(category));
-        if (status != null) builder.and(qMembershipFee.status.eq(status));
+        if (memberId != null && !memberId.isEmpty()) builder.and(membershipFee.memberId.eq(memberId));
+        if (memberName != null && !memberName.isEmpty()) builder.and(member.name.eq(memberName));
+        if (category != null && !category.isEmpty()) builder.and(membershipFee.category.eq(category));
+        if (status != null) builder.and(membershipFee.status.eq(status));
 
-        List<MembershipFee> membershipFees = queryFactory.selectFrom(qMembershipFee)
-                .leftJoin(qMembershipFee.applicant, qMember)
+        List<MembershipFee> membershipFees = queryFactory.selectFrom(membershipFee)
+                .leftJoin(member).on(membershipFee.memberId.eq(member.id))
                 .where(builder)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qMembershipFee))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, membershipFee))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long count = queryFactory.selectFrom(qMembershipFee)
-                .leftJoin(qMembershipFee.applicant, qMember)
+        long count = queryFactory.selectFrom(membershipFee)
+                .leftJoin(member).on(membershipFee.memberId.eq(member.id))
                 .where(builder)
                 .fetchCount();
 
         return new PageImpl<>(membershipFees, pageable, count);
     }
-
 }

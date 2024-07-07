@@ -44,5 +44,4 @@ public class BookRequestDto {
                 .reviewLinks(requestDto.reviewLinks == null ? List.of() : requestDto.reviewLinks)
                 .build();
     }
-
 }

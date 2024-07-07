@@ -34,5 +34,4 @@ public class ActivityPhotoRequestDto {
                 .isPublic(false)
                 .build();
     }
-
 }

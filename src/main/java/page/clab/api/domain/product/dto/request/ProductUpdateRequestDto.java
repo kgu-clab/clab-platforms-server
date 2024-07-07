@@ -16,5 +16,4 @@ public class ProductUpdateRequestDto {
 
     @Schema(description = "URL", example = "https://github.com/KGU-C-Lab/petmily-server")
     private String url;
-
 }

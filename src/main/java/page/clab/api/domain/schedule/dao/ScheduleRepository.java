@@ -11,5 +11,4 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long>, Sched
 
     @Query(value = "SELECT s.* FROM schedule s WHERE s.is_deleted = true", nativeQuery = true)
     Page<Schedule> findAllByIsDeletedTrue(Pageable pageable);
-
 }

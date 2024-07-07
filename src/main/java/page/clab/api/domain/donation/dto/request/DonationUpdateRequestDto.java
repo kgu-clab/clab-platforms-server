@@ -14,5 +14,4 @@ public class DonationUpdateRequestDto {
 
     @Schema(description = "후원 메시지", example = "대회 상금 일부 후원", required = true)
     private String message;
-
 }

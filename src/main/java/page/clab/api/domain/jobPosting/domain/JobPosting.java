@@ -67,6 +67,10 @@ public class JobPosting extends BaseEntity {
         Optional.ofNullable(jobPostingUpdateRequestDto.getJobPostingUrl()).ifPresent(this::setJobPostingUrl);
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     public JobPosting updateFromRequestDto(JobPostingRequestDto jobPostingRequestDto) {
         this.title = jobPostingRequestDto.getTitle();
         this.careerLevel = jobPostingRequestDto.getCareerLevel();
@@ -76,5 +80,4 @@ public class JobPosting extends BaseEntity {
         this.jobPostingUrl = jobPostingRequestDto.getJobPostingUrl();
         return this;
     }
-
 }

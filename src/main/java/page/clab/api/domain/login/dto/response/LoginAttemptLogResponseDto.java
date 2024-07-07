@@ -33,5 +33,4 @@ public class LoginAttemptLogResponseDto {
                 .loginAttemptTime(loginAttemptLog.getLoginAttemptTime())
                 .build();
     }
-
 }

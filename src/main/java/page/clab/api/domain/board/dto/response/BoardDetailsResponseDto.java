@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 
 import java.time.LocalDateTime;
@@ -33,17 +34,15 @@ public class BoardDetailsResponseDto {
 
     private String imageUrl;
 
-    private Long likes;
-
-    private boolean hasLikeByMe;
-
     @JsonProperty("isOwner")
     private Boolean isOwner;
 
+    private List<BoardEmojiCountResponseDto> emojiInfos;
+
     private LocalDateTime createdAt;
 
-    public static BoardDetailsResponseDto toDto(Board board, boolean hasLikeByMe, boolean isOwner) {
-        WriterInfo writerInfo = WriterInfo.fromBoardDetails(board);
+    public static BoardDetailsResponseDto toDto(Board board, MemberDetailedInfoDto memberInfo, boolean isOwner, List<BoardEmojiCountResponseDto> emojiInfos) {
+        WriterInfo writerInfo = WriterInfo.fromBoardDetails(board, memberInfo);
         return BoardDetailsResponseDto.builder()
                 .id(board.getId())
                 .writerId(writerInfo.getId())
@@ -55,11 +54,9 @@ public class BoardDetailsResponseDto {
                 .content(board.getContent())
                 .files(UploadedFileResponseDto.toDto(board.getUploadedFiles()))
                 .imageUrl(board.getImageUrl())
-                .likes(board.getLikes())
-                .hasLikeByMe(hasLikeByMe)
                 .isOwner(isOwner)
+                .emojiInfos(emojiInfos)
                 .createdAt(board.getCreatedAt())
                 .build();
     }
-
 }
