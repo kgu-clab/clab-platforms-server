@@ -22,5 +22,4 @@ public class RecruitmentUpdateRequestDto {
 
     @Schema(description = "대상", example = "2~3학년")
     private String target;
-
 }

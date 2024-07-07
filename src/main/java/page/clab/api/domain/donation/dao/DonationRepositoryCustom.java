@@ -7,7 +7,5 @@ import page.clab.api.domain.donation.domain.Donation;
 import java.time.LocalDate;
 
 public interface DonationRepositoryCustom {
-
     Page<Donation> findByConditions(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable);
-
 }

@@ -43,5 +43,4 @@ public class BoardListResponseDto {
                 .createdAt(board.getCreatedAt())
                 .build();
     }
-
 }

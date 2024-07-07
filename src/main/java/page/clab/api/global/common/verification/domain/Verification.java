@@ -16,7 +16,7 @@ import page.clab.api.global.exception.InvalidInformationException;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@RedisHash(value = "verification", timeToLive = 60*3)
+@RedisHash(value = "verification", timeToLive = 60 * 3)
 public class Verification {
 
     @Id
@@ -45,5 +45,4 @@ public class Verification {
             throw new InvalidInformationException("올바르지 않은 인증 요청입니다.");
         }
     }
-
 }

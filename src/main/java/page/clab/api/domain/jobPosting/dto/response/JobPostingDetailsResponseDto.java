@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class JobPostingDetailsResponseDto {
 
     private Long id;
-    
+
     private String title;
 
     private CareerLevel careerLevel;
@@ -25,7 +25,7 @@ public class JobPostingDetailsResponseDto {
     private String recruitmentPeriod;
 
     private String jobPostingUrl;
-    
+
     private LocalDateTime createdAt;
 
     public static JobPostingDetailsResponseDto toDto(JobPosting jobPosting) {
@@ -40,5 +40,4 @@ public class JobPostingDetailsResponseDto {
                 .createdAt(jobPosting.getCreatedAt())
                 .build();
     }
-
 }

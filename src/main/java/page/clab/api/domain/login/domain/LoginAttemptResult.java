@@ -13,5 +13,4 @@ public enum LoginAttemptResult {
 
     private String key;
     private String description;
-
 }

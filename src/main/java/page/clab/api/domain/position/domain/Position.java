@@ -51,5 +51,4 @@ public class Position extends BaseEntity {
     public void delete() {
         this.isDeleted = true;
     }
-
 }

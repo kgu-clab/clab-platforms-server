@@ -29,5 +29,4 @@ public class ReviewRequestDto {
                 .isPublic(false)
                 .build();
     }
-
 }

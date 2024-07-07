@@ -46,5 +46,4 @@ public class DeletedCommentResponseDto {
                 .createdAt(comment.getCreatedAt())
                 .build();
     }
-
 }

@@ -37,5 +37,4 @@ public class AwardRequestDto {
                 .memberId(memberId)
                 .build();
     }
-
 }

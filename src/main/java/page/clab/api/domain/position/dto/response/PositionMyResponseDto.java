@@ -43,5 +43,4 @@ public class PositionMyResponseDto {
                 .positionTypes(positionTypesByYear)
                 .build();
     }
-
 }

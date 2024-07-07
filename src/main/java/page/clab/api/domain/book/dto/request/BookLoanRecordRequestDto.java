@@ -12,5 +12,4 @@ public class BookLoanRecordRequestDto {
     @NotNull(message = "{notNull.bookLoanRecord.bookId}")
     @Schema(description = "책 ID", example = "1", required = true)
     private Long bookId;
-
 }

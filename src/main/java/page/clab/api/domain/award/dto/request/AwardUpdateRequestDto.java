@@ -21,5 +21,4 @@ public class AwardUpdateRequestDto {
 
     @Schema(description = "수상일", example = "2023-08-18")
     private LocalDate awardDate;
-
 }

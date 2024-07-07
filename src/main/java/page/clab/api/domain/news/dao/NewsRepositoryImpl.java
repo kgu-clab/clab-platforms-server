@@ -9,9 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.news.domain.News;
 import page.clab.api.domain.news.domain.QNews;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -40,5 +40,4 @@ public class NewsRepositoryImpl implements NewsRepositoryCustom {
 
         return new PageImpl<>(newsList, pageable, count);
     }
-
 }

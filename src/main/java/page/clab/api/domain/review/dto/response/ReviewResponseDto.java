@@ -51,5 +51,4 @@ public class ReviewResponseDto {
                 .createdAt(review.getCreatedAt())
                 .build();
     }
-
 }

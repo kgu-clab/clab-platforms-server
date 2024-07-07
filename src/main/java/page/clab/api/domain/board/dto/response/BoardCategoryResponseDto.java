@@ -40,5 +40,4 @@ public class BoardCategoryResponseDto {
                 .createdAt(board.getCreatedAt())
                 .build();
     }
-
 }

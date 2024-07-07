@@ -16,5 +16,4 @@ public interface RecruitmentRepository extends JpaRepository<Recruitment, Long> 
 
     @Query(value = "SELECT r.* FROM recruitment r WHERE r.is_deleted = true", nativeQuery = true)
     Page<Recruitment> findAllByIsDeletedTrue(Pageable pageable);
-
 }

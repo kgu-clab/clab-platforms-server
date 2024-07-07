@@ -25,5 +25,4 @@ public class ApplicationPassResponseDto {
                 .isPass(application.getIsPass())
                 .build();
     }
-
 }

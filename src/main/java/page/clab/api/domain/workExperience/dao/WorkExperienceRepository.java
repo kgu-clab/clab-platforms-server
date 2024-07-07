@@ -18,5 +18,4 @@ public interface WorkExperienceRepository extends JpaRepository<WorkExperience, 
 
     @Query(value = "SELECT w.* FROM work_experience w WHERE w.is_deleted = true", nativeQuery = true)
     Page<WorkExperience> findAllByIsDeletedTrue(Pageable pageable);
-
 }

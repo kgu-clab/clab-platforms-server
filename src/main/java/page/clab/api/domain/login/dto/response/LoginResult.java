@@ -1,7 +1,10 @@
 package page.clab.api.domain.login.dto.response;
 
+import lombok.Getter;
+
 public class LoginResult {
 
+    @Getter
     private final String header;
 
     private final boolean body;
@@ -15,12 +18,7 @@ public class LoginResult {
         return new LoginResult(header, body);
     }
 
-    public String getHeader() {
-        return header;
-    }
-
     public boolean getBody() {
         return body;
     }
-
 }

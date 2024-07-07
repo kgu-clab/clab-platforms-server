@@ -56,5 +56,4 @@ public class Accuse extends BaseEntity {
     public void delete() {
         this.isDeleted = true;
     }
-
 }

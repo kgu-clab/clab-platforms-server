@@ -20,5 +20,4 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query(value = "SELECT c.* FROM comment c WHERE c.is_deleted = true AND c.board_id = ?", nativeQuery = true)
     Page<Comment> findAllByIsDeletedTrueAndBoardId(Long boardId, Pageable pageable);
-
 }

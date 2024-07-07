@@ -14,5 +14,4 @@ public enum BookLoanStatus {
 
     private String key;
     private String description;
-
 }

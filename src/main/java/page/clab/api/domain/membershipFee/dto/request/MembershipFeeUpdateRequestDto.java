@@ -26,5 +26,4 @@ public class MembershipFeeUpdateRequestDto {
 
     @Schema(description = "상태", example = "PENDING")
     private MembershipFeeStatus status;
-
 }

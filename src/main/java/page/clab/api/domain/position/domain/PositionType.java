@@ -18,5 +18,4 @@ public enum PositionType {
     @Enumerated(EnumType.STRING)
     private String key;
     private String description;
-
 }

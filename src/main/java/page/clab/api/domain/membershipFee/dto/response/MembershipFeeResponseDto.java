@@ -45,5 +45,4 @@ public class MembershipFeeResponseDto {
                 .createdAt(membershipFee.getCreatedAt())
                 .build();
     }
-
 }

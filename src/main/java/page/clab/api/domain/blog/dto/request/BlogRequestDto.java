@@ -38,5 +38,4 @@ public class BlogRequestDto {
                 .imageUrl(requestDto.getImageUrl())
                 .build();
     }
-
 }

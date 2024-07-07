@@ -19,5 +19,4 @@ public interface BlogRepository extends JpaRepository<Blog, Long>, BlogRepositor
     Page<Blog> findAllByIsDeletedTrue(Pageable pageable);
 
     List<Blog> findByMemberId(String memberId);
-
 }

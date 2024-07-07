@@ -23,5 +23,4 @@ public class ApplicationId implements Serializable {
     public static ApplicationId create(String studentId, Long recruitmentId) {
         return new ApplicationId(studentId, recruitmentId);
     }
-
 }

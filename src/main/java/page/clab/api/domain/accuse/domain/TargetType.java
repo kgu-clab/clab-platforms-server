@@ -13,5 +13,4 @@ public enum TargetType {
 
     private String key;
     private String description;
-
 }

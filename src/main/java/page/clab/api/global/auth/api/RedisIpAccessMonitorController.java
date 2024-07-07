@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.domain.RedisIpAccessMonitor;
-import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.common.dto.PagedResponseDto;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class RedisIpAccessMonitorController {
 
     @Operation(summary = "[S] 비정상 접근으로 인한 차단 IP 목록 조회", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "지속적인 비정상 접근으로 인해 Redis에 추가된 IP를 조회")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @GetMapping("/abnormal-access")
     public ApiResponse<PagedResponseDto<RedisIpAccessMonitor>> getAbnormalAccessBlacklistIps(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -44,7 +44,7 @@ public class RedisIpAccessMonitorController {
 
     @Operation(summary = "[S] 비정상 접근 IP 기록 삭제", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "지속적인 비정상 접근으로 인해 차단된 IP를 삭제")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @DeleteMapping("/abnormal-access")
     public ApiResponse<String> removeAbnormalAccessBlacklistIp(
             HttpServletRequest request,
@@ -56,7 +56,7 @@ public class RedisIpAccessMonitorController {
 
     @Operation(summary = "[S] 비정상 접근 IP 기록 초기화", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "지속적인 비정상 접근으로 인해 차단된 IP를 모두 삭제")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     @DeleteMapping("/abnormal-access/clear")
     public ApiResponse<List<RedisIpAccessMonitor>> clearAbnormalAccessBlacklist(
             HttpServletRequest request

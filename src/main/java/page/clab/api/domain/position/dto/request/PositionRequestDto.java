@@ -30,5 +30,4 @@ public class PositionRequestDto {
                 .year(positionRequestDto.getYear())
                 .build();
     }
-
 }

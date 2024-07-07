@@ -17,14 +17,13 @@ import java.util.Optional;
 
 @Repository
 public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupMemberId>, GroupMemberRepositoryCustom, QuerydslPredicateExecutor<GroupMember> {
-
     List<GroupMember> findAllByMember(Member member);
 
     boolean existsByMemberAndActivityGroupId(Member member, Long activityGroupId);
 
     Optional<GroupMember> findByActivityGroupIdAndRole(Long activityGroupId, ActivityGroupRole role);
 
-   Optional<GroupMember> findByActivityGroupAndMember(ActivityGroup activityGroup, Member member);
+    Optional<GroupMember> findByActivityGroupAndMember(ActivityGroup activityGroup, Member member);
 
     List<GroupMember> findAllByActivityGroupIdOrderByMember_IdAsc(Long activityGroupId);
 
@@ -33,5 +32,4 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupM
     Page<GroupMember> findAllByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status, org.springframework.data.domain.Pageable pageable);
 
     boolean existsByActivityGroupAndMember(ActivityGroup activityGroup, Member member);
-
 }

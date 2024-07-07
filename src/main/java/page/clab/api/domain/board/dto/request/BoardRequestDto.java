@@ -49,5 +49,4 @@ public class BoardRequestDto {
                 .wantAnonymous(requestDto.isWantAnonymous())
                 .build();
     }
-
 }

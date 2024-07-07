@@ -113,5 +113,4 @@ public class BookLoanRecord extends BaseEntity {
         }
         this.status = BookLoanStatus.REJECTED;
     }
-
 }

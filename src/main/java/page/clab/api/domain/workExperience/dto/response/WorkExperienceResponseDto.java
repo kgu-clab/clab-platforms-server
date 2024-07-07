@@ -29,5 +29,4 @@ public class WorkExperienceResponseDto {
                 .endDate(workExperience.getEndDate())
                 .build();
     }
-
 }

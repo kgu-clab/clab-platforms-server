@@ -102,5 +102,4 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
 
         return new PageImpl<>(results, pageable, total);
     }
-
 }

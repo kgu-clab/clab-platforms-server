@@ -81,5 +81,4 @@ public class MembershipFee extends BaseEntity {
             throw new PermissionDeniedException("해당 회비를 수정/삭제할 권한이 없습니다.");
         }
     }
-
 }

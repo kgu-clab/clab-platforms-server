@@ -18,5 +18,4 @@ public class AccountLockInfoResponseDto {
                 .name(memberName)
                 .build();
     }
-
 }

@@ -11,7 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, String>, MemberRepositoryCustom, QuerydslPredicateExecutor<Member> {
-
     boolean existsByContact(String contact);
 
     boolean existsByEmail(String email);
@@ -19,5 +18,4 @@ public interface MemberRepository extends JpaRepository<Member, String>, MemberR
     Optional<Member> findByEmail(String email);
 
     Page<Member> findAllByOrderByCreatedAtDesc(Pageable pageable);
-
 }

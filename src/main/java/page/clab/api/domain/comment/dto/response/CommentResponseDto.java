@@ -64,5 +64,4 @@ public class CommentResponseDto {
                 .createdAt(comment.getCreatedAt())
                 .build();
     }
-
 }

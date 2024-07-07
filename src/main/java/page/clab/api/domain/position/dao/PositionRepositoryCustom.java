@@ -6,7 +6,5 @@ import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
 
 public interface PositionRepositoryCustom {
-
     Page<Position> findByConditions(String year, PositionType positionType, Pageable pageable);
-
 }

@@ -52,5 +52,4 @@ public class RedisToken {
     public boolean isAdminToken() {
         return role == Role.ADMIN || role == Role.SUPER;
     }
-
 }

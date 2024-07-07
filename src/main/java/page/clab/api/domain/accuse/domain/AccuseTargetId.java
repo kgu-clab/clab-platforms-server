@@ -23,5 +23,4 @@ public class AccuseTargetId implements Serializable {
     public static AccuseTargetId create(TargetType targetType, Long targetReferenceId) {
         return new AccuseTargetId(targetType, targetReferenceId);
     }
-
 }

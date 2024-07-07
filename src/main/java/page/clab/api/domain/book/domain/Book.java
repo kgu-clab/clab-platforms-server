@@ -93,5 +93,4 @@ public class Book extends BaseEntity {
             throw new InvalidBorrowerException("대출한 도서와 회원 정보가 일치하지 않습니다.");
         }
     }
-
 }

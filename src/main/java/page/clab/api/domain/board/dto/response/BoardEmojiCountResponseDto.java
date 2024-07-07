@@ -26,5 +26,4 @@ public class BoardEmojiCountResponseDto {
                 .isOwner(isOwner)
                 .build();
     }
-
 }
