@@ -1,4 +1,4 @@
-package page.clab.api.domain.news.dto.response;
+package page.clab.api.domain.news.application.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;

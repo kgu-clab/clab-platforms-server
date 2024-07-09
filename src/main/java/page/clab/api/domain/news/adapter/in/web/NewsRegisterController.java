@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.news.application.port.in.RegisterNewsUseCase;
-import page.clab.api.domain.news.dto.request.NewsRequestDto;
+import page.clab.api.domain.news.application.dto.request.NewsRequestDto;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController

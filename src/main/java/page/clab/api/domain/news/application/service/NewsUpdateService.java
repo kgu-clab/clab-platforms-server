@@ -7,7 +7,7 @@ import page.clab.api.domain.news.application.port.in.UpdateNewsUseCase;
 import page.clab.api.domain.news.application.port.out.RetrieveNewsPort;
 import page.clab.api.domain.news.application.port.out.UpdateNewsPort;
 import page.clab.api.domain.news.domain.News;
-import page.clab.api.domain.news.dto.request.NewsUpdateRequestDto;
+import page.clab.api.domain.news.application.dto.request.NewsUpdateRequestDto;
 import page.clab.api.global.validation.ValidationService;
 
 @Service

@@ -20,7 +20,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.URL;
-import page.clab.api.domain.news.dto.request.NewsUpdateRequestDto;
+import page.clab.api.domain.news.application.dto.request.NewsUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.domain.UploadedFile;
 

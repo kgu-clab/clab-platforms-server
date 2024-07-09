@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.news.application.port.in.RetrieveDeletedNewsUseCase;
 import page.clab.api.domain.news.application.port.out.RetrieveNewsPort;
 import page.clab.api.domain.news.domain.News;
-import page.clab.api.domain.news.dto.response.NewsDetailsResponseDto;
+import page.clab.api.domain.news.application.dto.response.NewsDetailsResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

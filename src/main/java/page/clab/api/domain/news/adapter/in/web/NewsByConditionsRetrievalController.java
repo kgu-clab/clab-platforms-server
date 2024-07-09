@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.news.application.port.in.RetrieveNewsByConditionsUseCase;
 import page.clab.api.domain.news.domain.News;
-import page.clab.api.domain.news.dto.response.NewsResponseDto;
+import page.clab.api.domain.news.application.dto.response.NewsResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
