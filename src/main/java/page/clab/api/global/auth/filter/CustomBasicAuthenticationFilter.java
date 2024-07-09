@@ -12,7 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.stereotype.Component;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.application.WhitelistService;
@@ -26,7 +25,7 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 
-@Component
+
 @Slf4j
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
