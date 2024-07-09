@@ -21,31 +21,29 @@ public class WhitelistUtil implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        swaggerPatterns = whitelistPatternsProperties.getPatterns().get("api-docs");
-        actuatorPatterns = whitelistPatternsProperties.getPatterns().get("actuator");
+        swaggerPatterns = whitelistPatternsProperties.getApiDocs();
+        actuatorPatterns = whitelistPatternsProperties.getActuator();
         whitelistPatterns = whitelistPatternsProperties.getWhitelistPatterns();
     }
 
     public static boolean isSwaggerRequest(String path) {
-        for (String pattern : swaggerPatterns) {
-            if (Pattern.compile(pattern).matcher(path).find()) {
-                return true;
-            }
-        }
-        return false;
+        return isPatternMatch(path, swaggerPatterns);
     }
 
     public static boolean isActuatorRequest(String path) {
-        for (String pattern : actuatorPatterns) {
-            if (Pattern.compile(pattern).matcher(path).find()) {
-                return true;
-            }
-        }
-        return false;
+        return isPatternMatch(path, actuatorPatterns);
     }
 
     public static boolean isWhitelistRequest(String path) {
-        for (String pattern : whitelistPatterns) {
+        return isPatternMatch(path, whitelistPatterns);
+    }
+
+    public static boolean isSwaggerIndexEndpoint(String path) {
+        return swaggerPatterns[2].equals(path);
+    }
+
+    private static boolean isPatternMatch(String path, String[] patterns) {
+        for (String pattern : patterns) {
             if (Pattern.compile(pattern).matcher(path).find()) {
                 return true;
             }
