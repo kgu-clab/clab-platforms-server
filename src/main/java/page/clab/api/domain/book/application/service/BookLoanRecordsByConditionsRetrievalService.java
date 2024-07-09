@@ -5,10 +5,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.book.application.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.domain.book.application.port.in.RetrieveBookLoanRecordsByConditionsUseCase;
 import page.clab.api.domain.book.application.port.out.RetrieveBookLoanRecordPort;
 import page.clab.api.domain.book.domain.BookLoanStatus;
-import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

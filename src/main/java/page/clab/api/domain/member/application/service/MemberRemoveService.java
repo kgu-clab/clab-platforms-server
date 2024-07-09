@@ -8,7 +8,7 @@ import page.clab.api.domain.member.application.port.in.RemoveMemberUseCase;
 import page.clab.api.domain.member.application.port.out.RegisterMemberPort;
 import page.clab.api.domain.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.event.MemberDeletedEvent;
+import page.clab.api.domain.member.application.event.MemberDeletedEvent;
 
 @Service
 @RequiredArgsConstructor

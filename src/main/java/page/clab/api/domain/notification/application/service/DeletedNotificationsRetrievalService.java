@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.notification.application.port.in.RetrieveDeletedNotificationsUseCase;
 import page.clab.api.domain.notification.application.port.out.RetrieveNotificationPort;
 import page.clab.api.domain.notification.domain.Notification;
-import page.clab.api.domain.notification.dto.response.NotificationResponseDto;
+import page.clab.api.domain.notification.application.dto.response.NotificationResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

@@ -15,11 +15,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.book.exception.BookAlreadyReturnedException;
-import page.clab.api.domain.book.exception.LoanNotPendingException;
-import page.clab.api.domain.book.exception.LoanSuspensionException;
-import page.clab.api.domain.book.exception.OverdueException;
-import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
+import page.clab.api.domain.book.application.exception.BookAlreadyReturnedException;
+import page.clab.api.domain.book.application.exception.LoanNotPendingException;
+import page.clab.api.domain.book.application.exception.LoanSuspensionException;
+import page.clab.api.domain.book.application.exception.OverdueException;
+import page.clab.api.domain.member.application.dto.shared.MemberBorrowerInfoDto;
 import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDateTime;

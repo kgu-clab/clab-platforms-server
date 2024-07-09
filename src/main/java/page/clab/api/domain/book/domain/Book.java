@@ -14,9 +14,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
-import page.clab.api.domain.book.dto.request.BookUpdateRequestDto;
-import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
-import page.clab.api.domain.book.exception.InvalidBorrowerException;
+import page.clab.api.domain.book.application.dto.request.BookUpdateRequestDto;
+import page.clab.api.domain.book.application.exception.BookAlreadyBorrowedException;
+import page.clab.api.domain.book.application.exception.InvalidBorrowerException;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.util.StringJsonConverter;
 

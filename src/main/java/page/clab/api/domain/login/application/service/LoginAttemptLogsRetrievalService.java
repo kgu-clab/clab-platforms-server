@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.login.application.port.in.RetrieveLoginAttemptLogsUseCase;
 import page.clab.api.domain.login.application.port.out.RetrieveLoginAttemptLogPort;
 import page.clab.api.domain.login.domain.LoginAttemptLog;
-import page.clab.api.domain.login.dto.response.LoginAttemptLogResponseDto;
+import page.clab.api.domain.login.application.dto.response.LoginAttemptLogResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

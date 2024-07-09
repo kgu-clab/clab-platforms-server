@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.schedule.application.dto.response.ScheduleResponseDto;
 import page.clab.api.domain.schedule.application.port.in.RetrieveActivitySchedulesUseCase;
 import page.clab.api.domain.schedule.application.port.out.RetrieveSchedulePort;
 import page.clab.api.domain.schedule.domain.Schedule;
-import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 import java.time.LocalDate;

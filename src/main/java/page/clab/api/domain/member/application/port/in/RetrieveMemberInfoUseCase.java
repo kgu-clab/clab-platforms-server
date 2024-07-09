@@ -1,11 +1,11 @@
 package page.clab.api.domain.member.application.port.in;
 
-import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
-import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
-import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.member.dto.shared.MemberEmailInfoDto;
-import page.clab.api.domain.member.dto.shared.MemberLoginInfoDto;
-import page.clab.api.domain.member.dto.shared.MemberPositionInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberBasicInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberBorrowerInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberEmailInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberLoginInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberPositionInfoDto;
 
 import java.util.List;
 

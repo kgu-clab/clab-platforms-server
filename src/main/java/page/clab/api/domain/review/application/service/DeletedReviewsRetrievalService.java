@@ -10,7 +10,7 @@ import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.review.application.port.in.RetrieveDeletedReviewsUseCase;
 import page.clab.api.domain.review.application.port.out.RetrieveReviewPort;
 import page.clab.api.domain.review.domain.Review;
-import page.clab.api.domain.review.dto.response.ReviewResponseDto;
+import page.clab.api.domain.review.application.dto.response.ReviewResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

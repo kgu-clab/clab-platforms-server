@@ -19,7 +19,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.review.dto.request.ReviewUpdateRequestDto;
+import page.clab.api.domain.review.application.dto.request.ReviewUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
 

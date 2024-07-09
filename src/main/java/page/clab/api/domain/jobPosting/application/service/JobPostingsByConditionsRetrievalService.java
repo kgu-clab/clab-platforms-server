@@ -10,7 +10,7 @@ import page.clab.api.domain.jobPosting.application.port.out.RetrieveJobPostingPo
 import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
-import page.clab.api.domain.jobPosting.dto.response.JobPostingResponseDto;
+import page.clab.api.domain.jobPosting.application.dto.response.JobPostingResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

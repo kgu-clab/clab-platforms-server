@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.workExperience.application.dto.request.WorkExperienceRequestDto;
 import page.clab.api.domain.workExperience.application.port.in.RegisterWorkExperienceUseCase;
 import page.clab.api.domain.workExperience.application.port.out.RegisterWorkExperiencePort;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
-import page.clab.api.domain.workExperience.dto.request.WorkExperienceRequestDto;
 import page.clab.api.global.validation.ValidationService;
 
 @Service

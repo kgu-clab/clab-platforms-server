@@ -7,7 +7,7 @@ import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.membershipFee.application.port.in.RegisterMembershipFeeUseCase;
 import page.clab.api.domain.membershipFee.application.port.out.RegisterMembershipFeePort;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
-import page.clab.api.domain.membershipFee.dto.request.MembershipFeeRequestDto;
+import page.clab.api.domain.membershipFee.application.dto.request.MembershipFeeRequestDto;
 import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
 import page.clab.api.global.validation.ValidationService;
 

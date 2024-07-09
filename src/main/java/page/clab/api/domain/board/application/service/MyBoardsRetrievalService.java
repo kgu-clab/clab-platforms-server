@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.application.port.in.RetrieveMyBoardsUseCase;
 import page.clab.api.domain.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.board.dto.response.BoardMyResponseDto;
+import page.clab.api.domain.board.application.dto.response.BoardMyResponseDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

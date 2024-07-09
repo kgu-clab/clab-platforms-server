@@ -3,13 +3,13 @@ package page.clab.api.domain.book.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.book.application.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.book.application.port.in.ApproveBookLoanUseCase;
 import page.clab.api.domain.book.application.port.out.RegisterBookLoanRecordPort;
 import page.clab.api.domain.book.application.port.out.RetrieveBookLoanRecordPort;
 import page.clab.api.domain.book.application.port.out.RetrieveBookPort;
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
-import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.global.validation.ValidationService;
 

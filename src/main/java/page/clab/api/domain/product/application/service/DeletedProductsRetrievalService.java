@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.product.application.port.in.RetrieveDeletedProductsUseCase;
 import page.clab.api.domain.product.application.port.out.RetrieveProductPort;
 import page.clab.api.domain.product.domain.Product;
-import page.clab.api.domain.product.dto.response.ProductResponseDto;
+import page.clab.api.domain.product.application.dto.response.ProductResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

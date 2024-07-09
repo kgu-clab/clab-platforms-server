@@ -17,7 +17,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.application.domain.ApplicationType;
-import page.clab.api.domain.recruitment.dto.request.RecruitmentUpdateRequestDto;
+import page.clab.api.domain.recruitment.application.dto.request.RecruitmentUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDateTime;

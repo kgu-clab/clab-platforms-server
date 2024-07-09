@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.recruitment.application.port.in.RetrieveDeletedRecruitmentsUseCase;
 import page.clab.api.domain.recruitment.application.port.out.RetrieveRecruitmentPort;
 import page.clab.api.domain.recruitment.domain.Recruitment;
-import page.clab.api.domain.recruitment.dto.response.RecruitmentResponseDto;
+import page.clab.api.domain.recruitment.application.dto.response.RecruitmentResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

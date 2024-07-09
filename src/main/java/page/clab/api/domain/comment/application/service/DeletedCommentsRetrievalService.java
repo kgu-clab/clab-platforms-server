@@ -9,10 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.comment.application.port.in.RetrieveDeletedCommentsUseCase;
 import page.clab.api.domain.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.comment.domain.Comment;
-import page.clab.api.domain.comment.dto.response.DeletedCommentResponseDto;
+import page.clab.api.domain.comment.application.dto.response.DeletedCommentResponseDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
-import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 import java.util.List;

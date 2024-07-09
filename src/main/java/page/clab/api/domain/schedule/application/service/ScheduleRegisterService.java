@@ -10,11 +10,11 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.schedule.application.dto.request.ScheduleRequestDto;
 import page.clab.api.domain.schedule.application.port.in.RegisterScheduleUseCase;
 import page.clab.api.domain.schedule.application.port.out.RegisterSchedulePort;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.ScheduleType;
-import page.clab.api.domain.schedule.dto.request.ScheduleRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.util.Optional;

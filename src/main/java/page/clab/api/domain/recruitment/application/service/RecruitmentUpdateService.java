@@ -3,11 +3,11 @@ package page.clab.api.domain.recruitment.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.recruitment.application.dto.request.RecruitmentUpdateRequestDto;
 import page.clab.api.domain.recruitment.application.port.in.RetrieveRecruitmentUseCase;
 import page.clab.api.domain.recruitment.application.port.in.UpdateRecruitmentUseCase;
 import page.clab.api.domain.recruitment.application.port.out.UpdateRecruitmentPort;
 import page.clab.api.domain.recruitment.domain.Recruitment;
-import page.clab.api.domain.recruitment.dto.request.RecruitmentUpdateRequestDto;
 import page.clab.api.global.validation.ValidationService;
 
 @Service

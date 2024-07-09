@@ -17,8 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.comment.dto.request.CommentUpdateRequestDto;
-import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.comment.application.dto.request.CommentUpdateRequestDto;
+import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
 

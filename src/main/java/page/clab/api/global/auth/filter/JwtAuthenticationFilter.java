@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
-import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
+import page.clab.api.domain.blacklistIp.adapter.out.persistence.BlacklistIpRepository;
 import page.clab.api.domain.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;

@@ -4,9 +4,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.schedule.application.dto.response.ScheduleCollectResponseDto;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
-import page.clab.api.domain.schedule.dto.response.ScheduleCollectResponseDto;
 
 import java.time.LocalDate;
 import java.util.List;

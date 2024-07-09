@@ -3,10 +3,10 @@ package page.clab.api.domain.product.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.product.application.dto.request.ProductRequestDto;
 import page.clab.api.domain.product.application.port.in.RegisterProductUseCase;
 import page.clab.api.domain.product.application.port.out.RegisterProductPort;
 import page.clab.api.domain.product.domain.Product;
-import page.clab.api.domain.product.dto.request.ProductRequestDto;
 import page.clab.api.global.validation.ValidationService;
 
 @Service

@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.jobPosting.application.port.in.UpdateJobPostingUseCase;
-import page.clab.api.domain.jobPosting.dao.JobPostingRepository;
+import page.clab.api.domain.jobPosting.adapter.out.persistence.JobPostingRepository;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
-import page.clab.api.domain.jobPosting.dto.request.JobPostingUpdateRequestDto;
+import page.clab.api.domain.jobPosting.application.dto.request.JobPostingUpdateRequestDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.validation.ValidationService;
 

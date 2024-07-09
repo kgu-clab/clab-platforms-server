@@ -3,13 +3,13 @@ package page.clab.api.domain.workExperience.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.workExperience.application.dto.request.WorkExperienceUpdateRequestDto;
 import page.clab.api.domain.workExperience.application.port.in.UpdateWorkExperienceUseCase;
 import page.clab.api.domain.workExperience.application.port.out.RetrieveWorkExperiencePort;
 import page.clab.api.domain.workExperience.application.port.out.UpdateWorkExperiencePort;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
-import page.clab.api.domain.workExperience.dto.request.WorkExperienceUpdateRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.validation.ValidationService;
 

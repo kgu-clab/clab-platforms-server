@@ -12,7 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
+import page.clab.api.domain.blacklistIp.adapter.out.persistence.BlacklistIpRepository;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.common.slack.application.SlackService;

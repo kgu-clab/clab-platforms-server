@@ -5,10 +5,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.blog.application.dto.response.BlogResponseDto;
 import page.clab.api.domain.blog.application.port.in.RetrieveBlogsUseCase;
 import page.clab.api.domain.blog.application.port.out.RetrieveBlogPort;
 import page.clab.api.domain.blog.domain.Blog;
-import page.clab.api.domain.blog.dto.response.BlogResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.EnsureMemberExistenceUseCase;
+import page.clab.api.domain.position.application.dto.request.PositionRequestDto;
 import page.clab.api.domain.position.application.port.in.RegisterPositionUseCase;
 import page.clab.api.domain.position.application.port.out.RegisterPositionPort;
 import page.clab.api.domain.position.application.port.out.RetrievePositionPort;
 import page.clab.api.domain.position.domain.Position;
-import page.clab.api.domain.position.dto.request.PositionRequestDto;
 
 @Service
 @RequiredArgsConstructor

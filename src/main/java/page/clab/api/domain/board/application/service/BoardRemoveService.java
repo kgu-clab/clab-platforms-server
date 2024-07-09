@@ -7,8 +7,8 @@ import page.clab.api.domain.board.application.port.in.RemoveBoardUseCase;
 import page.clab.api.domain.board.application.port.out.RegisterBoardPort;
 import page.clab.api.domain.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.board.domain.Board;
+import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service

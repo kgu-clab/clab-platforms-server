@@ -5,12 +5,12 @@ import org.springframework.stereotype.Service;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
-import page.clab.api.domain.member.dto.shared.MemberBorrowerInfoDto;
-import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.member.dto.shared.MemberEmailInfoDto;
-import page.clab.api.domain.member.dto.shared.MemberLoginInfoDto;
-import page.clab.api.domain.member.dto.shared.MemberPositionInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberBasicInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberBorrowerInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberEmailInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberLoginInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberPositionInfoDto;
 import page.clab.api.global.auth.util.AuthUtil;
 
 import java.util.List;

@@ -12,7 +12,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.dto.shared.MemberEmailInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberEmailInfoDto;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.common.email.dto.request.EmailDto;
 import page.clab.api.global.common.email.exception.MessageSendingFailedException;

@@ -3,10 +3,10 @@ package page.clab.api.domain.activityPhoto.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.activityPhoto.application.dto.request.ActivityPhotoRequestDto;
 import page.clab.api.domain.activityPhoto.application.port.in.RegisterActivityPhotoUseCase;
 import page.clab.api.domain.activityPhoto.application.port.out.RegisterActivityPhotoPort;
 import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
-import page.clab.api.domain.activityPhoto.dto.request.ActivityPhotoRequestDto;
 import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 

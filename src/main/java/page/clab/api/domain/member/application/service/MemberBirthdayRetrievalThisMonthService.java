@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberBirthdaysThisMonthUseCase;
 import page.clab.api.domain.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.dto.response.MemberBirthdayResponseDto;
+import page.clab.api.domain.member.application.dto.response.MemberBirthdayResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

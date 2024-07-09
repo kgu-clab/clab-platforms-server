@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
-import page.clab.api.domain.login.dto.response.TokenInfo;
+import page.clab.api.domain.login.application.dto.response.TokenInfo;
 import page.clab.api.domain.member.domain.Role;
 
 @Getter

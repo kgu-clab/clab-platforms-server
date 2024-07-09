@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.accuse.application.dto.response.AccuseResponseDto;
 import page.clab.api.domain.accuse.application.port.in.RetrieveAccusationUseCase;
 import page.clab.api.domain.accuse.application.port.out.RetrieveAccusePort;
 import page.clab.api.domain.accuse.application.port.out.RetrieveAccuseTargetPort;
@@ -12,9 +13,8 @@ import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
 import page.clab.api.domain.accuse.domain.AccuseTarget;
 import page.clab.api.domain.accuse.domain.TargetType;
-import page.clab.api.domain.accuse.dto.response.AccuseResponseDto;
+import page.clab.api.domain.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 import java.util.List;

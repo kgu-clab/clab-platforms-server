@@ -15,7 +15,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.URL;
-import page.clab.api.domain.product.dto.request.ProductUpdateRequestDto;
+import page.clab.api.domain.product.application.dto.request.ProductUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
 
 import java.util.Optional;

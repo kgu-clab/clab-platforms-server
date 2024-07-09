@@ -3,12 +3,12 @@ package page.clab.api.domain.position.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.member.application.dto.shared.MemberPositionInfoDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.member.dto.shared.MemberPositionInfoDto;
+import page.clab.api.domain.position.application.dto.response.PositionMyResponseDto;
 import page.clab.api.domain.position.application.port.in.RetrieveMyPositionsByYearUseCase;
 import page.clab.api.domain.position.application.port.out.RetrievePositionPort;
 import page.clab.api.domain.position.domain.Position;
-import page.clab.api.domain.position.dto.response.PositionMyResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 
 import java.util.List;

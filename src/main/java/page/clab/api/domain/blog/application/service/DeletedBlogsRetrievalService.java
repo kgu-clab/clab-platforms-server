@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.blog.application.port.in.RetrieveDeletedBlogsUseCase;
 import page.clab.api.domain.blog.application.port.out.RetrieveBlogPort;
 import page.clab.api.domain.blog.domain.Blog;
-import page.clab.api.domain.blog.dto.response.BlogDetailsResponseDto;
+import page.clab.api.domain.blog.application.dto.response.BlogDetailsResponseDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

@@ -6,15 +6,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.book.application.dto.response.BookResponseDto;
 import page.clab.api.domain.book.application.port.in.RetrieveBooksByConditionsUseCase;
 import page.clab.api.domain.book.application.port.out.RetrieveBookLoanRecordPort;
 import page.clab.api.domain.book.application.port.out.RetrieveBookPort;
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.domain.BookLoanStatus;
-import page.clab.api.domain.book.dto.response.BookResponseDto;
+import page.clab.api.domain.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 import java.time.LocalDateTime;

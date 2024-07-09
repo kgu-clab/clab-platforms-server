@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.accuse.application.port.in.RetrieveMyAccusationsUseCase;
 import page.clab.api.domain.accuse.application.port.out.RetrieveAccusePort;
 import page.clab.api.domain.accuse.domain.Accuse;
-import page.clab.api.domain.accuse.dto.response.AccuseMyResponseDto;
+import page.clab.api.domain.accuse.application.dto.response.AccuseMyResponseDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 

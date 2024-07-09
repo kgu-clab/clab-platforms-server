@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.jobPosting.application.port.in.RetrieveJobPostingDetailsUseCase;
 import page.clab.api.domain.jobPosting.application.port.out.RetrieveJobPostingPort;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
-import page.clab.api.domain.jobPosting.dto.response.JobPostingDetailsResponseDto;
+import page.clab.api.domain.jobPosting.application.dto.response.JobPostingDetailsResponseDto;
 
 @Service
 @RequiredArgsConstructor

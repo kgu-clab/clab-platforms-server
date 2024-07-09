@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.comment.application.port.in.RetrieveMyCommentsUseCase;
 import page.clab.api.domain.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.comment.domain.Comment;
-import page.clab.api.domain.comment.dto.response.CommentMyResponseDto;
+import page.clab.api.domain.comment.application.dto.response.CommentMyResponseDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;

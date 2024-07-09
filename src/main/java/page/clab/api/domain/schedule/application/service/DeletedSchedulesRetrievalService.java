@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.schedule.application.port.in.RetrieveDeletedSchedulesUseCase;
 import page.clab.api.domain.schedule.application.port.out.RetrieveSchedulePort;
 import page.clab.api.domain.schedule.domain.Schedule;
-import page.clab.api.domain.schedule.dto.response.ScheduleResponseDto;
+import page.clab.api.domain.schedule.application.dto.response.ScheduleResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.application.application.port.in.RetrieveDeletedApplicationsUseCase;
 import page.clab.api.domain.application.application.port.out.RetrieveApplicationPort;
 import page.clab.api.domain.application.domain.Application;
-import page.clab.api.domain.application.dto.response.ApplicationResponseDto;
+import page.clab.api.domain.application.application.dto.response.ApplicationResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

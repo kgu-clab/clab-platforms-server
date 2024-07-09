@@ -7,7 +7,7 @@ import page.clab.api.domain.jobPosting.application.port.in.RegisterJobPostingUse
 import page.clab.api.domain.jobPosting.application.port.out.RegisterJobPostingPort;
 import page.clab.api.domain.jobPosting.application.port.out.RetrieveJobPostingPort;
 import page.clab.api.domain.jobPosting.domain.JobPosting;
-import page.clab.api.domain.jobPosting.dto.request.JobPostingRequestDto;
+import page.clab.api.domain.jobPosting.application.dto.request.JobPostingRequestDto;
 import page.clab.api.global.validation.ValidationService;
 
 @Service

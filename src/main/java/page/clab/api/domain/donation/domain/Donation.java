@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import page.clab.api.domain.donation.dto.request.DonationUpdateRequestDto;
+import page.clab.api.domain.donation.application.dto.request.DonationUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
 

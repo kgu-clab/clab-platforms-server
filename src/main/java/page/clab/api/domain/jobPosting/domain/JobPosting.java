@@ -17,8 +17,8 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.URL;
-import page.clab.api.domain.jobPosting.dto.request.JobPostingRequestDto;
-import page.clab.api.domain.jobPosting.dto.request.JobPostingUpdateRequestDto;
+import page.clab.api.domain.jobPosting.application.dto.request.JobPostingRequestDto;
+import page.clab.api.domain.jobPosting.application.dto.request.JobPostingUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
 
 import java.util.Optional;

@@ -6,10 +6,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.workExperience.application.dto.response.WorkExperienceResponseDto;
 import page.clab.api.domain.workExperience.application.port.in.RetrieveMyWorkExperienceUseCase;
 import page.clab.api.domain.workExperience.application.port.out.RetrieveWorkExperiencePort;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
-import page.clab.api.domain.workExperience.dto.response.WorkExperienceResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

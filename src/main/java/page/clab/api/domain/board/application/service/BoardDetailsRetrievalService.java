@@ -4,14 +4,14 @@ import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.board.application.dto.response.BoardDetailsResponseDto;
+import page.clab.api.domain.board.application.dto.response.BoardEmojiCountResponseDto;
 import page.clab.api.domain.board.application.port.in.RetrieveBoardDetailsUseCase;
 import page.clab.api.domain.board.application.port.out.RetrieveBoardEmojiPort;
 import page.clab.api.domain.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.board.domain.Board;
-import page.clab.api.domain.board.dto.response.BoardDetailsResponseDto;
-import page.clab.api.domain.board.dto.response.BoardEmojiCountResponseDto;
+import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
 
 import java.util.List;
 import java.util.stream.Collectors;

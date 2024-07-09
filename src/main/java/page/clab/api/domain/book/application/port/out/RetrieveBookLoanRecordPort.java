@@ -2,11 +2,11 @@ package page.clab.api.domain.book.application.port.out;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import page.clab.api.domain.book.application.dto.response.BookLoanRecordOverdueResponseDto;
+import page.clab.api.domain.book.application.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.domain.BookLoanStatus;
-import page.clab.api.domain.book.dto.response.BookLoanRecordOverdueResponseDto;
-import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
 
 import java.util.Optional;
 

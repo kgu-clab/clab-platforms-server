@@ -10,7 +10,7 @@ import page.clab.api.domain.login.application.port.out.RegisterAccountLockInfoPo
 import page.clab.api.domain.login.application.port.out.RetrieveAccountLockInfoPort;
 import page.clab.api.domain.login.domain.AccountLockInfo;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.member.dto.shared.MemberBasicInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 

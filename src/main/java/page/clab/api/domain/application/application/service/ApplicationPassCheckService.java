@@ -3,10 +3,10 @@ package page.clab.api.domain.application.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.application.application.dto.response.ApplicationPassResponseDto;
 import page.clab.api.domain.application.application.port.in.CheckApplicationPassStatusUseCase;
 import page.clab.api.domain.application.application.port.out.RetrieveApplicationPort;
 import page.clab.api.domain.application.domain.ApplicationId;
-import page.clab.api.domain.application.dto.response.ApplicationPassResponseDto;
 
 @Service
 @RequiredArgsConstructor

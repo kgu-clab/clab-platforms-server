@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.award.application.port.in.RetrieveMyAwardsUseCase;
 import page.clab.api.domain.award.application.port.out.RetrieveAwardPort;
 import page.clab.api.domain.award.domain.Award;
-import page.clab.api.domain.award.dto.response.AwardResponseDto;
+import page.clab.api.domain.award.application.dto.response.AwardResponseDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 

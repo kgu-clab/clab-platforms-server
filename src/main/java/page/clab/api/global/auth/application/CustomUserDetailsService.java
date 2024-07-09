@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import page.clab.api.domain.member.dao.MemberRepository;
+import page.clab.api.domain.member.adapter.out.persistence.MemberRepository;
 import page.clab.api.domain.member.domain.Member;
 
 @Service

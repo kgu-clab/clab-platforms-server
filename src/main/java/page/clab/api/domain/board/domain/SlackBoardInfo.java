@@ -2,7 +2,7 @@ package page.clab.api.domain.board.domain;
 
 import lombok.Builder;
 import lombok.Getter;
-import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
 
 @Getter
 @Builder

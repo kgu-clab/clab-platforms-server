@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import page.clab.api.domain.member.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.workExperience.dto.request.WorkExperienceUpdateRequestDto;
+import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.workExperience.application.dto.request.WorkExperienceUpdateRequestDto;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
 

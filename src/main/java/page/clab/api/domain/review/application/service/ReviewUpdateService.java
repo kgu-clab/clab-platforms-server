@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.review.application.dto.request.ReviewUpdateRequestDto;
 import page.clab.api.domain.review.application.port.in.UpdateReviewUseCase;
 import page.clab.api.domain.review.application.port.out.RegisterReviewPort;
 import page.clab.api.domain.review.application.port.out.RetrieveReviewPort;
 import page.clab.api.domain.review.domain.Review;
-import page.clab.api.domain.review.dto.request.ReviewUpdateRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.validation.ValidationService;
 

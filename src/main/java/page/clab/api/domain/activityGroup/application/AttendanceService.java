@@ -21,7 +21,7 @@ import page.clab.api.domain.activityGroup.dto.response.AbsentResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.AttendanceResponseDto;
 import page.clab.api.domain.activityGroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activityGroup.exception.DuplicateAttendanceException;
-import page.clab.api.domain.login.dao.RedisQRKeyRepository;
+import page.clab.api.domain.login.adapter.out.persistence.RedisQRKeyRepository;
 import page.clab.api.domain.login.domain.RedisQRKey;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
