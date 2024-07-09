@@ -44,25 +44,15 @@ import java.io.IOException;
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-
     private final ManageRedisTokenUseCase manageRedisTokenUseCase;
-
     private final RedisIpAccessMonitorService redisIpAccessMonitorService;
-
     private final BlacklistIpRepository blacklistIpRepository;
-
     private final SlackService slackService;
-
     private final WhitelistService whitelistService;
-
     private final CorsConfigurationSource corsConfigurationSource;
-
     private final AuthenticationConfig authenticationConfig;
-
     private final WhitelistAccountProperties whitelistAccountProperties;
-
-    private final WhitelistPatternsProperties WhitelistPatternsProperties;
-
+    private final WhitelistPatternsProperties whitelistPatternsProperties;
     private final IPInfoConfig ipInfoConfig;
 
     @Value("${resource.file.url}")
@@ -94,7 +84,7 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository, whitelistService),
+                        new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository, whitelistService, slackService),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
@@ -115,7 +105,7 @@ public class SecurityConfig {
 
     private ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry configureRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequests) {
         return authorizeRequests
-                .requestMatchers(WhitelistPatternsProperties.getPatterns()).hasRole(whitelistAccountProperties.getRole())
+                .requestMatchers(whitelistPatternsProperties.getWhitelistPatterns()).hasRole(whitelistAccountProperties.getRole())
                 .requestMatchers(SecurityConstants.PERMIT_ALL).permitAll()
                 .requestMatchers(HttpMethod.GET, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
                 .requestMatchers(HttpMethod.POST, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
@@ -144,5 +134,4 @@ public class SecurityConfig {
         int httpStatus = response.getStatus();
         log.info("[{}:{}] {} {} {} {}", clientIpAddress, id, requestUrl, httpMethod, httpStatus, message);
     }
-
 }
