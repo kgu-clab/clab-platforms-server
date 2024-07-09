@@ -3,8 +3,6 @@ package page.clab.api.domain.activityGroup.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -28,12 +26,13 @@ import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupStatusResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.GroupMemberResponseDto;
-import page.clab.api.domain.application.domain.Application;
-import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/activity-group/member")
@@ -68,7 +67,7 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "[U] 나의 활동 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/my")
     public ApiResponse<PagedResponseDto<ActivityGroupResponseDto>> getMyActivityGroups(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -80,9 +79,9 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "[U] 활동 상태별 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/status")
-    public ApiResponse<PagedResponseDto<ActivityGroupStatusResponseDto>> getActivityGroupsByStatus (
+    public ApiResponse<PagedResponseDto<ActivityGroupStatusResponseDto>> getActivityGroupsByStatus(
             @RequestParam(name = "activityGroupStatus") ActivityGroupStatus status,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
@@ -109,7 +108,7 @@ public class ActivityGroupMemberController {
 
     @Operation(summary = "[U] 활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDate, startDate")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/schedule")
     public ApiResponse<PagedResponseDto<GroupScheduleDto>> getGroupScheduleList(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
@@ -126,7 +125,7 @@ public class ActivityGroupMemberController {
     @Operation(summary = "[U] 활동 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "활동에 참여(수락)된 멤버만 조회 가능<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDate, startDate")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/members")
     public ApiResponse<PagedResponseDto<GroupMemberResponseDto>> getActivityGroupMemberList(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
@@ -141,7 +140,7 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "[U] 활동 신청", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping("/apply")
     public ApiResponse<Long> applyActivityGroup(
             @RequestParam Long activityGroupId,

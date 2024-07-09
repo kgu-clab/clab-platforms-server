@@ -37,5 +37,4 @@ public class RecruitmentRequestDto {
                 .target(requestDto.getTarget())
                 .build();
     }
-
 }

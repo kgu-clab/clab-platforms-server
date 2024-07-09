@@ -38,5 +38,4 @@ public class PositionResponseDto {
                 .year(position.getYear())
                 .build();
     }
-
 }

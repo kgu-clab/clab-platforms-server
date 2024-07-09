@@ -13,7 +13,7 @@ public class QRCodeUtil {
 
     private static final int SIZE = 200;
 
-    public static byte[] encodeQRCode(String data) throws WriterException, IOException{
+    public static byte[] encodeQRCode(String data) throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, SIZE, SIZE);
 

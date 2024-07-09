@@ -15,5 +15,4 @@ public enum BoardCategory {
 
     private String key;
     private String description;
-
 }

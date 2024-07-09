@@ -16,5 +16,4 @@ public class CommentUpdateRequestDto {
     @NotNull(message = "{notNull.comment.wantAnonymous}")
     @Schema(description = "익명 사용 여부", example = "false")
     private boolean wantAnonymous;
-
 }

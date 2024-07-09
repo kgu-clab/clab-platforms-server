@@ -51,10 +51,13 @@ public class Donation extends BaseEntity {
         Optional.ofNullable(donationUpdateRequestDto.getMessage()).ifPresent(this::setMessage);
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     public void validateAccessPermission(boolean isSuperAdmin) throws PermissionDeniedException {
         if (!isSuperAdmin) {
             throw new PermissionDeniedException("해당 후원 정보를 수정할 권한이 없습니다.");
         }
     }
-
 }

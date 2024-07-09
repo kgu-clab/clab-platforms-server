@@ -165,6 +165,10 @@ public class Member extends BaseEntity implements UserDetails {
         }
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     public boolean isAdminRole() {
         return role.equals(Role.ADMIN) || role.equals(Role.SUPER);
     }

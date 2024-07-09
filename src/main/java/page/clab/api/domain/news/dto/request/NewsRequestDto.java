@@ -49,5 +49,4 @@ public class NewsRequestDto {
                 .date(requestDto.getDate())
                 .build();
     }
-
 }

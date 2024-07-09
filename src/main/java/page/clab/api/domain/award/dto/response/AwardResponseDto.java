@@ -29,5 +29,4 @@ public class AwardResponseDto {
                 .awardDate(award.getAwardDate())
                 .build();
     }
-
 }

@@ -27,14 +27,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 @RequiredArgsConstructor
 public class EmailAsyncService {
 
+    private static final int MAX_BATCH_SIZE = 10;
+    private static final BlockingQueue<EmailTask> emailQueue = new LinkedBlockingQueue<>();
     private final JavaMailSender javaMailSender;
-
     @Value("${spring.mail.username}")
     private String sender;
-
-    private static final int MAX_BATCH_SIZE = 10;
-
-    private static final BlockingQueue<EmailTask> emailQueue = new LinkedBlockingQueue<>();
 
     @Async
     public void sendEmailAsync(String to, String subject, String content, List<File> files, EmailTemplateType emailTemplateType) throws MessagingException {
@@ -91,7 +88,7 @@ public class EmailAsyncService {
     }
 
     private void setImageInTemplate(MimeMessageHelper messageHelper, EmailTemplateType templateType) throws MessagingException {
-        switch(templateType) {
+        switch (templateType) {
             case NORMAL -> {
                 messageHelper.addInline("image-1", new ClassPathResource("images/image-1.png"));
                 break;

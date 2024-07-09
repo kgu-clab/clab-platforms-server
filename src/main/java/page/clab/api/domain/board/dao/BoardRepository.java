@@ -23,5 +23,4 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<Board> findAllByIsDeletedTrue(Pageable pageable);
 
     List<Board> findByMemberId(String memberId);
-
 }

@@ -23,5 +23,4 @@ public class BlacklistIpRequestDto {
                 .reason(requestDto.getReason())
                 .build();
     }
-
 }

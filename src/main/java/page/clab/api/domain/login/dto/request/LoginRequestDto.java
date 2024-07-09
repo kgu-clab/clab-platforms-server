@@ -16,5 +16,4 @@ public class LoginRequestDto {
     @NotNull(message = "{notNull.login.password}")
     @Schema(description = "비밀번호", example = "1234", required = true)
     private String password;
-
 }

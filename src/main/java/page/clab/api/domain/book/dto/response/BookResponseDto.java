@@ -47,5 +47,4 @@ public class BookResponseDto {
                 .updatedAt(book.getUpdatedAt())
                 .build();
     }
-
 }

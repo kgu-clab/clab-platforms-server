@@ -21,5 +21,4 @@ public interface PositionRepository extends JpaRepository<Position, Long>, Posit
 
     @Query(value = "SELECT p.* FROM \"position\" p WHERE p.is_deleted = true", nativeQuery = true)
     Page<Position> findAllByIsDeletedTrue(Pageable pageable);
-
 }

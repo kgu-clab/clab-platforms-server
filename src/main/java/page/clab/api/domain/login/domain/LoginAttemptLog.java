@@ -53,5 +53,4 @@ public class LoginAttemptLog extends BaseEntity {
                 .loginAttemptTime(LocalDateTime.now())
                 .build();
     }
-
 }

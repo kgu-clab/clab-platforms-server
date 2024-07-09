@@ -111,8 +111,11 @@ public class Application extends BaseEntity {
                 .build();
     }
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     public void toggleApprovalStatus() {
         this.isPass = !this.isPass;
     }
-
 }

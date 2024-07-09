@@ -25,5 +25,4 @@ public class BoardUpdateRequestDto {
     @NotNull(message = "{notNull.board.wantAnonymous}")
     @Schema(description = "익명 사용 여부", example = "false")
     private boolean wantAnonymous;
-
 }

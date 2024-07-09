@@ -42,14 +42,12 @@ import page.clab.api.domain.book.exception.LoanNotPendingException;
 import page.clab.api.domain.book.exception.LoanSuspensionException;
 import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.book.exception.OverdueException;
-import page.clab.api.domain.login.exception.LoginFaliedException;
+import page.clab.api.domain.login.exception.LoginFailedException;
 import page.clab.api.domain.login.exception.MemberLockedException;
 import page.clab.api.domain.member.exception.DuplicateMemberContactException;
 import page.clab.api.domain.member.exception.DuplicateMemberEmailException;
 import page.clab.api.domain.member.exception.DuplicateMemberIdException;
 import page.clab.api.domain.review.exception.AlreadyReviewedException;
-import page.clab.api.domain.sharedAccount.exception.InvalidUsageTimeException;
-import page.clab.api.domain.sharedAccount.exception.SharedAccountUsageStateException;
 import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
@@ -70,12 +68,12 @@ import page.clab.api.global.exception.InvalidEmojiException;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.exception.SortingArgumentException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletionException;
-import page.clab.api.global.exception.SortingArgumentException;
 
 @RestControllerAdvice(basePackages = "page.clab.api")
 @RequiredArgsConstructor
@@ -100,7 +98,7 @@ public class GlobalExceptionHandler {
             UnknownPathException.class,
             InvalidEmojiException.class
     })
-    public ErrorResponse badRequestException(HttpServletResponse response, Exception e) {
+    public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
         return ErrorResponse.failure(e);
     }
@@ -109,7 +107,7 @@ public class GlobalExceptionHandler {
             AuthenticationInfoNotFoundException.class,
             UnAuthorizeException.class,
             AccessDeniedException.class,
-            LoginFaliedException.class,
+            LoginFailedException.class,
             MemberLockedException.class,
             BadCredentialsException.class,
             TokenValidateException.class,
@@ -118,7 +116,7 @@ public class GlobalExceptionHandler {
             TokenForgeryException.class,
             MessagingException.class,
     })
-    public ApiResponse unAuthorizeException(HttpServletResponse response, Exception e) {
+    public ApiResponse<Void> unAuthorizeException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         return ApiResponse.failure();
     }
@@ -127,7 +125,7 @@ public class GlobalExceptionHandler {
             PermissionDeniedException.class,
             InvalidBorrowerException.class,
     })
-    public ApiResponse deniedException(HttpServletResponse response, Exception e) {
+    public ApiResponse<Void> deniedException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         return ApiResponse.failure();
     }
@@ -138,7 +136,7 @@ public class GlobalExceptionHandler {
             NoSuchElementException.class,
             FileNotFoundException.class,
     })
-    public ErrorResponse notFoundException(HttpServletResponse response, Exception e) {
+    public ErrorResponse<Exception> notFoundException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
         return ErrorResponse.failure(e);
     }
@@ -146,7 +144,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             AssignmentFileUploadFailException.class
     })
-    public ApiResponse notFoundException(HttpServletResponse response, AssignmentFileUploadFailException e) {
+    public ApiResponse<Void> notFoundException(HttpServletResponse response, AssignmentFileUploadFailException e) {
         response.setStatus(HttpServletResponse.SC_OK);
         return ApiResponse.failure();
     }
@@ -173,10 +171,8 @@ public class GlobalExceptionHandler {
             OverdueException.class,
             LoanSuspensionException.class,
             LoanNotPendingException.class,
-            SharedAccountUsageStateException.class,
-            InvalidUsageTimeException.class,
     })
-    public ErrorResponse conflictException(HttpServletResponse response, Exception e) {
+    public ErrorResponse<Exception> conflictException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
         return ErrorResponse.failure(e);
     }
@@ -200,7 +196,7 @@ public class GlobalExceptionHandler {
             MetadataException.class,
             Exception.class
     })
-    public ApiResponse serverException(HttpServletRequest request, HttpServletResponse response, Exception e) {
+    public ApiResponse<Void> serverException(HttpServletRequest request, HttpServletResponse response, Exception e) {
         slackService.sendServerErrorNotification(request, e);
         log.warn(e.getMessage());
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -211,7 +207,7 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException.class,
             ConstraintViolationException.class
     })
-    public ApiResponse handleValidationException(HttpServletResponse response, Exception e) {
+    public ApiResponse<Void> handleValidationException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return ApiResponse.failure();
     }

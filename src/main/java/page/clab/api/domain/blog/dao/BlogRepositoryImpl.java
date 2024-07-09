@@ -46,5 +46,4 @@ public class BlogRepositoryImpl implements BlogRepositoryCustom {
 
         return new PageImpl<>(blogs, pageable, count);
     }
-
 }

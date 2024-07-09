@@ -7,8 +7,6 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.google.common.base.Strings;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -21,6 +19,7 @@ import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.util.ImageCompressionUtil;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -34,15 +33,12 @@ import java.util.UUID;
 @Configuration
 public class FileHandler {
 
+    private final Set<String> disallowExtensions = new HashSet<>();
+    private final Set<String> compressibleImageExtensions = new HashSet<>();
     @Value("${resource.file.path}")
     private String filePath;
-
     @Value("${resource.file.image-quality}")
     private float imageQuality;
-
-    private final Set<String> disallowExtensions = new HashSet<>();
-
-    private final Set<String> compressibleImageExtensions = new HashSet<>();
 
     public FileHandler(
             @Value("${resource.file.disallow-extension}") String[] disallowExtensions,
@@ -82,8 +78,7 @@ public class FileHandler {
             if (isImageFile(multipartFile)) {
                 BufferedImage originalImage = adjustImageDirection(multipartFile);
                 ImageIO.write(originalImage, extension, file);
-            }
-            else {
+            } else {
                 multipartFile.transferTo(file);
             }
         } catch (Exception e) {
@@ -104,13 +99,13 @@ public class FileHandler {
             case 1:
                 break;
             case 3:
-                bufferedImage = Scalr.rotate(bufferedImage, Scalr.Rotation.CW_180, null);
+                bufferedImage = Scalr.rotate(bufferedImage, Scalr.Rotation.CW_180, (BufferedImageOp[]) null);
                 break;
             case 6:
-                bufferedImage = Scalr.rotate(bufferedImage, Scalr.Rotation.CW_90, null);
+                bufferedImage = Scalr.rotate(bufferedImage, Scalr.Rotation.CW_90, (BufferedImageOp[]) null);
                 break;
             case 8:
-                bufferedImage = Scalr.rotate(bufferedImage, Scalr.Rotation.CW_270, null);
+                bufferedImage = Scalr.rotate(bufferedImage, Scalr.Rotation.CW_270, (BufferedImageOp[]) null);
                 break;
         }
 

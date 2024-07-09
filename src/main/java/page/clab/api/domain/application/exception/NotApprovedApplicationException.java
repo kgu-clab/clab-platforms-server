@@ -11,5 +11,4 @@ public class NotApprovedApplicationException extends RuntimeException {
     public NotApprovedApplicationException(String s) {
         super(s);
     }
-
 }

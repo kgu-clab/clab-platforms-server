@@ -21,7 +21,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
-import page.clab.api.domain.login.application.RedisTokenService;
+import page.clab.api.domain.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
@@ -44,7 +44,7 @@ import java.io.IOException;
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTokenService redisTokenService;
+    private final ManageRedisTokenUseCase manageRedisTokenUseCase;
     private final RedisIpAccessMonitorService redisIpAccessMonitorService;
     private final BlacklistIpRepository blacklistIpRepository;
     private final SlackService slackService;
@@ -88,7 +88,7 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new JwtAuthenticationFilter(jwtTokenProvider, redisTokenService, redisIpAccessMonitorService, slackService, blacklistIpRepository),
+                        new JwtAuthenticationFilter(jwtTokenProvider, manageRedisTokenUseCase, redisIpAccessMonitorService, slackService, blacklistIpRepository),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->

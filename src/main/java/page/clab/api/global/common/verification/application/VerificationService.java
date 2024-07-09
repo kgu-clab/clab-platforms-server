@@ -21,7 +21,7 @@ public class VerificationService {
         return verificationRepository.findByVerificationCode(verificationCode)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 인증코드입니다."));
     }
-    
+
     public void saveVerificationCode(String memberId, String verificationCode) {
         Verification code = Verification.create(memberId, verificationCode);
         verificationRepository.save(code);
@@ -44,5 +44,4 @@ public class VerificationService {
         secureRandom.nextBytes(codeBytes);
         return Base64.encodeBase64URLSafeString(codeBytes);
     }
-
 }

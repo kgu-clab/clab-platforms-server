@@ -5,7 +5,5 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.review.domain.Review;
 
 public interface ReviewRepositoryCustom {
-
     Page<Review> findByConditions(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable);
-
 }

@@ -25,5 +25,4 @@ public class DonationRequestDto {
                 .message(requestDto.getMessage())
                 .build();
     }
-
 }

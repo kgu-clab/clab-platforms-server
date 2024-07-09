@@ -37,5 +37,4 @@ public class WorkExperienceRequestDto {
                 .memberId(memberId)
                 .build();
     }
-
 }

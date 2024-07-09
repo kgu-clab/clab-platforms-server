@@ -17,5 +17,4 @@ public class ScheduleCollectResponseDto {
                 .totalEventCount(totalEventCount)
                 .build();
     }
-
 }

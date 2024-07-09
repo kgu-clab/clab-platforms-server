@@ -10,9 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.domain.QMember;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -66,5 +66,4 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     private BooleanExpression birthdayInMonth(int month) {
         return QMember.member.birth.month().eq(month);
     }
-
 }

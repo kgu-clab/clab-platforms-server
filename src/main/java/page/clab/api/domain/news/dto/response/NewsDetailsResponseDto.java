@@ -44,5 +44,4 @@ public class NewsDetailsResponseDto {
                 .createdAt(news.getCreatedAt())
                 .build();
     }
-
 }

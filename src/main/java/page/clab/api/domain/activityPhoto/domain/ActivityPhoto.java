@@ -14,6 +14,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.domain.UploadedFile;
 
@@ -26,6 +28,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@SQLDelete(sql = "UPDATE activity_photo SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 public class ActivityPhoto extends BaseEntity {
 
     @Id
@@ -46,8 +50,11 @@ public class ActivityPhoto extends BaseEntity {
     @Column(nullable = false)
     private Boolean isPublic;
 
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     public void togglePublicStatus() {
         this.isPublic = !this.isPublic;
     }
-
 }

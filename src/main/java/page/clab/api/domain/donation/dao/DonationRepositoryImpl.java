@@ -49,5 +49,4 @@ public class DonationRepositoryImpl implements DonationRepositoryCustom {
 
         return new PageImpl<>(results, pageable, count);
     }
-
 }

@@ -23,5 +23,4 @@ public class LoginHeader {
         Gson gson = new GsonBuilder().serializeNulls().create();
         return gson.toJson(this);
     }
-
 }

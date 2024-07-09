@@ -3,8 +3,6 @@ package page.clab.api.domain.activityGroup.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -24,13 +22,14 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupReport;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupReportResponseDto;
-import page.clab.api.domain.application.domain.Application;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/activity-group/report")
@@ -43,7 +42,7 @@ public class ActivityGroupReportController {
 
     @Operation(summary = "[U] 활동 보고서 작성", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     public ApiResponse<Long> writeReport(
             @Valid @RequestBody ActivityGroupReportRequestDto requestDto
     ) throws PermissionDeniedException, IllegalAccessException {
@@ -54,7 +53,7 @@ public class ActivityGroupReportController {
     @Operation(summary = "[U] 특정 그룹의 활동 보고서 전체 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, activityGroupId")
     @GetMapping("")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     public ApiResponse<PagedResponseDto<ActivityGroupReportResponseDto>> getReports(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -69,7 +68,7 @@ public class ActivityGroupReportController {
 
     @Operation(summary = "[U] 특정 그룹의 특정 차시 활동 보고서 검색", description = "ROLE_USER 이상의 권한이 필요함")
     @GetMapping("/search")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     public ApiResponse<ActivityGroupReportResponseDto> searchReport(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "turn") Long turn
@@ -80,7 +79,7 @@ public class ActivityGroupReportController {
 
     @Operation(summary = "[U] 활동 보고서 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @PatchMapping("/{reportId}")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     public ApiResponse<Long> updateReport(
             @PathVariable(name = "reportId") Long reportId,
             @RequestParam(name = "activityGroupId") Long activityGroupId,
@@ -91,7 +90,7 @@ public class ActivityGroupReportController {
     }
 
     @Operation(summary = "[U] 활동보고서 삭제", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({"ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER"})
+    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @DeleteMapping("/{reportId}")
     public ApiResponse<Long> deleteAward(
             @PathVariable(name = "reportId") Long reportId
@@ -103,7 +102,7 @@ public class ActivityGroupReportController {
 
     @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 활동보고서 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({"ROLE_SUPER"})
+    @Secured({ "ROLE_SUPER" })
     public ApiResponse<PagedResponseDto<ActivityGroupReportResponseDto>> getDeletedActivityGroupReports(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size

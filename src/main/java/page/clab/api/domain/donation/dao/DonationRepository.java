@@ -10,11 +10,8 @@ import page.clab.api.domain.donation.domain.Donation;
 
 public interface DonationRepository extends JpaRepository<Donation, Long>, DonationRepositoryCustom, QuerydslPredicateExecutor<Donation> {
 
-    Page<Donation> findAllByOrderByCreatedAtDesc(Pageable pageable);
-
     Page<Donation> findByMemberId(String memberId, Pageable pageable);
 
     @Query(value = "SELECT d.* FROM donation d WHERE d.is_deleted = true", nativeQuery = true)
     Page<Donation> findAllByIsDeletedTrue(Pageable pageable);
-
 }

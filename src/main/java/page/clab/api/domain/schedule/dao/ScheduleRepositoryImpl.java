@@ -14,11 +14,11 @@ import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.domain.ScheduleType;
 import page.clab.api.domain.schedule.dto.response.ScheduleCollectResponseDto;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import page.clab.api.global.util.OrderSpecifierUtil;
 
 @Repository
 @RequiredArgsConstructor
@@ -137,5 +137,4 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
 
         return ScheduleCollectResponseDto.toDto(total, highPriorityCount);
     }
-
 }

@@ -25,5 +25,4 @@ public class BookLoanRecordOverdueResponseDto {
     private LocalDateTime dueDate;
 
     private BookLoanStatus status;
-
 }

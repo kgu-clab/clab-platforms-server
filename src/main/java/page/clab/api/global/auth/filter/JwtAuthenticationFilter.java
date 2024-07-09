@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
-import page.clab.api.domain.login.application.RedisTokenService;
+import page.clab.api.domain.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
@@ -29,7 +29,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTokenService redisTokenService;
+    private final ManageRedisTokenUseCase manageRedisTokenUseCase;
     private final RedisIpAccessMonitorService redisIpAccessMonitorService;
     private final SlackService slackService;
     private final BlacklistIpRepository blacklistIpRepository;
@@ -65,14 +65,14 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     private boolean authenticateToken(HttpServletRequest request, HttpServletResponse response, String clientIpAddress) throws IOException {
         String token = jwtTokenProvider.resolveToken(request);
         if (token != null && jwtTokenProvider.validateToken(token)) {
-            RedisToken redisToken = jwtTokenProvider.isRefreshToken(token) ? redisTokenService.getRedisTokenByRefreshToken(token) : redisTokenService.getRedisTokenByAccessToken(token);
+            RedisToken redisToken = jwtTokenProvider.isRefreshToken(token) ? manageRedisTokenUseCase.findByRefreshToken(token) : manageRedisTokenUseCase.findByAccessToken(token);
             if (redisToken == null) {
                 log.warn("존재하지 않는 토큰입니다.");
                 ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
                 return false;
             }
             if (!redisToken.getIp().equals(clientIpAddress)) {
-                redisTokenService.deleteRedisTokenByAccessToken(token);
+                manageRedisTokenUseCase.deleteByAccessToken(token);
                 sendSecurityAlertSlackMessage(request, redisToken);
                 log.warn("[{}] 토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.", clientIpAddress);
                 ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);

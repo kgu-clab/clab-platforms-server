@@ -15,9 +15,8 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long>, J
 
     Optional<JobPosting> findByJobPostingUrl(String jobPostingUrl);
 
-    Page<JobPosting> findAllByOrderByCreatedAtDesc(Pageable pageable);
-
     @Query(value = "SELECT j.* FROM job_posting j WHERE j.is_deleted = true", nativeQuery = true)
     Page<JobPosting> findAllByIsDeletedTrue(Pageable pageable);
 
+    boolean existsByJobPostingUrl(String jobPostingUrl);
 }

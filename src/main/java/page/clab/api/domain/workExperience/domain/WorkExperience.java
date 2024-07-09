@@ -73,5 +73,4 @@ public class WorkExperience extends BaseEntity {
             throw new PermissionDeniedException("해당 경력사항을 수정/삭제할 권한이 없습니다.");
         }
     }
-
 }

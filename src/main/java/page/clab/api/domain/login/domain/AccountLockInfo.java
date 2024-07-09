@@ -84,6 +84,5 @@ public class AccountLockInfo extends BaseEntity {
             unlockAccount();
         }
     }
-
 }
 

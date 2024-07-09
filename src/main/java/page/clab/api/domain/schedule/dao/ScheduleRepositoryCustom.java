@@ -20,5 +20,4 @@ public interface ScheduleRepositoryCustom {
     Page<Schedule> findActivitySchedulesByDateRangeAndMember(LocalDate startDate, LocalDate endDate, Member member, Pageable pageable);
 
     ScheduleCollectResponseDto findCollectSchedules();
-
 }

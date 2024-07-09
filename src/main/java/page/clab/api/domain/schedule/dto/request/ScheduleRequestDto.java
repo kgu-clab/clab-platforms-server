@@ -54,5 +54,4 @@ public class ScheduleRequestDto {
                 .activityGroup(activityGroup)
                 .build();
     }
-
 }

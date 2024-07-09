@@ -36,12 +36,12 @@ public class WhitelistService {
                 mapper.writeValue(Files.newBufferedWriter(path), defaultContent);
                 log.info("Whitelist IP file created at {}", whitelistPath);
             }
-            Map<String, List<String>> data = mapper.readValue(path.toFile(), new TypeReference<>() {});
+            Map<String, List<String>> data = mapper.readValue(path.toFile(), new TypeReference<>() {
+            });
             return data.getOrDefault("allowedIps", List.of("*"));
         } catch (IOException e) {
             log.error("Failed to load or create IP whitelist from path: {}", whitelistPath, e);
             return List.of("*");
         }
     }
-
 }

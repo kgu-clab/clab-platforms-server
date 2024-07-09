@@ -33,5 +33,4 @@ public class BookLoanRecordResponseDto {
     private Long loanExtensionCount;
 
     private BookLoanStatus status;
-
 }

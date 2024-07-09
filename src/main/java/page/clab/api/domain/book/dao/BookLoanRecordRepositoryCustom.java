@@ -7,9 +7,7 @@ import page.clab.api.domain.book.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.domain.book.dto.response.BookLoanRecordResponseDto;
 
 public interface BookLoanRecordRepositoryCustom {
-
     Page<BookLoanRecordResponseDto> findByConditions(Long bookId, String borrowerId, BookLoanStatus status, Pageable pageable);
 
     Page<BookLoanRecordOverdueResponseDto> findOverdueBookLoanRecords(Pageable pageable);
-
 }

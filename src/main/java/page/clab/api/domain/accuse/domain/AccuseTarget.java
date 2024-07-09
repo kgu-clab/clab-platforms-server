@@ -45,5 +45,4 @@ public class AccuseTarget extends BaseEntity {
     public void updateStatus(AccuseStatus newStatus) {
         this.accuseStatus = newStatus;
     }
-
 }
