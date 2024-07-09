@@ -51,7 +51,6 @@ public class SecurityConfig {
     private final WhitelistAccountProperties whitelistAccountProperties;
     private final WhitelistPatternsProperties whitelistPatternsProperties;
     private final IPInfoConfig ipInfoConfig;
-    private final ApiDocsConfig apiDocsConfig;
 
     @Value("${resource.file.url}")
     String fileURL;
@@ -82,7 +81,7 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository, whitelistService, whitelistPatternsProperties, slackService, apiDocsConfig),
+                        new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository, whitelistService, slackService),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
