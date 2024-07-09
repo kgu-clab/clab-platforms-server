@@ -7,8 +7,6 @@ import page.clab.api.global.config.WhitelistPatternsProperties;
 
 import java.util.regex.Pattern;
 
-
-
 @Component
 public class WhitelistUtil implements InitializingBean {
 
