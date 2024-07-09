@@ -20,7 +20,7 @@ import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
-import page.clab.api.global.util.SwaggerUtil;
+import page.clab.api.global.util.WhitelistUtil;
 
 import java.io.IOException;
 
@@ -29,13 +29,9 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final JwtTokenProvider jwtTokenProvider;
-
     private final RedisTokenService redisTokenService;
-
     private final RedisIpAccessMonitorService redisIpAccessMonitorService;
-
     private final SlackService slackService;
-
     private final BlacklistIpRepository blacklistIpRepository;
 
     @Override
@@ -43,7 +39,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         String path = httpServletRequest.getRequestURI();
-        if (SwaggerUtil.isSwaggerRequest(path)) {
+        if (WhitelistUtil.isWhitelistRequest(path)) {
             chain.doFilter(request, response);
             return;
         }
@@ -96,5 +92,4 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             slackService.sendSecurityAlertNotification(request, SecurityAlertType.DUPLICATE_LOGIN, "토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
         }
     }
-
 }
