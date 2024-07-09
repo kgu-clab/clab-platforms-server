@@ -18,14 +18,11 @@ import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
-import page.clab.api.global.config.ApiDocsConfig;
-import page.clab.api.global.config.WhitelistPatternsProperties;
 import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
 import page.clab.api.global.util.WhitelistUtil;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -36,26 +33,20 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
     private final RedisIpAccessMonitorService redisIpAccessMonitorService;
     private final BlacklistIpRepository blacklistIpRepository;
     private final WhitelistService whitelistService;
-    private final WhitelistPatternsProperties whitelistPatternsProperties;
     private final SlackService slackService;
-    private final ApiDocsConfig apiDocsConfig;
 
     public CustomBasicAuthenticationFilter(
             AuthenticationManager authenticationManager,
             RedisIpAccessMonitorService redisIpAccessMonitorService,
             BlacklistIpRepository blacklistIpRepository,
             WhitelistService whitelistService,
-            WhitelistPatternsProperties whitelistPatternsProperties,
-            SlackService slackService,
-            ApiDocsConfig apiDocsConfig
+            SlackService slackService
     ) {
         super(authenticationManager);
         this.redisIpAccessMonitorService = redisIpAccessMonitorService;
         this.blacklistIpRepository = blacklistIpRepository;
         this.whitelistService = whitelistService;
-        this.whitelistPatternsProperties = whitelistPatternsProperties;
         this.slackService = slackService;
-        this.apiDocsConfig = apiDocsConfig;
     }
 
     @Override
@@ -90,13 +81,8 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
         String username = credentials[0];
         String password = credentials[1];
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
-        Authentication authentication = null;
         try {
-            authentication = getAuthenticationManager().authenticate(authRequest);
-            if (authentication == null) {
-                ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
-                return false;
-            }
+            Authentication authentication = getAuthenticationManager().authenticate(authRequest);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             sendAuthenticationSuccessAlertSlackMessage(request);
         } catch (BadCredentialsException e) {
@@ -128,32 +114,21 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
         return credentials.split(":", 2);
     }
 
-    public boolean isApiDocsPath(String path) {
-        String swaggerEndpoint = apiDocsConfig.getSwaggerEndpoint();
-        return swaggerEndpoint.equals(path);
-    }
-
-    public boolean isActuatorPath(String path) {
-        String[] actuatorPaths = whitelistPatternsProperties.getPatterns().get("actuator");
-        return Arrays.stream(actuatorPaths)
-                .anyMatch(path::matches);
-    }
-
     private void sendAuthenticationSuccessAlertSlackMessage(HttpServletRequest request) {
         String path = request.getRequestURI();
-        if (isApiDocsPath(path)) {
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.API_DOCS_ACCESS,"API 문서 접근 성공");
-        } else if (isActuatorPath(path)) {
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.ACTUATOR_ACCESS,"Actuator 접근 성공");
+        if (WhitelistUtil.isSwaggerIndexEndpoint(path)) {
+            slackService.sendSecurityAlertNotification(request, SecurityAlertType.API_DOCS_ACCESS,"API 문서에 대한 접근이 허가되었습니다.");
+        } else if (WhitelistUtil.isActuatorRequest(path)) {
+            slackService.sendSecurityAlertNotification(request, SecurityAlertType.ACTUATOR_ACCESS,"Actuator에 대한 접근이 허가되었습니다.");
         }
     }
 
     private void sendAuthenticationFailureAlertSlackMessage(HttpServletRequest request) {
         String path = request.getRequestURI();
-        if (isApiDocsPath(path)) {
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.API_DOCS_ACCESS,"API 문서 접근 실패");
-        } else if (isActuatorPath(path)) {
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.ACTUATOR_ACCESS,"Actuator 접근 실패");
+        if (WhitelistUtil.isSwaggerIndexEndpoint(path)) {
+            slackService.sendSecurityAlertNotification(request, SecurityAlertType.API_DOCS_ACCESS,"API 문서에 대한 접근이 거부되었습니다.");
+        } else if (WhitelistUtil.isActuatorRequest(path)) {
+            slackService.sendSecurityAlertNotification(request, SecurityAlertType.ACTUATOR_ACCESS,"Actuator에 대한 접근이 거부되었습니다.");
         }
     }
 }
