@@ -10,7 +10,6 @@ import lombok.Setter;
 public class TokenHeader {
 
     private String accessToken;
-
     private String refreshToken;
 
     private TokenHeader() {

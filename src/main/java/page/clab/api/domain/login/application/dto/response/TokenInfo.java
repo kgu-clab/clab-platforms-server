@@ -11,7 +11,6 @@ import lombok.Getter;
 public class TokenInfo {
 
     private String accessToken;
-
     private String refreshToken;
 
     public static TokenInfo create(String accessToken, String refreshToken) {

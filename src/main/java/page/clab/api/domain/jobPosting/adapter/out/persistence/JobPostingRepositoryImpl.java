@@ -9,8 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
-import page.clab.api.domain.jobPosting.domain.JobPosting;
-import page.clab.api.domain.jobPosting.domain.QJobPosting;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
@@ -22,8 +20,8 @@ public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<JobPosting> findByConditions(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable) {
-        QJobPosting jobPosting = QJobPosting.jobPosting;
+    public Page<JobPostingJpaEntity> findByConditions(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable) {
+        QJobPostingJpaEntity jobPosting = QJobPostingJpaEntity.jobPostingJpaEntity;
         BooleanBuilder builder = new BooleanBuilder();
 
         if (title != null && !title.isEmpty()) builder.and(jobPosting.title.containsIgnoreCase(title));
@@ -32,7 +30,7 @@ public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
         if (careerLevel != null) builder.and(jobPosting.careerLevel.eq(careerLevel));
         if (employmentType != null) builder.and(jobPosting.employmentType.eq(employmentType));
 
-        List<JobPosting> jobPostings = queryFactory.selectFrom(jobPosting)
+        List<JobPostingJpaEntity> jobPostings = queryFactory.selectFrom(jobPosting)
                 .where(builder)
                 .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, jobPosting))
                 .offset(pageable.getOffset())

@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.jobPosting.adapter.out.persistence.JobPostingJpaEntity;
+import page.clab.api.domain.jobPosting.application.dto.response.JobPostingResponseDto;
 import page.clab.api.domain.jobPosting.application.port.in.RetrieveJobPostingsByConditionsUseCase;
 import page.clab.api.domain.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.jobPosting.domain.EmploymentType;
-import page.clab.api.domain.jobPosting.domain.JobPosting;
-import page.clab.api.domain.jobPosting.application.dto.response.JobPostingResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
@@ -46,7 +46,7 @@ public class JobPostingsByConditionsRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, JobPosting.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, JobPostingJpaEntity.class);
         PagedResponseDto<JobPostingResponseDto> jobPostings = retrieveJobPostingsByConditionsUseCase.retrieveJobPostings(title, companyName, careerLevel, employmentType, pageable);
         return ApiResponse.success(jobPostings);
     }

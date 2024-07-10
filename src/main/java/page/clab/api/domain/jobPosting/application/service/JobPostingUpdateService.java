@@ -3,31 +3,24 @@ package page.clab.api.domain.jobPosting.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.jobPosting.application.port.in.UpdateJobPostingUseCase;
-import page.clab.api.domain.jobPosting.adapter.out.persistence.JobPostingRepository;
-import page.clab.api.domain.jobPosting.domain.JobPosting;
 import page.clab.api.domain.jobPosting.application.dto.request.JobPostingUpdateRequestDto;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.validation.ValidationService;
+import page.clab.api.domain.jobPosting.application.port.in.UpdateJobPostingUseCase;
+import page.clab.api.domain.jobPosting.application.port.out.RegisterJobPostingPort;
+import page.clab.api.domain.jobPosting.application.port.out.RetrieveJobPostingPort;
+import page.clab.api.domain.jobPosting.domain.JobPosting;
 
 @Service
 @RequiredArgsConstructor
 public class JobPostingUpdateService implements UpdateJobPostingUseCase {
 
-    private final ValidationService validationService;
-    private final JobPostingRepository jobPostingRepository;
+    private final RetrieveJobPostingPort retrieveJobPostingPort;
+    private final RegisterJobPostingPort registerJobPostingPort;
 
     @Transactional
     @Override
     public Long updateJobPosting(Long jobPostingId, JobPostingUpdateRequestDto requestDto) {
-        JobPosting jobPosting = getJobPostingByIdOrThrow(jobPostingId);
+        JobPosting jobPosting = retrieveJobPostingPort.findByIdOrThrow(jobPostingId);
         jobPosting.update(requestDto);
-        validationService.checkValid(jobPosting);
-        return jobPostingRepository.save(jobPosting).getId();
-    }
-
-    private JobPosting getJobPostingByIdOrThrow(Long jobPostingId) {
-        return jobPostingRepository.findById(jobPostingId)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 채용 공고입니다."));
+        return registerJobPostingPort.save(jobPosting).getId();
     }
 }

@@ -9,7 +9,6 @@ import page.clab.api.domain.login.domain.AccountLockInfo;
 public class AccountLockInfoResponseDto {
 
     private String id;
-
     private String name;
 
     public static AccountLockInfoResponseDto toDto(AccountLockInfo accountLockInfo, String memberName) {

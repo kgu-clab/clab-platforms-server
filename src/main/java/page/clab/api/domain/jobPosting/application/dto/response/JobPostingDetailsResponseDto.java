@@ -13,19 +13,12 @@ import java.time.LocalDateTime;
 public class JobPostingDetailsResponseDto {
 
     private Long id;
-
     private String title;
-
     private CareerLevel careerLevel;
-
     private EmploymentType employmentType;
-
     private String companyName;
-
     private String recruitmentPeriod;
-
     private String jobPostingUrl;
-
     private LocalDateTime createdAt;
 
     public static JobPostingDetailsResponseDto toDto(JobPosting jobPosting) {

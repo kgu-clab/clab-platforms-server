@@ -12,15 +12,10 @@ import java.time.LocalDateTime;
 public class LoginAttemptLogResponseDto {
 
     private Long id;
-
     private String userAgent;
-
     private String ipAddress;
-
     private String location;
-
     private LoginAttemptResult loginAttemptResult;
-
     private LocalDateTime loginAttemptTime;
 
     public static LoginAttemptLogResponseDto toDto(LoginAttemptLog loginAttemptLog) {

@@ -12,13 +12,9 @@ import java.util.List;
 public class JobPostingResponseDto {
 
     private Long id;
-
     private String title;
-
     private String recruitmentPeriod;
-
     private String jobPostingUrl;
-
     private LocalDateTime createdAt;
 
     public static JobPostingResponseDto toDto(JobPosting jobPosting) {
