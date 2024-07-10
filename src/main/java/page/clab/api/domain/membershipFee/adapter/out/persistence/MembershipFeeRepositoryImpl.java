@@ -8,9 +8,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.member.domain.QMember;
-import page.clab.api.domain.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
-import page.clab.api.domain.membershipFee.domain.QMembershipFee;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
@@ -22,8 +20,8 @@ public class MembershipFeeRepositoryImpl implements MembershipFeeRepositoryCusto
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<MembershipFee> findByConditions(String memberId, String memberName, String category, MembershipFeeStatus status, Pageable pageable) {
-        QMembershipFee membershipFee = QMembershipFee.membershipFee;
+    public Page<MembershipFeeJpaEntity> findByConditions(String memberId, String memberName, String category, MembershipFeeStatus status, Pageable pageable) {
+        QMembershipFeeJpaEntity membershipFee = QMembershipFeeJpaEntity.membershipFeeJpaEntity;
         QMember member = QMember.member;
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -32,7 +30,7 @@ public class MembershipFeeRepositoryImpl implements MembershipFeeRepositoryCusto
         if (category != null && !category.isEmpty()) builder.and(membershipFee.category.eq(category));
         if (status != null) builder.and(membershipFee.status.eq(status));
 
-        List<MembershipFee> membershipFees = queryFactory.selectFrom(membershipFee)
+        List<MembershipFeeJpaEntity> membershipFees = queryFactory.selectFrom(membershipFee)
                 .leftJoin(member).on(membershipFee.memberId.eq(member.id))
                 .where(builder)
                 .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, membershipFee))

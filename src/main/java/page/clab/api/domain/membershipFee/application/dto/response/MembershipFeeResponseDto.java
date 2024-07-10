@@ -12,23 +12,14 @@ import java.time.LocalDateTime;
 public class MembershipFeeResponseDto {
 
     private Long id;
-
     private String memberId;
-
     private String memberName;
-
     private String category;
-
     private String account;
-
     private Long amount;
-
     private String content;
-
     private String imageUrl;
-
     private MembershipFeeStatus status;
-
     private LocalDateTime createdAt;
 
     public static MembershipFeeResponseDto toDto(MembershipFee membershipFee, String memberName, boolean isAdminRole) {

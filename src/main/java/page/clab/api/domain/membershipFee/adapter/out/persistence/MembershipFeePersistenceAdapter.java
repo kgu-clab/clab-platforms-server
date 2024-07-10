@@ -23,40 +23,50 @@ public class MembershipFeePersistenceAdapter implements
         RetrieveMembershipFeePort {
 
     private final MembershipFeeRepository repository;
+    private final MembershipFeeMapper mapper;
 
     @Override
     public Optional<MembershipFee> findById(Long id) {
-        return repository.findById(id);
+        return repository.findById(id)
+                .map(mapper::toDomainEntity);
     }
 
     @Override
     public MembershipFee findByIdOrThrow(Long id) {
         return repository.findById(id)
+                .map(mapper::toDomainEntity)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회비 내역입니다."));
     }
 
     @Override
     public MembershipFee save(MembershipFee membershipFee) {
-        return repository.save(membershipFee);
+        MembershipFeeJpaEntity entity = mapper.toJpaEntity(membershipFee);
+        MembershipFeeJpaEntity savedEntity = repository.save(entity);
+        return mapper.toDomainEntity(savedEntity);
     }
 
     @Override
     public void delete(MembershipFee membershipFee) {
-        repository.delete(membershipFee);
+        MembershipFeeJpaEntity entity = mapper.toJpaEntity(membershipFee);
+        repository.delete(entity);
     }
 
     @Override
     public MembershipFee update(MembershipFee membershipFee) {
-        return repository.save(membershipFee);
+        MembershipFeeJpaEntity entity = mapper.toJpaEntity(membershipFee);
+        MembershipFeeJpaEntity updatedEntity = repository.save(entity);
+        return mapper.toDomainEntity(updatedEntity);
     }
 
     @Override
     public Page<MembershipFee> findAllByIsDeletedTrue(Pageable pageable) {
-        return repository.findAllByIsDeletedTrue(pageable);
+        return repository.findAllByIsDeletedTrue(pageable)
+                .map(mapper::toDomainEntity);
     }
 
     @Override
     public Page<MembershipFee> findByConditions(String memberId, String memberName, String category, MembershipFeeStatus status, Pageable pageable) {
-        return repository.findByConditions(memberId, memberName, category, status, pageable);
+        return repository.findByConditions(memberId, memberName, category, status, pageable)
+                .map(mapper::toDomainEntity);
     }
 }
