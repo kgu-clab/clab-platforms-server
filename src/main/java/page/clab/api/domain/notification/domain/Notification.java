@@ -38,6 +38,10 @@ public class Notification extends BaseEntity {
     @Size(min = 1, max = 1000, message = "{size.notification.content}")
     private String content;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public static Notification create(String memberId, String content) {
         return Notification.builder()
                 .memberId(memberId)

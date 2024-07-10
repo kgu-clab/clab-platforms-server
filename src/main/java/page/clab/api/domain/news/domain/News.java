@@ -69,6 +69,10 @@ public class News extends BaseEntity {
     @Column(nullable = false)
     private LocalDate date;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public void update(NewsUpdateRequestDto newsUpdateRequestDto) {
         Optional.ofNullable(newsUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
         Optional.ofNullable(newsUpdateRequestDto.getCategory()).ifPresent(this::setCategory);

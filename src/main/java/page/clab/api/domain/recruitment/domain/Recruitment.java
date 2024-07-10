@@ -55,6 +55,10 @@ public class Recruitment extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RecruitmentStatus status;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public void update(RecruitmentUpdateRequestDto recruitmentUpdateRequestDto) {
         Optional.ofNullable(recruitmentUpdateRequestDto.getStartDate()).ifPresent(this::setStartDate);
         Optional.ofNullable(recruitmentUpdateRequestDto.getEndDate()).ifPresent(this::setEndDate);

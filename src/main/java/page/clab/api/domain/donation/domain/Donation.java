@@ -46,6 +46,10 @@ public class Donation extends BaseEntity {
     @Size(min = 1, max = 1000, message = "{size.donation.message}")
     private String message;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public void update(DonationUpdateRequestDto donationUpdateRequestDto) {
         Optional.ofNullable(donationUpdateRequestDto.getAmount()).ifPresent(this::setAmount);
         Optional.ofNullable(donationUpdateRequestDto.getMessage()).ifPresent(this::setMessage);

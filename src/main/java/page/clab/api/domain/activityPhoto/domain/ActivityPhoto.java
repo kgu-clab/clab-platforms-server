@@ -50,6 +50,10 @@ public class ActivityPhoto extends BaseEntity {
     @Column(nullable = false)
     private Boolean isPublic;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public void delete() {
         this.isDeleted = true;
     }

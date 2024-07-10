@@ -58,6 +58,10 @@ public class JobPosting extends BaseEntity {
     @URL(message = "{url.jobPosting.jobPostingUrl}")
     private String jobPostingUrl;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public void update(JobPostingUpdateRequestDto jobPostingUpdateRequestDto) {
         Optional.ofNullable(jobPostingUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
         Optional.ofNullable(jobPostingUpdateRequestDto.getCareerLevel()).ifPresent(this::setCareerLevel);

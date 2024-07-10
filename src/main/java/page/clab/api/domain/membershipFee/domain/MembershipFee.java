@@ -59,6 +59,10 @@ public class MembershipFee extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MembershipFeeStatus status;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public void update(MembershipFeeUpdateRequestDto membershipFeeUpdateRequestDto) {
         Optional.ofNullable(membershipFeeUpdateRequestDto.getCategory()).ifPresent(this::setCategory);
         Optional.ofNullable(membershipFeeUpdateRequestDto.getAccount()).ifPresent(this::setAccount);

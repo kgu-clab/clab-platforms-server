@@ -92,6 +92,10 @@ public class Application extends BaseEntity {
     @Column(nullable = false)
     private Boolean isPass;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public static Member toMember(Application application) {
         return Member.builder()
                 .id(application.getStudentId())

@@ -49,6 +49,10 @@ public class Accuse extends BaseEntity {
     @Size(min = 1, max = 1000, message = "{size.accuse.reason}")
     private String reason;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public void updateReason(String reason) {
         this.reason = reason;
     }

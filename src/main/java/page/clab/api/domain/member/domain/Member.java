@@ -101,6 +101,10 @@ public class Member extends BaseEntity implements UserDetails {
 
     private Boolean isOtpEnabled;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(getRole().getKey()));

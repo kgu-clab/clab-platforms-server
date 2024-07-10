@@ -70,6 +70,10 @@ public class Board extends BaseEntity {
     @Column(nullable = false)
     private boolean wantAnonymous;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public void update(BoardUpdateRequestDto boardUpdateRequestDto) {
         Optional.ofNullable(boardUpdateRequestDto.getCategory()).ifPresent(this::setCategory);
         Optional.ofNullable(boardUpdateRequestDto.getTitle()).ifPresent(this::setTitle);

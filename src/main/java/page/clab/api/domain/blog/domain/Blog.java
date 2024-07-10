@@ -53,6 +53,10 @@ public class Blog extends BaseEntity {
 
     private String hyperlink;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public void update(BlogUpdateRequestDto requestDto) {
         Optional.ofNullable(requestDto.getTitle()).ifPresent(this::setTitle);
         Optional.ofNullable(requestDto.getSubTitle()).ifPresent(this::setSubTitle);

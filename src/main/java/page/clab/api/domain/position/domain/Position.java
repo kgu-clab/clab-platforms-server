@@ -40,6 +40,10 @@ public class Position extends BaseEntity {
     @Column(nullable = false)
     private String year;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public static Position create(String memberId) {
         return Position.builder()
                 .memberId(memberId)

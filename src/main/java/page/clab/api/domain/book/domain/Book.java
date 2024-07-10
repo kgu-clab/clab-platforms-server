@@ -60,6 +60,10 @@ public class Book extends BaseEntity {
     @Version
     private Long version;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public void update(BookUpdateRequestDto requestDto) {
         Optional.ofNullable(requestDto.getCategory()).ifPresent(this::setCategory);
         Optional.ofNullable(requestDto.getTitle()).ifPresent(this::setTitle);

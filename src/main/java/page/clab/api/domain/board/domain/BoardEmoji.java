@@ -48,6 +48,10 @@ public class BoardEmoji extends BaseEntity {
 
     private LocalDateTime deletedAt;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public static BoardEmoji create(String memberId, Long boardId, String emoji) {
         return BoardEmoji.builder()
                 .memberId(memberId)

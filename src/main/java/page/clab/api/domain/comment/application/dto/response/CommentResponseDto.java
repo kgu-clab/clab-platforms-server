@@ -41,7 +41,7 @@ public class CommentResponseDto {
     private LocalDateTime createdAt;
 
     public static CommentResponseDto toDto(Comment comment, MemberDetailedInfoDto memberInfo, boolean isOwner, List<CommentResponseDto> children) {
-        if (comment.getIsDeleted()) {
+        if (comment.isDeleted()) {
             return CommentResponseDto.builder()
                     .id(comment.getId())
                     .isDeleted(true)

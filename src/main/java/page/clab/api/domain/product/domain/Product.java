@@ -45,6 +45,10 @@ public class Product extends BaseEntity {
     @URL(message = "{url.product.url}")
     private String url;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public void update(ProductUpdateRequestDto productUpdateRequestDto) {
         Optional.ofNullable(productUpdateRequestDto.getName()).ifPresent(this::setName);
         Optional.ofNullable(productUpdateRequestDto.getDescription()).ifPresent(this::setDescription);

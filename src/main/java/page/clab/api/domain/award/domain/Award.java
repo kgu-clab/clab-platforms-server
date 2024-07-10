@@ -54,6 +54,10 @@ public class Award extends BaseEntity {
     @Column(name = "member_id", nullable = false)
     private String memberId;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public void update(AwardUpdateRequestDto requestDto) {
         Optional.ofNullable(requestDto.getCompetitionName()).ifPresent(this::setCompetitionName);
         Optional.ofNullable(requestDto.getOrganizer()).ifPresent(this::setOrganizer);

@@ -55,6 +55,10 @@ public class Review extends BaseEntity {
     @Column(nullable = false)
     private Boolean isPublic;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public void update(ReviewUpdateRequestDto requestDto) {
         Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
         Optional.ofNullable(requestDto.getIsPublic()).ifPresent(this::setIsPublic);

@@ -47,6 +47,10 @@ public class ActivityGroupReport extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
+    @Builder.Default
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted = false;
+
     public void update(ActivityGroupReportUpdateRequestDto reportRequestDto) {
         Optional.ofNullable(reportRequestDto.getTurn()).ifPresent(this::setTurn);
         Optional.ofNullable(reportRequestDto.getTitle()).ifPresent(this::setTitle);
