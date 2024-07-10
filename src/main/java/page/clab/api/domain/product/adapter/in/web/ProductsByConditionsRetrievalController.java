@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.product.adapter.out.persistence.ProductJpaEntity;
 import page.clab.api.domain.product.application.dto.response.ProductResponseDto;
 import page.clab.api.domain.product.application.port.in.RetrieveProductsByConditionsUseCase;
-import page.clab.api.domain.product.domain.Product;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
@@ -40,7 +40,7 @@ public class ProductsByConditionsRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Product.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, ProductJpaEntity.class);
         PagedResponseDto<ProductResponseDto> products = retrieveProductsByConditionsUseCase.retrieveProducts(productName, pageable);
         return ApiResponse.success(products);
     }

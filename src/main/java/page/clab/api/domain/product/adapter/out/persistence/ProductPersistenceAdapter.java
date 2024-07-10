@@ -20,35 +20,44 @@ public class ProductPersistenceAdapter implements
         RetrieveProductPort {
 
     private final ProductRepository repository;
+    private final ProductMapper mapper;
 
     @Override
     public Product save(Product product) {
-        return repository.save(product);
+        ProductJpaEntity entity = mapper.toJpaEntity(product);
+        ProductJpaEntity savedEntity = repository.save(entity);
+        return mapper.toDomainEntity(savedEntity);
     }
 
     @Override
     public Product update(Product product) {
-        return repository.save(product);
+        ProductJpaEntity entity = mapper.toJpaEntity(product);
+        ProductJpaEntity updatedEntity = repository.save(entity);
+        return mapper.toDomainEntity(updatedEntity);
     }
 
     @Override
     public Optional<Product> findById(Long productId) {
-        return repository.findById(productId);
+        return repository.findById(productId)
+                .map(mapper::toDomainEntity);
     }
 
     @Override
     public Product findByIdOrThrow(Long productId) {
         return repository.findById(productId)
+                .map(mapper::toDomainEntity)
                 .orElseThrow(() -> new NotFoundException("[Product] id: " + productId + "에 해당하는 상품이 존재하지 않습니다."));
     }
 
     @Override
     public Page<Product> findAllByIsDeletedTrue(Pageable pageable) {
-        return repository.findAllByIsDeletedTrue(pageable);
+        return repository.findAllByIsDeletedTrue(pageable)
+                .map(mapper::toDomainEntity);
     }
 
     @Override
     public Page<Product> findByConditions(String productName, Pageable pageable) {
-        return repository.findByConditions(productName, pageable);
+        return repository.findByConditions(productName, pageable)
+                .map(mapper::toDomainEntity);
     }
 }

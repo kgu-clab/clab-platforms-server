@@ -11,13 +11,9 @@ import java.time.LocalDateTime;
 public class ProductResponseDto {
 
     private Long id;
-
     private String name;
-
     private String description;
-
     private String url;
-
     private LocalDateTime createdAt;
 
     public static ProductResponseDto toDto(Product product) {

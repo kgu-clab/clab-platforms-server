@@ -1,13 +1,10 @@
 package page.clab.api.domain.recruitment.application.service;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import page.clab.api.domain.recruitment.application.port.out.RetrieveRecruitmentPort;
+import page.clab.api.domain.recruitment.application.port.out.UpdateRecruitmentPort;
 import page.clab.api.domain.recruitment.domain.Recruitment;
 import page.clab.api.domain.recruitment.domain.RecruitmentStatus;
 
@@ -19,9 +16,7 @@ import java.util.List;
 public class RecruitmentStatusUpdater {
 
     private final RetrieveRecruitmentPort retrieveRecruitmentPort;
-    private final PlatformTransactionManager transactionManager;
-    private final EntityManager entityManager;
-    private final TransactionDefinition transactionDefinition;
+    private final UpdateRecruitmentPort updateRecruitmentPort;
 
     @Scheduled(cron = "0 * * * * *")
     public void updateRecruitmentStatus() {
@@ -30,10 +25,8 @@ public class RecruitmentStatusUpdater {
     }
 
     public void updateRecruitmentStatusByRecruitment(Recruitment recruitment) {
-        TransactionStatus transactionStatus = transactionManager.getTransaction(transactionDefinition);
         updateRecruitmentStatus(recruitment);
-        entityManager.merge(recruitment);
-        transactionManager.commit(transactionStatus);
+        updateRecruitmentPort.update(recruitment);
     }
 
     public void updateRecruitmentStatus(Recruitment recruitment) {

@@ -6,10 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
-import page.clab.api.domain.product.domain.Product;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long>, ProductRepositoryCustom, QuerydslPredicateExecutor<Product> {
+public interface ProductRepository extends JpaRepository<ProductJpaEntity, Long>, ProductRepositoryCustom, QuerydslPredicateExecutor<ProductJpaEntity> {
     @Query(value = "SELECT p.* FROM product p WHERE p.is_deleted = true", nativeQuery = true)
-    Page<Product> findAllByIsDeletedTrue(Pageable pageable);
+    Page<ProductJpaEntity> findAllByIsDeletedTrue(Pageable pageable);
 }

@@ -8,7 +8,6 @@ import lombok.Getter;
 public class ScheduleCollectResponseDto {
 
     private Long totalScheduleCount;
-
     private Long totalEventCount;
 
     public static ScheduleCollectResponseDto toDto(Long totalScheduleCount, Long totalEventCount) {

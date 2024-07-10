@@ -12,17 +12,11 @@ import java.time.LocalDateTime;
 public class ScheduleResponseDto {
 
     private Long id;
-
     private String title;
-
     private String detail;
-
     private String activityName;
-
     private LocalDateTime startDate;
-
     private LocalDateTime endDate;
-
     private SchedulePriority priority;
 
     public static ScheduleResponseDto toDto(Schedule schedule) {

@@ -7,8 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import page.clab.api.domain.product.domain.Product;
-import page.clab.api.domain.product.domain.QProduct;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
@@ -20,22 +18,22 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Product> findByConditions(String productName, Pageable pageable) {
-        QProduct qProduct = QProduct.product;
+    public Page<ProductJpaEntity> findByConditions(String productName, Pageable pageable) {
+        QProductJpaEntity product = QProductJpaEntity.productJpaEntity;
         BooleanBuilder builder = new BooleanBuilder();
 
         if (productName != null && !productName.isEmpty()) {
-            builder.and(qProduct.name.containsIgnoreCase(productName));
+            builder.and(product.name.containsIgnoreCase(productName));
         }
 
-        List<Product> products = queryFactory.selectFrom(qProduct)
+        List<ProductJpaEntity> products = queryFactory.selectFrom(product)
                 .where(builder)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qProduct))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, product))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long count = queryFactory.query().from(qProduct)
+        long count = queryFactory.query().from(product)
                 .where(builder)
                 .fetchCount();
 
