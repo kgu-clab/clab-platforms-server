@@ -35,6 +35,7 @@ public class ScheduleRegisterService implements RegisterScheduleUseCase {
         ActivityGroup activityGroup = resolveActivityGroupForSchedule(requestDto, currentMember);
         Schedule schedule = ScheduleRequestDto.toEntity(requestDto, currentMember, activityGroup);
         schedule.validateAccessPermissionForCreation(currentMember);
+        schedule.validateBusinessRules();
         return registerSchedulePort.save(schedule).getId();
     }
 

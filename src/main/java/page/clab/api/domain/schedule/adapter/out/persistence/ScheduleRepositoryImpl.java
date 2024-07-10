@@ -10,8 +10,6 @@ import org.springframework.stereotype.Repository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.application.dto.response.ScheduleCollectResponseDto;
-import page.clab.api.domain.schedule.domain.QSchedule;
-import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.domain.ScheduleType;
 import page.clab.api.global.util.OrderSpecifierUtil;
@@ -27,8 +25,8 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Schedule> findByDateRangeAndMember(LocalDate startDate, LocalDate endDate, List<ActivityGroup> myGroups, Pageable pageable) {
-        QSchedule schedule = QSchedule.schedule;
+    public Page<ScheduleJpaEntity> findByDateRangeAndMember(LocalDate startDate, LocalDate endDate, List<ActivityGroup> myGroups, Pageable pageable) {
+        QScheduleJpaEntity schedule = QScheduleJpaEntity.scheduleJpaEntity;
         BooleanBuilder builder = new BooleanBuilder();
 
         LocalDateTime startDateTime = startDate.atStartOfDay();
@@ -44,7 +42,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
             builder.and(schedule.activityGroup.isNull());
         }
 
-        List<Schedule> results = queryFactory.selectFrom(schedule)
+        List<ScheduleJpaEntity> results = queryFactory.selectFrom(schedule)
                 .where(builder)
                 .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, schedule))
                 .offset(pageable.getOffset())
@@ -59,8 +57,8 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
     }
 
     @Override
-    public Page<Schedule> findByConditions(Integer year, Integer month, SchedulePriority priority, Pageable pageable) {
-        QSchedule schedule = QSchedule.schedule;
+    public Page<ScheduleJpaEntity> findByConditions(Integer year, Integer month, SchedulePriority priority, Pageable pageable) {
+        QScheduleJpaEntity schedule = QScheduleJpaEntity.scheduleJpaEntity;
         BooleanBuilder builder = new BooleanBuilder();
 
         if (year != null) {
@@ -73,7 +71,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
             builder.and(schedule.priority.eq(priority));
         }
 
-        List<Schedule> results = queryFactory.selectFrom(schedule)
+        List<ScheduleJpaEntity> results = queryFactory.selectFrom(schedule)
                 .where(builder)
                 .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, schedule))
                 .offset(pageable.getOffset())
@@ -88,8 +86,8 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
     }
 
     @Override
-    public Page<Schedule> findActivitySchedulesByDateRangeAndMember(LocalDate startDate, LocalDate endDate, Member member, Pageable pageable) {
-        QSchedule schedule = QSchedule.schedule;
+    public Page<ScheduleJpaEntity> findActivitySchedulesByDateRangeAndMember(LocalDate startDate, LocalDate endDate, Member member, Pageable pageable) {
+        QScheduleJpaEntity schedule = QScheduleJpaEntity.scheduleJpaEntity;
         BooleanBuilder builder = new BooleanBuilder();
 
         LocalDateTime startDateTime = startDate.atStartOfDay();
@@ -100,7 +98,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
                 .and(schedule.scheduleWriter.eq(member))
                 .and(schedule.scheduleType.ne(ScheduleType.ALL));
 
-        List<Schedule> results = queryFactory.selectFrom(schedule)
+        List<ScheduleJpaEntity> results = queryFactory.selectFrom(schedule)
                 .where(builder)
                 .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, schedule))
                 .offset(pageable.getOffset())
@@ -116,7 +114,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
 
     @Override
     public ScheduleCollectResponseDto findCollectSchedules() {
-        QSchedule schedule = QSchedule.schedule;
+        QScheduleJpaEntity schedule = QScheduleJpaEntity.scheduleJpaEntity;
         BooleanBuilder builder = new BooleanBuilder();
 
         LocalDateTime startDateTime = LocalDate.now().withDayOfYear(1).atStartOfDay();

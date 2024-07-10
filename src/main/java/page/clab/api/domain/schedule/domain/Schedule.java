@@ -1,14 +1,5 @@
 package page.clab.api.domain.schedule.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,61 +7,32 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.global.common.domain.BaseEntity;
+import page.clab.api.global.exception.InvalidDateRangeException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode(callSuper = false)
-@SQLDelete(sql = "UPDATE schedule SET is_deleted = true WHERE id = ?")
-@SQLRestriction("is_deleted = false")
-public class Schedule extends BaseEntity {
+public class Schedule {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
     private ScheduleType scheduleType;
-
-    @Column(nullable = false)
     private String title;
-
-    @Column(nullable = false)
     private String detail;
-
-    @Column(nullable = false)
     private LocalDateTime startDateTime;
-
-    @Column(nullable = false)
     private LocalDateTime endDateTime;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
     private SchedulePriority priority;
-
-    @ManyToOne
-    @JoinColumn(name = "member_id")
     private Member scheduleWriter;
-
-    @ManyToOne
-    @JoinColumn(name = "activityGroup")
     private ActivityGroup activityGroup;
-
-    @Builder.Default
-    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
+
 
     public void delete() {
         this.isDeleted = true;
@@ -82,6 +44,12 @@ public class Schedule extends BaseEntity {
 
     public boolean isAllSchedule() {
         return this.scheduleType.equals(ScheduleType.ALL);
+    }
+
+    public void validateBusinessRules() {
+        if (startDateTime.isAfter(endDateTime)) {
+            throw new InvalidDateRangeException("시작일시가 종료일시보다 늦을 수 없습니다.");
+        }
     }
 
     public void validateAccessPermission(Member member) throws PermissionDeniedException {

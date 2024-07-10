@@ -26,10 +26,13 @@ public class SchedulePersistenceAdapter implements
         RemoveSchedulePort {
 
     private final ScheduleRepository repository;
+    private final ScheduleMapper mapper;
 
     @Override
     public Schedule save(Schedule schedule) {
-        return repository.save(schedule);
+        ScheduleJpaEntity entity = mapper.toJpaEntity(schedule);
+        ScheduleJpaEntity savedEntity = repository.save(entity);
+        return mapper.toDomainEntity(savedEntity);
     }
 
     @Override
@@ -39,18 +42,20 @@ public class SchedulePersistenceAdapter implements
 
     @Override
     public Optional<Schedule> findById(Long id) {
-        return repository.findById(id);
+        return repository.findById(id).map(mapper::toDomainEntity);
     }
 
     @Override
     public Schedule findByIdOrThrow(Long id) {
         return repository.findById(id)
+                .map(mapper::toDomainEntity)
                 .orElseThrow(() -> new NotFoundException("[Schedule] id: " + id + "에 해당하는 스케줄이 존재하지 않습니다."));
     }
 
     @Override
     public Page<Schedule> findActivitySchedulesByDateRangeAndMember(LocalDate startDate, LocalDate endDate, Member member, Pageable pageable) {
-        return repository.findActivitySchedulesByDateRangeAndMember(startDate, endDate, member, pageable);
+        return repository.findActivitySchedulesByDateRangeAndMember(startDate, endDate, member, pageable)
+                .map(mapper::toDomainEntity);
     }
 
     @Override
@@ -60,16 +65,19 @@ public class SchedulePersistenceAdapter implements
 
     @Override
     public Page<Schedule> findAllByIsDeletedTrue(Pageable pageable) {
-        return repository.findAllByIsDeletedTrue(pageable);
+        return repository.findAllByIsDeletedTrue(pageable)
+                .map(mapper::toDomainEntity);
     }
 
     @Override
     public Page<Schedule> findByConditions(Integer year, Integer month, SchedulePriority priority, Pageable pageable) {
-        return repository.findByConditions(year, month, priority, pageable);
+        return repository.findByConditions(year, month, priority, pageable)
+                .map(mapper::toDomainEntity);
     }
 
     @Override
     public Page<Schedule> findByDateRangeAndMember(LocalDate startDate, LocalDate endDate, List<ActivityGroup> myGroups, Pageable pageable) {
-        return repository.findByDateRangeAndMember(startDate, endDate, myGroups, pageable);
+        return repository.findByDateRangeAndMember(startDate, endDate, myGroups, pageable)
+                .map(mapper::toDomainEntity);
     }
 }

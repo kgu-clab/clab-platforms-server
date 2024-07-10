@@ -46,7 +46,7 @@ public class WorkExperience {
 
     public void validateBusinessRules() {
         if (startDate.isAfter(endDate)) {
-            throw new InvalidDateRangeException("시작일은 종료일보다 빠를 수 없습니다.");
+            throw new InvalidDateRangeException("시작일은 종료일보다 늦을 수 없습니다.");
         }
     }
 
