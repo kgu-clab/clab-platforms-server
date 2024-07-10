@@ -17,7 +17,6 @@ import page.clab.api.domain.review.application.port.in.RegisterReviewUseCase;
 import page.clab.api.domain.review.application.port.out.RegisterReviewPort;
 import page.clab.api.domain.review.application.port.out.RetrieveReviewPort;
 import page.clab.api.domain.review.domain.Review;
-import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +25,6 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
     private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
     private final SendNotificationUseCase notificationService;
-    private final ValidationService validationService;
     private final RegisterReviewPort registerReviewPort;
     private final RetrieveReviewPort retrieveReviewPort;
 
@@ -37,7 +35,6 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(requestDto.getActivityGroupId());
         validateReviewCreationPermission(activityGroup, currentMember);
         Review review = ReviewRequestDto.toEntity(requestDto, currentMember, activityGroup);
-        validationService.checkValid(review);
         notifyGroupLeaderOfNewReview(activityGroup, currentMember);
         return registerReviewPort.save(review).getId();
     }

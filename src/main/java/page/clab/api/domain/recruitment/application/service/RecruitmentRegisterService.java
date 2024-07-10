@@ -8,14 +8,12 @@ import page.clab.api.domain.recruitment.application.dto.request.RecruitmentReque
 import page.clab.api.domain.recruitment.application.port.in.RegisterRecruitmentUseCase;
 import page.clab.api.domain.recruitment.application.port.out.RegisterRecruitmentPort;
 import page.clab.api.domain.recruitment.domain.Recruitment;
-import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
 public class RecruitmentRegisterService implements RegisterRecruitmentUseCase {
 
     private final SendNotificationUseCase notificationService;
-    private final ValidationService validationService;
     private final RegisterRecruitmentPort registerRecruitmentPort;
     private final RecruitmentStatusUpdater recruitmentStatusUpdater;
 
@@ -23,8 +21,8 @@ public class RecruitmentRegisterService implements RegisterRecruitmentUseCase {
     @Override
     public Long registerRecruitment(RecruitmentRequestDto requestDto) {
         Recruitment recruitment = RecruitmentRequestDto.toEntity(requestDto);
-        recruitmentStatusUpdater.updateRecruitmentStatusByRecruitment(recruitment);
-        validationService.checkValid(recruitment);
+        recruitmentStatusUpdater.updateRecruitmentStatus(recruitment);
+        recruitment.validateBusinessRules();
         notificationService.sendNotificationToAllMembers("새로운 모집 공고가 등록되었습니다.");
         return registerRecruitmentPort.save(recruitment).getId();
     }

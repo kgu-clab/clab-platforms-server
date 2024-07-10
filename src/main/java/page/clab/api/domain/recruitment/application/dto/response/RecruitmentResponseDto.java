@@ -12,17 +12,11 @@ import java.time.LocalDateTime;
 public class RecruitmentResponseDto {
 
     private Long id;
-
     private LocalDateTime startDate;
-
     private LocalDateTime endDate;
-
     private ApplicationType applicationType;
-
     private String target;
-
     private String status;
-
     private LocalDateTime updatedAt;
 
     public static RecruitmentResponseDto toDto(Recruitment recruitment) {

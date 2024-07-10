@@ -8,14 +8,12 @@ import page.clab.api.domain.recruitment.application.port.in.RetrieveRecruitmentU
 import page.clab.api.domain.recruitment.application.port.in.UpdateRecruitmentUseCase;
 import page.clab.api.domain.recruitment.application.port.out.UpdateRecruitmentPort;
 import page.clab.api.domain.recruitment.domain.Recruitment;
-import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
 public class RecruitmentUpdateService implements UpdateRecruitmentUseCase {
 
     private final RetrieveRecruitmentUseCase retrieveRecruitmentUseCase;
-    private final ValidationService validationService;
     private final UpdateRecruitmentPort updateRecruitmentPort;
     private final RecruitmentStatusUpdater recruitmentStatusUpdater;
 
@@ -24,8 +22,8 @@ public class RecruitmentUpdateService implements UpdateRecruitmentUseCase {
     public Long updateRecruitment(Long recruitmentId, RecruitmentUpdateRequestDto requestDto) {
         Recruitment recruitment = retrieveRecruitmentUseCase.findByIdOrThrow(recruitmentId);
         recruitment.update(requestDto);
-        recruitmentStatusUpdater.updateRecruitmentStatusByRecruitment(recruitment);
-        validationService.checkValid(recruitment);
+        recruitmentStatusUpdater.updateRecruitmentStatus(recruitment);
+        recruitment.validateBusinessRules();
         return updateRecruitmentPort.update(recruitment).getId();
     }
 }

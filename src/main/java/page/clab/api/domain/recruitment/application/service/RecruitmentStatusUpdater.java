@@ -31,6 +31,12 @@ public class RecruitmentStatusUpdater {
 
     public void updateRecruitmentStatusByRecruitment(Recruitment recruitment) {
         TransactionStatus transactionStatus = transactionManager.getTransaction(transactionDefinition);
+        updateRecruitmentStatus(recruitment);
+        entityManager.merge(recruitment);
+        transactionManager.commit(transactionStatus);
+    }
+
+    public void updateRecruitmentStatus(Recruitment recruitment) {
         LocalDateTime now = LocalDateTime.now();
         RecruitmentStatus newStatus = RecruitmentStatus.OPEN;
         if (now.isBefore(recruitment.getStartDate())) {
@@ -39,7 +45,5 @@ public class RecruitmentStatusUpdater {
             newStatus = RecruitmentStatus.CLOSED;
         }
         recruitment.updateStatus(newStatus);
-        entityManager.merge(recruitment);
-        transactionManager.commit(transactionStatus);
     }
 }
