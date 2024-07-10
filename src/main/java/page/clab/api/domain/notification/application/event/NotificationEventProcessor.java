@@ -6,7 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.event.MemberEventProcessor;
 import page.clab.api.domain.member.application.event.MemberEventProcessorRegistry;
-import page.clab.api.domain.notification.adapter.out.persistence.NotificationRepository;
+import page.clab.api.domain.notification.application.port.out.RegisterNotificationPort;
+import page.clab.api.domain.notification.application.port.out.RetrieveNotificationPort;
 import page.clab.api.domain.notification.domain.Notification;
 
 import java.util.List;
@@ -15,8 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationEventProcessor implements MemberEventProcessor {
 
-    private final NotificationRepository notificationRepository;
-
+    private final RetrieveNotificationPort retrieveNotificationPort;
+    private final RegisterNotificationPort registerNotificationPort;
     private final MemberEventProcessorRegistry processorRegistry;
 
     @PostConstruct
@@ -27,9 +28,9 @@ public class NotificationEventProcessor implements MemberEventProcessor {
     @Override
     @Transactional
     public void processMemberDeleted(String memberId) {
-        List<Notification> notifications = notificationRepository.findByMemberId(memberId);
+        List<Notification> notifications = retrieveNotificationPort.findByMemberId(memberId);
         notifications.forEach(Notification::delete);
-        notificationRepository.saveAll(notifications);
+        registerNotificationPort.saveAll(notifications);
     }
 
     @Override

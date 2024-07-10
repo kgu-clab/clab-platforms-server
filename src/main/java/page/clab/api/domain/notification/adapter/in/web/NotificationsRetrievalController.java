@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.notification.adapter.out.persistence.NotificationJpaEntity;
 import page.clab.api.domain.notification.application.dto.response.NotificationResponseDto;
 import page.clab.api.domain.notification.application.port.in.RetrieveNotificationsUseCase;
-import page.clab.api.domain.notification.domain.Notification;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
@@ -38,7 +38,7 @@ public class NotificationsRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Notification.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, NotificationJpaEntity.class);
         PagedResponseDto<NotificationResponseDto> notifications = retrieveNotificationsUseCase.retrieveNotifications(pageable);
         return ApiResponse.success(notifications);
     }
