@@ -13,25 +13,15 @@ import java.time.LocalDateTime;
 public class ReviewResponseDto {
 
     private Long id;
-
     private Long activityGroupId;
-
     private String activityGroupName;
-
     private String activityGroupCategory;
-
     private String memberId;
-
     private String name;
-
     private String department;
-
     private String content;
-
     private Boolean isPublic;
-
     private Boolean isOwner;
-
     private LocalDateTime createdAt;
 
     public static ReviewResponseDto toDto(Review review, Member currentMember) {

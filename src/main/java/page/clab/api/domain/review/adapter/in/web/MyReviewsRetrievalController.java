@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.review.adapter.out.persistence.ReviewJpaEntity;
 import page.clab.api.domain.review.application.dto.response.ReviewResponseDto;
 import page.clab.api.domain.review.application.port.in.RetrieveMyReviewsUseCase;
-import page.clab.api.domain.review.domain.Review;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
@@ -38,7 +38,7 @@ public class MyReviewsRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Review.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, ReviewJpaEntity.class);
         PagedResponseDto<ReviewResponseDto> myReviews = retrieveMyReviewsUseCase.retrieveMyReviews(pageable);
         return ApiResponse.success(myReviews);
     }

@@ -9,12 +9,12 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.review.domain.Review;
 
-public interface ReviewRepository extends JpaRepository<Review, Long>, ReviewRepositoryCustom, QuerydslPredicateExecutor<Review> {
+public interface ReviewRepository extends JpaRepository<ReviewJpaEntity, Long>, ReviewRepositoryCustom, QuerydslPredicateExecutor<Review> {
 
     boolean existsByMemberAndActivityGroup(Member member, ActivityGroup activityGroup);
 
-    Page<Review> findAllByMember(Member member, Pageable pageable);
+    Page<ReviewJpaEntity> findAllByMember(Member member, Pageable pageable);
 
     @Query(value = "SELECT r.* FROM review r WHERE r.is_deleted = true", nativeQuery = true)
-    Page<Review> findAllByIsDeletedTrue(Pageable pageable);
+    Page<ReviewJpaEntity> findAllByIsDeletedTrue(Pageable pageable);
 }
