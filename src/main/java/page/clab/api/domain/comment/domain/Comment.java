@@ -1,75 +1,40 @@
 package page.clab.api.domain.comment.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.application.dto.request.CommentUpdateRequestDto;
 import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.exception.PermissionDeniedException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Entity
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Comment extends BaseEntity {
+public class Comment {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "board_id")
-    private Board board;
-
-    @Column(name = "member_id", nullable = false)
+    private Long boardId;
     private String writerId;
-
-    @Column(nullable = false)
     private String nickname;
-
-    @Column(nullable = false)
-    @Size(min = 1, max = 1000, message = "{size.comment.content}")
     private String content;
-
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    @JsonIgnoreProperties("children")
     private Comment parent;
 
     @Builder.Default
-    @OneToMany(mappedBy = "parent", orphanRemoval = true)
-    @JsonIgnoreProperties("parent")
     private List<Comment> children = new ArrayList<>();
-
-    @Column(nullable = false)
     private boolean wantAnonymous;
-
     private Long likes;
-
-    @Builder.Default
-    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
+    private LocalDateTime createdAt;
 
     public void update(CommentUpdateRequestDto commentUpdateRequestDto) {
         Optional.ofNullable(commentUpdateRequestDto.getContent()).ifPresent(this::setContent);

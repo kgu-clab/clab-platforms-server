@@ -25,6 +25,6 @@ public class CommentRemoveService implements RemoveCommentUseCase {
         comment.validateAccessPermission(retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo());
         comment.delete();
         registerCommentPort.save(comment);
-        return comment.getBoard().getId();
+        return comment.getBoardId();
     }
 }

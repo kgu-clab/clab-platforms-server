@@ -38,7 +38,7 @@ public class BoardsRetrievalService implements RetrieveBoardsUseCase {
 
     @NotNull
     private BoardListResponseDto mapToBoardListResponseDto(Board board, MemberDetailedInfoDto memberInfo) {
-        Long commentCount = retrieveCommentPort.countByBoard(board);
+        Long commentCount = retrieveCommentPort.countByBoardId(board.getId());
         return BoardListResponseDto.toDto(board, memberInfo, commentCount);
     }
 }

@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.global.util.RandomNicknameUtil;
 
@@ -20,9 +19,9 @@ public class CommentRequestDto {
     @Schema(description = "익명 사용 여부", example = "false", required = true)
     private boolean wantAnonymous;
 
-    public static Comment toEntity(CommentRequestDto requestDto, Board board, String writerId, Comment parent) {
+    public static Comment toEntity(CommentRequestDto requestDto, Long boardId, String writerId, Comment parent) {
         return Comment.builder()
-                .board(board)
+                .boardId(boardId)
                 .writerId(writerId)
                 .nickname(RandomNicknameUtil.makeRandomNickname())
                 .content(requestDto.getContent())

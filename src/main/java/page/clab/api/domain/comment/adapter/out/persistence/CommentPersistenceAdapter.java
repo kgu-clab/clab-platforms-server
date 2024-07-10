@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.comment.application.port.out.RegisterCommentPort;
-import page.clab.api.domain.comment.application.port.out.RemoveCommentPort;
 import page.clab.api.domain.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.global.exception.NotFoundException;
@@ -17,49 +15,51 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CommentPersistenceAdapter implements
         RegisterCommentPort,
-        RemoveCommentPort,
         RetrieveCommentPort {
 
     private final CommentRepository commentRepository;
+    private final CommentMapper commentMapper;
 
     @Override
     public Comment save(Comment comment) {
-        return commentRepository.save(comment);
-    }
-
-    @Override
-    public void delete(Comment comment) {
-        commentRepository.delete(comment);
+        CommentJpaEntity entity = commentMapper.toJpaEntity(comment);
+        CommentJpaEntity savedEntity = commentRepository.save(entity);
+        return commentMapper.toDomain(savedEntity);
     }
 
     @Override
     public Optional<Comment> findById(Long commentId) {
-        return commentRepository.findById(commentId);
+        return commentRepository.findById(commentId)
+                .map(commentMapper::toDomain);
     }
 
     @Override
     public Comment findByIdOrThrow(Long commentId) {
         return commentRepository.findById(commentId)
+                .map(commentMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[Comment] id: " + commentId + "에 해당하는 댓글이 존재하지 않습니다."));
     }
 
     @Override
     public Page<Comment> findAllByIsDeletedTrueAndBoardId(Long boardId, Pageable pageable) {
-        return commentRepository.findAllByIsDeletedTrueAndBoardId(boardId, pageable);
+        return commentRepository.findAllByIsDeletedTrueAndBoardId(boardId, pageable)
+                .map(commentMapper::toDomain);
     }
 
     @Override
     public Page<Comment> findAllByBoardIdAndParentIsNull(Long boardId, Pageable pageable) {
-        return commentRepository.findAllByBoardIdAndParentIsNull(boardId, pageable);
+        return commentRepository.findAllByBoardIdAndParentIsNull(boardId, pageable)
+                .map(commentMapper::toDomain);
     }
 
     @Override
     public Page<Comment> findAllByWriterId(String memberId, Pageable pageable) {
-        return commentRepository.findAllByWriterId(memberId, pageable);
+        return commentRepository.findAllByWriterId(memberId, pageable)
+                .map(commentMapper::toDomain);
     }
 
     @Override
-    public Long countByBoard(Board board) {
-        return commentRepository.countByBoard(board);
+    public Long countByBoardId(Long boardId) {
+        return commentRepository.countByBoardId(boardId);
     }
 }

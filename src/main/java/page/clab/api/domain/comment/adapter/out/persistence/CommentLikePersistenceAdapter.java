@@ -17,19 +17,23 @@ public class CommentLikePersistenceAdapter implements
         RetrieveCommentLikePort {
 
     private final CommentLikeRepository commentLikeRepository;
+    private final CommentMapper commentMapper;
 
     @Override
     public CommentLike save(CommentLike commentLike) {
-        return commentLikeRepository.save(commentLike);
+        CommentLikeJpaEntity entity = commentMapper.toJpaEntity(commentLike);
+        CommentLikeJpaEntity savedEntity = commentLikeRepository.save(entity);
+        return commentMapper.toDomain(savedEntity);
     }
 
     @Override
     public void delete(CommentLike commentLike) {
-        commentLikeRepository.delete(commentLike);
+        commentLikeRepository.deleteById(commentLike.getCommentLikeId());
     }
 
     @Override
     public Optional<CommentLike> findByCommentIdAndMemberId(Long commentId, String memberId) {
-        return commentLikeRepository.findByCommentIdAndMemberId(commentId, memberId);
+        return commentLikeRepository.findByCommentIdAndMemberId(commentId, memberId)
+                .map(commentMapper::toDomain);
     }
 }
