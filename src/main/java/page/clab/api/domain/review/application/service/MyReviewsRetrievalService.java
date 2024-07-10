@@ -23,8 +23,11 @@ public class MyReviewsRetrievalService implements RetrieveMyReviewsUseCase {
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<ReviewResponseDto> retrieveMyReviews(Pageable pageable) {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
-        Page<Review> reviews = retrieveReviewPort.findAllByMember(currentMember, pageable);
-        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));
+        String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
+        Page<Review> reviews = retrieveReviewPort.findAllByMemberId(currentMemberId, pageable);
+        return new PagedResponseDto<>(reviews.map(review -> {
+            Member reviewer = retrieveMemberUseCase.findByIdOrThrow(review.getMemberId());
+            return ReviewResponseDto.toDto(review, reviewer, review.isOwner(currentMemberId));
+        }));
     }
 }

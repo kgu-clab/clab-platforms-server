@@ -25,6 +25,7 @@ public class MemberPersistenceAdapter implements
         RetrieveMemberPort {
 
     private final MemberRepository memberRepository;
+    private final MemberMapper memberMapper;
 
     @Override
     public boolean existsById(String id) {
@@ -43,53 +44,64 @@ public class MemberPersistenceAdapter implements
 
     @Override
     public Member save(Member member) {
-        return memberRepository.save(member);
+        MemberJpaEntity jpaEntity = memberMapper.toJpaEntity(member);
+        MemberJpaEntity savedEntity = memberRepository.save(jpaEntity);
+        return memberMapper.toDomainEntity(savedEntity);
     }
 
     @Override
     public void delete(Member member) {
-        memberRepository.delete(member);
+        MemberJpaEntity jpaEntity = memberMapper.toJpaEntity(member);
+        memberRepository.delete(jpaEntity);
     }
 
     @Override
     public Member update(Member member) {
-        return memberRepository.save(member);
+        MemberJpaEntity jpaEntity = memberMapper.toJpaEntity(member);
+        MemberJpaEntity updatedEntity = memberRepository.save(jpaEntity);
+        return memberMapper.toDomainEntity(updatedEntity);
     }
 
     @Override
     public Page<Member> findByConditions(String id, String name, Pageable pageable) {
-        return memberRepository.findByConditions(id, name, pageable);
+        Page<MemberJpaEntity> jpaEntities = memberRepository.findByConditions(id, name, pageable);
+        return jpaEntities.map(memberMapper::toDomainEntity);
     }
 
     @Override
     public Optional<Member> findById(String memberId) {
-        return memberRepository.findById(memberId);
+        return memberRepository.findById(memberId).map(memberMapper::toDomainEntity);
     }
 
     @Override
     public Member findByIdOrThrow(String memberId) {
-        return memberRepository.findById(memberId)
+        MemberJpaEntity jpaEntity = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("[Member] id: " + memberId + "에 해당하는 회원이 존재하지 않습니다."));
+        return memberMapper.toDomainEntity(jpaEntity);
     }
 
     @Override
     public List<Member> findAll() {
-        return memberRepository.findAll();
+        List<MemberJpaEntity> jpaEntities = memberRepository.findAll();
+        return jpaEntities.stream().map(memberMapper::toDomainEntity).toList();
     }
 
     @Override
     public Page<Member> findAllByOrderByCreatedAtDesc(Pageable pageable) {
-        return memberRepository.findAllByOrderByCreatedAtDesc(pageable);
+        Page<MemberJpaEntity> jpaEntities = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return jpaEntities.map(memberMapper::toDomainEntity);
     }
 
     @Override
     public Member findByEmailOrThrow(String email) {
-        return memberRepository.findByEmail(email)
+        MemberJpaEntity jpaEntity = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("[Member] email: " + email + "을 사용하는 회원이 존재하지 않습니다."));
+        return memberMapper.toDomainEntity(jpaEntity);
     }
 
     @Override
     public Page<Member> findBirthdaysThisMonth(int month, Pageable pageable) {
-        return memberRepository.findBirthdaysThisMonth(month, pageable);
+        Page<MemberJpaEntity> jpaEntities = memberRepository.findBirthdaysThisMonth(month, pageable);
+        return jpaEntities.map(memberMapper::toDomainEntity);
     }
 }

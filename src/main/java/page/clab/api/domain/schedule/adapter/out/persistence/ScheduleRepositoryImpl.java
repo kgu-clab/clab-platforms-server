@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.application.dto.response.ScheduleCollectResponseDto;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.domain.ScheduleType;
@@ -86,7 +85,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
     }
 
     @Override
-    public Page<ScheduleJpaEntity> findActivitySchedulesByDateRangeAndMember(LocalDate startDate, LocalDate endDate, Member member, Pageable pageable) {
+    public Page<ScheduleJpaEntity> findActivitySchedulesByDateRangeAndMemberId(LocalDate startDate, LocalDate endDate, String memberId, Pageable pageable) {
         QScheduleJpaEntity schedule = QScheduleJpaEntity.scheduleJpaEntity;
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -95,7 +94,7 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
 
         builder.and(schedule.endDateTime.goe(startDateTime))
                 .and(schedule.startDateTime.loe(endDateTime))
-                .and(schedule.scheduleWriter.eq(member))
+                .and(schedule.scheduleWriter.eq(memberId))
                 .and(schedule.scheduleType.ne(ScheduleType.ALL));
 
         List<ScheduleJpaEntity> results = queryFactory.selectFrom(schedule)

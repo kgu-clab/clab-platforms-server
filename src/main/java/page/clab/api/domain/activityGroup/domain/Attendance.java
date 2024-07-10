@@ -13,7 +13,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDate;
@@ -30,9 +29,7 @@ public class Attendance extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    private String memberId;
 
     @ManyToOne
     @JoinColumn(name = "group_id")
@@ -41,9 +38,9 @@ public class Attendance extends BaseEntity {
     @Column(nullable = false)
     private LocalDate activityDate;
 
-    public static Attendance create(Member member, ActivityGroup activityGroup, LocalDate activityDate) {
+    public static Attendance create(String memberId, ActivityGroup activityGroup, LocalDate activityDate) {
         return Attendance.builder()
-                .member(member)
+                .memberId(memberId)
                 .activityGroup(activityGroup)
                 .activityDate(activityDate)
                 .build();

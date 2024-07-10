@@ -19,7 +19,7 @@ public class ApplyFormRequestDto {
     public static ApplyForm toEntity(ApplyFormRequestDto requestDto, ActivityGroup activityGroup, Member member) {
         return ApplyForm.builder()
                 .activityGroup(activityGroup)
-                .member(member)
+                .memberId(member.getId())
                 .applyReason(requestDto.getApplyReason())
                 .build();
     }

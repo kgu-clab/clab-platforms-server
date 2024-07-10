@@ -50,9 +50,7 @@ public class ActivityGroupBoard extends BaseEntity {
     @JoinColumn(name = "activity_group_id", nullable = false)
     private ActivityGroup activityGroup;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    private String memberId;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -95,12 +93,12 @@ public class ActivityGroupBoard extends BaseEntity {
         this.children.add(child);
     }
 
-    public boolean isOwner(Member member) {
-        return this.member.isSameMember(member);
+    public boolean isOwner(String memberId) {
+        return this.memberId.equals(memberId);
     }
 
     public void validateAccessPermission(Member member) throws PermissionDeniedException {
-        if (!isOwner(member) && !member.isAdminRole()) {
+        if (!isOwner(member.getId()) && !member.isAdminRole()) {
             throw new PermissionDeniedException("해당 활동 그룹 게시판을 수정/삭제할 권한이 없습니다.");
         }
     }
@@ -118,7 +116,7 @@ public class ActivityGroupBoard extends BaseEntity {
     }
 
     public void validateAccessPermission(Member member, GroupMember leader) throws PermissionDeniedException {
-        if (!member.isAdminRole() && leader != null && !leader.isOwner(member)) {
+        if (!member.isAdminRole() && leader != null && !leader.isOwner(member.getId())) {
             if (this.isAssignment()) {
                 throw new PermissionDeniedException("과제 게시판에 접근할 권한이 없습니다.");
             }

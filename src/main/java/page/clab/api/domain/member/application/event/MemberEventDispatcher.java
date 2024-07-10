@@ -21,5 +21,4 @@ public class MemberEventDispatcher {
     public void handleMemberUpdatedEvent(MemberUpdatedEvent event) {
         processors.forEach(processor -> processor.processMemberUpdated(event.getMemberId()));
     }
-
 }

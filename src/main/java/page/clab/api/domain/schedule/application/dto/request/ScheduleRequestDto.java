@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.domain.ScheduleType;
@@ -42,7 +41,7 @@ public class ScheduleRequestDto {
 
     private Long activityGroupId;
 
-    public static Schedule toEntity(ScheduleRequestDto requestDto, Member member, ActivityGroup activityGroup) {
+    public static Schedule toEntity(ScheduleRequestDto requestDto, String memberId, ActivityGroup activityGroup) {
         return Schedule.builder()
                 .scheduleType(requestDto.getScheduleType())
                 .title(requestDto.getTitle())
@@ -50,7 +49,7 @@ public class ScheduleRequestDto {
                 .startDateTime(requestDto.getStartDateTime())
                 .endDateTime(requestDto.getEndDateTime())
                 .priority(requestDto.getPriority())
-                .scheduleWriter(member)
+                .scheduleWriter(memberId)
                 .activityGroup(activityGroup)
                 .build();
     }

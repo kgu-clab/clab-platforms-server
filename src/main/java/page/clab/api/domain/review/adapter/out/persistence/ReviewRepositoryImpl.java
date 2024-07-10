@@ -1,12 +1,14 @@
 package page.clab.api.domain.review.adapter.out.persistence;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import page.clab.api.domain.member.adapter.out.persistence.QMemberJpaEntity;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
@@ -22,8 +24,14 @@ public class ReviewRepositoryImpl implements ReviewRepositoryCustom {
         QReviewJpaEntity review = QReviewJpaEntity.reviewJpaEntity;
         BooleanBuilder builder = new BooleanBuilder();
 
-        if (memberId != null) builder.and(review.member.id.eq(memberId));
-        if (memberName != null && !memberName.isBlank()) builder.and(review.member.name.eq(memberName));
+        if (memberId != null) builder.and(review.memberId.eq(memberId));
+        if (memberName != null && !memberName.isBlank()) {
+            QMemberJpaEntity member = QMemberJpaEntity.memberJpaEntity;
+            builder.and(JPAExpressions.selectFrom(member)
+                    .where(member.name.eq(memberName)
+                            .and(member.id.eq(review.memberId)))
+                    .exists());
+        }
         if (activityId != null) builder.and(review.activityGroup.id.eq(activityId));
         if (isPublic != null) builder.and(review.isPublic.eq(isPublic));
 

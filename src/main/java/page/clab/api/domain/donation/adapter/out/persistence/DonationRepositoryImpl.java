@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.donation.domain.Donation;
 import page.clab.api.domain.donation.domain.QDonation;
-import page.clab.api.domain.member.domain.QMember;
+import page.clab.api.domain.member.adapter.out.persistence.QMemberJpaEntity;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.time.LocalDate;
@@ -24,7 +24,7 @@ public class DonationRepositoryImpl implements DonationRepositoryCustom {
     @Override
     public Page<Donation> findByConditions(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         QDonation donation = QDonation.donation;
-        QMember member = QMember.member;
+        QMemberJpaEntity member = QMemberJpaEntity.memberJpaEntity;
 
         BooleanBuilder builder = new BooleanBuilder();
         if (memberId != null && !memberId.isBlank()) builder.and(donation.memberId.eq(memberId));

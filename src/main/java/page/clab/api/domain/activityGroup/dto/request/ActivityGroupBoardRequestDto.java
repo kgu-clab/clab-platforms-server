@@ -36,7 +36,7 @@ public class ActivityGroupBoardRequestDto {
     public static ActivityGroupBoard toEntity(ActivityGroupBoardRequestDto requestDto, Member member, ActivityGroup activityGroup, ActivityGroupBoard parentBoard, List<UploadedFile> uploadedFiles) {
         return ActivityGroupBoard.builder()
                 .activityGroup(activityGroup)
-                .member(member)
+                .memberId(member.getId())
                 .category(requestDto.getCategory())
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())

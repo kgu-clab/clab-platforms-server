@@ -12,7 +12,7 @@ import page.clab.api.domain.book.application.dto.response.BookLoanRecordOverdueR
 import page.clab.api.domain.book.application.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.domain.book.domain.QBookLoanRecord;
-import page.clab.api.domain.member.domain.QMember;
+import page.clab.api.domain.member.adapter.out.persistence.QMemberJpaEntity;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.time.LocalDateTime;
@@ -27,7 +27,7 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
     @Override
     public Page<BookLoanRecordResponseDto> findByConditions(Long bookId, String borrowerId, BookLoanStatus status, Pageable pageable) {
         QBookLoanRecord bookLoanRecord = QBookLoanRecord.bookLoanRecord;
-        QMember member = QMember.member;
+        QMemberJpaEntity member = QMemberJpaEntity.memberJpaEntity;
 
         BooleanBuilder builder = new BooleanBuilder();
         if (bookId != null) builder.and(bookLoanRecord.book.id.eq(bookId));
@@ -69,7 +69,7 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
     @Override
     public Page<BookLoanRecordOverdueResponseDto> findOverdueBookLoanRecords(Pageable pageable) {
         QBookLoanRecord bookLoanRecord = QBookLoanRecord.bookLoanRecord;
-        QMember member = QMember.member;
+        QMemberJpaEntity member = QMemberJpaEntity.memberJpaEntity;
 
         LocalDateTime now = LocalDateTime.now();
 

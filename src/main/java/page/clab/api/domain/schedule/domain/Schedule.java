@@ -29,7 +29,7 @@ public class Schedule {
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
     private SchedulePriority priority;
-    private Member scheduleWriter;
+    private String scheduleWriter;
     private ActivityGroup activityGroup;
     private boolean isDeleted = false;
 
@@ -39,7 +39,7 @@ public class Schedule {
     }
 
     public boolean isOwner(Member member) {
-        return this.scheduleWriter.isSameMember(member);
+        return this.scheduleWriter.equals(member);
     }
 
     public boolean isAllSchedule() {

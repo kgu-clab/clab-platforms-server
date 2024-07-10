@@ -11,11 +11,8 @@ import java.time.LocalDate;
 public class MemberBirthdayResponseDto {
 
     private String id;
-
     private String name;
-
     private LocalDate birth;
-
     private String imageUrl;
 
     public static MemberBirthdayResponseDto toDto(Member member) {
@@ -26,5 +23,4 @@ public class MemberBirthdayResponseDto {
                 .imageUrl(member.getImageUrl())
                 .build();
     }
-
 }

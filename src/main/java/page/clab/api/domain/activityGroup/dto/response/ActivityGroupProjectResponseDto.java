@@ -48,7 +48,7 @@ public class ActivityGroupProjectResponseDto {
 
     private LocalDateTime createdAt;
 
-    public static ActivityGroupProjectResponseDto create(ActivityGroup activityGroup, List<GroupMember> groupMembers, List<ActivityGroupBoard> boards, boolean isOwner) {
+    public static ActivityGroupProjectResponseDto create(ActivityGroup activityGroup, List<GroupMember> groupMembers, List<ActivityGroupBoard> boards, List<GroupMemberResponseDto> groupMemberResponseDtos, boolean isOwner) {
         return ActivityGroupProjectResponseDto.builder()
                 .id(activityGroup.getId())
                 .category(activityGroup.getCategory())
@@ -57,7 +57,7 @@ public class ActivityGroupProjectResponseDto {
                 .content(activityGroup.getContent())
                 .status(activityGroup.getStatus())
                 .imageUrl(activityGroup.getImageUrl())
-                .groupMembers(groupMembers.stream().map(GroupMemberResponseDto::toDto).toList())
+                .groupMembers(groupMemberResponseDtos)
                 .startDate(activityGroup.getStartDate())
                 .endDate(activityGroup.getEndDate())
                 .techStack(activityGroup.getTechStack())

@@ -43,5 +43,4 @@ public class MemberUpdateRequestDto {
 
     @Schema(description = "OTP 사용 여부", example = "false")
     private Boolean isOtpEnabled;
-
 }

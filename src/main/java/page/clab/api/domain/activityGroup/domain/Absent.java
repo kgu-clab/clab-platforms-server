@@ -14,7 +14,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDate;
@@ -32,9 +31,7 @@ public class Absent extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member absentee;
+    private String memberId;
 
     @ManyToOne
     @JoinColumn(name = "activity_group_id", nullable = false)

@@ -8,7 +8,6 @@ import lombok.Getter;
 public class CloudUsageInfo {
 
     private String memberId;
-
     private Long usage;
 
     public static CloudUsageInfo create(String memberId, Long usage) {
@@ -17,5 +16,4 @@ public class CloudUsageInfo {
                 .usage(usage)
                 .build();
     }
-
 }

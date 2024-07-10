@@ -10,26 +10,25 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.domain.GroupMemberId;
 import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
-import page.clab.api.domain.member.domain.Member;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupMemberId>, GroupMemberRepositoryCustom, QuerydslPredicateExecutor<GroupMember> {
-    List<GroupMember> findAllByMember(Member member);
+    List<GroupMember> findAllByMemberId(String memberId);
 
-    boolean existsByMemberAndActivityGroupId(Member member, Long activityGroupId);
+    boolean existsByMemberIdAndActivityGroupId(String memberId, Long activityGroupId);
 
     Optional<GroupMember> findByActivityGroupIdAndRole(Long activityGroupId, ActivityGroupRole role);
 
-    Optional<GroupMember> findByActivityGroupAndMember(ActivityGroup activityGroup, Member member);
+    Optional<GroupMember> findByActivityGroupAndMemberId(ActivityGroup activityGroup, String memberId);
 
-    List<GroupMember> findAllByActivityGroupIdOrderByMember_IdAsc(Long activityGroupId);
+    List<GroupMember> findAllByActivityGroupIdOrderByMemberIdAsc(Long activityGroupId);
 
     Page<GroupMember> findAllByActivityGroupId(Long activityGroupId, Pageable pageable);
 
     Page<GroupMember> findAllByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status, org.springframework.data.domain.Pageable pageable);
 
-    boolean existsByActivityGroupAndMember(ActivityGroup activityGroup, Member member);
+    boolean existsByActivityGroupAndMemberId(ActivityGroup activityGroup, String memberId);
 }

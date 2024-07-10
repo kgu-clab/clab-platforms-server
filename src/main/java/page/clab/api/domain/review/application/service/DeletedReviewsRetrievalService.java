@@ -7,10 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.review.application.dto.response.ReviewResponseDto;
 import page.clab.api.domain.review.application.port.in.RetrieveDeletedReviewsUseCase;
 import page.clab.api.domain.review.application.port.out.RetrieveReviewPort;
 import page.clab.api.domain.review.domain.Review;
-import page.clab.api.domain.review.application.dto.response.ReviewResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service
@@ -23,8 +23,11 @@ public class DeletedReviewsRetrievalService implements RetrieveDeletedReviewsUse
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<ReviewResponseDto> retrieveDeletedReviews(Pageable pageable) {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         Page<Review> reviews = retrieveReviewPort.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(reviews.map(review -> ReviewResponseDto.toDto(review, currentMember)));
+        return new PagedResponseDto<>(reviews.map(review -> {
+            Member reviewer = retrieveMemberUseCase.findByIdOrThrow(review.getMemberId());
+            return ReviewResponseDto.toDto(review, reviewer, review.isOwner(currentMemberId));
+        }));
     }
 }

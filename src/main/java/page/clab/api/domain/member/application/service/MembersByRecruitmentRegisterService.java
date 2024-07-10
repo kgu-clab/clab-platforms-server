@@ -19,7 +19,6 @@ import page.clab.api.domain.position.domain.PositionType;
 import page.clab.api.global.common.email.application.EmailService;
 import page.clab.api.global.common.verification.application.VerificationService;
 import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.validation.ValidationService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,7 +31,6 @@ public class MembersByRecruitmentRegisterService implements RegisterMembersByRec
 
     private final VerificationService verificationService;
     private final EmailService emailService;
-    private final ValidationService validationService;
     private final RetrieveMemberPort retrieveMemberPort;
     private final RegisterMemberPort registerMemberPort;
     private final RegisterPositionPort registerPositionPort;
@@ -72,7 +70,6 @@ public class MembersByRecruitmentRegisterService implements RegisterMembersByRec
 
     private Member createMemberByApplication(Application application) {
         Member member = Application.toMember(application);
-        validationService.checkValid(member);
         Member existingMember = retrieveMemberPort.findById(member.getId())
                 .orElse(null);
         if (existingMember != null) {
@@ -96,7 +93,8 @@ public class MembersByRecruitmentRegisterService implements RegisterMembersByRec
     }
 
     public void createPositionByMember(Member member) {
-        if (retrievePositionPort.findByMemberIdAndYearAndPositionType(member.getId(), String.valueOf(LocalDate.now().getYear()),PositionType.MEMBER).isPresent()) {
+        if (retrievePositionPort.findByMemberIdAndYearAndPositionType
+                (member.getId(), String.valueOf(LocalDate.now().getYear()),PositionType.MEMBER).isPresent()) {
             return;
         }
         Position position = Position.create(member.getId());

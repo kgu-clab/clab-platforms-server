@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.award.domain.Award;
 import page.clab.api.domain.award.domain.QAward;
-import page.clab.api.domain.member.domain.QMember;
+import page.clab.api.domain.member.adapter.out.persistence.QMemberJpaEntity;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.time.LocalDate;
@@ -24,7 +24,7 @@ public class AwardRepositoryImpl implements AwardRepositoryCustom {
     @Override
     public Page<Award> findByConditions(String memberId, Long year, Pageable pageable) {
         QAward award = QAward.award;
-        QMember member = QMember.member;
+        QMemberJpaEntity member = QMemberJpaEntity.memberJpaEntity;
 
         BooleanBuilder builder = new BooleanBuilder();
         if (memberId != null) builder.and(award.memberId.eq(memberId));

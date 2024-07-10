@@ -57,7 +57,7 @@ public class ActivityGroupBoardService {
     public Long createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroupMemberService.isGroupMember(activityGroup, currentMember)) {
+        if (!activityGroupMemberService.isGroupMember(activityGroup, currentMember.getId())) {
             throw new PermissionDeniedException("활동 그룹 멤버만 게시글을 등록할 수 있습니다.");
         }
 
@@ -197,19 +197,19 @@ public class ActivityGroupBoardService {
     }
 
     private void notifyMembersAboutNewBoard(Long activityGroupId, ActivityGroup activityGroup, Member member) {
-        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member);
+        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member.getId());
         if (groupMember.isLeader()) {
             List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
             groupMembers
                     .forEach(gMember -> {
-                        if (!gMember.isOwner(member)) {
-                            notificationService.sendNotificationToMember(gMember.getMember().getId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
+                        if (!gMember.isOwner(member.getId())) {
+                            notificationService.sendNotificationToMember(gMember.getMemberId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
                         }
                     });
         } else {
             GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
             if (groupLeader != null) {
-                notificationService.sendNotificationToMember(groupLeader.getMember().getId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
+                notificationService.sendNotificationToMember(groupLeader.getMemberId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
             }
         }
     }

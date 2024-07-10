@@ -10,11 +10,8 @@ import page.clab.api.domain.member.domain.Role;
 public class MemberLoginInfoDto {
 
     private String memberId;
-
     private String memberName;
-
     private Role role;
-
     private boolean isOtpEnabled;
 
     public static MemberLoginInfoDto create(Member member) {
@@ -33,5 +30,4 @@ public class MemberLoginInfoDto {
     public boolean isSuperAdminRole() {
         return role.toRoleLevel() == 3;
     }
-
 }

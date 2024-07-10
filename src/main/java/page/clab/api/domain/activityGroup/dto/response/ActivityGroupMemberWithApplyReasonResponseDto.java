@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
+import page.clab.api.domain.member.domain.Member;
 
 @Getter
 @Builder
@@ -19,10 +20,10 @@ public class ActivityGroupMemberWithApplyReasonResponseDto {
 
     private String applyReason;
 
-    public static ActivityGroupMemberWithApplyReasonResponseDto create(GroupMember groupMember, String applyReason) {
+    public static ActivityGroupMemberWithApplyReasonResponseDto create(Member member, GroupMember groupMember, String applyReason) {
         return ActivityGroupMemberWithApplyReasonResponseDto.builder()
-                .memberId(groupMember.getMember().getId())
-                .memberName(groupMember.getMember().getName())
+                .memberId(member.getId())
+                .memberName(member.getName())
                 .role(groupMember.getRole().toString())
                 .status(groupMember.getStatus())
                 .applyReason(applyReason)

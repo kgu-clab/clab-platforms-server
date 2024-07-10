@@ -13,7 +13,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
 
 @Getter
@@ -32,9 +31,7 @@ public class ApplyForm extends BaseEntity {
     @JoinColumn(name = "activity_group_id", nullable = false)
     private ActivityGroup activityGroup;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    private String memberId;
 
     @Column(nullable = false)
     private String applyReason;

@@ -72,7 +72,7 @@ public class AttendanceService {
         redisQRKeyRepository.save(redisQRKey);
 
         String url = generateQRCodeURL(activityGroupId, secretKey);
-        Attendance attendance = Attendance.create(currentMember, activityGroup, LocalDate.parse(nowDateTime.split(" ")[0], dateFormatter));
+        Attendance attendance = Attendance.create(currentMember.getId(), activityGroup, LocalDate.parse(nowDateTime.split(" ")[0], dateFormatter));
         attendanceRepository.save(attendance);
 
         byte[] QRCodeImage = QRCodeUtil.encodeQRCode(url);
@@ -85,7 +85,7 @@ public class AttendanceService {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = validateMemberForAttendance(currentMember, requestDto.getActivityGroupId());
         validateQRCodeData(requestDto.getQRCodeSecretKey());
-        Attendance attendance = Attendance.create(currentMember, activityGroup, LocalDate.now());
+        Attendance attendance = Attendance.create(currentMember.getId(), activityGroup, LocalDate.now());
         return attendanceRepository.save(attendance).getId();
     }
 
@@ -93,7 +93,7 @@ public class AttendanceService {
     public PagedResponseDto<AttendanceResponseDto> getMyAttendances(Long activityGroupId, Pageable pageable) throws IllegalAccessException {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = validateGroupAndMemberForAttendance(activityGroupId, currentMember);
-        Page<Attendance> attendances = getAttendanceByMember(activityGroup, currentMember, pageable);
+        Page<Attendance> attendances = getAttendanceByMemberId(activityGroup, currentMember.getId(), pageable);
         return new PagedResponseDto<>(attendances.map(AttendanceResponseDto::toDto));
     }
 
@@ -119,19 +119,22 @@ public class AttendanceService {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupWithPermissionCheck(activityGroupId, currentMember);
         Page<Absent> absents = absentRepository.findAllByActivityGroup(activityGroup, pageable);
-        return new PagedResponseDto<>(absents.map(AbsentResponseDto::toDto));
+        return new PagedResponseDto<>(absents.map(absent -> {
+            Member member = retrieveMemberUseCase.findByIdOrThrow(absent.getMemberId());
+            return AbsentResponseDto.toDto(absent, member);
+        }));
     }
 
-    private Page<Attendance> getAttendanceByMember(ActivityGroup activityGroup, Member member, Pageable pageable) {
-        return attendanceRepository.findAllByMemberAndActivityGroup(member, activityGroup, pageable);
+    private Page<Attendance> getAttendanceByMemberId(ActivityGroup activityGroup, String memberId, Pageable pageable) {
+        return attendanceRepository.findAllByMemberIdAndActivityGroup(memberId, activityGroup, pageable);
     }
 
     private Page<Attendance> getAttendanceByActivityGroup(ActivityGroup activityGroup, Pageable pageable) {
         return attendanceRepository.findAllByActivityGroup(activityGroup, pageable);
     }
 
-    public boolean hasAttendanceHistory(ActivityGroup activityGroup, Member member, LocalDate activityDate) {
-        Attendance attendanceHistory = attendanceRepository.findByActivityGroupAndMemberAndActivityDate(activityGroup, member, activityDate);
+    public boolean hasAttendanceHistory(ActivityGroup activityGroup, String memberId, LocalDate activityDate) {
+        Attendance attendanceHistory = attendanceRepository.findByActivityGroupAndMemberIdAndActivityDate(activityGroup, memberId, activityDate);
         return attendanceHistory != null;
     }
 
@@ -140,7 +143,7 @@ public class AttendanceService {
     }
 
     public boolean hasAbsentExcuseHistory(ActivityGroup activityGroup, Member absentee, LocalDate absentDate) {
-        Absent absentHistory = absentRepository.findByActivityGroupAndAbsenteeAndAbsentDate(activityGroup, absentee, absentDate);
+        Absent absentHistory = absentRepository.findByActivityGroupAndMemberIdAndAbsentDate(activityGroup, absentee.getId(), absentDate);
         return absentHistory != null;
     }
 
@@ -175,7 +178,7 @@ public class AttendanceService {
             throw new IllegalAccessException("해당 그룹의 멤버가 아닙니다. 출석체크 인증을 진행할 수 없습니다.");
         }
         LocalDate today = LocalDate.now();
-        if (hasAttendanceHistory(activityGroup, member, today)) {
+        if (hasAttendanceHistory(activityGroup, member.getId(), today)) {
             throw new DuplicateAttendanceException("이미 오늘의 출석 기록이 있습니다.");
         }
         return activityGroup;
@@ -222,7 +225,7 @@ public class AttendanceService {
         if (!isActivityExistedAt(activityGroup, absentDate)) {
             throw new NotFoundException("해당 날짜에 진행한 그룹 활동이 없습니다. 불참 사유서를 등록할 수 없습니다.");
         }
-        if (hasAttendanceHistory(activityGroup, absentee, absentDate)) {
+        if (hasAttendanceHistory(activityGroup, absentee.getId(), absentDate)) {
             throw new IllegalAccessException("해당 요일에 출석한 기록이 있습니다. 불참 사유서를 등록할 수 없습니다.");
         }
         if (hasAbsentExcuseHistory(activityGroup, absentee, absentDate)) {

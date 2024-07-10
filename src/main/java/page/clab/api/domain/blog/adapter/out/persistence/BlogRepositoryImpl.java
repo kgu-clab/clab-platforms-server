@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.blog.domain.Blog;
 import page.clab.api.domain.blog.domain.QBlog;
-import page.clab.api.domain.member.domain.QMember;
+import page.clab.api.domain.member.adapter.out.persistence.QMemberJpaEntity;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
@@ -22,25 +22,25 @@ public class BlogRepositoryImpl implements BlogRepositoryCustom {
 
     @Override
     public Page<Blog> findByConditions(String title, String memberName, Pageable pageable) {
-        QBlog qBlog = QBlog.blog;
-        QMember qMember = QMember.member;
+        QBlog blog = QBlog.blog;
+        QMemberJpaEntity member = QMemberJpaEntity.memberJpaEntity;
 
         BooleanBuilder builder = new BooleanBuilder();
 
-        if (title != null && !title.isBlank()) builder.and(qBlog.title.containsIgnoreCase(title));
-        if (memberName != null && !memberName.isBlank()) builder.and(qMember.name.eq(memberName));
+        if (title != null && !title.isBlank()) builder.and(blog.title.containsIgnoreCase(title));
+        if (memberName != null && !memberName.isBlank()) builder.and(member.name.eq(memberName));
 
-        List<Blog> blogs = queryFactory.selectFrom(qBlog)
-                .leftJoin(qMember).on(qBlog.memberId.eq(qMember.id))
+        List<Blog> blogs = queryFactory.selectFrom(blog)
+                .leftJoin(member).on(blog.memberId.eq(member.id))
                 .where(builder)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qBlog))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, blog))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         long count = queryFactory
-                .selectFrom(qBlog)
-                .leftJoin(qMember).on(qBlog.memberId.eq(qMember.id))
+                .selectFrom(blog)
+                .leftJoin(member).on(blog.memberId.eq(member.id))
                 .where(builder)
                 .fetchCount();
 

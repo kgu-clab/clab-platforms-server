@@ -24,20 +24,19 @@ public class ReviewResponseDto {
     private Boolean isOwner;
     private LocalDateTime createdAt;
 
-    public static ReviewResponseDto toDto(Review review, Member currentMember) {
+    public static ReviewResponseDto toDto(Review review, Member reviewer, boolean isOwner) {
         ActivityGroup activityGroup = review.getActivityGroup();
-        Member member = review.getMember();
         return ReviewResponseDto.builder()
                 .id(review.getId())
                 .activityGroupId(activityGroup.getId())
                 .activityGroupName(activityGroup.getName())
                 .activityGroupCategory(String.valueOf(activityGroup.getCategory()))
-                .memberId(member.getId())
-                .name(member.getName())
-                .department(member.getDepartment())
+                .memberId(reviewer.getId())
+                .name(reviewer.getName())
+                .department(reviewer.getDepartment())
                 .content(review.getContent())
                 .isPublic(review.getIsPublic())
-                .isOwner(review.isOwner(currentMember))
+                .isOwner(isOwner)
                 .createdAt(review.getCreatedAt())
                 .build();
     }

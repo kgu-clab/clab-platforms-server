@@ -14,37 +14,21 @@ import java.time.LocalDateTime;
 public class MemberResponseDto {
 
     private String id;
-
     private String name;
-
     private String contact;
-
     private String email;
-
     private String department;
-
     private Long grade;
-
     private LocalDate birth;
-
     private String address;
-
     private String interests;
-
     private String githubUrl;
-
     private StudentStatus studentStatus;
-
     private String imageUrl;
-
     private Role role;
-
     private LocalDateTime lastLoginTime;
-
     private LocalDateTime loanSuspensionDate;
-
     private Boolean isOtpEnabled;
-
     private LocalDateTime createdAt;
 
     public static MemberResponseDto toDto(Member member) {
@@ -68,5 +52,4 @@ public class MemberResponseDto {
                 .createdAt(member.getCreatedAt())
                 .build();
     }
-
 }

@@ -9,7 +9,6 @@ import page.clab.api.domain.member.domain.Member;
 public class MemberBasicInfoDto {
 
     private String memberId;
-
     private String memberName;
 
     public static MemberBasicInfoDto create(Member member) {
@@ -18,5 +17,4 @@ public class MemberBasicInfoDto {
                 .memberName(member.getName())
                 .build();
     }
-
 }

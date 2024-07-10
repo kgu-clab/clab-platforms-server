@@ -52,7 +52,7 @@ public class FileService {
     private String maxFileSize;
 
     public String saveQRCodeImage(byte[] QRCodeImage, String path, long storagePeriod, String nowDateTime) throws IOException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         String extension = "png";
         String originalFileName = path.replace(File.separator, "-") + nowDateTime;
         String saveFilename = fileHandler.makeFileName(extension);
@@ -60,7 +60,7 @@ public class FileService {
         String url = fileURL + "/" + path.replace(File.separator, "/") + "/" + saveFilename;
 
         fileHandler.saveQRCodeImage(QRCodeImage, path, saveFilename, extension);
-        UploadedFile uploadedFile = UploadedFile.create(currentMember, originalFileName, saveFilename, savePath, url, (long) QRCodeImage.length, "image/png", storagePeriod, path);
+        UploadedFile uploadedFile = UploadedFile.create(currentMemberId, originalFileName, saveFilename, savePath, url, (long) QRCodeImage.length, "image/png", storagePeriod, path);
         uploadedFileService.saveUploadedFile(uploadedFile);
         return url;
     }
@@ -75,7 +75,7 @@ public class FileService {
     }
 
     public UploadedFileResponseDto saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws IOException, PermissionDeniedException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
 
         validatePathVariable(path);
         validateMemberCloudUsage(multipartFile, path);
@@ -85,7 +85,7 @@ public class FileService {
         String fileName = new File(savedFilePath).getName();
         String url = fileURL + "/" + path.replace(File.separator, "/") + "/" + fileName;
 
-        UploadedFile uploadedFile = UploadedFile.create(currentMember, multipartFile.getOriginalFilename(), fileName, savedFilePath, url, multipartFile.getSize(), multipartFile.getContentType(), storagePeriod, path);
+        UploadedFile uploadedFile = UploadedFile.create(currentMemberId, multipartFile.getOriginalFilename(), fileName, savedFilePath, url, multipartFile.getSize(), multipartFile.getContentType(), storagePeriod, path);
         uploadedFileService.saveUploadedFile(uploadedFile);
         return UploadedFileResponseDto.toDto(uploadedFile);
     }
@@ -122,7 +122,7 @@ public class FileService {
             if (!activityGroupRepository.existsById(activityGroupId)) {
                 throw new AssignmentFileUploadFailException("해당 활동은 존재하지 않습니다.");
             }
-            if (assignmentWriterOpt.isEmpty() || !groupMemberRepository.existsByMemberAndActivityGroupId(assignmentWriterOpt.get(), activityGroupId)) {
+            if (assignmentWriterOpt.isEmpty() || !groupMemberRepository.existsByMemberIdAndActivityGroupId(assignmentWriterOpt.get().getId(), activityGroupId)) {
                 throw new AssignmentFileUploadFailException("해당 활동에 참여하고 있지 않은 멤버입니다.");
             }
             if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {

@@ -19,7 +19,6 @@ import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
 import page.clab.api.global.common.email.application.EmailService;
 import page.clab.api.global.common.verification.application.VerificationService;
-import page.clab.api.global.validation.ValidationService;
 
 import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
@@ -30,7 +29,6 @@ import java.util.concurrent.CompletableFuture;
 public class MemberRegisterService implements RegisterMemberUseCase {
 
     private final VerificationService verificationService;
-    private final ValidationService validationService;
     private final EmailService emailService;
     private final CheckMemberExistencePort checkMemberExistencePort;
     private final RegisterMemberPort registerMemberPort;
@@ -43,7 +41,6 @@ public class MemberRegisterService implements RegisterMemberUseCase {
     public String registerMember(MemberRequestDto requestDto) {
         checkMemberUniqueness(requestDto);
         Member member = MemberRequestDto.toEntity(requestDto);
-        validationService.checkValid(member);
         setupMemberPassword(member);
         registerMemberPort.save(member);
         createPositionByMember(member);

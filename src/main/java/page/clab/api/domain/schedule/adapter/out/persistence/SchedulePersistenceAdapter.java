@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.application.dto.response.ScheduleCollectResponseDto;
 import page.clab.api.domain.schedule.application.port.out.RegisterSchedulePort;
 import page.clab.api.domain.schedule.application.port.out.RemoveSchedulePort;
@@ -53,8 +52,8 @@ public class SchedulePersistenceAdapter implements
     }
 
     @Override
-    public Page<Schedule> findActivitySchedulesByDateRangeAndMember(LocalDate startDate, LocalDate endDate, Member member, Pageable pageable) {
-        return repository.findActivitySchedulesByDateRangeAndMember(startDate, endDate, member, pageable)
+    public Page<Schedule> findActivitySchedulesByDateRangeAndMemberId(LocalDate startDate, LocalDate endDate, String memberId, Pageable pageable) {
+        return repository.findActivitySchedulesByDateRangeAndMemberId(startDate, endDate, memberId, pageable)
                 .map(mapper::toDomainEntity);
     }
 

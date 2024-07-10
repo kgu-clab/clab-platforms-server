@@ -9,13 +9,9 @@ import page.clab.api.domain.member.domain.Member;
 public class MemberDetailedInfoDto {
 
     private String memberId;
-
     private String memberName;
-
     private Long roleLevel;
-
     private String imageUrl;
-
     private boolean isGraduated;
 
     public static MemberDetailedInfoDto create(Member member) {
@@ -35,5 +31,4 @@ public class MemberDetailedInfoDto {
     public boolean isSuperAdminRole() {
         return roleLevel == 3;
     }
-
 }

@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.review.application.port.out.RegisterReviewPort;
 import page.clab.api.domain.review.application.port.out.RetrieveReviewPort;
 import page.clab.api.domain.review.application.port.out.UpdateReviewPort;
@@ -58,14 +57,14 @@ public class ReviewPersistenceAdapter implements
     }
 
     @Override
-    public Page<Review> findAllByMember(Member member, Pageable pageable) {
-        return repository.findAllByMember(member, pageable)
+    public Page<Review> findAllByMemberId(String memberId, Pageable pageable) {
+        return repository.findAllByMemberId(memberId, pageable)
                 .map(mapper::toDomainEntity);
     }
 
     @Override
-    public boolean existsByMemberAndActivityGroup(Member member, ActivityGroup activityGroup) {
-        return repository.existsByMemberAndActivityGroup(member, activityGroup);
+    public boolean existsByMemberIdAndActivityGroup(String memberId, ActivityGroup activityGroup) {
+        return repository.existsByMemberIdAndActivityGroup(memberId, activityGroup);
     }
 
     @Override

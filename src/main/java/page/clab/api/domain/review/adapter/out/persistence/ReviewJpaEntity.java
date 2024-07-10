@@ -19,7 +19,6 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
 
 @Entity
@@ -42,9 +41,7 @@ public class ReviewJpaEntity extends BaseEntity {
     @JoinColumn(name = "activity_group_id")
     private ActivityGroup activityGroup;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    private String memberId;
 
     @Column(nullable = false)
     @Size(min = 1, max = 1000, message = "{size.review.content}")

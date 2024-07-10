@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.review.application.dto.request.ReviewUpdateRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -23,7 +23,7 @@ public class Review {
 
     private Long id;
     private ActivityGroup activityGroup;
-    private Member member;
+    private String memberId;
     private String content;
     private Boolean isPublic;
     private boolean isDeleted = false;
@@ -38,16 +38,12 @@ public class Review {
         this.isDeleted = true;
     }
 
-    public boolean isOwner(Member member) {
-        return this.member.isSameMember(member);
-    }
-
     public boolean isOwner(String memberId) {
-        return this.member.isSameMember(memberId);
+        return this.memberId.equals(memberId);
     }
 
-    public void validateAccessPermission(Member member) throws PermissionDeniedException {
-        if (!isOwner(member) && !member.isAdminRole()) {
+    public void validateAccessPermission(MemberDetailedInfoDto memberInfo) throws PermissionDeniedException {
+        if (!isOwner(memberInfo.getMemberId()) && !memberInfo.isAdminRole()) {
             throw new PermissionDeniedException("해당 후기를 수정/삭제할 권한이 없습니다.");
         }
     }

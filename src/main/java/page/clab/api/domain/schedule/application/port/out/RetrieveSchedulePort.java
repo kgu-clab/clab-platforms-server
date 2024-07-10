@@ -3,7 +3,6 @@ package page.clab.api.domain.schedule.application.port.out;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.application.dto.response.ScheduleCollectResponseDto;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
@@ -21,7 +20,7 @@ public interface RetrieveSchedulePort {
 
     Page<Schedule> findByConditions(Integer year, Integer month, SchedulePriority priority, Pageable pageable);
 
-    Page<Schedule> findActivitySchedulesByDateRangeAndMember(LocalDate startDate, LocalDate endDate, Member member, Pageable pageable);
+    Page<Schedule> findActivitySchedulesByDateRangeAndMemberId(LocalDate startDate, LocalDate endDate, String memberId, Pageable pageable);
 
     ScheduleCollectResponseDto findCollectSchedules();
 

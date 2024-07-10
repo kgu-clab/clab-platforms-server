@@ -20,7 +20,6 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.domain.ScheduleType;
 import page.clab.api.global.common.domain.BaseEntity;
@@ -63,9 +62,7 @@ public class ScheduleJpaEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private SchedulePriority priority;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member scheduleWriter;
+    private String scheduleWriter;
 
     @ManyToOne
     @JoinColumn(name = "activityGroup")

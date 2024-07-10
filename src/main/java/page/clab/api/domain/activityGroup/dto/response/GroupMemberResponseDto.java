@@ -4,8 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
-
-import java.util.List;
+import page.clab.api.domain.member.domain.Member;
 
 @Getter
 @Builder
@@ -19,19 +18,13 @@ public class GroupMemberResponseDto {
 
     private GroupMemberStatus status;
 
-    public static GroupMemberResponseDto toDto(GroupMember groupMember) {
+    public static GroupMemberResponseDto toDto(Member member, GroupMember groupMember) {
         return GroupMemberResponseDto.builder()
-                .memberId(groupMember.getMember().getId())
-                .memberName(groupMember.getMember().getName())
+                .memberId(member.getId())
+                .memberName(member.getName())
                 .role(groupMember.getRole().getKey())
                 .status(groupMember.getStatus())
                 .build();
-    }
-
-    public static List<GroupMemberResponseDto> toDto(List<GroupMember> groupMembers) {
-        return groupMembers.stream()
-                .map(GroupMemberResponseDto::toDto)
-                .toList();
     }
 
 }

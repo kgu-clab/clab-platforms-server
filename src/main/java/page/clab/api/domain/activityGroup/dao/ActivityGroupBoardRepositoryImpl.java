@@ -23,7 +23,7 @@ public class ActivityGroupBoardRepositoryImpl implements ActivityGroupBoardRepos
 
         BooleanBuilder builder = new BooleanBuilder();
         builder.and(qBoard.parent.id.eq(parentId));
-        builder.and(qBoard.member.id.eq(memberId));
+        builder.and(qBoard.memberId.eq(memberId));
         builder.and(qBoard.category.eq(ActivityGroupBoardCategory.SUBMIT));
 
         return queryFactory.selectFrom(qBoard)

@@ -18,5 +18,4 @@ public class MemberEventProcessorRegistry {
     public List<MemberEventProcessor> getProcessors() {
         return Collections.unmodifiableList(processors);
     }
-
 }

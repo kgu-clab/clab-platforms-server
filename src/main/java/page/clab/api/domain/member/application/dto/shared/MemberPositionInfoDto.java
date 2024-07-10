@@ -9,15 +9,10 @@ import page.clab.api.domain.member.domain.Member;
 public class MemberPositionInfoDto {
 
     private String memberId;
-
     private String memberName;
-
     private String email;
-
     private String imageUrl;
-
     private String interests;
-
     private String githubUrl;
 
     public static MemberPositionInfoDto create(Member member) {
@@ -30,5 +25,4 @@ public class MemberPositionInfoDto {
                 .githubUrl(member.getGithubUrl())
                 .build();
     }
-
 }

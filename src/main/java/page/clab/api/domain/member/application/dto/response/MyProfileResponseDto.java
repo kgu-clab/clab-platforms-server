@@ -12,27 +12,16 @@ import java.time.LocalDateTime;
 public class MyProfileResponseDto {
 
     private String name;
-
     private String id;
-
     private String interests;
-
     private String contact;
-
     private String email;
-
     private String address;
-
     private String githubUrl;
-
     private StudentStatus studentStatus;
-
     private String imageUrl;
-
     private Long roleLevel;
-
     private Boolean isOtpEnabled;
-
     private LocalDateTime createdAt;
 
     public static MyProfileResponseDto toDto(Member member) {

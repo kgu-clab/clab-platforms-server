@@ -15,7 +15,7 @@ import java.io.Serializable;
 public class GroupMemberId implements Serializable {
 
     @EqualsAndHashCode.Include
-    private String member;
+    private String memberId;
 
     @EqualsAndHashCode.Include
     private Long activityGroup;

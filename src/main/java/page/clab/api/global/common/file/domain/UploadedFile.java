@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,9 +27,7 @@ public class UploadedFile extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member uploader;
+    private String uploader;
 
     @Column(nullable = false)
     private String originalFileName;
@@ -56,7 +52,7 @@ public class UploadedFile extends BaseEntity {
 
     private Long storagePeriod;
 
-    public static UploadedFile create(Member uploader, String originalFileName, String saveFileName, String savedPath, String url, Long fileSize, String contentType, Long storagePeriod, String category) {
+    public static UploadedFile create(String uploader, String originalFileName, String saveFileName, String savedPath, String url, Long fileSize, String contentType, Long storagePeriod, String category) {
         return UploadedFile.builder()
                 .uploader(uploader)
                 .originalFileName(originalFileName)
@@ -71,7 +67,7 @@ public class UploadedFile extends BaseEntity {
     }
 
     public boolean isOwner(Member member) {
-        return this.uploader.isSameMember(member);
+        return this.uploader.equals(member);
     }
 
     public void validateAccessPermission(Member member) throws PermissionDeniedException {

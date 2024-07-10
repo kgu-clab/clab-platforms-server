@@ -9,7 +9,6 @@ import page.clab.api.domain.member.domain.Member;
 public class MemberEmailInfoDto {
 
     private String memberName;
-
     private String email;
 
     public static MemberEmailInfoDto create(Member member) {
@@ -18,5 +17,4 @@ public class MemberEmailInfoDto {
                 .email(member.getEmail())
                 .build();
     }
-
 }

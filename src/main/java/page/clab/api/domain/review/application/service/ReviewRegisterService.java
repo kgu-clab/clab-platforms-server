@@ -33,17 +33,17 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
     public Long registerReview(ReviewRequestDto requestDto) {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(requestDto.getActivityGroupId());
-        validateReviewCreationPermission(activityGroup, currentMember);
-        Review review = ReviewRequestDto.toEntity(requestDto, currentMember, activityGroup);
+        validateReviewCreationPermission(activityGroup, currentMember.getId());
+        Review review = ReviewRequestDto.toEntity(requestDto, currentMember.getId(), activityGroup);
         notifyGroupLeaderOfNewReview(activityGroup, currentMember);
         return registerReviewPort.save(review).getId();
     }
 
-    private void validateReviewCreationPermission(ActivityGroup activityGroup, Member member) {
+    private void validateReviewCreationPermission(ActivityGroup activityGroup, String memberId) {
         if (!activityGroup.isEnded()) {
             throw new ActivityGroupNotFinishedException("활동이 종료된 활동 그룹만 리뷰를 작성할 수 있습니다.");
         }
-        if (isExistsByMemberAndActivityGroup(member, activityGroup)) {
+        if (isExistsByMemberIdAndActivityGroup(memberId, activityGroup)) {
             throw new AlreadyReviewedException("이미 리뷰를 작성한 활동 그룹입니다.");
         }
     }
@@ -51,11 +51,11 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
     private void notifyGroupLeaderOfNewReview(ActivityGroup activityGroup, Member member) {
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         if (groupLeader != null) {
-            notificationService.sendNotificationToMember(groupLeader.getMember().getId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 리뷰를 등록하였습니다.");
+            notificationService.sendNotificationToMember(groupLeader.getMemberId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 리뷰를 등록하였습니다.");
         }
     }
 
-    private boolean isExistsByMemberAndActivityGroup(Member member, ActivityGroup activityGroup) {
-        return retrieveReviewPort.existsByMemberAndActivityGroup(member, activityGroup);
+    private boolean isExistsByMemberIdAndActivityGroup(String memberId, ActivityGroup activityGroup) {
+        return retrieveReviewPort.existsByMemberIdAndActivityGroup(memberId, activityGroup);
     }
 }

@@ -12,5 +12,4 @@ public class MemberDeletedEvent extends ApplicationEvent {
         super(source);
         this.memberId = memberId;
     }
-
 }

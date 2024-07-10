@@ -28,9 +28,7 @@ import page.clab.api.global.common.domain.BaseEntity;
 public class GroupMember extends BaseEntity {
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
+    private String memberId;
 
     @Id
     @ManyToOne
@@ -44,9 +42,9 @@ public class GroupMember extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private GroupMemberStatus status;
 
-    public static GroupMember create(Member member, ActivityGroup activityGroup, ActivityGroupRole role, GroupMemberStatus status) {
+    public static GroupMember create(String memberId, ActivityGroup activityGroup, ActivityGroupRole role, GroupMemberStatus status) {
         return GroupMember.builder()
-                .member(member)
+                .memberId(memberId)
                 .activityGroup(activityGroup)
                 .role(role)
                 .status(status)
@@ -57,8 +55,8 @@ public class GroupMember extends BaseEntity {
         return role.equals(ActivityGroupRole.LEADER);
     }
 
-    public boolean isOwner(Member member) {
-        return this.member.isSameMember(member);
+    public boolean isOwner(String memberId) {
+        return this.memberId.equals(memberId);
     }
 
     public boolean isSameRole(ActivityGroupRole role) {
@@ -74,7 +72,7 @@ public class GroupMember extends BaseEntity {
     }
 
     public boolean isOwnerAndLeader(Member member) {
-        return isOwner(member) && isLeader();
+        return isOwner(member.getId()) && isLeader();
     }
 
     public boolean isAccepted() {

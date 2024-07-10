@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.review.domain.Review;
 
 @Getter
@@ -21,10 +20,10 @@ public class ReviewRequestDto {
             "신입생이라도 자유롭게 스터디 그룹을 만들고 사람들을 모아서 원하는 분야와 관련된 기술을 알아보고 같이 공부하기 좋습니다!", required = true)
     private String content;
 
-    public static Review toEntity(ReviewRequestDto requestDto, Member member, ActivityGroup activityGroup) {
+    public static Review toEntity(ReviewRequestDto requestDto, String memberId, ActivityGroup activityGroup) {
         return Review.builder()
                 .activityGroup(activityGroup)
-                .member(member)
+                .memberId(memberId)
                 .content(requestDto.getContent())
                 .isPublic(false)
                 .build();

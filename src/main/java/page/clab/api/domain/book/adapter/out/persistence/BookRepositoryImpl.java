@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.QBook;
-import page.clab.api.domain.member.domain.QMember;
+import page.clab.api.domain.member.adapter.out.persistence.QMemberJpaEntity;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
     @Override
     public Page<Book> findByConditions(String title, String category, String publisher, String borrowerId, String borrowerName, Pageable pageable) {
         QBook book = QBook.book;
-        QMember borrower = QMember.member;
+        QMemberJpaEntity borrower = QMemberJpaEntity.memberJpaEntity;
         BooleanBuilder builder = new BooleanBuilder();
 
         if (title != null) builder.and(book.title.containsIgnoreCase(title));
