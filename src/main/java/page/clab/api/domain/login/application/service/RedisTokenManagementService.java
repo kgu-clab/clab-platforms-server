@@ -13,6 +13,7 @@ import page.clab.api.global.auth.exception.TokenNotFoundException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -38,6 +39,7 @@ public class RedisTokenManagementService implements ManageRedisTokenUseCase {
     public List<String> getCurrentLoggedInUsers() {
         Iterable<RedisToken> iterableTokens = retrieveRedisTokenPort.findAll();
         return StreamSupport.stream(iterableTokens.spliterator(), false)
+                .filter(Objects::nonNull)
                 .filter(redisToken -> jwtTokenProvider.validateTokenSilently(redisToken.getAccessToken()))
                 .map(RedisToken::getId)
                 .distinct()

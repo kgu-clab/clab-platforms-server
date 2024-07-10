@@ -22,33 +22,40 @@ public class AccountLockInfoPersistenceAdapter implements
         RemoveAccountLockInfoPort {
 
     private final AccountLockInfoRepository accountLockInfoRepository;
+    private final AccountLockInfoMapper accountLockInfoMapper;
 
     @Override
     public AccountLockInfo save(AccountLockInfo accountLockInfo) {
-        return accountLockInfoRepository.save(accountLockInfo);
+        AccountLockInfoJpaEntity jpaEntity = accountLockInfoMapper.toJpaEntity(accountLockInfo);
+        AccountLockInfoJpaEntity savedEntity = accountLockInfoRepository.save(jpaEntity);
+        return accountLockInfoMapper.toDomainEntity(savedEntity);
     }
 
     @Override
     public Optional<AccountLockInfo> findById(Long id) {
-        return accountLockInfoRepository.findById(id);
+        return accountLockInfoRepository.findById(id).map(accountLockInfoMapper::toDomainEntity);
     }
 
     @Override
     public Optional<AccountLockInfo> findByMemberId(String memberId) {
-        return accountLockInfoRepository.findByMemberId(memberId);
+        return accountLockInfoRepository.findByMemberId(memberId).map(accountLockInfoMapper::toDomainEntity);
     }
 
     @Override
     public AccountLockInfo update(AccountLockInfo accountLockInfo) {
-        return accountLockInfoRepository.save(accountLockInfo);
+        AccountLockInfoJpaEntity jpaEntity = accountLockInfoMapper.toJpaEntity(accountLockInfo);
+        AccountLockInfoJpaEntity updatedEntity = accountLockInfoRepository.save(jpaEntity);
+        return accountLockInfoMapper.toDomainEntity(updatedEntity);
     }
 
     @Override
     public void delete(AccountLockInfo accountLockInfo) {
-        accountLockInfoRepository.delete(accountLockInfo);
+        AccountLockInfoJpaEntity jpaEntity = accountLockInfoMapper.toJpaEntity(accountLockInfo);
+        accountLockInfoRepository.delete(jpaEntity);
     }
 
     public Page<AccountLockInfo> findByLockUntil(LocalDateTime banDate, Pageable pageable) {
-        return accountLockInfoRepository.findByLockUntil(banDate, pageable);
+        Page<AccountLockInfoJpaEntity> jpaEntities = accountLockInfoRepository.findByLockUntil(banDate, pageable);
+        return jpaEntities.map(accountLockInfoMapper::toDomainEntity);
     }
 }

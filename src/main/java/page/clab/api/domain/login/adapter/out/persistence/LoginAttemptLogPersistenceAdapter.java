@@ -15,14 +15,18 @@ public class LoginAttemptLogPersistenceAdapter implements
         RetrieveLoginAttemptLogPort {
 
     private final LoginAttemptLogRepository loginAttemptLogRepository;
+    private final LoginAttemptLogMapper loginAttemptLogMapper;
 
     @Override
     public LoginAttemptLog save(LoginAttemptLog loginAttemptLog) {
-        return loginAttemptLogRepository.save(loginAttemptLog);
+        LoginAttemptLogJpaEntity jpaEntity = loginAttemptLogMapper.toJpaEntity(loginAttemptLog);
+        LoginAttemptLogJpaEntity savedEntity = loginAttemptLogRepository.save(jpaEntity);
+        return loginAttemptLogMapper.toDomainEntity(savedEntity);
     }
 
     @Override
     public Page<LoginAttemptLog> findAllByMemberId(String memberId, Pageable pageable) {
-        return loginAttemptLogRepository.findAllByMemberId(memberId, pageable);
+        return loginAttemptLogRepository.findAllByMemberId(memberId, pageable)
+                .map(loginAttemptLogMapper::toDomainEntity);
     }
 }

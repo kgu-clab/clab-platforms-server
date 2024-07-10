@@ -1,4 +1,4 @@
-package page.clab.api.domain.login.domain;
+package page.clab.api.domain.activityGroup.domain;
 
 import jakarta.persistence.Column;
 import lombok.AccessLevel;

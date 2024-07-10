@@ -18,26 +18,31 @@ public class AuthenticatorPersistenceAdapter implements
         RemoveAuthenticatorPort {
 
     private final AuthenticatorRepository authenticatorRepository;
+    private final AuthenticatorMapper authenticatorMapper;
 
     @Override
     public Authenticator save(Authenticator authenticator) {
-        return authenticatorRepository.save(authenticator);
+        AuthenticatorJpaEntity jpaEntity = authenticatorMapper.toJpaEntity(authenticator);
+        AuthenticatorJpaEntity savedEntity = authenticatorRepository.save(jpaEntity);
+        return authenticatorMapper.toDomainEntity(savedEntity);
     }
 
     @Override
     public Optional<Authenticator> findById(String memberId) {
-        return authenticatorRepository.findById(memberId);
+        return authenticatorRepository.findById(memberId).map(authenticatorMapper::toDomainEntity);
     }
 
     @Override
     public Authenticator findByIdOrThrow(String memberId) {
         return authenticatorRepository.findById(memberId)
+                .map(authenticatorMapper::toDomainEntity)
                 .orElseThrow(() -> new NotFoundException("[Authenticator] memberId: " + memberId + "에 해당하는 Authenticator가 존재하지 않습니다."));
     }
 
     @Override
     public void delete(Authenticator authenticator) {
-        authenticatorRepository.delete(authenticator);
+        AuthenticatorJpaEntity jpaEntity = authenticatorMapper.toJpaEntity(authenticator);
+        authenticatorRepository.delete(jpaEntity);
     }
 
     @Override

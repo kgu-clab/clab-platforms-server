@@ -1,8 +1,8 @@
-package page.clab.api.domain.login.adapter.out.persistence;
+package page.clab.api.domain.activityGroup.dao;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import page.clab.api.domain.login.domain.RedisQRKey;
+import page.clab.api.domain.activityGroup.domain.RedisQRKey;
 
 @Repository
 public interface RedisQRKeyRepository extends CrudRepository<RedisQRKey, String> {

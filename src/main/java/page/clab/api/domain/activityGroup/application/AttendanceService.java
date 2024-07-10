@@ -11,18 +11,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activityGroup.dao.AbsentRepository;
 import page.clab.api.domain.activityGroup.dao.AttendanceRepository;
+import page.clab.api.domain.activityGroup.dao.RedisQRKeyRepository;
 import page.clab.api.domain.activityGroup.domain.Absent;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.Attendance;
+import page.clab.api.domain.activityGroup.domain.RedisQRKey;
 import page.clab.api.domain.activityGroup.dto.request.AbsentRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.AttendanceRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.AbsentResponseDto;
 import page.clab.api.domain.activityGroup.dto.response.AttendanceResponseDto;
 import page.clab.api.domain.activityGroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activityGroup.exception.DuplicateAttendanceException;
-import page.clab.api.domain.login.adapter.out.persistence.RedisQRKeyRepository;
-import page.clab.api.domain.login.domain.RedisQRKey;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -44,21 +44,13 @@ import java.time.format.DateTimeFormatter;
 public class AttendanceService {
 
     private final RetrieveMemberUseCase retrieveMemberUseCase;
-
     private final FileService fileService;
-
     private final ActivityGroupAdminService activityGroupAdminService;
-
     private final AttendanceRepository attendanceRepository;
-
     private final RedisQRKeyRepository redisQRKeyRepository;
-
     private final AbsentRepository absentRepository;
-
     private final GoogleAuthenticator googleAuthenticator;
-
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Transactional

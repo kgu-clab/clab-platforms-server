@@ -26,7 +26,6 @@ public class RedisToken {
     private String id;
 
     private Role role;
-
     private String ip;
 
     @Indexed
