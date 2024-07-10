@@ -7,8 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import page.clab.api.domain.donation.domain.Donation;
-import page.clab.api.domain.donation.domain.QDonation;
 import page.clab.api.domain.member.adapter.out.persistence.QMemberJpaEntity;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
@@ -22,8 +20,8 @@ public class DonationRepositoryImpl implements DonationRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Donation> findByConditions(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable) {
-        QDonation donation = QDonation.donation;
+    public Page<DonationJpaEntity> findByConditions(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        QDonationJpaEntity donation = QDonationJpaEntity.donationJpaEntity;
         QMemberJpaEntity member = QMemberJpaEntity.memberJpaEntity;
 
         BooleanBuilder builder = new BooleanBuilder();
@@ -32,7 +30,7 @@ public class DonationRepositoryImpl implements DonationRepositoryCustom {
         if (startDate != null) builder.and(donation.createdAt.goe(startDate.atStartOfDay()));
         if (endDate != null) builder.and(donation.createdAt.loe(endDate.plusDays(1).atStartOfDay()));
 
-        List<Donation> results = queryFactory
+        List<DonationJpaEntity> results = queryFactory
                 .selectFrom(donation)
                 .leftJoin(member).on(donation.memberId.eq(member.id))
                 .where(builder)

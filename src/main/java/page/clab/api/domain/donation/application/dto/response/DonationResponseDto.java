@@ -11,15 +11,10 @@ import java.time.LocalDateTime;
 public class DonationResponseDto {
 
     private Long id;
-
     private String memberId;
-
     private String memberName;
-
     private Double amount;
-
     private String message;
-
     private LocalDateTime createdAt;
 
     public static DonationResponseDto toDto(Donation donation, String memberName) {

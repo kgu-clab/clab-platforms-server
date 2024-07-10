@@ -14,6 +14,7 @@ import page.clab.api.global.common.slack.domain.SecurityAlertType;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -52,6 +53,7 @@ public class RedisIpAccessMonitorService {
                 .stream(redisIpAccessMonitorRepository.findAll().spliterator(), false)
                 .toList();
         List<RedisIpAccessMonitor> filteredMonitors = allMonitors.stream()
+                .filter(Objects::nonNull)
                 .filter(monitor -> monitor.isBlocked(maxAttempts))
                 .sorted(Comparator.comparing(RedisIpAccessMonitor::getLastAttempt).reversed())
                 .toList();
