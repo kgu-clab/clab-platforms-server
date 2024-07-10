@@ -15,22 +15,15 @@ import java.time.LocalDateTime;
 public class DeletedCommentResponseDto {
 
     private Long id;
-
     private String writerId;
-
     private String writerName;
-
     private String writerImageUrl;
-
     private Long writerRoleLevel;
-
     private String content;
-
     private Long likes;
 
     @JsonProperty("isOwner")
     private boolean isOwner;
-
     private LocalDateTime createdAt;
 
     public static DeletedCommentResponseDto toDto(Comment comment, MemberDetailedInfoDto memberInfo, boolean isOwner) {
