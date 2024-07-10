@@ -20,4 +20,6 @@ public interface RetrievePositionPort {
     Optional<Position> findByMemberIdAndYearAndPositionType(String memberId, String year, PositionType positionType);
 
     Page<Position> findByConditions(String year, PositionType positionType, Pageable pageable);
+
+    List<Position> findByMemberId(String memberId);
 }

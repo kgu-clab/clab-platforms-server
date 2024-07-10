@@ -15,17 +15,11 @@ import java.util.stream.Collectors;
 public class PositionMyResponseDto {
 
     private Long id;
-
     private String name;
-
     private String email;
-
     private String imageUrl;
-
     private String interests;
-
     private String githubUrl;
-
     private Map<String, List<PositionType>> positionTypes;
 
     public static PositionMyResponseDto toDto(List<Position> positions, MemberPositionInfoDto memberInfo) {

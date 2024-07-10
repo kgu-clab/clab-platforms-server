@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.domain.ApplicationId;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface RetrieveApplicationPort {
@@ -15,4 +16,8 @@ public interface RetrieveApplicationPort {
     Page<Application> findByConditions(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable);
 
     Page<Application> findAllByIsDeletedTrue(Pageable pageable);
+
+    List<Application> findByRecruitmentIdAndIsPass(Long recruitmentId, boolean isPass);
+
+    Optional<Application> findByRecruitmentIdAndStudentId(Long recruitmentId, String memberId);
 }

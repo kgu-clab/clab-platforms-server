@@ -6,7 +6,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.member.application.event.MemberEventProcessor;
 import page.clab.api.domain.member.application.event.MemberEventProcessorRegistry;
-import page.clab.api.domain.position.adapter.out.persistence.PositionRepository;
+import page.clab.api.domain.position.application.port.out.RegisterPositionPort;
+import page.clab.api.domain.position.application.port.out.RetrievePositionPort;
 import page.clab.api.domain.position.domain.Position;
 
 import java.util.List;
@@ -15,8 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PositionEventProcessor implements MemberEventProcessor {
 
-    private final PositionRepository positionRepository;
-
+    private final RetrievePositionPort retrievePositionPort;
+    private final RegisterPositionPort registerPositionPort;
     private final MemberEventProcessorRegistry processorRegistry;
 
     @PostConstruct
@@ -27,9 +28,9 @@ public class PositionEventProcessor implements MemberEventProcessor {
     @Override
     @Transactional
     public void processMemberDeleted(String memberId) {
-        List<Position> positions = positionRepository.findByMemberId(memberId);
+        List<Position> positions = retrievePositionPort.findByMemberId(memberId);
         positions.forEach(Position::delete);
-        positionRepository.saveAll(positions);
+        registerPositionPort.saveAll(positions);
     }
 
     @Override

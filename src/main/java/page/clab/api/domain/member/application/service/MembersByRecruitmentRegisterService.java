@@ -5,14 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.application.adapter.out.persistence.ApplicationRepository;
-import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.application.exception.NotApprovedApplicationException;
+import page.clab.api.domain.application.application.port.out.RetrieveApplicationPort;
+import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.member.application.port.in.RegisterMembersByRecruitmentUseCase;
 import page.clab.api.domain.member.application.port.out.RegisterMemberPort;
 import page.clab.api.domain.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.position.adapter.out.persistence.PositionRepository;
+import page.clab.api.domain.position.application.port.out.RegisterPositionPort;
+import page.clab.api.domain.position.application.port.out.RetrievePositionPort;
 import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
 import page.clab.api.global.common.email.application.EmailService;
@@ -31,17 +32,18 @@ public class MembersByRecruitmentRegisterService implements RegisterMembersByRec
 
     private final VerificationService verificationService;
     private final EmailService emailService;
-    private final ApplicationRepository applicationRepository;
     private final ValidationService validationService;
     private final RetrieveMemberPort retrieveMemberPort;
     private final RegisterMemberPort registerMemberPort;
-    private final PositionRepository positionRepository;
+    private final RegisterPositionPort registerPositionPort;
+    private final RetrievePositionPort retrievePositionPort;
+    private final RetrieveApplicationPort retrieveApplicationPort;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
     @Override
     public List<String> registerMembersByRecruitment(Long recruitmentId) {
-        List<Application> applications = applicationRepository.findByRecruitmentIdAndIsPass(recruitmentId, true);
+        List<Application> applications = retrieveApplicationPort.findByRecruitmentIdAndIsPass(recruitmentId, true);
         return applications.stream()
                 .map(this::createMemberFromApplication)
                 .toList();
@@ -55,7 +57,7 @@ public class MembersByRecruitmentRegisterService implements RegisterMembersByRec
     }
 
     private Application getApplicationByRecruitmentIdAndStudentIdOrThrow(Long recruitmentId, String memberId) {
-        return applicationRepository.findByRecruitmentIdAndStudentId(recruitmentId, memberId)
+        return retrieveApplicationPort.findByRecruitmentIdAndStudentId(recruitmentId, memberId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 지원서입니다."));
     }
 
@@ -94,10 +96,10 @@ public class MembersByRecruitmentRegisterService implements RegisterMembersByRec
     }
 
     public void createPositionByMember(Member member) {
-        if (positionRepository.findByMemberIdAndYearAndPositionType(member.getId(), String.valueOf(LocalDate.now().getYear()), PositionType.MEMBER).isPresent()) {
+        if (retrievePositionPort.findByMemberIdAndYearAndPositionType(member.getId(), String.valueOf(LocalDate.now().getYear()),PositionType.MEMBER).isPresent()) {
             return;
         }
         Position position = Position.create(member.getId());
-        positionRepository.save(position);
+        registerPositionPort.save(position);
     }
 }

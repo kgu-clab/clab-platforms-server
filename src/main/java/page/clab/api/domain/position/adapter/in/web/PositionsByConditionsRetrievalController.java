@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.position.adapter.out.persistence.PositionJpaEntity;
 import page.clab.api.domain.position.application.dto.response.PositionResponseDto;
 import page.clab.api.domain.position.application.port.in.RetrievePositionsByConditionsUseCase;
-import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -43,7 +43,7 @@ public class PositionsByConditionsRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "year, positionType") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc, asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Position.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, PositionJpaEntity.class);
         PagedResponseDto<PositionResponseDto> positions = retrievePositionsByConditionsUseCase.retrievePositions(year, positionType, pageable);
         return ApiResponse.success(positions);
     }

@@ -8,9 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
-import page.clab.api.domain.position.domain.QPosition;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
@@ -23,21 +21,21 @@ public class PositionRepositoryImpl implements PositionRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Position> findByConditions(String year, PositionType positionType, Pageable pageable) {
-        QPosition qPosition = QPosition.position;
+    public Page<PositionJpaEntity> findByConditions(String year, PositionType positionType, Pageable pageable) {
+        QPositionJpaEntity position = QPositionJpaEntity.positionJpaEntity;
         BooleanBuilder builder = new BooleanBuilder();
 
-        if (year != null) builder.and(qPosition.year.eq(year));
-        if (positionType != null) builder.and(qPosition.positionType.eq(positionType));
+        if (year != null) builder.and(position.year.eq(year));
+        if (positionType != null) builder.and(position.positionType.eq(positionType));
 
-        List<Position> positions = queryFactory.selectFrom(qPosition)
+        List<PositionJpaEntity> positions = queryFactory.selectFrom(position)
                 .where(builder)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qPosition))
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, position))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long count = queryFactory.selectFrom(qPosition)
+        long count = queryFactory.selectFrom(position)
                 .where(builder)
                 .fetchCount();
 

@@ -11,19 +11,12 @@ import page.clab.api.domain.position.domain.PositionType;
 public class PositionResponseDto {
 
     private Long id;
-
     private String name;
-
     private String email;
-
     private String imageUrl;
-
     private String interests;
-
     private String githubUrl;
-
     private PositionType positionType;
-
     private String year;
 
     public static PositionResponseDto toDto(Position position, MemberPositionInfoDto memberInfo) {

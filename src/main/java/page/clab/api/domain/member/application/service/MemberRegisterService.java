@@ -5,15 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.RegisterMemberUseCase;
-import page.clab.api.domain.member.application.port.out.CheckMemberExistencePort;
-import page.clab.api.domain.member.application.port.out.RegisterMemberPort;
-import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.member.application.dto.request.MemberRequestDto;
 import page.clab.api.domain.member.application.exception.DuplicateMemberContactException;
 import page.clab.api.domain.member.application.exception.DuplicateMemberEmailException;
 import page.clab.api.domain.member.application.exception.DuplicateMemberIdException;
-import page.clab.api.domain.position.adapter.out.persistence.PositionRepository;
+import page.clab.api.domain.member.application.port.in.RegisterMemberUseCase;
+import page.clab.api.domain.member.application.port.out.CheckMemberExistencePort;
+import page.clab.api.domain.member.application.port.out.RegisterMemberPort;
+import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.position.application.port.out.RegisterPositionPort;
+import page.clab.api.domain.position.application.port.out.RetrievePositionPort;
 import page.clab.api.domain.position.domain.Position;
 import page.clab.api.domain.position.domain.PositionType;
 import page.clab.api.global.common.email.application.EmailService;
@@ -33,7 +34,8 @@ public class MemberRegisterService implements RegisterMemberUseCase {
     private final EmailService emailService;
     private final CheckMemberExistencePort checkMemberExistencePort;
     private final RegisterMemberPort registerMemberPort;
-    private final PositionRepository positionRepository;
+    private final RegisterPositionPort registerPositionPort;
+    private final RetrievePositionPort retrievePositionPort;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -66,11 +68,11 @@ public class MemberRegisterService implements RegisterMemberUseCase {
     }
 
     public void createPositionByMember(Member member) {
-        if (positionRepository.findByMemberIdAndYearAndPositionType(member.getId(), String.valueOf(LocalDate.now().getYear()), PositionType.MEMBER).isPresent()) {
+        if (retrievePositionPort.findByMemberIdAndYearAndPositionType(member.getId(), String.valueOf(LocalDate.now().getYear()), PositionType.MEMBER).isPresent()) {
             return;
         }
         Position position = Position.create(member.getId());
-        positionRepository.save(position);
+        registerPositionPort.save(position);
     }
 
     private void setRandomPasswordAndSendEmail(Member member) {

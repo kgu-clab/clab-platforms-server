@@ -11,6 +11,7 @@ import page.clab.api.domain.application.domain.Application;
 import page.clab.api.domain.application.domain.ApplicationId;
 import page.clab.api.global.exception.NotFoundException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -46,6 +47,16 @@ public class ApplicationPersistenceAdapter implements
     @Override
     public Page<Application> findAllByIsDeletedTrue(Pageable pageable) {
         return applicationRepository.findAllByIsDeletedTrue(pageable);
+    }
+
+    @Override
+    public List<Application> findByRecruitmentIdAndIsPass(Long recruitmentId, boolean isPass) {
+        return applicationRepository.findByRecruitmentIdAndIsPass(recruitmentId, isPass);
+    }
+
+    @Override
+    public Optional<Application> findByRecruitmentIdAndStudentId(Long recruitmentId, String memberId) {
+        return applicationRepository.findByRecruitmentIdAndStudentId(recruitmentId, memberId);
     }
 
     @Override
