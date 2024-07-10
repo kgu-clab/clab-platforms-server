@@ -1,60 +1,32 @@
 package page.clab.api.domain.workExperience.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.workExperience.application.dto.request.WorkExperienceUpdateRequestDto;
-import page.clab.api.global.common.domain.BaseEntity;
+import page.clab.api.global.exception.InvalidDateRangeException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.time.LocalDate;
 import java.util.Optional;
 
-@Entity
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@SQLDelete(sql = "UPDATE work_experience SET is_deleted = true WHERE id = ?")
-@SQLRestriction("is_deleted = false")
-public class WorkExperience extends BaseEntity {
+public class WorkExperience {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
-    @Size(min = 1, message = "{size.workExperience.companyName}")
     private String companyName;
-
-    @Column(nullable = false)
-    @Size(min = 1, message = "{size.workExperience.position}")
     private String position;
-
-    @Column(nullable = false)
     private LocalDate startDate;
-
-    @Column(nullable = false)
     private LocalDate endDate;
-
-    @Column(name = "member_id", nullable = false)
     private String memberId;
-
-    @Builder.Default
-    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
     public void update(WorkExperienceUpdateRequestDto workExperienceUpdateRequestDto) {
@@ -70,6 +42,12 @@ public class WorkExperience extends BaseEntity {
 
     public boolean isOwner(String memberId) {
         return this.memberId.equals(memberId);
+    }
+
+    public void validateBusinessRules() {
+        if (startDate.isAfter(endDate)) {
+            throw new InvalidDateRangeException("시작일은 종료일보다 빠를 수 없습니다.");
+        }
     }
 
     public void validateAccessPermission(MemberDetailedInfoDto memberInfo) throws PermissionDeniedException {

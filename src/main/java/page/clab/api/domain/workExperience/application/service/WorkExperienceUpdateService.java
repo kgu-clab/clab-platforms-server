@@ -11,14 +11,12 @@ import page.clab.api.domain.workExperience.application.port.out.RetrieveWorkExpe
 import page.clab.api.domain.workExperience.application.port.out.UpdateWorkExperiencePort;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
 public class WorkExperienceUpdateService implements UpdateWorkExperienceUseCase {
 
     private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
-    private final ValidationService validationService;
     private final RetrieveWorkExperiencePort retrieveWorkExperiencePort;
     private final UpdateWorkExperiencePort updateWorkExperiencePort;
 
@@ -29,7 +27,7 @@ public class WorkExperienceUpdateService implements UpdateWorkExperienceUseCase 
         WorkExperience workExperience = retrieveWorkExperiencePort.findByIdOrThrow(workExperienceId);
         workExperience.validateAccessPermission(currentMemberInfo);
         workExperience.update(requestDto);
-        validationService.checkValid(workExperience);
+        workExperience.validateBusinessRules();
         return updateWorkExperiencePort.update(workExperience).getId();
     }
 }

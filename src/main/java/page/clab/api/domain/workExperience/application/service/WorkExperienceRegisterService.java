@@ -8,14 +8,12 @@ import page.clab.api.domain.workExperience.application.dto.request.WorkExperienc
 import page.clab.api.domain.workExperience.application.port.in.RegisterWorkExperienceUseCase;
 import page.clab.api.domain.workExperience.application.port.out.RegisterWorkExperiencePort;
 import page.clab.api.domain.workExperience.domain.WorkExperience;
-import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
 public class WorkExperienceRegisterService implements RegisterWorkExperienceUseCase {
 
     private final RetrieveMemberUseCase retrieveMemberUseCase;
-    private final ValidationService validationService;
     private final RegisterWorkExperiencePort registerWorkExperiencePort;
 
     @Override
@@ -23,7 +21,7 @@ public class WorkExperienceRegisterService implements RegisterWorkExperienceUseC
     public Long registerWorkExperience(WorkExperienceRequestDto requestDto) {
         String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         WorkExperience workExperience = WorkExperienceRequestDto.toEntity(requestDto, currentMemberId);
-        validationService.checkValid(workExperience);
+        workExperience.validateBusinessRules();
         return registerWorkExperiencePort.save(workExperience).getId();
     }
 }

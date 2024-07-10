@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.workExperience.adapter.out.persistence.WorkExperienceJpaEntity;
 import page.clab.api.domain.workExperience.application.dto.response.WorkExperienceResponseDto;
 import page.clab.api.domain.workExperience.application.port.in.RetrieveWorkExperiencesByConditionsUseCase;
-import page.clab.api.domain.workExperience.domain.WorkExperience;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
@@ -40,7 +40,7 @@ public class WorkExperiencesByConditionsRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "startDate") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, WorkExperience.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, WorkExperienceJpaEntity.class);
         PagedResponseDto<WorkExperienceResponseDto> workExperiences = retrieveWorkExperiencesByConditionsUseCase.retrieveWorkExperiences(memberId, pageable);
         return ApiResponse.success(workExperiences);
     }

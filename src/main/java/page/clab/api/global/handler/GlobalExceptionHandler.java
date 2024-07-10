@@ -64,6 +64,7 @@ import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.DecryptionException;
 import page.clab.api.global.exception.EncryptionException;
 import page.clab.api.global.exception.InvalidColumnException;
+import page.clab.api.global.exception.InvalidDateRangeException;
 import page.clab.api.global.exception.InvalidEmojiException;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
@@ -86,6 +87,9 @@ public class GlobalExceptionHandler {
             InvalidInformationException.class,
             InvalidParentBoardException.class,
             InvalidCategoryException.class,
+            InvalidDateRangeException.class,
+            InvalidColumnException.class,
+            InvalidEmojiException.class,
             StringIndexOutOfBoundsException.class,
             MissingServletRequestParameterException.class,
             MalformedJsonException.class,
@@ -94,9 +98,7 @@ public class GlobalExceptionHandler {
             IllegalAccessException.class,
             NumberFormatException.class,
             SortingArgumentException.class,
-            InvalidColumnException.class,
-            UnknownPathException.class,
-            InvalidEmojiException.class
+            UnknownPathException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
