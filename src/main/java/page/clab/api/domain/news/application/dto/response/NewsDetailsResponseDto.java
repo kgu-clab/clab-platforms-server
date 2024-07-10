@@ -14,21 +14,13 @@ import java.util.List;
 public class NewsDetailsResponseDto {
 
     private Long id;
-
     private String title;
-
     private String category;
-
     private String content;
-
     private String articleUrl;
-
     private String source;
-
     private List<UploadedFileResponseDto> files;
-
     private LocalDate date;
-
     private LocalDateTime createdAt;
 
     public static NewsDetailsResponseDto toDto(News news) {
@@ -39,7 +31,6 @@ public class NewsDetailsResponseDto {
                 .content(news.getContent())
                 .articleUrl(news.getArticleUrl())
                 .source(news.getSource())
-                .files(UploadedFileResponseDto.toDto(news.getUploadedFiles()))
                 .date(news.getDate())
                 .createdAt(news.getCreatedAt())
                 .build();

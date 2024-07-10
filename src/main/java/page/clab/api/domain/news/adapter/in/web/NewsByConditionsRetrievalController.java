@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.news.application.port.in.RetrieveNewsByConditionsUseCase;
-import page.clab.api.domain.news.domain.News;
+import page.clab.api.domain.news.adapter.out.persistence.NewsJpaEntity;
 import page.clab.api.domain.news.application.dto.response.NewsResponseDto;
+import page.clab.api.domain.news.application.port.in.RetrieveNewsByConditionsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
@@ -42,7 +42,7 @@ public class NewsByConditionsRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, News.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, NewsJpaEntity.class);
         PagedResponseDto<NewsResponseDto> news = retrieveNewsByConditionsUseCase.retrieveNews(title, category, pageable);
         return ApiResponse.success(news);
     }

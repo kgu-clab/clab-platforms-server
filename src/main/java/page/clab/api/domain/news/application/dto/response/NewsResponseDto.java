@@ -12,15 +12,10 @@ import java.time.LocalDateTime;
 public class NewsResponseDto {
 
     private Long id;
-
     private String title;
-
     private String category;
-
     private String articleUrl;
-
     private LocalDate date;
-
     private LocalDateTime createdAt;
 
     public static NewsResponseDto toDto(News news) {
