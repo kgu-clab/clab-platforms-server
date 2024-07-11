@@ -15,17 +15,11 @@ import java.util.List;
 public class AccuseResponseDto {
 
     private List<MemberBasicInfoDto> members;
-
     private TargetType targetType;
-
     private Long targetId;
-
     private String reason;
-
     private AccuseStatus accuseStatus;
-
     private Long accuseCount;
-
     private LocalDateTime createdAt;
 
     public static AccuseResponseDto toDto(Accuse accuse, List<MemberBasicInfoDto> members) {

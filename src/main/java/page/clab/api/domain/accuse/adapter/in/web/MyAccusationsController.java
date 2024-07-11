@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.accuse.application.port.in.RetrieveMyAccusationsUseCase;
-import page.clab.api.domain.accuse.domain.Accuse;
+import page.clab.api.domain.accuse.adapter.out.persistence.AccuseJpaEntity;
 import page.clab.api.domain.accuse.application.dto.response.AccuseMyResponseDto;
+import page.clab.api.domain.accuse.application.port.in.RetrieveMyAccusationsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
@@ -38,7 +38,7 @@ public class MyAccusationsController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Accuse.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, AccuseJpaEntity.class);
         PagedResponseDto<AccuseMyResponseDto> accuses = retrieveMyAccusationsUsecase.retrieveMyAccusations(pageable);
         return ApiResponse.success(accuses);
     }

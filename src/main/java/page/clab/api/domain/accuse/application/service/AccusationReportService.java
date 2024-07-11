@@ -3,6 +3,7 @@ package page.clab.api.domain.accuse.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.accuse.adapter.out.persistence.AccuseTargetId;
 import page.clab.api.domain.accuse.application.dto.request.AccuseRequestDto;
 import page.clab.api.domain.accuse.application.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.accuse.application.port.in.ReportAccusationUseCase;
@@ -12,7 +13,6 @@ import page.clab.api.domain.accuse.application.port.out.RetrieveAccusePort;
 import page.clab.api.domain.accuse.application.port.out.RetrieveAccuseTargetPort;
 import page.clab.api.domain.accuse.domain.Accuse;
 import page.clab.api.domain.accuse.domain.AccuseTarget;
-import page.clab.api.domain.accuse.domain.AccuseTargetId;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.domain.board.application.port.in.RetrieveBoardsUseCase;
 import page.clab.api.domain.board.domain.Board;
@@ -22,7 +22,6 @@ import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
 import page.clab.api.domain.review.application.port.in.RetrieveReviewUseCase;
 import page.clab.api.domain.review.domain.Review;
-import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +36,6 @@ public class AccusationReportService implements ReportAccusationUseCase {
     private final RetrieveBoardsUseCase retrieveBoardsUseCase;
     private final RetrieveCommentsUseCase retrieveCommentsUseCase;
     private final RetrieveReviewUseCase retrieveReviewUseCase;
-    private final ValidationService validationService;
 
     @Transactional
     @Override
@@ -49,11 +47,9 @@ public class AccusationReportService implements ReportAccusationUseCase {
         validateAccusationRequest(type, targetId, memberId);
 
         AccuseTarget target = getOrCreateAccuseTarget(requestDto, type, targetId);
-        validationService.checkValid(target);
         registerAccuseTargetPort.save(target);
 
         Accuse accuse = findOrCreateAccusation(requestDto, memberId, target);
-        validationService.checkValid(accuse);
 
         notificationService.sendNotificationToMember(memberId, "신고하신 내용이 접수되었습니다.");
         notificationService.sendNotificationToSuperAdmins(memberId + "님이 신고를 접수하였습니다. 확인해주세요.");

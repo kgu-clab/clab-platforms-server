@@ -13,13 +13,9 @@ import java.time.LocalDateTime;
 public class AccuseMyResponseDto {
 
     private TargetType targetType;
-
     private Long targetId;
-
     private String reason;
-
     private AccuseStatus accuseStatus;
-
     private LocalDateTime createdAt;
 
     public static AccuseMyResponseDto toDto(Accuse accuse) {

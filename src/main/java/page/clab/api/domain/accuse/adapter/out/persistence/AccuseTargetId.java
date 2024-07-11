@@ -1,10 +1,11 @@
-package page.clab.api.domain.accuse.domain;
+package page.clab.api.domain.accuse.adapter.out.persistence;
 
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import page.clab.api.domain.accuse.domain.TargetType;
 
 import java.io.Serializable;
 

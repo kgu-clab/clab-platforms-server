@@ -8,8 +8,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.accuse.domain.AccuseStatus;
-import page.clab.api.domain.accuse.domain.AccuseTarget;
-import page.clab.api.domain.accuse.domain.QAccuseTarget;
 import page.clab.api.domain.accuse.domain.TargetType;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
@@ -22,8 +20,8 @@ public class AccuseTargetRepositoryImpl implements AccuseTargetRepositoryCustom 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<AccuseTarget> findByConditions(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable) {
-        QAccuseTarget accuseTarget = QAccuseTarget.accuseTarget;
+    public Page<AccuseTargetJpaEntity> findByConditions(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable) {
+        QAccuseTargetJpaEntity accuseTarget = QAccuseTargetJpaEntity.accuseTargetJpaEntity;
         BooleanExpression predicate = accuseTarget.isNotNull();
 
         if (type != null) {
@@ -33,7 +31,7 @@ public class AccuseTargetRepositoryImpl implements AccuseTargetRepositoryCustom 
             predicate = predicate.and(accuseTarget.accuseStatus.eq(status));
         }
 
-        List<AccuseTarget> accuseTargets = queryFactory.selectFrom(accuseTarget)
+        List<AccuseTargetJpaEntity> accuseTargets = queryFactory.selectFrom(accuseTarget)
                 .where(predicate)
                 .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, accuseTarget))
                 .offset(pageable.getOffset())
