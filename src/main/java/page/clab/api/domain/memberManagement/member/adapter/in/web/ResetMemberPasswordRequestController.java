@@ -14,7 +14,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RestController
 @RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
-@Tag(name = "Member Management - Member", description = "멤버 관련 API")
+@Tag(name = "Member Management - Member", description = "멤버")
 public class ResetMemberPasswordRequestController {
 
     private final RequestResetMemberPasswordUseCase requestResetMemberPasswordUseCase;

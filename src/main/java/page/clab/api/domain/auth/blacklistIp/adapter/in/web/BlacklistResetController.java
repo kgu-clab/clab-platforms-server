@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/blacklists")
 @RequiredArgsConstructor
-@Tag(name = "Authentication - Blacklist IP", description = "블랙리스트 IP 관련 API")
+@Tag(name = "Authentication - Blacklist IP", description = "블랙리스트 IP")
 public class BlacklistResetController {
 
     private final ResetBlacklistIpsUseCase resetBlacklistIpsUseCase;

@@ -19,7 +19,7 @@ import page.clab.api.global.common.file.dto.response.FileInfo;
 @RestController
 @RequestMapping("/api/v1/clouds")
 @RequiredArgsConstructor
-@Tag(name = "Member Management - Cloud", description = "클라우드 관련 API")
+@Tag(name = "Member Management - Cloud", description = "클라우드")
 public class FilesInMemberDirectoryRetrievalController {
 
     private final RetrieveFilesInMemberDirectoryUseCase retrieveFilesInMemberDirectoryUseCase;

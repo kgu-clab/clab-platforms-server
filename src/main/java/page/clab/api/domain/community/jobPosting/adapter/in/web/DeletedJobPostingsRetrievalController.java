@@ -18,7 +18,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RestController
 @RequestMapping("/api/v1/job-postings")
 @RequiredArgsConstructor
-@Tag(name = "Community - Job Posting", description = "커뮤니티 채용 공고 관련 API")
+@Tag(name = "Community - Job Posting", description = "커뮤니티 채용 공고")
 public class DeletedJobPostingsRetrievalController {
 
     private final RetrieveDeletedJobPostingsUseCase retrieveDeletedJobPostingsUseCase;

@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/account-access-logs")
 @RequiredArgsConstructor
-@Tag(name = "Authentication - Account Access Log", description = "계정 접근 로그 관련 API")
+@Tag(name = "Authentication - Account Access Log", description = "계정 접근 로그")
 public class AccountAccessLogsRetrievalController {
 
     private final RetrieveAccountAccessLogsUseCase retrieveAccountAccessLogsUseCase;

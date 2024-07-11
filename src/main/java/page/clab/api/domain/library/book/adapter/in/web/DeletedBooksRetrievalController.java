@@ -18,7 +18,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RestController
 @RequestMapping("/api/v1/books")
 @RequiredArgsConstructor
-@Tag(name = "Library - Book", description = "도서관 도서 관련 API")
+@Tag(name = "Library - Book", description = "도서관 도서")
 public class DeletedBooksRetrievalController {
 
     private final RetrieveDeletedBooksUseCase retrieveDeletedBooksUseCase;

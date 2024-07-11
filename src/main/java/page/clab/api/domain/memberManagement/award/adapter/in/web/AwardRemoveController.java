@@ -15,7 +15,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/api/v1/awards")
 @RequiredArgsConstructor
-@Tag(name = "Member Management - Award", description = "수상 이력 관련 API")
+@Tag(name = "Member Management - Award", description = "수상 이력")
 public class AwardRemoveController {
 
     private final RemoveAwardUseCase removeAwardUseCase;

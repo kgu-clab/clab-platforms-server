@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/accusations")
 @RequiredArgsConstructor
-@Tag(name = "Community - Accusation", description = "커뮤니티 신고 관련 API")
+@Tag(name = "Community - Accusation", description = "커뮤니티 신고")
 public class MyAccusationsController {
 
     private final RetrieveMyAccusationsUseCase retrieveMyAccusationsUsecase;

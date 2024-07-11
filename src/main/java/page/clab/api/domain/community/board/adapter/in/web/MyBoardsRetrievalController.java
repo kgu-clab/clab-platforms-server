@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/boards")
 @RequiredArgsConstructor
-@Tag(name = "Community - Board", description = "커뮤니티 게시판 관련 API")
+@Tag(name = "Community - Board", description = "커뮤니티 게시판")
 public class MyBoardsRetrievalController {
 
     private final RetrieveMyBoardsUseCase retrieveMyBoardsUseCase;

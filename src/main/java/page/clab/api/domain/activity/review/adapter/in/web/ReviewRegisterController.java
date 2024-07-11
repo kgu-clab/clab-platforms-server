@@ -16,7 +16,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RestController
 @RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
-@Tag(name = "Activity - Review", description = "활동 리뷰 관련 API")
+@Tag(name = "Activity - Review", description = "활동 리뷰")
 public class ReviewRegisterController {
 
     private final RegisterReviewUseCase registerReviewUseCase;

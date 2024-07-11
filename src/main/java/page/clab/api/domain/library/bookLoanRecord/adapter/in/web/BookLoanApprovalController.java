@@ -14,7 +14,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RestController
 @RequestMapping("/api/v1/book-loan-records")
 @RequiredArgsConstructor
-@Tag(name = "Library - Book Loan", description = "도서관 도서 대출 관련 API")
+@Tag(name = "Library - Book Loan", description = "도서관 도서 대출")
 public class BookLoanApprovalController {
 
     private final ApproveBookLoanUseCase approveBookLoanUseCase;

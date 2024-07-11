@@ -17,7 +17,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RestController
 @RequestMapping("/api/v1/job-postings")
 @RequiredArgsConstructor
-@Tag(name = "Community - Job Posting", description = "커뮤니티 채용 공고 관련 API")
+@Tag(name = "Community - Job Posting", description = "커뮤니티 채용 공고")
 public class JobPostingUpdateController {
 
     private final UpdateJobPostingUseCase updateJobPostingUseCase;

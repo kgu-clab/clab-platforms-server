@@ -15,7 +15,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RestController
 @RequestMapping("/api/v1/account-lock-info")
 @RequiredArgsConstructor
-@Tag(name = "Authentication - Account Lock Info", description = "계정 잠금 정보 관련 API")
+@Tag(name = "Authentication - Account Lock Info", description = "계정 잠금 정보")
 public class MemberBanController {
 
     private final BanMemberUseCase banMemberUseCase;

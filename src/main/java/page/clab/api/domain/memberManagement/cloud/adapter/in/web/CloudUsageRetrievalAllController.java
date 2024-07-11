@@ -18,7 +18,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RestController
 @RequestMapping("/api/v1/clouds")
 @RequiredArgsConstructor
-@Tag(name = "Member Management - Cloud", description = "클라우드 관련 API")
+@Tag(name = "Member Management - Cloud", description = "클라우드")
 public class CloudUsageRetrievalAllController {
 
     private final RetrieveAllCloudUsageUseCase retrieveAllCloudUsageUseCase;

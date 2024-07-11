@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/news")
 @RequiredArgsConstructor
-@Tag(name = "Community - News", description = "커뮤니티 뉴스 관련 API")
+@Tag(name = "Community - News", description = "커뮤니티 뉴스")
 public class NewsByConditionsRetrievalController {
 
     private final RetrieveNewsByConditionsUseCase retrieveNewsByConditionsUseCase;

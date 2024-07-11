@@ -32,7 +32,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/attendance")
 @RequiredArgsConstructor
-@Tag(name = "Activity - Attendance", description = "활동 출석체크 관련 API")
+@Tag(name = "Activity - Attendance", description = "활동 출석체크")
 public class AttendanceController {
 
     private final AttendanceService attendanceService;

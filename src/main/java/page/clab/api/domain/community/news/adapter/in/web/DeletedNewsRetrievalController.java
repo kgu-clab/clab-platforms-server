@@ -18,7 +18,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RestController
 @RequestMapping("/api/v1/news")
 @RequiredArgsConstructor
-@Tag(name = "Community - News", description = "커뮤니티 뉴스 관련 API")
+@Tag(name = "Community - News", description = "커뮤니티 뉴스")
 public class DeletedNewsRetrievalController {
 
     private final RetrieveDeletedNewsUseCase retrieveDeletedNewsUseCase;

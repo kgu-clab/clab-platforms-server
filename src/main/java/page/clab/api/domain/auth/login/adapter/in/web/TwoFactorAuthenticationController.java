@@ -23,7 +23,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/login/authenticator")
-@Tag(name = "Authentication - Two Factor Authentication", description = "2단계 인증 관련 API")
+@Tag(name = "Authentication - Two Factor Authentication", description = "2단계 인증")
 public class TwoFactorAuthenticationController {
 
     private final ManageLoginUseCase manageLoginUseCase;

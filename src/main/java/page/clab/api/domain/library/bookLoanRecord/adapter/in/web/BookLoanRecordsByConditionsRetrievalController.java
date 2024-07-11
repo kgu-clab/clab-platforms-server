@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/book-loan-records")
 @RequiredArgsConstructor
-@Tag(name = "Library - Book Loan", description = "도서관 도서 대출 관련 API")
+@Tag(name = "Library - Book Loan", description = "도서관 도서 대출")
 public class BookLoanRecordsByConditionsRetrievalController {
 
     private final RetrieveBookLoanRecordsByConditionsUseCase retrieveBookLoanRecordsByConditionsUseCase;

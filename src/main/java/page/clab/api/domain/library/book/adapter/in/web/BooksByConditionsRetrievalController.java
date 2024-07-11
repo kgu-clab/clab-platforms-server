@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/books")
 @RequiredArgsConstructor
-@Tag(name = "Library - Book", description = "도서관 도서 관련 API")
+@Tag(name = "Library - Book", description = "도서관 도서")
 public class BooksByConditionsRetrievalController {
 
     private final RetrieveBooksByConditionsUseCase retrieveBooksByConditionsUseCase;

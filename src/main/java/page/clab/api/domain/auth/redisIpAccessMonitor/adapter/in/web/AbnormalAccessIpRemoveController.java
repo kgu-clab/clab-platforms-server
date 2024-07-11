@@ -15,7 +15,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RestController
 @RequestMapping("/api/v1/ip-access-monitor")
 @RequiredArgsConstructor
-@Tag(name = "Authentication - Abnormal Access IP", description = "비정상 접근 IP 관련 API")
+@Tag(name = "Authentication - Abnormal Access IP", description = "비정상 접근 IP")
 public class AbnormalAccessIpRemoveController {
 
     private final RemoveAbnormalAccessIpUseCase removeAbnormalAccessIpUseCase;

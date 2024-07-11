@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/login")
-@Tag(name = "Authentication - Token Management", description = "토큰 관리 관련 API")
+@Tag(name = "Authentication - Token Management", description = "토큰 관리")
 public class TokenManagementController {
 
     private final ManageLoginUseCase manageLoginUseCase;

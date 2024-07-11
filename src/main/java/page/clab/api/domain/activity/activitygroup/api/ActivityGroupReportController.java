@@ -32,7 +32,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/activity-group/report")
 @RequiredArgsConstructor
-@Tag(name = "Activity - Group Report", description = "활동 그룹 보고서 관련 API")
+@Tag(name = "Activity - Group Report", description = "활동 그룹 보고서")
 public class ActivityGroupReportController {
 
     private final ActivityGroupReportService activityGroupReportService;

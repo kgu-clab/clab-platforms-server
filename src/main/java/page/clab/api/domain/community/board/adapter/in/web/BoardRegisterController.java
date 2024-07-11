@@ -17,7 +17,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/api/v1/boards")
 @RequiredArgsConstructor
-@Tag(name = "Community - Board", description = "커뮤니티 게시판 관련 API")
+@Tag(name = "Community - Board", description = "커뮤니티 게시판")
 public class BoardRegisterController {
 
     private final RegisterBoardUseCase registerBoardUseCase;

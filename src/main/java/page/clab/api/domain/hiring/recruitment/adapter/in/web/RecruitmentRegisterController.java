@@ -16,7 +16,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RestController
 @RequestMapping("/api/v1/recruitments")
 @RequiredArgsConstructor
-@Tag(name = "Hiring - Recruitment", description = "모집 공고 관련 API")
+@Tag(name = "Hiring - Recruitment", description = "모집 공고")
 public class RecruitmentRegisterController {
 
     private final RegisterRecruitmentUseCase registerRecruitmentUseCase;

@@ -16,7 +16,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
-@Tag(name = "Member Management - Member", description = "멤버 관련 API")
+@Tag(name = "Member Management - Member", description = "멤버")
 public class MemberInfoUpdateController {
 
     private final UpdateMemberInfoUseCase updateMemberInfoUseCase;

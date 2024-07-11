@@ -33,7 +33,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/activity-group/member")
 @RequiredArgsConstructor
-@Tag(name = "Activity - Group Member", description = "활동 그룹 멤버 관련 API")
+@Tag(name = "Activity - Group Member", description = "활동 그룹 멤버")
 public class ActivityGroupMemberController {
 
     private final ActivityGroupMemberService activityGroupMemberService;

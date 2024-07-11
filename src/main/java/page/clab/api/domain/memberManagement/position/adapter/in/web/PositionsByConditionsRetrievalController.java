@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/positions")
 @RequiredArgsConstructor
-@Tag(name = "Member Management - Position", description = "멤버 직책 관련 API")
+@Tag(name = "Member Management - Position", description = "멤버 직책")
 public class PositionsByConditionsRetrievalController {
 
     private final RetrievePositionsByConditionsUseCase retrievePositionsByConditionsUseCase;

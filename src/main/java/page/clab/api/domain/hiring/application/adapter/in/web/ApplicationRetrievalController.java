@@ -22,7 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/applications")
 @RequiredArgsConstructor
-@Tag(name = "Hiring - Application", description = "동아리 지원 관련 API")
+@Tag(name = "Hiring - Application", description = "동아리 지원")
 public class ApplicationRetrievalController {
 
     private final RetrieveApplicationsUseCase retrieveApplicationsUseCase;

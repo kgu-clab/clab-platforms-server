@@ -20,7 +20,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/login")
-@Tag(name = "Authentication - Login", description = "로그인 관련 API")
+@Tag(name = "Authentication - Login", description = "로그인")
 public class MemberLoginController {
 
     private final ManageLoginUseCase manageLoginUseCase;

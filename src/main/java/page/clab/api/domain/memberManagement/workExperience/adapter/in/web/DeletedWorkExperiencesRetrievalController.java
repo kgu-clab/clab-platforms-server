@@ -18,7 +18,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RestController
 @RequestMapping("/api/v1/work-experiences")
 @RequiredArgsConstructor
-@Tag(name = "Member Management - Work Experience", description = "경력사항 관련 API")
+@Tag(name = "Member Management - Work Experience", description = "경력사항")
 public class DeletedWorkExperiencesRetrievalController {
 
     private final RetrieveDeletedWorkExperiencesUseCase retrieveDeletedWorkExperiencesUseCase;

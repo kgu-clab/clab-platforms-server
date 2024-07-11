@@ -14,7 +14,7 @@ import page.clab.api.global.common.verification.dto.request.VerificationRequestD
 @RestController
 @RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
-@Tag(name = "Member Management - Member", description = "멤버 관련 API")
+@Tag(name = "Member Management - Member", description = "멤버")
 public class ResetMemberPasswordVerificationController {
 
     private final VerifyResetMemberPasswordUseCase verifyResetMemberPasswordUseCase;

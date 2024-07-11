@@ -14,7 +14,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RestController
 @RequestMapping("/api/v1/comments")
 @RequiredArgsConstructor
-@Tag(name = "Community - Comment", description = "커뮤니티 댓글 관련 API")
+@Tag(name = "Community - Comment", description = "커뮤니티 댓글")
 public class CommentLikeToggleController {
 
     private final ToggleCommentLikeUseCase toggleCommentLikeUseCase;

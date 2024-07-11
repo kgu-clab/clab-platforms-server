@@ -16,7 +16,7 @@ import page.clab.api.global.common.dto.ApiResponse;
 @RestController
 @RequestMapping("/api/v1/books")
 @RequiredArgsConstructor
-@Tag(name = "Library - Book", description = "도서관 도서 관련 API")
+@Tag(name = "Library - Book", description = "도서관 도서")
 public class BookRegisterController {
 
     private final RegisterBookUseCase registerBookUseCase;

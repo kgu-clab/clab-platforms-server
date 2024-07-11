@@ -35,7 +35,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/activity-group/boards")
 @RequiredArgsConstructor
-@Tag(name = "Activity - Group Board", description = "활동 그룹 게시판 관리 관련 API")
+@Tag(name = "Activity - Group Board", description = "활동 그룹 게시판 관리")
 public class ActivityGroupBoardController {
 
     private final ActivityGroupBoardService activityGroupBoardService;

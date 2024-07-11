@@ -18,7 +18,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RestController
 @RequestMapping("/api/v1/positions")
 @RequiredArgsConstructor
-@Tag(name = "Member Management - Position", description = "멤버 직책 관련 API")
+@Tag(name = "Member Management - Position", description = "멤버 직책")
 public class DeletedPositionsRetrievalController {
 
     private final RetrieveDeletedPositionsUseCase retrieveDeletedPositionsUseCase;

@@ -18,7 +18,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @RestController
 @RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
-@Tag(name = "Activity - Review", description = "활동 리뷰 관련 API")
+@Tag(name = "Activity - Review", description = "활동 리뷰")
 public class ReviewUpdateController {
 
     private final UpdateReviewUseCase updateReviewUseCase;

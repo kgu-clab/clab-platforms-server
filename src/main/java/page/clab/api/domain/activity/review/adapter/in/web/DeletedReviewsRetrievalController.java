@@ -18,7 +18,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 @RestController
 @RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
-@Tag(name = "Activity - Review", description = "활동 리뷰 관련 API")
+@Tag(name = "Activity - Review", description = "활동 리뷰")
 public class DeletedReviewsRetrievalController {
 
     private final RetrieveDeletedReviewsUseCase retrieveDeletedReviewsUseCase;
