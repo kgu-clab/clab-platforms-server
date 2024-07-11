@@ -2,7 +2,7 @@ package page.clab.api.domain.member.application.dto.shared;
 
 import lombok.Builder;
 import lombok.Getter;
-import page.clab.api.domain.book.application.exception.LoanSuspensionException;
+import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanSuspensionException;
 import page.clab.api.domain.member.domain.Member;
 
 import java.time.LocalDateTime;
