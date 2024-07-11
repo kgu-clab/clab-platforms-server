@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.notification.application.port.in.SendNotificationUseCase;
 import page.clab.api.domain.members.membershipFee.application.dto.request.MembershipFeeRequestDto;
 import page.clab.api.domain.members.membershipFee.application.port.in.RegisterMembershipFeeUseCase;
 import page.clab.api.domain.members.membershipFee.application.port.out.RegisterMembershipFeePort;
 import page.clab.api.domain.members.membershipFee.domain.MembershipFee;
-import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
 
 @Service
 @RequiredArgsConstructor

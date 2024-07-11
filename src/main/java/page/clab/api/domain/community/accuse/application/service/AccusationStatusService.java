@@ -12,7 +12,7 @@ import page.clab.api.domain.community.accuse.domain.Accuse;
 import page.clab.api.domain.community.accuse.domain.AccuseStatus;
 import page.clab.api.domain.community.accuse.domain.AccuseTarget;
 import page.clab.api.domain.community.accuse.domain.TargetType;
-import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
+import page.clab.api.domain.memberManagement.notification.application.port.in.SendNotificationUseCase;
 
 import java.util.List;
 import java.util.stream.Collectors;

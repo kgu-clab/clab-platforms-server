@@ -10,7 +10,7 @@ import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.community.board.domain.SlackBoardInfo;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
+import page.clab.api.domain.memberManagement.notification.application.port.in.SendNotificationUseCase;
 import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.slack.application.SlackService;

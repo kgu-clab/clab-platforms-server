@@ -8,7 +8,7 @@ import page.clab.api.domain.hiring.application.application.port.in.ApplyForAppli
 import page.clab.api.domain.hiring.application.application.port.out.RegisterApplicationPort;
 import page.clab.api.domain.hiring.application.domain.Application;
 import page.clab.api.domain.hiring.recruitment.application.port.in.RetrieveRecruitmentUseCase;
-import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
+import page.clab.api.domain.memberManagement.notification.application.port.in.SendNotificationUseCase;
 import page.clab.api.global.common.slack.application.SlackService;
 
 @Service

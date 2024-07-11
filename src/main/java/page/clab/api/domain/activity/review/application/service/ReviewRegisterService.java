@@ -16,7 +16,7 @@ import page.clab.api.domain.activity.review.application.port.out.RetrieveReviewP
 import page.clab.api.domain.activity.review.domain.Review;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
+import page.clab.api.domain.memberManagement.notification.application.port.in.SendNotificationUseCase;
 
 @Service
 @RequiredArgsConstructor

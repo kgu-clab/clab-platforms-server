@@ -7,7 +7,7 @@ import page.clab.api.domain.hiring.recruitment.application.dto.request.Recruitme
 import page.clab.api.domain.hiring.recruitment.application.port.in.RegisterRecruitmentUseCase;
 import page.clab.api.domain.hiring.recruitment.application.port.out.RegisterRecruitmentPort;
 import page.clab.api.domain.hiring.recruitment.domain.Recruitment;
-import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
+import page.clab.api.domain.memberManagement.notification.application.port.in.SendNotificationUseCase;
 
 @Service
 @RequiredArgsConstructor
