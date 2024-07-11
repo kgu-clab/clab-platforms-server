@@ -14,24 +14,24 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class LoginAttemptLog {
+public class AccountAccessLog {
 
     private Long id;
     private String memberId;
     private String userAgent;
     private String ipAddress;
     private String location;
-    private LoginAttemptResult loginAttemptResult;
-    private LocalDateTime loginAttemptTime;
+    private AccountAccessResult accountAccessResult;
+    private LocalDateTime accessTime;
 
-    public static LoginAttemptLog create(String memberId, HttpServletRequest httpServletRequest, String ipAddress, IPResponse ipResponse, LoginAttemptResult loginAttemptResult) {
-        return LoginAttemptLog.builder()
+    public static AccountAccessLog create(String memberId, HttpServletRequest httpServletRequest, String ipAddress, IPResponse ipResponse, AccountAccessResult accountAccessResult) {
+        return AccountAccessLog.builder()
                 .memberId(memberId)
                 .userAgent(httpServletRequest.getHeader("User-Agent"))
                 .ipAddress(ipAddress)
                 .location(ipResponse == null ? "Unknown" : ipResponse.getCountryName() + ", " + ipResponse.getCity())
-                .loginAttemptResult(loginAttemptResult)
-                .loginAttemptTime(LocalDateTime.now())
+                .accountAccessResult(accountAccessResult)
+                .accessTime(LocalDateTime.now())
                 .build();
     }
 }

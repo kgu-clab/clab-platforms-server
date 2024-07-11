@@ -18,10 +18,10 @@ import page.clab.api.domain.login.application.exception.LoginFailedException;
 import page.clab.api.domain.login.application.exception.MemberLockedException;
 import page.clab.api.domain.login.application.port.in.ManageAccountLockUseCase;
 import page.clab.api.domain.login.application.port.in.ManageAuthenticatorUseCase;
-import page.clab.api.domain.login.application.port.in.ManageLoginAttemptLogUseCase;
 import page.clab.api.domain.login.application.port.in.ManageLoginUseCase;
 import page.clab.api.domain.login.application.port.in.ManageRedisTokenUseCase;
-import page.clab.api.domain.login.domain.LoginAttemptResult;
+import page.clab.api.domain.login.application.port.in.RegisterAccountAccessLogUseCase;
+import page.clab.api.domain.login.domain.AccountAccessResult;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.memberManagement.member.application.port.in.UpdateMemberUseCase;
@@ -43,7 +43,7 @@ public class UserLoginService implements ManageLoginUseCase {
     private final ManageAccountLockUseCase manageAccountLockUseCase;
     private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final UpdateMemberUseCase updateMemberUseCase;
-    private final ManageLoginAttemptLogUseCase manageLoginAttemptLogUseCase;
+    private final RegisterAccountAccessLogUseCase registerAccountAccessLogUseCase;
     private final ManageRedisTokenUseCase manageRedisTokenUseCase;
     private final ManageAuthenticatorUseCase manageAuthenticatorUseCase;
 
@@ -71,8 +71,8 @@ public class UserLoginService implements ManageLoginUseCase {
     }
 
     private void logLoginAttempt(HttpServletRequest request, String memberId, boolean isSuccess) {
-        LoginAttemptResult result = isSuccess ? LoginAttemptResult.SUCCESS : LoginAttemptResult.FAILURE;
-        manageLoginAttemptLogUseCase.logLoginAttempt(request, memberId, result);
+        AccountAccessResult result = isSuccess ? AccountAccessResult.SUCCESS : AccountAccessResult.FAILURE;
+        registerAccountAccessLogUseCase.registerAccountAccessLog(request, memberId, result);
     }
 
     private LoginResult generateLoginResult(MemberLoginInfoDto loginMember) {

@@ -14,10 +14,10 @@ import page.clab.api.domain.login.application.exception.LoginFailedException;
 import page.clab.api.domain.login.application.exception.MemberLockedException;
 import page.clab.api.domain.login.application.port.in.ManageAccountLockUseCase;
 import page.clab.api.domain.login.application.port.in.ManageAuthenticatorUseCase;
-import page.clab.api.domain.login.application.port.in.ManageLoginAttemptLogUseCase;
 import page.clab.api.domain.login.application.port.in.ManageLoginUseCase;
 import page.clab.api.domain.login.application.port.in.ManageRedisTokenUseCase;
-import page.clab.api.domain.login.domain.LoginAttemptResult;
+import page.clab.api.domain.login.application.port.in.RegisterAccountAccessLogUseCase;
+import page.clab.api.domain.login.domain.AccountAccessResult;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
@@ -33,7 +33,7 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
 
     private final ManageAccountLockUseCase manageAccountLockUseCase;
     private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
-    private final ManageLoginAttemptLogUseCase manageLoginAttemptLogUseCase;
+    private final RegisterAccountAccessLogUseCase registerAccountAccessLogUseCase;
     private final ManageRedisTokenUseCase manageRedisTokenUseCase;
     private final ManageAuthenticatorUseCase manageAuthenticatorUseCase;
     private final SlackService slackService;
@@ -57,11 +57,11 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
 
     private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request) throws MemberLockedException, LoginFailedException {
         if (!manageAuthenticatorUseCase.isAuthenticatorValid(memberId, totp)) {
-            manageLoginAttemptLogUseCase.logLoginAttempt(request, memberId, LoginAttemptResult.FAILURE);
+            registerAccountAccessLogUseCase.registerAccountAccessLog(request, memberId, AccountAccessResult.FAILURE);
             manageAccountLockUseCase.handleLoginFailure(request, memberId);
             throw new LoginFailedException("잘못된 인증번호입니다.");
         }
-        manageLoginAttemptLogUseCase.logLoginAttempt(request, memberId, LoginAttemptResult.TOTP);
+        registerAccountAccessLogUseCase.registerAccountAccessLog(request, memberId, AccountAccessResult.TOTP);
     }
 
     private TokenInfo generateAndSaveToken(MemberLoginInfoDto memberInfo) {

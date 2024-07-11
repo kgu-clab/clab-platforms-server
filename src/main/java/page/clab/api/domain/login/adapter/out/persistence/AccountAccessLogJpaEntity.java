@@ -14,19 +14,19 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.login.domain.LoginAttemptResult;
+import page.clab.api.domain.login.domain.AccountAccessResult;
 import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "login_attempt_log")
+@Table(name = "account_access_log")
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class LoginAttemptLogJpaEntity extends BaseEntity {
+public class AccountAccessLogJpaEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +39,6 @@ public class LoginAttemptLogJpaEntity extends BaseEntity {
     private String location;
 
     @Enumerated(EnumType.STRING)
-    private LoginAttemptResult loginAttemptResult;
-
-    private LocalDateTime loginAttemptTime;
+    private AccountAccessResult accountAccessResult;
+    private LocalDateTime accessTime;
 }

@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface LoginAttemptLogRepository extends JpaRepository<LoginAttemptLogJpaEntity, Long> {
-    Page<LoginAttemptLogJpaEntity> findAllByMemberId(String memberId, Pageable pageable);
+public interface AccountAccessLogRepository extends JpaRepository<AccountAccessLogJpaEntity, Long> {
+    Page<AccountAccessLogJpaEntity> findAllByMemberId(String memberId, Pageable pageable);
 }

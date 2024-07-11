@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum LoginAttemptResult {
+public enum AccountAccessResult {
 
     TOTP("TOTP", "2FA 인증 성공"),
     SUCCESS("SUCCESS", "로그인 성공"),
