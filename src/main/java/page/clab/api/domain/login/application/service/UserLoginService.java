@@ -51,7 +51,7 @@ public class UserLoginService implements ManageLoginUseCase {
     @Override
     public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFailedException, MemberLockedException {
         authenticateAndCheckStatus(request, requestDto);
-        logLoginAttempt(request, requestDto.getId(), true);
+        registerAccountAccessLog(request, requestDto.getId(), true);
         MemberLoginInfoDto loginMember = retrieveMemberInfoUseCase.getMemberLoginInfoById(requestDto.getId());
         updateMemberUseCase.updateLastLoginTime(requestDto.getId());
         return generateLoginResult(loginMember);
@@ -64,13 +64,13 @@ public class UserLoginService implements ManageLoginUseCase {
             loginAuthenticationManager.authenticate(authenticationToken);
             manageAccountLockUseCase.handleAccountLockInfo(loginRequestDto.getId());
         } catch (BadCredentialsException e) {
-            logLoginAttempt(httpServletRequest, loginRequestDto.getId(), false);
+            registerAccountAccessLog(httpServletRequest, loginRequestDto.getId(), false);
             manageAccountLockUseCase.handleLoginFailure(httpServletRequest, loginRequestDto.getId());
             throw new LoginFailedException();
         }
     }
 
-    private void logLoginAttempt(HttpServletRequest request, String memberId, boolean isSuccess) {
+    private void registerAccountAccessLog(HttpServletRequest request, String memberId, boolean isSuccess) {
         AccountAccessResult result = isSuccess ? AccountAccessResult.SUCCESS : AccountAccessResult.FAILURE;
         registerAccountAccessLogUseCase.registerAccountAccessLog(request, memberId, result);
     }

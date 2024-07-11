@@ -20,7 +20,7 @@ public class AccountAccessLogsRetrievalService implements RetrieveAccountAccessL
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<AccountAccessLogResponseDto> retrieveAccountAccessLogs(String memberId, Pageable pageable) {
-        Page<AccountAccessLog> loginAttemptLogs = retrieveAccountAccessLogPort.findAllByMemberId(memberId, pageable);
-        return new PagedResponseDto<>(loginAttemptLogs.map(AccountAccessLogResponseDto::toDto));
+        Page<AccountAccessLog> accountAccessLogs = retrieveAccountAccessLogPort.findAllByMemberId(memberId, pageable);
+        return new PagedResponseDto<>(accountAccessLogs.map(AccountAccessLogResponseDto::toDto));
     }
 }

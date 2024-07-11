@@ -43,7 +43,7 @@ public class AccountAccessLogsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, AccountAccessLogResponseDto.class);
-        PagedResponseDto<AccountAccessLogResponseDto> loginAttemptLogs = retrieveAccountAccessLogsUseCase.retrieveAccountAccessLogs(memberId, pageable);
-        return ApiResponse.success(loginAttemptLogs);
+        PagedResponseDto<AccountAccessLogResponseDto> accountAccessLogs = retrieveAccountAccessLogsUseCase.retrieveAccountAccessLogs(memberId, pageable);
+        return ApiResponse.success(accountAccessLogs);
     }
 }
