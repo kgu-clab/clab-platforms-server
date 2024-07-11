@@ -11,15 +11,10 @@ import java.time.LocalDateTime;
 public class BlogResponseDto {
 
     private Long id;
-
     private String title;
-
     private String subTitle;
-
     private String imageUrl;
-
     private String hyperlink;
-
     private LocalDateTime createdAt;
 
     public static BlogResponseDto toDto(Blog blog) {

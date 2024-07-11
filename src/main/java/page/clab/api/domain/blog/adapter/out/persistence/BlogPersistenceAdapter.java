@@ -20,35 +20,43 @@ public class BlogPersistenceAdapter implements
         RemoveBlogPort {
 
     private final BlogRepository blogRepository;
+    private final BlogMapper blogMapper;
 
     @Override
     public Blog save(Blog blog) {
-        return blogRepository.save(blog);
+        BlogJpaEntity entity = blogMapper.toJpaEntity(blog);
+        BlogJpaEntity savedEntity = blogRepository.save(entity);
+        return blogMapper.toDomain(savedEntity);
     }
 
     @Override
     public void delete(Blog blog) {
-        blogRepository.delete(blog);
+        BlogJpaEntity entity = blogMapper.toJpaEntity(blog);
+        blogRepository.delete(entity);
     }
 
     @Override
     public Optional<Blog> findById(Long blogId) {
-        return blogRepository.findById(blogId);
+        return blogRepository.findById(blogId)
+                .map(blogMapper::toDomain);
     }
 
     @Override
     public Blog findByIdOrThrow(Long blogId) {
         return blogRepository.findById(blogId)
+                .map(blogMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[Blog] id: " + blogId + "에 해당하는 게시글이 존재하지 않습니다."));
     }
 
     @Override
     public Page<Blog> findByConditions(String title, String memberName, Pageable pageable) {
-        return blogRepository.findByConditions(title, memberName, pageable);
+        return blogRepository.findByConditions(title, memberName, pageable)
+                .map(blogMapper::toDomain);
     }
 
     @Override
     public Page<Blog> findAllByIsDeletedTrue(Pageable pageable) {
-        return blogRepository.findAllByIsDeletedTrue(pageable);
+        return blogRepository.findAllByIsDeletedTrue(pageable)
+                .map(blogMapper::toDomain);
     }
 }

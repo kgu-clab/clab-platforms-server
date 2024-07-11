@@ -13,24 +13,16 @@ import java.time.LocalDateTime;
 public class BlogDetailsResponseDto {
 
     private Long id;
-
     private String memberId;
-
     private String name;
-
     private String title;
-
     private String subTitle;
-
     private String content;
-
     private String imageUrl;
-
     private String hyperlink;
 
     @JsonProperty("isOwner")
     private Boolean isOwner;
-
     private LocalDateTime createdAt;
 
     public static BlogDetailsResponseDto toDto(Blog blog, MemberBasicInfoDto memberInfo, boolean isOwner) {
