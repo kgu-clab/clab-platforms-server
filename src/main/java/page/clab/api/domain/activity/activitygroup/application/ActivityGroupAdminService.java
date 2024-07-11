@@ -27,7 +27,6 @@ import page.clab.api.domain.notification.application.port.in.SendNotificationUse
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.validation.ValidationService;
 
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,6 @@ public class ActivityGroupAdminService {
     private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
     private final SendNotificationUseCase notificationService;
-    private final ValidationService validationService;
     private final ActivityGroupRepository activityGroupRepository;
     private final GroupScheduleRepository groupScheduleRepository;
     private final ApplyFormRepository applyFormRepository;
@@ -49,11 +47,9 @@ public class ActivityGroupAdminService {
     public Long createActivityGroup(ActivityGroupRequestDto requestDto) {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = ActivityGroupRequestDto.toEntity(requestDto);
-        validationService.checkValid(activityGroup);
         activityGroupRepository.save(activityGroup);
 
         GroupMember groupLeader = GroupMember.create(currentMember.getId(), activityGroup, ActivityGroupRole.LEADER, GroupMemberStatus.ACCEPTED);
-        validationService.checkValid(groupLeader);
         activityGroupMemberService.save(groupLeader);
 
         notificationService.sendNotificationToMember(currentMember.getId(), "활동 그룹 생성이 완료되었습니다. 활동 승인이 완료되면 활동 그룹을 이용할 수 있습니다.");
@@ -68,7 +64,6 @@ public class ActivityGroupAdminService {
             throw new PermissionDeniedException("해당 활동을 수정할 권한이 없습니다.");
         }
         activityGroup.update(requestDto);
-        validationService.checkValid(activityGroup);
         return activityGroupRepository.save(activityGroup).getId();
     }
 
@@ -76,7 +71,6 @@ public class ActivityGroupAdminService {
     public Long manageActivityGroup(Long activityGroupId, ActivityGroupStatus status) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroup.updateStatus(status);
-        validationService.checkValid(activityGroup);
         activityGroupRepository.save(activityGroup);
 
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
@@ -117,7 +111,6 @@ public class ActivityGroupAdminService {
             throw new PermissionDeniedException("해당 활동을 수정할 권한이 없습니다.");
         }
         activityGroup.updateProgress(progress);
-        validationService.checkValid(activityGroup);
         return activityGroupRepository.save(activityGroup).getId();
     }
 

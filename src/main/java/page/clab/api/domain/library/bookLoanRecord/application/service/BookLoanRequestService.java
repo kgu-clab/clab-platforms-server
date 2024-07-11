@@ -18,7 +18,6 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
-import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +28,6 @@ public class BookLoanRequestService implements RequestBookLoanUseCase {
     private final RegisterBookLoanRecordPort registerBookLoanRecordPort;
     private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final SendNotificationUseCase notificationService;
-    private final ValidationService validationService;
 
     @Transactional
     @Override
@@ -44,7 +42,6 @@ public class BookLoanRequestService implements RequestBookLoanUseCase {
             checkIfLoanAlreadyApplied(book.getId(), borrowerInfo.getMemberId());
 
             BookLoanRecord bookLoanRecord = BookLoanRecord.create(book.getId(), borrowerInfo);
-            validationService.checkValid(bookLoanRecord);
 
             notificationService.sendNotificationToMember(borrowerInfo.getMemberId(), "[" + book.getTitle() + "] 도서 대출 신청이 완료되었습니다.");
             return registerBookLoanRecordPort.save(bookLoanRecord).getId();

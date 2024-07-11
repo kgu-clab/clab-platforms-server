@@ -19,7 +19,6 @@ import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +26,6 @@ public class ActivityGroupReportService {
 
     private final ActivityGroupAdminService activityGroupAdminService;
     private final RetrieveMemberUseCase retrieveMemberUseCase;
-    private final ValidationService validationService;
     private final ActivityGroupReportRepository activityGroupReportRepository;
 
     @Transactional
@@ -36,7 +34,6 @@ public class ActivityGroupReportService {
         Long activityGroupId = requestDto.getActivityGroupId();
         ActivityGroup activityGroup = activityGroupAdminService.validateAndGetActivityGroupForReporting(activityGroupId, currentMember);
         ActivityGroupReport report = validateReportCreationPermission(requestDto, activityGroup);
-        validationService.checkValid(report);
         return activityGroupReportRepository.save(report).getId();
     }
 
@@ -61,7 +58,6 @@ public class ActivityGroupReportService {
         validateReportUpdatePermission(activityGroupId, currentMember, activityGroup);
         ActivityGroupReport report = getReportByIdOrThrow(reportId);
         report.update(requestDto);
-        validationService.checkValid(report);
         return activityGroupReportRepository.save(report).getId();
     }
 

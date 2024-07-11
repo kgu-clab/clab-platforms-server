@@ -29,7 +29,6 @@ import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.validation.ValidationService;
 
 import java.util.Comparator;
 import java.util.List;
@@ -40,17 +39,10 @@ import java.util.List;
 public class ActivityGroupBoardService {
 
     private final ActivityGroupBoardRepository activityGroupBoardRepository;
-
     private final RetrieveMemberUseCase retrieveMemberUseCase;
-
     private final ActivityGroupAdminService activityGroupAdminService;
-
     private final ActivityGroupMemberService activityGroupMemberService;
-
     private final SendNotificationUseCase notificationService;
-
-    private final ValidationService validationService;
-
     private final UploadedFileService uploadedFileService;
 
     @Transactional
@@ -66,7 +58,6 @@ public class ActivityGroupBoardService {
 
         ActivityGroupBoard parentBoard = parentId != null ? getActivityGroupBoardByIdOrThrow(parentId) : null;
         ActivityGroupBoard board = ActivityGroupBoardRequestDto.toEntity(requestDto, currentMember, activityGroup, parentBoard, uploadedFiles);
-        validationService.checkValid(board);
         if (parentId != null) {
             parentBoard.addChild(board);
             activityGroupBoardRepository.save(parentBoard);
@@ -132,7 +123,6 @@ public class ActivityGroupBoardService {
         board.validateAccessPermission(currentMember);
 
         board.update(requestDto, uploadedFileService);
-        validationService.checkValid(board);
         ActivityGroupBoard savedBoard = activityGroupBoardRepository.save(board);
         return ActivityGroupBoardUpdateResponseDto.toDto(savedBoard);
     }
