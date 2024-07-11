@@ -23,7 +23,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import page.clab.api.domain.auth.blacklistIp.application.port.out.RegisterBlacklistIpPort;
 import page.clab.api.domain.auth.blacklistIp.application.port.out.RetrieveBlacklistIpPort;
 import page.clab.api.domain.auth.login.application.port.in.ManageRedisTokenUseCase;
-import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
+import page.clab.api.domain.auth.redisIpAccessMonitor.application.port.in.CheckIpBlockedUseCase;
+import page.clab.api.domain.auth.redisIpAccessMonitor.application.port.in.RegisterIpAccessMonitorUseCase;
 import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
 import page.clab.api.global.auth.filter.InvalidEndpointAccessFilter;
@@ -46,7 +47,8 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final ManageRedisTokenUseCase manageRedisTokenUseCase;
-    private final RedisIpAccessMonitorService redisIpAccessMonitorService;
+    private final RegisterIpAccessMonitorUseCase registerIpAccessMonitorUseCase;
+    private final CheckIpBlockedUseCase checkIpBlockedUseCase;
     private final RegisterBlacklistIpPort registerBlacklistIpPort;
     private final RetrieveBlacklistIpPort retrieveBlacklistIpPort;
     private final SlackService slackService;
@@ -86,11 +88,11 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, retrieveBlacklistIpPort, whitelistService, slackService),
+                        new CustomBasicAuthenticationFilter(authenticationManager, checkIpBlockedUseCase, retrieveBlacklistIpPort, whitelistService, slackService),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new JwtAuthenticationFilter(jwtTokenProvider, manageRedisTokenUseCase, redisIpAccessMonitorService, slackService, retrieveBlacklistIpPort),
+                        new JwtAuthenticationFilter(jwtTokenProvider, manageRedisTokenUseCase, checkIpBlockedUseCase, slackService, retrieveBlacklistIpPort),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
@@ -117,14 +119,14 @@ public class SecurityConfig {
     private void handleAuthenticationEntryPoint(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         apiLogging(request, response, clientIpAddress, "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.");
-        redisIpAccessMonitorService.registerIpAccessMonitor(request, clientIpAddress);
+        registerIpAccessMonitorUseCase.registerIpAccessMonitor(request, clientIpAddress);
         ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
     }
 
     private void handleAccessDenied(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         apiLogging(request, response, clientIpAddress, "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.");
-        redisIpAccessMonitorService.registerIpAccessMonitor(request, clientIpAddress);
+        registerIpAccessMonitorUseCase.registerIpAccessMonitor(request, clientIpAddress);
         ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN);
     }
 

@@ -14,7 +14,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import page.clab.api.domain.auth.blacklistIp.application.port.out.RetrieveBlacklistIpPort;
 import page.clab.api.domain.auth.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.domain.auth.login.domain.RedisToken;
-import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
+import page.clab.api.domain.auth.redisIpAccessMonitor.application.port.in.CheckIpBlockedUseCase;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
@@ -30,7 +30,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final ManageRedisTokenUseCase manageRedisTokenUseCase;
-    private final RedisIpAccessMonitorService redisIpAccessMonitorService;
+    private final CheckIpBlockedUseCase checkIpBlockedUseCase;
     private final SlackService slackService;
     private final RetrieveBlacklistIpPort retrieveBlacklistIpPort;
 
@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     }
 
     private boolean verifyIpAddressAccess(HttpServletResponse response, String clientIpAddress) throws IOException {
-        if (retrieveBlacklistIpPort.existsByIpAddress(clientIpAddress) || redisIpAccessMonitorService.isBlocked(clientIpAddress)) {
+        if (retrieveBlacklistIpPort.existsByIpAddress(clientIpAddress) || checkIpBlockedUseCase.isIpBlocked(clientIpAddress)) {
             log.info("[{}] : 서비스 이용이 제한된 IP입니다.", clientIpAddress);
             ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
             return false;

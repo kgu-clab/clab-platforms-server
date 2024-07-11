@@ -1,4 +1,4 @@
-package page.clab.api.global.auth.domain;
+package page.clab.api.domain.auth.redisIpAccessMonitor.domain;
 
 import jakarta.persistence.Column;
 import lombok.AccessLevel;
@@ -31,14 +31,18 @@ public class RedisIpAccessMonitor {
     @Column(nullable = false)
     private LocalDateTime lastAttempt;
 
-    private RedisIpAccessMonitor(String ipAddress) {
+    @Column(nullable = false)
+    private int maxAttempts;
+
+    private RedisIpAccessMonitor(String ipAddress, int maxAttempts) {
         this.ipAddress = ipAddress;
         this.attempts = 1;
         this.lastAttempt = LocalDateTime.now();
+        this.maxAttempts = maxAttempts;
     }
 
-    public static RedisIpAccessMonitor create(String ipAddress) {
-        return new RedisIpAccessMonitor(ipAddress);
+    public static RedisIpAccessMonitor create(String ipAddress, int maxAttempts) {
+        return new RedisIpAccessMonitor(ipAddress, maxAttempts);
     }
 
     public void increaseAttempts() {
@@ -49,8 +53,7 @@ public class RedisIpAccessMonitor {
         this.lastAttempt = LocalDateTime.now();
     }
 
-    public boolean isBlocked(int maxAttempts) {
-        return this.attempts >= maxAttempts;
+    public boolean isBlocked() {
+        return this.attempts >= this.maxAttempts;
     }
-
 }
