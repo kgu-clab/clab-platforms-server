@@ -21,7 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.application.application.dto.request.ApplicationRequestDto;
-import page.clab.api.domain.board.domain.SlackBoardInfo;
+import page.clab.api.domain.community.board.domain.SlackBoardInfo;
 import page.clab.api.domain.member.application.dto.shared.MemberLoginInfoDto;
 import page.clab.api.global.common.slack.domain.AlertType;
 import page.clab.api.global.common.slack.domain.GeneralAlertType;
