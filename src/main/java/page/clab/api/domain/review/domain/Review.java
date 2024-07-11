@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.activity.domain.ActivityGroup;
 import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.review.application.dto.request.ReviewUpdateRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;

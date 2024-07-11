@@ -2,7 +2,7 @@ package page.clab.api.domain.review.application.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.activity.domain.ActivityGroup;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.domain.review.domain.Review;
 

@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.activity.domain.ActivityGroup;
 import page.clab.api.global.common.domain.BaseEntity;
 
 @Entity

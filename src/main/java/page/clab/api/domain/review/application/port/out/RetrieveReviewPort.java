@@ -2,7 +2,7 @@ package page.clab.api.domain.review.application.port.out;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import page.clab.api.domain.activityGroup.domain.ActivityGroup;
+import page.clab.api.domain.activity.domain.ActivityGroup;
 import page.clab.api.domain.review.domain.Review;
 
 import java.util.Optional;
