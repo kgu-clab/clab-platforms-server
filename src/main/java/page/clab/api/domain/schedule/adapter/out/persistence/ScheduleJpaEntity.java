@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import page.clab.api.domain.activity.domain.ActivityGroup;
+import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
 import page.clab.api.domain.schedule.domain.ScheduleType;
 import page.clab.api.global.common.domain.BaseEntity;

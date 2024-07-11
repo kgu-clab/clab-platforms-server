@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.activity.domain.ActivityGroup;
+import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.schedule.application.dto.response.ScheduleCollectResponseDto;
 import page.clab.api.domain.schedule.application.port.out.RegisterSchedulePort;
 import page.clab.api.domain.schedule.application.port.out.RemoveSchedulePort;

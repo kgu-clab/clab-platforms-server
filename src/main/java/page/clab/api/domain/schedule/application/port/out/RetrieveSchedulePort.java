@@ -2,7 +2,7 @@ package page.clab.api.domain.schedule.application.port.out;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import page.clab.api.domain.activity.domain.ActivityGroup;
+import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.schedule.application.dto.response.ScheduleCollectResponseDto;
 import page.clab.api.domain.schedule.domain.Schedule;
 import page.clab.api.domain.schedule.domain.SchedulePriority;
