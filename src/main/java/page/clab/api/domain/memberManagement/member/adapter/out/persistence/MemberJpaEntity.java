@@ -96,7 +96,6 @@ public class MemberJpaEntity extends BaseEntity {
 
     private Boolean isOtpEnabled;
 
-    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 }

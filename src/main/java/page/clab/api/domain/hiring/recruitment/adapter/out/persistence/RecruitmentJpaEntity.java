@@ -56,7 +56,6 @@ public class RecruitmentJpaEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RecruitmentStatus status;
 
-    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 }

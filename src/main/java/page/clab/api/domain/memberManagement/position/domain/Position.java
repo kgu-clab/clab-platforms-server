@@ -20,9 +20,7 @@ public class Position {
     private String memberId;
     private PositionType positionType;
     private String year;
-
-    @Builder.Default
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 
     public static Position create(String memberId) {
         return Position.builder()

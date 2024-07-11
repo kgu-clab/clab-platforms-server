@@ -69,7 +69,6 @@ public class ScheduleJpaEntity extends BaseEntity {
     @JoinColumn(name = "activityGroup")
     private ActivityGroup activityGroup;
 
-    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 }

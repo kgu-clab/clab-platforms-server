@@ -92,7 +92,6 @@ public class ApplicationJpaEntity extends BaseEntity {
     @Column(nullable = false)
     private Boolean isPass;
 
-    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 }

@@ -22,9 +22,7 @@ public class Product {
     private String name;
     private String description;
     private String url;
-
-    @Builder.Default
-    private boolean isDeleted = false;
+    private boolean isDeleted;
     private LocalDateTime createdAt;
 
     public void update(ProductUpdateRequestDto productUpdateRequestDto) {

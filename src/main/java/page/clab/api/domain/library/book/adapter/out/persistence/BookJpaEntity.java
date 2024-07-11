@@ -60,7 +60,6 @@ public class BookJpaEntity extends BaseEntity {
     @Version
     private Long version;
 
-    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 }

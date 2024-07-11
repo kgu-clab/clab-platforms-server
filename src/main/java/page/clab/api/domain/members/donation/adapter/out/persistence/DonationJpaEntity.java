@@ -44,7 +44,6 @@ public class DonationJpaEntity extends BaseEntity {
     @Size(min = 1, max = 1000, message = "{size.donation.message}")
     private String message;
 
-    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 }

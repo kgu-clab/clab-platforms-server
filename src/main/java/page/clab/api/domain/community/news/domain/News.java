@@ -26,9 +26,7 @@ public class News {
     private String articleUrl;
     private String source;
     private LocalDate date;
-
-    @Builder.Default
-    private boolean isDeleted = false;
+    private boolean isDeleted;
     private LocalDateTime createdAt;
 
     public void update(NewsUpdateRequestDto newsUpdateRequestDto) {

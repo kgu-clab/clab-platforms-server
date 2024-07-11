@@ -58,7 +58,6 @@ public class JobPostingJpaEntity extends BaseEntity {
     @URL(message = "{url.jobPosting.jobPostingUrl}")
     private String jobPostingUrl;
 
-    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 }

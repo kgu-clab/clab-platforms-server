@@ -27,9 +27,7 @@ public class WorkExperience {
     private LocalDate startDate;
     private LocalDate endDate;
     private String memberId;
-
-    @Builder.Default
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 
     public void update(WorkExperienceUpdateRequestDto workExperienceUpdateRequestDto) {
         Optional.ofNullable(workExperienceUpdateRequestDto.getCompanyName()).ifPresent(this::setCompanyName);

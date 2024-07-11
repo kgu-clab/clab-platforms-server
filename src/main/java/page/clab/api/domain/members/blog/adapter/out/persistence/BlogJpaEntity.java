@@ -50,7 +50,6 @@ public class BlogJpaEntity extends BaseEntity {
 
     private String hyperlink;
 
-    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 }

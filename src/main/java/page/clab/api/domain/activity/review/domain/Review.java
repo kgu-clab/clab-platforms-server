@@ -26,9 +26,7 @@ public class Review {
     private String memberId;
     private String content;
     private Boolean isPublic;
-
-    @Builder.Default
-    private boolean isDeleted = false;
+    private boolean isDeleted;
     private LocalDateTime createdAt;
 
     public void update(ReviewUpdateRequestDto requestDto) {

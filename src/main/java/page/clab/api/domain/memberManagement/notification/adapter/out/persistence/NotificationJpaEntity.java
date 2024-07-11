@@ -39,7 +39,6 @@ public class NotificationJpaEntity extends BaseEntity {
     @Size(min = 1, max = 1000, message = "{size.notification.content}")
     private String content;
 
-    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 }

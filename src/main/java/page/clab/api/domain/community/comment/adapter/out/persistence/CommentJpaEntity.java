@@ -67,7 +67,6 @@ public class CommentJpaEntity extends BaseEntity {
 
     private Long likes;
 
-    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 }

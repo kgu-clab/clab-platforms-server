@@ -51,7 +51,6 @@ public class ActivityPhotoJpaEntity extends BaseEntity {
     @Column(nullable = false)
     private Boolean isPublic;
 
-    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 }

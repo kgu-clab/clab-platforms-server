@@ -51,7 +51,6 @@ public class WorkExperienceJpaEntity extends BaseEntity {
     @Column(name = "member_id", nullable = false)
     private String memberId;
 
-    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 }

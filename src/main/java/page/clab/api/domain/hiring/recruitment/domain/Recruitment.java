@@ -26,9 +26,7 @@ public class Recruitment {
     private ApplicationType applicationType;
     private String target;
     private RecruitmentStatus status;
-
-    @Builder.Default
-    private boolean isDeleted = false;
+    private boolean isDeleted;
     private LocalDateTime updatedAt;
 
     public void update(RecruitmentUpdateRequestDto recruitmentUpdateRequestDto) {

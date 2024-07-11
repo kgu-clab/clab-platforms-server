@@ -77,9 +77,8 @@ public class ActivityGroupBoard extends BaseEntity {
 
     private LocalDateTime dueDateTime;
 
-    @Builder.Default
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
+    private boolean isDeleted;
 
     public void update(ActivityGroupBoardUpdateRequestDto requestDto, UploadedFileService uploadedFileService) {
         Optional.ofNullable(requestDto.getTitle()).ifPresent(this::setTitle);
