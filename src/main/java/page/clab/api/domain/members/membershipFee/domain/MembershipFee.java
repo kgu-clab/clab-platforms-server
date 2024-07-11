@@ -28,6 +28,8 @@ public class MembershipFee {
     private String content;
     private String imageUrl;
     private MembershipFeeStatus status;
+
+    @Builder.Default
     private boolean isDeleted = false;
     private LocalDateTime createdAt;
 

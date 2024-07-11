@@ -26,6 +26,8 @@ public class Review {
     private String memberId;
     private String content;
     private Boolean isPublic;
+
+    @Builder.Default
     private boolean isDeleted = false;
     private LocalDateTime createdAt;
 

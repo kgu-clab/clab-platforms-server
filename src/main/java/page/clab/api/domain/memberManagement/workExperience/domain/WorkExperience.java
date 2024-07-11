@@ -27,6 +27,8 @@ public class WorkExperience {
     private LocalDate startDate;
     private LocalDate endDate;
     private String memberId;
+
+    @Builder.Default
     private boolean isDeleted = false;
 
     public void update(WorkExperienceUpdateRequestDto workExperienceUpdateRequestDto) {

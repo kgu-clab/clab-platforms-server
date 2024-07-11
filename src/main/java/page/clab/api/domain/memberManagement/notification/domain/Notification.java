@@ -20,6 +20,8 @@ public class Notification {
     private Long id;
     private String memberId;
     private String content;
+
+    @Builder.Default
     private boolean isDeleted = false;
     private LocalDateTime createdAt;
 

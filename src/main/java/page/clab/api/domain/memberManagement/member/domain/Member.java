@@ -43,6 +43,8 @@ public class Member implements UserDetails {
     private LocalDateTime lastLoginTime;
     private LocalDateTime loanSuspensionDate;
     private Boolean isOtpEnabled;
+
+    @Builder.Default
     private boolean isDeleted = false;
     private LocalDateTime createdAt;
 

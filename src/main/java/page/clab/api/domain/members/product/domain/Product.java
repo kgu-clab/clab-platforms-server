@@ -22,6 +22,8 @@ public class Product {
     private String name;
     private String description;
     private String url;
+
+    @Builder.Default
     private boolean isDeleted = false;
     private LocalDateTime createdAt;
 

@@ -26,6 +26,8 @@ public class News {
     private String articleUrl;
     private String source;
     private LocalDate date;
+
+    @Builder.Default
     private boolean isDeleted = false;
     private LocalDateTime createdAt;
 

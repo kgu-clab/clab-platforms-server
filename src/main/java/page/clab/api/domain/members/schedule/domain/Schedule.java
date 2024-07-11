@@ -31,8 +31,9 @@ public class Schedule {
     private SchedulePriority priority;
     private String scheduleWriter;
     private ActivityGroup activityGroup;
-    private boolean isDeleted = false;
 
+    @Builder.Default
+    private boolean isDeleted = false;
 
     public void delete() {
         this.isDeleted = true;

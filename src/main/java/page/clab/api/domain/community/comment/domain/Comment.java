@@ -33,6 +33,8 @@ public class Comment {
     private List<Comment> children = new ArrayList<>();
     private boolean wantAnonymous;
     private Long likes;
+
+    @Builder.Default
     private boolean isDeleted = false;
     private LocalDateTime createdAt;
 
