@@ -19,6 +19,7 @@ public class BlacklistIpMapper {
                 .id(entity.getId())
                 .ipAddress(entity.getIpAddress())
                 .reason(entity.getReason())
+                .createdAt(entity.getCreatedAt())
                 .build();
     }
 }

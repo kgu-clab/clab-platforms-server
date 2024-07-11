@@ -1,8 +1,10 @@
 package page.clab.api.domain.board.application.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.board.application.event.BoardDeletedEvent;
 import page.clab.api.domain.board.application.port.in.RemoveBoardUseCase;
 import page.clab.api.domain.board.application.port.out.RegisterBoardPort;
 import page.clab.api.domain.board.application.port.out.RetrieveBoardPort;
@@ -18,6 +20,7 @@ public class BoardRemoveService implements RemoveBoardUseCase {
     private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final RetrieveBoardPort retrieveBoardPort;
     private final RegisterBoardPort registerBoardPort;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     @Override
@@ -27,6 +30,7 @@ public class BoardRemoveService implements RemoveBoardUseCase {
         board.validateAccessPermission(currentMemberInfo);
         board.delete();
         registerBoardPort.save(board);
+        eventPublisher.publishEvent(new BoardDeletedEvent(this, board.getId()));
         return board.getCategory().getKey();
     }
 }

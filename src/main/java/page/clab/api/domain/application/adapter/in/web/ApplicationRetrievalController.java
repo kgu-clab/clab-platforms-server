@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.application.adapter.out.persistence.ApplicationJpaEntity;
 import page.clab.api.domain.application.application.dto.response.ApplicationResponseDto;
 import page.clab.api.domain.application.application.port.in.RetrieveApplicationsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -27,6 +26,7 @@ import java.util.List;
 public class ApplicationRetrievalController {
 
     private final RetrieveApplicationsUseCase retrieveApplicationsUseCase;
+    private final PageableUtils pageableUtils;
 
     @Operation(summary = "[A] 지원자 목록 조회(모집 일정 ID, 지원자 ID, 합격 여부 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
@@ -43,7 +43,7 @@ public class ApplicationRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, ApplicationJpaEntity.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ApplicationResponseDto.class);
         PagedResponseDto<ApplicationResponseDto> applications = retrieveApplicationsUseCase.retrieveApplications(recruitmentId, studentId, isPass, pageable);
         return ApiResponse.success(applications);
     }

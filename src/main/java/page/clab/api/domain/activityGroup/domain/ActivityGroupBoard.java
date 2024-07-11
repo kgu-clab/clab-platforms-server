@@ -50,6 +50,7 @@ public class ActivityGroupBoard extends BaseEntity {
     @JoinColumn(name = "activity_group_id", nullable = false)
     private ActivityGroup activityGroup;
 
+    @Column(name = "member_id", nullable = false)
     private String memberId;
 
     @Column(nullable = false)
@@ -105,10 +106,6 @@ public class ActivityGroupBoard extends BaseEntity {
 
     public boolean isAssignment() {
         return this.category.equals(ActivityGroupBoardCategory.ASSIGNMENT);
-    }
-
-    public boolean isSubmit() {
-        return this.category.equals(ActivityGroupBoardCategory.SUBMIT);
     }
 
     public boolean isFeedback() {

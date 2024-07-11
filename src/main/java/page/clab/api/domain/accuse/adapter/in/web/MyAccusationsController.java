@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.accuse.adapter.out.persistence.AccuseJpaEntity;
 import page.clab.api.domain.accuse.application.dto.response.AccuseMyResponseDto;
 import page.clab.api.domain.accuse.application.port.in.RetrieveMyAccusationsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -27,6 +26,7 @@ import java.util.List;
 public class MyAccusationsController {
 
     private final RetrieveMyAccusationsUseCase retrieveMyAccusationsUsecase;
+    private final PageableUtils pageableUtils;
 
     @Operation(summary = "[U] 나의 신고 내역 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, memberId, targetReferenceId")
@@ -38,7 +38,7 @@ public class MyAccusationsController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, AccuseJpaEntity.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, AccuseMyResponseDto.class);
         PagedResponseDto<AccuseMyResponseDto> accuses = retrieveMyAccusationsUsecase.retrieveMyAccusations(pageable);
         return ApiResponse.success(accuses);
     }

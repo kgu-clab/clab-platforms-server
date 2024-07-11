@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.notification.adapter.out.persistence.NotificationJpaEntity;
 import page.clab.api.domain.notification.application.dto.response.NotificationResponseDto;
 import page.clab.api.domain.notification.application.port.in.RetrieveNotificationsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -27,6 +26,7 @@ import java.util.List;
 public class NotificationsRetrievalController {
 
     private final RetrieveNotificationsUseCase retrieveNotificationsUseCase;
+    private final PageableUtils pageableUtils;
 
     @Operation(summary = "[U] 나의 알림 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, memberId")
@@ -38,7 +38,7 @@ public class NotificationsRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, NotificationJpaEntity.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, NotificationResponseDto.class);
         PagedResponseDto<NotificationResponseDto> notifications = retrieveNotificationsUseCase.retrieveNotifications(pageable);
         return ApiResponse.success(notifications);
     }

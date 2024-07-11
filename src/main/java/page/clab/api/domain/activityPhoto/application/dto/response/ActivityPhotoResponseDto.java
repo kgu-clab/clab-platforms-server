@@ -6,6 +6,7 @@ import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -17,6 +18,7 @@ public class ActivityPhotoResponseDto {
     private List<UploadedFileResponseDto> files;
     private LocalDate date;
     private Boolean isPublic;
+    private LocalDateTime createdAt;
 
     public static ActivityPhotoResponseDto toDto(ActivityPhoto activityPhoto) {
         return ActivityPhotoResponseDto.builder()
@@ -25,6 +27,7 @@ public class ActivityPhotoResponseDto {
                 .files(UploadedFileResponseDto.toDto(activityPhoto.getUploadedFiles()))
                 .date(activityPhoto.getDate())
                 .isPublic(activityPhoto.getIsPublic())
+                .createdAt(activityPhoto.getCreatedAt())
                 .build();
     }
 }

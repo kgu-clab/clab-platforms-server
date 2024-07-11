@@ -9,6 +9,7 @@ import page.clab.api.domain.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.comment.domain.Comment;
 import page.clab.api.global.exception.NotFoundException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -25,6 +26,14 @@ public class CommentPersistenceAdapter implements
         CommentJpaEntity entity = commentMapper.toJpaEntity(comment);
         CommentJpaEntity savedEntity = commentRepository.save(entity);
         return commentMapper.toDomain(savedEntity);
+    }
+
+    @Override
+    public void saveAll(List<Comment> comments) {
+        List<CommentJpaEntity> entities = comments.stream()
+                .map(commentMapper::toJpaEntity)
+                .toList();
+        commentRepository.saveAll(entities);
     }
 
     @Override
@@ -61,5 +70,13 @@ public class CommentPersistenceAdapter implements
     @Override
     public Long countByBoardId(Long boardId) {
         return commentRepository.countByBoardId(boardId);
+    }
+
+    @Override
+    public List<Comment> findByBoardId(Long boardId) {
+        return commentRepository.findByBoardId(boardId)
+                .stream()
+                .map(commentMapper::toDomain)
+                .toList();
     }
 }

@@ -18,6 +18,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.global.common.domain.BaseEntity;
 
 import java.util.ArrayList;
@@ -30,6 +32,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "comment", indexes = @Index(name = "comment_index", columnList = "boardId"))
+@SQLDelete(sql = "UPDATE comment SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 public class CommentJpaEntity extends BaseEntity {
 
     @Id

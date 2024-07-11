@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.comment.domain.Comment;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface RetrieveCommentPort {
@@ -18,4 +19,6 @@ public interface RetrieveCommentPort {
     Page<Comment> findAllByWriterId(String memberId, Pageable pageable);
 
     Long countByBoardId(Long boardId);
+
+    List<Comment> findByBoardId(Long boardId);
 }

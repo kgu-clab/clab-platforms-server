@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
@@ -17,6 +19,7 @@ public class BlacklistIp {
     private Long id;
     private String ipAddress;
     private String reason;
+    private LocalDateTime createdAt;
 
     public static BlacklistIp create(String ipAddress, String reason) {
         return BlacklistIp.builder()

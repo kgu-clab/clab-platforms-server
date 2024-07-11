@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activityGroup.application.ActivityGroupBoardService;
-import page.clab.api.domain.activityGroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupBoardUpdateRequestDto;
@@ -42,6 +41,7 @@ import java.util.List;
 public class ActivityGroupBoardController {
 
     private final ActivityGroupBoardService activityGroupBoardService;
+    private final PageableUtils pageableUtils;
 
     @Operation(summary = "[U] 활동 그룹 게시판 생성", description = "ROLE_USER 이상의 권한이 필요함<br><br>" +
             "활동 그룹 게시판 카테고리별 requestDto에 들어가야 할 필수내용과 (선택)내용입니다.<br><br>" +
@@ -71,7 +71,7 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupBoard.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupBoardResponseDto.class);
         PagedResponseDto<ActivityGroupBoardResponseDto> boards = activityGroupBoardService.getAllActivityGroupBoard(pageable);
         return ApiResponse.success(boards);
     }
@@ -98,7 +98,7 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupBoard.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupBoardResponseDto.class);
         PagedResponseDto<ActivityGroupBoardResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByCategory(activityGroupId, category, pageable);
         return ApiResponse.success(boards);
     }

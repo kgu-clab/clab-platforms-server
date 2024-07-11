@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.login.application.port.in.RetrieveLoginAttemptLogsUseCase;
-import page.clab.api.domain.login.domain.LoginAttemptLog;
 import page.clab.api.domain.login.application.dto.response.LoginAttemptLogResponseDto;
+import page.clab.api.domain.login.application.port.in.RetrieveLoginAttemptLogsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
@@ -30,6 +29,7 @@ import java.util.List;
 public class LoginAttemptLogsRetrievalController {
 
     private final RetrieveLoginAttemptLogsUseCase retrieveLoginAttemptLogsUseCase;
+    private final PageableUtils pageableUtils;
 
     @Operation(summary = "[S] 계정별 로그인 시도 로그 조회", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, loginAttemptTime, memberId")
@@ -42,7 +42,7 @@ public class LoginAttemptLogsRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "loginAttemptTime") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, LoginAttemptLog.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, LoginAttemptLogResponseDto.class);
         PagedResponseDto<LoginAttemptLogResponseDto> loginAttemptLogs = retrieveLoginAttemptLogsUseCase.retrieveLoginAttemptLogs(memberId, pageable);
         return ApiResponse.success(loginAttemptLogs);
     }

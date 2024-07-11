@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.book.adapter.out.persistence.BookLoanRecordJpaEntity;
 import page.clab.api.domain.book.application.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.domain.book.application.port.in.RetrieveBookLoanRecordsByConditionsUseCase;
 import page.clab.api.domain.book.domain.BookLoanStatus;
@@ -28,6 +27,7 @@ import java.util.List;
 public class BookLoanRecordsByConditionsRetrievalController {
 
     private final RetrieveBookLoanRecordsByConditionsUseCase retrieveBookLoanRecordsByConditionsUseCase;
+    private final PageableUtils pageableUtils;
 
     @Operation(summary = "[U] 도서 대출 내역 조회(도서 ID, 대출자 ID, 대출 상태 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
@@ -41,10 +41,10 @@ public class BookLoanRecordsByConditionsRetrievalController {
             @RequestParam(name = "status", required = false) BookLoanStatus status,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "borrowedAt, createdAt") List<String> sortBy,
-            @RequestParam(name = "sortDirection", defaultValue = "desc, asc") List<String> sortDirection
+            @RequestParam(name = "sortBy", defaultValue = "borrowedAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, BookLoanRecordJpaEntity.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, BookLoanRecordResponseDto.class);
         PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords =
                 retrieveBookLoanRecordsByConditionsUseCase.retrieveBookLoanRecords(bookId, borrowerId, status, pageable);
         return ApiResponse.success(bookLoanRecords);

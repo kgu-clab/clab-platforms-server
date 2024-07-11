@@ -1,9 +1,11 @@
 package page.clab.api.domain.board.application.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.board.application.dto.request.BoardUpdateRequestDto;
+import page.clab.api.domain.board.application.event.BoardUpdatedEvent;
 import page.clab.api.domain.board.application.port.in.UpdateBoardUseCase;
 import page.clab.api.domain.board.application.port.out.RegisterBoardPort;
 import page.clab.api.domain.board.application.port.out.RetrieveBoardPort;
@@ -19,6 +21,7 @@ public class BoardUpdateService implements UpdateBoardUseCase {
     private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final RetrieveBoardPort retrieveBoardPort;
     private final RegisterBoardPort registerBoardPort;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     @Override
@@ -27,6 +30,8 @@ public class BoardUpdateService implements UpdateBoardUseCase {
         Board board = retrieveBoardPort.findByIdOrThrow(boardId);
         board.validateAccessPermission(currentMemberInfo);
         board.update(requestDto);
-        return registerBoardPort.save(board).getCategory().getKey();
+        registerBoardPort.save(board);
+        eventPublisher.publishEvent(new BoardUpdatedEvent(this, board.getId()));
+        return board.getCategory().getKey();
     }
 }

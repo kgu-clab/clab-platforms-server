@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.membershipFee.adapter.out.persistence.MembershipFeeJpaEntity;
 import page.clab.api.domain.membershipFee.application.dto.response.MembershipFeeResponseDto;
 import page.clab.api.domain.membershipFee.application.port.in.RetrieveMembershipFeesByConditionsUseCase;
 import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
@@ -28,6 +27,7 @@ import java.util.List;
 public class MembershipFeesByConditionsRetrievalController {
 
     private final RetrieveMembershipFeesByConditionsUseCase retrieveMembershipFeesByConditionsUseCase;
+    private final PageableUtils pageableUtils;
 
     @Operation(summary = "[U] 회비 정보 조회(멤버 ID, 멤버 이름, 카테고리, 상태 기준)", description = "ROLE_USER 이상의 권한이 필요함<br> " +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
@@ -46,7 +46,7 @@ public class MembershipFeesByConditionsRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, MembershipFeeJpaEntity.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, MembershipFeeResponseDto.class);
         PagedResponseDto<MembershipFeeResponseDto> membershipFees =
                 retrieveMembershipFeesByConditionsUseCase.retrieveMembershipFees(memberId, memberName, category, status, pageable);
         return ApiResponse.success(membershipFees);

@@ -16,11 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activityGroup.application.ActivityGroupMemberService;
-import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupCategory;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
-import page.clab.api.domain.activityGroup.domain.GroupMember;
-import page.clab.api.domain.activityGroup.domain.GroupSchedule;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupResponseDto;
@@ -42,6 +39,7 @@ import java.util.List;
 public class ActivityGroupMemberController {
 
     private final ActivityGroupMemberService activityGroupMemberService;
+    private final PageableUtils pageableUtils;
 
     @Operation(summary = "활동 전체 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, endDate, startDate")
@@ -52,7 +50,7 @@ public class ActivityGroupMemberController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroup.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupResponseDto.class);
         PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroups(pageable);
         return ApiResponse.success(activityGroups);
     }
@@ -101,7 +99,7 @@ public class ActivityGroupMemberController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroup.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupResponseDto.class);
         PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroupsByCategory(category, pageable);
         return ApiResponse.success(activityGroups);
     }
@@ -114,10 +112,10 @@ public class ActivityGroupMemberController {
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "id") List<String> sortBy,
+            @RequestParam(name = "sortBy", defaultValue = "schedule") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, GroupSchedule.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, GroupScheduleDto.class);
         PagedResponseDto<GroupScheduleDto> groupSchedules = activityGroupMemberService.getGroupSchedules(activityGroupId, pageable);
         return ApiResponse.success(groupSchedules);
     }
@@ -134,7 +132,7 @@ public class ActivityGroupMemberController {
             @RequestParam(name = "sortBy", defaultValue = "memberId") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, GroupMember.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, GroupMemberResponseDto.class);
         PagedResponseDto<GroupMemberResponseDto> activityGroupMembers = activityGroupMemberService.getActivityGroupMembers(activityGroupId, pageable);
         return ApiResponse.success(activityGroupMembers);
     }

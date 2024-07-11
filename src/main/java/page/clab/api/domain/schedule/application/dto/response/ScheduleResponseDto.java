@@ -15,8 +15,8 @@ public class ScheduleResponseDto {
     private String title;
     private String detail;
     private String activityName;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDateTime startDateTime;
+    private LocalDateTime endDateTime;
     private SchedulePriority priority;
 
     public static ScheduleResponseDto toDto(Schedule schedule) {
@@ -25,8 +25,8 @@ public class ScheduleResponseDto {
                 .title(schedule.getTitle())
                 .detail(schedule.getDetail())
                 .activityName(schedule.isAllSchedule() ? null : schedule.getActivityGroup().getName())
-                .startDate(schedule.getStartDateTime())
-                .endDate(schedule.getEndDateTime())
+                .startDateTime(schedule.getStartDateTime())
+                .endDateTime(schedule.getEndDateTime())
                 .priority(schedule.getPriority())
                 .build();
     }

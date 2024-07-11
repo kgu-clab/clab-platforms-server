@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activityGroup.application.ActivityGroupAdminService;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupStatus;
-import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activityGroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupRequestDto;
@@ -43,6 +42,7 @@ import java.util.List;
 public class ActivityGroupAdminController {
 
     private final ActivityGroupAdminService activityGroupAdminService;
+    private final PageableUtils pageableUtils;
 
     @Operation(summary = "[U] 활동 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
@@ -121,7 +121,7 @@ public class ActivityGroupAdminController {
             @RequestParam(name = "sortBy", defaultValue = "memberId") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, PermissionDeniedException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, GroupMember.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupMemberWithApplyReasonResponseDto.class);
         PagedResponseDto<ActivityGroupMemberWithApplyReasonResponseDto> groupMembers = activityGroupAdminService.getGroupMembersWithApplyReason(activityGroupId, pageable);
         return ApiResponse.success(groupMembers);
     }

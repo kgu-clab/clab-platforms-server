@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface CommentRepository extends JpaRepository<CommentJpaEntity, Long> {
 
@@ -18,4 +20,6 @@ public interface CommentRepository extends JpaRepository<CommentJpaEntity, Long>
 
     @Query(value = "SELECT c.* FROM comment c WHERE c.is_deleted = true AND c.board_id = ?", nativeQuery = true)
     Page<CommentJpaEntity> findAllByIsDeletedTrueAndBoardId(Long boardId, Pageable pageable);
+
+    List<CommentJpaEntity> findByBoardId(Long boardId);
 }

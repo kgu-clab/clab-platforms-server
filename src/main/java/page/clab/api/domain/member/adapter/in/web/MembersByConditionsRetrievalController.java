@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.member.adapter.out.persistence.MemberJpaEntity;
 import page.clab.api.domain.member.application.dto.response.MemberResponseDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMembersByConditionsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -26,6 +25,7 @@ import java.util.List;
 public class MembersByConditionsRetrievalController {
 
     private final RetrieveMembersByConditionsUseCase retrieveMembersByConditionsUseCase;
+    private final PageableUtils pageableUtils;
 
     @Operation(summary = "[A] 멤버 정보 조회(멤버 ID, 이름 기준)", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
             "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, birth, grade, lastLoginTime, loanSuspensionDate")
@@ -38,7 +38,7 @@ public class MembersByConditionsRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, MemberJpaEntity.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, MemberResponseDto.class);
         PagedResponseDto<MemberResponseDto> members = retrieveMembersByConditionsUseCase.retrieveMembers(id, name, pageable);
         return ApiResponse.success(members);
     }

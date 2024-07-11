@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.donation.adapter.out.persistence.DonationJpaEntity;
 import page.clab.api.domain.donation.application.dto.response.DonationResponseDto;
 import page.clab.api.domain.donation.application.port.in.RetrieveDonationsByConditionsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -28,6 +27,7 @@ import java.util.List;
 public class DonationsByConditionsRetrievalController {
 
     private final RetrieveDonationsByConditionsUseCase retrieveDonationsByConditionsUseCase;
+    private final PageableUtils pageableUtils;
 
     @Operation(summary = "[U] 후원 목록 조회(멤버 ID, 멤버 이름, 기간 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
@@ -45,7 +45,7 @@ public class DonationsByConditionsRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, DonationJpaEntity.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, DonationResponseDto.class);
         PagedResponseDto<DonationResponseDto> donations = retrieveDonationsByConditionsUseCase.retrieveDonations(memberId, name, startDate, endDate, pageable);
         return ApiResponse.success(donations);
     }

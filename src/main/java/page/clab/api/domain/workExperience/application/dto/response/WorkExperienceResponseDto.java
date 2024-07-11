@@ -11,13 +11,9 @@ import java.time.LocalDate;
 public class WorkExperienceResponseDto {
 
     private Long id;
-
     private String companyName;
-
     private String position;
-
     private LocalDate startDate;
-
     private LocalDate endDate;
 
     public static WorkExperienceResponseDto toDto(WorkExperience workExperience) {

@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activityGroup.application.AttendanceService;
-import page.clab.api.domain.activityGroup.domain.Absent;
-import page.clab.api.domain.activityGroup.domain.Attendance;
 import page.clab.api.domain.activityGroup.dto.request.AbsentRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.AttendanceRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.AbsentResponseDto;
@@ -40,6 +38,7 @@ import java.util.List;
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
+    private final PageableUtils pageableUtils;
 
     @Operation(summary = "[U] 출석체크 QR 생성", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
@@ -69,10 +68,10 @@ public class AttendanceController {
             @RequestParam(name = "activityGroupId", defaultValue = "1") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortBy", defaultValue = "attendanceDateTime") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, IllegalAccessException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Attendance.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, AttendanceResponseDto.class);
         PagedResponseDto<AttendanceResponseDto> myAttendances = attendanceService.getMyAttendances(activityGroupId, pageable);
         return ApiResponse.success(myAttendances);
     }
@@ -85,10 +84,10 @@ public class AttendanceController {
             @RequestParam(name = "activityGroupId", defaultValue = "1") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "member") List<String> sortBy,
+            @RequestParam(name = "sortBy", defaultValue = "memberId") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, PermissionDeniedException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Attendance.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, AttendanceResponseDto.class);
         PagedResponseDto<AttendanceResponseDto> attendances = attendanceService.getGroupAttendances(activityGroupId, pageable);
         return ApiResponse.success(attendances);
     }
@@ -111,10 +110,10 @@ public class AttendanceController {
             @PathVariable(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortBy", defaultValue = "absentDate") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, PermissionDeniedException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Absent.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, AbsentResponseDto.class);
         PagedResponseDto<AbsentResponseDto> absentExcuses = attendanceService.getActivityGroupAbsentExcuses(activityGroupId, pageable);
         return ApiResponse.success(absentExcuses);
     }

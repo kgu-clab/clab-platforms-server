@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.blog.adapter.out.persistence.BlogJpaEntity;
 import page.clab.api.domain.blog.application.dto.response.BlogResponseDto;
 import page.clab.api.domain.blog.application.port.in.RetrieveBlogsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -27,6 +26,7 @@ import java.util.List;
 public class BlogsRetrievalController {
 
     private final RetrieveBlogsUseCase retrieveBlogsUseCase;
+    private final PageableUtils pageableUtils;
 
     @Operation(summary = "[U] 블로그 포스트 조회(제목, 작성자명 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "2개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
@@ -42,7 +42,7 @@ public class BlogsRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, BlogJpaEntity.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, BlogResponseDto.class);
         PagedResponseDto<BlogResponseDto> blogs = retrieveBlogsUseCase.retrieveBlogs(title, memberName, pageable);
         return ApiResponse.success(blogs);
     }

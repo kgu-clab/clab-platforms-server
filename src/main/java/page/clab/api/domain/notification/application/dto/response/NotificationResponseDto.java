@@ -11,9 +11,7 @@ import java.time.LocalDateTime;
 public class NotificationResponseDto {
 
     private Long id;
-
     private String content;
-
     private LocalDateTime createdAt;
 
     public static NotificationResponseDto toDto(Notification notification) {

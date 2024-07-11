@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activityGroup.application.ActivityGroupReportService;
-import page.clab.api.domain.activityGroup.domain.ActivityGroupReport;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportRequestDto;
 import page.clab.api.domain.activityGroup.dto.request.ActivityGroupReportUpdateRequestDto;
 import page.clab.api.domain.activityGroup.dto.response.ActivityGroupReportResponseDto;
@@ -39,6 +38,7 @@ import java.util.List;
 public class ActivityGroupReportController {
 
     private final ActivityGroupReportService activityGroupReportService;
+    private final PageableUtils pageableUtils;
 
     @Operation(summary = "[U] 활동 보고서 작성", description = "ROLE_USER 이상의 권한이 필요함")
     @PostMapping("")
@@ -61,7 +61,7 @@ public class ActivityGroupReportController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupReport.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupReportResponseDto.class);
         PagedResponseDto<ActivityGroupReportResponseDto> reports = activityGroupReportService.getReports(activityGroupId, pageable);
         return ApiResponse.success(reports);
     }
