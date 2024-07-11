@@ -8,8 +8,8 @@ import page.clab.api.domain.activityGroup.domain.ActivityGroup;
 import page.clab.api.domain.activityGroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activityGroup.domain.GroupMember;
 import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.application.dto.shared.MemberBasicInfoDto;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
 import page.clab.api.domain.review.application.dto.request.ReviewRequestDto;
 import page.clab.api.domain.review.application.exception.AlreadyReviewedException;
@@ -22,7 +22,7 @@ import page.clab.api.domain.review.domain.Review;
 @RequiredArgsConstructor
 public class ReviewRegisterService implements RegisterReviewUseCase {
 
-    private final RetrieveMemberUseCase retrieveMemberUseCase;
+    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
     private final SendNotificationUseCase notificationService;
     private final RegisterReviewPort registerReviewPort;
@@ -31,11 +31,11 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
     @Transactional
     @Override
     public Long registerReview(ReviewRequestDto requestDto) {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        MemberBasicInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberBasicInfo();
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(requestDto.getActivityGroupId());
-        validateReviewCreationPermission(activityGroup, currentMember.getId());
-        Review review = ReviewRequestDto.toEntity(requestDto, currentMember.getId(), activityGroup);
-        notifyGroupLeaderOfNewReview(activityGroup, currentMember);
+        validateReviewCreationPermission(activityGroup, currentMemberInfo.getMemberId());
+        Review review = ReviewRequestDto.toEntity(requestDto, currentMemberInfo.getMemberId(), activityGroup);
+        notifyGroupLeaderOfNewReview(activityGroup, currentMemberInfo.getMemberName());
         return registerReviewPort.save(review).getId();
     }
 
@@ -48,10 +48,10 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
         }
     }
 
-    private void notifyGroupLeaderOfNewReview(ActivityGroup activityGroup, Member member) {
+    private void notifyGroupLeaderOfNewReview(ActivityGroup activityGroup, String memberName) {
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         if (groupLeader != null) {
-            notificationService.sendNotificationToMember(groupLeader.getMemberId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 리뷰를 등록하였습니다.");
+            notificationService.sendNotificationToMember(groupLeader.getMemberId(), "[" + activityGroup.getName() + "] " + memberName + "님이 리뷰를 등록하였습니다.");
         }
     }
 

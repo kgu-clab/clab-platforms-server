@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activityGroup.domain.ActivityGroup;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.exception.InvalidDateRangeException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -38,8 +38,8 @@ public class Schedule {
         this.isDeleted = true;
     }
 
-    public boolean isOwner(Member member) {
-        return this.scheduleWriter.equals(member);
+    public boolean isOwner(String memberId) {
+        return this.scheduleWriter.equals(memberId);
     }
 
     public boolean isAllSchedule() {
@@ -52,14 +52,14 @@ public class Schedule {
         }
     }
 
-    public void validateAccessPermission(Member member) throws PermissionDeniedException {
-        if (!isOwner(member) && !member.isAdminRole()) {
+    public void validateAccessPermission(MemberDetailedInfoDto memberInfo) throws PermissionDeniedException {
+        if (!isOwner(memberInfo.getMemberId()) && !memberInfo.isAdminRole()) {
             throw new PermissionDeniedException("해당 일정을 수정/삭제할 권한이 없습니다.");
         }
     }
 
-    public void validateAccessPermissionForCreation(Member member) throws PermissionDeniedException {
-        if (this.getScheduleType().equals(ScheduleType.ALL) && !member.isAdminRole()) {
+    public void validateAccessPermissionForCreation(MemberDetailedInfoDto memberInfo) throws PermissionDeniedException {
+        if (this.getScheduleType().equals(ScheduleType.ALL) && !memberInfo.isAdminRole()) {
             throw new PermissionDeniedException("동아리 공통 일정은 ADMIN 이상의 권한만 추가할 수 있습니다.");
         }
     }
