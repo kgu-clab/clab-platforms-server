@@ -11,13 +11,9 @@ import java.time.LocalDate;
 public class AwardResponseDto {
 
     private Long id;
-
     private String competitionName;
-
     private String organizer;
-
     private String awardName;
-
     private LocalDate awardDate;
 
     public static AwardResponseDto toDto(Award award) {

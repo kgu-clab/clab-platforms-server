@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.award.adapter.out.persistence.AwardJpaEntity;
 import page.clab.api.domain.award.application.dto.response.AwardResponseDto;
 import page.clab.api.domain.award.application.port.in.RetrieveAwardsUseCase;
-import page.clab.api.domain.award.domain.Award;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
@@ -42,7 +42,7 @@ public class AwardRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "awardDate") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, Award.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, AwardJpaEntity.class);
         PagedResponseDto<AwardResponseDto> awards = retrieveAwardsUseCase.retrieveAwards(memberId, year, pageable);
         return ApiResponse.success(awards);
     }

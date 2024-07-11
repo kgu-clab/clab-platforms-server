@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.award.domain.Award;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface RetrieveAwardPort {
@@ -16,4 +17,6 @@ public interface RetrieveAwardPort {
     Page<Award> findAllByIsDeletedTrue(Pageable pageable);
 
     Page<Award> findByMemberId(String memberId, Pageable pageable);
+
+    List<Award> findByMemberId(String memberId);
 }

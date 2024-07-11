@@ -7,8 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import page.clab.api.domain.award.domain.Award;
-import page.clab.api.domain.award.domain.QAward;
 import page.clab.api.domain.member.adapter.out.persistence.QMemberJpaEntity;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
@@ -22,8 +20,8 @@ public class AwardRepositoryImpl implements AwardRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Award> findByConditions(String memberId, Long year, Pageable pageable) {
-        QAward award = QAward.award;
+    public Page<AwardJpaEntity> findByConditions(String memberId, Long year, Pageable pageable) {
+        QAwardJpaEntity award = QAwardJpaEntity.awardJpaEntity;
         QMemberJpaEntity member = QMemberJpaEntity.memberJpaEntity;
 
         BooleanBuilder builder = new BooleanBuilder();
@@ -34,7 +32,7 @@ public class AwardRepositoryImpl implements AwardRepositoryCustom {
             builder.and(award.awardDate.between(startOfYear, endOfYear));
         }
 
-        List<Award> awards = queryFactory.selectFrom(award)
+        List<AwardJpaEntity> awards = queryFactory.selectFrom(award)
                 .leftJoin(member).on(award.memberId.eq(member.id))
                 .where(builder)
                 .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, award))

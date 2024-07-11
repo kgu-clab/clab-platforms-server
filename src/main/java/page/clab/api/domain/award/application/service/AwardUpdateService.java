@@ -11,7 +11,6 @@ import page.clab.api.domain.award.domain.Award;
 import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +19,6 @@ public class AwardUpdateService implements UpdateAwardUseCase {
     private final RetrieveAwardPort retrieveAwardPort;
     private final RegisterAwardPort registerAwardPort;
     private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
-    private final ValidationService validationService;
 
     @Transactional
     @Override
@@ -29,7 +27,6 @@ public class AwardUpdateService implements UpdateAwardUseCase {
         Award award = retrieveAwardPort.findByIdOrThrow(awardId);
         award.validateAccessPermission(currentMemberInfo);
         award.update(requestDto);
-        validationService.checkValid(award);
         return registerAwardPort.save(award).getId();
     }
 }
