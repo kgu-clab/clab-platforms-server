@@ -33,7 +33,7 @@ public class JobPostingsByConditionsRetrievalController {
     @Operation(summary = "[U] 채용 공고 목록 조회(공고명, 기업명, 경력, 근로 조건 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "4개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
             "공고명, 기업명, 경력, 근로 조건 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
-            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt")
+            "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("")
     public ApiResponse<PagedResponseDto<JobPostingResponseDto>> retrieveJobPostingsByConditions(

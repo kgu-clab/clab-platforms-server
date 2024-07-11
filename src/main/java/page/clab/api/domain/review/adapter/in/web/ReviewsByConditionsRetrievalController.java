@@ -31,7 +31,7 @@ public class ReviewsByConditionsRetrievalController {
     @Operation(summary = "[U] 리뷰 목록 조회(멤버 ID, 멤버 이름, 활동 ID, 공개 여부 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "4개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
             "멤버 ID, 멤버 이름, 활동 ID, 공개 여부 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
-            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, activityGroupId, memberId")
+            "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("")
     public ApiResponse<PagedResponseDto<ReviewResponseDto>> retrieveReviewsByConditions(

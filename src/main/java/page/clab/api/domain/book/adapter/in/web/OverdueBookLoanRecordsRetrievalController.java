@@ -29,7 +29,7 @@ public class OverdueBookLoanRecordsRetrievalController {
     private final PageableUtils pageableUtils;
 
     @Operation(summary = "[A] 도서 연체자 조회", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
-            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, bookId, borrowedAt, dueDate, loanExtensionCount, returnedAt, memberId")
+            "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("/overdue")
     public ApiResponse<PagedResponseDto<BookLoanRecordOverdueResponseDto>> retrieveOverdueBookLoanRecords(

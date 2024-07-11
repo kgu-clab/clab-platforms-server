@@ -51,7 +51,7 @@ public class ActivityGroupReportController {
     }
 
     @Operation(summary = "[U] 특정 그룹의 활동 보고서 전체 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "페이지네이션 정렬에 사용할 수 있는 칼럼 : createdAt, id, updatedAt, activityGroupId")
+            "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @GetMapping("")
     @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     public ApiResponse<PagedResponseDto<ActivityGroupReportResponseDto>> getReports(
