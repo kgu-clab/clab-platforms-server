@@ -27,6 +27,7 @@ public class AccuseMapper {
                 .target(accuseTargetMapper.toDomain(entity.getTarget()))
                 .reason(entity.getReason())
                 .isDeleted(entity.isDeleted())
+                .createdAt(entity.getCreatedAt())
                 .build();
     }
 }

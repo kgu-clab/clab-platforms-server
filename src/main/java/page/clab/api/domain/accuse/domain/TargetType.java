@@ -8,8 +8,7 @@ import lombok.Getter;
 public enum TargetType {
 
     BOARD("BOARD", "게시글"),
-    COMMENT("COMMENT", "댓글"),
-    REVIEW("REVIEW", "후기");
+    COMMENT("COMMENT", "댓글");
 
     private String key;
     private String description;

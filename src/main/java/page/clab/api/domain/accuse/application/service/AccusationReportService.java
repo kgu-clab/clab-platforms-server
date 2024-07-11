@@ -35,7 +35,6 @@ public class AccusationReportService implements ReportAccusationUseCase {
     private final RetrieveAccuseTargetPort retrieveAccuseTargetPort;
     private final RetrieveBoardsUseCase retrieveBoardsUseCase;
     private final RetrieveCommentsUseCase retrieveCommentsUseCase;
-    private final RetrieveReviewUseCase retrieveReviewUseCase;
 
     @Transactional
     @Override
@@ -68,12 +67,6 @@ public class AccusationReportService implements ReportAccusationUseCase {
                 Comment comment = retrieveCommentsUseCase.findByIdOrThrow(targetId);
                 if (comment.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 댓글은 신고할 수 없습니다.");
-                }
-                break;
-            case REVIEW:
-                Review review = retrieveReviewUseCase.findByIdOrThrow(targetId);
-                if (review.isOwner(currentMemberId)) {
-                    throw new AccuseTargetTypeIncorrectException("자신의 리뷰는 신고할 수 없습니다.");
                 }
                 break;
             default:
