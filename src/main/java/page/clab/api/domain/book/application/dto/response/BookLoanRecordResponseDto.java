@@ -13,24 +13,14 @@ import java.time.LocalDateTime;
 public class BookLoanRecordResponseDto {
 
     private Long bookLoanRecordId;
-
     private Long bookId;
-
     private String bookTitle;
-
     private String bookImageUrl;
-
     private String borrowerId;
-
     private String borrowerName;
-
     private LocalDateTime borrowedAt;
-
     private LocalDateTime returnedAt;
-
     private LocalDateTime dueDate;
-
     private Long loanExtensionCount;
-
     private BookLoanStatus status;
 }

@@ -13,16 +13,10 @@ import java.time.LocalDateTime;
 public class BookLoanRecordOverdueResponseDto {
 
     private Long bookId;
-
     private String bookTitle;
-
     private String borrowerId;
-
     private String borrowerName;
-
     private LocalDateTime borrowedAt;
-
     private LocalDateTime dueDate;
-
     private BookLoanStatus status;
 }

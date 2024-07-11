@@ -5,12 +5,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
-import page.clab.api.domain.book.domain.Book;
+import org.springframework.stereotype.Repository;
 
-public interface BookRepository extends JpaRepository<Book, Long>, BookRepositoryCustom, QuerydslPredicateExecutor<Book> {
+@Repository
+public interface BookRepository extends JpaRepository<BookJpaEntity, Long>, BookRepositoryCustom, QuerydslPredicateExecutor<BookJpaEntity> {
 
     int countByBorrowerId(String memberId);
 
     @Query(value = "SELECT b.* FROM book b WHERE b.is_deleted = true", nativeQuery = true)
-    Page<Book> findAllByIsDeletedTrue(Pageable pageable);
+    Page<BookJpaEntity> findAllByIsDeletedTrue(Pageable pageable);
 }

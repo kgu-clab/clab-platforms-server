@@ -7,7 +7,6 @@ import page.clab.api.domain.book.application.port.in.RejectBookLoanUseCase;
 import page.clab.api.domain.book.application.port.out.RegisterBookLoanRecordPort;
 import page.clab.api.domain.book.application.port.out.RetrieveBookLoanRecordPort;
 import page.clab.api.domain.book.domain.BookLoanRecord;
-import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -15,14 +14,12 @@ public class BookLoanRejectionService implements RejectBookLoanUseCase {
 
     private final RetrieveBookLoanRecordPort retrieveBookLoanRecordPort;
     private final RegisterBookLoanRecordPort registerBookLoanRecordPort;
-    private final ValidationService validationService;
 
     @Transactional
     @Override
     public Long rejectBookLoan(Long bookLoanRecordId) {
         BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByIdOrThrow(bookLoanRecordId);
         bookLoanRecord.reject();
-        validationService.checkValid(bookLoanRecord);
         return registerBookLoanRecordPort.save(bookLoanRecord).getId();
     }
 }

@@ -41,9 +41,9 @@ public class BookLoanRequestService implements RequestBookLoanUseCase {
             validateBorrowLimit(borrowerInfo.getMemberId());
 
             Book book = retrieveBookPort.findByIdOrThrow(requestDto.getBookId());
-            checkIfLoanAlreadyApplied(book, borrowerInfo.getMemberId());
+            checkIfLoanAlreadyApplied(book.getId(), borrowerInfo.getMemberId());
 
-            BookLoanRecord bookLoanRecord = BookLoanRecord.create(book, borrowerInfo);
+            BookLoanRecord bookLoanRecord = BookLoanRecord.create(book.getId(), borrowerInfo);
             validationService.checkValid(bookLoanRecord);
 
             notificationService.sendNotificationToMember(borrowerInfo.getMemberId(), "[" + book.getTitle() + "] 도서 대출 신청이 완료되었습니다.");
@@ -61,8 +61,8 @@ public class BookLoanRequestService implements RequestBookLoanUseCase {
         }
     }
 
-    private void checkIfLoanAlreadyApplied(Book book, String borrowerId) {
-        retrieveBookLoanRecordPort.findByBookAndBorrowerIdAndStatus(book, borrowerId, BookLoanStatus.PENDING)
+    private void checkIfLoanAlreadyApplied(Long bookId, String borrowerId) {
+        retrieveBookLoanRecordPort.findByBookIdAndBorrowerIdAndStatus(bookId, borrowerId, BookLoanStatus.PENDING)
                 .ifPresent(bookLoanRecord -> {
                     throw new BookAlreadyAppliedForLoanException("이미 대출 신청한 도서입니다.");
                 });

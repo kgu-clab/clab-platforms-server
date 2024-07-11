@@ -34,12 +34,12 @@ public class BookDetailsRetrievalService implements RetrieveBookDetailsUseCase {
 
     @NotNull
     private BookDetailsResponseDto mapToBookDetailsResponseDto(Book book, String borrowerName) {
-        LocalDateTime dueDate = getDueDateForBook(book);
+        LocalDateTime dueDate = getDueDateForBook(book.getId());
         return BookDetailsResponseDto.toDto(book, borrowerName, dueDate);
     }
 
-    private LocalDateTime getDueDateForBook(Book book) {
-        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByBookAndReturnedAtIsNullAndStatus(book, BookLoanStatus.APPROVED)
+    private LocalDateTime getDueDateForBook(Long bookId) {
+        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByBookIdAndReturnedAtIsNullAndStatus(bookId, BookLoanStatus.APPROVED)
                 .orElse(null);
         return bookLoanRecord != null ? bookLoanRecord.getDueDate() : null;
     }

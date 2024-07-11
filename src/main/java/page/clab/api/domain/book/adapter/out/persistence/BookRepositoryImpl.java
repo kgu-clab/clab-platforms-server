@@ -7,8 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import page.clab.api.domain.book.domain.Book;
-import page.clab.api.domain.book.domain.QBook;
 import page.clab.api.domain.member.adapter.out.persistence.QMemberJpaEntity;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
@@ -21,8 +19,8 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Book> findByConditions(String title, String category, String publisher, String borrowerId, String borrowerName, Pageable pageable) {
-        QBook book = QBook.book;
+    public Page<BookJpaEntity> findByConditions(String title, String category, String publisher, String borrowerId, String borrowerName, Pageable pageable) {
+        QBookJpaEntity book = QBookJpaEntity.bookJpaEntity;
         QMemberJpaEntity borrower = QMemberJpaEntity.memberJpaEntity;
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -32,7 +30,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
         if (borrowerId != null) builder.and(borrower.id.eq(borrowerId));
         if (borrowerName != null) builder.and(borrower.name.eq(borrowerName));
 
-        List<Book> books = queryFactory.selectFrom(book)
+        List<BookJpaEntity> books = queryFactory.selectFrom(book)
                 .leftJoin(borrower).on(book.borrowerId.eq(borrower.id))
                 .where(builder)
                 .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, book))

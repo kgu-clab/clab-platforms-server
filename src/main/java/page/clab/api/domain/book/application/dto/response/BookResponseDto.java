@@ -11,25 +11,15 @@ import java.time.LocalDateTime;
 public class BookResponseDto {
 
     private Long id;
-
     private String borrowerId;
-
     private String borrowerName;
-
     private String category;
-
     private String title;
-
     private String author;
-
     private String publisher;
-
     private String imageUrl;
-
     private LocalDateTime dueDate;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     public static BookResponseDto toDto(Book book, String borrowerName, LocalDateTime dueDate) {

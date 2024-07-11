@@ -1,14 +1,5 @@
 package page.clab.api.domain.book.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,44 +11,29 @@ import page.clab.api.domain.book.application.exception.LoanNotPendingException;
 import page.clab.api.domain.book.application.exception.LoanSuspensionException;
 import page.clab.api.domain.book.application.exception.OverdueException;
 import page.clab.api.domain.member.application.dto.shared.MemberBorrowerInfoDto;
-import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-@Entity
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class BookLoanRecord extends BaseEntity {
+public class BookLoanRecord {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "book_id", nullable = false)
-    private Book book;
-
-    @Column(name = "member_id", nullable = false)
+    private Long bookId;
     private String borrowerId;
-
     private LocalDateTime borrowedAt;
-
     private LocalDateTime returnedAt;
-
     private LocalDateTime dueDate;
-
     private Long loanExtensionCount;
-
-    @Enumerated(EnumType.STRING)
     private BookLoanStatus status;
 
-    public static BookLoanRecord create(Book book, MemberBorrowerInfoDto borrowerInfo) {
+    public static BookLoanRecord create(Long bookId, MemberBorrowerInfoDto borrowerInfo) {
         return BookLoanRecord.builder()
-                .book(book)
+                .bookId(bookId)
                 .borrowerId(borrowerInfo.getMemberId())
                 .loanExtensionCount(0L)
                 .status(BookLoanStatus.PENDING)
@@ -101,7 +77,6 @@ public class BookLoanRecord extends BaseEntity {
         if (this.status != BookLoanStatus.PENDING) {
             throw new LoanNotPendingException("대출 신청 상태가 아닙니다.");
         }
-        this.book.setBorrowerId(this.borrowerId);
         this.status = BookLoanStatus.APPROVED;
         this.borrowedAt = LocalDateTime.now();
         this.dueDate = LocalDateTime.now().plusWeeks(1);

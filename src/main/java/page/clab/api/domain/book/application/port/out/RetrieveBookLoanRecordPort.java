@@ -4,7 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.book.application.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.domain.book.application.dto.response.BookLoanRecordResponseDto;
-import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.domain.BookLoanStatus;
 
@@ -19,9 +18,9 @@ public interface RetrieveBookLoanRecordPort {
 
     Page<BookLoanRecordOverdueResponseDto> findOverdueBookLoanRecords(Pageable pageable);
 
-    Optional<BookLoanRecord> findByBookAndReturnedAtIsNullAndStatus(Book book, BookLoanStatus bookLoanStatus);
+    Optional<BookLoanRecord> findByBookIdAndReturnedAtIsNullAndStatus(Long bookId, BookLoanStatus bookLoanStatus);
 
-    BookLoanRecord findByBookAndReturnedAtIsNullAndStatusOrThrow(Book book, BookLoanStatus bookLoanStatus);
+    BookLoanRecord findByBookIdAndReturnedAtIsNullAndStatusOrThrow(Long bookId, BookLoanStatus bookLoanStatus);
 
-    Optional<BookLoanRecord> findByBookAndBorrowerIdAndStatus(Book book, String borrowerId, BookLoanStatus bookLoanStatus);
+    Optional<BookLoanRecord> findByBookIdAndBorrowerIdAndStatus(Long bookId, String borrowerId, BookLoanStatus bookLoanStatus);
 }

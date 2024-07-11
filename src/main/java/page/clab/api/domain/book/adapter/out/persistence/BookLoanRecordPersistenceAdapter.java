@@ -8,7 +8,6 @@ import page.clab.api.domain.book.application.dto.response.BookLoanRecordOverdueR
 import page.clab.api.domain.book.application.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.domain.book.application.port.out.RegisterBookLoanRecordPort;
 import page.clab.api.domain.book.application.port.out.RetrieveBookLoanRecordPort;
-import page.clab.api.domain.book.domain.Book;
 import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.global.exception.NotFoundException;
@@ -22,20 +21,25 @@ public class BookLoanRecordPersistenceAdapter implements
         RetrieveBookLoanRecordPort {
 
     private final BookLoanRecordRepository bookLoanRecordRepository;
+    private final BookLoanRecordMapper bookLoanRecordMapper;
 
     @Override
     public BookLoanRecord save(BookLoanRecord bookLoanRecord) {
-        return bookLoanRecordRepository.save(bookLoanRecord);
+        BookLoanRecordJpaEntity entity = bookLoanRecordMapper.toJpaEntity(bookLoanRecord);
+        BookLoanRecordJpaEntity savedEntity = bookLoanRecordRepository.save(entity);
+        return bookLoanRecordMapper.toDomain(savedEntity);
     }
 
     @Override
     public Optional<BookLoanRecord> findById(Long bookLoanRecordId) {
-        return bookLoanRecordRepository.findById(bookLoanRecordId);
+        return bookLoanRecordRepository.findById(bookLoanRecordId)
+                .map(bookLoanRecordMapper::toDomain);
     }
 
     @Override
     public BookLoanRecord findByIdOrThrow(Long bookLoanRecordId) {
         return bookLoanRecordRepository.findById(bookLoanRecordId)
+                .map(bookLoanRecordMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[BookLoanRecord] id: " + bookLoanRecordId + "에 해당하는 대출 기록이 존재하지 않습니다."));
     }
 
@@ -50,18 +54,21 @@ public class BookLoanRecordPersistenceAdapter implements
     }
 
     @Override
-    public Optional<BookLoanRecord> findByBookAndReturnedAtIsNullAndStatus(Book book, BookLoanStatus bookLoanStatus) {
-        return bookLoanRecordRepository.findByBookAndReturnedAtIsNullAndStatus(book, bookLoanStatus);
+    public Optional<BookLoanRecord> findByBookIdAndReturnedAtIsNullAndStatus(Long bookId, BookLoanStatus bookLoanStatus) {
+        return bookLoanRecordRepository.findByBookIdAndReturnedAtIsNullAndStatus(bookId, bookLoanStatus)
+                .map(bookLoanRecordMapper::toDomain);
     }
 
     @Override
-    public BookLoanRecord findByBookAndReturnedAtIsNullAndStatusOrThrow(Book book, BookLoanStatus bookLoanStatus) {
-        return bookLoanRecordRepository.findByBookAndReturnedAtIsNullAndStatus(book, bookLoanStatus)
-                .orElseThrow(() -> new NotFoundException("[Book] id: " + book.getId() + "에 해당하는 대출 기록이 존재하지 않습니다."));
+    public BookLoanRecord findByBookIdAndReturnedAtIsNullAndStatusOrThrow(Long bookId, BookLoanStatus bookLoanStatus) {
+        return bookLoanRecordRepository.findByBookIdAndReturnedAtIsNullAndStatus(bookId, bookLoanStatus)
+                .map(bookLoanRecordMapper::toDomain)
+                .orElseThrow(() -> new NotFoundException("[Book] id: " + bookId + "에 해당하는 대출 기록이 존재하지 않습니다."));
     }
 
     @Override
-    public Optional<BookLoanRecord> findByBookAndBorrowerIdAndStatus(Book book, String borrowerId, BookLoanStatus bookLoanStatus) {
-        return bookLoanRecordRepository.findByBookAndBorrowerIdAndStatus(book, borrowerId, bookLoanStatus);
+    public Optional<BookLoanRecord> findByBookIdAndBorrowerIdAndStatus(Long bookId, String borrowerId, BookLoanStatus bookLoanStatus) {
+        return bookLoanRecordRepository.findByBookIdAndBorrowerIdAndStatus(bookId, borrowerId, bookLoanStatus)
+                .map(bookLoanRecordMapper::toDomain);
     }
 }

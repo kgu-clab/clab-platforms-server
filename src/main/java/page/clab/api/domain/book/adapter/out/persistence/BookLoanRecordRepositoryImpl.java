@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import page.clab.api.domain.book.application.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.domain.book.application.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.domain.book.domain.BookLoanStatus;
-import page.clab.api.domain.book.domain.QBookLoanRecord;
 import page.clab.api.domain.member.adapter.out.persistence.QMemberJpaEntity;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
@@ -26,11 +25,12 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
 
     @Override
     public Page<BookLoanRecordResponseDto> findByConditions(Long bookId, String borrowerId, BookLoanStatus status, Pageable pageable) {
-        QBookLoanRecord bookLoanRecord = QBookLoanRecord.bookLoanRecord;
+        QBookLoanRecordJpaEntity bookLoanRecord = QBookLoanRecordJpaEntity.bookLoanRecordJpaEntity;
+        QBookJpaEntity book = QBookJpaEntity.bookJpaEntity;
         QMemberJpaEntity member = QMemberJpaEntity.memberJpaEntity;
 
         BooleanBuilder builder = new BooleanBuilder();
-        if (bookId != null) builder.and(bookLoanRecord.book.id.eq(bookId));
+        if (bookId != null) builder.and(bookLoanRecord.bookId.eq(bookId));
         if (borrowerId != null && !borrowerId.trim().isEmpty()) builder.and(bookLoanRecord.borrowerId.eq(borrowerId));
         if (status != null) builder.and(bookLoanRecord.status.eq(status));
 
@@ -38,9 +38,9 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
                 .select(Projections.constructor(
                         BookLoanRecordResponseDto.class,
                         bookLoanRecord.id,
-                        bookLoanRecord.book.id,
-                        bookLoanRecord.book.title,
-                        bookLoanRecord.book.imageUrl,
+                        bookLoanRecord.bookId,
+                        book.title,
+                        book.imageUrl,
                         bookLoanRecord.borrowerId,
                         member.name.as("borrowerName"),
                         bookLoanRecord.borrowedAt,
@@ -50,6 +50,7 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
                         bookLoanRecord.status
                 ))
                 .from(bookLoanRecord)
+                .leftJoin(book).on(bookLoanRecord.bookId.eq(book.id))
                 .leftJoin(member).on(bookLoanRecord.borrowerId.eq(member.id))
                 .where(builder)
                 .offset(pageable.getOffset())
@@ -59,6 +60,7 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
 
         long total = queryFactory
                 .selectFrom(bookLoanRecord)
+                .leftJoin(book).on(bookLoanRecord.bookId.eq(book.id))
                 .leftJoin(member).on(bookLoanRecord.borrowerId.eq(member.id))
                 .where(builder)
                 .fetchCount();
@@ -68,7 +70,8 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
 
     @Override
     public Page<BookLoanRecordOverdueResponseDto> findOverdueBookLoanRecords(Pageable pageable) {
-        QBookLoanRecord bookLoanRecord = QBookLoanRecord.bookLoanRecord;
+        QBookLoanRecordJpaEntity bookLoanRecord = QBookLoanRecordJpaEntity.bookLoanRecordJpaEntity;
+        QBookJpaEntity book = QBookJpaEntity.bookJpaEntity;
         QMemberJpaEntity member = QMemberJpaEntity.memberJpaEntity;
 
         LocalDateTime now = LocalDateTime.now();
@@ -76,8 +79,8 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
         List<BookLoanRecordOverdueResponseDto> results = queryFactory
                 .select(Projections.constructor(
                         BookLoanRecordOverdueResponseDto.class,
-                        bookLoanRecord.book.id,
-                        bookLoanRecord.book.title,
+                        bookLoanRecord.bookId,
+                        book.title,
                         bookLoanRecord.borrowerId,
                         member.name.as("borrowerName"),
                         bookLoanRecord.borrowedAt,
@@ -85,6 +88,7 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
                         bookLoanRecord.status
                 ))
                 .from(bookLoanRecord)
+                .leftJoin(book).on(bookLoanRecord.bookId.eq(book.id))
                 .leftJoin(member).on(bookLoanRecord.borrowerId.eq(member.id))
                 .where(bookLoanRecord.status.eq(BookLoanStatus.APPROVED)
                         .and(bookLoanRecord.dueDate.lt(now)))
@@ -95,6 +99,7 @@ public class BookLoanRecordRepositoryImpl implements BookLoanRecordRepositoryCus
 
         long total = queryFactory
                 .selectFrom(bookLoanRecord)
+                .leftJoin(book).on(bookLoanRecord.bookId.eq(book.id))
                 .leftJoin(member).on(bookLoanRecord.borrowerId.eq(member.id))
                 .where(bookLoanRecord.status.eq(BookLoanStatus.APPROVED)
                         .and(bookLoanRecord.dueDate.lt(now)))

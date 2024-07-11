@@ -12,27 +12,16 @@ import java.util.List;
 public class BookDetailsResponseDto {
 
     private Long id;
-
     private String borrowerId;
-
     private String borrowerName;
-
     private String category;
-
     private String title;
-
     private String author;
-
     private String publisher;
-
     private String imageUrl;
-
     private List<String> reviewLinks;
-
     private LocalDateTime dueDate;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     public static BookDetailsResponseDto toDto(Book book, String borrowerName, LocalDateTime dueDate) {

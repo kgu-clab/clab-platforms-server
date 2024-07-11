@@ -37,12 +37,12 @@ public class BooksByConditionsRetrievalService implements RetrieveBooksByConditi
     @NotNull
     private BookResponseDto mapToBookResponseDto(Book book) {
         MemberBasicInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberBasicInfo();
-        LocalDateTime dueDate = getDueDateForBook(book);
+        LocalDateTime dueDate = getDueDateForBook(book.getId());
         return BookResponseDto.toDto(book, currentMemberInfo.getMemberName(), dueDate);
     }
 
-    private LocalDateTime getDueDateForBook(Book book) {
-        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByBookAndReturnedAtIsNullAndStatus(book, BookLoanStatus.APPROVED)
+    private LocalDateTime getDueDateForBook(Long bookId) {
+        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByBookIdAndReturnedAtIsNullAndStatus(bookId, BookLoanStatus.APPROVED)
                 .orElse(null);
         return bookLoanRecord != null ? bookLoanRecord.getDueDate() : null;
     }

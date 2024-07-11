@@ -14,7 +14,6 @@ import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.domain.member.application.dto.shared.MemberBorrowerInfoDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
-import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +24,6 @@ public class BookLoanExtensionService implements ExtendBookLoanUseCase {
     private final RegisterBookLoanRecordPort registerBookLoanRecordPort;
     private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final SendNotificationUseCase notificationService;
-    private final ValidationService validationService;
 
     @Transactional
     @Override
@@ -35,9 +33,8 @@ public class BookLoanExtensionService implements ExtendBookLoanUseCase {
         Book book = retrieveBookPort.findByIdOrThrow(requestDto.getBookId());
 
         book.validateCurrentBorrower(currentMemberId);
-        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByBookAndReturnedAtIsNullAndStatusOrThrow(book, BookLoanStatus.APPROVED);
+        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByBookIdAndReturnedAtIsNullAndStatusOrThrow(book.getId(), BookLoanStatus.APPROVED);
         bookLoanRecord.extendLoan(borrowerInfo);
-        validationService.checkValid(bookLoanRecord);
 
         notificationService.sendNotificationToMember(currentMemberId, "[" + book.getTitle() + "] 도서 대출 연장이 완료되었습니다.");
 

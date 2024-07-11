@@ -16,7 +16,6 @@ import page.clab.api.domain.member.application.dto.shared.MemberBorrowerInfoDto;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.member.application.port.in.UpdateMemberUseCase;
 import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
-import page.clab.api.global.validation.ValidationService;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +28,6 @@ public class BookReturnService implements ReturnBookUseCase {
     private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final UpdateMemberUseCase updateMemberUseCase;
     private final SendNotificationUseCase notificationService;
-    private final ValidationService validationService;
 
     @Transactional
     @Override
@@ -40,9 +38,8 @@ public class BookReturnService implements ReturnBookUseCase {
         book.returnBook(currentMemberId);
         registerBookPort.save(book);
 
-        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByBookAndReturnedAtIsNullAndStatusOrThrow(book, BookLoanStatus.APPROVED);
+        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByBookIdAndReturnedAtIsNullAndStatusOrThrow(book.getId(), BookLoanStatus.APPROVED);
         bookLoanRecord.markAsReturned(borrowerInfo);
-        validationService.checkValid(bookLoanRecord);
 
         updateMemberUseCase.updateLoanSuspensionDate(borrowerInfo.getMemberId(), borrowerInfo.getLoanSuspensionDate());
 

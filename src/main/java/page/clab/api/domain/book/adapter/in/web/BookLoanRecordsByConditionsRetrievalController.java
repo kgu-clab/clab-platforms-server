@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.book.adapter.out.persistence.BookLoanRecordJpaEntity;
 import page.clab.api.domain.book.application.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.domain.book.application.port.in.RetrieveBookLoanRecordsByConditionsUseCase;
-import page.clab.api.domain.book.domain.BookLoanRecord;
 import page.clab.api.domain.book.domain.BookLoanStatus;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -44,7 +44,7 @@ public class BookLoanRecordsByConditionsRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "borrowedAt, createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc, asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, BookLoanRecord.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, BookLoanRecordJpaEntity.class);
         PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords =
                 retrieveBookLoanRecordsByConditionsUseCase.retrieveBookLoanRecords(bookId, borrowerId, status, pageable);
         return ApiResponse.success(bookLoanRecords);
