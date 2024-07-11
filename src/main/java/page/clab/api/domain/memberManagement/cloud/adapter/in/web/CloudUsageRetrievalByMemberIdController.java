@@ -1,4 +1,4 @@
-package page.clab.api.domain.memberManagement.member.adapter.in.web;
+package page.clab.api.domain.memberManagement.cloud.adapter.in.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -8,15 +8,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.memberManagement.member.application.dto.response.CloudUsageInfo;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveCloudUsageByMemberIdUseCase;
+import page.clab.api.domain.memberManagement.cloud.application.dto.response.CloudUsageInfo;
+import page.clab.api.domain.memberManagement.cloud.application.port.in.RetrieveCloudUsageByMemberIdUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
-@RequestMapping("/api/v1/member-clouds")
+@RequestMapping("/api/v1/clouds")
 @RequiredArgsConstructor
-@Tag(name = "Member Management - Cloud", description = "멤버 클라우드 관련 API")
+@Tag(name = "Member Management - Cloud", description = "클라우드 관련 API")
 public class CloudUsageRetrievalByMemberIdController {
 
     private final RetrieveCloudUsageByMemberIdUseCase retrieveCloudUsageByMemberIdUseCase;

@@ -1,4 +1,4 @@
-package page.clab.api.domain.memberManagement.member.application.port.in;
+package page.clab.api.domain.memberManagement.cloud.application.port.in;
 
 import org.springframework.data.domain.Pageable;
 import page.clab.api.global.common.dto.PagedResponseDto;

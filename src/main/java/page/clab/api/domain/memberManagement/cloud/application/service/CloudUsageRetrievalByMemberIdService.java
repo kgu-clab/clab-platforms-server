@@ -1,11 +1,11 @@
-package page.clab.api.domain.memberManagement.member.application.service;
+package page.clab.api.domain.memberManagement.cloud.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.memberManagement.member.application.dto.response.CloudUsageInfo;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveCloudUsageByMemberIdUseCase;
+import page.clab.api.domain.memberManagement.cloud.application.dto.response.CloudUsageInfo;
+import page.clab.api.domain.memberManagement.cloud.application.port.in.RetrieveCloudUsageByMemberIdUseCase;
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.memberManagement.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;

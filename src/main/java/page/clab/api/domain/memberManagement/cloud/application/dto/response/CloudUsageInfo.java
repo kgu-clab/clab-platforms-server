@@ -1,4 +1,4 @@
-package page.clab.api.domain.memberManagement.member.application.dto.response;
+package page.clab.api.domain.memberManagement.cloud.application.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;

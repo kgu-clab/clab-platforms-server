@@ -1,4 +1,4 @@
-package page.clab.api.domain.memberManagement.member.adapter.in.web;
+package page.clab.api.domain.memberManagement.cloud.adapter.in.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveFilesInMemberDirectoryUseCase;
+import page.clab.api.domain.memberManagement.cloud.application.port.in.RetrieveFilesInMemberDirectoryUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.dto.response.FileInfo;
 
 @RestController
-@RequestMapping("/api/v1/member-clouds")
+@RequestMapping("/api/v1/clouds")
 @RequiredArgsConstructor
-@Tag(name = "Member Management - Cloud", description = "멤버 클라우드 관련 API")
+@Tag(name = "Member Management - Cloud", description = "클라우드 관련 API")
 public class FilesInMemberDirectoryRetrievalController {
 
     private final RetrieveFilesInMemberDirectoryUseCase retrieveFilesInMemberDirectoryUseCase;
