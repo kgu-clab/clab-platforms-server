@@ -20,7 +20,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
-import page.clab.api.domain.blacklistIp.adapter.out.persistence.BlacklistIpRepository;
+import page.clab.api.domain.blacklistIp.application.port.out.RegisterBlacklistIpPort;
+import page.clab.api.domain.blacklistIp.application.port.out.RetrieveBlacklistIpPort;
 import page.clab.api.domain.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.application.WhitelistService;
@@ -46,7 +47,8 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final ManageRedisTokenUseCase manageRedisTokenUseCase;
     private final RedisIpAccessMonitorService redisIpAccessMonitorService;
-    private final BlacklistIpRepository blacklistIpRepository;
+    private final RegisterBlacklistIpPort registerBlacklistIpPort;
+    private final RetrieveBlacklistIpPort retrieveBlacklistIpPort;
     private final SlackService slackService;
     private final WhitelistService whitelistService;
     private final CorsConfigurationSource corsConfigurationSource;
@@ -80,15 +82,15 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new InvalidEndpointAccessFilter(blacklistIpRepository, slackService, fileURL),
+                        new InvalidEndpointAccessFilter(registerBlacklistIpPort, retrieveBlacklistIpPort, slackService, fileURL),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository, whitelistService, slackService),
+                        new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, retrieveBlacklistIpPort, whitelistService, slackService),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new JwtAuthenticationFilter(jwtTokenProvider, manageRedisTokenUseCase, redisIpAccessMonitorService, slackService, blacklistIpRepository),
+                        new JwtAuthenticationFilter(jwtTokenProvider, manageRedisTokenUseCase, redisIpAccessMonitorService, slackService, retrieveBlacklistIpPort),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->

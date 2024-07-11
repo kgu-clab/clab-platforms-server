@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
-import page.clab.api.domain.blacklistIp.adapter.out.persistence.BlacklistIpRepository;
+import page.clab.api.domain.blacklistIp.application.port.out.RetrieveBlacklistIpPort;
 import page.clab.api.domain.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.domain.login.domain.RedisToken;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
@@ -32,7 +32,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     private final ManageRedisTokenUseCase manageRedisTokenUseCase;
     private final RedisIpAccessMonitorService redisIpAccessMonitorService;
     private final SlackService slackService;
-    private final BlacklistIpRepository blacklistIpRepository;
+    private final RetrieveBlacklistIpPort retrieveBlacklistIpPort;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     }
 
     private boolean verifyIpAddressAccess(HttpServletResponse response, String clientIpAddress) throws IOException {
-        if (blacklistIpRepository.existsByIpAddress(clientIpAddress) || redisIpAccessMonitorService.isBlocked(clientIpAddress)) {
+        if (retrieveBlacklistIpPort.existsByIpAddress(clientIpAddress) || redisIpAccessMonitorService.isBlocked(clientIpAddress)) {
             log.info("[{}] : 서비스 이용이 제한된 IP입니다.", clientIpAddress);
             ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
             return false;

@@ -21,26 +21,37 @@ public class BlacklistIpPersistenceAdapter implements
         RemoveBlacklistIpPort {
 
     private final BlacklistIpRepository blacklistIpRepository;
+    private final BlacklistIpMapper blacklistIpMapper;
 
     @Override
     public BlacklistIp save(BlacklistIp blacklistIp) {
-        return blacklistIpRepository.save(blacklistIp);
+        BlacklistIpJpaEntity entity = blacklistIpMapper.toJpaEntity(blacklistIp);
+        BlacklistIpJpaEntity savedEntity = blacklistIpRepository.save(entity);
+        return blacklistIpMapper.toDomain(savedEntity);
     }
 
     @Override
     public Optional<BlacklistIp> findByIpAddress(String ipAddress) {
-        return blacklistIpRepository.findByIpAddress(ipAddress);
+        return blacklistIpRepository.findByIpAddress(ipAddress)
+                .map(blacklistIpMapper::toDomain);
     }
 
     @Override
     public BlacklistIp findByIpAddressOrThrow(String ipAddress) {
         return blacklistIpRepository.findByIpAddress(ipAddress)
+                .map(blacklistIpMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[BlacklistIp] IP: " + ipAddress + "에 해당하는 블랙리스트 IP가 존재하지 않습니다."));
     }
 
     @Override
+    public boolean existsByIpAddress(String clientIpAddress) {
+        return blacklistIpRepository.existsByIpAddress(clientIpAddress);
+    }
+
+    @Override
     public void delete(BlacklistIp blacklistIp) {
-        blacklistIpRepository.delete(blacklistIp);
+        BlacklistIpJpaEntity entity = blacklistIpMapper.toJpaEntity(blacklistIp);
+        blacklistIpRepository.delete(entity);
     }
 
     @Override
@@ -50,11 +61,14 @@ public class BlacklistIpPersistenceAdapter implements
 
     @Override
     public List<BlacklistIp> findAll() {
-        return blacklistIpRepository.findAll();
+        return blacklistIpRepository.findAll().stream()
+                .map(blacklistIpMapper::toDomain)
+                .toList();
     }
 
     @Override
     public Page<BlacklistIp> findAll(Pageable pageable) {
-        return blacklistIpRepository.findAll(pageable);
+        return blacklistIpRepository.findAll(pageable)
+                .map(blacklistIpMapper::toDomain);
     }
 }

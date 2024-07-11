@@ -11,7 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
-import page.clab.api.domain.blacklistIp.adapter.out.persistence.BlacklistIpRepository;
+import page.clab.api.domain.blacklistIp.application.port.out.RegisterBlacklistIpPort;
+import page.clab.api.domain.blacklistIp.application.port.out.RetrieveBlacklistIpPort;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
@@ -25,10 +26,9 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class InvalidEndpointAccessFilter extends GenericFilterBean {
 
-    private final BlacklistIpRepository blacklistIpRepository;
-
+    private final RegisterBlacklistIpPort registerBlacklistIpPort;
+    private final RetrieveBlacklistIpPort retrieveBlacklistIpPort;
     private final SlackService slackService;
-
     private final String fileURL;
 
     @Override
@@ -57,8 +57,8 @@ public class InvalidEndpointAccessFilter extends GenericFilterBean {
         log.info("[{}:{}] {} {} {} {}", clientIpAddress, id, requestUrl, httpMethod, httpStatus, message);
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS, message);
 
-        if (!blacklistIpRepository.existsByIpAddress(clientIpAddress)) {
-            blacklistIpRepository.save(
+        if (!retrieveBlacklistIpPort.existsByIpAddress(clientIpAddress)) {
+            registerBlacklistIpPort.save(
                     BlacklistIp.create(clientIpAddress, "서버 내부 파일 및 디렉토리에 대한 접근 시도")
             );
             slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Added IP: " + clientIpAddress);

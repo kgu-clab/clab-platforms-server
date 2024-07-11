@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.blacklistIp.adapter.out.persistence.BlacklistIpJpaEntity;
 import page.clab.api.domain.blacklistIp.application.port.in.RetrieveBlacklistIpsUseCase;
 import page.clab.api.domain.blacklistIp.domain.BlacklistIp;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -37,7 +38,7 @@ public class BlacklistIpRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, BlacklistIp.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, BlacklistIpJpaEntity.class);
         PagedResponseDto<BlacklistIp> blacklistedIps = retrieveBlacklistIpsUseCase.retrieveBlacklistIps(pageable);
         return ApiResponse.success(blacklistedIps);
     }

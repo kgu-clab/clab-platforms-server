@@ -12,7 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import page.clab.api.domain.blacklistIp.adapter.out.persistence.BlacklistIpRepository;
+import page.clab.api.domain.blacklistIp.application.port.out.RetrieveBlacklistIpPort;
 import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
 import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.common.slack.application.SlackService;
@@ -29,20 +29,20 @@ import java.util.List;
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final RedisIpAccessMonitorService redisIpAccessMonitorService;
-    private final BlacklistIpRepository blacklistIpRepository;
+    private final RetrieveBlacklistIpPort retrieveBlacklistIpPort;
     private final WhitelistService whitelistService;
     private final SlackService slackService;
 
     public CustomBasicAuthenticationFilter(
             AuthenticationManager authenticationManager,
             RedisIpAccessMonitorService redisIpAccessMonitorService,
-            BlacklistIpRepository blacklistIpRepository,
+            RetrieveBlacklistIpPort retrieveBlacklistIpPort,
             WhitelistService whitelistService,
             SlackService slackService
     ) {
         super(authenticationManager);
         this.redisIpAccessMonitorService = redisIpAccessMonitorService;
-        this.blacklistIpRepository = blacklistIpRepository;
+        this.retrieveBlacklistIpPort = retrieveBlacklistIpPort;
         this.whitelistService = whitelistService;
         this.slackService = slackService;
     }
@@ -95,7 +95,7 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         List<String> whitelistIps = whitelistService.loadWhitelistIps();
         if (!(whitelistIps.contains(clientIpAddress) || whitelistIps.contains("*")) ||
-                blacklistIpRepository.existsByIpAddress(clientIpAddress) ||
+                retrieveBlacklistIpPort.existsByIpAddress(clientIpAddress) ||
                 redisIpAccessMonitorService.isBlocked(clientIpAddress)
         ) {
             log.info("[{}] : 정책에 의해 차단된 IP입니다.", clientIpAddress);
