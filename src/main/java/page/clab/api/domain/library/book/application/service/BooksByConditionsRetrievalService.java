@@ -13,8 +13,8 @@ import page.clab.api.domain.library.book.domain.Book;
 import page.clab.api.domain.library.bookLoanRecord.application.port.out.RetrieveBookLoanRecordPort;
 import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanRecord;
 import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanStatus;
-import page.clab.api.domain.member.application.dto.shared.MemberBasicInfoDto;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 import java.time.LocalDateTime;

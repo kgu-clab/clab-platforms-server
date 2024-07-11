@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.blog.domain.Blog;
-import page.clab.api.domain.member.application.dto.shared.MemberBasicInfoDto;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 
 import java.time.LocalDateTime;
 

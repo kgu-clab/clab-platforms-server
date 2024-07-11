@@ -11,9 +11,9 @@ import page.clab.api.domain.login.application.port.in.ManageAccountLockUseCase;
 import page.clab.api.domain.login.application.port.out.RegisterAccountLockInfoPort;
 import page.clab.api.domain.login.application.port.out.RetrieveAccountLockInfoPort;
 import page.clab.api.domain.login.domain.AccountLockInfo;
-import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 

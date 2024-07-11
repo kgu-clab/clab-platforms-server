@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.review.domain.Review;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.domain.Member;
 
 import java.time.LocalDateTime;
 

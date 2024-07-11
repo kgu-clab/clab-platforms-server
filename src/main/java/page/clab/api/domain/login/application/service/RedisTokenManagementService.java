@@ -8,7 +8,7 @@ import page.clab.api.domain.login.application.port.out.RegisterRedisTokenPort;
 import page.clab.api.domain.login.application.port.out.RemoveRedisTokenPort;
 import page.clab.api.domain.login.application.port.out.RetrieveRedisTokenPort;
 import page.clab.api.domain.login.domain.RedisToken;
-import page.clab.api.domain.member.domain.Role;
+import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.global.auth.exception.TokenNotFoundException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 

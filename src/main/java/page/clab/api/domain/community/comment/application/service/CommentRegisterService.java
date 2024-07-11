@@ -12,7 +12,7 @@ import page.clab.api.domain.community.comment.application.port.in.RegisterCommen
 import page.clab.api.domain.community.comment.application.port.out.RegisterCommentPort;
 import page.clab.api.domain.community.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.community.comment.domain.Comment;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
 
 @Service

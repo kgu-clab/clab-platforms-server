@@ -8,8 +8,8 @@ import page.clab.api.domain.activity.activitygroup.application.ActivityGroupMemb
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
-import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.schedule.application.dto.request.ScheduleRequestDto;
 import page.clab.api.domain.schedule.application.port.in.RegisterScheduleUseCase;
 import page.clab.api.domain.schedule.application.port.out.RegisterSchedulePort;

@@ -7,7 +7,7 @@ import lombok.Setter;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoardCategory;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.file.domain.UploadedFile;
 
 import java.time.LocalDateTime;

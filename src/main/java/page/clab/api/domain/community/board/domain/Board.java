@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.community.board.application.dto.request.BoardUpdateRequestDto;
-import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.PermissionDeniedException;
 

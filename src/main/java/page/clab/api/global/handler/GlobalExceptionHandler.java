@@ -45,9 +45,9 @@ import page.clab.api.domain.library.bookLoanRecord.application.exception.MaxBorr
 import page.clab.api.domain.library.bookLoanRecord.application.exception.OverdueException;
 import page.clab.api.domain.login.application.exception.LoginFailedException;
 import page.clab.api.domain.login.application.exception.MemberLockedException;
-import page.clab.api.domain.member.application.exception.DuplicateMemberContactException;
-import page.clab.api.domain.member.application.exception.DuplicateMemberEmailException;
-import page.clab.api.domain.member.application.exception.DuplicateMemberIdException;
+import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberContactException;
+import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberEmailException;
+import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberIdException;
 import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;

@@ -1,0 +1,32 @@
+package page.clab.api.domain.memberManagement.position.application.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.memberManagement.member.application.port.in.EnsureMemberExistenceUseCase;
+import page.clab.api.domain.memberManagement.position.application.dto.request.PositionRequestDto;
+import page.clab.api.domain.memberManagement.position.application.port.in.RegisterPositionUseCase;
+import page.clab.api.domain.memberManagement.position.application.port.out.RegisterPositionPort;
+import page.clab.api.domain.memberManagement.position.application.port.out.RetrievePositionPort;
+import page.clab.api.domain.memberManagement.position.domain.Position;
+
+@Service
+@RequiredArgsConstructor
+public class PositionRegisterService implements RegisterPositionUseCase {
+
+    private final EnsureMemberExistenceUseCase ensureMemberExistenceUseCase;
+    private final RegisterPositionPort registerPositionPort;
+    private final RetrievePositionPort retrievePositionPort;
+
+    @Transactional
+    public Long registerPosition(PositionRequestDto requestDto) {
+        ensureMemberExistenceUseCase.ensureMemberExists(requestDto.getMemberId());
+        return retrievePositionPort.findByMemberIdAndYearAndPositionType(
+                        requestDto.getMemberId(), requestDto.getYear(), requestDto.getPositionType())
+                .map(Position::getId)
+                .orElseGet(() -> {
+                    Position position = PositionRequestDto.toEntity(requestDto);
+                    return registerPositionPort.save(position).getId();
+                });
+    }
+}

@@ -5,12 +5,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.domain.membershipFee.application.dto.response.MembershipFeeResponseDto;
 import page.clab.api.domain.membershipFee.application.port.in.RetrieveDeletedMembershipFeesUseCase;
 import page.clab.api.domain.membershipFee.application.port.out.RetrieveMembershipFeePort;
 import page.clab.api.domain.membershipFee.domain.MembershipFee;
-import page.clab.api.domain.membershipFee.application.dto.response.MembershipFeeResponseDto;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

@@ -10,7 +10,7 @@ import page.clab.api.domain.library.bookLoanRecord.application.exception.BookAlr
 import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanNotPendingException;
 import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanSuspensionException;
 import page.clab.api.domain.library.bookLoanRecord.application.exception.OverdueException;
-import page.clab.api.domain.member.application.dto.shared.MemberBorrowerInfoDto;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBorrowerInfoDto;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

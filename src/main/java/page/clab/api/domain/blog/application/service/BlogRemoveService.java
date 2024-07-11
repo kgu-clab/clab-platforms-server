@@ -7,8 +7,8 @@ import page.clab.api.domain.blog.application.port.in.RemoveBlogUseCase;
 import page.clab.api.domain.blog.application.port.out.RegisterBlogPort;
 import page.clab.api.domain.blog.application.port.out.RetrieveBlogPort;
 import page.clab.api.domain.blog.domain.Blog;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service

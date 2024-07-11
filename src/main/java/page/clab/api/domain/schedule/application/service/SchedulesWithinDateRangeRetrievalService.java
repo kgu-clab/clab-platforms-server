@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activity.activitygroup.application.ActivityGroupMemberService;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.schedule.application.dto.response.ScheduleResponseDto;
 import page.clab.api.domain.schedule.application.port.in.RetrieveSchedulesWithinDateRangeUseCase;
 import page.clab.api.domain.schedule.application.port.out.RetrieveSchedulePort;

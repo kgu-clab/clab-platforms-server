@@ -11,7 +11,7 @@ import page.clab.api.domain.library.bookLoanRecord.application.port.in.ApproveBo
 import page.clab.api.domain.library.bookLoanRecord.application.port.out.RegisterBookLoanRecordPort;
 import page.clab.api.domain.library.bookLoanRecord.application.port.out.RetrieveBookLoanRecordPort;
 import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanRecord;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 
 @Service
 @RequiredArgsConstructor

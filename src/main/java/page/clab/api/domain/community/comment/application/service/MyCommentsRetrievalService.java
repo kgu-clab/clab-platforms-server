@@ -12,9 +12,9 @@ import page.clab.api.domain.community.comment.application.dto.response.CommentMy
 import page.clab.api.domain.community.comment.application.port.in.RetrieveMyCommentsUseCase;
 import page.clab.api.domain.community.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.community.comment.domain.Comment;
-import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 import java.util.List;

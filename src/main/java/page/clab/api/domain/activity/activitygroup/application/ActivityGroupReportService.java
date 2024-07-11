@@ -14,8 +14,8 @@ import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupRepo
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupReportUpdateRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupReportResponseDto;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateReportException;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;

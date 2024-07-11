@@ -22,9 +22,9 @@ import page.clab.api.domain.login.application.port.in.ManageLoginAttemptLogUseCa
 import page.clab.api.domain.login.application.port.in.ManageLoginUseCase;
 import page.clab.api.domain.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.domain.login.domain.LoginAttemptResult;
-import page.clab.api.domain.member.application.dto.shared.MemberLoginInfoDto;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.member.application.port.in.UpdateMemberUseCase;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.domain.memberManagement.member.application.port.in.UpdateMemberUseCase;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.util.HttpReqResUtil;
 

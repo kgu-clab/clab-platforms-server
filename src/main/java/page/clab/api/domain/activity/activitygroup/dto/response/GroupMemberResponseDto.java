@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.domain.Member;
 
 @Getter
 @Builder

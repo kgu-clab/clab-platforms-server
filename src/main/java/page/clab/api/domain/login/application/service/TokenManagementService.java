@@ -16,7 +16,7 @@ import page.clab.api.domain.login.application.exception.MemberLockedException;
 import page.clab.api.domain.login.application.port.in.ManageLoginUseCase;
 import page.clab.api.domain.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.domain.login.domain.RedisToken;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;

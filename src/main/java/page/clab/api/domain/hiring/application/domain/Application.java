@@ -6,9 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.domain.Role;
-import page.clab.api.domain.member.domain.StudentStatus;
+import page.clab.api.domain.memberManagement.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.domain.Role;
+import page.clab.api.domain.memberManagement.member.domain.StudentStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

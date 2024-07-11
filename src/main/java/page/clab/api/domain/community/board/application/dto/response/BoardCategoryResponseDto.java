@@ -3,7 +3,7 @@ package page.clab.api.domain.community.board.application.dto.response;
 import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.community.board.domain.Board;
-import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 
 import java.time.LocalDateTime;
 

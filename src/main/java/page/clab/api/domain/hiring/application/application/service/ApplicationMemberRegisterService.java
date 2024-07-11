@@ -9,13 +9,13 @@ import page.clab.api.domain.hiring.application.application.exception.NotApproved
 import page.clab.api.domain.hiring.application.application.port.in.RegisterMembersByRecruitmentUseCase;
 import page.clab.api.domain.hiring.application.application.port.out.RetrieveApplicationPort;
 import page.clab.api.domain.hiring.application.domain.Application;
-import page.clab.api.domain.member.application.port.out.RegisterMemberPort;
-import page.clab.api.domain.member.application.port.out.RetrieveMemberPort;
-import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.position.application.port.out.RegisterPositionPort;
-import page.clab.api.domain.position.application.port.out.RetrievePositionPort;
-import page.clab.api.domain.position.domain.Position;
-import page.clab.api.domain.position.domain.PositionType;
+import page.clab.api.domain.memberManagement.member.application.port.out.RegisterMemberPort;
+import page.clab.api.domain.memberManagement.member.application.port.out.RetrieveMemberPort;
+import page.clab.api.domain.memberManagement.member.domain.Member;
+import page.clab.api.domain.memberManagement.position.application.port.out.RegisterPositionPort;
+import page.clab.api.domain.memberManagement.position.application.port.out.RetrievePositionPort;
+import page.clab.api.domain.memberManagement.position.domain.Position;
+import page.clab.api.domain.memberManagement.position.domain.PositionType;
 import page.clab.api.global.common.email.application.EmailService;
 import page.clab.api.global.common.verification.application.VerificationService;
 
@@ -88,7 +88,7 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
 
     public void createPositionByMember(Member member) {
         if (retrievePositionPort.findByMemberIdAndYearAndPositionType
-                (member.getId(), String.valueOf(LocalDate.now().getYear()),PositionType.MEMBER).isPresent()) {
+                (member.getId(), String.valueOf(LocalDate.now().getYear()), PositionType.MEMBER).isPresent()) {
             return;
         }
         Position position = Position.create(member.getId());

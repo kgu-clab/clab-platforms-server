@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
-import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.exception.InvalidDateRangeException;
 import page.clab.api.global.exception.PermissionDeniedException;
 

@@ -5,8 +5,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import page.clab.api.domain.member.application.port.out.RetrieveMemberPort;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.application.port.out.RetrieveMemberPort;
+import page.clab.api.domain.memberManagement.member.domain.Member;
 
 @Service
 @RequiredArgsConstructor

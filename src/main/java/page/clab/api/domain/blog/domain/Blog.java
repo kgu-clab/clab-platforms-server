@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.blog.application.dto.request.BlogUpdateRequestDto;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.time.LocalDateTime;

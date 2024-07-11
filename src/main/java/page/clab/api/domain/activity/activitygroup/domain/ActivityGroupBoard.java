@@ -21,7 +21,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoardUpdateRequestDto;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;

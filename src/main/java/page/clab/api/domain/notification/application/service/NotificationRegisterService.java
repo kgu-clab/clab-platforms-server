@@ -3,7 +3,7 @@ package page.clab.api.domain.notification.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.EnsureMemberExistenceUseCase;
+import page.clab.api.domain.memberManagement.member.application.port.in.EnsureMemberExistenceUseCase;
 import page.clab.api.domain.notification.application.dto.request.NotificationRequestDto;
 import page.clab.api.domain.notification.application.port.in.RegisterNotificationUseCase;
 import page.clab.api.domain.notification.application.port.out.RegisterNotificationPort;

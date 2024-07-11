@@ -10,7 +10,7 @@ import page.clab.api.domain.community.comment.application.port.out.RetrieveComme
 import page.clab.api.domain.community.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.community.comment.domain.Comment;
 import page.clab.api.domain.community.comment.domain.CommentLike;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 
 @Service
 @RequiredArgsConstructor

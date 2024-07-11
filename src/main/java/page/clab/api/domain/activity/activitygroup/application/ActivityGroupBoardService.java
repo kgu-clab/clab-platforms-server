@@ -21,8 +21,8 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoa
 import page.clab.api.domain.activity.activitygroup.dto.response.AssignmentSubmissionWithFeedbackResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.FeedbackResponseDto;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.UploadedFileService;

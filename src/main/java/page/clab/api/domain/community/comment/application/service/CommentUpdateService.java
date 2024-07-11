@@ -8,7 +8,7 @@ import page.clab.api.domain.community.comment.application.port.in.UpdateCommentU
 import page.clab.api.domain.community.comment.application.port.out.RegisterCommentPort;
 import page.clab.api.domain.community.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.community.comment.domain.Comment;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service

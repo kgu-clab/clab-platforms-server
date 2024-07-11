@@ -10,8 +10,8 @@ import page.clab.api.domain.community.board.application.port.in.UpdateBoardUseCa
 import page.clab.api.domain.community.board.application.port.out.RegisterBoardPort;
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
-import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service

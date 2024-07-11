@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.accuse.application.port.out.RegisterAccusePort;
 import page.clab.api.domain.community.accuse.application.port.out.RetrieveAccusePort;
 import page.clab.api.domain.community.accuse.domain.Accuse;
-import page.clab.api.domain.member.application.event.MemberEventProcessor;
-import page.clab.api.domain.member.application.event.MemberEventProcessorRegistry;
+import page.clab.api.domain.memberManagement.member.application.event.MemberEventProcessor;
+import page.clab.api.domain.memberManagement.member.application.event.MemberEventProcessorRegistry;
 
 import java.util.List;
 

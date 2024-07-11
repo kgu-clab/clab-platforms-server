@@ -23,8 +23,8 @@ import page.clab.api.domain.activity.activitygroup.dto.response.AbsentResponseDt
 import page.clab.api.domain.activity.activitygroup.dto.response.AttendanceResponseDto;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAttendanceException;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.exception.InvalidInformationException;
@@ -52,6 +52,18 @@ public class AttendanceService {
     private final GoogleAuthenticator googleAuthenticator;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    @NotNull
+    private static String buildPathForQRCode(ActivityGroup activityGroup) {
+        return "attendance" + File.separator
+                + activityGroup.getCategory().toString() + File.separator
+                + activityGroup.getId().toString();
+    }
+
+    @NotNull
+    private static String generateQRCodeURL(Long activityGroupId, String secretKey) {
+        return "clab.page/attendance?activityGroupId=" + activityGroupId.toString() + "&secretKey=" + secretKey;
+    }
 
     @Transactional
     public String generateAttendanceQRCode(Long activityGroupId) throws IOException, WriterException, PermissionDeniedException, IllegalAccessException {
@@ -150,18 +162,6 @@ public class AttendanceService {
             throw new IllegalAccessException("활동이 진행 중인 그룹이 아닙니다. 출석 QR 코드를 생성할 수 없습니다.");
         }
         return activityGroup;
-    }
-
-    @NotNull
-    private static String buildPathForQRCode(ActivityGroup activityGroup) {
-        return "attendance" + File.separator
-                + activityGroup.getCategory().toString() + File.separator
-                + activityGroup.getId().toString();
-    }
-
-    @NotNull
-    private static String generateQRCodeURL(Long activityGroupId, String secretKey) {
-        return "clab.page/attendance?activityGroupId=" + activityGroupId.toString() + "&secretKey=" + secretKey;
     }
 
     private ActivityGroup validateMemberForAttendance(Member member, Long activityGroupId) throws IllegalAccessException, DuplicateAttendanceException {

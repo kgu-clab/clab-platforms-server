@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.community.comment.domain.Comment;
-import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 
 import java.time.LocalDateTime;
 

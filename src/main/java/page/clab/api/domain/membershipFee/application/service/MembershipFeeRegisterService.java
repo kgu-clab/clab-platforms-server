@@ -3,7 +3,7 @@ package page.clab.api.domain.membershipFee.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.membershipFee.application.dto.request.MembershipFeeRequestDto;
 import page.clab.api.domain.membershipFee.application.port.in.RegisterMembershipFeeUseCase;
 import page.clab.api.domain.membershipFee.application.port.out.RegisterMembershipFeePort;

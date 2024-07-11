@@ -12,7 +12,7 @@ import page.clab.api.domain.library.book.adapter.out.persistence.QBookJpaEntity;
 import page.clab.api.domain.library.bookLoanRecord.application.dto.response.BookLoanRecordOverdueResponseDto;
 import page.clab.api.domain.library.bookLoanRecord.application.dto.response.BookLoanRecordResponseDto;
 import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanStatus;
-import page.clab.api.domain.member.adapter.out.persistence.QMemberJpaEntity;
+import page.clab.api.domain.memberManagement.member.adapter.out.persistence.QMemberJpaEntity;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.time.LocalDateTime;

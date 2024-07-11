@@ -31,8 +31,8 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupStu
 import page.clab.api.domain.activity.activitygroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidCategoryException;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;

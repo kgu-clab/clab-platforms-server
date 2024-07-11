@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import page.clab.api.domain.member.adapter.out.persistence.QMemberJpaEntity;
+import page.clab.api.domain.memberManagement.member.adapter.out.persistence.QMemberJpaEntity;
 import page.clab.api.domain.membershipFee.domain.MembershipFeeStatus;
 import page.clab.api.global.util.OrderSpecifierUtil;
 

@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ApplyForm;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.domain.Member;
 
 @Getter
 @Setter

@@ -9,8 +9,8 @@ import page.clab.api.domain.activity.review.application.dto.response.ReviewRespo
 import page.clab.api.domain.activity.review.application.port.in.RetrieveDeletedReviewsUseCase;
 import page.clab.api.domain.activity.review.application.port.out.RetrieveReviewPort;
 import page.clab.api.domain.activity.review.domain.Review;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service

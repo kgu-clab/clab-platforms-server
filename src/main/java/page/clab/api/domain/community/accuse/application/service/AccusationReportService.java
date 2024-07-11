@@ -18,7 +18,7 @@ import page.clab.api.domain.community.board.application.port.in.RetrieveBoardsUs
 import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.community.comment.application.port.in.RetrieveCommentsUseCase;
 import page.clab.api.domain.community.comment.domain.Comment;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.notification.application.port.in.SendNotificationUseCase;
 
 @Service
