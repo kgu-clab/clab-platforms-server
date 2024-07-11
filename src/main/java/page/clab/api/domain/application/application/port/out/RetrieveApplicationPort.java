@@ -19,5 +19,5 @@ public interface RetrieveApplicationPort {
 
     List<Application> findByRecruitmentIdAndIsPass(Long recruitmentId, boolean isPass);
 
-    Optional<Application> findByRecruitmentIdAndStudentId(Long recruitmentId, String memberId);
+    Application findByRecruitmentIdAndStudentIdOrThrow(Long recruitmentId, String studentId);
 }

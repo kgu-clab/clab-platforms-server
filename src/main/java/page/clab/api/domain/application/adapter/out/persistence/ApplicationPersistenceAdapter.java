@@ -69,8 +69,9 @@ public class ApplicationPersistenceAdapter implements
     }
 
     @Override
-    public Optional<Application> findByRecruitmentIdAndStudentId(Long recruitmentId, String studentId) {
+    public Application findByRecruitmentIdAndStudentIdOrThrow(Long recruitmentId, String studentId) {
         return applicationRepository.findByRecruitmentIdAndStudentId(recruitmentId, studentId)
-                .map(applicationMapper::toDomain);
+                .map(applicationMapper::toDomain)
+                .orElseThrow(() -> new NotFoundException("[Application] recruitmentId: " + recruitmentId + ", studentId: " + studentId + "에 해당하는 지원서가 존재하지 않습니다."));
     }
 }
