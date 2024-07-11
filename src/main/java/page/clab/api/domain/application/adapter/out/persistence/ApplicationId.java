@@ -1,4 +1,4 @@
-package page.clab.api.domain.application.domain;
+package page.clab.api.domain.application.adapter.out.persistence;
 
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;

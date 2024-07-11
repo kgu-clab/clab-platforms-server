@@ -10,11 +10,8 @@ import page.clab.api.domain.application.domain.ApplicationType;
 public class ApplicationPassResponseDto {
 
     private Long recruitmentId;
-
     private String name;
-
     private ApplicationType applicationType;
-
     private Boolean isPass;
 
     public static ApplicationPassResponseDto toDto(Application application) {

@@ -7,8 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import page.clab.api.domain.application.domain.Application;
-import page.clab.api.domain.application.domain.QApplication;
 import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
@@ -20,15 +18,15 @@ public class ApplicationRepositoryImpl implements ApplicationRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Application> findByConditions(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable) {
-        QApplication application = QApplication.application;
+    public Page<ApplicationJpaEntity> findByConditions(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable) {
+        QApplicationJpaEntity application = QApplicationJpaEntity.applicationJpaEntity;
         BooleanBuilder builder = new BooleanBuilder();
 
         if (recruitmentId != null) builder.and(application.recruitmentId.eq(recruitmentId));
         if (studentId != null && !studentId.isEmpty()) builder.and(application.studentId.eq(studentId));
         if (isPass != null) builder.and(application.isPass.eq(isPass));
 
-        List<Application> applications = queryFactory.selectFrom(application)
+        List<ApplicationJpaEntity> applications = queryFactory.selectFrom(application)
                 .where(builder.getValue())
                 .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, application))
                 .offset(pageable.getOffset())

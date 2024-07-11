@@ -13,35 +13,20 @@ import java.time.LocalDateTime;
 public class ApplicationResponseDto {
 
     private String studentId;
-
     private Long recruitmentId;
-
     private String name;
-
     private String contact;
-
     private String email;
-
     private String department;
-
     private Long grade;
-
     private LocalDate birth;
-
     private String address;
-
     private String interests;
-
     private String otherActivities;
-
     private String githubUrl;
-
     private ApplicationType applicationType;
-
     private Boolean isPass;
-
     private LocalDateTime updatedAt;
-
     private LocalDateTime createdAt;
 
     public static ApplicationResponseDto toDto(Application application) {
