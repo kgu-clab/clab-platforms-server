@@ -6,19 +6,21 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.global.common.domain.BaseEntity;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class AccuseTarget extends BaseEntity {
+public class AccuseTarget {
 
     private TargetType targetType;
     private Long targetReferenceId;
     private Long accuseCount;
     private AccuseStatus accuseStatus;
+    private LocalDateTime createdAt;
 
     public void increaseAccuseCount() {
         this.accuseCount++;

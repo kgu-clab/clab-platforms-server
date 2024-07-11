@@ -21,6 +21,7 @@ public class AccuseTargetMapper {
                 .targetReferenceId(entity.getTargetReferenceId())
                 .accuseCount(entity.getAccuseCount())
                 .accuseStatus(entity.getAccuseStatus())
+                .createdAt(entity.getCreatedAt())
                 .build();
     }
 }
