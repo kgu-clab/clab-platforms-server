@@ -7,8 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
-import page.clab.api.domain.activityPhoto.domain.QActivityPhoto;
 
 import java.util.List;
 
@@ -19,13 +17,13 @@ public class ActivityPhotoRepositoryImpl implements ActivityPhotoRepositoryCusto
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<ActivityPhoto> findByConditions(Boolean isPublic, Pageable pageable) {
-        QActivityPhoto activityPhoto = QActivityPhoto.activityPhoto;
+    public Page<ActivityPhotoJpaEntity> findByConditions(Boolean isPublic, Pageable pageable) {
+        QActivityPhotoJpaEntity activityPhoto = QActivityPhotoJpaEntity.activityPhotoJpaEntity;
         BooleanBuilder builder = new BooleanBuilder();
 
         if (isPublic != null) builder.and(activityPhoto.isPublic.eq(isPublic));
 
-        List<ActivityPhoto> photos = queryFactory.selectFrom(activityPhoto)
+        List<ActivityPhotoJpaEntity> photos = queryFactory.selectFrom(activityPhoto)
                 .where(builder)
                 .orderBy(activityPhoto.createdAt.desc())
                 .offset(pageable.getOffset())

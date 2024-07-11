@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.activityPhoto.adapter.out.persistence.ActivityPhotoJpaEntity;
 import page.clab.api.domain.activityPhoto.application.dto.response.ActivityPhotoResponseDto;
 import page.clab.api.domain.activityPhoto.application.port.in.RetrieveActivityPhotoUseCase;
-import page.clab.api.domain.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
@@ -38,7 +38,7 @@ public class ActivityPhotoRetrievalController {
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityPhoto.class);
+        Pageable pageable = PageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityPhotoJpaEntity.class);
         PagedResponseDto<ActivityPhotoResponseDto> activityPhotos = retrieveActivityPhotoUseCase.retrieveActivityPhotos(isPublic, pageable);
         return ApiResponse.success(activityPhotos);
     }

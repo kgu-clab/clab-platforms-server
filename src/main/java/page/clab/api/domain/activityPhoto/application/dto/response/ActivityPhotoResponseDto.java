@@ -13,13 +13,9 @@ import java.util.List;
 public class ActivityPhotoResponseDto {
 
     private Long id;
-
     private String title;
-
     private List<UploadedFileResponseDto> files;
-
     private LocalDate date;
-
     private Boolean isPublic;
 
     public static ActivityPhotoResponseDto toDto(ActivityPhoto activityPhoto) {

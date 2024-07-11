@@ -20,30 +20,37 @@ public class ActivityPhotoPersistenceAdapter implements
         RemoveActivityPhotoPort {
 
     private final ActivityPhotoRepository activityPhotoRepository;
+    private final ActivityPhotoMapper activityPhotoMapper;
 
     @Override
     public ActivityPhoto save(ActivityPhoto activityPhoto) {
-        return activityPhotoRepository.save(activityPhoto);
+        ActivityPhotoJpaEntity entity = activityPhotoMapper.toJpaEntity(activityPhoto);
+        ActivityPhotoJpaEntity savedEntity = activityPhotoRepository.save(entity);
+        return activityPhotoMapper.toDomain(savedEntity);
+    }
+
+    @Override
+    public void delete(ActivityPhoto activityPhoto) {
+        ActivityPhotoJpaEntity entity = activityPhotoMapper.toJpaEntity(activityPhoto);
+        activityPhotoRepository.delete(entity);
     }
 
     @Override
     public Optional<ActivityPhoto> findById(Long activityPhotoId) {
-        return activityPhotoRepository.findById(activityPhotoId);
+        return activityPhotoRepository.findById(activityPhotoId)
+                .map(activityPhotoMapper::toDomain);
     }
 
     @Override
     public ActivityPhoto findByIdOrThrow(Long activityPhotoId) {
         return activityPhotoRepository.findById(activityPhotoId)
+                .map(activityPhotoMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[ActivityPhoto] id: " + activityPhotoId + "에 해당하는 활동 사진이 존재하지 않습니다."));
     }
 
     @Override
     public Page<ActivityPhoto> findByConditions(Boolean isPublic, Pageable pageable) {
-        return activityPhotoRepository.findByConditions(isPublic, pageable);
-    }
-
-    @Override
-    public void delete(ActivityPhoto activityPhoto) {
-        activityPhotoRepository.delete(activityPhoto);
+        return activityPhotoRepository.findByConditions(isPublic, pageable)
+                .map(activityPhotoMapper::toDomain);
     }
 }
