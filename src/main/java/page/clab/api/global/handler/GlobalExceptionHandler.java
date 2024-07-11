@@ -33,6 +33,8 @@ import page.clab.api.domain.activity.activitygroup.exception.InvalidCategoryExce
 import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.activity.activitygroup.exception.LeaderStatusChangeNotAllowedException;
 import page.clab.api.domain.activity.review.application.exception.AlreadyReviewedException;
+import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
+import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.community.accuse.application.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.hiring.application.application.exception.NotApprovedApplicationException;
 import page.clab.api.domain.library.book.application.exception.BookAlreadyBorrowedException;
@@ -43,8 +45,6 @@ import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanNot
 import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanSuspensionException;
 import page.clab.api.domain.library.bookLoanRecord.application.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.library.bookLoanRecord.application.exception.OverdueException;
-import page.clab.api.domain.login.application.exception.LoginFailedException;
-import page.clab.api.domain.login.application.exception.MemberLockedException;
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberContactException;
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberEmailException;
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberIdException;

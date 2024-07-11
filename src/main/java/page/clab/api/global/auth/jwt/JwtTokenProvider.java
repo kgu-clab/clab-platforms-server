@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import page.clab.api.domain.login.application.dto.response.TokenInfo;
+import page.clab.api.domain.auth.login.application.dto.response.TokenInfo;
 import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.global.auth.exception.TokenValidateException;
 
