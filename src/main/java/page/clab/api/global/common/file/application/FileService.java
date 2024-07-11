@@ -9,7 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activityGroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activityGroup.dao.GroupMemberRepository;
+import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.member.application.port.in.RetrieveCloudUsageByMemberIdUseCase;
+import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.member.domain.Member;
 import page.clab.api.global.common.file.domain.UploadedFile;
@@ -36,6 +38,7 @@ public class FileService {
 
     private final FileHandler fileHandler;
     private final RetrieveMemberUseCase retrieveMemberUseCase;
+    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final RetrieveCloudUsageByMemberIdUseCase retrieveCloudUsageByMemberIdUseCase;
     private final UploadedFileService uploadedFileService;
     private final ActivityGroupRepository activityGroupRepository;
@@ -91,25 +94,27 @@ public class FileService {
     }
 
     public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) throws PermissionDeniedException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
         UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(deleteFileRequestDto.getUrl());
+
         String filePath = uploadedFile.getSavedPath();
         File storedFile = new File(filePath);
         if (!storedFile.exists()) {
             throw new NotFoundException("존재하지 않는 파일입니다.");
         }
-        uploadedFile.validateAccessPermission(currentMember);
+
+        uploadedFile.validateAccessPermission(currentMemberInfo);
         fileHandler.deleteFile(uploadedFile.getSavedPath());
         return uploadedFile.getUrl();
     }
 
     public String buildPath(String baseDirectory, Long... additionalSegments) {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
         StringBuilder pathBuilder = new StringBuilder(baseDirectory);
         for (Long segment : additionalSegments) {
             pathBuilder.append(File.separator).append(segment);
         }
-        pathBuilder.append(File.separator).append(currentMember.getId());
+        pathBuilder.append(File.separator).append(currentMemberId);
         return pathBuilder.toString();
     }
 
@@ -119,6 +124,7 @@ public class FileService {
             Long activityGroupBoardId = Long.parseLong(path.split(Pattern.quote(File.separator))[2]);
             String memberId = path.split(Pattern.quote(File.separator))[3];
             Optional<Member> assignmentWriterOpt = retrieveMemberUseCase.findById(memberId);
+
             if (!activityGroupRepository.existsById(activityGroupId)) {
                 throw new AssignmentFileUploadFailException("해당 활동은 존재하지 않습니다.");
             }
@@ -135,6 +141,7 @@ public class FileService {
         if (path.split(Pattern.quote(File.separator))[0].equals("members")) {
             String memberId = path.split(Pattern.quote(File.separator))[1];
             double usage = retrieveCloudUsageByMemberIdUseCase.retrieveCloudUsage(memberId).getUsage();
+
             if (multipartFile.getSize() + usage > FileSystemUtil.convertToBytes(maxFileSize)) {
                 throw new CloudStorageNotEnoughException("클라우드 저장 공간이 부족합니다.");
             }

@@ -16,6 +16,7 @@ public class BookLoanRecordMapper {
                 .dueDate(bookLoanRecord.getDueDate())
                 .loanExtensionCount(bookLoanRecord.getLoanExtensionCount())
                 .status(bookLoanRecord.getStatus())
+                .isDeleted(bookLoanRecord.isDeleted())
                 .build();
     }
 
@@ -29,6 +30,7 @@ public class BookLoanRecordMapper {
                 .dueDate(entity.getDueDate())
                 .loanExtensionCount(entity.getLoanExtensionCount())
                 .status(entity.getStatus())
+                .isDeleted(entity.isDeleted())
                 .build();
     }
 }

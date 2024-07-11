@@ -1,5 +1,6 @@
 package page.clab.api.domain.comment.adapter.out.persistence;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,6 +28,7 @@ public class CommentLikeJpaEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentLikeId;
 
+    @Column(name = "member_id", nullable = false)
     private String memberId;
     private Long commentId;
 }

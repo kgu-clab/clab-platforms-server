@@ -30,6 +30,7 @@ public class BookLoanRecord {
     private LocalDateTime dueDate;
     private Long loanExtensionCount;
     private BookLoanStatus status;
+    private boolean isDeleted;
 
     public static BookLoanRecord create(Long bookId, MemberBorrowerInfoDto borrowerInfo) {
         return BookLoanRecord.builder()

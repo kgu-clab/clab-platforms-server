@@ -35,6 +35,7 @@ public class BookMapper {
                 .isDeleted(entity.isDeleted())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
+                .isDeleted(entity.isDeleted())
                 .build();
     }
 }

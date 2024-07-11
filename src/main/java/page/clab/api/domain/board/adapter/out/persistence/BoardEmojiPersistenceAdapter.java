@@ -17,6 +17,7 @@ public class BoardEmojiPersistenceAdapter implements
         RegisterBoardEmojiPort {
 
     private final BoardEmojiRepository boardEmojiRepository;
+    private final BoardEmojiMapper boardEmojiMapper;
 
     @Override
     public List<Tuple> findEmojiClickCountsByBoardId(Long boardId, String memberId) {
@@ -25,11 +26,14 @@ public class BoardEmojiPersistenceAdapter implements
 
     @Override
     public Optional<BoardEmoji> findByBoardIdAndMemberIdAndEmoji(Long boardId, String memberId, String emoji) {
-        return boardEmojiRepository.findByBoardIdAndMemberIdAndEmoji(boardId, memberId, emoji);
+        return boardEmojiRepository.findByBoardIdAndMemberIdAndEmoji(boardId, memberId, emoji)
+                .map(boardEmojiMapper::toDomain);
     }
 
     @Override
     public BoardEmoji save(BoardEmoji boardEmoji) {
-        return boardEmojiRepository.save(boardEmoji);
+        BoardEmojiJpaEntity entity = boardEmojiMapper.toJpaEntity(boardEmoji);
+        BoardEmojiJpaEntity savedEntity = boardEmojiRepository.save(entity);
+        return boardEmojiMapper.toDomain(savedEntity);
     }
 }

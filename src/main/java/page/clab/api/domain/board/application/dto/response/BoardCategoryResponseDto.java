@@ -12,19 +12,12 @@ import java.time.LocalDateTime;
 public class BoardCategoryResponseDto {
 
     private Long id;
-
     private String category;
-
     private String writerId;
-
     private String writerName;
-
     private String title;
-
     private Long commentCount;
-
     private String imageUrl;
-
     private LocalDateTime createdAt;
 
     public static BoardCategoryResponseDto toDto(Board board, MemberDetailedInfoDto memberInfo, Long commentCount) {

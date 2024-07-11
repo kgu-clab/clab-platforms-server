@@ -4,7 +4,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.adapter.out.persistence.BoardRepository;
+import page.clab.api.domain.board.application.port.out.RegisterBoardPort;
+import page.clab.api.domain.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.board.domain.Board;
 import page.clab.api.domain.member.application.event.MemberEventProcessor;
 import page.clab.api.domain.member.application.event.MemberEventProcessorRegistry;
@@ -15,8 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardEventProcessor implements MemberEventProcessor {
 
-    private final BoardRepository boardRepository;
-
+    private final RetrieveBoardPort retrieveBoardPort;
+    private final RegisterBoardPort registerBoardPort;
     private final MemberEventProcessorRegistry processorRegistry;
 
     @PostConstruct
@@ -27,9 +28,9 @@ public class BoardEventProcessor implements MemberEventProcessor {
     @Override
     @Transactional
     public void processMemberDeleted(String memberId) {
-        List<Board> boards = boardRepository.findByMemberId(memberId);
+        List<Board> boards = retrieveBoardPort.findByMemberId(memberId);
         boards.forEach(Board::delete);
-        boardRepository.saveAll(boards);
+        registerBoardPort.saveAll(boards);
     }
 
     @Override

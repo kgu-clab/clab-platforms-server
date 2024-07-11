@@ -15,7 +15,6 @@ import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.validation.ValidationService;
 
 import java.util.List;
 
@@ -26,7 +25,6 @@ public class BoardRegisterService implements RegisterBoardUseCase {
     private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final SendNotificationUseCase notificationService;
     private final UploadedFileService uploadedFileService;
-    private final ValidationService validationService;
     private final SlackService slackService;
     private final RegisterBoardPort registerBoardPort;
 
@@ -37,7 +35,6 @@ public class BoardRegisterService implements RegisterBoardUseCase {
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         Board board = BoardRequestDto.toEntity(requestDto, currentMemberInfo.getMemberId(), uploadedFiles);
         board.validateAccessPermissionForCreation(currentMemberInfo);
-        validationService.checkValid(board);
         if (board.shouldNotifyForNewBoard(currentMemberInfo)) {
             notificationService.sendNotificationToMember(currentMemberInfo.getMemberId(), "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.");
         }

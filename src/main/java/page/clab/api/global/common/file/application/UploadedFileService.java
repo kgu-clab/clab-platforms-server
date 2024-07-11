@@ -18,16 +18,13 @@ public class UploadedFileService {
     private final UploadFileRepository uploadFileRepository;
 
     public UploadedFile saveUploadedFile(UploadedFile uploadedFile) {
+        log.info("UploadedFileService.saveUploadedFile - uploadedFile: {}", uploadedFile.getUploader());
         return uploadFileRepository.save(uploadedFile);
     }
 
     public UploadedFile getUploadedFileByUrl(String url) {
         return uploadFileRepository.findByUrl(url)
                 .orElseThrow(() -> new NotFoundException("파일을 찾을 수 없습니다."));
-    }
-
-    public UploadedFile getUniqueUploadedFileByCategoryAndOriginalName(String category, String originalName) {
-        return uploadFileRepository.findTopByCategoryAndOriginalFileNameOrderByCreatedAtDesc(category, originalName);
     }
 
     public UploadedFile getUniqueUploadedFileByCategory(String category) {

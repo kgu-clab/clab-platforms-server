@@ -7,21 +7,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.board.domain.BoardEmoji;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface BoardEmojiRepository extends JpaRepository<BoardEmoji, Long> {
+public interface BoardEmojiRepository extends JpaRepository<BoardEmojiJpaEntity, Long> {
 
     @Query(value = "SELECT b.* FROM board_emoji b WHERE b.board_id = :boardId AND b.member_id = :memberId AND b.emoji = :emoji", nativeQuery = true)
-    Optional<BoardEmoji> findByBoardIdAndMemberIdAndEmoji(@Param("boardId") Long boardId, @Param("memberId") String memberId, @Param("emoji") String emoji);
+    Optional<BoardEmojiJpaEntity> findByBoardIdAndMemberIdAndEmoji(@Param("boardId") Long boardId, @Param("memberId") String memberId, @Param("emoji") String emoji);
 
     @Query("SELECT b.emoji as emoji, COUNT(b) as count, " +
             "CASE WHEN SUM(CASE WHEN b.memberId = :memberId THEN 1 ELSE 0 END) > 0 THEN true ELSE false END as isClicked " +
-            "FROM BoardEmoji b " +
+            "FROM BoardEmojiJpaEntity b " +
             "WHERE b.boardId = :boardId " +
             "GROUP BY b.emoji")
     List<Tuple> findEmojiClickCountsByBoardId(@Param("boardId") Long boardId, @Param("memberId") String memberId);

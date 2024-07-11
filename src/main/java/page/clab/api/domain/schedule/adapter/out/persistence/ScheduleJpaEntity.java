@@ -62,6 +62,7 @@ public class ScheduleJpaEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private SchedulePriority priority;
 
+    @Column(name = "member_id", nullable = false)
     private String scheduleWriter;
 
     @ManyToOne

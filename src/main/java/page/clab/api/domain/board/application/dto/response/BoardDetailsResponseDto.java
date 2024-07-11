@@ -15,30 +15,19 @@ import java.util.List;
 public class BoardDetailsResponseDto {
 
     private Long id;
-
     private String writerId;
-
     private String writerName;
-
     private Long writerRoleLevel;
-
     private String writerImageUrl;
-
     private String category;
-
     private String title;
-
     private String content;
-
     private List<UploadedFileResponseDto> files;
-
     private String imageUrl;
 
     @JsonProperty("isOwner")
     private Boolean isOwner;
-
     private List<BoardEmojiCountResponseDto> emojiInfos;
-
     private LocalDateTime createdAt;
 
     public static BoardDetailsResponseDto toDto(Board board, MemberDetailedInfoDto memberInfo, boolean isOwner, List<BoardEmojiCountResponseDto> emojiInfos) {

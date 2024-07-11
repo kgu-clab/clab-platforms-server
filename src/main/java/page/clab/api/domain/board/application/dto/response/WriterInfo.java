@@ -8,11 +8,8 @@ import page.clab.api.domain.member.application.dto.shared.MemberDetailedInfoDto;
 public class WriterInfo {
 
     private final String id;
-
     private final String name;
-
     private Long roleLevel;
-
     private String imageUrl;
 
     public WriterInfo(String id, String name) {

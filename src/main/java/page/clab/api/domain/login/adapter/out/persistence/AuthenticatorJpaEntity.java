@@ -20,6 +20,7 @@ import page.clab.api.global.common.domain.BaseEntity;
 public class AuthenticatorJpaEntity extends BaseEntity {
 
     @Id
+    @Column(name = "member_id", nullable = false)
     private String memberId;
 
     @Column(nullable = false)

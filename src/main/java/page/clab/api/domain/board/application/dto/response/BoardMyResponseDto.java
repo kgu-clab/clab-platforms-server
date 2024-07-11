@@ -12,15 +12,10 @@ import java.time.LocalDateTime;
 public class BoardMyResponseDto {
 
     private Long id;
-
     private String category;
-
     private String writerName;
-
     private String title;
-
     private String imageUrl;
-
     private LocalDateTime createdAt;
 
     public static BoardMyResponseDto toDto(Board board, MemberBasicInfoDto memberInfo) {

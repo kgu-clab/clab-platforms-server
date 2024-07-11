@@ -8,9 +8,7 @@ import lombok.Getter;
 public class BoardEmojiCountResponseDto {
 
     private String emoji;
-
     private Long count;
-
     private Boolean isOwner;
 
     public BoardEmojiCountResponseDto(String emoji, Long count, Boolean isOwner) {
