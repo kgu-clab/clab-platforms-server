@@ -101,7 +101,7 @@ dependencies {
 
     // Image
     implementation 'commons-io:commons-io:2.8.0'
-    implementation 'com.drewnoakes:metadata-extractor:2.14.0'
+    implementation 'com.drewnoakes:metadata-extractor:2.19.0'
     implementation 'org.imgscalr:imgscalr-lib:4.2'
 
     //Emoji
