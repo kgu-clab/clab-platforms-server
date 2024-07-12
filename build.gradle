@@ -82,7 +82,7 @@ dependencies {
     implementation 'commons-io:commons-io:2.15.1' // Apache Commons IO
     implementation 'com.google.guava:guava:33.0.0-jre' // Google Core Libraries For Java
     implementation 'org.springframework.boot:spring-boot-starter-mail' // Spring Mail
-    implementation 'com.google.zxing:core:3.4.1' // QR 코드
+    implementation 'com.google.zxing:core:3.5.3' // QR 코드
     implementation 'com.google.zxing:javase:3.4.1' // QR 코드
 
     // IPInfo
