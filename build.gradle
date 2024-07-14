@@ -105,7 +105,7 @@ dependencies {
     implementation 'org.imgscalr:imgscalr-lib:4.2'
 
     //Emoji
-    implementation 'com.ibm.icu:icu4j:72.1'
+    implementation 'com.ibm.icu:icu4j:75.1'
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot Test
