@@ -22,4 +22,6 @@ public interface CommentRepository extends JpaRepository<CommentJpaEntity, Long>
     Page<CommentJpaEntity> findAllByIsDeletedTrueAndBoardId(Long boardId, Pageable pageable);
 
     List<CommentJpaEntity> findByBoardId(Long boardId);
+
+    long countAllByBoardId(Long boardId);
 }

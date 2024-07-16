@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.comment.application.dto.response.CommentResponseDto;
-import page.clab.api.domain.community.comment.application.port.in.RetrieveCommentsUseCase;
+import page.clab.api.domain.community.comment.application.port.in.RetrieveCommentUseCase;
 import page.clab.api.domain.community.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.community.comment.domain.Comment;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CommentsRetrievalService implements RetrieveCommentsUseCase {
+public class CommentRetrievalService implements RetrieveCommentUseCase {
 
     private final RetrieveCommentPort retrieveCommentPort;
     private final RetrieveMemberUseCase retrieveMemberUseCase;
@@ -34,6 +34,11 @@ public class CommentsRetrievalService implements RetrieveCommentsUseCase {
     @Override
     public Comment findByIdOrThrow(Long commentId) {
         return retrieveCommentPort.findByIdOrThrow(commentId);
+    }
+
+    @Override
+    public long countCommentsByBoardId(Long boardId) {
+        return retrieveCommentPort.countAllByBoardId(boardId);
     }
 
     @Transactional(readOnly = true)

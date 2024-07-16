@@ -16,7 +16,7 @@ import page.clab.api.domain.community.accuse.domain.AccuseTarget;
 import page.clab.api.domain.community.accuse.domain.TargetType;
 import page.clab.api.domain.community.board.application.port.in.RetrieveBoardsUseCase;
 import page.clab.api.domain.community.board.domain.Board;
-import page.clab.api.domain.community.comment.application.port.in.RetrieveCommentsUseCase;
+import page.clab.api.domain.community.comment.application.port.in.RetrieveCommentUseCase;
 import page.clab.api.domain.community.comment.domain.Comment;
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.memberManagement.notification.application.port.in.SendNotificationUseCase;
@@ -32,7 +32,7 @@ public class AccusationReportService implements ReportAccusationUseCase {
     private final RetrieveAccusePort retrieveAccusePort;
     private final RetrieveAccuseTargetPort retrieveAccuseTargetPort;
     private final RetrieveBoardsUseCase retrieveBoardsUseCase;
-    private final RetrieveCommentsUseCase retrieveCommentsUseCase;
+    private final RetrieveCommentUseCase retrieveCommentUseCase;
 
     @Transactional
     @Override
@@ -62,7 +62,7 @@ public class AccusationReportService implements ReportAccusationUseCase {
                 }
                 break;
             case COMMENT:
-                Comment comment = retrieveCommentsUseCase.findByIdOrThrow(targetId);
+                Comment comment = retrieveCommentUseCase.findByIdOrThrow(targetId);
                 if (comment.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 댓글은 신고할 수 없습니다.");
                 }

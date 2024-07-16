@@ -21,4 +21,6 @@ public interface RetrieveCommentPort {
     Long countByBoardId(Long boardId);
 
     List<Comment> findByBoardId(Long boardId);
+
+    long countAllByBoardId(Long boardId);
 }
