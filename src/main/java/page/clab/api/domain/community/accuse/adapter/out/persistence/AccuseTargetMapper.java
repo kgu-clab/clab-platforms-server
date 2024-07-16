@@ -1,27 +1,12 @@
 package page.clab.api.domain.community.accuse.adapter.out.persistence;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 import page.clab.api.domain.community.accuse.domain.AccuseTarget;
 
-@Component
-public class AccuseTargetMapper {
+@Mapper(componentModel = "spring")
+public interface AccuseTargetMapper {
 
-    public AccuseTargetJpaEntity toJpaEntity(AccuseTarget target) {
-        return AccuseTargetJpaEntity.builder()
-                .targetType(target.getTargetType())
-                .targetReferenceId(target.getTargetReferenceId())
-                .accuseCount(target.getAccuseCount())
-                .accuseStatus(target.getAccuseStatus())
-                .build();
-    }
+    AccuseTargetJpaEntity toJpaEntity(AccuseTarget target);
 
-    public AccuseTarget toDomain(AccuseTargetJpaEntity entity) {
-        return AccuseTarget.builder()
-                .targetType(entity.getTargetType())
-                .targetReferenceId(entity.getTargetReferenceId())
-                .accuseCount(entity.getAccuseCount())
-                .accuseStatus(entity.getAccuseStatus())
-                .createdAt(entity.getCreatedAt())
-                .build();
-    }
+    AccuseTarget toDomain(AccuseTargetJpaEntity entity);
 }

@@ -2,7 +2,6 @@ package page.clab.api.domain.community.comment.adapter.out.persistence;
 
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.comment.domain.Comment;
-import page.clab.api.domain.community.comment.domain.CommentLike;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,21 +73,5 @@ public class CommentMapper {
             domain.getChildren().add(toDomain(child, mappedDomains));
         }
         return domain;
-    }
-
-    public CommentLikeJpaEntity toJpaEntity(CommentLike commentLike) {
-        return CommentLikeJpaEntity.builder()
-                .commentLikeId(commentLike.getCommentLikeId())
-                .memberId(commentLike.getMemberId())
-                .commentId(commentLike.getCommentId())
-                .build();
-    }
-
-    public CommentLike toDomain(CommentLikeJpaEntity entity) {
-        return CommentLike.builder()
-                .commentLikeId(entity.getCommentLikeId())
-                .memberId(entity.getMemberId())
-                .commentId(entity.getCommentId())
-                .build();
     }
 }

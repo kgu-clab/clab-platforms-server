@@ -1,30 +1,12 @@
 package page.clab.api.domain.community.board.adapter.out.persistence;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 import page.clab.api.domain.community.board.domain.BoardEmoji;
 
-@Component
-public class BoardEmojiMapper {
+@Mapper(componentModel = "spring")
+public interface BoardEmojiMapper {
 
-    public BoardEmojiJpaEntity toJpaEntity(BoardEmoji boardEmoji) {
-        return BoardEmojiJpaEntity.builder()
-                .id(boardEmoji.getId())
-                .memberId(boardEmoji.getMemberId())
-                .boardId(boardEmoji.getBoardId())
-                .emoji(boardEmoji.getEmoji())
-                .deletedAt(boardEmoji.getDeletedAt())
-                .isDeleted(boardEmoji.isDeleted())
-                .build();
-    }
+    BoardEmojiJpaEntity toJpaEntity(BoardEmoji boardEmoji);
 
-    public BoardEmoji toDomain(BoardEmojiJpaEntity entity) {
-        return BoardEmoji.builder()
-                .id(entity.getId())
-                .memberId(entity.getMemberId())
-                .boardId(entity.getBoardId())
-                .emoji(entity.getEmoji())
-                .deletedAt(entity.getDeletedAt())
-                .isDeleted(entity.isDeleted())
-                .build();
-    }
+    BoardEmoji toDomain(BoardEmojiJpaEntity entity);
 }

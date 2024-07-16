@@ -22,12 +22,13 @@ public class JobPostingPersistenceAdapter implements
         RemoveJobPostingPort {
 
     private final JobPostingRepository repository;
+    private final JobPostingMapper jobPostingMapper;
 
     @Override
     public JobPosting save(JobPosting jobPosting) {
-        JobPostingJpaEntity entity = JobPostingMapper.toJpaEntity(jobPosting);
+        JobPostingJpaEntity entity = jobPostingMapper.toJpaEntity(jobPosting);
         JobPostingJpaEntity savedEntity = repository.save(entity);
-        return JobPostingMapper.toDomain(savedEntity);
+        return jobPostingMapper.toDomain(savedEntity);
     }
 
     @Override
@@ -37,28 +38,28 @@ public class JobPostingPersistenceAdapter implements
 
     @Override
     public Optional<JobPosting> findById(Long jobPostingId) {
-        return repository.findById(jobPostingId).map(JobPostingMapper::toDomain);
+        return repository.findById(jobPostingId).map(jobPostingMapper::toDomain);
     }
 
     @Override
     public JobPosting findByIdOrThrow(Long jobPostingId) {
         return repository.findById(jobPostingId)
-                .map(JobPostingMapper::toDomain)
+                .map(jobPostingMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[JobPosting] id: " + jobPostingId + "에 해당하는 채용 공고가 존재하지 않습니다."));
     }
 
     @Override
     public Optional<JobPosting> findByJobPostingUrl(String jobPostingUrl) {
-        return repository.findByJobPostingUrl(jobPostingUrl).map(JobPostingMapper::toDomain);
+        return repository.findByJobPostingUrl(jobPostingUrl).map(jobPostingMapper::toDomain);
     }
 
     @Override
     public Page<JobPosting> findAllByIsDeletedTrue(Pageable pageable) {
-        return repository.findAllByIsDeletedTrue(pageable).map(JobPostingMapper::toDomain);
+        return repository.findAllByIsDeletedTrue(pageable).map(jobPostingMapper::toDomain);
     }
 
     @Override
     public Page<JobPosting> findByConditions(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable) {
-        return repository.findByConditions(title, companyName, careerLevel, employmentType, pageable).map(JobPostingMapper::toDomain);
+        return repository.findByConditions(title, companyName, careerLevel, employmentType, pageable).map(jobPostingMapper::toDomain);
     }
 }

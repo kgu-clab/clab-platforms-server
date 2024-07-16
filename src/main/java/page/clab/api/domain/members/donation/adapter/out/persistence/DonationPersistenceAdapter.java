@@ -19,42 +19,43 @@ public class DonationPersistenceAdapter implements
         RetrieveDonationPort {
 
     private final DonationRepository repository;
+    private final DonationMapper donationMapper;
 
     @Override
     public Donation save(Donation donation) {
-        DonationJpaEntity entity = DonationMapper.toJpaEntity(donation);
+        DonationJpaEntity entity = donationMapper.toJpaEntity(donation);
         DonationJpaEntity savedEntity = repository.save(entity);
-        return DonationMapper.toDomain(savedEntity);
+        return donationMapper.toDomain(savedEntity);
     }
 
     @Override
     public Page<Donation> findAllByIsDeletedTrue(Pageable pageable) {
         return repository.findAllByIsDeletedTrue(pageable)
-                .map(DonationMapper::toDomain);
+                .map(donationMapper::toDomain);
     }
 
     @Override
     public Page<Donation> findByConditions(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         return repository.findByConditions(memberId, name, startDate, endDate, pageable)
-                .map(DonationMapper::toDomain);
+                .map(donationMapper::toDomain);
     }
 
     @Override
     public Optional<Donation> findById(Long donationId) {
         return repository.findById(donationId)
-                .map(DonationMapper::toDomain);
+                .map(donationMapper::toDomain);
     }
 
     @Override
     public Donation findByIdOrThrow(Long donationId) {
         return repository.findById(donationId)
-                .map(DonationMapper::toDomain)
+                .map(donationMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[Donation] id: " + donationId + "에 해당하는 후원이 존재하지 않습니다."));
     }
 
     @Override
     public Page<Donation> findByMemberId(String memberId, Pageable pageable) {
         return repository.findByMemberId(memberId, pageable)
-                .map(DonationMapper::toDomain);
+                .map(donationMapper::toDomain);
     }
 }

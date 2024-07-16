@@ -1,33 +1,15 @@
 package page.clab.api.domain.community.accuse.adapter.out.persistence;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import page.clab.api.domain.community.accuse.domain.Accuse;
 
-@Component
-@RequiredArgsConstructor
-public class AccuseMapper {
+@Mapper(componentModel = "spring", uses = {AccuseTargetMapper.class})
+public interface AccuseMapper {
 
-    private final AccuseTargetMapper accuseTargetMapper;
+    @Mapping(source = "target", target = "target")
+    AccuseJpaEntity toJpaEntity(Accuse accuse);
 
-    public AccuseJpaEntity toJpaEntity(Accuse accuse) {
-        return AccuseJpaEntity.builder()
-                .id(accuse.getId())
-                .memberId(accuse.getMemberId())
-                .target(accuseTargetMapper.toJpaEntity(accuse.getTarget()))
-                .reason(accuse.getReason())
-                .isDeleted(accuse.isDeleted())
-                .build();
-    }
-
-    public Accuse toDomain(AccuseJpaEntity entity) {
-        return Accuse.builder()
-                .id(entity.getId())
-                .memberId(entity.getMemberId())
-                .target(accuseTargetMapper.toDomain(entity.getTarget()))
-                .reason(entity.getReason())
-                .isDeleted(entity.isDeleted())
-                .createdAt(entity.getCreatedAt())
-                .build();
-    }
+    @Mapping(source = "target", target = "target")
+    Accuse toDomain(AccuseJpaEntity entity);
 }

@@ -1,22 +1,12 @@
 package page.clab.api.domain.auth.login.adapter.out.persistence;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 import page.clab.api.domain.auth.login.domain.Authenticator;
 
-@Component
-public class AuthenticatorMapper {
+@Mapper(componentModel = "spring")
+public interface AuthenticatorMapper {
 
-    public AuthenticatorJpaEntity toJpaEntity(Authenticator authenticator) {
-        return AuthenticatorJpaEntity.builder()
-                .memberId(authenticator.getMemberId())
-                .secretKey(authenticator.getSecretKey())
-                .build();
-    }
+    AuthenticatorJpaEntity toJpaEntity(Authenticator authenticator);
 
-    public Authenticator toDomainEntity(AuthenticatorJpaEntity jpaEntity) {
-        return Authenticator.builder()
-                .memberId(jpaEntity.getMemberId())
-                .secretKey(jpaEntity.getSecretKey())
-                .build();
-    }
+    Authenticator toDomainEntity(AuthenticatorJpaEntity jpaEntity);
 }

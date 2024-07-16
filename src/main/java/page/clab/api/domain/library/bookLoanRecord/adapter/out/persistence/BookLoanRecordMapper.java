@@ -1,36 +1,12 @@
 package page.clab.api.domain.library.bookLoanRecord.adapter.out.persistence;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanRecord;
 
-@Component
-public class BookLoanRecordMapper {
+@Mapper(componentModel = "spring")
+public interface BookLoanRecordMapper {
 
-    public BookLoanRecordJpaEntity toJpaEntity(BookLoanRecord bookLoanRecord) {
-        return BookLoanRecordJpaEntity.builder()
-                .id(bookLoanRecord.getId())
-                .bookId(bookLoanRecord.getBookId())
-                .borrowerId(bookLoanRecord.getBorrowerId())
-                .borrowedAt(bookLoanRecord.getBorrowedAt())
-                .returnedAt(bookLoanRecord.getReturnedAt())
-                .dueDate(bookLoanRecord.getDueDate())
-                .loanExtensionCount(bookLoanRecord.getLoanExtensionCount())
-                .status(bookLoanRecord.getStatus())
-                .isDeleted(bookLoanRecord.isDeleted())
-                .build();
-    }
+    BookLoanRecordJpaEntity toJpaEntity(BookLoanRecord bookLoanRecord);
 
-    public BookLoanRecord toDomain(BookLoanRecordJpaEntity entity) {
-        return BookLoanRecord.builder()
-                .id(entity.getId())
-                .bookId(entity.getBookId())
-                .borrowerId(entity.getBorrowerId())
-                .borrowedAt(entity.getBorrowedAt())
-                .returnedAt(entity.getReturnedAt())
-                .dueDate(entity.getDueDate())
-                .loanExtensionCount(entity.getLoanExtensionCount())
-                .status(entity.getStatus())
-                .isDeleted(entity.isDeleted())
-                .build();
-    }
+    BookLoanRecord toDomain(BookLoanRecordJpaEntity entity);
 }

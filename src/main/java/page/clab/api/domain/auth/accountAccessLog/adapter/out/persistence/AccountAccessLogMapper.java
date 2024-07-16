@@ -1,32 +1,12 @@
 package page.clab.api.domain.auth.accountAccessLog.adapter.out.persistence;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 import page.clab.api.domain.auth.accountAccessLog.domain.AccountAccessLog;
 
-@Component
-public class AccountAccessLogMapper {
+@Mapper(componentModel = "spring")
+public interface AccountAccessLogMapper {
 
-    public AccountAccessLogJpaEntity toJpaEntity(AccountAccessLog accountAccessLog) {
-        return AccountAccessLogJpaEntity.builder()
-                .id(accountAccessLog.getId())
-                .memberId(accountAccessLog.getMemberId())
-                .userAgent(accountAccessLog.getUserAgent())
-                .ipAddress(accountAccessLog.getIpAddress())
-                .location(accountAccessLog.getLocation())
-                .accountAccessResult(accountAccessLog.getAccountAccessResult())
-                .accessTime(accountAccessLog.getAccessTime())
-                .build();
-    }
+    AccountAccessLogJpaEntity toJpaEntity(AccountAccessLog accountAccessLog);
 
-    public AccountAccessLog toDomainEntity(AccountAccessLogJpaEntity jpaEntity) {
-        return AccountAccessLog.builder()
-                .id(jpaEntity.getId())
-                .memberId(jpaEntity.getMemberId())
-                .userAgent(jpaEntity.getUserAgent())
-                .ipAddress(jpaEntity.getIpAddress())
-                .location(jpaEntity.getLocation())
-                .accountAccessResult(jpaEntity.getAccountAccessResult())
-                .accessTime(jpaEntity.getAccessTime())
-                .build();
-    }
+    AccountAccessLog toDomainEntity(AccountAccessLogJpaEntity jpaEntity);
 }

@@ -1,27 +1,12 @@
 package page.clab.api.domain.members.donation.adapter.out.persistence;
 
+import org.mapstruct.Mapper;
 import page.clab.api.domain.members.donation.domain.Donation;
 
-public class DonationMapper {
+@Mapper(componentModel = "spring")
+public interface DonationMapper {
 
-    public static DonationJpaEntity toJpaEntity(Donation domain) {
-        return DonationJpaEntity.builder()
-                .id(domain.getId())
-                .memberId(domain.getMemberId())
-                .amount(domain.getAmount())
-                .message(domain.getMessage())
-                .isDeleted(domain.isDeleted())
-                .build();
-    }
+    DonationJpaEntity toJpaEntity(Donation domain);
 
-    public static Donation toDomain(DonationJpaEntity entity) {
-        return Donation.builder()
-                .id(entity.getId())
-                .memberId(entity.getMemberId())
-                .amount(entity.getAmount())
-                .message(entity.getMessage())
-                .isDeleted(entity.isDeleted())
-                .createdAt(entity.getCreatedAt())
-                .build();
-    }
+    Donation toDomain(DonationJpaEntity entity);
 }
