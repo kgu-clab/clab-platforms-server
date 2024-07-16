@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.auth.blacklistIp.application.dto.response.BlacklistIpResponseDto;
 import page.clab.api.domain.auth.blacklistIp.application.port.in.RetrieveBlacklistIpsUseCase;
-import page.clab.api.domain.auth.blacklistIp.domain.BlacklistIp;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
@@ -32,14 +32,14 @@ public class BlacklistIpRetrievalController {
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @GetMapping("")
-    public ApiResponse<PagedResponseDto<BlacklistIp>> retrieveBlacklistIps(
+    public ApiResponse<PagedResponseDto<BlacklistIpResponseDto>> retrieveBlacklistIps(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, BlacklistIp.class);
-        PagedResponseDto<BlacklistIp> blacklistedIps = retrieveBlacklistIpsUseCase.retrieveBlacklistIps(pageable);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, BlacklistIpResponseDto.class);
+        PagedResponseDto<BlacklistIpResponseDto> blacklistedIps = retrieveBlacklistIpsUseCase.retrieveBlacklistIps(pageable);
         return ApiResponse.success(blacklistedIps);
     }
 }
