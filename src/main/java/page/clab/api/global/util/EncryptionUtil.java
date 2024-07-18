@@ -87,5 +87,4 @@ public class EncryptionUtil {
         System.arraycopy(b, 0, combined, a.length, b.length);
         return combined;
     }
-
 }

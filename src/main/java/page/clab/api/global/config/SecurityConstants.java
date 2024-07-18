@@ -34,5 +34,4 @@ public class SecurityConstants {
             "/api/v1/members/password-reset-requests",
             "/api/v1/members/password-reset-verifications",
     };
-
 }

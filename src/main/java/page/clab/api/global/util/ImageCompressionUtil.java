@@ -36,5 +36,4 @@ public class ImageCompressionUtil {
             throw new ImageCompressionException("이미지 압축 실패 : " + filePath);
         }
     }
-
 }

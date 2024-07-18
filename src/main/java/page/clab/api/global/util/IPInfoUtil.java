@@ -16,9 +16,7 @@ import page.clab.api.global.config.IPInfoConfig;
 public class IPInfoUtil {
 
     private static RestClient restClient;
-
     private static String accessToken;
-
     private static AttributeStrategy attributeStrategy;
 
     public IPInfoUtil(IPInfoConfig ipInfoConfig) {
@@ -47,5 +45,4 @@ public class IPInfoUtil {
         }
         return ipResponse;
     }
-
 }

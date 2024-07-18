@@ -1,11 +1,18 @@
 package page.clab.api.external.auth.redisToken.application.port;
 
 import page.clab.api.domain.auth.login.application.dto.response.TokenInfo;
+import page.clab.api.domain.auth.login.domain.RedisToken;
 import page.clab.api.domain.memberManagement.member.domain.Role;
 
 public interface ExternalManageRedisTokenUseCase {
 
-    void deleteByMemberId(String memberId);
+    RedisToken findByAccessToken(String accessToken);
 
-    void saveToken(String memberId, Role role, TokenInfo tokenInfo, String clientIpAddress);
+    RedisToken findByRefreshToken(String refreshToken);
+
+    void saveToken(String memberId, Role role, TokenInfo tokenInfo, String ip);
+
+    void deleteByAccessToken(String accessToken);
+
+    void deleteByMemberId(String memberId);
 }

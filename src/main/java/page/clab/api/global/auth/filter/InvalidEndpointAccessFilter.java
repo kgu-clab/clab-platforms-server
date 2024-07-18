@@ -11,9 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
-import page.clab.api.domain.auth.blacklistIp.application.port.out.RegisterBlacklistIpPort;
-import page.clab.api.domain.auth.blacklistIp.application.port.out.RetrieveBlacklistIpPort;
 import page.clab.api.domain.auth.blacklistIp.domain.BlacklistIp;
+import page.clab.api.external.auth.blacklistIp.application.port.ExternalRegisterBlacklistIpUseCase;
+import page.clab.api.external.auth.blacklistIp.application.port.ExternalRetrieveBlacklistIpUseCase;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.config.SuspiciousPatterns;
@@ -26,10 +26,10 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class InvalidEndpointAccessFilter extends GenericFilterBean {
 
-    private final RegisterBlacklistIpPort registerBlacklistIpPort;
-    private final RetrieveBlacklistIpPort retrieveBlacklistIpPort;
     private final SlackService slackService;
     private final String fileURL;
+    private final ExternalRegisterBlacklistIpUseCase externalRegisterBlacklistIpUseCase;
+    private final ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -57,8 +57,8 @@ public class InvalidEndpointAccessFilter extends GenericFilterBean {
         log.info("[{}:{}] {} {} {} {}", clientIpAddress, id, requestUrl, httpMethod, httpStatus, message);
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS, message);
 
-        if (!retrieveBlacklistIpPort.existsByIpAddress(clientIpAddress)) {
-            registerBlacklistIpPort.save(
+        if (!externalRetrieveBlacklistIpUseCase.existsByIpAddress(clientIpAddress)) {
+            externalRegisterBlacklistIpUseCase.save(
                     BlacklistIp.create(clientIpAddress, "서버 내부 파일 및 디렉토리에 대한 접근 시도")
             );
             slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Added IP: " + clientIpAddress);

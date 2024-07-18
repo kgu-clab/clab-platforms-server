@@ -84,5 +84,4 @@ public class SuspiciousPatterns {
             Pattern.compile(".*\\/api_keys.*"),
             Pattern.compile(".*\\/passwords.*")
     );
-
 }

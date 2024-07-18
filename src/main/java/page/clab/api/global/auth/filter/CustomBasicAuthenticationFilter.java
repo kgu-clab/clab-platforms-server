@@ -12,8 +12,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import page.clab.api.domain.auth.blacklistIp.application.port.out.RetrieveBlacklistIpPort;
-import page.clab.api.domain.auth.redisIpAccessMonitor.application.port.in.CheckIpBlockedUseCase;
+import page.clab.api.external.auth.blacklistIp.application.port.ExternalRetrieveBlacklistIpUseCase;
+import page.clab.api.external.auth.redisIpAccessMonitor.application.port.ExternalCheckIpBlockedUseCase;
 import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
@@ -28,21 +28,21 @@ import java.util.List;
 @Slf4j
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
-    private final CheckIpBlockedUseCase checkIpBlockedUseCase;
-    private final RetrieveBlacklistIpPort retrieveBlacklistIpPort;
     private final WhitelistService whitelistService;
     private final SlackService slackService;
+    private final ExternalCheckIpBlockedUseCase externalCheckIpBlockedUseCase;
+    private final ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase;
 
     public CustomBasicAuthenticationFilter(
             AuthenticationManager authenticationManager,
-            CheckIpBlockedUseCase checkIpBlockedUseCase,
-            RetrieveBlacklistIpPort retrieveBlacklistIpPort,
             WhitelistService whitelistService,
-            SlackService slackService
+            SlackService slackService,
+            ExternalCheckIpBlockedUseCase externalCheckIpBlockedUseCase,
+            ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase
     ) {
         super(authenticationManager);
-        this.checkIpBlockedUseCase = checkIpBlockedUseCase;
-        this.retrieveBlacklistIpPort = retrieveBlacklistIpPort;
+        this.externalCheckIpBlockedUseCase = externalCheckIpBlockedUseCase;
+        this.externalRetrieveBlacklistIpUseCase = externalRetrieveBlacklistIpUseCase;
         this.whitelistService = whitelistService;
         this.slackService = slackService;
     }
@@ -95,8 +95,8 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         List<String> whitelistIps = whitelistService.loadWhitelistIps();
         if (!(whitelistIps.contains(clientIpAddress) || whitelistIps.contains("*")) ||
-                retrieveBlacklistIpPort.existsByIpAddress(clientIpAddress) ||
-                checkIpBlockedUseCase.isIpBlocked(clientIpAddress)
+                externalRetrieveBlacklistIpUseCase.existsByIpAddress(clientIpAddress) ||
+                externalCheckIpBlockedUseCase.isIpBlocked(clientIpAddress)
         ) {
             log.info("[{}] : 정책에 의해 차단된 IP입니다.", clientIpAddress);
             ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);

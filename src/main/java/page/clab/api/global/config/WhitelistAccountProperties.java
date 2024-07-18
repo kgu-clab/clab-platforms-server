@@ -12,9 +12,6 @@ import org.springframework.context.annotation.Configuration;
 public class WhitelistAccountProperties {
 
     private String username;
-
     private String password;
-
     private String role;
-
 }

@@ -102,5 +102,4 @@ public class HttpReqResUtil {
         return Arrays.stream(IpAddressMatcherList)
                 .anyMatch(ipAddressMatcher -> ipAddressMatcher.matches(ip));
     }
-
 }

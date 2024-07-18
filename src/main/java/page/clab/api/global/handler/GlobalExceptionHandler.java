@@ -213,5 +213,4 @@ public class GlobalExceptionHandler {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return ApiResponse.failure();
     }
-
 }

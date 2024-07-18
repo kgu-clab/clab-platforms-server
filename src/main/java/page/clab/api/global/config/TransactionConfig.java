@@ -12,5 +12,4 @@ public class TransactionConfig {
     public TransactionDefinition transactionDefinition() {
         return new DefaultTransactionDefinition();
     }
-
 }

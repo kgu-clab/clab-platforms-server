@@ -22,11 +22,8 @@ import java.util.Objects;
 public class IPinfoSpringFilter implements Filter {
 
     private final IPinfo ii;
-
     private final AttributeStrategy attributeStrategy;
-
     private final IPStrategy ipStrategy;
-
     private final InterceptorStrategy interceptorStrategy;
 
     public IPinfoSpringFilter(IPInfoConfig ipInfoConfig) {

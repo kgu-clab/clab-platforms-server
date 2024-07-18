@@ -17,5 +17,4 @@ public class ThymeleafConfig {
         springResourceTemplateResolver.setCacheable(false);
         return springResourceTemplateResolver;
     }
-
 }

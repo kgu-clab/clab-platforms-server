@@ -46,5 +46,4 @@ public class OpenApiConfig {
                 )
                 .info(info);
     }
-
 }

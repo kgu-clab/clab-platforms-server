@@ -32,5 +32,4 @@ public class StringJsonConverter implements AttributeConverter<List<String>, Str
             return null;
         }
     }
-
 }

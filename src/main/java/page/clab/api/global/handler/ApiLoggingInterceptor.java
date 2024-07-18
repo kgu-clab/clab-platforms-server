@@ -38,5 +38,4 @@ public class ApiLoggingInterceptor implements HandlerInterceptor {
             log.error("[{}:{}] {} {} {} {}ms, Exception: {}", clientIpAddress, id, requestUrl, httpMethod, httpStatus, duration, ex.getMessage());
         }
     }
-
 }
