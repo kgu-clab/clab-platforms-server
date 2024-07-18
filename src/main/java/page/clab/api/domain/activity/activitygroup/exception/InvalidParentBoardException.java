@@ -11,5 +11,4 @@ public class InvalidParentBoardException extends RuntimeException {
     public InvalidParentBoardException(String s) {
         super(s);
     }
-
 }

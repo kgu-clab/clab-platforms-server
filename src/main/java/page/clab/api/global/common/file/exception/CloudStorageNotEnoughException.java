@@ -5,5 +5,4 @@ public class CloudStorageNotEnoughException extends RuntimeException {
     public CloudStorageNotEnoughException(String message) {
         super(message);
     }
-
 }

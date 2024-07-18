@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public interface AwardRepository extends JpaRepository<AwardJpaEntity, Long>, AwardRepositoryCustom {
+
     Page<AwardJpaEntity> findByMemberId(String memberId, Pageable pageable);
 
     @Query(value = "SELECT a.* FROM award a WHERE a.is_deleted = true", nativeQuery = true)

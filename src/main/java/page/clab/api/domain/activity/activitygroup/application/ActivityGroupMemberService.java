@@ -207,5 +207,4 @@ public class ActivityGroupMemberService {
     public void deleteAll(List<GroupMember> groupMemberList) {
         groupMemberRepository.deleteAll(groupMemberList);
     }
-
 }

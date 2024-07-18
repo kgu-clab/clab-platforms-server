@@ -10,7 +10,6 @@ import page.clab.api.domain.memberManagement.notification.domain.Notification;
 import page.clab.api.global.exception.NotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -34,12 +33,6 @@ public class NotificationPersistenceAdapter implements
                 .map(mapper::toJpaEntity)
                 .toList();
         repository.saveAll(entities);
-    }
-
-    @Override
-    public Optional<Notification> findById(Long id) {
-        return repository.findById(id)
-                .map(mapper::toDomainEntity);
     }
 
     @Override

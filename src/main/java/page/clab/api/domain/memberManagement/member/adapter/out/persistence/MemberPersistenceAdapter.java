@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.memberManagement.member.application.port.out.CheckMemberExistencePort;
 import page.clab.api.domain.memberManagement.member.application.port.out.RegisterMemberPort;
-import page.clab.api.domain.memberManagement.member.application.port.out.RemoveMemberPort;
 import page.clab.api.domain.memberManagement.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.memberManagement.member.application.port.out.UpdateMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;
@@ -21,7 +20,6 @@ public class MemberPersistenceAdapter implements
         CheckMemberExistencePort,
         RegisterMemberPort,
         UpdateMemberPort,
-        RemoveMemberPort,
         RetrieveMemberPort {
 
     private final MemberRepository memberRepository;
@@ -47,12 +45,6 @@ public class MemberPersistenceAdapter implements
         MemberJpaEntity jpaEntity = memberMapper.toJpaEntity(member);
         MemberJpaEntity savedEntity = memberRepository.save(jpaEntity);
         return memberMapper.toDomainEntity(savedEntity);
-    }
-
-    @Override
-    public void delete(Member member) {
-        MemberJpaEntity jpaEntity = memberMapper.toJpaEntity(member);
-        memberRepository.delete(jpaEntity);
     }
 
     @Override

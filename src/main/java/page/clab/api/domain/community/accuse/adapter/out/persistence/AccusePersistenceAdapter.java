@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.accuse.application.port.out.RegisterAccusePort;
 import page.clab.api.domain.community.accuse.application.port.out.RetrieveAccusePort;
-import page.clab.api.domain.community.accuse.application.port.out.UpdateAccusePort;
 import page.clab.api.domain.community.accuse.domain.Accuse;
 import page.clab.api.domain.community.accuse.domain.TargetType;
 
@@ -17,8 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AccusePersistenceAdapter implements
         RegisterAccusePort,
-        RetrieveAccusePort,
-        UpdateAccusePort {
+        RetrieveAccusePort {
 
     private final AccuseRepository accuseRepository;
     private final AccuseMapper accuseMapper;
@@ -69,12 +67,5 @@ public class AccusePersistenceAdapter implements
         return accuseRepository.findByMemberId(memberId).stream()
                 .map(accuseMapper::toDomain)
                 .toList();
-    }
-
-    @Override
-    public Accuse update(Accuse accuse) {
-        AccuseJpaEntity entity = accuseMapper.toJpaEntity(accuse);
-        AccuseJpaEntity updatedEntity = accuseRepository.save(entity);
-        return accuseMapper.toDomain(updatedEntity);
     }
 }

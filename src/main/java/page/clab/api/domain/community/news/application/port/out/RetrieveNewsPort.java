@@ -4,10 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.community.news.domain.News;
 
-import java.util.Optional;
-
 public interface RetrieveNewsPort {
-    Optional<News> findById(Long id);
 
     News findByIdOrThrow(Long id);
 

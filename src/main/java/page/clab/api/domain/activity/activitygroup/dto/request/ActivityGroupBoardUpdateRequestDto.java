@@ -22,5 +22,4 @@ public class ActivityGroupBoardUpdateRequestDto {
 
     @Schema(description = "마감일자", example = "2024-11-28 18:00:00.000")
     private LocalDateTime dueDateTime;
-
 }

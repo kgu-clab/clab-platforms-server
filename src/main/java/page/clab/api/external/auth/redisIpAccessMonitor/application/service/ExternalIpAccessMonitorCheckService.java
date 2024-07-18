@@ -17,8 +17,8 @@ public class ExternalIpAccessMonitorCheckService implements ExternalCheckIpBlock
     @Value("${security.ip-attempt.max-attempts}")
     private int maxAttempts;
 
-    @Override
     @Transactional(readOnly = true)
+    @Override
     public boolean isIpBlocked(String ipAddress) {
         RedisIpAccessMonitor existingAttempt = retrieveIpAccessMonitorPort.findById(ipAddress).orElse(null);
         return existingAttempt != null && existingAttempt.getAttempts() >= maxAttempts;

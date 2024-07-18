@@ -39,5 +39,4 @@ public class ActivityGroupUpdateRequestDto {
 
     @Schema(description = "Github URL", example = "https://github.com/KGU-C-Lab")
     private String githubUrl;
-
 }

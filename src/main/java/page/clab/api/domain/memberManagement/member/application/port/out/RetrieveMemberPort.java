@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RetrieveMemberPort {
+
     Optional<Member> findById(String memberId);
 
     Member findByIdOrThrow(String memberId);

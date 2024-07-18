@@ -4,10 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.library.book.domain.Book;
 
-import java.util.Optional;
-
 public interface RetrieveBookPort {
-    Optional<Book> findById(Long bookId);
 
     Book findByIdOrThrow(Long bookId);
 

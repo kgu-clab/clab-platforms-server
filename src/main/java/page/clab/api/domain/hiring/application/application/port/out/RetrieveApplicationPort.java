@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RetrieveApplicationPort {
+
     Optional<Application> findById(ApplicationId applicationId);
 
     Application findByIdOrThrow(ApplicationId applicationId);

@@ -23,5 +23,4 @@ public class ApplyFormRequestDto {
                 .applyReason(requestDto.getApplyReason())
                 .build();
     }
-
 }

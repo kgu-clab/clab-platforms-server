@@ -7,5 +7,4 @@ public interface GroupMemberRepositoryCustom {
     long countAcceptedMembersByActivityGroupId(Long activityGroupId);
 
     GroupMember findLeaderByActivityGroupId(Long activityGroupId);
-
 }

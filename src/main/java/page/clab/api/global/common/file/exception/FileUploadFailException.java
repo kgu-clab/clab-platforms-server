@@ -21,5 +21,4 @@ public class FileUploadFailException extends FileUploadException {
     public FileUploadFailException(String msg, Throwable throwable) {
         super(msg, throwable);
     }
-
 }

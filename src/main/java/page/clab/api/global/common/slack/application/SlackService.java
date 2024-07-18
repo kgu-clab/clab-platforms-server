@@ -45,5 +45,4 @@ public class SlackService {
     public void sendServerStartNotification() {
         eventPublisher.publishEvent(new NotificationEvent(this, GeneralAlertType.SERVER_START, null, null));
     }
-
 }

@@ -103,5 +103,4 @@ public class ActivityGroupReportService {
         }
         return report;
     }
-
 }

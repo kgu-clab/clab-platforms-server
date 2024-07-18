@@ -10,7 +10,6 @@ import page.clab.api.domain.members.donation.domain.Donation;
 import page.clab.api.global.exception.NotFoundException;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -37,12 +36,6 @@ public class DonationPersistenceAdapter implements
     @Override
     public Page<Donation> findByConditions(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         return repository.findByConditions(memberId, name, startDate, endDate, pageable)
-                .map(donationMapper::toDomain);
-    }
-
-    @Override
-    public Optional<Donation> findById(Long donationId) {
-        return repository.findById(donationId)
                 .map(donationMapper::toDomain);
     }
 

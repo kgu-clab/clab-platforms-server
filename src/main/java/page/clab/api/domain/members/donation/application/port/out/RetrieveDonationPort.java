@@ -5,10 +5,8 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.members.donation.domain.Donation;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 public interface RetrieveDonationPort {
-    Optional<Donation> findById(Long donationId);
 
     Donation findByIdOrThrow(Long donationId);
 

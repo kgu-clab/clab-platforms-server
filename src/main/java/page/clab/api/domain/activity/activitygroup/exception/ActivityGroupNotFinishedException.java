@@ -5,5 +5,4 @@ public class ActivityGroupNotFinishedException extends RuntimeException {
     public ActivityGroupNotFinishedException(String message) {
         super(message);
     }
-
 }

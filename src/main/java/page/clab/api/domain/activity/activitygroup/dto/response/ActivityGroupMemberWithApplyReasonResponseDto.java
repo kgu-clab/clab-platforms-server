@@ -11,13 +11,9 @@ import page.clab.api.domain.memberManagement.member.domain.Member;
 public class ActivityGroupMemberWithApplyReasonResponseDto {
 
     private String memberId;
-
     private String memberName;
-
     private String role;
-
     private GroupMemberStatus status;
-
     private String applyReason;
 
     public static ActivityGroupMemberWithApplyReasonResponseDto create(Member member, GroupMember groupMember, String applyReason) {
@@ -29,5 +25,4 @@ public class ActivityGroupMemberWithApplyReasonResponseDto {
                 .applyReason(applyReason)
                 .build();
     }
-
 }

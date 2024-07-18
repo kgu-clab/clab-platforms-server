@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RetrieveBlacklistIpPort {
+
     List<BlacklistIp> findAll();
 
     Page<BlacklistIp> findAll(Pageable pageable);

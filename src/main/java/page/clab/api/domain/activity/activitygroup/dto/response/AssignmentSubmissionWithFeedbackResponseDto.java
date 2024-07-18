@@ -13,17 +13,11 @@ import java.util.List;
 public class AssignmentSubmissionWithFeedbackResponseDto {
 
     private Long id;
-
     private Long parentId;
-
     private String content;
-
     private List<UploadedFileResponseDto> files;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
-
     private List<FeedbackResponseDto> feedbacks;
 
     public static AssignmentSubmissionWithFeedbackResponseDto toDto(ActivityGroupBoard board, List<FeedbackResponseDto> feedbackDtos) {
@@ -37,5 +31,4 @@ public class AssignmentSubmissionWithFeedbackResponseDto {
                 .feedbacks(feedbackDtos)
                 .build();
     }
-
 }

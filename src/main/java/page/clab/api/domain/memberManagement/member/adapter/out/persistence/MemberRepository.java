@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface MemberRepository extends JpaRepository<MemberJpaEntity, String>, MemberRepositoryCustom, QuerydslPredicateExecutor<MemberJpaEntity> {
+
     boolean existsByContact(String contact);
 
     boolean existsByEmail(String email);

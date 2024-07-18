@@ -10,7 +10,6 @@ import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanStatus;
 import java.util.Optional;
 
 public interface RetrieveBookLoanRecordPort {
-    Optional<BookLoanRecord> findById(Long bookLoanRecordId);
 
     BookLoanRecord findByIdOrThrow(Long bookLoanRecordId);
 

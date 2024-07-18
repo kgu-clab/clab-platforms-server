@@ -115,5 +115,4 @@ public class AttendanceController {
         PagedResponseDto<AbsentResponseDto> absentExcuses = attendanceService.getActivityGroupAbsentExcuses(activityGroupId, pageable);
         return ApiResponse.success(absentExcuses);
     }
-
 }

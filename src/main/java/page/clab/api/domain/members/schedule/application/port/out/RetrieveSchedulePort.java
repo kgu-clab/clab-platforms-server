@@ -9,10 +9,8 @@ import page.clab.api.domain.members.schedule.domain.SchedulePriority;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface RetrieveSchedulePort {
-    Optional<Schedule> findById(Long id);
 
     Schedule findByIdOrThrow(Long id);
 

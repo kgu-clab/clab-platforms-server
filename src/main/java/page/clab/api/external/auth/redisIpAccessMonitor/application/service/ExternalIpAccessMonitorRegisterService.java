@@ -24,8 +24,8 @@ public class ExternalIpAccessMonitorRegisterService implements ExternalRegisterI
     @Value("${security.ip-attempt.max-attempts}")
     private int maxAttempts;
 
-    @Override
     @Transactional
+    @Override
     public void registerIpAccessMonitor(HttpServletRequest request, String ipAddress) {
         RedisIpAccessMonitor redisIpAccessMonitor = getOrCreateRedisIpAccessMonitor(ipAddress);
         if (redisIpAccessMonitor.isBlocked()) {

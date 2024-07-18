@@ -8,6 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface BookLoanRecordRepository extends JpaRepository<BookLoanRecordJpaEntity, Long>, BookLoanRecordRepositoryCustom {
+
     Optional<BookLoanRecordJpaEntity> findByBookIdAndReturnedAtIsNullAndStatus(Long bookId, BookLoanStatus bookLoanStatus);
 
     Optional<BookLoanRecordJpaEntity> findByBookIdAndBorrowerIdAndStatus(Long bookId, String borrowerId, BookLoanStatus bookLoanStatus);

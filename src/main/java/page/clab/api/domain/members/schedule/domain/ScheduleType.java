@@ -13,5 +13,4 @@ public enum ScheduleType {
 
     private String key;
     private String description;
-
 }

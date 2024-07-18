@@ -32,9 +32,7 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final Key key;
-
     private final long accessTokenDuration;
-
     private final long refreshTokenDuration;
 
     public JwtTokenProvider(
@@ -151,5 +149,4 @@ public class JwtTokenProvider {
         }
         return role;
     }
-
 }

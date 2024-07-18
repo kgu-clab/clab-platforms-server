@@ -31,12 +31,6 @@ public class BookLoanRecordPersistenceAdapter implements
     }
 
     @Override
-    public Optional<BookLoanRecord> findById(Long bookLoanRecordId) {
-        return bookLoanRecordRepository.findById(bookLoanRecordId)
-                .map(bookLoanRecordMapper::toDomain);
-    }
-
-    @Override
     public BookLoanRecord findByIdOrThrow(Long bookLoanRecordId) {
         return bookLoanRecordRepository.findById(bookLoanRecordId)
                 .map(bookLoanRecordMapper::toDomain)

@@ -11,5 +11,4 @@ public class AlreadyAppliedException extends RuntimeException {
     public AlreadyAppliedException(String s) {
         super(s);
     }
-
 }

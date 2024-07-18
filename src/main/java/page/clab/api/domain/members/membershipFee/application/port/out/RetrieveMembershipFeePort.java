@@ -5,10 +5,7 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.members.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.members.membershipFee.domain.MembershipFeeStatus;
 
-import java.util.Optional;
-
 public interface RetrieveMembershipFeePort {
-    Optional<MembershipFee> findById(Long id);
 
     MembershipFee findByIdOrThrow(Long id);
 

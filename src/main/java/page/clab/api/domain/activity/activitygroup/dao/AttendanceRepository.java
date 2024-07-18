@@ -9,6 +9,7 @@ import page.clab.api.domain.activity.activitygroup.domain.Attendance;
 import java.time.LocalDate;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
+
     Page<Attendance> findAllByMemberIdAndActivityGroup(String memberId, ActivityGroup activityGroup, Pageable pageable);
 
     Page<Attendance> findAllByActivityGroup(ActivityGroup activityGroup, Pageable pageable);

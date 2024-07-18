@@ -11,5 +11,4 @@ public class SortingArgumentException extends Exception {
     public SortingArgumentException(String s) {
         super(s);
     }
-
 }

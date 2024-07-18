@@ -2,6 +2,7 @@ package page.clab.api.external.community.comment.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.comment.application.port.in.RetrieveCommentUseCase;
 import page.clab.api.domain.community.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.community.comment.domain.Comment;
@@ -14,16 +15,19 @@ public class ExternalCommentRetrievalService implements ExternalRetrieveCommentU
     private final RetrieveCommentUseCase retrieveCommentUseCase;
     private final RetrieveCommentPort retrieveCommentPort;
 
+    @Transactional(readOnly = true)
     @Override
     public Comment findByIdOrThrow(Long targetId) {
         return retrieveCommentUseCase.findByIdOrThrow(targetId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Long countByBoardId(Long id) {
         return retrieveCommentPort.countByBoardId(id);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public long countCommentsByBoardId(Long id) {
         return retrieveCommentPort.countAllByBoardId(id);

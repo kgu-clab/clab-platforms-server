@@ -15,5 +15,4 @@ public enum ActivityGroupBoardCategory {
 
     private String key;
     private String description;
-
 }

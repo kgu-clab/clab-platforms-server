@@ -35,5 +35,4 @@ public class ApplyForm extends BaseEntity {
 
     @Column(nullable = false)
     private String applyReason;
-
 }

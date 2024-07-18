@@ -42,5 +42,4 @@ public class Absent extends BaseEntity {
 
     @Column(nullable = false)
     private String reason;
-
 }

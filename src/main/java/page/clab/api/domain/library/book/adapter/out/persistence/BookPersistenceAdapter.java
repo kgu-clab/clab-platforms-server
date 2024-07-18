@@ -10,8 +10,6 @@ import page.clab.api.domain.library.book.application.port.out.RetrieveBookPort;
 import page.clab.api.domain.library.book.domain.Book;
 import page.clab.api.global.exception.NotFoundException;
 
-import java.util.Optional;
-
 @Component
 @RequiredArgsConstructor
 public class BookPersistenceAdapter implements
@@ -32,12 +30,6 @@ public class BookPersistenceAdapter implements
     @Override
     public void delete(Book book) {
         bookRepository.deleteById(book.getId());
-    }
-
-    @Override
-    public Optional<Book> findById(Long bookId) {
-        return bookRepository.findById(bookId)
-                .map(bookMapper::toDomain);
     }
 
     @Override

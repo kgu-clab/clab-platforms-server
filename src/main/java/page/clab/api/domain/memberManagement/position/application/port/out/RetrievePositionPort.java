@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RetrievePositionPort {
-    Optional<Position> findById(Long id);
 
     Position findByIdOrThrow(Long id);
 

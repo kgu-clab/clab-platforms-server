@@ -5,19 +5,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.members.activityPhoto.application.port.out.RegisterActivityPhotoPort;
-import page.clab.api.domain.members.activityPhoto.application.port.out.RemoveActivityPhotoPort;
 import page.clab.api.domain.members.activityPhoto.application.port.out.RetrieveActivityPhotoPort;
 import page.clab.api.domain.members.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.global.exception.NotFoundException;
-
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class ActivityPhotoPersistenceAdapter implements
         RegisterActivityPhotoPort,
-        RetrieveActivityPhotoPort,
-        RemoveActivityPhotoPort {
+        RetrieveActivityPhotoPort {
 
     private final ActivityPhotoRepository activityPhotoRepository;
     private final ActivityPhotoMapper activityPhotoMapper;
@@ -33,12 +29,6 @@ public class ActivityPhotoPersistenceAdapter implements
     public void delete(ActivityPhoto activityPhoto) {
         ActivityPhotoJpaEntity entity = activityPhotoMapper.toJpaEntity(activityPhoto);
         activityPhotoRepository.delete(entity);
-    }
-
-    @Override
-    public Optional<ActivityPhoto> findById(Long activityPhotoId) {
-        return activityPhotoRepository.findById(activityPhotoId)
-                .map(activityPhotoMapper::toDomain);
     }
 
     @Override

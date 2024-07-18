@@ -2,6 +2,7 @@ package page.clab.api.external.memberManagement.member.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.memberManagement.member.application.port.out.RegisterMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRegisterMemberUseCase;
@@ -12,6 +13,7 @@ public class ExternalMemberRegisterService implements ExternalRegisterMemberUseC
 
     private final RegisterMemberPort registerMemberPort;
 
+    @Transactional
     @Override
     public void save(Member member) {
         registerMemberPort.save(member);

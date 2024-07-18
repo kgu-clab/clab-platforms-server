@@ -16,5 +16,4 @@ public class VerificationRequestDto {
     @NotNull(message = "{notNull.verificationCode.verificationCode}")
     @Schema(description = "인증 코드", example = "123456789012", required = true)
     private String verificationCode;
-
 }

@@ -132,5 +132,4 @@ public class FileController {
         String deletedFileUrl = fileService.deleteFile(deleteFileRequestDto);
         return ApiResponse.success(deletedFileUrl);
     }
-
 }

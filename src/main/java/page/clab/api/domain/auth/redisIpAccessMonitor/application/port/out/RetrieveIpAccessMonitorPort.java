@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RetrieveIpAccessMonitorPort {
+
     Optional<RedisIpAccessMonitor> findById(String ipAddress);
 
     List<RedisIpAccessMonitor> findAll();

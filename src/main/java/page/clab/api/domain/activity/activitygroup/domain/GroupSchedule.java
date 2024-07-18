@@ -38,5 +38,4 @@ public class GroupSchedule extends BaseEntity {
 
     @Column(nullable = false)
     private String content;
-
 }

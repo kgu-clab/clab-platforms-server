@@ -2,6 +2,7 @@ package page.clab.api.external.auth.redisToken.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.auth.login.application.dto.response.TokenInfo;
 import page.clab.api.domain.auth.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.domain.auth.login.domain.RedisToken;
@@ -14,26 +15,31 @@ public class ExternalRedisTokenManagementService implements ExternalManageRedisT
 
     private final ManageRedisTokenUseCase manageRedisTokenUseCase;
 
+    @Transactional(readOnly = true)
     @Override
     public RedisToken findByAccessToken(String accessToken) {
         return manageRedisTokenUseCase.findByAccessToken(accessToken);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public RedisToken findByRefreshToken(String refreshToken) {
         return manageRedisTokenUseCase.findByRefreshToken(refreshToken);
     }
 
+    @Transactional
     @Override
     public void saveToken(String memberId, Role role, TokenInfo tokenInfo, String ip) {
         manageRedisTokenUseCase.saveToken(memberId, role, tokenInfo, ip);
     }
 
+    @Transactional
     @Override
     public void deleteByAccessToken(String accessToken) {
         manageRedisTokenUseCase.deleteByAccessToken(accessToken);
     }
 
+    @Transactional
     @Override
     public void deleteByMemberId(String memberId) {
         manageRedisTokenUseCase.deleteByMemberId(memberId);

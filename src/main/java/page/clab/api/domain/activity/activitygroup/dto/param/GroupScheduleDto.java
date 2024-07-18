@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class GroupScheduleDto {
 
     private LocalDateTime schedule;
-
     private String content;
 
     public static GroupScheduleDto toDto(GroupSchedule groupSchedule) {
@@ -31,5 +30,4 @@ public class GroupScheduleDto {
                 .content(groupScheduleDto.getContent())
                 .build();
     }
-
 }

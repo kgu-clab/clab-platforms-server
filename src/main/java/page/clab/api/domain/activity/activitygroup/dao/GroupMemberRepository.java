@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @Repository
 public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupMemberId>, GroupMemberRepositoryCustom, QuerydslPredicateExecutor<GroupMember> {
+
     List<GroupMember> findAllByMemberId(String memberId);
 
     boolean existsByMemberIdAndActivityGroupId(String memberId, Long activityGroupId);

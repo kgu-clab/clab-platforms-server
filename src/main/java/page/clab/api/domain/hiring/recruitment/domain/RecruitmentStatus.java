@@ -13,5 +13,4 @@ public enum RecruitmentStatus {
 
     private String key;
     private String description;
-
 }

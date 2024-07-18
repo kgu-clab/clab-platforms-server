@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RetrieveAccusePort {
+
     Optional<Accuse> findByMemberIdAndTarget(String memberId, TargetType targetType, Long targetReferenceId);
 
     List<Accuse> findByTargetOrderByCreatedAtDesc(TargetType targetType, Long targetReferenceId);

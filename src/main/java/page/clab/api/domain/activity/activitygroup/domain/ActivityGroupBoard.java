@@ -118,5 +118,4 @@ public class ActivityGroupBoard extends BaseEntity {
             }
         }
     }
-
 }

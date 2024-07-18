@@ -14,8 +14,6 @@ import java.util.List;
 @Repository
 public interface ActivityGroupBoardRepository extends JpaRepository<ActivityGroupBoard, Long>, ActivityGroupBoardRepositoryCustom, QuerydslPredicateExecutor<ActivityGroupBoard> {
 
-    Page<ActivityGroupBoard> findAll(Pageable pageable);
-
     Page<ActivityGroupBoard> findAllByActivityGroup_IdAndCategory(Long activityGroupId, ActivityGroupBoardCategory category, Pageable pageable);
 
     Long countByActivityGroupIdAndCategory(Long id, ActivityGroupBoardCategory category);
@@ -24,5 +22,4 @@ public interface ActivityGroupBoardRepository extends JpaRepository<ActivityGrou
 
     @Query(value = "SELECT a.* FROM activity_group_board a WHERE a.is_deleted = true", nativeQuery = true)
     Page<ActivityGroupBoard> findAllByIsDeletedTrue(Pageable pageable);
-
 }

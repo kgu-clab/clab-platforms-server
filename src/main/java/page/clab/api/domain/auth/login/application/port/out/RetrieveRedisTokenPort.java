@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RetrieveRedisTokenPort {
-    Optional<RedisToken> findById(String id);
 
     Optional<RedisToken> findByAccessToken(String accessToken);
 

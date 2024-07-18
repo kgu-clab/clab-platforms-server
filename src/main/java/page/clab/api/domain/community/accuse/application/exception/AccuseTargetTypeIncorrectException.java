@@ -5,5 +5,4 @@ public class AccuseTargetTypeIncorrectException extends RuntimeException {
     public AccuseTargetTypeIncorrectException(String message) {
         super(message);
     }
-
 }

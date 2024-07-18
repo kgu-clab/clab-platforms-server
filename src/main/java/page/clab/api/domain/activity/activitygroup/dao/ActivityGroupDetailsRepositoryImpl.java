@@ -56,5 +56,4 @@ public class ActivityGroupDetailsRepositoryImpl implements ActivityGroupDetailsR
 
         return ActivityGroupDetails.create(foundActivityGroup, groupMembers, boards);
     }
-
 }

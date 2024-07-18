@@ -109,5 +109,4 @@ public class ActivityGroupReportController {
         PagedResponseDto<ActivityGroupReportResponseDto> activityGroupReports = activityGroupReportService.getDeletedActivityGroupReports(pageable);
         return ApiResponse.success(activityGroupReports);
     }
-
 }

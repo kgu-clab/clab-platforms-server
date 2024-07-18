@@ -32,5 +32,4 @@ public class ActivityGroupBoardRepositoryImpl implements ActivityGroupBoardRepos
                 .distinct()
                 .fetch();
     }
-
 }

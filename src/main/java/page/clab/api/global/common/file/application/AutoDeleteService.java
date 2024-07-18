@@ -86,5 +86,4 @@ public class AutoDeleteService {
             log.error("Failed to delete unknown file: {}", file.getAbsolutePath());
         }
     }
-
 }

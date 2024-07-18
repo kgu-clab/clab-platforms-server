@@ -22,5 +22,4 @@ public class AuthUtil {
     public static String getAuthenticationInfoMemberId() {
         return getAuthenticationInfo().getUsername();
     }
-
 }

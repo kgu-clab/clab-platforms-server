@@ -5,5 +5,4 @@ public class DuplicateMemberEmailException extends RuntimeException {
     public DuplicateMemberEmailException(String s) {
         super(s);
     }
-
 }

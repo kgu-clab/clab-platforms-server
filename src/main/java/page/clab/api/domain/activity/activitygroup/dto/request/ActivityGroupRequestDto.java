@@ -63,5 +63,4 @@ public class ActivityGroupRequestDto {
                 .githubUrl(requestDto.getGithubUrl())
                 .build();
     }
-
 }

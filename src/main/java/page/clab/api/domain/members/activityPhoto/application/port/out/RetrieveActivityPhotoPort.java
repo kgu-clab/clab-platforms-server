@@ -4,10 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.members.activityPhoto.domain.ActivityPhoto;
 
-import java.util.Optional;
-
 public interface RetrieveActivityPhotoPort {
-    Optional<ActivityPhoto> findById(Long activityPhotoId);
 
     ActivityPhoto findByIdOrThrow(Long activityPhotoId);
 

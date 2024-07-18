@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import page.clab.api.domain.auth.accountLockInfo.application.port.out.RegisterAccountLockInfoPort;
 import page.clab.api.domain.auth.accountLockInfo.application.port.out.RemoveAccountLockInfoPort;
 import page.clab.api.domain.auth.accountLockInfo.application.port.out.RetrieveAccountLockInfoPort;
-import page.clab.api.domain.auth.accountLockInfo.application.port.out.UpdateAccountLockInfoPort;
 import page.clab.api.domain.auth.accountLockInfo.domain.AccountLockInfo;
 
 import java.time.LocalDateTime;
@@ -18,7 +17,6 @@ import java.util.Optional;
 public class AccountLockInfoPersistenceAdapter implements
         RegisterAccountLockInfoPort,
         RetrieveAccountLockInfoPort,
-        UpdateAccountLockInfoPort,
         RemoveAccountLockInfoPort {
 
     private final AccountLockInfoRepository accountLockInfoRepository;
@@ -32,20 +30,8 @@ public class AccountLockInfoPersistenceAdapter implements
     }
 
     @Override
-    public Optional<AccountLockInfo> findById(Long id) {
-        return accountLockInfoRepository.findById(id).map(accountLockInfoMapper::toDomainEntity);
-    }
-
-    @Override
     public Optional<AccountLockInfo> findByMemberId(String memberId) {
         return accountLockInfoRepository.findByMemberId(memberId).map(accountLockInfoMapper::toDomainEntity);
-    }
-
-    @Override
-    public AccountLockInfo update(AccountLockInfo accountLockInfo) {
-        AccountLockInfoJpaEntity jpaEntity = accountLockInfoMapper.toJpaEntity(accountLockInfo);
-        AccountLockInfoJpaEntity updatedEntity = accountLockInfoRepository.save(jpaEntity);
-        return accountLockInfoMapper.toDomainEntity(updatedEntity);
     }
 
     @Override

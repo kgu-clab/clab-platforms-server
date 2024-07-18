@@ -16,5 +16,4 @@ public class ActivityGroupReportUpdateRequestDto {
 
     @Schema(description = "내용", example = "변수, 자료형에 대해 공부")
     private String content;
-
 }

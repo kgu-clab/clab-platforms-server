@@ -35,8 +35,10 @@ public class FileHandler {
 
     private final Set<String> disallowExtensions = new HashSet<>();
     private final Set<String> compressibleImageExtensions = new HashSet<>();
+
     @Value("${resource.file.path}")
     private String filePath;
+
     @Value("${resource.file.image-quality}")
     private float imageQuality;
 
@@ -193,5 +195,4 @@ public class FileHandler {
             log.info("[{}] 파일을 삭제하는데 실패했습니다.", savedPath);
         }
     }
-
 }

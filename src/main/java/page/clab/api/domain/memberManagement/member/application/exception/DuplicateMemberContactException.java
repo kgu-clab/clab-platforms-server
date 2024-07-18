@@ -5,5 +5,4 @@ public class DuplicateMemberContactException extends RuntimeException {
     public DuplicateMemberContactException(String s) {
         super(s);
     }
-
 }

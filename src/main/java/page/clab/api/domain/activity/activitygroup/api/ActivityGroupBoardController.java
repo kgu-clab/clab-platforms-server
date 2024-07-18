@@ -156,5 +156,4 @@ public class ActivityGroupBoardController {
         PagedResponseDto<ActivityGroupBoardResponseDto> activityBoards = activityGroupBoardService.getDeletedActivityGroupBoards(pageable);
         return ApiResponse.success(activityBoards);
     }
-
 }

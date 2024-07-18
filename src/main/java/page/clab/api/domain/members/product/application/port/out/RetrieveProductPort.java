@@ -4,10 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.members.product.domain.Product;
 
-import java.util.Optional;
-
 public interface RetrieveProductPort {
-    Optional<Product> findById(Long productId);
 
     Product findByIdOrThrow(Long productId);
 

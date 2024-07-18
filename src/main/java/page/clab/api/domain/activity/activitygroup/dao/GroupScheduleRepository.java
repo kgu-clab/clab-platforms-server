@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public interface GroupScheduleRepository extends JpaRepository<GroupSchedule, Long> {
+
     List<GroupSchedule> findAllByActivityGroupIdOrderByIdDesc(Long activityGroupId);
 
     Page<GroupSchedule> findAllByActivityGroupId(Long activityGroupId, Pageable pageable);

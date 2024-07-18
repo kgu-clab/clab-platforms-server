@@ -55,5 +55,4 @@ public class ActivityGroupReport extends BaseEntity {
         Optional.ofNullable(reportRequestDto.getTitle()).ifPresent(this::setTitle);
         Optional.ofNullable(reportRequestDto.getContent()).ifPresent(this::setContent);
     }
-
 }

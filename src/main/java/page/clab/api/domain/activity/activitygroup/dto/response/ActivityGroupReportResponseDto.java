@@ -11,17 +11,11 @@ import java.time.LocalDateTime;
 public class ActivityGroupReportResponseDto {
 
     private Long activityGroupId;
-
     private String activityGroupName;
-
     private Long turn;
-
     private String title;
-
     private String content;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     public static ActivityGroupReportResponseDto toDto(ActivityGroupReport report) {
@@ -35,5 +29,4 @@ public class ActivityGroupReportResponseDto {
                 .updatedAt(report.getUpdatedAt())
                 .build();
     }
-
 }

@@ -8,7 +8,5 @@ import lombok.Setter;
 public class AttendanceRequestDto {
 
     private Long activityGroupId;
-
     private String QRCodeSecretKey;
-
 }

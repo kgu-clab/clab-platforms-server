@@ -11,11 +11,8 @@ import page.clab.api.domain.memberManagement.member.domain.Member;
 public class GroupMemberResponseDto {
 
     private String memberId;
-
     private String memberName;
-
     private String role;
-
     private GroupMemberStatus status;
 
     public static GroupMemberResponseDto toDto(Member member, GroupMember groupMember) {
@@ -26,5 +23,4 @@ public class GroupMemberResponseDto {
                 .status(groupMember.getStatus())
                 .build();
     }
-
 }

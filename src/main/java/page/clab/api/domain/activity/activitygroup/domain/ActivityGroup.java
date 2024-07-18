@@ -90,10 +90,6 @@ public class ActivityGroup extends BaseEntity {
         Optional.ofNullable(requestDto.getGithubUrl()).ifPresent(this::setGithubUrl);
     }
 
-    public boolean isWaiting() {
-        return this.status.equals(ActivityGroupStatus.WAITING);
-    }
-
     public boolean isProgressing() {
         return this.status.equals(ActivityGroupStatus.PROGRESSING);
     }
@@ -123,5 +119,4 @@ public class ActivityGroup extends BaseEntity {
             throw new ActivityGroupNotProgressingException("해당 활동은 진행중인 활동이 아닙니다.");
         }
     }
-
 }

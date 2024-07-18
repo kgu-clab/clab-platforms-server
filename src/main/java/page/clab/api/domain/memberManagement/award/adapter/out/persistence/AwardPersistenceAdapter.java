@@ -11,7 +11,6 @@ import page.clab.api.domain.memberManagement.award.domain.Award;
 import page.clab.api.global.exception.NotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -42,12 +41,6 @@ public class AwardPersistenceAdapter implements
     public void delete(Award award) {
         AwardJpaEntity entity = awardMapper.toJpaEntity(award);
         awardRepository.delete(entity);
-    }
-
-    @Override
-    public Optional<Award> findById(Long awardId) {
-        return awardRepository.findById(awardId)
-                .map(awardMapper::toDomain);
     }
 
     @Override

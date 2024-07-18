@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface RetrieveAccountLockInfoPort {
-    Optional<AccountLockInfo> findById(Long id);
 
     Optional<AccountLockInfo> findByMemberId(String memberId);
 

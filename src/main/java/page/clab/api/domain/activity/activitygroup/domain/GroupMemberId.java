@@ -19,5 +19,4 @@ public class GroupMemberId implements Serializable {
 
     @EqualsAndHashCode.Include
     private Long activityGroup;
-
 }

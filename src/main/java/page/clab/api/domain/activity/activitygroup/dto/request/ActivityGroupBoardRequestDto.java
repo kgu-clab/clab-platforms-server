@@ -45,5 +45,4 @@ public class ActivityGroupBoardRequestDto {
                 .dueDateTime(requestDto.getDueDateTime())
                 .build();
     }
-
 }

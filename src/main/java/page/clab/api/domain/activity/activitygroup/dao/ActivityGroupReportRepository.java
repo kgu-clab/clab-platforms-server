@@ -19,5 +19,4 @@ public interface ActivityGroupReportRepository extends JpaRepository<ActivityGro
 
     @Query(value = "SELECT a.* FROM activity_group_report a WHERE a.is_deleted = true", nativeQuery = true)
     Page<ActivityGroupReport> findAllByIsDeletedTrue(Pageable pageable);
-
 }

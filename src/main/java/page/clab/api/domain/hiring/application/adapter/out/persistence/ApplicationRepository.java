@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface ApplicationRepository extends JpaRepository<ApplicationJpaEntity, ApplicationId>, ApplicationRepositoryCustom {
+
     List<ApplicationJpaEntity> findByRecruitmentIdAndIsPass(Long recruitmentId, Boolean isPass);
 
     Optional<ApplicationJpaEntity> findByRecruitmentIdAndStudentId(Long recruitmentId, String studentId);

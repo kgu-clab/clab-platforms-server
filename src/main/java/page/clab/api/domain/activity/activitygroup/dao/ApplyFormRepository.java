@@ -7,7 +7,5 @@ import page.clab.api.domain.activity.activitygroup.domain.ApplyForm;
 import java.util.List;
 
 public interface ApplyFormRepository extends JpaRepository<ApplyForm, Long> {
-
     List<ApplyForm> findAllByActivityGroup(ActivityGroup activityGroup);
-
 }

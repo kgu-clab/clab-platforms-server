@@ -27,5 +27,4 @@ public class AccuseMyResponseDto {
                 .createdAt(accuse.getTarget().getCreatedAt())
                 .build();
     }
-
 }

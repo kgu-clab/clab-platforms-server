@@ -5,5 +5,4 @@ public class LeaderStatusChangeNotAllowedException extends RuntimeException {
     public LeaderStatusChangeNotAllowedException(String message) {
         super(message);
     }
-
 }

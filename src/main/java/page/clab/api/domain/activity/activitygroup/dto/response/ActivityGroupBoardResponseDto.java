@@ -14,21 +14,13 @@ import java.util.List;
 public class ActivityGroupBoardResponseDto {
 
     private Long id;
-
     private Long parentId;
-
     private ActivityGroupBoardCategory category;
-
     private String title;
-
     private String content;
-
     private List<UploadedFileResponseDto> files;
-
     private LocalDateTime dueDateTime;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     public static ActivityGroupBoardResponseDto toDto(ActivityGroupBoard board) {
@@ -44,5 +36,4 @@ public class ActivityGroupBoardResponseDto {
                 .updatedAt(board.getUpdatedAt())
                 .build();
     }
-
 }

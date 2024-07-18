@@ -18,37 +18,25 @@ import java.util.List;
 public class ActivityGroupProjectResponseDto {
 
     private Long id;
-
     private ActivityGroupCategory category;
-
     private String subject;
-
     private String name;
-
     private String content;
-
     private ActivityGroupStatus status;
-
     private String imageUrl;
-
     private List<GroupMemberResponseDto> groupMembers;
-
     private LocalDate startDate;
-
     private LocalDate endDate;
-
     private String techStack;
-
     private String githubUrl;
-
     private List<ActivityGroupBoardResponseDto> activityGroupBoards;
 
     @JsonProperty("isOwner")
     private boolean isOwner;
-
     private LocalDateTime createdAt;
 
-    public static ActivityGroupProjectResponseDto create(ActivityGroup activityGroup, List<GroupMember> groupMembers, List<ActivityGroupBoard> boards, List<GroupMemberResponseDto> groupMemberResponseDtos, boolean isOwner) {
+    public static ActivityGroupProjectResponseDto create(ActivityGroup activityGroup, List<GroupMember> groupMembers,
+                                                         List<ActivityGroupBoard> boards, List<GroupMemberResponseDto> groupMemberResponseDtos, boolean isOwner) {
         return ActivityGroupProjectResponseDto.builder()
                 .id(activityGroup.getId())
                 .category(activityGroup.getCategory())
@@ -67,5 +55,4 @@ public class ActivityGroupProjectResponseDto {
                 .createdAt(activityGroup.getCreatedAt())
                 .build();
     }
-
 }

@@ -13,5 +13,4 @@ public enum SchedulePriority {
 
     private String key;
     private String description;
-
 }

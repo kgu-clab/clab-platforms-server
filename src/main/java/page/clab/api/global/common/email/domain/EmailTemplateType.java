@@ -15,5 +15,4 @@ public enum EmailTemplateType {
     private String key;
     private String description;
     private String templateName;
-
 }

@@ -56,5 +56,4 @@ public class EmailController {
         List<String> successfulEmails = emailTask.join();
         return ApiResponse.success(successfulEmails);
     }
-
 }

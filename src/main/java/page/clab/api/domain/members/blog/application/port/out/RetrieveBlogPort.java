@@ -4,10 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.members.blog.domain.Blog;
 
-import java.util.Optional;
-
 public interface RetrieveBlogPort {
-    Optional<Blog> findById(Long blogId);
 
     Blog findByIdOrThrow(Long blogId);
 

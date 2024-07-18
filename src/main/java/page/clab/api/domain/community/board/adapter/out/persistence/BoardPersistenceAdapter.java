@@ -10,9 +10,6 @@ import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.community.board.domain.BoardCategory;
 import page.clab.api.global.exception.NotFoundException;
 
-import java.util.List;
-import java.util.Optional;
-
 @Component
 @RequiredArgsConstructor
 public class BoardPersistenceAdapter implements
@@ -27,20 +24,6 @@ public class BoardPersistenceAdapter implements
         BoardJpaEntity entity = boardMapper.toJpaEntity(board);
         BoardJpaEntity savedEntity = boardRepository.save(entity);
         return boardMapper.toDomain(savedEntity);
-    }
-
-    @Override
-    public void saveAll(List<Board> boards) {
-        List<BoardJpaEntity> entities = boards.stream()
-                .map(boardMapper::toJpaEntity)
-                .toList();
-        boardRepository.saveAll(entities);
-    }
-
-    @Override
-    public Optional<Board> findById(Long boardId) {
-        return boardRepository.findById(boardId)
-                .map(boardMapper::toDomain);
     }
 
     @Override
@@ -66,13 +49,6 @@ public class BoardPersistenceAdapter implements
     public Page<Board> findAllByMemberId(String memberId, Pageable pageable) {
         return boardRepository.findAllByMemberId(memberId, pageable)
                 .map(boardMapper::toDomain);
-    }
-
-    @Override
-    public List<Board> findByMemberId(String memberId) {
-        return boardRepository.findByMemberId(memberId).stream()
-                .map(boardMapper::toDomain)
-                .toList();
     }
 
     @Override

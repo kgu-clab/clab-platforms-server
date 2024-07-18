@@ -47,12 +47,6 @@ public class PositionPersistenceAdapter implements
     }
 
     @Override
-    public Optional<Position> findById(Long id) {
-        return repository.findById(id)
-                .map(mapper::toDomainEntity);
-    }
-
-    @Override
     public Position findByIdOrThrow(Long id) {
         return repository.findById(id)
                 .map(mapper::toDomainEntity)

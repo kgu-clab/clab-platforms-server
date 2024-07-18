@@ -11,7 +11,6 @@ import page.clab.api.domain.memberManagement.workExperience.domain.WorkExperienc
 import page.clab.api.global.exception.NotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -70,12 +69,6 @@ public class WorkExperiencePersistenceAdapter implements
         WorkExperienceJpaEntity entity = mapper.toJpaEntity(workExperience);
         WorkExperienceJpaEntity updatedEntity = repository.save(entity);
         return mapper.toDomainEntity(updatedEntity);
-    }
-
-    @Override
-    public Optional<WorkExperience> findById(Long id) {
-        return repository.findById(id)
-                .map(mapper::toDomainEntity);
     }
 
     @Override

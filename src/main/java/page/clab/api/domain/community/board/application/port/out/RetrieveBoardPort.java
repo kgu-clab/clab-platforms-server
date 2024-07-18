@@ -5,11 +5,7 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.community.board.domain.BoardCategory;
 
-import java.util.List;
-import java.util.Optional;
-
 public interface RetrieveBoardPort {
-    Optional<Board> findById(Long boardId);
 
     Board findByIdOrThrow(Long boardId);
 
@@ -20,6 +16,4 @@ public interface RetrieveBoardPort {
     Page<Board> findAllByIsDeletedTrue(Pageable pageable);
 
     Page<Board> findAllByMemberId(String memberId, Pageable pageable);
-
-    List<Board> findByMemberId(String memberId);
 }

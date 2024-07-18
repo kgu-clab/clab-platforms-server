@@ -11,9 +11,7 @@ public class ErrorResponse<T> {
 
     @Builder.Default
     private Boolean success = false;
-
     private T data;
-
     private String errorMessage;
 
     public static <T> ErrorResponse<T> failure(Exception e) {
@@ -27,5 +25,4 @@ public class ErrorResponse<T> {
         Gson gson = new GsonBuilder().serializeNulls().create();
         return gson.toJson(this);
     }
-
 }

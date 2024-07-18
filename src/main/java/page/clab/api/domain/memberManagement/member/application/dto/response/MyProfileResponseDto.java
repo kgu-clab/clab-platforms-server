@@ -40,5 +40,4 @@ public class MyProfileResponseDto {
                 .createdAt(member.getCreatedAt())
                 .build();
     }
-
 }

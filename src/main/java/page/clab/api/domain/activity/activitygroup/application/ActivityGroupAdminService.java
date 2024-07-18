@@ -199,5 +199,4 @@ public class ActivityGroupAdminService {
         }
         return activityGroup;
     }
-
 }

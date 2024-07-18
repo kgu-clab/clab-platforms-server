@@ -30,6 +30,7 @@ public class EmailAsyncService {
     private static final int MAX_BATCH_SIZE = 10;
     private static final BlockingQueue<EmailTask> emailQueue = new LinkedBlockingQueue<>();
     private final JavaMailSender javaMailSender;
+
     @Value("${spring.mail.username}")
     private String sender;
 
@@ -95,5 +96,4 @@ public class EmailAsyncService {
             }
         }
     }
-
 }

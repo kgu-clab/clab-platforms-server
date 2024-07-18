@@ -27,5 +27,4 @@ public class ActivityGroupRepositoryCustomImpl implements ActivityGroupRepositor
                 .where(builder)
                 .fetch();
     }
-
 }

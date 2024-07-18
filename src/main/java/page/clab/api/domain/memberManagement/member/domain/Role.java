@@ -15,16 +15,11 @@ public enum Role {
     private String description;
 
     public Long toRoleLevel() {
-        switch (this) {
-            case USER:
-                return 1L;
-            case ADMIN:
-                return 2L;
-            case SUPER:
-                return 3L;
-            default:
-                return 0L;
-        }
+        return switch (this) {
+            case USER -> 1L;
+            case ADMIN -> 2L;
+            case SUPER -> 3L;
+            default -> 0L;
+        };
     }
-
 }

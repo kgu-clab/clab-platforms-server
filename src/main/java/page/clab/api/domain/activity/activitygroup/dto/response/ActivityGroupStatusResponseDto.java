@@ -13,25 +13,15 @@ import java.time.LocalDateTime;
 public class ActivityGroupStatusResponseDto {
 
     private Long id;
-
     private String name;
-
     private String content;
-
     private ActivityGroupCategory category;
-
     private String subject;
-
     private String imageUrl;
-
     private String leaderId;
-
     private String leaderName;
-
     private Long participantCount;
-
     private Long weeklyActivityCount;
-
     private LocalDateTime createdAt;
 
     public static ActivityGroupStatusResponseDto toDto(ActivityGroup activityGroup, Member leader, Long participantCount, Long weeklyActivityCount) {
@@ -49,5 +39,4 @@ public class ActivityGroupStatusResponseDto {
                 .createdAt(activityGroup.getCreatedAt())
                 .build();
     }
-
 }

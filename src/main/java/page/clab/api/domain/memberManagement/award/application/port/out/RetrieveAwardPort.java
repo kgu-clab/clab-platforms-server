@@ -5,10 +5,8 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.memberManagement.award.domain.Award;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface RetrieveAwardPort {
-    Optional<Award> findById(Long awardId);
 
     Award findByIdOrThrow(Long awardId);
 

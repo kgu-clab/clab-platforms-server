@@ -5,5 +5,4 @@ public class ActivityGroupNotProgressingException extends RuntimeException {
     public ActivityGroupNotProgressingException(String message) {
         super(message);
     }
-
 }

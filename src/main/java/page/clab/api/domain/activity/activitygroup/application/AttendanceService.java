@@ -233,5 +233,4 @@ public class AttendanceService {
         }
         return activityGroup;
     }
-
 }

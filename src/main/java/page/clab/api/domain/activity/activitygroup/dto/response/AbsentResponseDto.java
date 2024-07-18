@@ -12,15 +12,10 @@ import java.time.LocalDate;
 public class AbsentResponseDto {
 
     private String absenteeId;
-
     private String absenteeName;
-
     private Long activityGroupId;
-
     private String activityGroupName;
-
     private String reason;
-
     private LocalDate absentDate;
 
     public static AbsentResponseDto toDto(Absent absent, Member member) {
@@ -33,5 +28,4 @@ public class AbsentResponseDto {
                 .absentDate(absent.getAbsentDate())
                 .build();
     }
-
 }

@@ -41,5 +41,4 @@ public class AccuseRequestDto {
                 .accuseStatus(AccuseStatus.PENDING)
                 .build();
     }
-
 }

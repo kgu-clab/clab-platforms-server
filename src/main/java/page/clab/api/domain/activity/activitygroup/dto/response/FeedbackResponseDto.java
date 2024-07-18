@@ -13,13 +13,9 @@ import java.util.List;
 public class FeedbackResponseDto {
 
     private Long id;
-
     private String content;
-
     private List<UploadedFileResponseDto> files;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     public static FeedbackResponseDto toDto(ActivityGroupBoard board) {
@@ -31,5 +27,4 @@ public class FeedbackResponseDto {
                 .updatedAt(board.getUpdatedAt())
                 .build();
     }
-
 }

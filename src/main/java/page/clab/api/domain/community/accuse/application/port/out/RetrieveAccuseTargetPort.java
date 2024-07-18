@@ -10,6 +10,7 @@ import page.clab.api.domain.community.accuse.domain.TargetType;
 import java.util.Optional;
 
 public interface RetrieveAccuseTargetPort {
+
     Optional<AccuseTarget> findById(AccuseTargetId accuseTargetId);
 
     AccuseTarget findByIdOrThrow(AccuseTargetId accuseTargetId);

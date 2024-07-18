@@ -97,5 +97,4 @@ public class GroupMember extends BaseEntity {
             throw new LeaderStatusChangeNotAllowedException("리더의 상태는 변경할 수 없습니다.");
         }
     }
-
 }

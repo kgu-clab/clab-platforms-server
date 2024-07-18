@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RetrieveCommentPort {
+
     Optional<Comment> findById(Long commentId);
 
     Comment findByIdOrThrow(Long commentId);
@@ -18,9 +19,9 @@ public interface RetrieveCommentPort {
 
     Page<Comment> findAllByWriterId(String memberId, Pageable pageable);
 
-    Long countByBoardId(Long boardId);
-
     List<Comment> findByBoardId(Long boardId);
+
+    Long countByBoardId(Long boardId);
 
     long countAllByBoardId(Long boardId);
 }

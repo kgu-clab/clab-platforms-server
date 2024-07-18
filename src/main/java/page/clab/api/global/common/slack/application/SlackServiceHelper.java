@@ -47,17 +47,11 @@ import java.util.stream.Collectors;
 public class SlackServiceHelper {
 
     private final Slack slack;
-
     private final String webhookUrl;
-
     private final String webUrl;
-
     private final String apiUrl;
-
     private final String color;
-
     private final Environment environment;
-
     private final AttributeStrategy attributeStrategy;
 
     public SlackServiceHelper(SlackConfig slackConfig, Environment environment, AttributeStrategy attributeStrategy) {
@@ -287,5 +281,4 @@ public class SlackServiceHelper {
         IPResponse ipResponse = attributeStrategy.getAttribute(request);
         return ipResponse == null ? "Unknown" : ipResponse.getCountryName() + ", " + ipResponse.getCity();
     }
-
 }

@@ -6,6 +6,7 @@ import page.clab.api.domain.community.comment.domain.Comment;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveCommentUseCase {
+
     PagedResponseDto<CommentResponseDto> retrieveComments(Long boardId, Pageable pageable);
 
     Comment findByIdOrThrow(Long commentId);

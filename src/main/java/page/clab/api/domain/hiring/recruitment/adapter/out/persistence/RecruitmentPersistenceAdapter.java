@@ -11,7 +11,6 @@ import page.clab.api.domain.hiring.recruitment.domain.Recruitment;
 import page.clab.api.global.exception.NotFoundException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -35,12 +34,6 @@ public class RecruitmentPersistenceAdapter implements
         RecruitmentJpaEntity entity = mapper.toJpaEntity(recruitment);
         RecruitmentJpaEntity updatedEntity = repository.save(entity);
         return mapper.toDomainEntity(updatedEntity);
-    }
-
-    @Override
-    public Optional<Recruitment> findById(Long recruitmentId) {
-        return repository.findById(recruitmentId)
-                .map(mapper::toDomainEntity);
     }
 
     @Override

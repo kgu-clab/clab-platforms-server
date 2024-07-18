@@ -68,5 +68,4 @@ public class IPinfoSpringFilter implements Filter {
     public void destroy() {
         log.info("Destroying IPinfoSpringFilter");
     }
-
 }

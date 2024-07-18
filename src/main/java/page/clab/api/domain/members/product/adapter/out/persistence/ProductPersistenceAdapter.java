@@ -10,8 +10,6 @@ import page.clab.api.domain.members.product.application.port.out.UpdateProductPo
 import page.clab.api.domain.members.product.domain.Product;
 import page.clab.api.global.exception.NotFoundException;
 
-import java.util.Optional;
-
 @Component
 @RequiredArgsConstructor
 public class ProductPersistenceAdapter implements
@@ -34,12 +32,6 @@ public class ProductPersistenceAdapter implements
         ProductJpaEntity entity = mapper.toJpaEntity(product);
         ProductJpaEntity updatedEntity = repository.save(entity);
         return mapper.toDomainEntity(updatedEntity);
-    }
-
-    @Override
-    public Optional<Product> findById(Long productId) {
-        return repository.findById(productId)
-                .map(mapper::toDomainEntity);
     }
 
     @Override

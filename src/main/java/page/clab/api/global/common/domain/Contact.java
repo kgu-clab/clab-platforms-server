@@ -18,5 +18,4 @@ public class Contact {
     private static String removeHyphens(String value) {
         return value.replaceAll("-", "");
     }
-
 }

@@ -35,5 +35,4 @@ public class ActivityGroupReportRequestDto {
                 .content(requestDto.getContent())
                 .build();
     }
-
 }

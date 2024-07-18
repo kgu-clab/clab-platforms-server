@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.members.schedule.application.dto.response.ScheduleCollectResponseDto;
 import page.clab.api.domain.members.schedule.application.port.out.RegisterSchedulePort;
-import page.clab.api.domain.members.schedule.application.port.out.RemoveSchedulePort;
 import page.clab.api.domain.members.schedule.application.port.out.RetrieveSchedulePort;
 import page.clab.api.domain.members.schedule.domain.Schedule;
 import page.clab.api.domain.members.schedule.domain.SchedulePriority;
@@ -15,14 +14,12 @@ import page.clab.api.global.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class SchedulePersistenceAdapter implements
         RegisterSchedulePort,
-        RetrieveSchedulePort,
-        RemoveSchedulePort {
+        RetrieveSchedulePort {
 
     private final ScheduleRepository repository;
     private final ScheduleMapper mapper;
@@ -32,16 +29,6 @@ public class SchedulePersistenceAdapter implements
         ScheduleJpaEntity entity = mapper.toJpaEntity(schedule);
         ScheduleJpaEntity savedEntity = repository.save(entity);
         return mapper.toDomainEntity(savedEntity);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        repository.deleteById(id);
-    }
-
-    @Override
-    public Optional<Schedule> findById(Long id) {
-        return repository.findById(id).map(mapper::toDomainEntity);
     }
 
     @Override

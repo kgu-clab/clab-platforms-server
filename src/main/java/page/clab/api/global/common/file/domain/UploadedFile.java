@@ -76,5 +76,4 @@ public class UploadedFile extends BaseEntity {
             throw new PermissionDeniedException("해당 파일을 삭제할 권한이 없습니다.");
         }
     }
-
 }

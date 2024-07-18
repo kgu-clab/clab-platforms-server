@@ -5,19 +5,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.news.application.port.out.RegisterNewsPort;
-import page.clab.api.domain.community.news.application.port.out.RemoveNewsPort;
 import page.clab.api.domain.community.news.application.port.out.RetrieveNewsPort;
 import page.clab.api.domain.community.news.application.port.out.UpdateNewsPort;
 import page.clab.api.domain.community.news.domain.News;
 import page.clab.api.global.exception.NotFoundException;
 
-import java.util.Optional;
-
 @Component
 @RequiredArgsConstructor
 public class NewsPersistenceAdapter implements
         RegisterNewsPort,
-        RemoveNewsPort,
         UpdateNewsPort,
         RetrieveNewsPort {
 
@@ -32,22 +28,10 @@ public class NewsPersistenceAdapter implements
     }
 
     @Override
-    public void delete(News news) {
-        NewsJpaEntity entity = mapper.toJpaEntity(news);
-        repository.delete(entity);
-    }
-
-    @Override
     public News update(News news) {
         NewsJpaEntity entity = mapper.toJpaEntity(news);
         NewsJpaEntity updatedEntity = repository.save(entity);
         return mapper.toDomainEntity(updatedEntity);
-    }
-
-    @Override
-    public Optional<News> findById(Long id) {
-        return repository.findById(id)
-                .map(mapper::toDomainEntity);
     }
 
     @Override

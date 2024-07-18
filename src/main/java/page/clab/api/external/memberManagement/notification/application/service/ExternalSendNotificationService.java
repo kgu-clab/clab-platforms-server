@@ -18,8 +18,8 @@ public class ExternalSendNotificationService implements ExternalSendNotification
     private final RegisterNotificationPort registerNotificationPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
-    @Override
     @Transactional
+    @Override
     public void sendNotificationToAllMembers(String content) {
         List<Notification> notifications = externalRetrieveMemberUseCase.getMemberIds().stream()
                 .map(memberId -> Notification.create(memberId, content))
@@ -27,16 +27,16 @@ public class ExternalSendNotificationService implements ExternalSendNotification
         registerNotificationPort.saveAll(notifications);
     }
 
-    @Override
     @Transactional
+    @Override
     public void sendNotificationToMember(String memberId, String content) {
         externalRetrieveMemberUseCase.ensureMemberExists(memberId);
         Notification notification = Notification.create(memberId, content);
         registerNotificationPort.save(notification);
     }
 
-    @Override
     @Transactional
+    @Override
     public void sendNotificationToMembers(List<String> memberIds, String content) {
         List<Notification> notifications = memberIds.stream()
                 .map(memberId -> Notification.create(memberId, content))
@@ -44,14 +44,14 @@ public class ExternalSendNotificationService implements ExternalSendNotification
         registerNotificationPort.saveAll(notifications);
     }
 
-    @Override
     @Transactional
+    @Override
     public void sendNotificationToAdmins(String content) {
         sendNotificationToSpecificRole(externalRetrieveMemberUseCase::getAdminIds, content);
     }
 
-    @Override
     @Transactional
+    @Override
     public void sendNotificationToSuperAdmins(String content) {
         sendNotificationToSpecificRole(externalRetrieveMemberUseCase::getSuperAdminIds, content);
     }

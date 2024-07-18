@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NewsRepository extends JpaRepository<NewsJpaEntity, Long>, NewsRepositoryCustom, QuerydslPredicateExecutor<NewsJpaEntity> {
+
     @Query(value = "SELECT n.* FROM news n WHERE n.is_deleted = true", nativeQuery = true)
     Page<NewsJpaEntity> findAllByIsDeletedTrue(Pageable pageable);
 }

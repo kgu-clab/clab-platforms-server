@@ -13,9 +13,7 @@ import java.util.List;
 public class ActivityGroupDetails {
 
     private ActivityGroup activityGroup;
-
     private List<GroupMember> groupMembers;
-
     private List<ActivityGroupBoard> activityGroupBoards;
 
     private ActivityGroupDetails(ActivityGroup activityGroup, List<GroupMember> groupMembers, List<ActivityGroupBoard> activityGroupBoards) {
@@ -27,5 +25,4 @@ public class ActivityGroupDetails {
     public static ActivityGroupDetails create(ActivityGroup activityGroup, List<GroupMember> groupMembers, List<ActivityGroupBoard> activityGroupBoards) {
         return new ActivityGroupDetails(activityGroup, groupMembers, activityGroupBoards);
     }
-
 }

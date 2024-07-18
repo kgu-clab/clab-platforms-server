@@ -11,9 +11,7 @@ import java.time.LocalDateTime;
 public class AttendanceResponseDto {
 
     private Long activityGroupId;
-
     private String memberId;
-
     private LocalDateTime attendanceDateTime;
 
     public static AttendanceResponseDto toDto(Attendance attendance) {
@@ -23,5 +21,4 @@ public class AttendanceResponseDto {
                 .attendanceDateTime(attendance.getCreatedAt())
                 .build();
     }
-
 }

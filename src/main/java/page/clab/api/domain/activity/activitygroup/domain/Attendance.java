@@ -45,5 +45,4 @@ public class Attendance extends BaseEntity {
                 .activityDate(activityDate)
                 .build();
     }
-
 }

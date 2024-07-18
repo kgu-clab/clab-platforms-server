@@ -5,10 +5,8 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.hiring.recruitment.domain.Recruitment;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface RetrieveRecruitmentPort {
-    Optional<Recruitment> findById(Long recruitmentId);
 
     Recruitment findByIdOrThrow(Long recruitmentId);
 

@@ -2,6 +2,7 @@ package page.clab.api.external.hiring.application.application.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.hiring.recruitment.application.port.out.RetrieveRecruitmentPort;
 import page.clab.api.external.hiring.application.application.port.ExternalRetrieveRecruitmentUseCase;
 
@@ -11,6 +12,7 @@ public class ExternalRecruitmentRetrievalService implements ExternalRetrieveRecr
 
     private final RetrieveRecruitmentPort retrieveRecruitmentPort;
 
+    @Transactional(readOnly = true)
     @Override
     public void ensureRecruitmentExists(Long recruitmentId) {
         retrieveRecruitmentPort.existsByIdOrThrow(recruitmentId);

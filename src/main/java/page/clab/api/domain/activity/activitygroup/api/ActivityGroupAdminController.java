@@ -147,5 +147,4 @@ public class ActivityGroupAdminController {
         PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupAdminService.getDeletedActivityGroups(pageable);
         return ApiResponse.success(activityGroups);
     }
-
 }

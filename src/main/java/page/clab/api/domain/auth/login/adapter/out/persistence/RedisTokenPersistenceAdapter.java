@@ -25,11 +25,6 @@ public class RedisTokenPersistenceAdapter implements
     }
 
     @Override
-    public Optional<RedisToken> findById(String id) {
-        return redisTokenRepository.findById(id);
-    }
-
-    @Override
     public Optional<RedisToken> findByAccessToken(String accessToken) {
         return redisTokenRepository.findByAccessToken(accessToken);
     }

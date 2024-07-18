@@ -65,5 +65,4 @@ public class InvalidEndpointAccessFilter extends GenericFilterBean {
         }
         ResponseUtil.sendErrorResponse(response, httpStatus);
     }
-
 }

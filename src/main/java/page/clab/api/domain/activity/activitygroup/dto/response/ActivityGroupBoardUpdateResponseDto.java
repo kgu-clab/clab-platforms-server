@@ -9,7 +9,6 @@ import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
 public class ActivityGroupBoardUpdateResponseDto {
 
     private Long id;
-
     private Long parentId;
 
     public static ActivityGroupBoardUpdateResponseDto toDto(ActivityGroupBoard board) {
@@ -18,5 +17,4 @@ public class ActivityGroupBoardUpdateResponseDto {
                 .parentId(board.getParent() != null ? board.getParent().getId() : null)
                 .build();
     }
-
 }

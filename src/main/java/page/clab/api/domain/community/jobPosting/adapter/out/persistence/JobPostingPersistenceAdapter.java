@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.jobPosting.application.port.out.RegisterJobPostingPort;
-import page.clab.api.domain.community.jobPosting.application.port.out.RemoveJobPostingPort;
 import page.clab.api.domain.community.jobPosting.application.port.out.RetrieveJobPostingPort;
 import page.clab.api.domain.community.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.community.jobPosting.domain.EmploymentType;
@@ -18,8 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class JobPostingPersistenceAdapter implements
         RegisterJobPostingPort,
-        RetrieveJobPostingPort,
-        RemoveJobPostingPort {
+        RetrieveJobPostingPort {
 
     private final JobPostingRepository repository;
     private final JobPostingMapper jobPostingMapper;
@@ -29,16 +27,6 @@ public class JobPostingPersistenceAdapter implements
         JobPostingJpaEntity entity = jobPostingMapper.toJpaEntity(jobPosting);
         JobPostingJpaEntity savedEntity = repository.save(entity);
         return jobPostingMapper.toDomain(savedEntity);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        repository.deleteById(id);
-    }
-
-    @Override
-    public Optional<JobPosting> findById(Long jobPostingId) {
-        return repository.findById(jobPostingId).map(jobPostingMapper::toDomain);
     }
 
     @Override

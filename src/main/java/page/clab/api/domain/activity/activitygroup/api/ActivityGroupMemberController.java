@@ -145,5 +145,4 @@ public class ActivityGroupMemberController {
         Long id = activityGroupMemberService.applyActivityGroup(activityGroupId, requestDto);
         return ApiResponse.success(id);
     }
-
 }

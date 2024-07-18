@@ -9,7 +9,6 @@ import page.clab.api.domain.community.jobPosting.domain.JobPosting;
 import java.util.Optional;
 
 public interface RetrieveJobPostingPort {
-    Optional<JobPosting> findById(Long jobPostingId);
 
     JobPosting findByIdOrThrow(Long jobPostingId);
 

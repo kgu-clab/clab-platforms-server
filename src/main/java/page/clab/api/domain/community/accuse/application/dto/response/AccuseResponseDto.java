@@ -33,5 +33,4 @@ public class AccuseResponseDto {
                 .createdAt(accuse.getCreatedAt())
                 .build();
     }
-
 }
