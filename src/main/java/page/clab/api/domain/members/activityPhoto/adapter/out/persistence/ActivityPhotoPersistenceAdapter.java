@@ -26,12 +26,6 @@ public class ActivityPhotoPersistenceAdapter implements
     }
 
     @Override
-    public void delete(ActivityPhoto activityPhoto) {
-        ActivityPhotoJpaEntity entity = activityPhotoMapper.toJpaEntity(activityPhoto);
-        activityPhotoRepository.delete(entity);
-    }
-
-    @Override
     public ActivityPhoto findByIdOrThrow(Long activityPhotoId) {
         return activityPhotoRepository.findById(activityPhotoId)
                 .map(activityPhotoMapper::toDomain)
