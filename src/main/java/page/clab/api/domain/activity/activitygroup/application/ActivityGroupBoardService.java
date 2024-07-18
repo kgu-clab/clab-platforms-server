@@ -21,9 +21,9 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoa
 import page.clab.api.domain.activity.activitygroup.dto.response.AssignmentSubmissionWithFeedbackResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.FeedbackResponseDto;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.memberManagement.member.domain.Member;
-import page.clab.api.domain.memberManagement.notification.application.port.in.SendNotificationUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
+import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
@@ -39,15 +39,15 @@ import java.util.List;
 public class ActivityGroupBoardService {
 
     private final ActivityGroupBoardRepository activityGroupBoardRepository;
-    private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final ActivityGroupAdminService activityGroupAdminService;
     private final ActivityGroupMemberService activityGroupMemberService;
-    private final SendNotificationUseCase notificationService;
     private final UploadedFileService uploadedFileService;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
 
     @Transactional
     public Long createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
         if (!activityGroupMemberService.isGroupMember(activityGroup, currentMember.getId())) {
             throw new PermissionDeniedException("활동 그룹 멤버만 게시글을 등록할 수 있습니다.");
@@ -88,7 +88,7 @@ public class ActivityGroupBoardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) throws PermissionDeniedException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
         Long activityGroupId = parentBoard.getActivityGroup().getId();
 
@@ -102,7 +102,7 @@ public class ActivityGroupBoardService {
 
     @Transactional(readOnly = true)
     public List<AssignmentSubmissionWithFeedbackResponseDto> getMyAssignmentsWithFeedbacks(Long parentId) {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
         List<ActivityGroupBoard> mySubmissions = activityGroupBoardRepository.findMySubmissionsWithFeedbacks(parentId, currentMember.getId());
         return mySubmissions.stream()
@@ -118,7 +118,7 @@ public class ActivityGroupBoardService {
 
     @Transactional
     public ActivityGroupBoardUpdateResponseDto updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
         board.validateAccessPermission(currentMember);
 
@@ -128,7 +128,7 @@ public class ActivityGroupBoardService {
     }
 
     public Long deleteActivityGroupBoard(Long activityGroupBoardId) throws PermissionDeniedException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
         board.validateAccessPermission(currentMember);
         activityGroupBoardRepository.delete(board);
@@ -193,13 +193,13 @@ public class ActivityGroupBoardService {
             groupMembers
                     .forEach(gMember -> {
                         if (!gMember.isOwner(member.getId())) {
-                            notificationService.sendNotificationToMember(gMember.getMemberId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
+                            externalSendNotificationUseCase.sendNotificationToMember(gMember.getMemberId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
                         }
                     });
         } else {
             GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
             if (groupLeader != null) {
-                notificationService.sendNotificationToMember(groupLeader.getMemberId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
+                externalSendNotificationUseCase.sendNotificationToMember(groupLeader.getMemberId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
             }
         }
     }

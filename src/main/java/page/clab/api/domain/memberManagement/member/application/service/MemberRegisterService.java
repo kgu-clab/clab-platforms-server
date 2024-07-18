@@ -13,10 +13,10 @@ import page.clab.api.domain.memberManagement.member.application.port.in.Register
 import page.clab.api.domain.memberManagement.member.application.port.out.CheckMemberExistencePort;
 import page.clab.api.domain.memberManagement.member.application.port.out.RegisterMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;
-import page.clab.api.domain.memberManagement.position.application.port.out.RegisterPositionPort;
-import page.clab.api.domain.memberManagement.position.application.port.out.RetrievePositionPort;
 import page.clab.api.domain.memberManagement.position.domain.Position;
 import page.clab.api.domain.memberManagement.position.domain.PositionType;
+import page.clab.api.external.memberManagement.position.application.port.ExternalRegisterPositionUseCase;
+import page.clab.api.external.memberManagement.position.application.port.ExternalRetrievePositionUseCase;
 import page.clab.api.global.common.email.application.EmailService;
 import page.clab.api.global.common.verification.application.VerificationService;
 
@@ -28,12 +28,12 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class MemberRegisterService implements RegisterMemberUseCase {
 
-    private final VerificationService verificationService;
-    private final EmailService emailService;
     private final CheckMemberExistencePort checkMemberExistencePort;
     private final RegisterMemberPort registerMemberPort;
-    private final RegisterPositionPort registerPositionPort;
-    private final RetrievePositionPort retrievePositionPort;
+    private final ExternalRegisterPositionUseCase externalRegisterPositionUseCase;
+    private final ExternalRetrievePositionUseCase externalRetrievePositionUseCase;
+    private final VerificationService verificationService;
+    private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -65,11 +65,11 @@ public class MemberRegisterService implements RegisterMemberUseCase {
     }
 
     public void createPositionByMember(Member member) {
-        if (retrievePositionPort.findByMemberIdAndYearAndPositionType(member.getId(), String.valueOf(LocalDate.now().getYear()), PositionType.MEMBER).isPresent()) {
+        if (externalRetrievePositionUseCase.findByMemberIdAndYearAndPositionType(member.getId(), String.valueOf(LocalDate.now().getYear()), PositionType.MEMBER).isPresent()) {
             return;
         }
         Position position = Position.create(member.getId());
-        registerPositionPort.save(position);
+        externalRegisterPositionUseCase.save(position);
     }
 
     private void setRandomPasswordAndSendEmail(Member member) {

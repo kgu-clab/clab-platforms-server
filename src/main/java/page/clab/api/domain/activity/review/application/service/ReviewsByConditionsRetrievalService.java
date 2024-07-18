@@ -9,24 +9,24 @@ import page.clab.api.domain.activity.review.application.dto.response.ReviewRespo
 import page.clab.api.domain.activity.review.application.port.in.RetrieveReviewsByConditionsUseCase;
 import page.clab.api.domain.activity.review.application.port.out.RetrieveReviewPort;
 import page.clab.api.domain.activity.review.domain.Review;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
-import page.clab.api.domain.memberManagement.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberReviewInfoDto;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewsByConditionsRetrievalService implements RetrieveReviewsByConditionsUseCase {
 
-    private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final RetrieveReviewPort retrieveReviewPort;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<ReviewResponseDto> retrieveReviews(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable) {
-        String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
+        String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         Page<Review> reviews = retrieveReviewPort.findByConditions(memberId, memberName, activityId, isPublic, pageable);
         return new PagedResponseDto<>(reviews.map(review -> {
-            Member reviewer = retrieveMemberUseCase.findByIdOrThrow(review.getMemberId());
+            MemberReviewInfoDto reviewer = externalRetrieveMemberUseCase.getMemberReviewInfoById(review.getMemberId());
             return ReviewResponseDto.toDto(review, reviewer, review.isOwner(currentMemberId));
         }));
     }

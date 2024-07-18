@@ -69,4 +69,11 @@ public class RecruitmentPersistenceAdapter implements
                 .map(mapper::toDomainEntity)
                 .toList();
     }
+
+    @Override
+    public void existsByIdOrThrow(Long recruitmentId) {
+        if (!repository.existsById(recruitmentId)) {
+            throw new NotFoundException("[Recruitment] id: " + recruitmentId + "에 해당하는 모집 공고가 존재하지 않습니다.");
+        }
+    }
 }

@@ -17,4 +17,6 @@ public interface RetrieveRecruitmentPort {
     Page<Recruitment> findAllByIsDeletedTrue(Pageable pageable);
 
     List<Recruitment> findTop5ByOrderByCreatedAtDesc();
+
+    void existsByIdOrThrow(Long recruitmentId);
 }

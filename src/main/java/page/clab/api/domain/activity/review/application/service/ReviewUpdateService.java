@@ -9,21 +9,21 @@ import page.clab.api.domain.activity.review.application.port.out.RegisterReviewP
 import page.clab.api.domain.activity.review.application.port.out.RetrieveReviewPort;
 import page.clab.api.domain.activity.review.domain.Review;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewUpdateService implements UpdateReviewUseCase {
 
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final RetrieveReviewPort retrieveReviewPort;
     private final RegisterReviewPort registerReviewPort;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
     @Transactional
     @Override
     public Long updateReview(Long reviewId, ReviewUpdateRequestDto requestDto) throws PermissionDeniedException {
-        MemberDetailedInfoDto currentMember = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
+        MemberDetailedInfoDto currentMember = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         Review review = retrieveReviewPort.findByIdOrThrow(reviewId);
         review.validateAccessPermission(currentMember);
         review.update(requestDto);

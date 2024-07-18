@@ -3,11 +3,10 @@ package page.clab.api.domain.memberManagement.notification.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.memberManagement.member.application.port.in.EnsureMemberExistenceUseCase;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.memberManagement.notification.application.port.in.SendNotificationUseCase;
 import page.clab.api.domain.memberManagement.notification.application.port.out.RegisterNotificationPort;
 import page.clab.api.domain.memberManagement.notification.domain.Notification;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -16,14 +15,13 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class NotificationSenderUseCase implements SendNotificationUseCase {
 
-    private final EnsureMemberExistenceUseCase ensureMemberExistenceUseCase;
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final RegisterNotificationPort registerNotificationPort;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
     @Override
     @Transactional
     public void sendNotificationToAllMembers(String content) {
-        List<Notification> notifications = retrieveMemberInfoUseCase.getMemberIds().stream()
+        List<Notification> notifications = externalRetrieveMemberUseCase.getMemberIds().stream()
                 .map(memberId -> Notification.create(memberId, content))
                 .toList();
         registerNotificationPort.saveAll(notifications);
@@ -32,7 +30,7 @@ public class NotificationSenderUseCase implements SendNotificationUseCase {
     @Override
     @Transactional
     public void sendNotificationToMember(String memberId, String content) {
-        ensureMemberExistenceUseCase.ensureMemberExists(memberId);
+        externalRetrieveMemberUseCase.ensureMemberExists(memberId);
         Notification notification = Notification.create(memberId, content);
         registerNotificationPort.save(notification);
     }
@@ -49,13 +47,13 @@ public class NotificationSenderUseCase implements SendNotificationUseCase {
     @Override
     @Transactional
     public void sendNotificationToAdmins(String content) {
-        sendNotificationToSpecificRole(retrieveMemberInfoUseCase::getAdminIds, content);
+        sendNotificationToSpecificRole(externalRetrieveMemberUseCase::getAdminIds, content);
     }
 
     @Override
     @Transactional
     public void sendNotificationToSuperAdmins(String content) {
-        sendNotificationToSpecificRole(retrieveMemberInfoUseCase::getSuperAdminIds, content);
+        sendNotificationToSpecificRole(externalRetrieveMemberUseCase::getSuperAdminIds, content);
     }
 
     private void sendNotificationToSpecificRole(Supplier<List<String>> memberSupplier, String content) {

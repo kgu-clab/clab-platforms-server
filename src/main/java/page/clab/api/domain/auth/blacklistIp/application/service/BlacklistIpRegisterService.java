@@ -16,9 +16,9 @@ import page.clab.api.global.common.slack.domain.SecurityAlertType;
 @RequiredArgsConstructor
 public class BlacklistIpRegisterService implements RegisterBlacklistIpUseCase {
 
-    private final SlackService slackService;
     private final RegisterBlacklistIpPort registerBlacklistIpPort;
     private final RetrieveBlacklistIpPort retrieveBlacklistIpPort;
+    private final SlackService slackService;
 
     @Transactional
     @Override

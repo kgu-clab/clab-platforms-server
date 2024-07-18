@@ -12,8 +12,7 @@ import page.clab.api.domain.auth.accountLockInfo.domain.AccountLockInfo;
 import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
 import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 
@@ -21,11 +20,10 @@ import page.clab.api.global.common.slack.domain.SecurityAlertType;
 @RequiredArgsConstructor
 public class AccountLockManagementService implements ManageAccountLockUseCase {
 
-    private final RetrieveMemberUseCase retrieveMemberUseCase;
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
-    private final SlackService slackService;
     private final RetrieveAccountLockInfoPort retrieveAccountLockInfoPort;
     private final RegisterAccountLockInfoPort registerAccountLockInfoPort;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final SlackService slackService;
 
     @Value("${security.login-attempt.max-failures}")
     private int maxLoginFailures;
@@ -63,7 +61,7 @@ public class AccountLockManagementService implements ManageAccountLockUseCase {
     }
 
     private void ensureMemberExists(String memberId) throws LoginFailedException {
-        if (retrieveMemberUseCase.findById(memberId).isEmpty()) {
+        if (!externalRetrieveMemberUseCase.existsById(memberId)) {
             throw new LoginFailedException();
         }
     }
@@ -75,7 +73,7 @@ public class AccountLockManagementService implements ManageAccountLockUseCase {
     }
 
     private void sendSlackLoginFailureNotification(HttpServletRequest request, String memberId) {
-        MemberDetailedInfoDto memberInfo = retrieveMemberInfoUseCase.getMemberDetailedInfoById(memberId);
+        MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(memberId);
         String memberName = memberInfo.getMemberName();
         if (memberInfo.isAdminRole()) {
             request.setAttribute("member", memberId + " " + memberName);

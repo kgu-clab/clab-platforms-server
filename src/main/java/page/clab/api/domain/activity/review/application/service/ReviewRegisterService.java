@@ -15,23 +15,23 @@ import page.clab.api.domain.activity.review.application.port.out.RegisterReviewP
 import page.clab.api.domain.activity.review.application.port.out.RetrieveReviewPort;
 import page.clab.api.domain.activity.review.domain.Review;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.memberManagement.notification.application.port.in.SendNotificationUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
+import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewRegisterService implements RegisterReviewUseCase {
 
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
-    private final ActivityGroupMemberService activityGroupMemberService;
-    private final SendNotificationUseCase notificationService;
     private final RegisterReviewPort registerReviewPort;
     private final RetrieveReviewPort retrieveReviewPort;
+    private final ActivityGroupMemberService activityGroupMemberService;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
 
     @Transactional
     @Override
     public Long registerReview(ReviewRequestDto requestDto) {
-        MemberBasicInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberBasicInfo();
+        MemberBasicInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(requestDto.getActivityGroupId());
         validateReviewCreationPermission(activityGroup, currentMemberInfo.getMemberId());
         Review review = ReviewRequestDto.toEntity(requestDto, currentMemberInfo.getMemberId(), activityGroup);
@@ -51,7 +51,7 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
     private void notifyGroupLeaderOfNewReview(ActivityGroup activityGroup, String memberName) {
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         if (groupLeader != null) {
-            notificationService.sendNotificationToMember(groupLeader.getMemberId(), "[" + activityGroup.getName() + "] " + memberName + "님이 리뷰를 등록하였습니다.");
+            externalSendNotificationUseCase.sendNotificationToMember(groupLeader.getMemberId(), "[" + activityGroup.getName() + "] " + memberName + "님이 리뷰를 등록하였습니다.");
         }
     }
 

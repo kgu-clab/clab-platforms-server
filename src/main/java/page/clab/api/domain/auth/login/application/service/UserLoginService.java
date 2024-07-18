@@ -8,9 +8,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.auth.accountAccessLog.application.port.in.RegisterAccountAccessLogUseCase;
 import page.clab.api.domain.auth.accountAccessLog.domain.AccountAccessResult;
-import page.clab.api.domain.auth.accountLockInfo.application.port.in.ManageAccountLockUseCase;
 import page.clab.api.domain.auth.login.application.dto.request.LoginRequestDto;
 import page.clab.api.domain.auth.login.application.dto.request.TwoFactorAuthenticationRequestDto;
 import page.clab.api.domain.auth.login.application.dto.response.LoginHeader;
@@ -21,10 +19,12 @@ import page.clab.api.domain.auth.login.application.exception.LoginFailedExceptio
 import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.auth.login.application.port.in.ManageAuthenticatorUseCase;
 import page.clab.api.domain.auth.login.application.port.in.ManageLoginUseCase;
-import page.clab.api.domain.auth.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.memberManagement.member.application.port.in.UpdateMemberUseCase;
+import page.clab.api.external.auth.accountAccessLog.application.port.ExternalRegisterAccountAccessLogUseCase;
+import page.clab.api.external.auth.accountLockInfo.application.ExternalManageAccountLockUseCase;
+import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalUpdateMemberUseCase;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.util.HttpReqResUtil;
 
@@ -36,24 +36,24 @@ import java.util.Optional;
 @Qualifier("userLoginService")
 public class UserLoginService implements ManageLoginUseCase {
 
+    private final ManageAuthenticatorUseCase manageAuthenticatorUseCase;
+    private final ExternalManageAccountLockUseCase externalManageAccountLockUseCase;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final ExternalUpdateMemberUseCase externalUpdateMemberUseCase;
+    private final ExternalRegisterAccountAccessLogUseCase registerAccountAccessLogUseCase;
+    private final ExternalManageRedisTokenUseCase manageRedisTokenUseCase;
+
     @Qualifier("loginAuthenticationManager")
     private final AuthenticationManager loginAuthenticationManager;
-
     private final JwtTokenProvider jwtTokenProvider;
-    private final ManageAccountLockUseCase manageAccountLockUseCase;
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
-    private final UpdateMemberUseCase updateMemberUseCase;
-    private final RegisterAccountAccessLogUseCase registerAccountAccessLogUseCase;
-    private final ManageRedisTokenUseCase manageRedisTokenUseCase;
-    private final ManageAuthenticatorUseCase manageAuthenticatorUseCase;
 
     @Transactional
     @Override
     public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFailedException, MemberLockedException {
         authenticateAndCheckStatus(request, requestDto);
         registerAccountAccessLog(request, requestDto.getId(), true);
-        MemberLoginInfoDto loginMember = retrieveMemberInfoUseCase.getMemberLoginInfoById(requestDto.getId());
-        updateMemberUseCase.updateLastLoginTime(requestDto.getId());
+        MemberLoginInfoDto loginMember = externalRetrieveMemberUseCase.getMemberLoginInfoById(requestDto.getId());
+        externalUpdateMemberUseCase.updateLastLoginTime(requestDto.getId());
         return generateLoginResult(loginMember);
     }
 
@@ -62,10 +62,10 @@ public class UserLoginService implements ManageLoginUseCase {
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(loginRequestDto.getId(), loginRequestDto.getPassword());
             loginAuthenticationManager.authenticate(authenticationToken);
-            manageAccountLockUseCase.handleAccountLockInfo(loginRequestDto.getId());
+            externalManageAccountLockUseCase.handleAccountLockInfo(loginRequestDto.getId());
         } catch (BadCredentialsException e) {
             registerAccountAccessLog(httpServletRequest, loginRequestDto.getId(), false);
-            manageAccountLockUseCase.handleLoginFailure(httpServletRequest, loginRequestDto.getId());
+            externalManageAccountLockUseCase.handleLoginFailure(httpServletRequest, loginRequestDto.getId());
             throw new LoginFailedException();
         }
     }

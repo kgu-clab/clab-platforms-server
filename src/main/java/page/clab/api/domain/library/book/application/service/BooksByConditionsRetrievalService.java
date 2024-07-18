@@ -10,11 +10,9 @@ import page.clab.api.domain.library.book.application.dto.response.BookResponseDt
 import page.clab.api.domain.library.book.application.port.in.RetrieveBooksByConditionsUseCase;
 import page.clab.api.domain.library.book.application.port.out.RetrieveBookPort;
 import page.clab.api.domain.library.book.domain.Book;
-import page.clab.api.domain.library.bookLoanRecord.application.port.out.RetrieveBookLoanRecordPort;
-import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanRecord;
-import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanStatus;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.external.library.bookLoanRecord.application.port.ExternalRetrieveBookLoanRecordUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 import java.time.LocalDateTime;
@@ -23,9 +21,9 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class BooksByConditionsRetrievalService implements RetrieveBooksByConditionsUseCase {
 
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final RetrieveBookPort retrieveBookPort;
-    private final RetrieveBookLoanRecordPort retrieveBookLoanRecordPort;
+    private final ExternalRetrieveBookLoanRecordUseCase externalRetrieveBookLoanRecordUseCase;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
     @Transactional(readOnly = true)
     @Override
@@ -36,14 +34,8 @@ public class BooksByConditionsRetrievalService implements RetrieveBooksByConditi
 
     @NotNull
     private BookResponseDto mapToBookResponseDto(Book book) {
-        MemberBasicInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberBasicInfo();
-        LocalDateTime dueDate = getDueDateForBook(book.getId());
+        MemberBasicInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
+        LocalDateTime dueDate = externalRetrieveBookLoanRecordUseCase.getDueDateForBook(book.getId());
         return BookResponseDto.toDto(book, currentMemberInfo.getMemberName(), dueDate);
-    }
-
-    private LocalDateTime getDueDateForBook(Long bookId) {
-        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByBookIdAndReturnedAtIsNullAndStatus(bookId, BookLoanStatus.APPROVED)
-                .orElse(null);
-        return bookLoanRecord != null ? bookLoanRecord.getDueDate() : null;
     }
 }

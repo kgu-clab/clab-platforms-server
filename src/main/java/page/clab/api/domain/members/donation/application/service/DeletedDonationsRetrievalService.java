@@ -6,11 +6,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.members.donation.application.dto.response.DonationResponseDto;
 import page.clab.api.domain.members.donation.application.port.in.RetrieveDeletedDonationsUseCase;
 import page.clab.api.domain.members.donation.application.port.out.RetrieveDonationPort;
 import page.clab.api.domain.members.donation.domain.Donation;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service
@@ -18,14 +18,14 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class DeletedDonationsRetrievalService implements RetrieveDeletedDonationsUseCase {
 
     private final RetrieveDonationPort retrieveDonationPort;
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<DonationResponseDto> retrieveDeletedDonations(Pageable pageable) {
         Page<Donation> donations = retrieveDonationPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(donations.map(donation -> {
-            MemberBasicInfoDto memberInfo = retrieveMemberInfoUseCase.getMemberBasicInfoById(donation.getMemberId());
+            MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(donation.getMemberId());
             return DonationResponseDto.toDto(donation, memberInfo.getMemberName());
         }));
     }

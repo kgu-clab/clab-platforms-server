@@ -10,9 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberEmailInfoDto;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.memberManagement.member.domain.Member;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.common.email.dto.request.EmailDto;
 import page.clab.api.global.common.email.exception.MessageSendingFailedException;
@@ -30,7 +30,7 @@ import java.util.UUID;
 public class EmailService {
 
     private final RetrieveMemberUseCase retrieveMemberUseCase;
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final SpringTemplateEngine springTemplateEngine;
     private final EmailAsyncService emailAsyncService;
 
@@ -61,7 +61,7 @@ public class EmailService {
         List<File> convertedFiles = multipartFiles != null && !multipartFiles.isEmpty() ?
                 convertMultipartFiles(multipartFiles) : null;
 
-        List<MemberEmailInfoDto> memberInfos = retrieveMemberInfoUseCase.getMembers();
+        List<MemberEmailInfoDto> memberInfos = externalRetrieveMemberUseCase.getMembers();
 
         List<String> successfulEmails = Collections.synchronizedList(new ArrayList<>());
 

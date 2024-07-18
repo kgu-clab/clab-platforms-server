@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.community.board.application.dto.response.BoardListResponseDto;
-import page.clab.api.domain.community.board.application.port.in.RetrieveBoardsUseCase;
+import page.clab.api.domain.community.board.application.port.in.RetrieveBoardUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
@@ -25,7 +25,7 @@ import java.util.List;
 @Tag(name = "Community - Board", description = "커뮤니티 게시판")
 public class BoardsRetrievalController {
 
-    private final RetrieveBoardsUseCase retrieveBoardsUseCase;
+    private final RetrieveBoardUseCase retrieveBoardUseCase;
     private final PageableUtils pageableUtils;
 
     @GetMapping("")
@@ -39,7 +39,7 @@ public class BoardsRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, BoardListResponseDto.class);
-        PagedResponseDto<BoardListResponseDto> boards = retrieveBoardsUseCase.retrieveBoards(pageable);
+        PagedResponseDto<BoardListResponseDto> boards = retrieveBoardUseCase.retrieveBoards(pageable);
         return ApiResponse.success(boards);
     }
 }

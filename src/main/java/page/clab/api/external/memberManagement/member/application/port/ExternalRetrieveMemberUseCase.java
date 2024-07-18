@@ -1,4 +1,4 @@
-package page.clab.api.domain.memberManagement.member.application.port.in;
+package page.clab.api.external.memberManagement.member.application.port;
 
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBorrowerInfoDto;
@@ -6,10 +6,26 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberEmailInfoDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberPositionInfoDto;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberReviewInfoDto;
+import page.clab.api.domain.memberManagement.member.domain.Member;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface RetrieveMemberInfoUseCase {
+public interface ExternalRetrieveMemberUseCase {
+
+    boolean existsById(String memberId);
+
+    void ensureMemberExists(String memberId);
+
+    Optional<Member> findById(String id);
+
+    Member findByIdOrThrow(String memberId);
+
+    Member getCurrentMember();
+
+    String getCurrentMemberId();
+
     List<MemberEmailInfoDto> getMembers();
 
     List<String> getMemberIds();
@@ -31,4 +47,6 @@ public interface RetrieveMemberInfoUseCase {
     MemberLoginInfoDto getMemberLoginInfoById(String memberId);
 
     MemberPositionInfoDto getCurrentMemberPositionInfo();
+
+    MemberReviewInfoDto getMemberReviewInfoById(String memberId);
 }

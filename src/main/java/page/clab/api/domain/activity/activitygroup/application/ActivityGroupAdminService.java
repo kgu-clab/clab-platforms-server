@@ -21,9 +21,9 @@ import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupRequ
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupMemberWithApplyReasonResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupResponseDto;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.memberManagement.member.domain.Member;
-import page.clab.api.domain.memberManagement.notification.application.port.in.SendNotificationUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
+import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -36,29 +36,29 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ActivityGroupAdminService {
 
-    private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
-    private final SendNotificationUseCase notificationService;
     private final ActivityGroupRepository activityGroupRepository;
     private final GroupScheduleRepository groupScheduleRepository;
     private final ApplyFormRepository applyFormRepository;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
 
     @Transactional
     public Long createActivityGroup(ActivityGroupRequestDto requestDto) {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = ActivityGroupRequestDto.toEntity(requestDto);
         activityGroupRepository.save(activityGroup);
 
         GroupMember groupLeader = GroupMember.create(currentMember.getId(), activityGroup, ActivityGroupRole.LEADER, GroupMemberStatus.ACCEPTED);
         activityGroupMemberService.save(groupLeader);
 
-        notificationService.sendNotificationToMember(currentMember.getId(), "활동 그룹 생성이 완료되었습니다. 활동 승인이 완료되면 활동 그룹을 이용할 수 있습니다.");
+        externalSendNotificationUseCase.sendNotificationToMember(currentMember.getId(), "활동 그룹 생성이 완료되었습니다. 활동 승인이 완료되면 활동 그룹을 이용할 수 있습니다.");
         return activityGroup.getId();
     }
 
     @Transactional
     public Long updateActivityGroup(Long activityGroupId, ActivityGroupUpdateRequestDto requestDto) throws PermissionDeniedException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
             throw new PermissionDeniedException("해당 활동을 수정할 권한이 없습니다.");
@@ -75,7 +75,7 @@ public class ActivityGroupAdminService {
 
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
         if (groupLeader != null) {
-            notificationService.sendNotificationToMember(groupLeader.getMemberId(), "활동 그룹이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
+            externalSendNotificationUseCase.sendNotificationToMember(groupLeader.getMemberId(), "활동 그룹이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
         }
         return activityGroup.getId();
     }
@@ -98,14 +98,14 @@ public class ActivityGroupAdminService {
         activityGroupRepository.delete(activityGroup);
 
         if (groupLeader != null) {
-            notificationService.sendNotificationToMember(groupLeader.getMemberId(), "활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다.");
+            externalSendNotificationUseCase.sendNotificationToMember(groupLeader.getMemberId(), "활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다.");
         }
         return activityGroup.getId();
     }
 
     @Transactional
     public Long updateProjectProgress(Long activityGroupId, Long progress) throws PermissionDeniedException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
             throw new PermissionDeniedException("해당 활동을 수정할 권한이 없습니다.");
@@ -116,7 +116,7 @@ public class ActivityGroupAdminService {
 
     @Transactional
     public Long addSchedule(Long activityGroupId, List<GroupScheduleDto> scheduleDtos) throws PermissionDeniedException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
             throw new PermissionDeniedException("해당 일정을 등록할 권한이 없습니다.");
@@ -130,7 +130,7 @@ public class ActivityGroupAdminService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupMemberWithApplyReasonResponseDto> getGroupMembersWithApplyReason(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!(isMemberGroupLeaderRole(activityGroup, currentMember) || currentMember.isAdminRole())) {
             throw new PermissionDeniedException("해당 활동의 멤버를 조회할 권한이 없습니다.");
@@ -147,7 +147,7 @@ public class ActivityGroupAdminService {
         List<ActivityGroupMemberWithApplyReasonResponseDto> groupMembersWithApplyReason = groupMembers.getContent().stream()
                 .map(groupMember -> {
                     String applyReason = memberIdToApplyReasonMap.getOrDefault(groupMember.getMemberId(), "");
-                    Member member = retrieveMemberUseCase.findByIdOrThrow(groupMember.getMemberId());
+                    Member member = externalRetrieveMemberUseCase.findByIdOrThrow(groupMember.getMemberId());
                     return ActivityGroupMemberWithApplyReasonResponseDto.create(member, groupMember, applyReason);
                 }).toList();
 
@@ -156,19 +156,19 @@ public class ActivityGroupAdminService {
 
     @Transactional
     public String manageGroupMemberStatus(Long activityGroupId, String memberId, GroupMemberStatus status) throws PermissionDeniedException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
             throw new PermissionDeniedException("해당 활동의 신청 멤버를 조회할 권한이 없습니다.");
         }
 
-        Member member = retrieveMemberUseCase.findByIdOrThrow(memberId);
+        Member member = externalRetrieveMemberUseCase.findByIdOrThrow(memberId);
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member.getId());
         groupMember.validateAccessPermission();
         groupMember.updateStatus(status);
         activityGroupMemberService.save(groupMember);
 
-        notificationService.sendNotificationToMember(member.getId(), "활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
+        externalSendNotificationUseCase.sendNotificationToMember(member.getId(), "활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
         return groupMember.getMemberId();
     }
 

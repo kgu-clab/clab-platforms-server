@@ -3,8 +3,6 @@ package page.clab.api.domain.library.bookLoanRecord.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.library.book.application.port.out.RegisterBookPort;
-import page.clab.api.domain.library.book.application.port.out.RetrieveBookPort;
 import page.clab.api.domain.library.book.domain.Book;
 import page.clab.api.domain.library.bookLoanRecord.application.dto.request.BookLoanRecordRequestDto;
 import page.clab.api.domain.library.bookLoanRecord.application.port.in.ReturnBookUseCase;
@@ -13,37 +11,39 @@ import page.clab.api.domain.library.bookLoanRecord.application.port.out.Retrieve
 import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanRecord;
 import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanStatus;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBorrowerInfoDto;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.memberManagement.member.application.port.in.UpdateMemberUseCase;
-import page.clab.api.domain.memberManagement.notification.application.port.in.SendNotificationUseCase;
+import page.clab.api.external.library.book.application.port.ExternalRegisterBookUseCase;
+import page.clab.api.external.library.book.application.port.ExternalRetrieveBookUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalUpdateMemberUseCase;
+import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
 
 @Service
 @RequiredArgsConstructor
 public class BookReturnService implements ReturnBookUseCase {
 
-    private final RetrieveBookPort retrieveBookPort;
     private final RetrieveBookLoanRecordPort retrieveBookLoanRecordPort;
-    private final RegisterBookPort registerBookPort;
     private final RegisterBookLoanRecordPort registerBookLoanRecordPort;
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
-    private final UpdateMemberUseCase updateMemberUseCase;
-    private final SendNotificationUseCase notificationService;
+    private final ExternalRegisterBookUseCase externalRegisterBookUseCase;
+    private final ExternalRetrieveBookUseCase externalRetrieveBookUseCase;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final ExternalUpdateMemberUseCase externalUpdateMemberUseCase;
+    private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
 
     @Transactional
     @Override
     public Long returnBook(BookLoanRecordRequestDto requestDto) {
-        MemberBorrowerInfoDto borrowerInfo = retrieveMemberInfoUseCase.getCurrentMemberBorrowerInfo();
+        MemberBorrowerInfoDto borrowerInfo = externalRetrieveMemberUseCase.getCurrentMemberBorrowerInfo();
         String currentMemberId = borrowerInfo.getMemberId();
-        Book book = retrieveBookPort.findByIdOrThrow(requestDto.getBookId());
+        Book book = externalRetrieveBookUseCase.findByIdOrThrow(requestDto.getBookId());
         book.returnBook(currentMemberId);
-        registerBookPort.save(book);
+        externalRegisterBookUseCase.save(book);
 
         BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByBookIdAndReturnedAtIsNullAndStatusOrThrow(book.getId(), BookLoanStatus.APPROVED);
         bookLoanRecord.markAsReturned(borrowerInfo);
 
-        updateMemberUseCase.updateLoanSuspensionDate(borrowerInfo.getMemberId(), borrowerInfo.getLoanSuspensionDate());
+        externalUpdateMemberUseCase.updateLoanSuspensionDate(borrowerInfo.getMemberId(), borrowerInfo.getLoanSuspensionDate());
 
-        notificationService.sendNotificationToMember(currentMemberId, "[" + book.getTitle() + "] 도서 반납이 완료되었습니다.");
+        externalSendNotificationUseCase.sendNotificationToMember(currentMemberId, "[" + book.getTitle() + "] 도서 반납이 완료되었습니다.");
         return registerBookLoanRecordPort.save(bookLoanRecord).getId();
     }
 }

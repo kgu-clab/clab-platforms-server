@@ -23,8 +23,8 @@ import page.clab.api.domain.activity.activitygroup.dto.response.AbsentResponseDt
 import page.clab.api.domain.activity.activitygroup.dto.response.AttendanceResponseDto;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAttendanceException;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.memberManagement.member.domain.Member;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.exception.InvalidInformationException;
@@ -43,13 +43,14 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 public class AttendanceService {
 
-    private final RetrieveMemberUseCase retrieveMemberUseCase;
-    private final FileService fileService;
     private final ActivityGroupAdminService activityGroupAdminService;
     private final AttendanceRepository attendanceRepository;
     private final RedisQRKeyRepository redisQRKeyRepository;
     private final AbsentRepository absentRepository;
     private final GoogleAuthenticator googleAuthenticator;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final FileService fileService;
+
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -67,7 +68,7 @@ public class AttendanceService {
 
     @Transactional
     public String generateAttendanceQRCode(Long activityGroupId) throws IOException, WriterException, PermissionDeniedException, IllegalAccessException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = validateAttendanceQRCodeGeneration(activityGroupId, currentMember);
 
         String nowDateTime = LocalDateTime.now().format(dateTimeFormatter);
@@ -86,7 +87,7 @@ public class AttendanceService {
 
     @Transactional
     public Long checkMemberAttendance(AttendanceRequestDto requestDto) throws IllegalAccessException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = validateMemberForAttendance(currentMember, requestDto.getActivityGroupId());
         validateQRCodeData(requestDto.getQRCodeSecretKey());
         Attendance attendance = Attendance.create(currentMember.getId(), activityGroup, LocalDate.now());
@@ -95,7 +96,7 @@ public class AttendanceService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<AttendanceResponseDto> getMyAttendances(Long activityGroupId, Pageable pageable) throws IllegalAccessException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = validateGroupAndMemberForAttendance(activityGroupId, currentMember);
         Page<Attendance> attendances = getAttendanceByMemberId(activityGroup, currentMember.getId(), pageable);
         return new PagedResponseDto<>(attendances.map(AttendanceResponseDto::toDto));
@@ -103,7 +104,7 @@ public class AttendanceService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<AttendanceResponseDto> getGroupAttendances(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupWithValidPermissions(activityGroupId, currentMember);
         Page<Attendance> attendances = getAttendanceByActivityGroup(activityGroup, pageable);
         return new PagedResponseDto<>(attendances.map(AttendanceResponseDto::toDto));
@@ -111,7 +112,7 @@ public class AttendanceService {
 
     @Transactional
     public Long writeAbsentExcuse(AbsentRequestDto requestDto) throws IllegalAccessException, DuplicateAbsentExcuseException {
-        Member absentee = retrieveMemberUseCase.findByIdOrThrow(requestDto.getAbsenteeId());
+        Member absentee = externalRetrieveMemberUseCase.findByIdOrThrow(requestDto.getAbsenteeId());
         ActivityGroup activityGroup = getValidActivityGroup(requestDto.getActivityGroupId());
         validateAbsentExcuseConditions(absentee, activityGroup, requestDto.getAbsentDate());
         Absent absent = AbsentRequestDto.toEntity(requestDto, absentee, activityGroup);
@@ -120,11 +121,11 @@ public class AttendanceService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<AbsentResponseDto> getActivityGroupAbsentExcuses(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
-        Member currentMember = retrieveMemberUseCase.getCurrentMember();
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupWithPermissionCheck(activityGroupId, currentMember);
         Page<Absent> absents = absentRepository.findAllByActivityGroup(activityGroup, pageable);
         return new PagedResponseDto<>(absents.map(absent -> {
-            Member member = retrieveMemberUseCase.findByIdOrThrow(absent.getMemberId());
+            Member member = externalRetrieveMemberUseCase.findByIdOrThrow(absent.getMemberId());
             return AbsentResponseDto.toDto(absent, member);
         }));
     }

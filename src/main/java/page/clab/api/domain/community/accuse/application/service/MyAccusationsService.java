@@ -9,7 +9,7 @@ import page.clab.api.domain.community.accuse.application.dto.response.AccuseMyRe
 import page.clab.api.domain.community.accuse.application.port.in.RetrieveMyAccusationsUseCase;
 import page.clab.api.domain.community.accuse.application.port.out.RetrieveAccusePort;
 import page.clab.api.domain.community.accuse.domain.Accuse;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 @Service
@@ -17,12 +17,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class MyAccusationsService implements RetrieveMyAccusationsUseCase {
 
     private final RetrieveAccusePort retrieveAccusePort;
-    private final RetrieveMemberUseCase retrieveMemberUseCase;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<AccuseMyResponseDto> retrieveMyAccusations(Pageable pageable) {
-        String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
+        String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         Page<Accuse> accuses = retrieveAccusePort.findByMemberId(currentMemberId, pageable);
         return new PagedResponseDto<>(accuses.map(AccuseMyResponseDto::toDto));
     }

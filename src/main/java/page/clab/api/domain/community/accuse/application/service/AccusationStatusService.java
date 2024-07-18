@@ -12,7 +12,7 @@ import page.clab.api.domain.community.accuse.domain.Accuse;
 import page.clab.api.domain.community.accuse.domain.AccuseStatus;
 import page.clab.api.domain.community.accuse.domain.AccuseTarget;
 import page.clab.api.domain.community.accuse.domain.TargetType;
-import page.clab.api.domain.memberManagement.notification.application.port.in.SendNotificationUseCase;
+import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +24,7 @@ public class AccusationStatusService implements ChangeAccusationStatusUseCase {
     private final RetrieveAccusePort retrieveAccusePort;
     private final RetrieveAccuseTargetPort retrieveAccuseTargetPort;
     private final RegisterAccuseTargetPort registerAccuseTargetPort;
-    private final SendNotificationUseCase notificationService;
+    private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
 
     @Transactional
     @Override
@@ -39,6 +39,6 @@ public class AccusationStatusService implements ChangeAccusationStatusUseCase {
         List<String> memberIds = retrieveAccusePort.findByTarget(target.getTargetType(), target.getTargetReferenceId()).stream()
                 .map(Accuse::getMemberId)
                 .collect(Collectors.toList());
-        notificationService.sendNotificationToMembers(memberIds, "신고 상태가 " + status.getDescription() + "(으)로 변경되었습니다.");
+        externalSendNotificationUseCase.sendNotificationToMembers(memberIds, "신고 상태가 " + status.getDescription() + "(으)로 변경되었습니다.");
     }
 }

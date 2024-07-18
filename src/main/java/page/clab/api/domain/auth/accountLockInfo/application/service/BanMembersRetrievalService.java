@@ -9,7 +9,7 @@ import page.clab.api.domain.auth.accountLockInfo.application.dto.response.Accoun
 import page.clab.api.domain.auth.accountLockInfo.application.port.in.RetrieveBannedMembersUseCase;
 import page.clab.api.domain.auth.accountLockInfo.application.port.out.RetrieveAccountLockInfoPort;
 import page.clab.api.domain.auth.accountLockInfo.domain.AccountLockInfo;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 import java.time.LocalDateTime;
@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class BanMembersRetrievalService implements RetrieveBannedMembersUseCase {
 
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final RetrieveAccountLockInfoPort retrieveAccountLockInfoPort;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
     @Transactional(readOnly = true)
     @Override
@@ -27,7 +27,7 @@ public class BanMembersRetrievalService implements RetrieveBannedMembersUseCase 
         LocalDateTime banDate = LocalDateTime.of(9999, 12, 31, 23, 59);
         Page<AccountLockInfo> banMembers = retrieveAccountLockInfoPort.findByLockUntil(banDate, pageable);
         return new PagedResponseDto<>(banMembers.map(accountLockInfo -> {
-            String memberName = retrieveMemberInfoUseCase.getMemberBasicInfoById(accountLockInfo.getMemberId()).getMemberName();
+            String memberName = externalRetrieveMemberUseCase.getMemberBasicInfoById(accountLockInfo.getMemberId()).getMemberName();
             return AccountLockInfoResponseDto.toDto(accountLockInfo, memberName);
         }));
     }

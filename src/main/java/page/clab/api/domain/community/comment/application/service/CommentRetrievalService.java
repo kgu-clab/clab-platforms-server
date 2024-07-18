@@ -11,8 +11,7 @@ import page.clab.api.domain.community.comment.application.port.in.RetrieveCommen
 import page.clab.api.domain.community.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.community.comment.domain.Comment;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 import java.util.List;
@@ -22,8 +21,7 @@ import java.util.List;
 public class CommentRetrievalService implements RetrieveCommentUseCase {
 
     private final RetrieveCommentPort retrieveCommentPort;
-    private final RetrieveMemberUseCase retrieveMemberUseCase;
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
     @Transactional(readOnly = true)
     @Override
@@ -43,7 +41,7 @@ public class CommentRetrievalService implements RetrieveCommentUseCase {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<CommentResponseDto> getAllComments(Long boardId, Pageable pageable) {
-        String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
+        String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         Page<Comment> comments = retrieveCommentPort.findAllByBoardIdAndParentIsNull(boardId, pageable);
         List<CommentResponseDto> commentDtos = comments.stream()
                 .map(comment -> toCommentResponseDtoWithMemberInfo(comment, currentMemberId))
@@ -52,7 +50,7 @@ public class CommentRetrievalService implements RetrieveCommentUseCase {
     }
 
     private CommentResponseDto toCommentResponseDtoWithMemberInfo(Comment comment, String currentMemberId) {
-        MemberDetailedInfoDto memberInfo = retrieveMemberInfoUseCase.getMemberDetailedInfoById(comment.getWriterId());
+        MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(comment.getWriterId());
         List<CommentResponseDto> childrenDtos = comment.getChildren().stream()
                 .map(child -> toCommentResponseDtoWithMemberInfo(child, currentMemberId))
                 .toList();

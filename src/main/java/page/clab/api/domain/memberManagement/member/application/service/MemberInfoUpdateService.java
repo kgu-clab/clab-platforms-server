@@ -23,8 +23,8 @@ public class MemberInfoUpdateService implements UpdateMemberInfoUseCase {
     private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final RetrieveMemberPort retrieveMemberPort;
     private final UpdateMemberPort updateMemberPort;
-    private final PasswordEncoder passwordEncoder;
     private final FileService fileService;
+    private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional

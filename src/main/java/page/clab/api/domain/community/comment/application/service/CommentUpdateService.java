@@ -8,7 +8,7 @@ import page.clab.api.domain.community.comment.application.port.in.UpdateCommentU
 import page.clab.api.domain.community.comment.application.port.out.RegisterCommentPort;
 import page.clab.api.domain.community.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.community.comment.domain.Comment;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
@@ -17,13 +17,13 @@ public class CommentUpdateService implements UpdateCommentUseCase {
 
     private final RetrieveCommentPort retrieveCommentPort;
     private final RegisterCommentPort registerCommentPort;
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
     @Transactional
     @Override
     public Long updateComment(Long commentId, CommentUpdateRequestDto requestDto) throws PermissionDeniedException {
         Comment comment = retrieveCommentPort.findByIdOrThrow(commentId);
-        comment.validateAccessPermission(retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo());
+        comment.validateAccessPermission(externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo());
         comment.update(requestDto);
         registerCommentPort.save(comment);
         return comment.getBoardId();

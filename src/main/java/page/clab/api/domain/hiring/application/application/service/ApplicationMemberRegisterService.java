@@ -9,13 +9,13 @@ import page.clab.api.domain.hiring.application.application.exception.NotApproved
 import page.clab.api.domain.hiring.application.application.port.in.RegisterMembersByRecruitmentUseCase;
 import page.clab.api.domain.hiring.application.application.port.out.RetrieveApplicationPort;
 import page.clab.api.domain.hiring.application.domain.Application;
-import page.clab.api.domain.memberManagement.member.application.port.out.RegisterMemberPort;
-import page.clab.api.domain.memberManagement.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;
-import page.clab.api.domain.memberManagement.position.application.port.out.RegisterPositionPort;
-import page.clab.api.domain.memberManagement.position.application.port.out.RetrievePositionPort;
 import page.clab.api.domain.memberManagement.position.domain.Position;
 import page.clab.api.domain.memberManagement.position.domain.PositionType;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRegisterMemberUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
+import page.clab.api.external.memberManagement.position.application.port.ExternalRegisterPositionUseCase;
+import page.clab.api.external.memberManagement.position.application.port.ExternalRetrievePositionUseCase;
 import page.clab.api.global.common.email.application.EmailService;
 import page.clab.api.global.common.verification.application.VerificationService;
 
@@ -28,13 +28,13 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class ApplicationMemberRegisterService implements RegisterMembersByRecruitmentUseCase {
 
-    private final VerificationService verificationService;
-    private final EmailService emailService;
-    private final RetrieveMemberPort retrieveMemberPort;
-    private final RegisterMemberPort registerMemberPort;
-    private final RegisterPositionPort registerPositionPort;
-    private final RetrievePositionPort retrievePositionPort;
     private final RetrieveApplicationPort retrieveApplicationPort;
+    private final ExternalRegisterMemberUseCase externalRegisterMemberUseCase;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final ExternalRegisterPositionUseCase externalRegisterPositionUseCase;
+    private final ExternalRetrievePositionUseCase externalRetrievePositionUseCase;
+    private final EmailService emailService;
+    private final VerificationService verificationService;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -64,13 +64,13 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
 
     private Member createMemberByApplication(Application application) {
         Member member = Application.toMember(application);
-        Member existingMember = retrieveMemberPort.findById(member.getId())
+        Member existingMember = externalRetrieveMemberUseCase.findById(member.getId())
                 .orElse(null);
         if (existingMember != null) {
             return existingMember;
         }
         setRandomPasswordAndSendEmail(member);
-        registerMemberPort.save(member);
+        externalRegisterMemberUseCase.save(member);
         return member;
     }
 
@@ -87,11 +87,11 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
     }
 
     public void createPositionByMember(Member member) {
-        if (retrievePositionPort.findByMemberIdAndYearAndPositionType
+        if (externalRetrievePositionUseCase.findByMemberIdAndYearAndPositionType
                 (member.getId(), String.valueOf(LocalDate.now().getYear()), PositionType.MEMBER).isPresent()) {
             return;
         }
         Position position = Position.create(member.getId());
-        registerPositionPort.save(position);
+        externalRegisterPositionUseCase.save(position);
     }
 }

@@ -7,19 +7,19 @@ import page.clab.api.domain.memberManagement.award.application.dto.request.Award
 import page.clab.api.domain.memberManagement.award.application.port.in.RegisterAwardUseCase;
 import page.clab.api.domain.memberManagement.award.application.port.out.RegisterAwardPort;
 import page.clab.api.domain.memberManagement.award.domain.Award;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 
 @Service
 @RequiredArgsConstructor
 public class AwardRegisterService implements RegisterAwardUseCase {
 
-    private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final RegisterAwardPort registerAwardPort;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
     @Transactional
     @Override
     public Long registerAward(AwardRequestDto requestDto) {
-        String currentMemberId = retrieveMemberUseCase.getCurrentMemberId();
+        String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         Award award = AwardRequestDto.toEntity(requestDto, currentMemberId);
         return registerAwardPort.save(award).getId();
     }

@@ -11,7 +11,7 @@ import page.clab.api.domain.community.board.application.port.out.RetrieveBoardEm
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,14 +20,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BoardDetailsRetrievalService implements RetrieveBoardDetailsUseCase {
 
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final RetrieveBoardPort retrieveBoardPort;
     private final RetrieveBoardEmojiPort retrieveBoardEmojiPort;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
     @Transactional
     @Override
     public BoardDetailsResponseDto retrieveBoardDetails(Long boardId) {
-        MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
+        MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         Board board = retrieveBoardPort.findByIdOrThrow(boardId);
         boolean isOwner = board.isOwner(currentMemberInfo.getMemberId());
         List<BoardEmojiCountResponseDto> emojiInfos = getBoardEmojiCountResponseDtoList(boardId, currentMemberInfo.getMemberId());

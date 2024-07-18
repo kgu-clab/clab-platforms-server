@@ -10,7 +10,7 @@ import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPo
 import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.community.board.domain.BoardEmoji;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.exception.InvalidEmojiException;
 import page.clab.api.global.util.EmojiUtils;
 
@@ -18,10 +18,10 @@ import page.clab.api.global.util.EmojiUtils;
 @RequiredArgsConstructor
 public class BoardEmojiToggleService implements ToggleBoardEmojiUseCase {
 
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
     private final RetrieveBoardPort retrieveBoardPort;
     private final RetrieveBoardEmojiPort retrieveBoardEmojiPort;
     private final RegisterBoardEmojiPort registerBoardEmojiPort;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
     @Transactional
     @Override
@@ -29,7 +29,7 @@ public class BoardEmojiToggleService implements ToggleBoardEmojiUseCase {
         if (!EmojiUtils.isEmoji(emoji)) {
             throw new InvalidEmojiException("지원하지 않는 이모지입니다.");
         }
-        MemberDetailedInfoDto currentMemberInfo = retrieveMemberInfoUseCase.getCurrentMemberDetailedInfo();
+        MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         String memberId = currentMemberInfo.getMemberId();
         Board board = retrieveBoardPort.findByIdOrThrow(boardId);
         BoardEmoji boardEmoji = retrieveBoardEmojiPort.findByBoardIdAndMemberIdAndEmoji(boardId, memberId, emoji)

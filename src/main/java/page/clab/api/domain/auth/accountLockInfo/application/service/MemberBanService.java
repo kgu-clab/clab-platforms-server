@@ -8,9 +8,9 @@ import page.clab.api.domain.auth.accountLockInfo.application.port.in.BanMemberUs
 import page.clab.api.domain.auth.accountLockInfo.application.port.out.RegisterAccountLockInfoPort;
 import page.clab.api.domain.auth.accountLockInfo.application.port.out.RetrieveAccountLockInfoPort;
 import page.clab.api.domain.auth.accountLockInfo.domain.AccountLockInfo;
-import page.clab.api.domain.auth.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberInfoUseCase;
+import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 
@@ -18,19 +18,19 @@ import page.clab.api.global.common.slack.domain.SecurityAlertType;
 @RequiredArgsConstructor
 public class MemberBanService implements BanMemberUseCase {
 
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
-    private final ManageRedisTokenUseCase manageRedisTokenUseCase;
-    private final SlackService slackService;
     private final RetrieveAccountLockInfoPort retrieveAccountLockInfoPort;
     private final RegisterAccountLockInfoPort registerAccountLockInfoPort;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final ExternalManageRedisTokenUseCase externalManageRedisTokenUseCase;
+    private final SlackService slackService;
 
     @Transactional
     @Override
     public Long banMember(HttpServletRequest request, String memberId) {
-        MemberBasicInfoDto memberInfo = retrieveMemberInfoUseCase.getMemberBasicInfoById(memberId);
+        MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(memberId);
         AccountLockInfo accountLockInfo = ensureAccountLockInfo(memberInfo.getMemberId());
         accountLockInfo.banPermanently();
-        manageRedisTokenUseCase.deleteByMemberId(memberId);
+        externalManageRedisTokenUseCase.deleteByMemberId(memberId);
         sendSlackBanNotification(request, memberId);
         return registerAccountLockInfoPort.save(accountLockInfo).getId();
     }
@@ -47,7 +47,7 @@ public class MemberBanService implements BanMemberUseCase {
     }
 
     private void sendSlackBanNotification(HttpServletRequest request, String memberId) {
-        String memberName = retrieveMemberInfoUseCase.getMemberBasicInfoById(memberId).getMemberName();
+        String memberName = externalRetrieveMemberUseCase.getMemberBasicInfoById(memberId).getMemberName();
         slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_BANNED, "ID: " + memberId + ", Name: " + memberName);
     }
 }
