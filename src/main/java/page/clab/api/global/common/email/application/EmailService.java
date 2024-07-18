@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberEmailInfoDto;
-import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
@@ -29,7 +28,6 @@ import java.util.UUID;
 @Slf4j
 public class EmailService {
 
-    private final RetrieveMemberUseCase retrieveMemberUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final SpringTemplateEngine springTemplateEngine;
     private final EmailAsyncService emailAsyncService;
@@ -46,7 +44,7 @@ public class EmailService {
 
         emailDto.getTo().parallelStream().forEach(address -> {
             try {
-                Member recipient = retrieveMemberUseCase.findByEmail(address);
+                Member recipient = externalRetrieveMemberUseCase.findByEmail(address);
                 String emailContent = generateEmailContent(emailDto, recipient.getName());
                 emailAsyncService.sendEmailAsync(address, emailDto.getSubject(), emailContent, convertedFiles, emailDto.getEmailTemplateType());
                 successfulAddresses.add(address);

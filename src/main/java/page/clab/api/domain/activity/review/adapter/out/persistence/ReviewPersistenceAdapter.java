@@ -7,17 +7,13 @@ import org.springframework.stereotype.Component;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.review.application.port.out.RegisterReviewPort;
 import page.clab.api.domain.activity.review.application.port.out.RetrieveReviewPort;
-import page.clab.api.domain.activity.review.application.port.out.UpdateReviewPort;
 import page.clab.api.domain.activity.review.domain.Review;
 import page.clab.api.global.exception.NotFoundException;
-
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class ReviewPersistenceAdapter implements
         RegisterReviewPort,
-        UpdateReviewPort,
         RetrieveReviewPort {
 
     private final ReviewRepository repository;
@@ -28,19 +24,6 @@ public class ReviewPersistenceAdapter implements
         ReviewJpaEntity entity = mapper.toJpaEntity(review);
         ReviewJpaEntity savedEntity = repository.save(entity);
         return mapper.toDomainEntity(savedEntity);
-    }
-
-    @Override
-    public Review update(Review review) {
-        ReviewJpaEntity entity = mapper.toJpaEntity(review);
-        ReviewJpaEntity updatedEntity = repository.save(entity);
-        return mapper.toDomainEntity(updatedEntity);
-    }
-
-    @Override
-    public Optional<Review> findById(Long reviewId) {
-        return repository.findById(reviewId)
-                .map(mapper::toDomainEntity);
     }
 
     @Override

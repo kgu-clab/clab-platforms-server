@@ -1,9 +1,8 @@
 package page.clab.api.domain.memberManagement.member.application.port.in;
 
-import java.time.LocalDateTime;
+import page.clab.api.domain.memberManagement.member.application.dto.request.MemberUpdateRequestDto;
+import page.clab.api.global.exception.PermissionDeniedException;
 
 public interface UpdateMemberUseCase {
-    void updateLoanSuspensionDate(String memberId, LocalDateTime loanSuspensionDate);
-
-    void updateLastLoginTime(String id);
+    String updateMember(String memberId, MemberUpdateRequestDto requestDto) throws PermissionDeniedException;
 }

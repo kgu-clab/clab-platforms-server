@@ -9,8 +9,6 @@ public interface RetrieveMemberUseCase {
 
     Member findByIdOrThrow(String memberId);
 
-    Member findByEmail(String email);
-
     Member getCurrentMember();
 
     String getCurrentMemberId();

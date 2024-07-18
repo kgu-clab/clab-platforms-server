@@ -34,11 +34,6 @@ public class CommentRetrievalService implements RetrieveCommentUseCase {
         return retrieveCommentPort.findByIdOrThrow(commentId);
     }
 
-    @Override
-    public long countCommentsByBoardId(Long boardId) {
-        return retrieveCommentPort.countAllByBoardId(boardId);
-    }
-
     @Transactional(readOnly = true)
     public PagedResponseDto<CommentResponseDto> getAllComments(Long boardId, Pageable pageable) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();

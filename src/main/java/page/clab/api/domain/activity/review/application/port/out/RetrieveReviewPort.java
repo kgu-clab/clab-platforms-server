@@ -5,10 +5,7 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.review.domain.Review;
 
-import java.util.Optional;
-
 public interface RetrieveReviewPort {
-    Optional<Review> findById(Long reviewId);
 
     Review findByIdOrThrow(Long reviewId);
 

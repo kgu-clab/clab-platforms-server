@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.memberManagement.member.application.dto.request.MemberUpdateRequestDto;
-import page.clab.api.domain.memberManagement.member.application.port.in.UpdateMemberInfoUseCase;
+import page.clab.api.domain.memberManagement.member.application.port.in.UpdateMemberUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -19,7 +19,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 @Tag(name = "Member Management - Member", description = "멤버")
 public class MemberInfoUpdateController {
 
-    private final UpdateMemberInfoUseCase updateMemberInfoUseCase;
+    private final UpdateMemberUseCase updateMemberUseCase;
 
     @Operation(summary = "[U] 멤버 정보 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능")
@@ -28,7 +28,7 @@ public class MemberInfoUpdateController {
             @PathVariable(name = "memberId") String memberId,
             @RequestBody MemberUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        String id = updateMemberInfoUseCase.updateMemberInfo(memberId, requestDto);
+        String id = updateMemberUseCase.updateMember(memberId, requestDto);
         return ApiResponse.success(id);
     }
 }

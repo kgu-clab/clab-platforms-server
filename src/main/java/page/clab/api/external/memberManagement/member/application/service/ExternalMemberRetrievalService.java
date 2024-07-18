@@ -50,6 +50,11 @@ public class ExternalMemberRetrievalService implements ExternalRetrieveMemberUse
     }
 
     @Override
+    public Member findByEmail(String address) {
+        return retrieveMemberPort.findByEmailOrThrow(address);
+    }
+
+    @Override
     public Member getCurrentMember() {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
         return retrieveMemberPort.findByIdOrThrow(memberId);

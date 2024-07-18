@@ -9,6 +9,4 @@ public interface RetrieveCommentUseCase {
     PagedResponseDto<CommentResponseDto> retrieveComments(Long boardId, Pageable pageable);
 
     Comment findByIdOrThrow(Long commentId);
-
-    long countCommentsByBoardId(Long boardId);
 }

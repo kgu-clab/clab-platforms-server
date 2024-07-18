@@ -22,6 +22,8 @@ public interface ExternalRetrieveMemberUseCase {
 
     Member findByIdOrThrow(String memberId);
 
+    Member findByEmail(String address);
+
     Member getCurrentMember();
 
     String getCurrentMemberId();

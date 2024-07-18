@@ -14,7 +14,6 @@ import java.util.Optional;
 public class MemberRetrievalService implements RetrieveMemberUseCase {
 
     private final RetrieveMemberPort retrieveMemberPort;
-    private final RetrieveMemberPort retrieveMemberPort1;
 
     @Override
     public Optional<Member> findById(String memberId) {
@@ -24,11 +23,6 @@ public class MemberRetrievalService implements RetrieveMemberUseCase {
     @Override
     public Member findByIdOrThrow(String memberId) {
         return retrieveMemberPort.findByIdOrThrow(memberId);
-    }
-
-    @Override
-    public Member findByEmail(String email) {
-        return retrieveMemberPort1.findByEmailOrThrow(email);
     }
 
     @Override
