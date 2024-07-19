@@ -30,6 +30,7 @@ public class AccuseRequestDto {
                 .memberId(memberId)
                 .target(target)
                 .reason(requestDto.getReason())
+                .isDeleted(false)
                 .build();
     }
 

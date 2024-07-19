@@ -35,6 +35,7 @@ public class RecruitmentRequestDto {
                 .endDate(requestDto.getEndDate())
                 .applicationType(requestDto.getApplicationType())
                 .target(requestDto.getTarget())
+                .isDeleted(false)
                 .build();
     }
 }

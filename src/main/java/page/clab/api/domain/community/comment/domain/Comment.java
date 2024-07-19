@@ -33,7 +33,7 @@ public class Comment {
     private List<Comment> children = new ArrayList<>();
     private boolean wantAnonymous;
     private Long likes;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
 
     public void update(CommentUpdateRequestDto commentUpdateRequestDto) {

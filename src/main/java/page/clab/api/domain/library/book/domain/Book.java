@@ -30,7 +30,7 @@ public class Book {
     private List<String> reviewLinks;
     private String borrowerId;
     private Long version;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

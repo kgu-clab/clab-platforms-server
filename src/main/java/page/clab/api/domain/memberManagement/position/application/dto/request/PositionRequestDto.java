@@ -28,6 +28,7 @@ public class PositionRequestDto {
                 .memberId(positionRequestDto.getMemberId())
                 .positionType(positionRequestDto.getPositionType())
                 .year(positionRequestDto.getYear())
+                .isDeleted(false)
                 .build();
     }
 }

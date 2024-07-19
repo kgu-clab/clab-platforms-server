@@ -24,7 +24,7 @@ public class ActivityPhoto extends BaseEntity {
     private List<UploadedFile> uploadedFiles;
     private LocalDate date;
     private Boolean isPublic;
-    private boolean isDeleted;
+    private Boolean isDeleted;
 
     public void delete() {
         this.isDeleted = true;

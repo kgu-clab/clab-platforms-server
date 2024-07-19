@@ -43,7 +43,7 @@ public class Member implements UserDetails {
     private LocalDateTime lastLoginTime;
     private LocalDateTime loanSuspensionDate;
     private Boolean isOtpEnabled;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
 
     private Member(String id, String password, Role role) {

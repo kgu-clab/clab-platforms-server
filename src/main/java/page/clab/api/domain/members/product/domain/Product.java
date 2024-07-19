@@ -22,7 +22,7 @@ public class Product {
     private String name;
     private String description;
     private String url;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
 
     public void update(ProductUpdateRequestDto productUpdateRequestDto) {

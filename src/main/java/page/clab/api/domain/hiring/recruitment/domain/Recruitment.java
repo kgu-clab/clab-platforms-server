@@ -26,7 +26,7 @@ public class Recruitment {
     private ApplicationType applicationType;
     private String target;
     private RecruitmentStatus status;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private LocalDateTime updatedAt;
 
     public void update(RecruitmentUpdateRequestDto recruitmentUpdateRequestDto) {

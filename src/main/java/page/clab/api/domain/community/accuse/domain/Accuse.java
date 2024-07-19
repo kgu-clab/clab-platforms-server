@@ -22,7 +22,7 @@ public class Accuse {
     private String memberId;
     private AccuseTarget target;
     private String reason;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
 
     public void updateReason(String reason) {

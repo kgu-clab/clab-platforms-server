@@ -81,6 +81,7 @@ public class MemberRequestDto {
                 .imageUrl(requestDto.getImageUrl())
                 .role(Role.USER)
                 .isOtpEnabled(false)
+                .isDeleted(false)
                 .build();
     }
 }

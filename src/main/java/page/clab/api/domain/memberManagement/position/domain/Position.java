@@ -20,13 +20,14 @@ public class Position {
     private String memberId;
     private PositionType positionType;
     private String year;
-    private boolean isDeleted;
+    private Boolean isDeleted;
 
     public static Position create(String memberId) {
         return Position.builder()
                 .memberId(memberId)
                 .positionType(PositionType.MEMBER)
                 .year(String.valueOf(LocalDate.now().getYear()))
+                .isDeleted(false)
                 .build();
     }
 

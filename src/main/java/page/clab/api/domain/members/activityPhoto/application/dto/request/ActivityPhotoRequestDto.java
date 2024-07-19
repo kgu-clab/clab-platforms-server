@@ -32,6 +32,7 @@ public class ActivityPhotoRequestDto {
                 .uploadedFiles(uploadedFiles)
                 .date(requestDto.getDate())
                 .isPublic(false)
+                .isDeleted(false)
                 .build();
     }
 }

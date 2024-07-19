@@ -41,6 +41,7 @@ public class JobPostingRequestDto {
                 .companyName(requestDto.getCompanyName())
                 .recruitmentPeriod(requestDto.getRecruitmentPeriod())
                 .jobPostingUrl(requestDto.getJobPostingUrl())
+                .isDeleted(false)
                 .build();
     }
 }

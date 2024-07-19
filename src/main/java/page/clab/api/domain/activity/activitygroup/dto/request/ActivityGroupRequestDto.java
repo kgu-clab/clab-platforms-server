@@ -61,6 +61,7 @@ public class ActivityGroupRequestDto {
                 .endDate(requestDto.getEndDate())
                 .techStack(requestDto.getTechStack())
                 .githubUrl(requestDto.getGithubUrl())
+                .isDeleted(false)
                 .build();
     }
 }

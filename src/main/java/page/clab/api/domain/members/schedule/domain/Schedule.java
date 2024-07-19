@@ -31,7 +31,7 @@ public class Schedule {
     private SchedulePriority priority;
     private String scheduleWriter;
     private ActivityGroup activityGroup;
-    private boolean isDeleted;
+    private Boolean isDeleted;
 
     public void delete() {
         this.isDeleted = true;

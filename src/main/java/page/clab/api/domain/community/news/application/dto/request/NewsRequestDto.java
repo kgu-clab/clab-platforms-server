@@ -43,6 +43,7 @@ public class NewsRequestDto {
                 .articleUrl(requestDto.getArticleUrl())
                 .source(requestDto.getSource())
                 .date(requestDto.getDate())
+                .isDeleted(false)
                 .build();
     }
 }

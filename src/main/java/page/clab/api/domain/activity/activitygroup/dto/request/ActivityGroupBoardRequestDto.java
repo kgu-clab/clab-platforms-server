@@ -43,6 +43,7 @@ public class ActivityGroupBoardRequestDto {
                 .parent(parentBoard)
                 .uploadedFiles(uploadedFiles)
                 .dueDateTime(requestDto.getDueDateTime())
+                .isDeleted(false)
                 .build();
     }
 }

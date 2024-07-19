@@ -97,5 +97,5 @@ public class MemberJpaEntity extends BaseEntity {
     private Boolean isOtpEnabled;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+    private Boolean isDeleted;
 }

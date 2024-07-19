@@ -45,5 +45,5 @@ public class DonationJpaEntity extends BaseEntity {
     private String message;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+    private Boolean isDeleted;
 }

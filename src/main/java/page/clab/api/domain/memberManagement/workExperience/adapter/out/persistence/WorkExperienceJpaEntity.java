@@ -52,5 +52,5 @@ public class WorkExperienceJpaEntity extends BaseEntity {
     private String memberId;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+    private Boolean isDeleted;
 }

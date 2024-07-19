@@ -20,13 +20,14 @@ public class Notification {
     private Long id;
     private String memberId;
     private String content;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
 
     public static Notification create(String memberId, String content) {
         return Notification.builder()
                 .memberId(memberId)
                 .content(content)
+                .isDeleted(false)
                 .build();
     }
 

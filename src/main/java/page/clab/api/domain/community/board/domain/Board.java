@@ -31,7 +31,7 @@ public class Board {
     private List<UploadedFile> uploadedFiles;
     private String imageUrl;
     private boolean wantAnonymous;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
 
     public void update(BoardUpdateRequestDto boardUpdateRequestDto) {

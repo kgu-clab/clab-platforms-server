@@ -26,7 +26,7 @@ public class Award {
     private String awardName;
     private LocalDate awardDate;
     private String memberId;
-    private boolean isDeleted;
+    private Boolean isDeleted;
 
     public void update(AwardUpdateRequestDto requestDto) {
         Optional.ofNullable(requestDto.getCompetitionName()).ifPresent(this::setCompetitionName);

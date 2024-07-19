@@ -23,7 +23,7 @@ public class Donation {
     private String memberId;
     private Double amount;
     private String message;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
 
     public void update(DonationUpdateRequestDto donationUpdateRequestDto) {

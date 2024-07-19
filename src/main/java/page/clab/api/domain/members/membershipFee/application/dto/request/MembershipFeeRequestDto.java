@@ -38,6 +38,7 @@ public class MembershipFeeRequestDto {
                 .content(requestDto.getContent())
                 .imageUrl(requestDto.getImageUrl())
                 .status(MembershipFeeStatus.PENDING)
+                .isDeleted(false)
                 .build();
     }
 }

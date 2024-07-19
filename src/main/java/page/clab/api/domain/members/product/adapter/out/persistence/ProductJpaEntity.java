@@ -45,5 +45,5 @@ public class ProductJpaEntity extends BaseEntity {
     private String url;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+    private Boolean isDeleted;
 }

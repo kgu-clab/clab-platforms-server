@@ -35,6 +35,7 @@ public class WorkExperienceRequestDto {
                 .startDate(requestDto.getStartDate())
                 .endDate(requestDto.getEndDate())
                 .memberId(memberId)
+                .isDeleted(false)
                 .build();
     }
 }

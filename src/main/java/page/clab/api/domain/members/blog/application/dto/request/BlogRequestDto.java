@@ -36,6 +36,7 @@ public class BlogRequestDto {
                 .content(requestDto.getContent())
                 .hyperlink(requestDto.getHyperlink())
                 .imageUrl(requestDto.getImageUrl())
+                .isDeleted(false)
                 .build();
     }
 }

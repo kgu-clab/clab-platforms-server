@@ -58,5 +58,5 @@ public class MembershipFeeJpaEntity extends BaseEntity {
     private MembershipFeeStatus status;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+    private Boolean isDeleted;
 }

@@ -21,13 +21,14 @@ public class BoardEmoji {
     private Long boardId;
     private String emoji;
     private LocalDateTime deletedAt;
-    private boolean isDeleted;
+    private Boolean isDeleted;
 
     public static BoardEmoji create(String memberId, Long boardId, String emoji) {
         return BoardEmoji.builder()
                 .memberId(memberId)
                 .boardId(boardId)
                 .emoji(emoji)
+                .isDeleted(false)
                 .build();
     }
 

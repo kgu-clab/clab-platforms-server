@@ -26,6 +26,7 @@ public class ProductRequestDto {
                 .name(requestDto.getName())
                 .description(requestDto.getDescription())
                 .url(requestDto.getUrl())
+                .isDeleted(false)
                 .build();
     }
 }

@@ -51,6 +51,7 @@ public class ScheduleRequestDto {
                 .priority(requestDto.getPriority())
                 .scheduleWriter(memberId)
                 .activityGroup(activityGroup)
+                .isDeleted(false)
                 .build();
     }
 }

@@ -28,7 +28,7 @@ public class MembershipFee {
     private String content;
     private String imageUrl;
     private MembershipFeeStatus status;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
 
     public void update(MembershipFeeUpdateRequestDto membershipFeeUpdateRequestDto) {

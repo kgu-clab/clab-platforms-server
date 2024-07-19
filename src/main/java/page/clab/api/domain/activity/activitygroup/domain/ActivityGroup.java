@@ -75,7 +75,7 @@ public class ActivityGroup extends BaseEntity {
     private String githubUrl;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+    private Boolean isDeleted;
 
     public void update(ActivityGroupUpdateRequestDto requestDto) {
         Optional.ofNullable(requestDto.getCategory()).ifPresent(this::setCategory);

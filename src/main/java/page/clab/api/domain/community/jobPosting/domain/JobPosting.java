@@ -26,7 +26,7 @@ public class JobPosting {
     private String companyName;
     private String recruitmentPeriod;
     private String jobPostingUrl;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
 
     public void update(JobPostingUpdateRequestDto jobPostingUpdateRequestDto) {

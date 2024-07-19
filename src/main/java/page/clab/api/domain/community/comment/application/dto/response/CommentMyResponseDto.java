@@ -23,7 +23,7 @@ public class CommentMyResponseDto {
     private LocalDateTime createdAt;
 
     public static CommentMyResponseDto toDto(Comment comment, MemberDetailedInfoDto memberInfo, BoardCommentInfoDto boardInfo, boolean hasLikeByMe) {
-        if (comment.getBoardId() == null || comment.isDeleted()) {
+        if (comment.getBoardId() == null || comment.getIsDeleted()) {
             return null;
         }
         return CommentMyResponseDto.builder()

@@ -32,7 +32,7 @@ public class CommentMapper {
                 .children(new ArrayList<>())
                 .wantAnonymous(comment.isWantAnonymous())
                 .likes(comment.getLikes())
-                .isDeleted(comment.isDeleted())
+                .isDeleted(comment.getIsDeleted())
                 .build();
 
         mappedEntities.put(comment.getId(), entity);
@@ -64,7 +64,7 @@ public class CommentMapper {
                 .children(new ArrayList<>())
                 .wantAnonymous(entity.isWantAnonymous())
                 .likes(entity.getLikes())
-                .isDeleted(entity.isDeleted())
+                .isDeleted(entity.getIsDeleted())
                 .createdAt(entity.getCreatedAt())
                 .build();
 

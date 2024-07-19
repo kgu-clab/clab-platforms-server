@@ -26,6 +26,7 @@ public class ReviewRequestDto {
                 .memberId(memberId)
                 .content(requestDto.getContent())
                 .isPublic(false)
+                .isDeleted(false)
                 .build();
     }
 }

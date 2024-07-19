@@ -27,7 +27,7 @@ public class Blog {
     private String content;
     private String imageUrl;
     private String hyperlink;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
 
     public void update(BlogUpdateRequestDto requestDto) {

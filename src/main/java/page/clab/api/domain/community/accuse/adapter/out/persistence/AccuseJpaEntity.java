@@ -52,5 +52,5 @@ public class AccuseJpaEntity extends BaseEntity {
     private String reason;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+    private Boolean isDeleted;
 }

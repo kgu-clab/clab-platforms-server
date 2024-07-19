@@ -33,6 +33,7 @@ public class ActivityGroupReportRequestDto {
                 .activityGroup(activityGroup)
                 .title(requestDto.getTitle())
                 .content(requestDto.getContent())
+                .isDeleted(false)
                 .build();
     }
 }

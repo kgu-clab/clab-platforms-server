@@ -93,5 +93,5 @@ public class ApplicationJpaEntity extends BaseEntity {
     private Boolean isPass;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+    private Boolean isDeleted;
 }

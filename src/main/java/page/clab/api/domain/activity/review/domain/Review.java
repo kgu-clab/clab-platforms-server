@@ -26,7 +26,7 @@ public class Review {
     private String memberId;
     private String content;
     private Boolean isPublic;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
 
     public void update(ReviewUpdateRequestDto requestDto) {

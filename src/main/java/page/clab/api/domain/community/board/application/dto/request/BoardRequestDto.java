@@ -47,6 +47,7 @@ public class BoardRequestDto {
                 .uploadedFiles(uploadedFiles)
                 .imageUrl(requestDto.getImageUrl())
                 .wantAnonymous(requestDto.isWantAnonymous())
+                .isDeleted(false)
                 .build();
     }
 }

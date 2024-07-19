@@ -23,6 +23,7 @@ public class DonationRequestDto {
                 .memberId(memberId)
                 .amount(requestDto.getAmount())
                 .message(requestDto.getMessage())
+                .isDeleted(false)
                 .build();
     }
 }

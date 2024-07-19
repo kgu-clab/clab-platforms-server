@@ -26,7 +26,7 @@ public class News {
     private String articleUrl;
     private String source;
     private LocalDate date;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
 
     public void update(NewsUpdateRequestDto newsUpdateRequestDto) {

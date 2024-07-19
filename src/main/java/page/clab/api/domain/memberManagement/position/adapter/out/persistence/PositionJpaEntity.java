@@ -42,5 +42,5 @@ public class PositionJpaEntity extends BaseEntity {
     private String year;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+    private Boolean isDeleted;
 }

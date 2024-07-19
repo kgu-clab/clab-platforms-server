@@ -53,5 +53,5 @@ public class BookLoanRecordJpaEntity extends BaseEntity {
     private BookLoanStatus status;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+    private Boolean isDeleted;
 }

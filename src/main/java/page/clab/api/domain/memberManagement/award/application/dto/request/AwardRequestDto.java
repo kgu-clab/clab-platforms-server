@@ -35,6 +35,7 @@ public class AwardRequestDto {
                 .awardName(requestDto.getAwardName())
                 .awardDate(requestDto.getAwardDate())
                 .memberId(memberId)
+                .isDeleted(false)
                 .build();
     }
 }

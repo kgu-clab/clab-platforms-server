@@ -42,6 +42,7 @@ public class BookRequestDto {
                 .publisher(requestDto.getPublisher())
                 .imageUrl(requestDto.getImageUrl())
                 .reviewLinks(requestDto.reviewLinks == null ? List.of() : requestDto.reviewLinks)
+                .isDeleted(false)
                 .build();
     }
 }

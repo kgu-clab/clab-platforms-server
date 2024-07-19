@@ -81,6 +81,7 @@ public class ApplicationRequestDto {
                 .githubUrl(requestDto.getGithubUrl())
                 .applicationType(requestDto.getApplicationType())
                 .isPass(false)
+                .isDeleted(false)
                 .build();
     }
 }

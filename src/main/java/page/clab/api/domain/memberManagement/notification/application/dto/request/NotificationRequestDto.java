@@ -22,6 +22,7 @@ public class NotificationRequestDto {
         return Notification.builder()
                 .content(requestDto.getContent())
                 .memberId(requestDto.getMemberId())
+                .isDeleted(false)
                 .build();
     }
 }

@@ -59,5 +59,5 @@ public class JobPostingJpaEntity extends BaseEntity {
     private String jobPostingUrl;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+    private Boolean isDeleted;
 }

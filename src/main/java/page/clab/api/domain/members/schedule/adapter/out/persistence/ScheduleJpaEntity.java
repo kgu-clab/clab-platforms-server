@@ -70,5 +70,5 @@ public class ScheduleJpaEntity extends BaseEntity {
     private ActivityGroup activityGroup;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+    private Boolean isDeleted;
 }

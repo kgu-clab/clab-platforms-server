@@ -40,5 +40,5 @@ public class NotificationJpaEntity extends BaseEntity {
     private String content;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+    private Boolean isDeleted;
 }

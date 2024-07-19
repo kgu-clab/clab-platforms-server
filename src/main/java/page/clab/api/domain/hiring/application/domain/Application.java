@@ -34,7 +34,7 @@ public class Application {
     private String githubUrl;
     private ApplicationType applicationType;
     private Boolean isPass;
-    private boolean isDeleted;
+    private Boolean isDeleted;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

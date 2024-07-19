@@ -49,5 +49,5 @@ public class BoardEmojiJpaEntity extends BaseEntity {
     private LocalDateTime deletedAt;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+    private Boolean isDeleted;
 }
