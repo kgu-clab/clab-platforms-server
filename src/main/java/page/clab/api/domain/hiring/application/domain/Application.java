@@ -54,6 +54,7 @@ public class Application {
                 .imageUrl("")
                 .role(Role.USER)
                 .isOtpEnabled(false)
+                .isDeleted(false)
                 .build();
     }
 
