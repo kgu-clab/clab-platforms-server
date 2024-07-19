@@ -83,7 +83,7 @@ public class EmailAsyncService {
         try {
             javaMailSender.send(mimeMessages);
         } catch (Exception e) {
-            log.error("Error sending batch email: " + e.getMessage(), e);
+            log.error("Error sending batch email: {}", e.getMessage());
         }
         log.debug("Batch email sent successfully.");
     }
