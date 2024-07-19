@@ -11,8 +11,8 @@ public enum Role {
     ADMIN("ROLE_ADMIN", "Administrator"),
     SUPER("ROLE_SUPER", "Super Administrator");
 
-    private String key;
-    private String description;
+    private final String key;
+    private final String description;
 
     public Long toRoleLevel() {
         return switch (this) {

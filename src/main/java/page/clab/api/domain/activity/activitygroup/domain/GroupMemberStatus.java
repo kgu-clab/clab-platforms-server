@@ -11,6 +11,6 @@ public enum GroupMemberStatus {
     ACCEPTED("ACCEPTED", "수락"),
     WAITING("WAITING", "승인 대기");
 
-    private String key;
-    private String description;
+    private final String key;
+    private final String description;
 }

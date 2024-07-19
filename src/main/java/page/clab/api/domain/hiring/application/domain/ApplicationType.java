@@ -11,6 +11,6 @@ public enum ApplicationType {
     OPERATION("OPERATION", "운영진"),
     CORE_TEAM("CORE_TEAM", "코어팀");
 
-    private String key;
-    private String description;
+    private final String key;
+    private final String description;
 }

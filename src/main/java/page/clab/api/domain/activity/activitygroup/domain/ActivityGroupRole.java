@@ -11,6 +11,6 @@ public enum ActivityGroupRole {
     MEMBER("MEMBER", "Member"),
     NONE("NONE", "None");
 
-    private String key;
-    private String description;
+    private final String key;
+    private final String description;
 }

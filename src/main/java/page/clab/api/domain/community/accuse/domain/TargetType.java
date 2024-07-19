@@ -10,6 +10,6 @@ public enum TargetType {
     BOARD("BOARD", "게시글"),
     COMMENT("COMMENT", "댓글");
 
-    private String key;
-    private String description;
+    private final String key;
+    private final String description;
 }

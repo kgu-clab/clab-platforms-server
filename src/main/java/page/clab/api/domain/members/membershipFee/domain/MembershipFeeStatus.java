@@ -12,6 +12,6 @@ public enum MembershipFeeStatus {
     APPROVED("APPROVED", "승인"),
     REJECTED("REJECTED", "반려");
 
-    private String key;
-    private String description;
+    private final String key;
+    private final String description;
 }

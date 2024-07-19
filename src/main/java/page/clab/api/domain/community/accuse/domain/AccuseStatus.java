@@ -11,6 +11,6 @@ public enum AccuseStatus {
     APPROVED("APPROVED", "처리 완료"),
     REJECTED("REJECTED", "거부");
 
-    private String key;
-    private String description;
+    private final String key;
+    private final String description;
 }

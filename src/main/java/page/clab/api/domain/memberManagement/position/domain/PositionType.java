@@ -16,6 +16,6 @@ public enum PositionType {
     MEMBER("MEMBER", "일반회원");
 
     @Enumerated(EnumType.STRING)
-    private String key;
-    private String description;
+    private final String key;
+    private final String description;
 }

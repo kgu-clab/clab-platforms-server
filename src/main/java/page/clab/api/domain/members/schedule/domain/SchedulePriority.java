@@ -11,6 +11,6 @@ public enum SchedulePriority {
     MEDIUM("MEDIUM", "중간"),
     LOW("LOW", "낮음");
 
-    private String key;
-    private String description;
+    private final String key;
+    private final String description;
 }

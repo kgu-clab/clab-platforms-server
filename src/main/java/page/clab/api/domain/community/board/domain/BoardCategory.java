@@ -13,6 +13,6 @@ public enum BoardCategory {
     GRADUATED("graduated", "졸업생 게시판"),
     ORGANIZATION("organization", "동아리 소식");
 
-    private String key;
-    private String description;
+    private final String key;
+    private final String description;
 }

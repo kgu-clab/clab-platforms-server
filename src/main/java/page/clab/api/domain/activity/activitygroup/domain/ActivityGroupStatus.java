@@ -11,6 +11,6 @@ public enum ActivityGroupStatus {
     PROGRESSING("ACTIVE", "활동 중"),
     END("END", "활동 종료");
 
-    private String key;
-    private String description;
+    private final String key;
+    private final String description;
 }

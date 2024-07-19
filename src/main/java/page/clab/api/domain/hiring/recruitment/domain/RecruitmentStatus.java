@@ -11,6 +11,6 @@ public enum RecruitmentStatus {
     OPEN("OPEN", "진행중"),
     CLOSED("CLOSED", "종료");
 
-    private String key;
-    private String description;
+    private final String key;
+    private final String description;
 }

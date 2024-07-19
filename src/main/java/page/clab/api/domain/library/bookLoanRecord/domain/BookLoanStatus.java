@@ -12,6 +12,6 @@ public enum BookLoanStatus {
     REJECTED("REJECTED", "대출 거절"),
     RETURNED("RETURNED", "반납 완료");
 
-    private String key;
-    private String description;
+    private final String key;
+    private final String description;
 }

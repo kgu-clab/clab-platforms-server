@@ -13,6 +13,6 @@ public enum ActivityGroupBoardCategory {
     ASSIGNMENT("ASSIGNMENT", "과제"),
     SUBMIT("SUBMIT", "제출");
 
-    private String key;
-    private String description;
+    private final String key;
+    private final String description;
 }

@@ -11,6 +11,6 @@ public enum ScheduleType {
     STUDY("STUDY", "스터디"),
     PROJECT("PROJECT", "프로젝트");
 
-    private String key;
-    private String description;
+    private final String key;
+    private final String description;
 }
