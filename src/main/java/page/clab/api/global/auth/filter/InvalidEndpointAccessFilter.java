@@ -22,8 +22,8 @@ import page.clab.api.global.util.ResponseUtil;
 
 import java.io.IOException;
 
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class InvalidEndpointAccessFilter extends GenericFilterBean {
 
     private final SlackService slackService;

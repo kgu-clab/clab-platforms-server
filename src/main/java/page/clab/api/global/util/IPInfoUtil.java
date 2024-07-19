@@ -11,8 +11,8 @@ import org.springframework.web.client.RestClient;
 import page.clab.api.global.common.dto.IPInfoResponse;
 import page.clab.api.global.config.IPInfoConfig;
 
-@Slf4j
 @Component
+@Slf4j
 public class IPInfoUtil {
 
     private static RestClient restClient;

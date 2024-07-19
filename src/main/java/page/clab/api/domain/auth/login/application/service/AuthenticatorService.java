@@ -3,7 +3,6 @@ package page.clab.api.domain.auth.login.application.service;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.auth.login.application.port.in.ManageAuthenticatorUseCase;
@@ -15,7 +14,6 @@ import page.clab.api.global.util.EncryptionUtil;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class AuthenticatorService implements ManageAuthenticatorUseCase {
 
     private final RegisterAuthenticatorPort registerAuthenticatorPort;

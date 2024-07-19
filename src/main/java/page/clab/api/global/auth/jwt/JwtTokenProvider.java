@@ -27,8 +27,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
-@Slf4j
 @Component
+@Slf4j
 public class JwtTokenProvider {
 
     private final Key key;

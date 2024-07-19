@@ -14,9 +14,9 @@ import page.clab.api.global.common.slack.domain.GeneralAlertType;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.common.slack.event.NotificationEvent;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SlackService {
 
     private final ApplicationEventPublisher eventPublisher;

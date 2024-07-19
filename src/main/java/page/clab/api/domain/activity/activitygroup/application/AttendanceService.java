@@ -3,7 +3,6 @@ package page.clab.api.domain.activity.activitygroup.application;
 import com.google.zxing.WriterException;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,7 +39,6 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class AttendanceService {
 
     private final ActivityGroupAdminService activityGroupAdminService;

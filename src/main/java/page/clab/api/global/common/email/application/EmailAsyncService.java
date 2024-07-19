@@ -23,8 +23,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class EmailAsyncService {
 
     private static final int MAX_BATCH_SIZE = 10;

@@ -29,8 +29,8 @@ import java.util.Set;
 import java.util.UUID;
 
 @Component
-@Slf4j
 @Configuration
+@Slf4j
 public class FileHandler {
 
     private final Set<String> disallowExtensions = new HashSet<>();
