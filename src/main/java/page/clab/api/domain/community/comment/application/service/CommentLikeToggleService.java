@@ -9,6 +9,7 @@ import page.clab.api.domain.community.comment.application.port.out.RemoveComment
 import page.clab.api.domain.community.comment.application.port.out.RetrieveCommentLikePort;
 import page.clab.api.domain.community.comment.domain.Comment;
 import page.clab.api.domain.community.comment.domain.CommentLike;
+import page.clab.api.external.community.comment.application.port.ExternalRegisterCommentUseCase;
 import page.clab.api.external.community.comment.application.port.ExternalRetrieveCommentUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 
@@ -20,6 +21,7 @@ public class CommentLikeToggleService implements ToggleCommentLikeUseCase {
     private final RegisterCommentLikePort registerCommentLikePort;
     private final RemoveCommentLikePort removeCommentLikePort;
     private final ExternalRetrieveCommentUseCase externalRetrieveCommentUseCase;
+    private final ExternalRegisterCommentUseCase externalRegisterCommentUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
     @Transactional
@@ -31,13 +33,13 @@ public class CommentLikeToggleService implements ToggleCommentLikeUseCase {
                 .map(commentLike -> {
                     removeCommentLikePort.delete(commentLike);
                     comment.decrementLikes();
-                    return comment.getLikes();
+                    return externalRegisterCommentUseCase.save(comment).getLikes();
                 })
                 .orElseGet(() -> {
                     CommentLike newLike = CommentLike.create(currentMemberId, comment.getId());
                     registerCommentLikePort.save(newLike);
                     comment.incrementLikes();
-                    return comment.getLikes();
+                    return externalRegisterCommentUseCase.save(comment).getLikes();
                 });
 
     }
