@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -79,7 +80,7 @@ public class FileHandler {
         try {
             if (isImageFile(multipartFile)) {
                 BufferedImage originalImage = adjustImageDirection(multipartFile);
-                ImageIO.write(originalImage, extension, file);
+                ImageIO.write(originalImage, Objects.requireNonNull(extension), file);
             } else {
                 multipartFile.transferTo(file);
             }

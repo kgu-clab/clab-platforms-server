@@ -5,13 +5,15 @@ import org.springframework.context.annotation.Configuration;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
+import java.util.Objects;
+
 @Configuration
 public class ThymeleafConfig {
 
     @Bean
     public SpringResourceTemplateResolver springResourceTemplateResolver() {
         SpringResourceTemplateResolver springResourceTemplateResolver = new SpringResourceTemplateResolver();
-        springResourceTemplateResolver.setPrefix(getClass().getResource("/templates/").toString());
+        springResourceTemplateResolver.setPrefix(Objects.requireNonNull(getClass().getResource("/templates/")).toString());
         springResourceTemplateResolver.setCharacterEncoding("UTF-8");
         springResourceTemplateResolver.setTemplateMode(TemplateMode.HTML);
         springResourceTemplateResolver.setCacheable(false);

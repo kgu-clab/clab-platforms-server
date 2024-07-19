@@ -3,6 +3,7 @@ package page.clab.api.global.handler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -14,13 +15,13 @@ import page.clab.api.global.util.HttpReqResUtil;
 public class ApiLoggingInterceptor implements HandlerInterceptor {
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) throws Exception {
         request.setAttribute("startTime", System.currentTimeMillis());
         return true;
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, @NotNull Object handler, Exception ex) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String id = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
