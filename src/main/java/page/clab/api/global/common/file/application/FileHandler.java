@@ -180,15 +180,24 @@ public class FileHandler {
                 ImageCompressionUtil.compressImage(savePath, imageQuality);
             }
             if (os.contains("win")) {
-                boolean isReadOnly = file.setReadOnly();
-                if (!isReadOnly) {
+                boolean readOnly = file.setReadOnly();
+                if (!readOnly) {
                     log.error("Failed to set file read-only: {}", savePath);
                 }
             } else {
-                Runtime.getRuntime().exec("chmod 400 " + savePath);
+                setFilePermissionsUnix(savePath);
             }
-        } catch (IOException e) {
-            throw new FileUploadFailException("파일 저장 실패", e);
+        } catch (Exception e) {
+            throw new FileUploadFailException("Failed to upload file: " + savePath, e);
+        }
+    }
+
+    private void setFilePermissionsUnix(String filePath) throws IOException, InterruptedException {
+        ProcessBuilder processBuilder = new ProcessBuilder("chmod", "400", filePath);
+        Process process = processBuilder.start();
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            log.error("Failed to set file permissions for: {}", filePath);
         }
     }
 
@@ -196,7 +205,7 @@ public class FileHandler {
         File fileToDelete = new File(savedPath);
         boolean deleted = fileToDelete.delete();
         if (!deleted) {
-            log.info("Failed to delete file: {}", savedPath);
+            log.error("Failed to delete file: {}", savedPath);
         }
     }
 }

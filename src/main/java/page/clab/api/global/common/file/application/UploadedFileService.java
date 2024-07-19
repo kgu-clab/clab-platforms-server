@@ -18,7 +18,6 @@ public class UploadedFileService {
     private final UploadFileRepository uploadFileRepository;
 
     public UploadedFile saveUploadedFile(UploadedFile uploadedFile) {
-        log.info("UploadedFileService.saveUploadedFile - uploadedFile: {}", uploadedFile.getUploader());
         return uploadFileRepository.save(uploadedFile);
     }
 
