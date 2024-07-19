@@ -166,7 +166,10 @@ public class FileHandler {
 
     private void ensureParentDirectoryExists(File file) {
         if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
+            boolean isCreated = file.getParentFile().mkdirs();
+            if (!isCreated) {
+                log.error("Failed to create directory: {}", file.getParentFile().getAbsolutePath());
+            }
         }
     }
 
@@ -177,9 +180,10 @@ public class FileHandler {
                 ImageCompressionUtil.compressImage(savePath, imageQuality);
             }
             if (os.contains("win")) {
-                file.setReadable(true);
-                file.setWritable(false);
-                file.setExecutable(false);
+                boolean isReadOnly = file.setReadOnly();
+                if (!isReadOnly) {
+                    log.error("Failed to set file read-only: {}", savePath);
+                }
             } else {
                 Runtime.getRuntime().exec("chmod 400 " + savePath);
             }
@@ -192,7 +196,7 @@ public class FileHandler {
         File fileToDelete = new File(savedPath);
         boolean deleted = fileToDelete.delete();
         if (!deleted) {
-            log.info("[{}] 파일을 삭제하는데 실패했습니다.", savedPath);
+            log.info("Failed to delete file: {}", savedPath);
         }
     }
 }

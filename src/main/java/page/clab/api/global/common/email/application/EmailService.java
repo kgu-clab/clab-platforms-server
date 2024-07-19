@@ -151,7 +151,10 @@ public class EmailService {
 
     private void checkDir(File file) {
         if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
+            boolean isCreated = file.getParentFile().mkdirs();
+            if (!isCreated) {
+                log.error("Failed to create directory: {}", file.getParentFile().getAbsolutePath());
+            }
         }
     }
 }
