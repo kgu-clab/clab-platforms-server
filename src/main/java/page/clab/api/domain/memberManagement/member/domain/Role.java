@@ -19,7 +19,6 @@ public enum Role {
             case USER -> 1L;
             case ADMIN -> 2L;
             case SUPER -> 3L;
-            default -> 0L;
         };
     }
 }

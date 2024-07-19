@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -89,11 +90,8 @@ public class EmailAsyncService {
     }
 
     private void setImageInTemplate(MimeMessageHelper messageHelper, EmailTemplateType templateType) throws MessagingException {
-        switch (templateType) {
-            case NORMAL -> {
-                messageHelper.addInline("image-1", new ClassPathResource("images/image-1.png"));
-                break;
-            }
+        if (Objects.requireNonNull(templateType) == EmailTemplateType.NORMAL) {
+            messageHelper.addInline("image-1", new ClassPathResource("images/image-1.png"));
         }
     }
 }
