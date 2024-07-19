@@ -25,7 +25,7 @@ public class StringJsonConverter implements AttributeConverter<List<String>, Str
     @Override
     public List<String> convertToEntityAttribute(String dbData) {
         try {
-            return objectMapper.readValue(dbData, new TypeReference<List<String>>() {
+            return objectMapper.readValue(dbData, new TypeReference<>() {
             });
         } catch (Exception e) {
             log.error("Could not convert JSON string to list", e);
