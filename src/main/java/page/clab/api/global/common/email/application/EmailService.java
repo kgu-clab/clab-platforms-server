@@ -77,17 +77,16 @@ public class EmailService {
 
     public void broadcastEmailToApprovedMember(Member member, String password) {
         String subject = "C-Lab 계정 발급 안내";
-        String content = String.format(
-                "정식으로 C-Lab의 일원이 된 것을 축하드립니다.\n" +
-                        "C-Lab과 함께하는 동안 불타는 열정으로 모든 원하는 목표를 이루어 내시기를 바라고,\n" +
-                        "훗날, 당신의 합류가 C-Lab에겐 최고의 행운이었다고 기억되기를 희망합니다.\n\n" +
-                        "로그인을 위해 아래의 계정 정보를 확인해주세요.\n" +
-                        "ID: %s\n" +
-                        "Password: %s\n" +
-                        "로그인 후 비밀번호를 변경해주세요.",
-                member.getId(),
-                password
-        );
+        String content = """
+            정식으로 C-Lab의 일원이 된 것을 축하드립니다.
+            C-Lab과 함께하는 동안 불타는 열정으로 모든 원하는 목표를 이루어 내시기를 바라고,
+            훗날, 당신의 합류가 C-Lab에겐 최고의 행운이었다고 기억되기를 희망합니다.
+
+            로그인을 위해 아래의 계정 정보를 확인해주세요.
+            ID: %s
+            Password: %s
+            로그인 후 비밀번호를 변경해주세요.
+            """.formatted(member.getId(), password);
         EmailDto emailDto = EmailDto.create(List.of(member.getEmail()), subject, content, EmailTemplateType.NORMAL);
         try {
             String emailContent = generateEmailContent(emailDto, member.getName());
@@ -99,13 +98,12 @@ public class EmailService {
 
     public void sendPasswordResetEmail(Member member, String code) {
         String subject = "C-Lab 비밀번호 재발급 인증 안내";
-        String content = String.format(
-                "C-Lab 비밀번호 재발급 인증 안내 메일입니다.\n" +
-                        "인증번호는 %s입니다.\n" +
-                        "해당 인증번호를 비밀번호 재설정 페이지에 입력해주세요.\n" +
-                        "재설정시 비밀번호는 인증번호로 대체됩니다.",
-                code
-        );
+        String content = """
+            C-Lab 비밀번호 재발급 인증 안내 메일입니다.
+            인증번호는 %s입니다.
+            해당 인증번호를 비밀번호 재설정 페이지에 입력해주세요.
+            재설정시 비밀번호는 인증번호로 대체됩니다.
+            """.formatted(code);
         EmailDto emailDto = EmailDto.create(List.of(member.getEmail()), subject, content, EmailTemplateType.NORMAL);
         try {
             broadcastEmail(emailDto, null);
