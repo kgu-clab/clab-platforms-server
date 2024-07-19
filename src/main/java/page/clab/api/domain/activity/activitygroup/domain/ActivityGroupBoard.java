@@ -84,9 +84,7 @@ public class ActivityGroupBoard extends BaseEntity {
         Optional.ofNullable(requestDto.getTitle()).ifPresent(this::setTitle);
         Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
         Optional.ofNullable(requestDto.getDueDateTime()).ifPresent(this::setDueDateTime);
-        Optional.ofNullable(requestDto.getFileUrls()).ifPresent(urls -> {
-            this.setUploadedFiles(uploadedFileService.getUploadedFilesByUrls(urls));
-        });
+        Optional.ofNullable(requestDto.getFileUrls()).ifPresent(urls -> this.setUploadedFiles(uploadedFileService.getUploadedFilesByUrls(urls)));
     }
 
     public void addChild(ActivityGroupBoard child) {

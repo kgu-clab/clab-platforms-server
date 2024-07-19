@@ -31,9 +31,8 @@ public class IPInfoUtil {
                 .header("Authorization", "Bearer " + accessToken)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, ((request, response) -> {
-                    log.warn("4xx error occurred while getting ip info. Status code: {}", response.getStatusCode());
-                }))
+                .onStatus(HttpStatusCode::is4xxClientError, ((request, response) ->
+                    log.warn("4xx error occurred while getting ip info. Status code: {}", response.getStatusCode())))
                 .body(IPInfoResponse.class);
     }
 

@@ -34,10 +34,7 @@ public class EmailController {
             EmailDto emailDto,
             @RequestParam(name = "multipartFile", required = false) List<MultipartFile> files
     ) {
-        CompletableFuture<List<String>> emailTask = CompletableFuture.supplyAsync(() -> {
-            return emailService.broadcastEmail(emailDto, files);
-        });
-
+        CompletableFuture<List<String>> emailTask = CompletableFuture.supplyAsync(() -> emailService.broadcastEmail(emailDto, files));
         List<String> successfulAddresses = emailTask.join();
         return ApiResponse.success(successfulAddresses);
     }
@@ -49,10 +46,7 @@ public class EmailController {
             EmailDto emailDto,
             @RequestParam(name = "multipartFile", required = false) List<MultipartFile> files
     ) {
-        CompletableFuture<List<String>> emailTask = CompletableFuture.supplyAsync(() -> {
-            return emailService.broadcastEmailToAllMember(emailDto, files);
-        });
-
+        CompletableFuture<List<String>> emailTask = CompletableFuture.supplyAsync(() -> emailService.broadcastEmailToAllMember(emailDto, files));
         List<String> successfulEmails = emailTask.join();
         return ApiResponse.success(successfulEmails);
     }
