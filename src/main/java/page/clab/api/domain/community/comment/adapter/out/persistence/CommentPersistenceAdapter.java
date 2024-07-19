@@ -79,9 +79,4 @@ public class CommentPersistenceAdapter implements
                 .map(commentMapper::toDomain)
                 .toList();
     }
-
-    @Override
-    public long countAllByBoardId(Long boardId) {
-        return commentRepository.countAllByBoardId(boardId);
-    }
 }

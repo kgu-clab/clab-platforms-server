@@ -26,10 +26,4 @@ public class ExternalCommentRetrievalService implements ExternalRetrieveCommentU
     public Long countByBoardId(Long id) {
         return retrieveCommentPort.countByBoardId(id);
     }
-
-    @Transactional(readOnly = true)
-    @Override
-    public long countCommentsByBoardId(Long id) {
-        return retrieveCommentPort.countAllByBoardId(id);
-    }
 }

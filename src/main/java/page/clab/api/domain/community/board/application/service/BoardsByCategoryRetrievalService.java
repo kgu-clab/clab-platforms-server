@@ -29,7 +29,7 @@ public class BoardsByCategoryRetrievalService implements RetrieveBoardsByCategor
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         Page<Board> boards = retrieveBoardPort.findAllByCategory(category, pageable);
         return new PagedResponseDto<>(boards.map(board -> {
-            long commentCount = externalRetrieveCommentUseCase.countCommentsByBoardId(board.getId());
+            long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
             return  BoardCategoryResponseDto.toDto(board, currentMemberInfo, commentCount);
         }));
     }

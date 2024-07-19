@@ -7,6 +7,4 @@ public interface ExternalRetrieveCommentUseCase {
     Comment findByIdOrThrow(Long targetId);
 
     Long countByBoardId(Long id);
-
-    long countCommentsByBoardId(Long id);
 }

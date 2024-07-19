@@ -24,7 +24,7 @@ import java.util.List;
 @RequestMapping("/api/v1/comments")
 @RequiredArgsConstructor
 @Tag(name = "Community - Comment", description = "커뮤니티 댓글")
-public class CommentsRetrievalController {
+public class CommentRetrievalController {
 
     private final RetrieveCommentUseCase retrieveCommentUseCase;
     private final PageableUtils pageableUtils;
