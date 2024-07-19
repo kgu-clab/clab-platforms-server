@@ -11,11 +11,8 @@ import java.util.Date;
 public class FileInfo {
 
     private String fileName;
-
     private Long fileSizeInBytes;
-
     private Date creationDate;
-
     private Date modificationDate;
 
     public static FileInfo toDto(File file) {
@@ -30,5 +27,4 @@ public class FileInfo {
                 .modificationDate(new Date(file.lastModified()))
                 .build();
     }
-
 }

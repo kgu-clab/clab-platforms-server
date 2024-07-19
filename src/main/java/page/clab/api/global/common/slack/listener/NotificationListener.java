@@ -14,7 +14,6 @@ import page.clab.api.global.common.slack.event.NotificationEvent;
 public class NotificationListener {
 
     private final NotificationSettingService settingService;
-
     private final SlackServiceHelper slackServiceHelper;
 
     @EventListener
@@ -26,5 +25,4 @@ public class NotificationListener {
             slackServiceHelper.sendSlackMessage(alertType, event.getRequest(), event.getAdditionalData());
         }
     }
-
 }

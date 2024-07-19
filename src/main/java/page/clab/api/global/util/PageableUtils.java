@@ -14,19 +14,19 @@ import java.util.stream.IntStream;
 @Component
 public class PageableUtils {
 
-    private static ColumnValidator columnValidator;
+    private final ColumnValidator columnValidator;
 
     public PageableUtils(ColumnValidator columnValidator) {
-        PageableUtils.columnValidator = columnValidator;
+        this.columnValidator = columnValidator;
     }
 
-    public static Pageable createPageable(int page, int size, List<String> sortByList, List<String> sortDirectionList, Class<?> entityClass) throws SortingArgumentException, InvalidColumnException {
+    public Pageable createPageable(int page, int size, List<String> sortByList, List<String> sortDirectionList, Class<?> domainClass) throws SortingArgumentException, InvalidColumnException {
         if (sortByList.size() != sortDirectionList.size()) {
             throw new SortingArgumentException();
         }
 
         for (String sortBy : sortByList) {
-            if (!columnValidator.isValidColumn(entityClass, sortBy)) {
+            if (!columnValidator.isValidColumn(domainClass, sortBy)) {
                 throw new InvalidColumnException(sortBy + "라는 칼럼이 존재하지 않습니다.");
             }
         }
@@ -46,7 +46,7 @@ public class PageableUtils {
         return PageRequest.of(page, size, sort);
     }
 
-    private static boolean isValidateSortDirection(String direction) {
+    private boolean isValidateSortDirection(String direction) {
         return "asc".equalsIgnoreCase(direction) || "desc".equalsIgnoreCase(direction);
     }
 }

@@ -3,7 +3,7 @@ package page.clab.api.global.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,9 +25,7 @@ import java.io.IOException;
 public class WebConfig implements WebMvcConfigurer {
 
     private final ObjectMapper objectMapper;
-
-    @Autowired
-    private ApiLoggingInterceptor apiLoggingInterceptor;
+    private final ApiLoggingInterceptor apiLoggingInterceptor;
 
     @Value("${resource.file.path}")
     private String filePath;
@@ -44,7 +42,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver() {
                     @Override
-                    protected Resource getResource(String resourcePath, Resource location) throws IOException {
+                    protected Resource getResource(@NotNull String resourcePath, @NotNull Resource location) throws IOException {
                         Resource resource = location.createRelative(resourcePath);
                         if (resource.exists() && resource.isReadable()) {
                             return resource;

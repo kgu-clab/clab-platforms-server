@@ -12,8 +12,7 @@ public enum EmailTemplateType {
     NORMAL("NORMAL", "기본", "clabEmail.html");
 
     @Enumerated(EnumType.STRING)
-    private String key;
-    private String description;
-    private String templateName;
-
+    private final String key;
+    private final String description;
+    private final String templateName;
 }

@@ -14,16 +14,12 @@ import org.springframework.context.annotation.Configuration;
 public class SlackConfig {
 
     private String webhookUrl;
-
     private String webUrl;
-
     private String apiUrl;
-
     private String color;
 
     @Bean
     public Slack slack() {
         return Slack.getInstance();
     }
-
 }

@@ -18,8 +18,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import page.clab.api.domain.login.dto.response.TokenInfo;
-import page.clab.api.domain.member.domain.Role;
+import page.clab.api.domain.auth.login.application.dto.response.TokenInfo;
+import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.global.auth.exception.TokenValidateException;
 
 import java.security.Key;
@@ -27,14 +27,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
-@Slf4j
 @Component
+@Slf4j
 public class JwtTokenProvider {
 
     private final Key key;
-
     private final long accessTokenDuration;
-
     private final long refreshTokenDuration;
 
     public JwtTokenProvider(
@@ -151,5 +149,4 @@ public class JwtTokenProvider {
         }
         return role;
     }
-
 }

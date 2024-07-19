@@ -15,5 +15,4 @@ public enum GeneralAlertType implements AlertType {
 
     private final String title;
     private final String defaultMessage;
-
 }

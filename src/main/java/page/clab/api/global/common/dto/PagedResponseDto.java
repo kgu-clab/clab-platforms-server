@@ -10,17 +10,11 @@ import java.util.List;
 public class PagedResponseDto<T> {
 
     private final int currentPage;
-
     private final boolean hasPrevious;
-
     private final boolean hasNext;
-
     private final int totalPages;
-
     private final long totalItems;
-
     private final int take;
-
     private final List<T> items;
 
     public PagedResponseDto(Page<T> page) {
@@ -42,5 +36,4 @@ public class PagedResponseDto<T> {
         this.take = size;
         this.items = ts;
     }
-
 }

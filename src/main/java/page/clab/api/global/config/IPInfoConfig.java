@@ -52,5 +52,4 @@ public class IPInfoConfig {
     public AttributeStrategy attributeStrategy() {
         return new SessionAttributeStrategy();
     }
-
 }

@@ -11,5 +11,4 @@ public class ImageCompressionException extends RuntimeException {
     public ImageCompressionException(String s) {
         super(s);
     }
-
 }

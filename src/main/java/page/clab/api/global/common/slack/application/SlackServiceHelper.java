@@ -20,9 +20,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.application.dto.request.ApplicationRequestDto;
-import page.clab.api.domain.board.domain.SlackBoardInfo;
-import page.clab.api.domain.member.dto.shared.MemberLoginInfoDto;
+import page.clab.api.domain.community.board.domain.SlackBoardInfo;
+import page.clab.api.domain.hiring.application.application.dto.request.ApplicationRequestDto;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
 import page.clab.api.global.common.slack.domain.AlertType;
 import page.clab.api.global.common.slack.domain.GeneralAlertType;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
@@ -47,17 +47,11 @@ import java.util.stream.Collectors;
 public class SlackServiceHelper {
 
     private final Slack slack;
-
     private final String webhookUrl;
-
     private final String webUrl;
-
     private final String apiUrl;
-
     private final String color;
-
     private final Environment environment;
-
     private final AttributeStrategy attributeStrategy;
 
     public SlackServiceHelper(SlackConfig slackConfig, Environment environment, AttributeStrategy attributeStrategy) {
@@ -68,6 +62,11 @@ public class SlackServiceHelper {
         this.color = slackConfig.getColor();
         this.environment = environment;
         this.attributeStrategy = attributeStrategy;
+    }
+
+    private static String getUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
     }
 
     public CompletableFuture<Boolean> sendSlackMessage(AlertType alertType, HttpServletRequest request, Object additionalData) {
@@ -269,11 +268,6 @@ public class SlackServiceHelper {
         return String.format("%dMB / %dMB (%.2f%%)", usedMemory, maxMemory, ((double) usedMemory / maxMemory) * 100);
     }
 
-    private static String getUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
-    }
-
     private @NotNull String getUsername(HttpServletRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return Optional.ofNullable(request.getAttribute("member"))
@@ -287,5 +281,4 @@ public class SlackServiceHelper {
         IPResponse ipResponse = attributeStrategy.getAttribute(request);
         return ipResponse == null ? "Unknown" : ipResponse.getCountryName() + ", " + ipResponse.getCity();
     }
-
 }

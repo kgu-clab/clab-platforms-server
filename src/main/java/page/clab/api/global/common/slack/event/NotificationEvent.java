@@ -9,9 +9,7 @@ import page.clab.api.global.common.slack.domain.AlertType;
 public class NotificationEvent extends ApplicationEvent {
 
     private final AlertType alertType;
-
     private final HttpServletRequest request;
-
     private final Object additionalData;
 
     public NotificationEvent(Object source, AlertType alertType, HttpServletRequest request, Object additionalData) {
@@ -20,5 +18,4 @@ public class NotificationEvent extends ApplicationEvent {
         this.request = request;
         this.additionalData = additionalData;
     }
-
 }

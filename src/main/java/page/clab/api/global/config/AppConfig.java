@@ -20,5 +20,4 @@ public class AppConfig {
                 .timeZone("Asia/Seoul")
                 .build();
     }
-
 }

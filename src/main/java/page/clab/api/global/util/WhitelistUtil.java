@@ -1,7 +1,6 @@
 package page.clab.api.global.util;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import page.clab.api.global.config.WhitelistPatternsProperties;
 
@@ -14,8 +13,11 @@ public class WhitelistUtil implements InitializingBean {
     private static String[] actuatorPatterns;
     private static String[] whitelistPatterns;
 
-    @Autowired
-    private WhitelistPatternsProperties whitelistPatternsProperties;
+    private final WhitelistPatternsProperties whitelistPatternsProperties;
+
+    public WhitelistUtil(WhitelistPatternsProperties whitelistPatternsProperties) {
+        this.whitelistPatternsProperties = whitelistPatternsProperties;
+    }
 
     @Override
     public void afterPropertiesSet() throws Exception {

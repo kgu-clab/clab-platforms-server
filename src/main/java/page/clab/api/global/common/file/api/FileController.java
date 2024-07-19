@@ -3,7 +3,6 @@ package page.clab.api.global.common.file.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,7 +27,6 @@ import java.util.List;
 @RequestMapping("/api/v1/files")
 @RequiredArgsConstructor
 @Tag(name = "UploadedFile", description = "파일 업로드")
-@Slf4j
 public class FileController {
 
     private final FileService fileService;
@@ -132,5 +130,4 @@ public class FileController {
         String deletedFileUrl = fileService.deleteFile(deleteFileRequestDto);
         return ApiResponse.success(deletedFileUrl);
     }
-
 }

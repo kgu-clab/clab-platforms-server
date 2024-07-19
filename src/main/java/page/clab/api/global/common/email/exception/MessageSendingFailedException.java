@@ -5,6 +5,5 @@ public class MessageSendingFailedException extends RuntimeException {
     public MessageSendingFailedException(String message) {
         super(message);
     }
-
 }
 

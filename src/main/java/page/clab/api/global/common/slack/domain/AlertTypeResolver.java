@@ -19,5 +19,4 @@ public class AlertTypeResolver {
         }
         throw new AlertTypeNotFoundException(alertTypeName);
     }
-
 }

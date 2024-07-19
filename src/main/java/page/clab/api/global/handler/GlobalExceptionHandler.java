@@ -23,31 +23,31 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
-import page.clab.api.domain.accuse.exception.AccuseTargetTypeIncorrectException;
-import page.clab.api.domain.activityGroup.exception.ActivityGroupNotFinishedException;
-import page.clab.api.domain.activityGroup.exception.ActivityGroupNotProgressingException;
-import page.clab.api.domain.activityGroup.exception.AlreadyAppliedException;
-import page.clab.api.domain.activityGroup.exception.DuplicateAbsentExcuseException;
-import page.clab.api.domain.activityGroup.exception.DuplicateAttendanceException;
-import page.clab.api.domain.activityGroup.exception.DuplicateReportException;
-import page.clab.api.domain.activityGroup.exception.InvalidCategoryException;
-import page.clab.api.domain.activityGroup.exception.InvalidParentBoardException;
-import page.clab.api.domain.activityGroup.exception.LeaderStatusChangeNotAllowedException;
-import page.clab.api.domain.application.exception.NotApprovedApplicationException;
-import page.clab.api.domain.book.exception.BookAlreadyAppliedForLoanException;
-import page.clab.api.domain.book.exception.BookAlreadyBorrowedException;
-import page.clab.api.domain.book.exception.BookAlreadyReturnedException;
-import page.clab.api.domain.book.exception.InvalidBorrowerException;
-import page.clab.api.domain.book.exception.LoanNotPendingException;
-import page.clab.api.domain.book.exception.LoanSuspensionException;
-import page.clab.api.domain.book.exception.MaxBorrowLimitExceededException;
-import page.clab.api.domain.book.exception.OverdueException;
-import page.clab.api.domain.login.exception.LoginFailedException;
-import page.clab.api.domain.login.exception.MemberLockedException;
-import page.clab.api.domain.member.exception.DuplicateMemberContactException;
-import page.clab.api.domain.member.exception.DuplicateMemberEmailException;
-import page.clab.api.domain.member.exception.DuplicateMemberIdException;
-import page.clab.api.domain.review.exception.AlreadyReviewedException;
+import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotFinishedException;
+import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotProgressingException;
+import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedException;
+import page.clab.api.domain.activity.activitygroup.exception.DuplicateAbsentExcuseException;
+import page.clab.api.domain.activity.activitygroup.exception.DuplicateAttendanceException;
+import page.clab.api.domain.activity.activitygroup.exception.DuplicateReportException;
+import page.clab.api.domain.activity.activitygroup.exception.InvalidCategoryException;
+import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
+import page.clab.api.domain.activity.activitygroup.exception.LeaderStatusChangeNotAllowedException;
+import page.clab.api.domain.activity.review.application.exception.AlreadyReviewedException;
+import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
+import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
+import page.clab.api.domain.community.accuse.application.exception.AccuseTargetTypeIncorrectException;
+import page.clab.api.domain.hiring.application.application.exception.NotApprovedApplicationException;
+import page.clab.api.domain.library.book.application.exception.BookAlreadyBorrowedException;
+import page.clab.api.domain.library.book.application.exception.InvalidBorrowerException;
+import page.clab.api.domain.library.bookLoanRecord.application.exception.BookAlreadyAppliedForLoanException;
+import page.clab.api.domain.library.bookLoanRecord.application.exception.BookAlreadyReturnedException;
+import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanNotPendingException;
+import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanSuspensionException;
+import page.clab.api.domain.library.bookLoanRecord.application.exception.MaxBorrowLimitExceededException;
+import page.clab.api.domain.library.bookLoanRecord.application.exception.OverdueException;
+import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberContactException;
+import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberEmailException;
+import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberIdException;
 import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
@@ -64,6 +64,7 @@ import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.DecryptionException;
 import page.clab.api.global.exception.EncryptionException;
 import page.clab.api.global.exception.InvalidColumnException;
+import page.clab.api.global.exception.InvalidDateRangeException;
 import page.clab.api.global.exception.InvalidEmojiException;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
@@ -86,6 +87,9 @@ public class GlobalExceptionHandler {
             InvalidInformationException.class,
             InvalidParentBoardException.class,
             InvalidCategoryException.class,
+            InvalidDateRangeException.class,
+            InvalidColumnException.class,
+            InvalidEmojiException.class,
             StringIndexOutOfBoundsException.class,
             MissingServletRequestParameterException.class,
             MalformedJsonException.class,
@@ -94,9 +98,7 @@ public class GlobalExceptionHandler {
             IllegalAccessException.class,
             NumberFormatException.class,
             SortingArgumentException.class,
-            InvalidColumnException.class,
-            UnknownPathException.class,
-            InvalidEmojiException.class
+            UnknownPathException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
@@ -211,5 +213,4 @@ public class GlobalExceptionHandler {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return ApiResponse.failure();
     }
-
 }

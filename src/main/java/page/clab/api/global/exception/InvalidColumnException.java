@@ -11,5 +11,4 @@ public class InvalidColumnException extends Exception {
     public InvalidColumnException(String s) {
         super(s);
     }
-
 }

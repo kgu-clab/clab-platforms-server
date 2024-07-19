@@ -25,18 +25,21 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
 @Component
-@Slf4j
 @Configuration
+@Slf4j
 public class FileHandler {
 
     private final Set<String> disallowExtensions = new HashSet<>();
     private final Set<String> compressibleImageExtensions = new HashSet<>();
+
     @Value("${resource.file.path}")
     private String filePath;
+
     @Value("${resource.file.image-quality}")
     private float imageQuality;
 
@@ -77,7 +80,7 @@ public class FileHandler {
         try {
             if (isImageFile(multipartFile)) {
                 BufferedImage originalImage = adjustImageDirection(multipartFile);
-                ImageIO.write(originalImage, extension, file);
+                ImageIO.write(originalImage, Objects.requireNonNull(extension), file);
             } else {
                 multipartFile.transferTo(file);
             }
@@ -164,7 +167,10 @@ public class FileHandler {
 
     private void ensureParentDirectoryExists(File file) {
         if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
+            boolean isCreated = file.getParentFile().mkdirs();
+            if (!isCreated) {
+                log.error("Failed to create directory: {}", file.getParentFile().getAbsolutePath());
+            }
         }
     }
 
@@ -175,14 +181,24 @@ public class FileHandler {
                 ImageCompressionUtil.compressImage(savePath, imageQuality);
             }
             if (os.contains("win")) {
-                file.setReadable(true);
-                file.setWritable(false);
-                file.setExecutable(false);
+                boolean readOnly = file.setReadOnly();
+                if (!readOnly) {
+                    log.error("Failed to set file read-only: {}", savePath);
+                }
             } else {
-                Runtime.getRuntime().exec("chmod 400 " + savePath);
+                setFilePermissionsUnix(savePath);
             }
-        } catch (IOException e) {
-            throw new FileUploadFailException("파일 저장 실패", e);
+        } catch (Exception e) {
+            throw new FileUploadFailException("Failed to upload file: " + savePath, e);
+        }
+    }
+
+    private void setFilePermissionsUnix(String filePath) throws IOException, InterruptedException {
+        ProcessBuilder processBuilder = new ProcessBuilder("chmod", "400", filePath);
+        Process process = processBuilder.start();
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            log.error("Failed to set file permissions for: {}", filePath);
         }
     }
 
@@ -190,8 +206,7 @@ public class FileHandler {
         File fileToDelete = new File(savedPath);
         boolean deleted = fileToDelete.delete();
         if (!deleted) {
-            log.info("[{}] 파일을 삭제하는데 실패했습니다.", savedPath);
+            log.error("Failed to delete file: {}", savedPath);
         }
     }
-
 }

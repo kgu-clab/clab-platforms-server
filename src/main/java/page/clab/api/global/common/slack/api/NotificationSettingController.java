@@ -42,5 +42,4 @@ public class NotificationSettingController {
         notificationSettingService.updateNotificationSetting(requestDto.getAlertType(), requestDto.isEnabled());
         return ApiResponse.success();
     }
-
 }
