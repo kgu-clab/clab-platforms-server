@@ -15,7 +15,7 @@ public interface RetrieveCommentPort {
 
     Page<Comment> findAllByIsDeletedTrueAndBoardId(Long boardId, Pageable pageable);
 
-    Page<Comment> findAllByBoardIdAndParentIsNull(Long boardId, Pageable pageable);
+    Page<Comment> findAllByBoardId(Long boardId, Pageable pageable);
 
     Page<Comment> findAllByWriterId(String memberId, Pageable pageable);
 

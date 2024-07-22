@@ -56,8 +56,8 @@ public class CommentPersistenceAdapter implements
     }
 
     @Override
-    public Page<Comment> findAllByBoardIdAndParentIsNull(Long boardId, Pageable pageable) {
-        return commentRepository.findAllByBoardIdAndParentIsNull(boardId, pageable)
+    public Page<Comment> findAllByBoardId(Long boardId, Pageable pageable) {
+        return commentRepository.findAllByBoardId(boardId, pageable)
                 .map(commentMapper::toDomain);
     }
 

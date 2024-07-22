@@ -37,7 +37,7 @@ public class CommentRetrievalService implements RetrieveCommentUseCase {
     @Transactional(readOnly = true)
     public PagedResponseDto<CommentResponseDto> getAllComments(Long boardId, Pageable pageable) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
-        Page<Comment> comments = retrieveCommentPort.findAllByBoardIdAndParentIsNull(boardId, pageable);
+        Page<Comment> comments = retrieveCommentPort.findAllByBoardId(boardId, pageable);
         List<CommentResponseDto> commentDtos = comments.stream()
                 .map(comment -> toCommentResponseDtoWithMemberInfo(comment, currentMemberId))
                 .toList();

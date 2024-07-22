@@ -12,8 +12,8 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<CommentJpaEntity, Long> {
 
-    @Query("SELECT c FROM CommentJpaEntity c WHERE c.boardId = ?1 AND c.parent.id IS NULL")
-    Page<CommentJpaEntity> findAllByBoardIdAndParentIsNull(Long boardId, Pageable pageable);
+    @Query("SELECT c FROM CommentJpaEntity c WHERE c.boardId = ?1")
+    Page<CommentJpaEntity> findAllByBoardId(Long boardId, Pageable pageable);
 
     @Query("SELECT c FROM CommentJpaEntity c WHERE c.writerId = ?1 AND c.isDeleted = false")
     Page<CommentJpaEntity> findAllByWriterId(String memberId, Pageable pageable);
