@@ -39,9 +39,10 @@ public class CommentRetrievalService implements RetrieveCommentUseCase {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         Page<Comment> comments = retrieveCommentPort.findAllByBoardId(boardId, pageable);
         List<CommentResponseDto> commentDtos = comments.stream()
+                .filter(comment -> comment.getParent() == null)
                 .map(comment -> toCommentResponseDtoWithMemberInfo(comment, currentMemberId))
                 .toList();
-        return new PagedResponseDto<>(new PageImpl<>(commentDtos, pageable, comments.getTotalElements()));
+        return new PagedResponseDto<>(commentDtos, pageable, comments.getTotalElements(), comments.getNumberOfElements());
     }
 
     private CommentResponseDto toCommentResponseDtoWithMemberInfo(Comment comment, String currentMemberId) {
