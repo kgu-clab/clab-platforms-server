@@ -26,11 +26,14 @@ public class BoardsByCategoryRetrievalService implements RetrieveBoardsByCategor
     @Transactional
     @Override
     public PagedResponseDto<BoardCategoryResponseDto> retrieveBoardsByCategory(BoardCategory category, Pageable pageable) {
-        MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         Page<Board> boards = retrieveBoardPort.findAllByCategory(category, pageable);
         return new PagedResponseDto<>(boards.map(board -> {
             long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
-            return  BoardCategoryResponseDto.toDto(board, currentMemberInfo, commentCount);
+            return  BoardCategoryResponseDto.toDto(board, getMemberDetailedInfoByBoard(board), commentCount);
         }));
+    }
+
+    private MemberDetailedInfoDto getMemberDetailedInfoByBoard(Board board) {
+        return externalRetrieveMemberUseCase.getMemberDetailedInfoById(board.getMemberId());
     }
 }
