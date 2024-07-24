@@ -42,8 +42,8 @@ public class CommentRetrievalService implements RetrieveCommentUseCase {
                 .map(comment -> toCommentResponseDtoWithMemberInfo(comment, currentMemberId))
                 .toList();
         Long totalElements = retrieveCommentPort.countByBoardId(boardId);
-        int numberOfElements = retrieveCommentPort.findByBoardId(boardId).size();
-        return new PagedResponseDto<>(commentDtos, pageable, totalElements, numberOfElements);
+        Page<CommentResponseDto> commentDtoPage = new PageImpl<>(commentDtos, pageable, comments.getTotalElements());
+        return new PagedResponseDto<>(commentDtoPage, totalElements, getNumberOfCurrentPageComments(comments, commentDtos));
     }
 
     private CommentResponseDto toCommentResponseDtoWithMemberInfo(Comment comment, String currentMemberId) {
@@ -53,5 +53,12 @@ public class CommentRetrievalService implements RetrieveCommentUseCase {
                 .toList();
         boolean isOwner = comment.isOwner(currentMemberId);
         return CommentResponseDto.toDto(comment, memberInfo, isOwner, childrenDtos);
+    }
+
+    private int getNumberOfCurrentPageComments(Page<Comment> comments, List<CommentResponseDto> commentDtos) {
+        return comments.getNumberOfElements() +
+                commentDtos.stream()
+                        .mapToInt(comment -> comment.getChildren().size())
+                        .sum();
     }
 }
