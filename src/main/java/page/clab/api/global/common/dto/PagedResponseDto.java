@@ -27,6 +27,16 @@ public class PagedResponseDto<T> {
         this.items = page.getContent();
     }
 
+    public PagedResponseDto(Page<T> page, long totalItems, int numberOfElements) {
+        this.currentPage = page.getNumber();
+        this.hasPrevious = page.hasPrevious();
+        this.hasNext = page.hasNext();
+        this.totalPages = page.getTotalPages();
+        this.totalItems = totalItems;
+        this.take = numberOfElements;
+        this.items = page.getContent();
+    }
+
     public PagedResponseDto(List<T> ts, Pageable pageable, int size) {
         this.currentPage = pageable.getPageNumber();
         this.hasPrevious = pageable.getPageNumber() > 0;
