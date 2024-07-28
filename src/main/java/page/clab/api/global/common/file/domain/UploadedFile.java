@@ -27,7 +27,7 @@ public class UploadedFile extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "member_id", nullable = false)
     private String uploader;
 
     @Column(nullable = false)
