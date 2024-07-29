@@ -96,7 +96,7 @@ dependencies {
 
     // Slack
     implementation 'com.slack.api:slack-api-model:1.40.3'
-    implementation 'com.slack.api:slack-api-client:1.40.2'
+    implementation 'com.slack.api:slack-api-client:1.40.3'
     implementation 'com.slack.api:slack-app-backend:1.40.3'
 
     // XSS Filter
