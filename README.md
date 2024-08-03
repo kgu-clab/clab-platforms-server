@@ -144,10 +144,16 @@ The packages in this project are organized using the private-package convention.
 - **handler**: Contains classes for defining handlers for exceptions and specific situations.
 - **util**: Contains general utility classes.
 
+## System Architecture Diagram
+![System-Architecture-Diagram](images/System-Architecture-Diagram.png)
+
+## Monitoring Services Diagram
+![Monitoring-Services-Diagram](images/Monitoring-Services-Diagram.png)
+
 ## Entity-Relationship Diagram
 > **Note**: Although the actual database design avoids using foreign keys, the diagram visually represents foreign key connections for illustrative purposes.
- 
-![img.png](img.png)
+
+![Entity-Relationship-Diagram](images/Entity-Relationship-Diagram.png)
 
 ## License
 This project is licensed under the GNU General Public License (GPL) v3.0. For more information, see the [LICENSE](https://github.com/KGU-C-Lab/clab-server?tab=GPL-3.0-1-ov-file#readme) file.
