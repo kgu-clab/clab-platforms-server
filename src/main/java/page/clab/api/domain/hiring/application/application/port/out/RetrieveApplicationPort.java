@@ -16,8 +16,6 @@ public interface RetrieveApplicationPort {
 
     Page<Application> findByConditions(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable);
 
-    Page<Application> findAllByIsDeletedTrue(Pageable pageable);
-
     List<Application> findByRecruitmentIdAndIsPass(Long recruitmentId, boolean isPass);
 
     Application findByRecruitmentIdAndStudentIdOrThrow(Long recruitmentId, String studentId);
