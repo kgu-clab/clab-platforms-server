@@ -107,7 +107,7 @@ api/
 ```
 
 ### Architecture
-This project is structured according to the port-and-adapter (hexagonal) architecture pattern. This architecture promotes a clean separation of concerns, making the codebase more modular, testable, and maintainable.
+This project is structured according to the port-and-adapter ([hexagonal](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software))) architecture pattern. This architecture promotes a clean separation of concerns, making the codebase more modular, testable, and maintainable.
 
 ### Package Organization
 The packages in this project are organized using the private-package convention. This helps in encapsulating implementation details and exposing only necessary components, leading to better modularity and maintainability.
