@@ -7,9 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,16 +32,6 @@ public class TokenManagementController {
     ) {
         this.manageLoginUseCase = manageLoginUseCase;
         this.authHeader = authHeader;
-    }
-
-    @Operation(summary = "[S] 멤버 토큰 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @DeleteMapping("/revoke/{memberId}")
-    @Secured({ "ROLE_SUPER" })
-    public ApiResponse<String> revokeToken(
-            @PathVariable(name = "memberId") String memberId
-    ) {
-        String id = manageLoginUseCase.revokeToken(memberId);
-        return ApiResponse.success(id);
     }
 
     @Operation(summary = "[U] 멤버 토큰 재발급", description = "ROLE_USER 이상의 권한이 필요함")

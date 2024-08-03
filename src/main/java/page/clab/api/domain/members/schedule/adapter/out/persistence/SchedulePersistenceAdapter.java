@@ -50,12 +50,6 @@ public class SchedulePersistenceAdapter implements
     }
 
     @Override
-    public Page<Schedule> findAllByIsDeletedTrue(Pageable pageable) {
-        return repository.findAllByIsDeletedTrue(pageable)
-                .map(mapper::toDomainEntity);
-    }
-
-    @Override
     public Page<Schedule> findByConditions(Integer year, Integer month, SchedulePriority priority, Pageable pageable) {
         return repository.findByConditions(year, month, priority, pageable)
                 .map(mapper::toDomainEntity);

@@ -111,11 +111,6 @@ public class UserLoginService implements ManageLoginUseCase {
     }
 
     @Override
-    public String revokeToken(String memberId) {
-        throw new UnsupportedOperationException("Method not implemented");
-    }
-
-    @Override
     public TokenHeader reissueToken(HttpServletRequest request) {
         throw new UnsupportedOperationException("Method not implemented");
     }

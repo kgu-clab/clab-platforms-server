@@ -36,15 +36,11 @@ public class Recruitment {
         Optional.ofNullable(recruitmentUpdateRequestDto.getTarget()).ifPresent(this::setTarget);
     }
 
-    public void delete() {
-        this.isDeleted = true;
-    }
-
     public void updateStatus(RecruitmentStatus status) {
         this.status = status;
     }
 
-    public void validateBusinessRules() {
+    public void validateDateRange() {
         if (startDate.isAfter(endDate)) {
             throw new InvalidDateRangeException("시작일은 종료일보다 늦을 수 없습니다.");
         }

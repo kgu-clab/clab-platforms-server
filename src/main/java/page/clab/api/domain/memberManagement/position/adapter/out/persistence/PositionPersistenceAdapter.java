@@ -67,12 +67,6 @@ public class PositionPersistenceAdapter implements
     }
 
     @Override
-    public Page<Position> findAllByIsDeletedTrue(Pageable pageable) {
-        return repository.findAllByIsDeletedTrue(pageable)
-                .map(mapper::toDomainEntity);
-    }
-
-    @Override
     public Page<Position> findByConditions(String year, PositionType positionType, Pageable pageable) {
         return repository.findByConditions(year, positionType, pageable)
                 .map(mapper::toDomainEntity);

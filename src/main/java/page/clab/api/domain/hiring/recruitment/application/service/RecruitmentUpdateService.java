@@ -23,7 +23,7 @@ public class RecruitmentUpdateService implements UpdateRecruitmentUseCase {
         Recruitment recruitment = retrieveRecruitmentUseCase.findByIdOrThrow(recruitmentId);
         recruitment.update(requestDto);
         recruitmentStatusUpdater.updateRecruitmentStatus(recruitment);
-        recruitment.validateBusinessRules();
+        recruitment.validateDateRange();
         return updateRecruitmentPort.update(recruitment).getId();
     }
 }

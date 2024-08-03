@@ -42,17 +42,6 @@ public class FileController {
         return ApiResponse.success(responseDtos);
     }
 
-    @Operation(summary = "[U] 뉴스 사진 업로드", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
-    @PostMapping(value = "/news", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<List<UploadedFileResponseDto>> newsUpload(
-            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
-            @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws IOException, PermissionDeniedException {
-        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "news", storagePeriod);
-        return ApiResponse.success(responseDtos);
-    }
-
     @Operation(summary = "[U] 멤버 프로필 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping(value = "/profiles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -83,17 +72,6 @@ public class FileController {
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, fileService.buildPath("members"), storagePeriod);
-        return ApiResponse.success(responseDtos);
-    }
-
-    @Operation(summary = "[U] 양식 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
-    @PostMapping(value = "/forms", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiResponse<List<UploadedFileResponseDto>> formUpload(
-            @RequestParam("multipartFile") List<MultipartFile> multipartFiles,
-            @RequestParam("storagePeriod") long storagePeriod
-    ) throws IOException, PermissionDeniedException {
-        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "forms", storagePeriod);
         return ApiResponse.success(responseDtos);
     }
 

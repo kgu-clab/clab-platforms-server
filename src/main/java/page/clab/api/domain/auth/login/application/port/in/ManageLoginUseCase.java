@@ -18,8 +18,6 @@ public interface ManageLoginUseCase {
 
     String resetAuthenticator(String memberId);
 
-    String revokeToken(String memberId);
-
     TokenHeader reissueToken(HttpServletRequest request);
 
     List<String> retrieveCurrentLoggedInUsers();

@@ -22,7 +22,7 @@ public class RecruitmentRegisterService implements RegisterRecruitmentUseCase {
     public Long registerRecruitment(RecruitmentRequestDto requestDto) {
         Recruitment recruitment = RecruitmentRequestDto.toEntity(requestDto);
         recruitmentStatusUpdater.updateRecruitmentStatus(recruitment);
-        recruitment.validateBusinessRules();
+        recruitment.validateDateRange();
         externalSendNotificationUseCase.sendNotificationToAllMembers("새로운 모집 공고가 등록되었습니다.");
         return registerRecruitmentPort.save(recruitment).getId();
     }

@@ -55,8 +55,4 @@ public class RedisTokenManagementService implements ManageRedisTokenUseCase {
         retrieveRedisTokenPort.findByAccessToken(accessToken)
                 .ifPresent(removeRedisTokenPort::delete);
     }
-
-    public void deleteByMemberId(String memberId) {
-        removeRedisTokenPort.deleteByMemberId(memberId);
-    }
 }

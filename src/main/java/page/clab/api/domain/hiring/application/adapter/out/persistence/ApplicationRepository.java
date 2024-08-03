@@ -1,9 +1,6 @@
 package page.clab.api.domain.hiring.application.adapter.out.persistence;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,7 +12,4 @@ public interface ApplicationRepository extends JpaRepository<ApplicationJpaEntit
     List<ApplicationJpaEntity> findByRecruitmentIdAndIsPass(Long recruitmentId, Boolean isPass);
 
     Optional<ApplicationJpaEntity> findByRecruitmentIdAndStudentId(Long recruitmentId, String studentId);
-
-    @Query(value = "SELECT a.* FROM application a WHERE a.is_deleted = true", nativeQuery = true)
-    Page<ApplicationJpaEntity> findAllByIsDeletedTrue(Pageable pageable);
 }

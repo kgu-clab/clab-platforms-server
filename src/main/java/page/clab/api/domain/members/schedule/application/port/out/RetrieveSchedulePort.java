@@ -14,8 +14,6 @@ public interface RetrieveSchedulePort {
 
     Schedule findByIdOrThrow(Long id);
 
-    Page<Schedule> findAllByIsDeletedTrue(Pageable pageable);
-
     Page<Schedule> findByConditions(Integer year, Integer month, SchedulePriority priority, Pageable pageable);
 
     Page<Schedule> findActivitySchedulesByDateRangeAndMemberId(LocalDate startDate, LocalDate endDate, String memberId, Pageable pageable);

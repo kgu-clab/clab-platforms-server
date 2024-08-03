@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.hiring.application.application.port.out.RegisterApplicationPort;
-import page.clab.api.domain.hiring.application.application.port.out.RemoveApplicationPort;
 import page.clab.api.domain.hiring.application.application.port.out.RetrieveApplicationPort;
 import page.clab.api.domain.hiring.application.domain.Application;
 import page.clab.api.global.exception.NotFoundException;
@@ -17,8 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ApplicationPersistenceAdapter implements
         RegisterApplicationPort,
-        RetrieveApplicationPort,
-        RemoveApplicationPort {
+        RetrieveApplicationPort {
 
     private final ApplicationRepository applicationRepository;
     private final ApplicationMapper applicationMapper;
@@ -28,12 +26,6 @@ public class ApplicationPersistenceAdapter implements
         ApplicationJpaEntity entity = applicationMapper.toJpaEntity(application);
         ApplicationJpaEntity savedEntity = applicationRepository.save(entity);
         return applicationMapper.toDomain(savedEntity);
-    }
-
-    @Override
-    public void delete(Application application) {
-        ApplicationJpaEntity entity = applicationMapper.toJpaEntity(application);
-        applicationRepository.delete(entity);
     }
 
     @Override
@@ -52,12 +44,6 @@ public class ApplicationPersistenceAdapter implements
     @Override
     public Page<Application> findByConditions(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable) {
         return applicationRepository.findByConditions(recruitmentId, studentId, isPass, pageable)
-                .map(applicationMapper::toDomain);
-    }
-
-    @Override
-    public Page<Application> findAllByIsDeletedTrue(Pageable pageable) {
-        return applicationRepository.findAllByIsDeletedTrue(pageable)
                 .map(applicationMapper::toDomain);
     }
 

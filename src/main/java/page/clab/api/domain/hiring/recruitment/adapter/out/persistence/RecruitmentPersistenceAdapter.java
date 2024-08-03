@@ -1,8 +1,6 @@
 package page.clab.api.domain.hiring.recruitment.adapter.out.persistence;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.hiring.recruitment.application.port.out.RegisterRecruitmentPort;
 import page.clab.api.domain.hiring.recruitment.application.port.out.RetrieveRecruitmentPort;
@@ -48,12 +46,6 @@ public class RecruitmentPersistenceAdapter implements
         return repository.findAll().stream()
                 .map(mapper::toDomainEntity)
                 .toList();
-    }
-
-    @Override
-    public Page<Recruitment> findAllByIsDeletedTrue(Pageable pageable) {
-        return repository.findAllByIsDeletedTrue(pageable)
-                .map(mapper::toDomainEntity);
     }
 
     @Override

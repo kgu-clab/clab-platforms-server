@@ -82,10 +82,4 @@ public class TokenManagementService implements ManageLoginUseCase {
     public String resetAuthenticator(String memberId) {
         throw new UnsupportedOperationException("Method not implemented");
     }
-
-    @Override
-    public String revokeToken(String memberId) {
-        manageRedisTokenUseCase.deleteByMemberId(memberId);
-        return memberId;
-    }
 }
