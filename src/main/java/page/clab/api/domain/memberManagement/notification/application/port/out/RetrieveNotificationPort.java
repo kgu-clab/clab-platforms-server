@@ -13,6 +13,4 @@ public interface RetrieveNotificationPort {
     List<Notification> findByMemberId(String memberId);
 
     Page<Notification> findByMemberId(String memberId, Pageable pageable);
-
-    Page<Notification> findAllByIsDeletedTrue(Pageable pageable);
 }

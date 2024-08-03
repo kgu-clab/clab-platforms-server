@@ -54,10 +54,4 @@ public class NotificationPersistenceAdapter implements
         return repository.findByMemberId(memberId, pageable)
                 .map(mapper::toDomainEntity);
     }
-
-    @Override
-    public Page<Notification> findAllByIsDeletedTrue(Pageable pageable) {
-        return repository.findAllByIsDeletedTrue(pageable)
-                .map(mapper::toDomainEntity);
-    }
 }
