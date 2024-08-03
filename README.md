@@ -76,20 +76,21 @@ After all the configurations are done, run the Spring Boot application:
 ## Project Structure
 ```markdown
 api/
-├── domain/
-│   ├── adapter/
-│   │   ├── in/
-│   │   │   ├── web/
-│   │   └── out/
-│   │       ├── persistence/
-│   ├── application/
-│   │   ├── dto/
-│   │   ├── event/
-│   │   ├── port/
+├── category/
+│   ├── domain/
+│   │   ├── adapter/
 │   │   │   ├── in/
+│   │   │   │   ├── web/
 │   │   │   └── out/
-│   │   ├── service/
-│   └── domain/
+│   │   │       ├── persistence/
+│   │   ├── application/
+│   │   │   ├── dto/
+│   │   │   ├── event/
+│   │   │   ├── port/
+│   │   │   │   ├── in/
+│   │   │   │   └── out/
+│   │   │   ├── service/
+│   │   └── domain/
 └── external/
 │   ├── category/
 │   │   ├── domain/
