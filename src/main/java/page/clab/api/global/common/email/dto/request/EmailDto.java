@@ -38,5 +38,4 @@ public class EmailDto {
                 .emailTemplateType(emailTemplateType)
                 .build();
     }
-
 }

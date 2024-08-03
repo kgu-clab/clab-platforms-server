@@ -9,7 +9,6 @@ import page.clab.api.global.common.slack.domain.NotificationSetting;
 public class NotificationSettingResponseDto {
 
     private String alertType;
-
     private boolean enabled;
 
     public static NotificationSettingResponseDto toDto(NotificationSetting setting) {

@@ -5,18 +5,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import page.clab.api.domain.member.dao.MemberRepository;
-import page.clab.api.domain.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.domain.Member;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final MemberRepository memberRepository;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return memberRepository.findById(username)
+        return externalRetrieveMemberUseCase.findById(username)
                 .map(this::createUserDetails)
                 .orElseThrow(() -> new UsernameNotFoundException("해당하는 멤버를 찾을 수 없습니다."));
     }
@@ -24,5 +24,4 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserDetails createUserDetails(Member member) {
         return Member.createUserDetails(member);
     }
-
 }

@@ -36,5 +36,4 @@ public class EmojiUtils {
         }
         return false;
     }
-
 }

@@ -9,10 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberInfoUseCase;
-import page.clab.api.domain.member.application.port.in.RetrieveMemberUseCase;
-import page.clab.api.domain.member.domain.Member;
-import page.clab.api.domain.member.dto.shared.MemberEmailInfoDto;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberEmailInfoDto;
+import page.clab.api.domain.memberManagement.member.domain.Member;
+import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.common.email.dto.request.EmailDto;
 import page.clab.api.global.common.email.exception.MessageSendingFailedException;
@@ -29,8 +28,7 @@ import java.util.UUID;
 @Slf4j
 public class EmailService {
 
-    private final RetrieveMemberUseCase retrieveMemberUseCase;
-    private final RetrieveMemberInfoUseCase retrieveMemberInfoUseCase;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final SpringTemplateEngine springTemplateEngine;
     private final EmailAsyncService emailAsyncService;
 
@@ -46,7 +44,7 @@ public class EmailService {
 
         emailDto.getTo().parallelStream().forEach(address -> {
             try {
-                Member recipient = retrieveMemberUseCase.findByEmail(address);
+                Member recipient = externalRetrieveMemberUseCase.findByEmail(address);
                 String emailContent = generateEmailContent(emailDto, recipient.getName());
                 emailAsyncService.sendEmailAsync(address, emailDto.getSubject(), emailContent, convertedFiles, emailDto.getEmailTemplateType());
                 successfulAddresses.add(address);
@@ -61,7 +59,7 @@ public class EmailService {
         List<File> convertedFiles = multipartFiles != null && !multipartFiles.isEmpty() ?
                 convertMultipartFiles(multipartFiles) : null;
 
-        List<MemberEmailInfoDto> memberInfos = retrieveMemberInfoUseCase.getMembers();
+        List<MemberEmailInfoDto> memberInfos = externalRetrieveMemberUseCase.getMembers();
 
         List<String> successfulEmails = Collections.synchronizedList(new ArrayList<>());
 
@@ -79,17 +77,16 @@ public class EmailService {
 
     public void broadcastEmailToApprovedMember(Member member, String password) {
         String subject = "C-Lab 계정 발급 안내";
-        String content = String.format(
-                "정식으로 C-Lab의 일원이 된 것을 축하드립니다.\n" +
-                        "C-Lab과 함께하는 동안 불타는 열정으로 모든 원하는 목표를 이루어 내시기를 바라고,\n" +
-                        "훗날, 당신의 합류가 C-Lab에겐 최고의 행운이었다고 기억되기를 희망합니다.\n\n" +
-                        "로그인을 위해 아래의 계정 정보를 확인해주세요.\n" +
-                        "ID: %s\n" +
-                        "Password: %s\n" +
-                        "로그인 후 비밀번호를 변경해주세요.",
-                member.getId(),
-                password
-        );
+        String content = """
+            정식으로 C-Lab의 일원이 된 것을 축하드립니다.
+            C-Lab과 함께하는 동안 불타는 열정으로 모든 원하는 목표를 이루어 내시기를 바라고,
+            훗날, 당신의 합류가 C-Lab에겐 최고의 행운이었다고 기억되기를 희망합니다.
+
+            로그인을 위해 아래의 계정 정보를 확인해주세요.
+            ID: %s
+            Password: %s
+            로그인 후 비밀번호를 변경해주세요.
+            """.formatted(member.getId(), password);
         EmailDto emailDto = EmailDto.create(List.of(member.getEmail()), subject, content, EmailTemplateType.NORMAL);
         try {
             String emailContent = generateEmailContent(emailDto, member.getName());
@@ -101,13 +98,12 @@ public class EmailService {
 
     public void sendPasswordResetEmail(Member member, String code) {
         String subject = "C-Lab 비밀번호 재발급 인증 안내";
-        String content = String.format(
-                "C-Lab 비밀번호 재발급 인증 안내 메일입니다.\n" +
-                        "인증번호는 %s입니다.\n" +
-                        "해당 인증번호를 비밀번호 재설정 페이지에 입력해주세요.\n" +
-                        "재설정시 비밀번호는 인증번호로 대체됩니다.",
-                code
-        );
+        String content = """
+            C-Lab 비밀번호 재발급 인증 안내 메일입니다.
+            인증번호는 %s입니다.
+            해당 인증번호를 비밀번호 재설정 페이지에 입력해주세요.
+            재설정시 비밀번호는 인증번호로 대체됩니다.
+            """.formatted(code);
         EmailDto emailDto = EmailDto.create(List.of(member.getEmail()), subject, content, EmailTemplateType.NORMAL);
         try {
             broadcastEmail(emailDto, null);
@@ -153,8 +149,10 @@ public class EmailService {
 
     private void checkDir(File file) {
         if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
+            boolean isCreated = file.getParentFile().mkdirs();
+            if (!isCreated) {
+                log.error("Failed to create directory: {}", file.getParentFile().getAbsolutePath());
+            }
         }
     }
-
 }

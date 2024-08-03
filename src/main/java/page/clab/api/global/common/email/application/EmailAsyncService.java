@@ -19,17 +19,19 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class EmailAsyncService {
 
     private static final int MAX_BATCH_SIZE = 10;
     private static final BlockingQueue<EmailTask> emailQueue = new LinkedBlockingQueue<>();
     private final JavaMailSender javaMailSender;
+
     @Value("${spring.mail.username}")
     private String sender;
 
@@ -82,18 +84,14 @@ public class EmailAsyncService {
         try {
             javaMailSender.send(mimeMessages);
         } catch (Exception e) {
-            log.error("Error sending batch email: " + e.getMessage(), e);
+            log.error("Error sending batch email: {}", e.getMessage());
         }
         log.debug("Batch email sent successfully.");
     }
 
     private void setImageInTemplate(MimeMessageHelper messageHelper, EmailTemplateType templateType) throws MessagingException {
-        switch (templateType) {
-            case NORMAL -> {
-                messageHelper.addInline("image-1", new ClassPathResource("images/image-1.png"));
-                break;
-            }
+        if (Objects.requireNonNull(templateType) == EmailTemplateType.NORMAL) {
+            messageHelper.addInline("image-1", new ClassPathResource("images/image-1.png"));
         }
     }
-
 }

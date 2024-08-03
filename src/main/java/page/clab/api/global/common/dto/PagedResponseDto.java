@@ -10,17 +10,11 @@ import java.util.List;
 public class PagedResponseDto<T> {
 
     private final int currentPage;
-
     private final boolean hasPrevious;
-
     private final boolean hasNext;
-
     private final int totalPages;
-
     private final long totalItems;
-
     private final int take;
-
     private final List<T> items;
 
     public PagedResponseDto(Page<T> page) {
@@ -33,6 +27,16 @@ public class PagedResponseDto<T> {
         this.items = page.getContent();
     }
 
+    public PagedResponseDto(Page<T> page, long totalItems, int numberOfElements) {
+        this.currentPage = page.getNumber();
+        this.hasPrevious = page.hasPrevious();
+        this.hasNext = page.hasNext();
+        this.totalPages = page.getTotalPages();
+        this.totalItems = totalItems;
+        this.take = numberOfElements;
+        this.items = page.getContent();
+    }
+
     public PagedResponseDto(List<T> ts, Pageable pageable, int size) {
         this.currentPage = pageable.getPageNumber();
         this.hasPrevious = pageable.getPageNumber() > 0;
@@ -42,5 +46,4 @@ public class PagedResponseDto<T> {
         this.take = size;
         this.items = ts;
     }
-
 }

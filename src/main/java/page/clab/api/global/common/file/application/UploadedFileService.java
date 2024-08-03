@@ -26,10 +26,6 @@ public class UploadedFileService {
                 .orElseThrow(() -> new NotFoundException("파일을 찾을 수 없습니다."));
     }
 
-    public UploadedFile getUniqueUploadedFileByCategoryAndOriginalName(String category, String originalName) {
-        return uploadFileRepository.findTopByCategoryAndOriginalFileNameOrderByCreatedAtDesc(category, originalName);
-    }
-
     public UploadedFile getUniqueUploadedFileByCategory(String category) {
         return uploadFileRepository.findTopByCategoryOrderByCreatedAtDesc(category);
     }
@@ -44,5 +40,4 @@ public class UploadedFileService {
         }
         return uploadedFiles;
     }
-
 }

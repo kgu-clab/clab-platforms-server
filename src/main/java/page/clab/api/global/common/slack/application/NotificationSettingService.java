@@ -16,7 +16,6 @@ import java.util.List;
 public class NotificationSettingService {
 
     private final AlertTypeResolver alertTypeResolver;
-
     private final NotificationSettingRepository settingRepository;
 
     @Transactional(readOnly = true)
@@ -44,5 +43,4 @@ public class NotificationSettingService {
         NotificationSetting defaultSetting = NotificationSetting.createDefault(alertType);
         return settingRepository.save(defaultSetting);
     }
-
 }

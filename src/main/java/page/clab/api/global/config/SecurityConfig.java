@@ -20,9 +20,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
-import page.clab.api.domain.blacklistIp.dao.BlacklistIpRepository;
-import page.clab.api.domain.login.application.port.in.ManageRedisTokenUseCase;
-import page.clab.api.global.auth.application.RedisIpAccessMonitorService;
+import page.clab.api.external.auth.blacklistIp.application.port.ExternalRegisterBlacklistIpUseCase;
+import page.clab.api.external.auth.blacklistIp.application.port.ExternalRetrieveBlacklistIpUseCase;
+import page.clab.api.external.auth.redisIpAccessMonitor.application.port.ExternalCheckIpBlockedUseCase;
+import page.clab.api.external.auth.redisIpAccessMonitor.application.port.ExternalRegisterIpAccessMonitorUseCase;
+import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
 import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
 import page.clab.api.global.auth.filter.InvalidEndpointAccessFilter;
@@ -43,27 +45,19 @@ import java.io.IOException;
 @Slf4j
 public class SecurityConfig {
 
-    private final JwtTokenProvider jwtTokenProvider;
-
-    private final ManageRedisTokenUseCase manageRedisTokenUseCase;
-
-    private final RedisIpAccessMonitorService redisIpAccessMonitorService;
-
-    private final BlacklistIpRepository blacklistIpRepository;
-
+    private final ExternalManageRedisTokenUseCase externalManageRedisTokenUseCase;
+    private final ExternalRegisterIpAccessMonitorUseCase externalRegisterIpAccessMonitorUseCase;
+    private final ExternalCheckIpBlockedUseCase externalCheckIpBlockedUseCase;
+    private final ExternalRegisterBlacklistIpUseCase externalRegisterBlacklistIpUseCase;
+    private final ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase;
     private final SlackService slackService;
-
     private final WhitelistService whitelistService;
-
-    private final CorsConfigurationSource corsConfigurationSource;
-
-    private final AuthenticationConfig authenticationConfig;
-
     private final WhitelistAccountProperties whitelistAccountProperties;
-
-    private final WhitelistPatternsProperties WhitelistPatternsProperties;
-
+    private final WhitelistPatternsProperties whitelistPatternsProperties;
     private final IPInfoConfig ipInfoConfig;
+    private final AuthenticationConfig authenticationConfig;
+    private final CorsConfigurationSource corsConfigurationSource;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Value("${resource.file.url}")
     String fileURL;
@@ -90,15 +84,15 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new InvalidEndpointAccessFilter(blacklistIpRepository, slackService, fileURL),
+                        new InvalidEndpointAccessFilter(slackService, fileURL, externalRegisterBlacklistIpUseCase, externalRetrieveBlacklistIpUseCase),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new CustomBasicAuthenticationFilter(authenticationManager, redisIpAccessMonitorService, blacklistIpRepository, whitelistService),
+                        new CustomBasicAuthenticationFilter(authenticationManager, whitelistService, slackService, externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new JwtAuthenticationFilter(jwtTokenProvider, manageRedisTokenUseCase, redisIpAccessMonitorService, slackService, blacklistIpRepository),
+                        new JwtAuthenticationFilter(slackService, jwtTokenProvider, externalManageRedisTokenUseCase, externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
@@ -115,7 +109,7 @@ public class SecurityConfig {
 
     private ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry configureRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequests) {
         return authorizeRequests
-                .requestMatchers(WhitelistPatternsProperties.getPatterns()).hasRole(whitelistAccountProperties.getRole())
+                .requestMatchers(whitelistPatternsProperties.getWhitelistPatterns()).hasRole(whitelistAccountProperties.getRole())
                 .requestMatchers(SecurityConstants.PERMIT_ALL).permitAll()
                 .requestMatchers(HttpMethod.GET, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
                 .requestMatchers(HttpMethod.POST, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
@@ -125,14 +119,14 @@ public class SecurityConfig {
     private void handleAuthenticationEntryPoint(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         apiLogging(request, response, clientIpAddress, "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.");
-        redisIpAccessMonitorService.registerIpAccessMonitor(request, clientIpAddress);
+        externalRegisterIpAccessMonitorUseCase.registerIpAccessMonitor(request, clientIpAddress);
         ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
     }
 
     private void handleAccessDenied(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         apiLogging(request, response, clientIpAddress, "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.");
-        redisIpAccessMonitorService.registerIpAccessMonitor(request, clientIpAddress);
+        externalRegisterIpAccessMonitorUseCase.registerIpAccessMonitor(request, clientIpAddress);
         ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN);
     }
 
@@ -144,5 +138,4 @@ public class SecurityConfig {
         int httpStatus = response.getStatus();
         log.info("[{}:{}] {} {} {} {}", clientIpAddress, id, requestUrl, httpMethod, httpStatus, message);
     }
-
 }

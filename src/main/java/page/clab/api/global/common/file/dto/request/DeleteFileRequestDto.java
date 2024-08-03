@@ -20,5 +20,4 @@ public class DeleteFileRequestDto {
                 .url(url)
                 .build();
     }
-
 }

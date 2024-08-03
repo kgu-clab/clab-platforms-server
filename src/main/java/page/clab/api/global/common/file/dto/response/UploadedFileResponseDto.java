@@ -12,11 +12,8 @@ import java.util.List;
 public class UploadedFileResponseDto {
 
     private String fileUrl;
-
     private String originalFileName;
-
     private Long storagePeriod;
-
     private LocalDateTime createdAt;
 
     public static List<UploadedFileResponseDto> toDto(List<UploadedFile> uploadedFiles) {
@@ -33,5 +30,4 @@ public class UploadedFileResponseDto {
                 .createdAt(uploadedFile.getCreatedAt())
                 .build();
     }
-
 }

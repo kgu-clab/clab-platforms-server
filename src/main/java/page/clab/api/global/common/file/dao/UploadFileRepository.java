@@ -12,10 +12,7 @@ public interface UploadFileRepository extends JpaRepository<UploadedFile, Long> 
 
     Optional<UploadedFile> findByUrl(String url);
 
-    UploadedFile findTopByCategoryAndOriginalFileNameOrderByCreatedAtDesc(String category, String originalFileName);
-
     UploadedFile findTopByCategoryOrderByCreatedAtDesc(String category);
 
     List<UploadedFile> findAllByUrlIn(List<String> fileUrls);
-
 }

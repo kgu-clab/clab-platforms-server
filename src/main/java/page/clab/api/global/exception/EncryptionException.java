@@ -11,5 +11,4 @@ public class EncryptionException extends RuntimeException {
     public EncryptionException(String s) {
         super(s);
     }
-
 }

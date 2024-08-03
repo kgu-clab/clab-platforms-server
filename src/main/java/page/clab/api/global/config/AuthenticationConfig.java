@@ -19,10 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthenticationConfig {
 
-    private final AuthenticationConfiguration authenticationConfiguration;
-
     private final CustomUserDetailsService customUserDetailsService;
-
+    private final AuthenticationConfiguration authenticationConfiguration;
     private final WhitelistAccountProperties whitelistAccountProperties;
 
     @Bean
@@ -59,5 +57,4 @@ public class AuthenticationConfig {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

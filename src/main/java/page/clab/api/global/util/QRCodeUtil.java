@@ -22,5 +22,4 @@ public class QRCodeUtil {
 
         return pngOutputStream.toByteArray();
     }
-
 }

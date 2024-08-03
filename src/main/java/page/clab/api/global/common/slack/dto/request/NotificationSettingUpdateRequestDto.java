@@ -16,5 +16,4 @@ public class NotificationSettingUpdateRequestDto {
     @NotNull(message = "{notNull.notificationSetting.enabled}")
     @Schema(description = "알림 활성화 여부", example = "true")
     private boolean enabled;
-
 }

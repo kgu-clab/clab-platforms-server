@@ -11,5 +11,4 @@ public class AuthenticatorConfig {
     public GoogleAuthenticator googleAuthenticator() {
         return new GoogleAuthenticator();
     }
-
 }

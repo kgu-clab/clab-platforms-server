@@ -61,5 +61,4 @@ public class FileSystemUtil {
         }
         return sizeInBytes;
     }
-
 }

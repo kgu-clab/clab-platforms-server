@@ -12,5 +12,4 @@ public class ResponseUtil {
         response.setContentType("application/json");
         response.setStatus(status);
     }
-
 }

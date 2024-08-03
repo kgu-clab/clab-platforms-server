@@ -11,7 +11,6 @@ public class ApiResponse<T> {
 
     @Builder.Default
     private Boolean success = true;
-
     private T data;
 
     public static <T> ApiResponse<T> success() {
@@ -41,5 +40,4 @@ public class ApiResponse<T> {
         Gson gson = new GsonBuilder().serializeNulls().create();
         return gson.toJson(this);
     }
-
 }

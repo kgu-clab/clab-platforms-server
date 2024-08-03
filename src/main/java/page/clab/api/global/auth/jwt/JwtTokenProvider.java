@@ -18,8 +18,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import page.clab.api.domain.login.dto.response.TokenInfo;
-import page.clab.api.domain.member.domain.Role;
+import page.clab.api.domain.auth.login.application.dto.response.TokenInfo;
+import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.global.auth.exception.TokenValidateException;
 
 import java.security.Key;
@@ -27,14 +27,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
-@Slf4j
 @Component
+@Slf4j
 public class JwtTokenProvider {
 
     private final Key key;
-
     private final long accessTokenDuration;
-
     private final long refreshTokenDuration;
 
     public JwtTokenProvider(
@@ -114,7 +112,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parser().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("Invalid JWT Token");
@@ -130,7 +128,7 @@ public class JwtTokenProvider {
 
     public boolean validateTokenSilently(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jwts.parser().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;
@@ -139,7 +137,7 @@ public class JwtTokenProvider {
 
     public Claims parseClaims(String accessToken) {
         try {
-            return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
+            return Jwts.parser().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
@@ -151,5 +149,4 @@ public class JwtTokenProvider {
         }
         return role;
     }
-
 }

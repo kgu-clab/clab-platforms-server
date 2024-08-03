@@ -11,5 +11,4 @@ public class DecryptionException extends RuntimeException {
     public DecryptionException(String s) {
         super(s);
     }
-
 }

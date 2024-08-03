@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.1'
-    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.springframework.boot' version '3.3.2'
+    id 'io.spring.dependency-management' version '1.1.6'
 }
 
 group = 'page.clab'
@@ -50,9 +50,9 @@ dependencies {
     // Security
     implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
     implementation 'com.warrenstrange:googleauth:1.5.0' // Google Authenticator
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5' // JWT 라이브러리
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5' // JWT 구현체
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JWT Jackson 모듈
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6' // JWT 라이브러리
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6' // JWT 구현체
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6' // JWT Jackson 모듈
 
     // Monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator' // Spring Boot Actuator
@@ -61,12 +61,12 @@ dependencies {
     implementation 'ch.qos.logback:logback-core:1.5.6' // Logback
 
     // DB
-    implementation 'org.postgresql:postgresql:42.7.1' // PostgreSQL JDBC Driver
+    implementation 'org.postgresql:postgresql:42.7.3' // PostgreSQL JDBC Driver
     implementation 'org.springframework.boot:spring-boot-starter-data-redis' // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
     implementation 'org.springframework.boot:spring-boot-starter-validation' // Hibernate Validator
     implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final' // Bean Validation
-    implementation 'jakarta.validation:jakarta.validation-api:3.0.2' // Jakarta Bean Validation
+    implementation 'jakarta.validation:jakarta.validation-api:3.1.0' // Jakarta Bean Validation
 
     // QueryDSL
     implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
@@ -77,22 +77,27 @@ dependencies {
     // Util
     compileOnly 'org.projectlombok:lombok' // 롬복
     annotationProcessor 'org.projectlombok:lombok' // 롬복
-    implementation 'com.google.code.gson:gson:2.10.1' // JSON 라이브러리
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0' // Swagger
-    implementation 'commons-io:commons-io:2.15.1' // Apache Commons IO
-    implementation 'com.google.guava:guava:33.0.0-jre' // Google Core Libraries For Java
+    implementation 'com.google.code.gson:gson:2.11.0' // JSON 라이브러리
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0' // Swagger
+    implementation 'commons-io:commons-io:2.16.1' // Apache Commons IO
+    implementation 'com.google.guava:guava:33.2.1-jre' // Google Core Libraries For Java
     implementation 'org.springframework.boot:spring-boot-starter-mail' // Spring Mail
     implementation 'com.google.zxing:core:3.4.1' // QR 코드
-    implementation 'com.google.zxing:javase:3.4.1' // QR 코드
+    implementation 'com.google.zxing:javase:3.5.3' // QR 코드
+
+    // MapStruct
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
     // IPInfo
     implementation 'io.ipinfo:ipinfo-spring:0.3.1' // IPInfo Spring
     implementation 'io.ipinfo:ipinfo-api:3.0.0' // IPInfo API
 
     // Slack
-    implementation 'com.slack.api:slack-api-model:1.39.0'
-    implementation 'com.slack.api:slack-api-client:1.39.0'
-    implementation 'com.slack.api:slack-app-backend:1.39.0'
+    implementation 'com.slack.api:slack-api-model:1.40.3'
+    implementation 'com.slack.api:slack-api-client:1.40.3'
+    implementation 'com.slack.api:slack-app-backend:1.40.3'
 
     // XSS Filter
     implementation 'com.navercorp.lucy:lucy-xss-servlet:2.0.1' // Lucy XSS Servlet Filter
@@ -100,12 +105,12 @@ dependencies {
     implementation 'org.apache.commons:commons-text:1.11.0' // Apache Commons Text
 
     // Image
-    implementation 'commons-io:commons-io:2.8.0'
+    implementation 'commons-io:commons-io:2.16.1'
     implementation 'com.drewnoakes:metadata-extractor:2.14.0'
     implementation 'org.imgscalr:imgscalr-lib:4.2'
 
     //Emoji
-    implementation 'com.ibm.icu:icu4j:72.1'
+    implementation 'com.ibm.icu:icu4j:75.1'
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot Test

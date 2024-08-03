@@ -39,5 +39,4 @@ public class NotificationSetting {
     public void updateEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-
 }

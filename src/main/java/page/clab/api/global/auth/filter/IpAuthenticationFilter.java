@@ -60,5 +60,4 @@ public class IpAuthenticationFilter implements Filter {
     public void destroy() {
         log.info("IP Authentication Filter destroyed.");
     }
-
 }
