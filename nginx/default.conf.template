@@ -1,4 +1,4 @@
-# Nginx server configuration for redirecting HTTP to HTTPS and serving API requests over HTTPS
+# Nginx configuration template for API requests
 
 # Redirect HTTP requests to HTTPS
 server {
@@ -23,6 +23,8 @@ server {
     # Location block to proxy API requests to the backend server
     location / {
         # Pass the request to the backend server specified by the BACKEND_URL environment variable
+        # Note: Do not modify the $BACKEND_URL if you are using Jenkins with a Blue-Green deployment strategy
+        # The value for $BACKEND_URL will be provided by envsubst during the deployment process
         proxy_pass $BACKEND_URL;
 
         # Set proxy headers
