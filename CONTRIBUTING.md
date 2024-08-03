@@ -1,33 +1,37 @@
 # Contribution Guidelines
-
-KGU C-Lab 서버 프로젝트에 관심을 가져주셔서 감사합니다! 커뮤니티의 모든 구성원들이 기여할 수 있도록 다음의 절차와 규칙을 준수하여 기여해 주시기 바랍니다.
+Thank you for your interest in the KGU C-Lab Server Project! Please follow these steps and rules to ensure that all community members can contribute effectively.
 
 ## Getting Started
-
-1. 프로젝트를 포크하여 개인 계정으로 복사합니다.
-2. `git clone [포크한 저장소 URL]`을 통해 로컬 시스템으로 클론합니다.
-3. `git checkout -b [새 브랜치 이름]`으로 새로운 작업 브랜치를 생성합니다.
+1. Fork the project repository to your personal account.
+2. Clone the forked repository to your local system using `git clone https://github.com/KGU-C-Lab/clab-server.git`.
+3. Create a new working branch with `git checkout -b [new branch name]`.
 
 ## Working Rules
-
-- 작업은 최소 기능 단위로 이슈를 생성하여 진행합니다.
-- 목표 이슈, 명세 이슈, 작업 이슈의 순서로 이슈를 구성합니다.
-- 이슈 번호를 참조하여 `feature/#이슈번호` 형식의 브랜치를 만듭니다.
-- 커밋 메시지는 `feat: [기능 설명] (#이슈번호)` 형식으로 작성합니다.
+- Create issues for each minimum feature unit you plan to work on.
+- Follow the order: goal issue, specification issue, and task issue.
+- Create a branch using the format `feat/#issueNumber` referencing the issue number.
+- We use the following commit message formats:
+    - **feat**: Introducing new features.
+        - Example: `feat(feature): [description of the feature]`
+    - **refactor**: Code refactoring without adding new features or fixing bugs.
+        - Example: `refactor(module): [description of the refactoring]`
+    - **fix**: Fixing a bug.
+        - Example: `fix(issue): [description of the fix]`
+    - **hotfix**: Immediate fixes that need to be applied urgently.
+        - Example: `hotfix(issue): [description of the hotfix]`
+    - **chore**: Routine tasks and maintenance.
+        - Example: `chore(task): [description of the task]`
 
 ## Pull Requests
-
-- PR의 타이틀은 간결하고 명확하게 작성합니다.
-- PR 본문에는 변경된 내용의 체인지로그를 문장형으로 작성합니다.
-- 관련 이슈 번호를 참조하고, 필요한 경우 리뷰어를 태그합니다.
+- Write concise and clear PR titles.
+- Include a changelog in the PR description that details the changes made.
+- Reference the relevant issue number and tag reviewers if necessary.
 
 ## Code Review
-
-- 메인테이너 또는 프로젝트 관리자가 리뷰를 진행한 후, 수정이 필요하다고 판단될 경우 피드백을 제공합니다.
-- 피드백에 따른 수정 사항이 있을 경우, 해당 브랜치에 추가 커밋을 통해 수정합니다.
+- Maintainers or project managers will review the PR. If changes are needed, they will provide feedback.
+- If there are any changes required based on the feedback, make the necessary updates with additional commits to the branch.
 
 ## Merging
+- Once the PR is approved and all checks are complete, it will be merged into the master branch by a maintainer.
 
-- PR이 승인되고 모든 체크가 완료되면, 메인테이너에 의해 `master` 브랜치로 병합됩니다.
-
-프로젝트에 기여해 주셔서 다시 한번 감사드리며, 여러분의 소중한 기여가 이 커뮤니티를 더욱 풍부하게 만들 것입니다.
+Thank you again for contributing to the project. Your valuable contributions help enrich our community!
