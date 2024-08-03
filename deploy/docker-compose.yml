@@ -1,73 +1,76 @@
-version: "3.8"
+# Before running Docker Compose, if you want to persist container data, ensure the necessary directories are created and permissions are set:
+# Only follow these steps if you uncomment the volume mappings below for each service.
+#
+# # Create necessary directories (only if persisting data):
+# sudo mkdir -p /infra/nginx /infra/jenkins_home /infra/redis/data /infra/postgresql/data
+#
+# # Set permissions to ensure Docker can access these directories (only if persisting data):
+# sudo chown -R $(whoami):$(whoami) /infra
+#
+# # Set environment variables (these can also be placed in a .env file):
+# export REDIS_PASSWORD=your_redis_password
+# export POSTGRES_USER=your_postgres_username
+# export POSTGRES_PASSWORD=your_postgres_password
 
 services:
-    nginx:
-        image: nginx
-        container_name: nginx
-        ports:
-            - "${NGINX_PORT_80}:80"
-            - "${NGINX_PORT_443}:443"
-        volumes:
-            - "${NGINX_VOLUME_PATH}:/etc/nginx:rw"
-            - "${APP_VOLUME_PATH}:/app:rw"
-            - "${LETS_ENCRYPT_VOLUME_PATH}:/etc/letsencrypt:rw"
-        environment:
-            - STATIC_CONTENT_PATH=${STATIC_CONTENT_PATH}
-            - DOMAIN=${DOMAIN}
-            - DOMAIN_OPS=${DOMAIN_OPS}
-            - DOMAIN_API=${DOMAIN_API}
-        networks:
-            - network_name
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    # volumes:
+    #   - /infra/nginx:/etc/nginx
+    networks:
+      - infra-network
 
-    jenkins:
-        build: .
-        container_name: jenkins
-        user: "1000:1000"
-        ports:
-            - "${JENKINS_PORT_50000}:50000"
-            - "${JENKINS_PORT_8080}:8080"
-        volumes:
-            - "${JENKINS_HOME_VOLUME_PATH}:/var/jenkins_home:rw"
-            - "/var/run/docker.sock:/var/run/docker.sock"
-        environment:
-            - DOCKER_HOST=unix:///var/run/docker.sock
-        networks:
-            - network_name
+  jenkins:
+    image: jenkins/jenkins:latest-jdk21
+    container_name: jenkins
+    restart: always
+    ports:
+      - 50000:50000
+      - 8080:8080
+    # volumes:
+    #   - /infra/jenkins_home:/var/jenkins_home
+    #   - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - infra-network
 
-    openjdk21:
-        image: openjdk:21-jdk
-        container_name: openjdk21
-        command: tail -f /dev/null
-        networks:
-            - network_name
+  openjdk21:
+    image: openjdk:21-jdk
+    container_name: openjdk21
+    restart: always
+    command: tail -f /dev/null
+    networks:
+      - infra-network
 
-    redis:
-        image: redis
-        container_name: redis
-        ports:
-            - "${REDIS_PORT}:6379"
-        environment:
-            - REDIS_PASSWORD=${REDIS_PASSWORD}
-        volumes:
-            - "${REDIS_DATA_VOLUME_PATH}:/data"
-        networks:
-            - network_name
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - 6379:6379
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD} # Input your Redis password
+    # volumes:
+    #   - /infra/redis/data:/data
+    networks:
+      - infra-network
 
-    postgres:
-        image: postgres
-        container_name: postgresql
-        ports:
-            - "${POSTGRES_PORT}:5432"
-        environment:
-            - POSTGRES_USER=${POSTGRES_USER}
-            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-        volumes:
-            - "${POSTGRESQL_DATA_VOLUME_PATH}:/var/lib/postgresql/data"
-        networks:
-            - network_name
+  postgres:
+    image: postgres
+    container_name: postgresql
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER} # Input your PostgreSQL username
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # Input your PostgreSQL password
+    # volumes:
+    #   - /infra/postgresql/data:/var/lib/postgresql/data
+    networks:
+      - infra-network
 
 networks:
-    network_name:
-        driver: bridge
-        external: false
-        name: ${NETWORK_NAME}
+  infra-network:
+    driver: bridge
