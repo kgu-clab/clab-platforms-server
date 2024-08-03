@@ -6,6 +6,12 @@
 
 해당 프로젝트는 C-Lab의 활동을 지원하고, 회원들 간의 소통을 원활하게 하기 위해 개발되었습니다.
 
+## Contributors
+
+<a href="https://github.com/KGU-C-Lab/clab-server/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=KGU-C-Lab/clab-server" />
+</a>
+
 ## Tech Stack
 
 - **Spring Boot**: 웹 및 애플리케이션 개발을 위한 프레임워크.
@@ -58,13 +64,3 @@
 본 프로젝트에 기여하고자 하시는 분은 다음의 가이드라인을 따라주세요.
 
 [CONTRIBUTING.md](CONTRIBUTING.md)
-
-## Contributors
-
-- [한관희](https://github.com/limehee)
-- [전민주](https://github.com/mingmingmon)
-- [이한음](https://github.com/LeeHanEum)
-- [김관식](https://github.com/gwansikk)
-
-기여해 주신 모든 분들께 감사드립니다.
-
