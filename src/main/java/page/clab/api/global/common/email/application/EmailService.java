@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberEmailInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
@@ -53,26 +52,6 @@ public class EmailService {
             }
         });
         return successfulAddresses;
-    }
-
-    public List<String> broadcastEmailToAllMember(EmailDto emailDto, List<MultipartFile> multipartFiles) {
-        List<File> convertedFiles = multipartFiles != null && !multipartFiles.isEmpty() ?
-                convertMultipartFiles(multipartFiles) : null;
-
-        List<MemberEmailInfoDto> memberInfos = externalRetrieveMemberUseCase.getMembers();
-
-        List<String> successfulEmails = Collections.synchronizedList(new ArrayList<>());
-
-        memberInfos.parallelStream().forEach(member -> {
-            try {
-                String emailContent = generateEmailContent(emailDto, member.getMemberName());
-                emailAsyncService.sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, convertedFiles, emailDto.getEmailTemplateType());
-                successfulEmails.add(member.getEmail());
-            } catch (MessagingException e) {
-                throw new MessageSendingFailedException(member.getEmail() + "에게 이메일을 보내는데 실패했습니다.");
-            }
-        });
-        return successfulEmails;
     }
 
     public void broadcastEmailToApprovedMember(Member member, String password) {
