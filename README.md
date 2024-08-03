@@ -16,11 +16,6 @@ The C-Lab Server project aims to support club activities and facilitate smooth c
 - **Collaboration and Participation**: It enhances member engagement and collaboration with features like individual and group schedule management, personal cloud storage, community functions, job postings, and performance aggregation.
 - **Efficiency and Convenience**: By providing various features that enhance user convenience and operational efficiency in one platform, it simplifies the everyday management of the club.
 
-## Contributors
-<a href="https://github.com/KGU-C-Lab/clab-server/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=KGU-C-Lab/clab-server" />
-</a>
-
 ## Requirements
 - [Docker](https://docs.docker.com/engine/install/) and [Docker Compose](https://docs.docker.com/compose/install/) installed
 - Linux-based OS is recommended
@@ -157,6 +152,11 @@ The packages in this project are organized using the private-package convention.
 
 ## License
 This project is licensed under the GNU General Public License (GPL) v3.0. For more information, see the [LICENSE](https://github.com/KGU-C-Lab/clab-server?tab=GPL-3.0-1-ov-file#readme) file.
+
+## Contributors
+<a href="https://github.com/KGU-C-Lab/clab-server/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=KGU-C-Lab/clab-server" />
+</a>
 
 ## Contributing
 To contribute to this project, follow these steps:
