@@ -17,6 +17,4 @@ public interface ManageRedisTokenUseCase {
     void saveToken(String memberId, Role role, TokenInfo tokenInfo, String ip);
 
     void deleteByAccessToken(String accessToken);
-
-    void deleteByMemberId(String memberId);
 }
