@@ -1,6 +1,10 @@
 # Contribution Guidelines
 Thank you for your interest in the KGU C-Lab Server Project. Please follow these steps and rules to ensure that all community members can contribute effectively.
 
+## Languages
+- [한국어](CONTRIBUTING.md)
+- [English](CONTRIBUTING_EN.md)
+
 ## Getting Started
 1. Fork the project repository to your personal account.
 2. Clone the forked repository to your local system using `git clone https://github.com/[your-username]/clab-server.git`.

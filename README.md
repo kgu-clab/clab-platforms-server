@@ -2,6 +2,10 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Spring Boot Gradle CI](https://github.com/KGU-C-Lab/clab-server/actions/workflows/spring-boot-gradle-ci.yml/badge.svg)](https://github.com/KGU-C-Lab/clab-server/actions/workflows/spring-boot-gradle-ci.yml)
 
+## Languages
+- [한국어](README.md)
+- [English](README_EN.md)
+
 ## 프로젝트 개요
 C-Lab Server 프로젝트는 경기대학교 개발보안 동아리 C-Lab을 위한 플랫폼으로 시작되었습니다. 그러나 현재는 이를 넘어, 유사한 플랫폼을 만들고자 하는 사람들에게 유용한 참고 자료가 되는 것을 목표로 하고 있습니다. 이러한 이유로, 우리는 모든 코드와 다양한 서버 관련 설정을 공개하고 있으며, 다양한 노력과 실험을 통해 코드 품질을 지속적으로 향상시키고자 합니다.
 
