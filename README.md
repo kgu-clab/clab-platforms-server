@@ -163,4 +163,4 @@ api/
 
 ## 기여하기
 이 프로젝트에 기여하려면 다음 단계를 따라주세요.
-[CONTRIBUTING.md](CONTRIBUTING)
+[CONTRIBUTING.md](CONTRIBUTING.md)

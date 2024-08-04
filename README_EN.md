@@ -163,4 +163,4 @@ This project is licensed under the GNU General Public License (GPL) v3.0. For mo
 
 ## Contributing
 To contribute to this project, follow these steps:
-[CONTRIBUTING.md](CONTRIBUTING_EN)
+[CONTRIBUTING.md](CONTRIBUTING_EN.md)
