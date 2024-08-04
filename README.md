@@ -73,12 +73,12 @@ docker-compose up -d # 또는 'docker compose up -d'
 ./gradlew bootRun
 ```
 
-### Additional Information
+### 추가 정보
 - Docker 및 Docker Compose 설치: [Get Docker](https://docs.docker.com/get-docker/)
 - WSL2 설치 및 설정: [Install WSL2](https://learn.microsoft.com/en-us/windows/wsl/install)
 - Spring Boot 공식 문서: [Spring Boot Docs](https://spring.io/projects/spring-boot)
 
-## Project Structure
+## 프로젝트 구조
 ```markdown
 api/
 ├── category/
