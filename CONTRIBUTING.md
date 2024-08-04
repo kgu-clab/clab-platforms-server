@@ -1,7 +1,6 @@
 # 기여 지침
 KGU C-Lab 서버 프로젝트에 관심을 가져주셔서 감사합니다. 커뮤니티의 모든 구성원들이 효과적으로 기여할 수 있도록 다음의 절차와 규칙을 준수하여 주시기 바랍니다.
 
-## Languages
 - [한국어](CONTRIBUTING.md)
 - [English](CONTRIBUTING_EN.md)
 

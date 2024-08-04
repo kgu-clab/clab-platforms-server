@@ -1,7 +1,6 @@
 # Contribution Guidelines
 Thank you for your interest in the KGU C-Lab Server Project. Please follow these steps and rules to ensure that all community members can contribute effectively.
 
-## Languages
 - [한국어](CONTRIBUTING.md)
 - [English](CONTRIBUTING_EN.md)
 
