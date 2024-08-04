@@ -1,9 +1,9 @@
 # Contribution Guidelines
-Thank you for your interest in the KGU C-Lab Server Project! Please follow these steps and rules to ensure that all community members can contribute effectively.
+Thank you for your interest in the KGU C-Lab Server Project. Please follow these steps and rules to ensure that all community members can contribute effectively.
 
 ## Getting Started
 1. Fork the project repository to your personal account.
-2. Clone the forked repository to your local system using `git clone https://github.com/KGU-C-Lab/clab-server.git`.
+2. Clone the forked repository to your local system using `git clone https://github.com/[your-username]/clab-server.git`.
 3. Create a new working branch with `git checkout -b [new branch name]`.
 
 ## Working Rules
@@ -32,6 +32,6 @@ Thank you for your interest in the KGU C-Lab Server Project! Please follow these
 - If there are any changes required based on the feedback, make the necessary updates with additional commits to the branch.
 
 ## Merging
-- Once the PR is approved and all checks are complete, it will be merged into the master branch by a maintainer.
+- Once the PR is approved and all checks are complete, it will be merged into the `develop` branch by a maintainer.
 
-Thank you again for contributing to the project. Your valuable contributions help enrich our community!
+Thank you for contributing to the project. Your contributions greatly enhance and strengthen our community.
