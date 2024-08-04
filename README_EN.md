@@ -3,11 +3,13 @@
 [![Spring Boot Gradle CI](https://github.com/KGU-C-Lab/clab-server/actions/workflows/spring-boot-gradle-ci.yml/badge.svg)](https://github.com/KGU-C-Lab/clab-server/actions/workflows/spring-boot-gradle-ci.yml)
 
 ## Project Overview
-The C-Lab Server project started as a platform for the C-Lab development and security club at Kyonggi University. However, our goal is to go beyond serving just C-Lab. We aim to create a valuable reference for anyone looking to build a similar internal product. For this reason, we are making all our code and various server-related configurations publicly available. We continuously strive to improve the quality of our project code through various efforts and experiments.
+The C-Lab Server project started as a platform for the C-Lab development and security club at Kyonggi University. However, we aim to go beyond serving just C-Lab and provide a valuable reference for anyone looking to build a similar platform. For this reason, we are making all our code and various server-related configurations publicly available, and we continuously strive to improve the quality of our project code through various efforts and experiments.
 
 Additionally, we are committed to creating a secure platform that users can trust. To achieve this, we adhere to the '[Software Development Security Guide](https://www.kisa.or.kr/2060204/form?postSeq=5&lang_type=KO&page=1)' provided by the Korea Internet & Security Agency (KISA). We are always open to feedback and actively seek to incorporate diverse opinions and suggestions into our work.
 
-Our backend system, as well as our frontend, are both publicly available. If you're interested, please also check out our frontend repository [here](https://github.com/KGU-C-Lab/clab.page).
+Both our backend and frontend systems are publicly available. If you're interested, please also check out our frontend repository [here](https://github.com/KGU-C-Lab/clab.page).
+
+The currently deployed version of the platform can be accessed [here](https://www.clab.page/).
 
 ## Project Purpose and Features
 The C-Lab Server project aims to support club activities and facilitate smooth communication among members by providing integrated services such as:
@@ -110,7 +112,7 @@ api/
 This project is structured according to the port-and-adapter ([hexagonal](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software))) architecture pattern. This architecture promotes a clean separation of concerns, making the codebase more modular, testable, and maintainable.
 
 ### Package Organization
-The packages in this project are organized using the private-package convention. This helps in encapsulating implementation details and exposing only necessary components, leading to better modularity and maintainability.
+The packages in this project are organized using the package-private convention. This helps in encapsulating implementation details and exposing only necessary components, leading to better modularity and maintainability.
 
 ### `domain`
 - **adapter**: Contains adapters that interact with external systems. This includes `in` adapters for handling web interfaces and `out` adapters for interacting with databases.
