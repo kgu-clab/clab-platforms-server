@@ -1,0 +1,36 @@
+# Nginx configuration template for API requests
+
+# Redirect HTTP requests to HTTPS
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${DOMAIN_API};
+
+    # Redirect all HTTP requests to HTTPS
+    return 301 https://$host$request_uri;
+}
+
+# Serve API requests over HTTPS
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name ${DOMAIN_API};
+
+    # SSL certificate settings
+    ssl_certificate /etc/letsencrypt/live/${DOMAIN_API}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN_API}/privkey.pem;
+
+    # Location block to proxy API requests to the backend server
+    location / {
+        # Pass the request to the backend server specified by the BACKEND_URL environment variable
+        # Note: Do not modify the $BACKEND_URL if you are using Jenkins with a Blue-Green deployment strategy
+        # The value for $BACKEND_URL will be provided by envsubst during the deployment process
+        proxy_pass $BACKEND_URL;
+
+        # Set proxy headers
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

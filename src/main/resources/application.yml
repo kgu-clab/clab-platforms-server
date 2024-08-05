@@ -1,4 +1,192 @@
+# Spring Boot Project Port
+server:
+  port: 8081
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  error:
+    include-exception: false
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+
 # Configure the logging level to info for Spring Framework
 logging:
   level:
     org.springframework: info
+
+# Spring Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info, health, prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    tags:
+      application: clab-env
+
+spring:
+  # Log resolved exceptions
+  mvc:
+    log-resolved-exception: true
+
+  # Validation message source
+  messages:
+    basename: messages
+
+  # Set the time zone for the database connection to UTC
+  jpa:
+    properties:
+      hibernate.jdbc.time_zone: UTC
+
+    # Use Hibernate to automatically create tables based on entity classes
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+
+  # Configure the PostgreSQL database connection
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?useUnicode=true&characterEncoding=utf8mb4
+    username: ${DB_USERNAME} # Input your PostgreSQL username
+    password: ${DB_PASSWORD} # Input your PostgreSQL password
+    driver-class-name: org.postgresql.Driver
+
+  # Redis configuration
+  data:
+    redis:
+      lettuce:
+        pool:
+          max-active: 10
+          max-idle: 10
+          min-idle: 2
+      host: localhost
+      port: 6379
+      password: ${REDIS_PASSWORD} # Input your Redis password (default: No password)
+
+  # File Upload Preferences
+  servlet:
+    multipart:
+      max-file-size: 1000MB
+      max-request-size: 5000MB
+
+  # Gmail
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_USERNAME} # Input your Gmail username (Include '@gmail.com')
+    password: ${GMAIL_PASSWORD} # Input your Gmail password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+security:
+  # C-Lab Auth
+  auth:
+    header: Clab-Auth
+
+  # Access Control
+  # Allow only Korean access
+  access:
+    allowed-countries: KR
+
+  # Whitelist configuration
+  whitelist:
+    enabled: true
+    path: ${user.dir}/config/whitelist.json # Path to the whitelist file
+    patterns:
+      actuator: # Default Actuator paths
+        - /actuator
+        - /actuator/.*
+      api-docs: # Default Swagger UI and OpenAPI documentation paths
+        - /swagger-ui/.*
+        - /v3/api-docs.*
+
+  # CORS configuration
+  cors:
+    allowed-origins: "*"
+    allowed-methods:
+      GET,
+      POST,
+      PATCH,
+      DELETE
+    allowed-headers: "*"
+    allow-credentials: true
+    configuration-path: "/**"
+
+  # JWT configuration
+  jwt:
+    # Generate a 64-byte secret key (512 bits) using the following command:
+    # openssl rand -base64 64
+    secret-key: ${JWT_SECRET_KEY}
+    # Access token and refresh token validity period
+    # 1,800,000 ms = 30 minutes
+    # 1,209,600,000 ms = 14 days
+    token-validity-in-seconds:
+      access-token: 1800000
+      refresh-token: 1209600000
+
+  # AES symmetric key
+  # Generate a 32-byte secret key (256 bits) using the following command:
+  # openssl rand -base64 24
+  aes-key: ${AES_KEY}
+
+  # IP attempt limit
+  ip-attempt:
+    max-attempts: 10
+
+  # Login attempt limit
+  login-attempt:
+    max-failures: 5
+    lock-duration-minutes: 5
+
+# File upload
+resource:
+  file:
+    url: /upload/files # File access URL (http://localhost:8080/upload/files/{filename})
+    path: ${user.dir}/files # File storage path ({project-root}/files)
+    disallow-extension: php, php3, php4, php5, phtml, inc, jsp, jsf, asp, asa, cds, cer, aspx, asax, ascx, ashx, asmx, axd, config, cs, csproj, licx, rem, resources, resx, soap, vb, vbproj, vsdisco, webinfo, dll, exe, bat, cmd, sh, vbs, js, jar, py, ps1, com, msi, html, htm, phps, cgi, jspf, jspx
+    compressible-image-extension: jpg, jpeg, png
+    image-quality: 0.3f
+
+# IPInfo configuration
+ipinfo:
+  access-token: ${IPINFO_ACCESS_TOKEN} # Register at https://ipinfo.io/
+
+# Slack webhook configuration
+slack:
+  webhook-url: ${SLACK_WEBHOOK_URL} # Create a Slack channel and get a webhook URL
+  web-url: ${WEB_URL} # Your web URL
+  api-url: ${API_URL} # Your API docs URL
+  color: "#FF968A" # Slack message color
+
+# Configure Swagger UI and generate OpenAPI documentation
+springdoc:
+  version: v1.0.0
+  packages-to-scan: page.clab.api
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: alpha
+    doc-expansion: none
+    display-request-duration: true
+    disable-swagger-default-url: true
+  api-docs:
+    groups:
+      enabled: true
+  cache:
+    disabled: true
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
