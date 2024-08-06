@@ -2,6 +2,7 @@ package page.clab.api.domain.activity.activitygroup.application;
 
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoa
 import page.clab.api.domain.activity.activitygroup.dto.response.AssignmentSubmissionWithFeedbackResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.FeedbackResponseDto;
 import page.clab.api.domain.activity.activitygroup.exception.AssignmentBoardHasNoDueDateTimeException;
+import page.clab.api.domain.activity.activitygroup.exception.FeedbackBoardHasNoContentException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
@@ -37,6 +39,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ActivityGroupBoardService {
 
     private final ActivityGroupBoardRepository activityGroupBoardRepository;
@@ -54,14 +57,9 @@ public class ActivityGroupBoardService {
             throw new PermissionDeniedException("활동 그룹 멤버만 게시글을 등록할 수 있습니다.");
         }
 
-        ActivityGroupBoardCategory activityGroupBoardCategory = requestDto.getCategory();
-        LocalDateTime dueDateTime = requestDto.getDueDateTime();
-
-        if (activityGroupBoardCategory == ActivityGroupBoardCategory.ASSIGNMENT && dueDateTime == null) {
-            throw new AssignmentBoardHasNoDueDateTimeException();
-        }
-
+        validateRequestBody(requestDto);
         validateParentBoard(requestDto.getCategory(), parentId);
+
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrls());
 
         ActivityGroupBoard parentBoard = parentId != null ? getActivityGroupBoardByIdOrThrow(parentId) : null;
@@ -199,6 +197,20 @@ public class ActivityGroupBoardService {
                 default -> "유효하지 않은 카테고리입니다.";
             };
             throw new InvalidParentBoardException(message);
+        }
+    }
+
+    private void validateRequestBody(ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
+        ActivityGroupBoardCategory activityGroupBoardCategory = activityGroupBoardRequestDto.getCategory();
+        LocalDateTime dueDateTime = activityGroupBoardRequestDto.getDueDateTime();
+        String content = activityGroupBoardRequestDto.getContent();
+
+        if (activityGroupBoardCategory == ActivityGroupBoardCategory.ASSIGNMENT && dueDateTime == null) {
+            throw new AssignmentBoardHasNoDueDateTimeException();
+        }
+
+        if (activityGroupBoardCategory == ActivityGroupBoardCategory.FEEDBACK && content.isEmpty()) {
+            throw new FeedbackBoardHasNoContentException();
         }
     }
 

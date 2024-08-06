@@ -30,6 +30,7 @@ import page.clab.api.domain.activity.activitygroup.exception.AssignmentBoardHasN
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAttendanceException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateReportException;
+import page.clab.api.domain.activity.activitygroup.exception.FeedbackBoardHasNoContentException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidCategoryException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.activity.activitygroup.exception.LeaderStatusChangeNotAllowedException;
@@ -100,7 +101,8 @@ public class GlobalExceptionHandler {
             NumberFormatException.class,
             SortingArgumentException.class,
             UnknownPathException.class,
-            AssignmentBoardHasNoDueDateTimeException.class
+            AssignmentBoardHasNoDueDateTimeException.class,
+            FeedbackBoardHasNoContentException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
