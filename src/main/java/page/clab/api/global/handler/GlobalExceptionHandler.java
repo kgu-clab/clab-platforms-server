@@ -26,6 +26,7 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
 import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotFinishedException;
 import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotProgressingException;
 import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedException;
+import page.clab.api.domain.activity.activitygroup.exception.AssignmentBoardHasNoDueDateTimeException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAttendanceException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateReportException;
@@ -98,7 +99,8 @@ public class GlobalExceptionHandler {
             IllegalAccessException.class,
             NumberFormatException.class,
             SortingArgumentException.class,
-            UnknownPathException.class
+            UnknownPathException.class,
+            AssignmentBoardHasNoDueDateTimeException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
