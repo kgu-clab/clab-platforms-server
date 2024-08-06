@@ -13,6 +13,8 @@ import java.util.List;
 public class AssignmentSubmissionWithFeedbackResponseDto {
 
     private Long id;
+    private String memberId;
+    private String memberName;
     private Long parentId;
     private String content;
     private List<UploadedFileResponseDto> files;
@@ -20,9 +22,11 @@ public class AssignmentSubmissionWithFeedbackResponseDto {
     private LocalDateTime updatedAt;
     private List<FeedbackResponseDto> feedbacks;
 
-    public static AssignmentSubmissionWithFeedbackResponseDto toDto(ActivityGroupBoard board, List<FeedbackResponseDto> feedbackDtos) {
+    public static AssignmentSubmissionWithFeedbackResponseDto toDto(ActivityGroupBoard board, String memberId, String memberName, List<FeedbackResponseDto> feedbackDtos) {
         return AssignmentSubmissionWithFeedbackResponseDto.builder()
                 .id(board.getId())
+                .memberId(memberId)
+                .memberName(memberName)
                 .parentId(board.getParent() != null ? board.getParent().getId() : null)
                 .content(board.getContent())
                 .files(UploadedFileResponseDto.toDto(board.getUploadedFiles()))

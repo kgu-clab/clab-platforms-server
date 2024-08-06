@@ -20,6 +20,7 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoa
 import page.clab.api.domain.activity.activitygroup.dto.response.AssignmentSubmissionWithFeedbackResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.FeedbackResponseDto;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
@@ -69,19 +70,19 @@ public class ActivityGroupBoardService {
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardResponseDto> getAllActivityGroupBoard(Pageable pageable) {
         Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAll(pageable);
-        return new PagedResponseDto<>(boards.map(ActivityGroupBoardResponseDto::toDto));
+        return new PagedResponseDto<>(boards.map(board -> ActivityGroupBoardResponseDto.toActivityGroupBoardResponseDtoWithMemberInfo(board, externalRetrieveMemberUseCase)));
     }
 
     @Transactional(readOnly = true)
     public ActivityGroupBoardResponseDto getActivityGroupBoardById(Long activityGroupBoardId) {
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        return ActivityGroupBoardResponseDto.toDto(board);
+        return ActivityGroupBoardResponseDto.toActivityGroupBoardResponseDtoWithMemberInfo(board, externalRetrieveMemberUseCase);
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardResponseDto> getActivityGroupBoardByCategory(Long activityGroupId, ActivityGroupBoardCategory category, Pageable pageable) {
         Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByActivityGroup_IdAndCategory(activityGroupId, category, pageable);
-        return new PagedResponseDto<>(boards.map(ActivityGroupBoardResponseDto::toDto));
+        return new PagedResponseDto<>(boards.map(board -> ActivityGroupBoardResponseDto.toActivityGroupBoardResponseDtoWithMemberInfo(board, externalRetrieveMemberUseCase)));
     }
 
     @Transactional(readOnly = true)
@@ -95,7 +96,7 @@ public class ActivityGroupBoardService {
 
         List<ActivityGroupBoard> childBoards = getChildBoards(parentId);
         Page<ActivityGroupBoard> boards = new PageImpl<>(childBoards, pageable, childBoards.size());
-        return new PagedResponseDto<>(boards.map(ActivityGroupBoardChildResponseDto::toDto));
+        return new PagedResponseDto<>(boards.map(this::toActivityGroupBoardChildResponseDtoWithMemberInfo));
     }
 
     @Transactional(readOnly = true)
@@ -107,9 +108,9 @@ public class ActivityGroupBoardService {
                 .map(submission -> {
                     List<FeedbackResponseDto> feedbackDtos = submission.getChildren().stream()
                             .filter(ActivityGroupBoard::isFeedback)
-                            .map(FeedbackResponseDto::toDto)
+                            .map(board -> FeedbackResponseDto.toFeedbackResponseDtoWithMemberInfo(board, externalRetrieveMemberUseCase))
                             .toList();
-                    return AssignmentSubmissionWithFeedbackResponseDto.toDto(submission, feedbackDtos);
+                    return AssignmentSubmissionWithFeedbackResponseDto.toDto(submission, currentMember.getId(), currentMember.getName(), feedbackDtos);
                 })
                 .toList();
     }
@@ -135,8 +136,8 @@ public class ActivityGroupBoardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardResponseDto> getDeletedActivityGroupBoards(Pageable pageable) {
-        Page<ActivityGroupBoard> activityGroupBoards = activityGroupBoardRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(activityGroupBoards.map(ActivityGroupBoardResponseDto::toDto));
+        Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByIsDeletedTrue(pageable);
+        return new PagedResponseDto<>(boards.map(board -> ActivityGroupBoardResponseDto.toActivityGroupBoardResponseDtoWithMemberInfo(board, externalRetrieveMemberUseCase)));
     }
 
     private ActivityGroupBoard getActivityGroupBoardByIdOrThrow(Long activityGroupBoardId) {
@@ -149,6 +150,14 @@ public class ActivityGroupBoardService {
         List<ActivityGroupBoard> children = activityGroupBoardRepository.findAllChildrenByParentId(activityGroupBoardId);
         children.sort(Comparator.comparing(ActivityGroupBoard::getCreatedAt).reversed());
         return children;
+    }
+
+    public ActivityGroupBoardChildResponseDto toActivityGroupBoardChildResponseDtoWithMemberInfo(ActivityGroupBoard activityGroupBoard) {
+        MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(activityGroupBoard.getMemberId());
+        List<ActivityGroupBoardChildResponseDto> childrenDtos = activityGroupBoard.getChildren().stream()
+                .map(child -> toActivityGroupBoardChildResponseDtoWithMemberInfo(child))
+                .toList();
+        return ActivityGroupBoardChildResponseDto.toDto(activityGroupBoard, memberInfo, childrenDtos);
     }
 
     private void validateParentBoard(ActivityGroupBoardCategory category, Long parentId) throws InvalidParentBoardException {
