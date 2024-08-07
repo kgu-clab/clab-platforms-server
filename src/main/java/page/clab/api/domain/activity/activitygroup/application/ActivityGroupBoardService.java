@@ -57,8 +57,13 @@ public class ActivityGroupBoardService {
         if (!activityGroupMemberService.isGroupMember(activityGroup, currentMember.getId())) {
             throw new PermissionDeniedException("활동 그룹 멤버만 게시글을 등록할 수 있습니다.");
         }
+        if (requestDto.getCategory() == ActivityGroupBoardCategory.ASSIGNMENT) {
+            validateDueDateForAssignment(requestDto);
+        }
+        if (requestDto.getCategory() == ActivityGroupBoardCategory.FEEDBACK) {
+            validateContentForFeedback(requestDto);
+        }
 
-        validateRequestBody(requestDto);
         validateParentBoard(requestDto.getCategory(), parentId);
 
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrls());
@@ -215,16 +220,16 @@ public class ActivityGroupBoardService {
         }
     }
 
-    private void validateRequestBody(ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
-        ActivityGroupBoardCategory activityGroupBoardCategory = activityGroupBoardRequestDto.getCategory();
+    private void validateDueDateForAssignment(ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
         LocalDateTime dueDateTime = activityGroupBoardRequestDto.getDueDateTime();
-        String content = activityGroupBoardRequestDto.getContent();
-
-        if (activityGroupBoardCategory == ActivityGroupBoardCategory.ASSIGNMENT && dueDateTime == null) {
+        if (dueDateTime == null) {
             throw new AssignmentBoardHasNoDueDateTimeException();
         }
+    }
 
-        if (activityGroupBoardCategory == ActivityGroupBoardCategory.FEEDBACK && content.isEmpty()) {
+    private void validateContentForFeedback(ActivityGroupBoardRequestDto activityGroupBoardRequestDto) {
+        String content = activityGroupBoardRequestDto.getContent();
+        if (content.isEmpty()) {
             throw new FeedbackBoardHasNoContentException();
         }
     }
