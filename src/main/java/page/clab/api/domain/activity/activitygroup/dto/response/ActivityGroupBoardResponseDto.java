@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoardCategory;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
@@ -27,11 +28,11 @@ public class ActivityGroupBoardResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static ActivityGroupBoardResponseDto toDto(ActivityGroupBoard board, MemberDetailedInfoDto memberInfo) {
+    public static ActivityGroupBoardResponseDto toDto(ActivityGroupBoard board, MemberBasicInfoDto memberBasicInfoDto) {
         return ActivityGroupBoardResponseDto.builder()
                 .id(board.getId())
-                .memberId(memberInfo.getMemberId())
-                .memberName(memberInfo.getMemberName())
+                .memberId(memberBasicInfoDto.getMemberId())
+                .memberName(memberBasicInfoDto.getMemberName())
                 .parentId(board.getParent() != null ? board.getParent().getId() : null)
                 .category(board.getCategory())
                 .title(board.getTitle())
@@ -41,10 +42,5 @@ public class ActivityGroupBoardResponseDto {
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
                 .build();
-    }
-
-    public static ActivityGroupBoardResponseDto toActivityGroupBoardResponseDtoWithMemberInfo(ActivityGroupBoard activityGroupBoard, ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase) {
-        MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(activityGroupBoard.getMemberId());
-        return ActivityGroupBoardResponseDto.toDto(activityGroupBoard, memberInfo);
     }
 }

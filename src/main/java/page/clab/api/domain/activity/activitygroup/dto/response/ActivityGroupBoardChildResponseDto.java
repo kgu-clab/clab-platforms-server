@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoardCategory;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 
@@ -26,11 +27,11 @@ public class ActivityGroupBoardChildResponseDto {
     private List<UploadedFileResponseDto> files;
     private List<ActivityGroupBoardChildResponseDto> children;
 
-    public static ActivityGroupBoardChildResponseDto toDto(ActivityGroupBoard board, MemberDetailedInfoDto memberInfo, List<ActivityGroupBoardChildResponseDto> childrenDtos) {
+    public static ActivityGroupBoardChildResponseDto toDto(ActivityGroupBoard board, MemberBasicInfoDto memberBasicInfoDto, List<ActivityGroupBoardChildResponseDto> childrenDtos) {
         return ActivityGroupBoardChildResponseDto.builder()
                 .id(board.getId())
-                .memberId(memberInfo.getMemberId())
-                .memberName(memberInfo.getMemberName())
+                .memberId(memberBasicInfoDto.getMemberId())
+                .memberName(memberBasicInfoDto.getMemberName())
                 .category(board.getCategory())
                 .title(board.getTitle())
                 .content(board.getContent())

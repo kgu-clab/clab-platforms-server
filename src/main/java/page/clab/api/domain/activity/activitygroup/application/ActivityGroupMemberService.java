@@ -31,6 +31,7 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupStu
 import page.clab.api.domain.activity.activitygroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidCategoryException;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
@@ -72,7 +73,10 @@ public class ActivityGroupMemberService {
 
         List<ActivityGroupBoardResponseDto> activityGroupResponseDtos =
                 details.getActivityGroupBoards().stream()
-                        .map(board -> ActivityGroupBoardResponseDto.toActivityGroupBoardResponseDtoWithMemberInfo(board, externalRetrieveMemberUseCase))
+                        .map(board -> {
+                            MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
+                            return ActivityGroupBoardResponseDto.toDto(board, memberBasicInfoDto);
+                        })
                         .toList();
 
         if (details.getActivityGroup().isStudy()) {
