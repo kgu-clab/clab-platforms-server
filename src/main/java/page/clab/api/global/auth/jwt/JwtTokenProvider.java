@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,7 +50,7 @@ public class JwtTokenProvider {
         Date accessTokenExpiry = new Date(expiry.getTime() + (accessTokenDuration));
         String accessToken = Jwts.builder()
                 .subject(id)
-                .claim("role", role)
+                .claim("role", role.getKey())
                 .issuedAt(expiry)
                 .expiration(accessTokenExpiry)
                 .signWith(key)
@@ -60,7 +59,7 @@ public class JwtTokenProvider {
         Date refreshTokenExpiry = new Date(expiry.getTime() + (refreshTokenDuration));
         String refreshToken = Jwts.builder()
                 .subject(id)
-                .claim("role", role)
+                .claim("role", role.getKey())
                 .issuedAt(expiry)
                 .expiration(refreshTokenExpiry)
                 .signWith(key)
@@ -93,7 +92,6 @@ public class JwtTokenProvider {
 
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("role").toString().split(","))
-                        .map(this::formatRoleString)
                         .map(SimpleGrantedAuthority::new)
                         .toList();
 
@@ -150,12 +148,5 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }
-    }
-
-    private String formatRoleString(String role) {
-        if (!role.startsWith("ROLE_")) {
-            return "ROLE_" + role;
-        }
-        return role;
     }
 }
