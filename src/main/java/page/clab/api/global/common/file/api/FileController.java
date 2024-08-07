@@ -35,7 +35,7 @@ public class FileController {
     @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping(value = "/boards", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<List<UploadedFileResponseDto>> boardUpload(
-            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
+            @RequestBody List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "boards", storagePeriod);
@@ -46,7 +46,7 @@ public class FileController {
     @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping(value = "/profiles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<UploadedFileResponseDto> profileUpload(
-            @RequestParam(name = "multipartFile") MultipartFile multipartFile,
+            @RequestBody MultipartFile multipartFile,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
         UploadedFileResponseDto responseDto = fileService.saveFile(multipartFile, fileService.buildPath("profiles"), storagePeriod);
@@ -57,7 +57,7 @@ public class FileController {
     @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping(value = "/activity-photos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<List<UploadedFileResponseDto>> activityUpload(
-            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
+            @RequestBody List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "activity-photos", storagePeriod);
@@ -68,7 +68,7 @@ public class FileController {
     @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping(value = "/members", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<List<UploadedFileResponseDto>> memberCloudUpload(
-            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
+            @RequestBody List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws IOException, PermissionDeniedException {
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, fileService.buildPath("members"), storagePeriod);
@@ -81,7 +81,7 @@ public class FileController {
     public ApiResponse<List<UploadedFileResponseDto>> assignmentUpload(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
             @PathVariable(name = "activityGroupBoardId") Long activityGroupBoardId,
-            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
+            @RequestBody List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws PermissionDeniedException, IOException, NotFoundException {
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, fileService.buildPath("assignments", activityGroupId, activityGroupBoardId), storagePeriod);
@@ -92,7 +92,7 @@ public class FileController {
     @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     @PostMapping(value = "/membership-fee", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<List<UploadedFileResponseDto>> assignmentUpload(
-            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
+            @RequestBody List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws PermissionDeniedException, IOException, NotFoundException {
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, "membership-fees", storagePeriod);
