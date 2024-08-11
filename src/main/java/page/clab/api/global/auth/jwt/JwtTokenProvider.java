@@ -50,7 +50,7 @@ public class JwtTokenProvider {
         Date accessTokenExpiry = new Date(expiry.getTime() + (accessTokenDuration));
         String accessToken = Jwts.builder()
                 .subject(id)
-                .claim("role", role.getKey())
+                .claim("role", role)
                 .issuedAt(expiry)
                 .expiration(accessTokenExpiry)
                 .signWith(key)
@@ -59,7 +59,7 @@ public class JwtTokenProvider {
         Date refreshTokenExpiry = new Date(expiry.getTime() + (refreshTokenDuration));
         String refreshToken = Jwts.builder()
                 .subject(id)
-                .claim("role", role.getKey())
+                .claim("role", role)
                 .issuedAt(expiry)
                 .expiration(refreshTokenExpiry)
                 .signWith(key)
@@ -92,6 +92,7 @@ public class JwtTokenProvider {
 
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("role").toString().split(","))
+                        .map(r -> Role.valueOf(r).getKey())
                         .map(SimpleGrantedAuthority::new)
                         .toList();
 

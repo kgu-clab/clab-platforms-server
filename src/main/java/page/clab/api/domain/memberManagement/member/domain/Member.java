@@ -57,11 +57,6 @@ public class Member implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(getRole().getKey()));
-    }
-
-    @Override
     public String getUsername() {
         return id;
     }
@@ -69,6 +64,11 @@ public class Member implements UserDetails {
     @Override
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority(getRole().getKey()));
     }
 
     public void update(MemberUpdateRequestDto requestDto, PasswordEncoder passwordEncoder) {
