@@ -1,6 +1,5 @@
 package page.clab.api.domain.auth.login.domain;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -51,6 +50,6 @@ public class RedisToken {
     }
 
     public boolean isAdminToken() {
-        return role == Role.ADMIN || role == Role.SUPER;
+        return role.isHigherThan(Role.ADMIN);
     }
 }

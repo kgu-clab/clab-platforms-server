@@ -23,4 +23,8 @@ public enum Role {
             case SUPER -> 3L;
         };
     }
+
+    public boolean isHigherThan(Role role) {
+        return this.toRoleLevel() > role.toRoleLevel();
+    }
 }
