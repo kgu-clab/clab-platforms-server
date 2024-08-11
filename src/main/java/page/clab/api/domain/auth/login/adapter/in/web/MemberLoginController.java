@@ -46,4 +46,15 @@ public class MemberLoginController {
         response.setHeader(authHeader, result.getHeader());
         return ApiResponse.success(result.getBody());
     }
+
+    @Operation(summary = "Guest 로그인", description = "ROLE_ANONYMOUS 권한이 필요함")
+    @PostMapping("/guest")
+    public ApiResponse<Boolean> guestLogin(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        LoginResult result = manageLoginUseCase.guestLogin(request);
+        response.setHeader(authHeader, result.getHeader());
+        return ApiResponse.success(result.getBody());
+    }
 }

@@ -21,4 +21,6 @@ public interface ManageLoginUseCase {
     TokenHeader reissueToken(HttpServletRequest request);
 
     List<String> retrieveCurrentLoggedInUsers();
+
+    LoginResult guestLogin(HttpServletRequest request);
 }

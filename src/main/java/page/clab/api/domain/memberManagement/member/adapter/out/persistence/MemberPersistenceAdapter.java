@@ -9,6 +9,7 @@ import page.clab.api.domain.memberManagement.member.application.port.out.Registe
 import page.clab.api.domain.memberManagement.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.memberManagement.member.application.port.out.UpdateMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.global.exception.NotFoundException;
 
 import java.util.List;
@@ -58,6 +59,13 @@ public class MemberPersistenceAdapter implements
     public Page<Member> findByConditions(String id, String name, Pageable pageable) {
         Page<MemberJpaEntity> jpaEntities = memberRepository.findByConditions(id, name, pageable);
         return jpaEntities.map(memberMapper::toDomainEntity);
+    }
+
+    @Override
+    public Member findFirstByRoleOrThrow(Role role) {
+        MemberJpaEntity jpaEntity = memberRepository.findFirstByRole(role)
+                .orElseThrow(() -> new NotFoundException("[Member] role: " + role + "에 해당하는 회원이 존재하지 않습니다."));
+        return memberMapper.toDomainEntity(jpaEntity);
     }
 
     @Override

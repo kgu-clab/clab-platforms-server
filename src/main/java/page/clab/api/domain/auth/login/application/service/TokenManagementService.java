@@ -53,6 +53,11 @@ public class TokenManagementService implements ManageLoginUseCase {
         return manageRedisTokenUseCase.getCurrentLoggedInUsers();
     }
 
+    @Override
+    public LoginResult guestLogin(HttpServletRequest request) {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
+
     private void validateMemberExistence(Authentication authentication) {
         String id = authentication.getName();
         if (!externalRetrieveMemberUseCase.existsById(id)) {

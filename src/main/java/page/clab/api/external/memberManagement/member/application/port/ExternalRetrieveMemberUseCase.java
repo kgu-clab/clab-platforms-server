@@ -48,6 +48,8 @@ public interface ExternalRetrieveMemberUseCase {
 
     MemberLoginInfoDto getMemberLoginInfoById(String memberId);
 
+    MemberLoginInfoDto getGuestMemberLoginInfo();
+
     MemberPositionInfoDto getCurrentMemberPositionInfo();
 
     MemberReviewInfoDto getMemberReviewInfoById(String memberId);
