@@ -9,7 +9,7 @@ gradle/
 /src/main/resources/*.yml
 !/src/main/resources/application.yml
 src/main/java/page/clab/api/global/auth/application/DataLoader.java
-src/main/java/page/clab/api/global/auth/service/DataLoader.java
+src/main/java/page/clab/api/global/auth/application/MemberFactory.java
 src/main/java/page/clab/api/global/config/SecurityProperties.java
 /config/whitelist.json
 
