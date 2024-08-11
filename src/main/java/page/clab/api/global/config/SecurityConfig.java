@@ -4,15 +4,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
@@ -73,7 +76,9 @@ public class SecurityConfig {
                 .cors(cors ->
                         cors.configurationSource(corsConfigurationSource)
                 )
-                .authorizeRequests(this::configureRequests)
+                .authorizeHttpRequests(
+                        getAuthorizeHttpRequestsCustomizer()
+                )
                 .authenticationProvider(authenticationConfig.authenticationProvider())
                 .addFilterBefore(
                         new IPinfoSpringFilter(ipInfoConfig),
@@ -107,12 +112,12 @@ public class SecurityConfig {
         return http.build();
     }
 
-    private ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry configureRequests(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequests) {
-        return authorizeRequests
-                .requestMatchers(whitelistPatternsProperties.getWhitelistPatterns()).hasRole(whitelistAccountProperties.getRole())
+    private @NotNull Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> getAuthorizeHttpRequestsCustomizer() {
+        return (authorize) -> authorize
                 .requestMatchers(SecurityConstants.PERMIT_ALL).permitAll()
                 .requestMatchers(HttpMethod.GET, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
                 .requestMatchers(HttpMethod.POST, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
+                .requestMatchers(whitelistPatternsProperties.getWhitelistPatterns()).hasRole(whitelistAccountProperties.getRole())
                 .anyRequest().authenticated();
     }
 
