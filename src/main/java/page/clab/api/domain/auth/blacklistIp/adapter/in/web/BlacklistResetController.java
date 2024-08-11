@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +22,7 @@ public class BlacklistResetController {
     private final ResetBlacklistIpsUseCase resetBlacklistIpsUseCase;
 
     @Operation(summary = "[S] 블랙리스트 IP 초기화", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({ "ROLE_SUPER" })
+    @PreAuthorize("hasRole('SUPER')")
     @DeleteMapping("/clear")
     public ApiResponse<List<String>> resetBlacklistIps(
             HttpServletRequest request

@@ -3,7 +3,7 @@ package page.clab.api.domain.activity.review.adapter.in.web;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +21,7 @@ public class ReviewRemoveController {
     private final RemoveReviewUseCase removeReviewUseCase;
 
     @Operation(summary = "[U] 리뷰 삭제", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{reviewId}")
     public ApiResponse<Long> removeReview(
             @PathVariable(name = "reviewId") Long reviewId

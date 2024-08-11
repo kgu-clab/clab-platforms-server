@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +39,7 @@ public class AttendanceController {
     private final PageableUtils pageableUtils;
 
     @Operation(summary = "[U] 출석체크 QR 생성", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "")
     public ApiResponse<String> generateAttendanceQRCode(
             @RequestParam(name = "activityGroupId") Long activityGroupId
@@ -49,7 +49,7 @@ public class AttendanceController {
     }
 
     @Operation(summary = "[U] 출석 인증", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/check-in")
     public ApiResponse<Long> checkInAttendance(
             @RequestBody AttendanceRequestDto requestDto
@@ -60,7 +60,7 @@ public class AttendanceController {
 
     @Operation(summary = "[U] 내 출석기록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @GetMapping({ "/my-attendance" })
     public ApiResponse<PagedResponseDto<AttendanceResponseDto>> searchMyAttendance(
             @RequestParam(name = "activityGroupId", defaultValue = "1") Long activityGroupId,
@@ -76,7 +76,7 @@ public class AttendanceController {
 
     @Operation(summary = "[U] 특정 그룹의 출석기록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @GetMapping({ "/group-attendance" })
     public ApiResponse<PagedResponseDto<AttendanceResponseDto>> searchGroupAttendance(
             @RequestParam(name = "activityGroupId", defaultValue = "1") Long activityGroupId,
@@ -91,7 +91,7 @@ public class AttendanceController {
     }
 
     @Operation(summary = "[U] 불참 사유서 등록", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @PostMapping({ "/absent" })
     public ApiResponse<Long> writeAbsentExcuse(
             @RequestBody AbsentRequestDto requestDto
@@ -102,7 +102,7 @@ public class AttendanceController {
 
     @Operation(summary = "[U] 그룹의 불참 사유서 열람", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @GetMapping({ "/absent/{activityGroupId}" })
     public ApiResponse<PagedResponseDto<AbsentResponseDto>> getActivityGroupAbsentExcuses(
             @PathVariable(name = "activityGroupId") Long activityGroupId,

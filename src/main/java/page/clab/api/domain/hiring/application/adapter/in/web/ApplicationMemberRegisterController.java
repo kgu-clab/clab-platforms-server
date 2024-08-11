@@ -3,6 +3,7 @@ package page.clab.api.domain.hiring.application.adapter.in.web;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ public class ApplicationMemberRegisterController {
     private final RegisterMembersByRecruitmentUseCase registerMembersByRecruitmentUseCase;
 
     @Operation(summary = "[S] 모집 단위별 합격자 멤버 통합 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('SUPER')")
     @PostMapping("/{recruitmentId}")
     public ApiResponse<List<String>> registerMembersByRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId
@@ -30,6 +32,7 @@ public class ApplicationMemberRegisterController {
     }
 
     @Operation(summary = "[S] 모집 단위별 합격자 멤버 개별 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('SUPER')")
     @PostMapping("/{recruitmentId}/{studentId}")
     public ApiResponse<String> registerMembersByRecruitment(
             @PathVariable(name = "recruitmentId") Long recruitmentId,

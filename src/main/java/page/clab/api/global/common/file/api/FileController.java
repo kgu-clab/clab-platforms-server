@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +32,7 @@ public class FileController {
     private final FileService fileService;
 
     @Operation(summary = "[U] 게시글 파일 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/boards", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<List<UploadedFileResponseDto>> boardUpload(
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
@@ -43,7 +43,7 @@ public class FileController {
     }
 
     @Operation(summary = "[U] 멤버 프로필 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/profiles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<UploadedFileResponseDto> profileUpload(
             @RequestParam(name = "multipartFile") MultipartFile multipartFile,
@@ -53,8 +53,8 @@ public class FileController {
         return ApiResponse.success(responseDto);
     }
 
-    @Operation(summary = "[U] 함께하는 활동 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
+    @Operation(summary = "[A] 함께하는 활동 사진 업로드", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/activity-photos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<List<UploadedFileResponseDto>> activityUpload(
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
@@ -65,7 +65,7 @@ public class FileController {
     }
 
     @Operation(summary = "[U] 멤버 클라우드 파일 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/members", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<List<UploadedFileResponseDto>> memberCloudUpload(
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
@@ -76,7 +76,7 @@ public class FileController {
     }
 
     @Operation(summary = "[U] 활동 그룹 과제 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/assignment/{activityGroupId}/{activityGroupBoardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<List<UploadedFileResponseDto>> assignmentUpload(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
@@ -89,7 +89,7 @@ public class FileController {
     }
 
     @Operation(summary = "[U] 회비 증빙 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/membership-fee", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<List<UploadedFileResponseDto>> assignmentUpload(
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
@@ -101,7 +101,7 @@ public class FileController {
 
     @Operation(summary = "[U] 파일 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "본인 외의 정보는 ROLE_SUPER만 가능<br>" + "/resources/files/~를 입력. 즉 생성시 전달받은 url을 입력.")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("")
     public ApiResponse<String> deleteFile(@RequestBody DeleteFileRequestDto deleteFileRequestDto)
             throws PermissionDeniedException {

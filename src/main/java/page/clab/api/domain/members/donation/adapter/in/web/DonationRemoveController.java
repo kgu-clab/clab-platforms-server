@@ -3,7 +3,7 @@ package page.clab.api.domain.members.donation.adapter.in.web;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +21,7 @@ public class DonationRemoveController {
     private final RemoveDonationUseCase removeDonationUseCase;
 
     @Operation(summary = "[S] 후원 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({ "ROLE_SUPER" })
+    @PreAuthorize("hasRole('SUPER')")
     @DeleteMapping("/{donationId}")
     public ApiResponse<Long> removeDonation(
             @PathVariable(name = "donationId") Long donationId

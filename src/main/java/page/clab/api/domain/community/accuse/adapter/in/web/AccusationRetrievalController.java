@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,7 +35,7 @@ public class AccusationRetrievalController {
             "신고 대상, 처리 상태 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
             "누적 횟수 기준으로 정렬할지 여부를 선택할 수 있음<br>" +
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
-    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("")
     public ApiResponse<PagedResponseDto<AccuseResponseDto>> retrieveAccusations(
             @RequestParam(name = "targetType", required = false) TargetType type,

@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,7 +52,7 @@ public class TwoFactorAuthenticationController {
 
     @Operation(summary = "[S] TOTP 초기화", description = "ROLE_SUPER 권한이 필요함")
     @DeleteMapping("/{memberId}")
-    @Secured({ "ROLE_SUPER" })
+    @PreAuthorize("hasRole('SUPER')")
     public ApiResponse<String> resetAuthenticator(
             @PathVariable(name = "memberId") String memberId
     ) {

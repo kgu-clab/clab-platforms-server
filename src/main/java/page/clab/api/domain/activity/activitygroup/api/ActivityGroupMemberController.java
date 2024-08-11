@@ -6,7 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,8 +39,9 @@ public class ActivityGroupMemberController {
     private final ActivityGroupMemberService activityGroupMemberService;
     private final PageableUtils pageableUtils;
 
-    @Operation(summary = "활동 전체 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[U] 활동 전체 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("")
     public ApiResponse<PagedResponseDto<ActivityGroupResponseDto>> getActivityGroups(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -53,7 +54,8 @@ public class ActivityGroupMemberController {
         return ApiResponse.success(activityGroups);
     }
 
-    @Operation(summary = "활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Operation(summary = "[U] 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{activityGroupId}")
     public ApiResponse<Object> getActivityGroup(
             @PathVariable(name = "activityGroupId") Long activityGroupId
@@ -63,7 +65,7 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "[U] 나의 활동 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/my")
     public ApiResponse<PagedResponseDto<ActivityGroupResponseDto>> getMyActivityGroups(
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -75,7 +77,7 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "[U] 활동 상태별 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/status")
     public ApiResponse<PagedResponseDto<ActivityGroupStatusResponseDto>> getActivityGroupsByStatus(
             @RequestParam(name = "activityGroupStatus") ActivityGroupStatus status,
@@ -87,8 +89,9 @@ public class ActivityGroupMemberController {
         return ApiResponse.success(activityGroups);
     }
 
-    @Operation(summary = "카테고리별 활동 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[U] 카테고리별 활동 목록 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함<br>" +
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/list")
     public ApiResponse<PagedResponseDto<ActivityGroupResponseDto>> getActivityGroupsByCategory(
             @RequestParam(name = "category") ActivityGroupCategory category,
@@ -104,7 +107,7 @@ public class ActivityGroupMemberController {
 
     @Operation(summary = "[U] 활동 일정 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/schedule")
     public ApiResponse<PagedResponseDto<GroupScheduleDto>> getGroupScheduleList(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
@@ -121,7 +124,7 @@ public class ActivityGroupMemberController {
     @Operation(summary = "[U] 활동 멤버 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "활동에 참여(수락)된 멤버만 조회 가능<br>" +
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/members")
     public ApiResponse<PagedResponseDto<GroupMemberResponseDto>> getActivityGroupMemberList(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
@@ -136,7 +139,7 @@ public class ActivityGroupMemberController {
     }
 
     @Operation(summary = "[U] 활동 신청", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/apply")
     public ApiResponse<Long> applyActivityGroup(
             @RequestParam Long activityGroupId,
