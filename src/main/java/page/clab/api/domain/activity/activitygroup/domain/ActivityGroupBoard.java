@@ -20,7 +20,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoardRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoardUpdateRequestDto;
+import page.clab.api.domain.activity.activitygroup.exception.AssignmentBoardHasNoDueDateTimeException;
+import page.clab.api.domain.activity.activitygroup.exception.FeedbackBoardHasNoContentException;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.application.UploadedFileService;
@@ -112,6 +115,21 @@ public class ActivityGroupBoard extends BaseEntity {
         if (!member.isAdminRole() && leader != null && !leader.isOwner(member.getId())) {
             if (this.isAssignment()) {
                 throw new PermissionDeniedException("과제 게시판에 접근할 권한이 없습니다.");
+            }
+        }
+    }
+
+    public void validateEssentialElementByCategory() {
+        if (this.isAssignment()) {
+            LocalDateTime dueDateTime = this.getDueDateTime();
+            if (dueDateTime == null) {
+                throw new AssignmentBoardHasNoDueDateTimeException();
+            }
+        }
+        if (this.isFeedback()) {
+            String content = this.getContent();
+            if (content.isEmpty()) {
+                throw new FeedbackBoardHasNoContentException();
             }
         }
     }

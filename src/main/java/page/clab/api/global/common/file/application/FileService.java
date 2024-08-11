@@ -64,6 +64,16 @@ public class FileService {
         return url;
     }
 
+    public List<UploadedFileResponseDto> saveFilesTest(MultipartFile[] multipartFiles, String path, long storagePeriod) throws IOException, PermissionDeniedException {
+        List<UploadedFileResponseDto> uploadedFileResponseDtos = new ArrayList<>();
+        for (MultipartFile multipartFile : multipartFiles) {
+            UploadedFileResponseDto responseDto = saveFile(multipartFile, path, storagePeriod);
+            uploadedFileResponseDtos.add(responseDto);
+        }
+        return uploadedFileResponseDtos;
+    }
+
+
     public List<UploadedFileResponseDto> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws IOException, PermissionDeniedException {
         List<UploadedFileResponseDto> uploadedFileResponseDtos = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
