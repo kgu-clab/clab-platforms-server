@@ -20,8 +20,8 @@ public class NewsDetailsRetrievalController {
 
     private final RetrieveNewsDetailsUseCase retrieveNewsDetailsUseCase;
 
-    @Operation(summary = "[U] 뉴스 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @PreAuthorize("hasRole('USER')")
+    @Operation(summary = "[G] 뉴스 상세 조회", description = "ROLE_GUEST 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/{newsId}")
     public ApiResponse<NewsDetailsResponseDto> retrieveNewsDetails(
             @PathVariable(name = "newsId") Long newsId

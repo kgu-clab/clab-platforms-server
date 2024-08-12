@@ -58,9 +58,9 @@ public class AttendanceController {
         return ApiResponse.success(id);
     }
 
-    @Operation(summary = "[U] 내 출석기록 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[G] 내 출석기록 조회", description = "ROLE_GUEST 이상의 권한이 필요함<br>" +
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('GUEST')")
     @GetMapping({ "/my-attendance" })
     public ApiResponse<PagedResponseDto<AttendanceResponseDto>> searchMyAttendance(
             @RequestParam(name = "activityGroupId", defaultValue = "1") Long activityGroupId,

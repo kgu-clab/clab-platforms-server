@@ -19,8 +19,8 @@ public class MyProfileRetrievalController {
 
     private final RetrieveMyProfileUseCase retrieveMyProfileUseCase;
 
-    @Operation(summary = "[U] 내 프로필 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @PreAuthorize("hasRole('USER')")
+    @Operation(summary = "[G] 내 프로필 조회", description = "ROLE_GUEST 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/my-profile")
     public ApiResponse<MyProfileResponseDto> retrieveMyProfile() {
         MyProfileResponseDto myProfile = retrieveMyProfileUseCase.retrieveMyProfile();

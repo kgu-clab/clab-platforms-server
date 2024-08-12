@@ -20,8 +20,8 @@ public class BookDetailsRetrievalController {
 
     private final RetrieveBookDetailsUseCase retrieveBookDetailsUseCase;
 
-    @Operation(summary = "[U] 도서 상세 정보", description = "ROLE_USER 이상의 권한이 필요함")
-    @PreAuthorize("hasRole('USER')")
+    @Operation(summary = "[G] 도서 상세 정보", description = "ROLE_GUEST 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/{bookId}")
     public ApiResponse<BookDetailsResponseDto> retrieveBookDetails(
             @PathVariable(name = "bookId") Long bookId

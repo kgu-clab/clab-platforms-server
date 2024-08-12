@@ -28,11 +28,11 @@ public class NewsByConditionsRetrievalController {
     private final RetrieveNewsByConditionsUseCase retrieveNewsByConditionsUseCase;
     private final PageableUtils pageableUtils;
 
-    @Operation(summary = "[U] 뉴스 목록 조회(제목, 카테고리 기준)", description = "ROLE_USER 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[G] 뉴스 목록 조회(제목, 카테고리 기준)", description = "ROLE_GUEST 이상의 권한이 필요함<br>" +
             "2개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
             "제목, 카테고리 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('GUEST')")
     @GetMapping("")
     public ApiResponse<PagedResponseDto<NewsResponseDto>> retrieveNewsByConditions(
             @RequestParam(name = "title", required = false) String title,

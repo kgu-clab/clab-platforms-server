@@ -20,8 +20,8 @@ public class JobPostingDetailsRetrievalController {
 
     private final RetrieveJobPostingDetailsUseCase retrieveJobPostingDetailsUseCase;
 
-    @Operation(summary = "[U] 채용 공고 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @PreAuthorize("hasRole('USER')")
+    @Operation(summary = "[G] 채용 공고 상세 조회", description = "ROLE_GUEST 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/{jobPostingId}")
     public ApiResponse<JobPostingDetailsResponseDto> retrieveJobPostingDetails(
             @PathVariable(name = "jobPostingId") Long jobPostingId
