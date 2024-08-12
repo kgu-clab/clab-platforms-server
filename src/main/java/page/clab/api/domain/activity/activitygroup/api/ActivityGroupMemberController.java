@@ -19,6 +19,7 @@ import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupCategory;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupStatus;
 import page.clab.api.domain.activity.activitygroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ApplyFormRequestDto;
+import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupDetailResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupStatusResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.GroupMemberResponseDto;
@@ -57,10 +58,10 @@ public class ActivityGroupMemberController {
     @Operation(summary = "[U] 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{activityGroupId}")
-    public ApiResponse<Object> getActivityGroup(
+    public ApiResponse<ActivityGroupDetailResponseDto> getActivityGroup(
             @PathVariable(name = "activityGroupId") Long activityGroupId
     ) {
-        Object activityGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
+        ActivityGroupDetailResponseDto activityGroup = activityGroupMemberService.getActivityGroup(activityGroupId);
         return ApiResponse.success(activityGroup);
     }
 

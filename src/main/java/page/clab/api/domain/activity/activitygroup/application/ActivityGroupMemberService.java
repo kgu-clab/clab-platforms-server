@@ -25,10 +25,8 @@ import page.clab.api.domain.activity.activitygroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupDetailResponseDto;
-import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupProjectResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupStatusResponseDto;
-import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupStudyResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidCategoryException;
@@ -61,7 +59,7 @@ public class ActivityGroupMemberService {
     }
 
     @Transactional(readOnly = true)
-    public Object getActivityGroup(Long activityGroupId) {
+    public ActivityGroupDetailResponseDto getActivityGroup(Long activityGroupId) {
         ActivityGroupDetails details = activityGroupDetailsRepository.fetchActivityGroupDetails(activityGroupId);
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
 
