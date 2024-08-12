@@ -64,6 +64,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private boolean authenticateToken(HttpServletRequest request, HttpServletResponse response, String clientIpAddress) throws IOException {
         String token = jwtTokenProvider.resolveToken(request);
+
+        // 토큰이 존재하고 유효한 경우
         if (token != null && jwtTokenProvider.validateToken(token)) {
             RedisToken redisToken = jwtTokenProvider.isRefreshToken(token) ? externalManageRedisTokenUseCase.findByRefreshToken(token) : externalManageRedisTokenUseCase.findByAccessToken(token);
             if (redisToken == null) {
@@ -71,7 +73,9 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
                 ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
                 return false;
             }
-            if (!redisToken.getIp().equals(clientIpAddress)) {
+
+            // 관리자 토큰이고, 토큰 발급 IP와 다른 IP에서 접속한 경우 토큰 삭제
+            if (redisToken.isAdminToken() && !redisToken.isSameIp(clientIpAddress)) {
                 externalManageRedisTokenUseCase.deleteByAccessToken(token);
                 sendSecurityAlertSlackMessage(request, redisToken);
                 log.warn("[{}] 토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.", clientIpAddress);
@@ -80,10 +84,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             }
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            return true;
-        } else {
-            return true;
         }
+        return true;
     }
 
     private void sendSecurityAlertSlackMessage(HttpServletRequest request, RedisToken redisToken) {

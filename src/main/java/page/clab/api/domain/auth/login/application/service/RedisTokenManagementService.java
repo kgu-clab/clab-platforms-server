@@ -41,7 +41,7 @@ public class RedisTokenManagementService implements ManageRedisTokenUseCase {
         return StreamSupport.stream(iterableTokens.spliterator(), false)
                 .filter(Objects::nonNull)
                 .filter(redisToken -> jwtTokenProvider.validateTokenSilently(redisToken.getAccessToken()))
-                .map(RedisToken::getId)
+                .map(RedisToken::getMemberId)
                 .distinct()
                 .collect(Collectors.toList());
     }

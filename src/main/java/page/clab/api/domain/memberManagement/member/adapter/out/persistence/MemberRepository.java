@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
+import page.clab.api.domain.memberManagement.member.domain.Role;
 
 import java.util.Optional;
 
@@ -18,4 +19,6 @@ public interface MemberRepository extends JpaRepository<MemberJpaEntity, String>
     Optional<MemberJpaEntity> findByEmail(String email);
 
     Page<MemberJpaEntity> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    Optional<MemberJpaEntity> findFirstByRole(Role role);
 }

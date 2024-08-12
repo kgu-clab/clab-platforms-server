@@ -96,4 +96,9 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
     public List<String> retrieveCurrentLoggedInUsers() {
         throw new UnsupportedOperationException("Method not implemented");
     }
+
+    @Override
+    public LoginResult guestLogin(HttpServletRequest request) {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
 }

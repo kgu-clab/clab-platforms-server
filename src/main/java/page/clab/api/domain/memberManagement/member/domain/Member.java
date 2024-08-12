@@ -57,11 +57,6 @@ public class Member implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(getRole().getKey()));
-    }
-
-    @Override
     public String getUsername() {
         return id;
     }
@@ -72,23 +67,8 @@ public class Member implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority(getRole().getKey()));
     }
 
     public void update(MemberUpdateRequestDto requestDto, PasswordEncoder passwordEncoder) {

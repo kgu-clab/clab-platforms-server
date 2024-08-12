@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +25,7 @@ public class AbnormalAccessIpsRetrieveController {
 
     @Operation(summary = "[S] 비정상 접근으로 인한 차단 IP 목록 조회", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "지속적인 비정상 접근으로 인해 Redis에 추가된 IP를 조회")
-    @Secured({ "ROLE_SUPER" })
+    @PreAuthorize("hasRole('SUPER')")
     @GetMapping("/abnormal-access")
     public ApiResponse<PagedResponseDto<RedisIpAccessMonitor>> retrieveAbnormalAccessBlacklistIps(
             @RequestParam(name = "page", defaultValue = "0") int page,

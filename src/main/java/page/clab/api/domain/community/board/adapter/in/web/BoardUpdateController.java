@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,9 +23,9 @@ public class BoardUpdateController {
 
     private final UpdateBoardUseCase updateBoardUseCase;
 
-    @PatchMapping("/{boardId}")
     @Operation(summary = "[U] 커뮤니티 게시글 수정", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
+    @PatchMapping("/{boardId}")
     public ApiResponse<String> updateBoard(
             @PathVariable(name = "boardId") Long boardId,
             @Valid @RequestBody BoardUpdateRequestDto requestDto

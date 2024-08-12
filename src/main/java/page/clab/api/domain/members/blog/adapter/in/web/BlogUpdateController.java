@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +24,7 @@ public class BlogUpdateController {
     private final UpdateBlogUseCase updateBlogUseCase;
 
     @Operation(summary = "[A] 블로그 포스트 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{blogId}")
     public ApiResponse<Long> updateBlog(
             @PathVariable(name = "blogId") Long blogId,

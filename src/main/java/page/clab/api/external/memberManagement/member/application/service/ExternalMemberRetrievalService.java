@@ -13,6 +13,7 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.domain.memberManagement.member.application.port.out.CheckMemberExistencePort;
 import page.clab.api.domain.memberManagement.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.exception.NotFoundException;
@@ -154,6 +155,13 @@ public class ExternalMemberRetrievalService implements ExternalRetrieveMemberUse
     public MemberLoginInfoDto getMemberLoginInfoById(String memberId) {
         Member member = retrieveMemberPort.findByIdOrThrow(memberId);
         return MemberLoginInfoDto.create(member);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public MemberLoginInfoDto getGuestMemberLoginInfo() {
+        Member guestMember = retrieveMemberPort.findFirstByRoleOrThrow(Role.GUEST);
+        return MemberLoginInfoDto.create(guestMember);
     }
 
     @Transactional(readOnly = true)
