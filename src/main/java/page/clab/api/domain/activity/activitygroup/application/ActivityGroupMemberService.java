@@ -24,6 +24,7 @@ import page.clab.api.domain.activity.activitygroup.dto.param.ActivityGroupDetail
 import page.clab.api.domain.activity.activitygroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ApplyFormRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardResponseDto;
+import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupDetailResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupProjectResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupStatusResponseDto;
@@ -71,7 +72,7 @@ public class ActivityGroupMemberService {
                 .map(groupMember -> GroupMemberResponseDto.toDto(externalRetrieveMemberUseCase.findByIdOrThrow(groupMember.getMemberId()), groupMember))
                 .toList();
 
-        List<ActivityGroupBoardResponseDto> activityGroupResponseDtos =
+        List<ActivityGroupBoardResponseDto> activityGroupBoardResponseDtos =
                 details.getActivityGroupBoards().stream()
                         .map(board -> {
                             MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
@@ -79,13 +80,7 @@ public class ActivityGroupMemberService {
                         })
                         .toList();
 
-        if (details.getActivityGroup().isStudy()) {
-            return ActivityGroupStudyResponseDto.create(details.getActivityGroup(), details.getGroupMembers(), activityGroupResponseDtos, groupMemberResponseDtos, isOwner);
-        } else if (details.getActivityGroup().isProject()) {
-            return ActivityGroupProjectResponseDto.create(details.getActivityGroup(), details.getGroupMembers(), activityGroupResponseDtos, groupMemberResponseDtos, isOwner);
-        } else {
-            throw new InvalidCategoryException("해당 카테고리가 존재하지 않습니다.");
-        }
+        return ActivityGroupDetailResponseDto.create(details.getActivityGroup(), activityGroupBoardResponseDtos, groupMemberResponseDtos, isOwner);
     }
 
     @Transactional(readOnly = true)
