@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.members.membershipFee.application.dto.response.MembershipFeeResponseDto;
 import page.clab.api.domain.members.membershipFee.application.port.in.RetrieveMembershipFeesByConditionsUseCase;
 import page.clab.api.domain.members.membershipFee.application.port.out.RetrieveMembershipFeePort;
@@ -24,9 +24,13 @@ public class MembershipFeesByConditionsRetrievalService implements RetrieveMembe
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<MembershipFeeResponseDto> retrieveMembershipFees(String memberId, String memberName, String category, MembershipFeeStatus status, Pageable pageable) {
-        MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
-        Page<MembershipFee> membershipFeesPage = retrieveMembershipFeePort.findByConditions(memberId, memberName, category, status, pageable);
-        return new PagedResponseDto<>(membershipFeesPage.map(membershipFee ->
-                MembershipFeeResponseDto.toDto(membershipFee, memberInfo.getMemberName(), memberInfo.isAdminRole())));
+        Page<MembershipFee> membershipFees = retrieveMembershipFeePort.findByConditions(memberId, memberName, category, status, pageable);
+        boolean currentMemberIsAdmin = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo().isAdminRole();
+        return new PagedResponseDto<>(membershipFees.map(membership -> getMembershipFeeResponseDto(membership, currentMemberIsAdmin)));
+    }
+
+    private MembershipFeeResponseDto getMembershipFeeResponseDto(MembershipFee membershipFee, boolean isAdminRole) {
+        MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(membershipFee.getMemberId());
+        return MembershipFeeResponseDto.toDto(membershipFee, memberInfo.getMemberName(), isAdminRole);
     }
 }
