@@ -23,8 +23,8 @@ public class MembershipFeeUpdateController {
 
     private final UpdateMembershipFeeUseCase updateMembershipFeeUseCase;
 
-    @Operation(summary = "[S] 회비 정보 수정", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @PreAuthorize("hasRole('SUPER')")
+    @Operation(summary = "[A] 회비 정보 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{membershipFeeId}")
     public ApiResponse<Long> updateMembershipFee(
             @PathVariable(name = "membershipFeeId") Long membershipFeeId,
