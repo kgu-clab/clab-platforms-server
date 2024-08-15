@@ -1,21 +1,21 @@
-# C-Lab Server
+# C-Lab Platforms Server
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Spring Boot Gradle CI](https://github.com/KGU-C-Lab/clab-server/actions/workflows/spring-boot-gradle-ci.yml/badge.svg)](https://github.com/KGU-C-Lab/clab-server/actions/workflows/spring-boot-gradle-ci.yml)
+[![Spring Boot Gradle CI](https://github.com/KGU-C-Lab/clab-platforms-server/actions/workflows/spring-boot-gradle-ci.yml/badge.svg)](https://github.com/KGU-C-Lab/clab-platforms-server/actions/workflows/spring-boot-gradle-ci.yml)
 
 - [한국어](README.md)
 - [English](README_EN.md)
 
 ## 프로젝트 개요
-C-Lab Server 프로젝트는 경기대학교 개발보안 동아리 C-Lab을 위한 플랫폼으로 시작되었습니다. 그러나 현재는 이를 넘어, 유사한 플랫폼을 만들고자 하는 사람들에게 유용한 참고 자료가 되는 것을 목표로 하고 있습니다. 이러한 이유로, 우리는 모든 코드와 다양한 서버 관련 설정을 공개하고 있으며, 다양한 노력과 실험을 통해 코드 품질을 지속적으로 향상시키고자 합니다.
+C-Lab Platforms Server 프로젝트는 경기대학교 개발보안 동아리 C-Lab을 위한 플랫폼으로 시작되었습니다. 그러나 현재는 이를 넘어, 유사한 플랫폼을 만들고자 하는 사람들에게 유용한 참고 자료가 되는 것을 목표로 하고 있습니다. 이러한 이유로, 우리는 모든 코드와 다양한 서버 관련 설정을 공개하고 있으며, 다양한 노력과 실험을 통해 코드 품질을 지속적으로 향상시키고자 합니다.
 
 또한, 우리는 사용자가 신뢰할 수 있는 안전한 플랫폼을 만들기 위해 노력하고 있습니다. 이를 위해 한국인터넷진흥원(KISA)이 제공하는 '[소프트웨어 개발 보안 가이드](https://www.kisa.or.kr/2060204/form?postSeq=5&lang_type=KO&page=1)'를 준수하고자 합니다. 우리는 항상 피드백을 받을 준비가 되어 있으며, 다양한 의견과 제안을 적극적으로 반영하려고 노력합니다.
 
-백엔드 시스템뿐만 아니라 프론트엔드 시스템도 모두 공개되어 있습니다. 관심이 있으신 분들은 [여기](https://github.com/KGU-C-Lab/clab.page)에서 프론트엔드 리포지토리도 확인해보세요.
+백엔드 시스템뿐만 아니라 프론트엔드 시스템도 모두 공개되어 있습니다. 관심이 있으신 분들은 [여기](https://github.com/KGU-C-Lab/clab-platforms)에서 프론트엔드 리포지토리도 확인해보세요.
 
 현재 서비스되고 있는 페이지는 [여기](https://www.clab.page/)에서 확인할 수 있습니다.
 
 ## 프로젝트 목적 및 기능
-C-Lab Server 프로젝트는 동아리 활동을 지원하고 회원 간의 원활한 소통을 촉진하기 위해 통합 서비스를 제공합니다.
+C-Lab Platforms Server 프로젝트는 동아리 활동을 지원하고 회원 간의 원활한 소통을 촉진하기 위해 통합 서비스를 제공합니다.
 
 - **회원 관리**: 멤버스 페이지를 통해 동아리 운영에 필요한 핵심 기능을 제공하며, 학습 관리 시스템, 도서 대출, 재정 관리 등을 포함합니다.
 - **협업 및 참여**: 개인 및 그룹 일정 관리, 개인 클라우드 저장 공간, 커뮤니티 기능, 채용 공고 및 실적 취합 기능 등을 통해 회원들의 참여와 협력을 증진합니다.
@@ -30,8 +30,8 @@ C-Lab Server 프로젝트는 동아리 활동을 지원하고 회원 간의 원�
 ### 리포지토리 클론
 로컬 시스템에 리포지토리를 클론합니다.
 ```bash
-git clone https://github.com/KGU-C-Lab/clab-server.git
-cd clab-server
+git clone https://github.com/KGU-C-Lab/clab-platforms-server.git
+cd clab-platforms-server
 ```
 
 ### Docker Compose 설정
@@ -157,11 +157,11 @@ api/
 ![Entity-Relationship-Diagram](images/Entity-Relationship-Diagram.png)
 
 ## 라이선스
-이 프로젝트는 GNU 일반 공중 사용 허가서(GPL) v3.0에 따라 라이선스가 부여됩니다. 자세한 내용은 [LICENSE](https://github.com/KGU-C-Lab/clab-server?tab=GPL-3.0-1-ov-file#readme) 파일을 확인하세요.
+이 프로젝트는 GNU 일반 공중 사용 허가서(GPL) v3.0에 따라 라이선스가 부여됩니다. 자세한 내용은 [LICENSE](https://github.com/KGU-C-Lab/clab-platforms-server?tab=GPL-3.0-1-ov-file#readme) 파일을 확인하세요.
 
 ## 기여자
-<a href="https://github.com/KGU-C-Lab/clab-server/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=KGU-C-Lab/clab-server" />
+<a href="https://github.com/KGU-C-Lab/clab-platforms-server/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=KGU-C-Lab/clab-platforms-server" />
 </a>
 
 ## 기여하기

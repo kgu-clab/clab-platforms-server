@@ -1,21 +1,21 @@
-# C-Lab Server
+# C-Lab Platforms Server
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Spring Boot Gradle CI](https://github.com/KGU-C-Lab/clab-server/actions/workflows/spring-boot-gradle-ci.yml/badge.svg)](https://github.com/KGU-C-Lab/clab-server/actions/workflows/spring-boot-gradle-ci.yml)
+[![Spring Boot Gradle CI](https://github.com/KGU-C-Lab/clab-platforms-server/actions/workflows/spring-boot-gradle-ci.yml/badge.svg)](https://github.com/KGU-C-Lab/clab-platforms-server/actions/workflows/spring-boot-gradle-ci.yml)
 
 - [한국어](README.md)
 - [English](README_EN.md)
 
 ## Project Overview
-The C-Lab Server project started as a platform for the C-Lab development and security club at Kyonggi University. However, we aim to go beyond serving just C-Lab and provide a valuable reference for anyone looking to build a similar platform. For this reason, we are making all our code and various server-related configurations publicly available, and we continuously strive to improve the quality of our project code through various efforts and experiments.
+The C-Lab Platforms Server project started as a platform for the C-Lab development and security club at Kyonggi University. However, we aim to go beyond serving just C-Lab and provide a valuable reference for anyone looking to build a similar platform. For this reason, we are making all our code and various server-related configurations publicly available, and we continuously strive to improve the quality of our project code through various efforts and experiments.
 
 Additionally, we are committed to creating a secure platform that users can trust. To achieve this, we adhere to the '[Software Development Security Guide](https://www.kisa.or.kr/2060204/form?postSeq=5&lang_type=KO&page=1)' provided by the Korea Internet & Security Agency (KISA). We are always open to feedback and actively seek to incorporate diverse opinions and suggestions into our work.
 
-Both our backend and frontend systems are publicly available. If you're interested, please also check out our frontend repository [here](https://github.com/KGU-C-Lab/clab.page).
+Both our backend and frontend systems are publicly available. If you're interested, please also check out our frontend repository [here](https://github.com/KGU-C-Lab/clab-platforms).
 
 The currently deployed version of the platform can be accessed [here](https://www.clab.page/).
 
 ## Project Purpose and Features
-The C-Lab Server project aims to support club activities and facilitate smooth communication among members by providing integrated services such as:
+The C-Lab Platforms Server project aims to support club activities and facilitate smooth communication among members by providing integrated services such as:
 
 - **Member Management**: Through the Members Page, it offers essential features for club operations including club management, learning management system, book loans, and financial management.
 - **Collaboration and Participation**: It enhances member engagement and collaboration with features like individual and group schedule management, personal cloud storage, community functions, job postings, and performance aggregation.
@@ -30,8 +30,8 @@ The C-Lab Server project aims to support club activities and facilitate smooth c
 ### Clone the Repository
 First, clone the repository to your local machine:
 ```bash
-git clone https://github.com/KGU-C-Lab/clab-server.git
-cd clab-server
+git clone https://github.com/KGU-C-Lab/clab-platforms-server.git
+cd clab-platforms-server
 ```
 
 ### Docker Compose Setup
@@ -157,11 +157,11 @@ The packages in this project are organized using the package-private convention.
 ![Entity-Relationship-Diagram](images/Entity-Relationship-Diagram.png)
 
 ## License
-This project is licensed under the GNU General Public License (GPL) v3.0. For more information, see the [LICENSE](https://github.com/KGU-C-Lab/clab-server?tab=GPL-3.0-1-ov-file#readme) file.
+This project is licensed under the GNU General Public License (GPL) v3.0. For more information, see the [LICENSE](https://github.com/KGU-C-Lab/clab-platforms-server?tab=GPL-3.0-1-ov-file#readme) file.
 
 ## Contributors
-<a href="https://github.com/KGU-C-Lab/clab-server/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=KGU-C-Lab/clab-server" />
+<a href="https://github.com/KGU-C-Lab/clab-platforms-server/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=KGU-C-Lab/clab-platforms-server" />
 </a>
 
 ## Contributing
