@@ -24,6 +24,7 @@ import page.clab.api.domain.community.board.domain.SlackBoardInfo;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
 import page.clab.api.global.common.slack.domain.AlertType;
+import page.clab.api.global.common.slack.domain.ExecutivesAlertType;
 import page.clab.api.global.common.slack.domain.GeneralAlertType;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.config.SlackConfig;
@@ -48,6 +49,7 @@ public class SlackServiceHelper {
 
     private final Slack slack;
     private final String coreTeamWebhookUrl;
+    private final String exeutivesWebhookUrl;
     private final String webUrl;
     private final String apiUrl;
     private final String color;
@@ -57,6 +59,7 @@ public class SlackServiceHelper {
     public SlackServiceHelper(SlackConfig slackConfig, Environment environment, AttributeStrategy attributeStrategy) {
         this.slack = slackConfig.slack();
         this.coreTeamWebhookUrl = slackConfig.getCoreTeamWebhookUrl();
+        this.exeutivesWebhookUrl = slackConfig.getExecutivesWebhookUrl();
         this.webUrl = slackConfig.getWebUrl();
         this.apiUrl = slackConfig.getApiUrl();
         this.color = slackConfig.getColor();
@@ -106,21 +109,27 @@ public class SlackServiceHelper {
                         return createAdminLoginBlocks(request, (MemberLoginInfoDto) additionalData);
                     }
                     break;
-                case APPLICATION_CREATED:
-                    if (additionalData instanceof ApplicationRequestDto) {
-                        return createApplicationBlocks((ApplicationRequestDto) additionalData);
-                    }
-                    break;
-                case BOARD_CREATED:
-                    if (additionalData instanceof SlackBoardInfo) {
-                        return createBoardBlocks((SlackBoardInfo) additionalData);
-                    }
-                    break;
                 case SERVER_START:
                     return createServerStartBlocks();
                 case SERVER_ERROR:
                     if (additionalData instanceof Exception) {
                         return createErrorBlocks(request, (Exception) additionalData);
+                    }
+                    break;
+                default:
+                    log.error("Unknown alert type: {}", alertType);
+                    return List.of();
+            }
+        } else if (alertType instanceof ExecutivesAlertType) {
+            switch ((ExecutivesAlertType) alertType) {
+                case NEW_APPLICATION:
+                    if (additionalData instanceof ApplicationRequestDto) {
+                        return createApplicationBlocks((ApplicationRequestDto) additionalData);
+                    }
+                    break;
+                case NEW_BOARD:
+                    if (additionalData instanceof SlackBoardInfo) {
+                        return createBoardBlocks((SlackBoardInfo) additionalData);
                     }
                     break;
                 default:
