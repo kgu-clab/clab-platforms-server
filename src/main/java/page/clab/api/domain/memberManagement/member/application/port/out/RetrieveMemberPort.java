@@ -16,7 +16,7 @@ public interface RetrieveMemberPort {
 
     List<Member> findAll();
 
-    List<Member> findAll(Pageable pageable);
+    List<Member> findMemberRoleInfoByConditions(String memberId, String memberName, Role role, Pageable pageable);
 
     Page<Member> findAllByOrderByCreatedAtDesc(Pageable pageable);
 

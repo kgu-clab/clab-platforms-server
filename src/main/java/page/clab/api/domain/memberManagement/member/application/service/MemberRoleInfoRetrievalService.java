@@ -8,6 +8,7 @@ import page.clab.api.domain.memberManagement.member.application.dto.response.Mem
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberRoleInfoUseCase;
 import page.clab.api.domain.memberManagement.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.domain.Role;
 
 import java.util.List;
 
@@ -19,8 +20,8 @@ public class MemberRoleInfoRetrievalService implements RetrieveMemberRoleInfoUse
 
     @Transactional(readOnly = true)
     @Override
-    public List<MemberRoleInfoResponseDto> retrieveMemberRoleInfo(Pageable pageable) {
-        List<Member> members = retrieveMemberPort.findAll(pageable);
+    public List<MemberRoleInfoResponseDto> retrieveMemberRoleInfo(String memberId, String memberName, Role role, Pageable pageable) {
+        List<Member> members = retrieveMemberPort.findMemberRoleInfoByConditions(memberId, memberName, role, pageable);
         return MemberRoleInfoResponseDto.toDto(members);
     }
 }
