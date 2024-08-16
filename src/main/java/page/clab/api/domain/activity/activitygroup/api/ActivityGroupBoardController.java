@@ -56,8 +56,8 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @Valid @RequestBody ActivityGroupBoardRequestDto requestDto
     ) throws PermissionDeniedException {
-        ActivityGroupBoardReferenceDto activityGroupBoard = activityGroupBoardService.createActivityGroupBoard(parentId, activityGroupId, requestDto);
-        return ApiResponse.success(activityGroupBoard);
+        ActivityGroupBoardReferenceDto activityGroupBoardReferenceDto = activityGroupBoardService.createActivityGroupBoard(parentId, activityGroupId, requestDto);
+        return ApiResponse.success(activityGroupBoardReferenceDto);
     }
 
     @Operation(summary = "[U] 활동 그룹 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
