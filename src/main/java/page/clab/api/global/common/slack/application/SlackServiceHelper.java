@@ -48,8 +48,6 @@ import java.util.stream.Collectors;
 public class SlackServiceHelper {
 
     private final Slack slack;
-    private final String coreTeamWebhookUrl;
-    private final String exeutivesWebhookUrl;
     private final String webUrl;
     private final String apiUrl;
     private final String color;
@@ -58,8 +56,6 @@ public class SlackServiceHelper {
 
     public SlackServiceHelper(SlackConfig slackConfig, Environment environment, AttributeStrategy attributeStrategy) {
         this.slack = slackConfig.slack();
-        this.coreTeamWebhookUrl = slackConfig.getCoreTeamWebhookUrl();
-        this.exeutivesWebhookUrl = slackConfig.getExecutivesWebhookUrl();
         this.webUrl = slackConfig.getWebUrl();
         this.apiUrl = slackConfig.getApiUrl();
         this.color = slackConfig.getColor();
@@ -72,9 +68,8 @@ public class SlackServiceHelper {
         return (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
     }
 
-    public CompletableFuture<Boolean> sendSlackMessage(AlertType alertType, HttpServletRequest request, Object additionalData) {
+    public CompletableFuture<Boolean> sendSlackMessage(String webhookUrl, AlertType alertType, HttpServletRequest request, Object additionalData) {
         List<LayoutBlock> blocks = createBlocks(alertType, request, additionalData);
-
         return CompletableFuture.supplyAsync(() -> {
             Payload payload = Payload.builder()
                     .blocks(List.of(blocks.getFirst()))
@@ -85,7 +80,7 @@ public class SlackServiceHelper {
                                     .build()
                     )).build();
             try {
-                WebhookResponse response = slack.send(coreTeamWebhookUrl, payload);
+                WebhookResponse response = slack.send(webhookUrl, payload);
                 if (response.getCode() == 200) {
                     return true;
                 } else {
