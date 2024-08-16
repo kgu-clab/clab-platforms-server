@@ -94,19 +94,23 @@ public class Member implements UserDetails {
         this.isDeleted = true;
     }
 
+    public boolean isGuestRole() {
+        return role.isGuestRole();
+    }
+
     public boolean isAdminRole() {
-        return role.equals(Role.ADMIN) || role.equals(Role.SUPER);
+        return role.isHigherThanOrEqual(Role.ADMIN);
     }
 
     public boolean isSuperAdminRole() {
-        return role.equals(Role.SUPER);
+        return role.isSuperRole();
     }
 
     public boolean isSameMember(Member member) {
-        return id.equals(member.getId());
+        return isSameMemberId(member.getId());
     }
 
-    public boolean isSameMember(String memberId) {
+    public boolean isSameMemberId(String memberId) {
         return id.equals(memberId);
     }
 
@@ -148,6 +152,10 @@ public class Member implements UserDetails {
 
     public void updateLoanSuspensionDate(LocalDateTime loanSuspensionDate) {
         this.loanSuspensionDate = loanSuspensionDate;
+    }
+
+    public void changeRole(Role role) {
+        this.role = role;
     }
 
     public void clearImageUrl() {

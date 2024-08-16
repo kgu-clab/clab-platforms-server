@@ -27,4 +27,20 @@ public enum Role {
     public boolean isHigherThan(Role role) {
         return this.toRoleLevel() > role.toRoleLevel();
     }
+
+    public boolean isHigherThanOrEqual(Role role) {
+        return this.toRoleLevel() >= role.toRoleLevel();
+    }
+
+    public boolean isGuestRole() {
+        return this.equals(GUEST);
+    }
+
+    public boolean isAdminRole() {
+        return this.equals(ADMIN);
+    }
+
+    public boolean isSuperRole() {
+        return this.equals(SUPER);
+    }
 }
