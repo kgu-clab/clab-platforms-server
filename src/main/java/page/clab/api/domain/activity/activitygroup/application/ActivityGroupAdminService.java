@@ -19,6 +19,7 @@ import page.clab.api.domain.activity.activitygroup.domain.GroupSchedule;
 import page.clab.api.domain.activity.activitygroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupUpdateRequestDto;
+import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardStatusUpdatedResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupMemberWithApplyReasonResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
@@ -68,7 +69,7 @@ public class ActivityGroupAdminService {
     }
 
     @Transactional
-    public Long manageActivityGroup(Long activityGroupId, ActivityGroupStatus status) {
+    public ActivityGroupBoardStatusUpdatedResponseDto manageActivityGroup(Long activityGroupId, ActivityGroupStatus status) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         activityGroup.updateStatus(status);
         activityGroupRepository.save(activityGroup);
@@ -77,7 +78,7 @@ public class ActivityGroupAdminService {
         if (groupLeader != null) {
             externalSendNotificationUseCase.sendNotificationToMember(groupLeader.getMemberId(), "활동 그룹이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
         }
-        return activityGroup.getId();
+        return ActivityGroupBoardStatusUpdatedResponseDto.toDto(activityGroupId, status);
     }
 
     @Transactional(readOnly = true)
@@ -155,7 +156,7 @@ public class ActivityGroupAdminService {
     }
 
     @Transactional
-    public String manageGroupMemberStatus(Long activityGroupId, String memberId, GroupMemberStatus status) throws PermissionDeniedException {
+    public Long manageGroupMemberStatus(Long activityGroupId, String memberId, GroupMemberStatus status) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
@@ -169,7 +170,7 @@ public class ActivityGroupAdminService {
         activityGroupMemberService.save(groupMember);
 
         externalSendNotificationUseCase.sendNotificationToMember(member.getId(), "활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
-        return groupMember.getMemberId();
+        return activityGroup.getId();
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {

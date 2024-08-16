@@ -20,6 +20,7 @@ import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoardCate
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoardRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardChildResponseDto;
+import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardReferenceDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardUpdateResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.AssignmentSubmissionWithFeedbackResponseDto;
@@ -50,13 +51,13 @@ public class ActivityGroupBoardController {
     )
     @PreAuthorize("hasRole('USER')")
     @PostMapping("")
-    public ApiResponse<Long> createActivityGroupBoard(
+    public ApiResponse<ActivityGroupBoardReferenceDto> createActivityGroupBoard(
             @RequestParam(name = "parentId", required = false) Long parentId,
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @Valid @RequestBody ActivityGroupBoardRequestDto requestDto
     ) throws PermissionDeniedException {
-        Long id = activityGroupBoardService.createActivityGroupBoard(parentId, activityGroupId, requestDto);
-        return ApiResponse.success(id);
+        ActivityGroupBoardReferenceDto activityGroupBoard = activityGroupBoardService.createActivityGroupBoard(parentId, activityGroupId, requestDto);
+        return ApiResponse.success(activityGroupBoard);
     }
 
     @Operation(summary = "[U] 활동 그룹 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
@@ -127,22 +128,22 @@ public class ActivityGroupBoardController {
     @Operation(summary = "[U] 활동 그룹 게시판 수정", description = "ROLE_USER 이상의 권한이 필요함")
     @PreAuthorize("hasRole('USER')")
     @PatchMapping("")
-    public ApiResponse<ActivityGroupBoardUpdateResponseDto> updateActivityGroupBoard(
+    public ApiResponse<ActivityGroupBoardReferenceDto> updateActivityGroupBoard(
             @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId,
             @Valid @RequestBody ActivityGroupBoardUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        ActivityGroupBoardUpdateResponseDto board = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, requestDto);
-        return ApiResponse.success(board);
+        ActivityGroupBoardReferenceDto activityGroupBoardReferenceDto = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, requestDto);
+        return ApiResponse.success(activityGroupBoardReferenceDto);
     }
 
     @Operation(summary = "[U] 활동 그룹 게시판 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("")
-    public ApiResponse<Long> deleteActivityGroupBoard(
+    public ApiResponse<ActivityGroupBoardReferenceDto> deleteActivityGroupBoard(
             @RequestParam Long activityGroupBoardId
     ) throws PermissionDeniedException {
-        Long id = activityGroupBoardService.deleteActivityGroupBoard(activityGroupBoardId);
-        return ApiResponse.success(id);
+        ActivityGroupBoardReferenceDto activityGroupBoardReferenceDto = activityGroupBoardService.deleteActivityGroupBoard(activityGroupBoardId);
+        return ApiResponse.success(activityGroupBoardReferenceDto);
     }
 
     @Operation(summary = "[S] 삭제된 활동 그룹 게시판 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")

@@ -22,6 +22,7 @@ import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activity.activitygroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupUpdateRequestDto;
+import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardStatusUpdatedResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupMemberWithApplyReasonResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -66,12 +67,12 @@ public class ActivityGroupAdminController {
     @Operation(summary = "[A] 활동 상태 변경", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("manage/{activityGroupId}")
-    public ApiResponse<Long> manageActivityGroupStatus(
+    public ApiResponse<ActivityGroupBoardStatusUpdatedResponseDto> manageActivityGroupStatus(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "activityGroupStatus") ActivityGroupStatus status
     ) {
-        Long id = activityGroupAdminService.manageActivityGroup(activityGroupId, status);
-        return ApiResponse.success(id);
+        ActivityGroupBoardStatusUpdatedResponseDto activityGroupBoardStatusUpdatedResponseDto = activityGroupAdminService.manageActivityGroup(activityGroupId, status);
+        return ApiResponse.success(activityGroupBoardStatusUpdatedResponseDto);
     }
 
     @Operation(summary = "[A] 활동 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
@@ -127,12 +128,12 @@ public class ActivityGroupAdminController {
     @Operation(summary = "[U] 신청 멤버 상태 변경", description = "ROLE_USER 이상의 권한이 필요함")
     @PreAuthorize("hasRole('USER')")
     @PatchMapping("/accept")
-    public ApiResponse<String> acceptGroupMember(
+    public ApiResponse<Long> acceptGroupMember(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "memberId") String memberId,
             @RequestParam(name = "status") GroupMemberStatus status
     ) throws PermissionDeniedException {
-        String id = activityGroupAdminService.manageGroupMemberStatus(activityGroupId, memberId, status);
+        Long id = activityGroupAdminService.manageGroupMemberStatus(activityGroupId, memberId, status);
         return ApiResponse.success(id);
     }
 
