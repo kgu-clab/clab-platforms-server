@@ -18,7 +18,8 @@ public enum SecurityAlertType implements AlertType {
     ABNORMAL_ACCESS_IP_BLOCKED("비정상적인 접근 IP 차단", "Abnormal access IP has been blocked."),
     ABNORMAL_ACCESS_IP_DELETED("비정상적인 접근 IP 삭제", "Abnormal access IP has been deleted."),
     MEMBER_BANNED("멤버 밴 등록", "Member has been banned."),
-    MEMBER_UNBANNED("멤버 밴 해제", "Member has been unbanned.");
+    MEMBER_UNBANNED("멤버 밴 해제", "Member has been unbanned."),
+    MEMBER_ROLE_CHANGED("멤버 권한 변경", "Member role has been changed.");
 
     private final String title;
     private final String defaultMessage;

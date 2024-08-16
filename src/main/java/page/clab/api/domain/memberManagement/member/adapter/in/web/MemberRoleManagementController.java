@@ -2,6 +2,7 @@ package page.clab.api.domain.memberManagement.member.adapter.in.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,10 +28,11 @@ public class MemberRoleManagementController {
     @PreAuthorize("hasRole('SUPER')")
     @PatchMapping("/{memberId}/roles")
     public ApiResponse<String> changeMemberRole(
+            HttpServletRequest httpServletRequest,
             @PathVariable(name = "memberId") String memberId,
             @RequestBody ChangeMemberRoleRequest request
     ) {
-        String id = manageMemberRoleUseCase.changeMemberRole(memberId, request);
+        String id = manageMemberRoleUseCase.changeMemberRole(httpServletRequest, memberId, request);
         return ApiResponse.success(id);
     }
 }
