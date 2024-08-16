@@ -20,13 +20,14 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import page.clab.api.global.common.slack.domain.SlackBoardInfo;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
 import page.clab.api.global.common.slack.domain.AlertType;
 import page.clab.api.global.common.slack.domain.ExecutivesAlertType;
 import page.clab.api.global.common.slack.domain.GeneralAlertType;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
+import page.clab.api.global.common.slack.domain.SlackBoardInfo;
+import page.clab.api.global.common.slack.domain.SlackMembershipFeeInfo;
 import page.clab.api.global.config.SlackConfig;
 import page.clab.api.global.util.HttpReqResUtil;
 
@@ -127,6 +128,10 @@ public class SlackServiceHelper {
                         return createBoardBlocks((SlackBoardInfo) additionalData);
                     }
                     break;
+                case NEW_MEMBERSHIP_FEE:
+                    if (additionalData instanceof SlackMembershipFeeInfo) {
+                        return createMembershipFeeBlocks((SlackMembershipFeeInfo) additionalData);
+                    }
                 default:
                     log.error("Unknown alert type: {}", alertType);
                     return List.of();
@@ -218,6 +223,20 @@ public class SlackServiceHelper {
                 markdownText("*User:*\n" + board.getUsername())
         ))));
         return blocks;
+    }
+
+    private List<LayoutBlock> createMembershipFeeBlocks(SlackMembershipFeeInfo additionalData) {
+        String username = additionalData.getMemberId() + " " + additionalData.getMemberName();
+
+        return Arrays.asList(
+                section(section -> section.text(markdownText(":dollar: *New Membership Fee*"))),
+                section(section -> section.fields(Arrays.asList(
+                        markdownText("*User:*\n" + username),
+                        markdownText("*Category:*\n" + additionalData.getCategory()),
+                        markdownText("*Amount:*\n" + additionalData.getAmount() + "원")
+                ))),
+                section(section -> section.text(markdownText("*Content:*\n" + additionalData.getContent())))
+        );
     }
 
     private List<LayoutBlock> createServerStartBlocks() {
