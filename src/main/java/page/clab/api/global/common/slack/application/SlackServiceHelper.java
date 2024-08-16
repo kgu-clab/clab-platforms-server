@@ -20,7 +20,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.community.board.domain.SlackBoardInfo;
+import page.clab.api.global.common.slack.domain.SlackBoardInfo;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
 import page.clab.api.global.common.slack.domain.AlertType;

@@ -1,7 +1,8 @@
-package page.clab.api.domain.community.board.domain;
+package page.clab.api.global.common.slack.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 
 @Getter
