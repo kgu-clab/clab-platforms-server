@@ -16,6 +16,8 @@ public interface RetrieveMemberPort {
 
     List<Member> findAll();
 
+    List<Member> findAll(Pageable pageable);
+
     Page<Member> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     Member findByEmailOrThrow(String email);

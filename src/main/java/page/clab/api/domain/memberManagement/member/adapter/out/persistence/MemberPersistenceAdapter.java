@@ -87,6 +87,14 @@ public class MemberPersistenceAdapter implements
     }
 
     @Override
+    public List<Member> findAll(Pageable pageable) {
+        return memberRepository.findAll(pageable)
+                .stream()
+                .map(memberMapper::toDomainEntity)
+                .toList();
+    }
+
+    @Override
     public Page<Member> findAllByOrderByCreatedAtDesc(Pageable pageable) {
         Page<MemberJpaEntity> jpaEntities = memberRepository.findAllByOrderByCreatedAtDesc(pageable);
         return jpaEntities.map(memberMapper::toDomainEntity);
