@@ -30,7 +30,7 @@ public class MemberRoleManagementService implements ManageMemberRoleUseCase {
         Role oldRole = member.getRole();
         Role newRole = request.getRole();
 
-        validateRoleChange(member, newRole);
+        validateRoleChange(member, oldRole, newRole);
         member.changeRole(newRole);
 
         updateMemberPort.update(member);
@@ -40,8 +40,13 @@ public class MemberRoleManagementService implements ManageMemberRoleUseCase {
         return memberId;
     }
 
-    private void validateRoleChange(Member member, Role role) {
-        if (member.isGuestRole() || role.isGuestRole()) {
+    private void validateRoleChange(Member member, Role oldRole, Role newRole) {
+        // 기존 권한과 새 권한이 동일한지 확인
+        if (oldRole.equals(newRole)) {
+            throw new InvalidRoleChangeException("기존 권한과 변경할 권한이 같습니다.");
+        }
+        // 멤버의 변경될 권한이 GUEST 인지 또는 변경되는 권한이 GUEST 인지 확인
+        if (member.isGuestRole() || newRole.isGuestRole()) {
             throw new InvalidRoleChangeException("GUEST 권한은 변경 불가능합니다.");
         }
     }
