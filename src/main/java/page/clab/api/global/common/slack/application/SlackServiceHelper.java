@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 public class SlackServiceHelper {
 
     private final Slack slack;
-    private final String webhookUrl;
+    private final String coreTeamWebhookUrl;
     private final String webUrl;
     private final String apiUrl;
     private final String color;
@@ -56,7 +56,7 @@ public class SlackServiceHelper {
 
     public SlackServiceHelper(SlackConfig slackConfig, Environment environment, AttributeStrategy attributeStrategy) {
         this.slack = slackConfig.slack();
-        this.webhookUrl = slackConfig.getWebhookUrl();
+        this.coreTeamWebhookUrl = slackConfig.getCoreTeamWebhookUrl();
         this.webUrl = slackConfig.getWebUrl();
         this.apiUrl = slackConfig.getApiUrl();
         this.color = slackConfig.getColor();
@@ -82,7 +82,7 @@ public class SlackServiceHelper {
                                     .build()
                     )).build();
             try {
-                WebhookResponse response = slack.send(webhookUrl, payload);
+                WebhookResponse response = slack.send(coreTeamWebhookUrl, payload);
                 if (response.getCode() == 200) {
                     return true;
                 } else {
