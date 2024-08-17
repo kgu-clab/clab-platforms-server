@@ -71,8 +71,8 @@ public class ActivityGroupAdminController {
             @PathVariable(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "activityGroupStatus") ActivityGroupStatus status
     ) {
-        ActivityGroupBoardStatusUpdatedResponseDto activityGroupBoardStatusUpdatedResponseDto = activityGroupAdminService.manageActivityGroup(activityGroupId, status);
-        return ApiResponse.success(activityGroupBoardStatusUpdatedResponseDto);
+        ActivityGroupBoardStatusUpdatedResponseDto updatedStatusDto = activityGroupAdminService.manageActivityGroup(activityGroupId, status);
+        return ApiResponse.success(updatedStatusDto);
     }
 
     @Operation(summary = "[A] 활동 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")

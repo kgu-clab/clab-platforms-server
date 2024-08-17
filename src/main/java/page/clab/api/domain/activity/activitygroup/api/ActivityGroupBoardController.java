@@ -56,8 +56,8 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @Valid @RequestBody ActivityGroupBoardRequestDto requestDto
     ) throws PermissionDeniedException {
-        ActivityGroupBoardReferenceDto activityGroupBoardReferenceDto = activityGroupBoardService.createActivityGroupBoard(parentId, activityGroupId, requestDto);
-        return ApiResponse.success(activityGroupBoardReferenceDto);
+        ActivityGroupBoardReferenceDto referenceDto = activityGroupBoardService.createActivityGroupBoard(parentId, activityGroupId, requestDto);
+        return ApiResponse.success(referenceDto);
     }
 
     @Operation(summary = "[U] 활동 그룹 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
@@ -132,8 +132,8 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId,
             @Valid @RequestBody ActivityGroupBoardUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        ActivityGroupBoardReferenceDto activityGroupBoardReferenceDto = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, requestDto);
-        return ApiResponse.success(activityGroupBoardReferenceDto);
+        ActivityGroupBoardReferenceDto referenceDto = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, requestDto);
+        return ApiResponse.success(referenceDto);
     }
 
     @Operation(summary = "[U] 활동 그룹 게시판 삭제", description = "ROLE_USER 이상의 권한이 필요함")
@@ -142,8 +142,8 @@ public class ActivityGroupBoardController {
     public ApiResponse<ActivityGroupBoardReferenceDto> deleteActivityGroupBoard(
             @RequestParam Long activityGroupBoardId
     ) throws PermissionDeniedException {
-        ActivityGroupBoardReferenceDto activityGroupBoardReferenceDto = activityGroupBoardService.deleteActivityGroupBoard(activityGroupBoardId);
-        return ApiResponse.success(activityGroupBoardReferenceDto);
+        ActivityGroupBoardReferenceDto referenceDto = activityGroupBoardService.deleteActivityGroupBoard(activityGroupBoardId);
+        return ApiResponse.success(referenceDto);
     }
 
     @Operation(summary = "[S] 삭제된 활동 그룹 게시판 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
