@@ -1,3 +1,23 @@
+/*
+ * To use the following functionality:
+ * withCredentials([file(credentialsId: 'platforms_stage_config_yml', variable: 'CONFIG_FILE')]) {
+ *
+ * The 'Pipeline Utility Steps' plugin must be installed on your Jenkins instance.
+ *
+ * Installation Guide:
+ * 1. Log in to your Jenkins instance.
+ * 2. Navigate to 'Manage Jenkins' from the main dashboard.
+ * 3. Click on 'Manage Plugins'.
+ * 4. Go to the 'Available plugins' tab.
+ * 5. In the search box, type 'Pipeline Utility Steps'.
+ * 6. Select the 'Pipeline Utility Steps' plugin from the list.
+ * 7. Click on 'Install without restart' or 'Install and restart' to install the plugin.
+ * 8. Once the plugin is installed, you can use functions like 'readYaml' and other utility steps in your Jenkinsfile.
+ *
+ * Ensure the plugin is up-to-date to avoid compatibility issues.
+ */
+
+
 pipeline {
     agent any
 
@@ -5,51 +25,58 @@ pipeline {
         githubPush()
     }
 
-    environment {
-        JENKINS_DOMAIN = credentials('jenkins_domain') // Jenkins domain (e.g. http://jenkins.example.com)
-
-        SLACK_WEBHOOK_URL = credentials('slack_webhook_url') // Slack webhook URL (e.g. https://hooks.slack.com/services/...)
-        SLACK_COLOR_SUCCESS = credentials('slack_color_success') // Slack color code for success messages (e.g. #FF968A)
-        SLACK_COLOR_FAILURE = credentials('slack_color_failure') // Slack color code for failure messages (e.g. #FF0000)
-
-        PG_USER = credentials('pg_user') // PostgreSQL username
-        PG_PASSWORD = credentials('pg_password') // PostgreSQL password
-        BACKUP_DIR = credentials('backup_dir') // Directory for PostgreSQL backups
-
-        DOCKER_HUB_REPO = credentials('dockerhub_repo') // Docker Hub repository name
-        DOCKER_HUB_USER = credentials('dockerhub_user') // Docker Hub username
-        DOCKER_HUB_PASSWORD = credentials('dockerhub_password') // Docker Hub password
-
-        EXTERNAL_SERVER_CONFIG_PATH = credentials('external_server_config_path') // External mapping path for server configuration
-        EXTERNAL_SERVER_CLOUD_PATH = credentials('external_server_cloud_path') // External mapping path for cloud storage
-        EXTERNAL_SERVER_LOGS_PATH = credentials('external_server_logs_path') // External mapping path for logs
-
-        INTERNAL_SERVER_CONFIG_PATH = credentials('internal_server_config_path') // Internal server configuration path
-        INTERNAL_SERVER_CLOUD_PATH = credentials('internal_server_cloud_path') // Internal server cloud storage path
-        INTERNAL_SERVER_LOGS_PATH = credentials('internal_server_logs_path') // Internal server logs path
-
-        BLUE_CONTAINER = credentials('blue_container') // Blue container name (e.g. blue)
-        GREEN_CONTAINER = credentials('green_container') // Green container name (e.g. green)
-        BLUE_URL = credentials('blue_url') // URL for the blue container environment (e.g. http://blue:8080)
-        GREEN_URL = credentials('green_url') // URL for the green environment (e.g. http://green:8080)
-        IMAGE_NAME = credentials('image_name') // Docker image name for the application container (e.g. clab)
-
-        APPLICATION_NETWORK = credentials('application_network') // Docker network for the application
-        MONITORING_NETWORK = credentials('monitoring_network') // Docker network for monitoring
-
-        PROFILE = credentials('profile') // Active profile for the application (e.g. stage)
-        PORT_A = credentials('port_a') // Port A for the application (e.g. 8081)
-        PORT_B = credentials('port_b') // Port B for the application (e.g. 8082)
-
-        WHITELIST_ADMIN_USERNAME = credentials('whitelist_admin_username') // Whitelist-based service admin account
-        WHITELIST_ADMIN_PASSWORD = credentials('whitelist_admin_password') // Whitelist-based service admin password
-
-        DOCKERFILE_PATH = "${env.WORKSPACE}/jenkins/Dockerfile" // Path to the Dockerfile
-        NGINX_CONTAINER_NAME = 'nginx' // Name of the Nginx container
-        POSTGRESQL_CONTAINER_NAME = 'postgresql' // Name of the PostgreSQL container
-    }
-
     stages {
+        stage('Load Environment Variables') {
+            steps {
+                withCredentials([file(credentialsId: 'platforms_stage_config_yml', variable: 'CONFIG_FILE')]) {
+                    script {
+                        def config = readYaml(file: env.CONFIG_FILE)
+
+                        env.JENKINS_DOMAIN = config.'jenkins-domain'
+                        env.SLACK_WEBHOOK_URL = config.slack.'webhook-url'
+                        env.SLACK_COLOR_SUCCESS = config.slack.'color-success'
+                        env.SLACK_COLOR_FAILURE = config.slack.'color-failure'
+
+                        env.PG_USER = config.postgresql.user
+                        env.PG_PASSWORD = config.postgresql.password
+                        env.BACKUP_DIR = config.postgresql.'backup-dir'
+
+                        env.DOCKER_HUB_REPO = config.dockerhub.repo
+                        env.DOCKER_HUB_USER = config.dockerhub.user
+                        env.DOCKER_HUB_PASSWORD = config.dockerhub.password
+
+                        env.EXTERNAL_SERVER_CONFIG_PATH = config.'external-server'.'config-path'
+                        env.EXTERNAL_SERVER_CLOUD_PATH = config.'external-server'.'cloud-path'
+                        env.EXTERNAL_SERVER_LOGS_PATH = config.'external-server'.'logs-path'
+
+                        env.INTERNAL_SERVER_CONFIG_PATH = config.'internal-server'.'config-path'
+                        env.INTERNAL_SERVER_CLOUD_PATH = config.'internal-server'.'cloud-path'
+                        env.INTERNAL_SERVER_LOGS_PATH = config.'internal-server'.'logs-path'
+
+                        env.BLUE_CONTAINER = config.containers.blue
+                        env.GREEN_CONTAINER = config.containers.green
+                        env.BLUE_URL = config.containers.'blue-url'
+                        env.GREEN_URL = config.containers.'green-url'
+                        env.IMAGE_NAME = config.containers.'image-name'
+
+                        env.APPLICATION_NETWORK = config.networks.application
+                        env.MONITORING_NETWORK = config.networks.monitoring
+
+                        env.PROFILE = config.spring.profile
+                        env.PORT_A = config.spring.'port-a'.toString()
+                        env.PORT_B = config.spring.'port-b'.toString()
+
+                        env.WHITELIST_ADMIN_USERNAME = config.admin.username
+                        env.WHITELIST_ADMIN_PASSWORD = config.admin.password
+
+                        env.DOCKERFILE_PATH = "${env.WORKSPACE}${config.docker.'dockerfile-path'}"
+                        env.NGINX_CONTAINER_NAME = config.docker.'nginx-container-name'
+                        env.POSTGRESQL_CONTAINER_NAME = config.docker.'postgresql-container-name'
+                    }
+                }
+            }
+        }
+
         stage('Check Java Version') {
             steps {
                 sh 'java -version'
