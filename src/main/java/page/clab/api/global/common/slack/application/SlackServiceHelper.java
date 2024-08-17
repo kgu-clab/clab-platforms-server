@@ -133,6 +133,7 @@ public class SlackServiceHelper {
                     if (additionalData instanceof SlackMembershipFeeInfo) {
                         return createMembershipFeeBlocks((SlackMembershipFeeInfo) additionalData);
                     }
+                    break;
                 case NEW_BOOK_LOAN_REQUEST:
                     if (additionalData instanceof SlackBookLoanRecordInfo) {
                         return createBookLoanRecordBlocks((SlackBookLoanRecordInfo) additionalData);
