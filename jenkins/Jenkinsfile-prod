@@ -1,6 +1,6 @@
 /*
  * To use the following functionality:
- * withCredentials([file(credentialsId: 'platforms_stage_config_yml', variable: 'CONFIG_FILE')]) {
+ * withCredentials([file(credentialsId: 'platforms_prod_config_yml', variable: 'CONFIG_FILE')]) {
  *
  * The 'Pipeline Utility Steps' plugin must be installed on your Jenkins instance.
  *
