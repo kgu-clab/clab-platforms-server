@@ -17,6 +17,7 @@ import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoardRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardChildResponseDto;
+import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardReferenceDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardUpdateResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.AssignmentSubmissionWithFeedbackResponseDto;
@@ -51,7 +52,7 @@ public class ActivityGroupBoardService {
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
 
     @Transactional
-    public Long createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto requestDto) throws PermissionDeniedException {
+    public ActivityGroupBoardReferenceDto createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
         if (!activityGroupMemberService.isGroupMember(activityGroup, currentMember.getId())) {
@@ -73,7 +74,7 @@ public class ActivityGroupBoardService {
         activityGroupBoardRepository.save(board);
 
         notifyMembersAboutNewBoard(activityGroupId, activityGroup, currentMember);
-        return board.getId();
+        return ActivityGroupBoardReferenceDto.toDto(board.getId(), activityGroupId, parentId);
     }
 
     @Transactional(readOnly = true)
@@ -136,22 +137,24 @@ public class ActivityGroupBoardService {
     }
 
     @Transactional
-    public ActivityGroupBoardUpdateResponseDto updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public ActivityGroupBoardReferenceDto updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
         board.validateAccessPermission(currentMember);
 
         board.update(requestDto, uploadedFileService);
-        ActivityGroupBoard savedBoard = activityGroupBoardRepository.save(board);
-        return ActivityGroupBoardUpdateResponseDto.toDto(savedBoard);
+        activityGroupBoardRepository.save(board);
+        Long parentId = (board.getParent() != null) ? board.getParent().getId() : null;
+        return ActivityGroupBoardReferenceDto.toDto(board.getId(), board.getActivityGroup().getId(), parentId);
     }
 
-    public Long deleteActivityGroupBoard(Long activityGroupBoardId) throws PermissionDeniedException {
+    public ActivityGroupBoardReferenceDto deleteActivityGroupBoard(Long activityGroupBoardId) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
         board.validateAccessPermission(currentMember);
         activityGroupBoardRepository.delete(board);
-        return board.getId();
+        Long parentId = (board.getParent() != null) ? board.getParent().getId() : null;
+        return ActivityGroupBoardReferenceDto.toDto(board.getId(), board.getActivityGroup().getId(), parentId);
     }
 
     @Transactional(readOnly = true)
