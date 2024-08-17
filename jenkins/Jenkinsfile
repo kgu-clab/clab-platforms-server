@@ -1,3 +1,23 @@
+/*
+ * To use the following functionality:
+ * withCredentials([file(credentialsId: 'platforms_stage_config_yml', variable: 'CONFIG_FILE')]) {
+ *
+ * The 'Pipeline Utility Steps' plugin must be installed on your Jenkins instance.
+ *
+ * Installation Guide:
+ * 1. Log in to your Jenkins instance.
+ * 2. Navigate to 'Manage Jenkins' from the main dashboard.
+ * 3. Click on 'Manage Plugins'.
+ * 4. Go to the 'Available plugins' tab.
+ * 5. In the search box, type 'Pipeline Utility Steps'.
+ * 6. Select the 'Pipeline Utility Steps' plugin from the list.
+ * 7. Click on 'Install without restart' or 'Install and restart' to install the plugin.
+ * 8. Once the plugin is installed, you can use functions like 'readYaml' and other utility steps in your Jenkinsfile.
+ *
+ * Ensure the plugin is up-to-date to avoid compatibility issues.
+ */
+
+
 pipeline {
     agent any
 
