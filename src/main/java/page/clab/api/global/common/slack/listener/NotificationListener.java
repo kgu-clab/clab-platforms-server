@@ -22,7 +22,7 @@ public class NotificationListener {
         NotificationSetting setting = settingService.getOrCreateDefaultSetting(alertType);
 
         if (setting.isEnabled()) {
-            slackServiceHelper.sendSlackMessage(alertType, event.getRequest(), event.getAdditionalData());
+            slackServiceHelper.sendSlackMessage(event.getWebhookUrl(), alertType, event.getRequest(), event.getAdditionalData());
         }
     }
 }

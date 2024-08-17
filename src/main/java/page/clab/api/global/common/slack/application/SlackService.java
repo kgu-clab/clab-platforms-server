@@ -1,48 +1,59 @@
 package page.clab.api.global.common.slack.application;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
-import page.clab.api.domain.community.board.domain.SlackBoardInfo;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
+import page.clab.api.global.common.slack.domain.ExecutivesAlertType;
 import page.clab.api.global.common.slack.domain.GeneralAlertType;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
+import page.clab.api.global.common.slack.domain.SlackBoardInfo;
+import page.clab.api.global.common.slack.domain.SlackMembershipFeeInfo;
 import page.clab.api.global.common.slack.event.NotificationEvent;
+import page.clab.api.global.config.SlackConfig;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
 public class SlackService {
 
     private final ApplicationEventPublisher eventPublisher;
+    private final String coreTeamWebhookUrl;
+    private final String executivesWebhookUrl;
+
+    public SlackService(ApplicationEventPublisher eventPublisher, SlackConfig slackConfig) {
+        this.eventPublisher = eventPublisher;
+        this.coreTeamWebhookUrl = slackConfig.getCoreTeamWebhookUrl();
+        this.executivesWebhookUrl = slackConfig.getExecutivesWebhookUrl();
+    }
 
     public void sendServerErrorNotification(HttpServletRequest request, Exception e) {
-        eventPublisher.publishEvent(new NotificationEvent(this, GeneralAlertType.SERVER_ERROR, request, e));
+        eventPublisher.publishEvent(new NotificationEvent(this, coreTeamWebhookUrl, GeneralAlertType.SERVER_ERROR, request, e));
     }
 
     public void sendSecurityAlertNotification(HttpServletRequest request, SecurityAlertType alertType, String additionalMessage) {
-        eventPublisher.publishEvent(new NotificationEvent(this, alertType, request, additionalMessage));
+        eventPublisher.publishEvent(new NotificationEvent(this, coreTeamWebhookUrl, alertType, request, additionalMessage));
     }
 
     public void sendAdminLoginNotification(HttpServletRequest request, MemberLoginInfoDto loginMember) {
-        eventPublisher.publishEvent(new NotificationEvent(this, GeneralAlertType.ADMIN_LOGIN, request, loginMember));
+        eventPublisher.publishEvent(new NotificationEvent(this, coreTeamWebhookUrl, GeneralAlertType.ADMIN_LOGIN, request, loginMember));
     }
 
     public void sendNewApplicationNotification(ApplicationRequestDto applicationRequestDto) {
-        eventPublisher.publishEvent(new NotificationEvent(this, GeneralAlertType.APPLICATION_CREATED, null, applicationRequestDto));
+        eventPublisher.publishEvent(new NotificationEvent(this, executivesWebhookUrl, ExecutivesAlertType.NEW_APPLICATION, null, applicationRequestDto));
     }
 
     public void sendNewBoardNotification(SlackBoardInfo board) {
-        eventPublisher.publishEvent(new NotificationEvent(this, GeneralAlertType.BOARD_CREATED, null, board));
+        eventPublisher.publishEvent(new NotificationEvent(this, executivesWebhookUrl, ExecutivesAlertType.NEW_BOARD, null, board));
+    }
+
+    public void sendNewMembershipFeeNotification(SlackMembershipFeeInfo membershipFee) {
+        eventPublisher.publishEvent(new NotificationEvent(this, executivesWebhookUrl, ExecutivesAlertType.NEW_MEMBERSHIP_FEE, null, membershipFee));
     }
 
     @EventListener(ContextRefreshedEvent.class)
     public void sendServerStartNotification() {
-        eventPublisher.publishEvent(new NotificationEvent(this, GeneralAlertType.SERVER_START, null, null));
+        eventPublisher.publishEvent(new NotificationEvent(this, coreTeamWebhookUrl, GeneralAlertType.SERVER_START, null, null));
     }
 }

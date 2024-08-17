@@ -13,7 +13,8 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "slack")
 public class SlackConfig {
 
-    private String webhookUrl;
+    private String coreTeamWebhookUrl;
+    private String executivesWebhookUrl;
     private String webUrl;
     private String apiUrl;
     private String color;
