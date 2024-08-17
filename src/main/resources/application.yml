@@ -168,7 +168,8 @@ ipinfo:
 
 # Slack webhook configuration
 slack:
-  webhook-url: ${SLACK_WEBHOOK_URL} # Create a Slack channel and get a webhook URL
+  core-team-webhook-url: ${SLACK_WEBHOOK_URL} # Create a Slack channel and get a webhook URL
+  executives-webhook-url: ${SLACK_WEBHOOK_URL} # Create a Slack channel and get a webhook URL
   web-url: ${WEB_URL} # Your web URL
   api-url: ${API_URL} # Your API docs URL
   color: "#FF968A" # Slack message color
