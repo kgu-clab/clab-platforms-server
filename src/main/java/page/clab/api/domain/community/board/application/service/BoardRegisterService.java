@@ -7,7 +7,7 @@ import page.clab.api.domain.community.board.application.dto.request.BoardRequest
 import page.clab.api.domain.community.board.application.port.in.RegisterBoardUseCase;
 import page.clab.api.domain.community.board.application.port.out.RegisterBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
-import page.clab.api.domain.community.board.domain.SlackBoardInfo;
+import page.clab.api.global.common.slack.domain.SlackBoardInfo;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
