@@ -50,6 +50,7 @@ import page.clab.api.domain.library.bookLoanRecord.application.exception.Overdue
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberContactException;
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberEmailException;
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberIdException;
+import page.clab.api.domain.memberManagement.member.application.exception.InvalidRoleChangeException;
 import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
@@ -92,6 +93,7 @@ public class GlobalExceptionHandler {
             InvalidDateRangeException.class,
             InvalidColumnException.class,
             InvalidEmojiException.class,
+            InvalidRoleChangeException.class,
             StringIndexOutOfBoundsException.class,
             MissingServletRequestParameterException.class,
             MalformedJsonException.class,

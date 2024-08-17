@@ -83,7 +83,16 @@ public class MemberPersistenceAdapter implements
     @Override
     public List<Member> findAll() {
         List<MemberJpaEntity> jpaEntities = memberRepository.findAll();
-        return jpaEntities.stream().map(memberMapper::toDomainEntity).toList();
+        return jpaEntities.stream()
+                .map(memberMapper::toDomainEntity)
+                .toList();
+    }
+
+    public List<Member> findMemberRoleInfoByConditions(String memberId, String memberName, Role role, Pageable pageable) {
+        Page<MemberJpaEntity> jpaEntities = memberRepository.findMemberRoleInfoByConditions(memberId, memberName, role, pageable);
+        return jpaEntities.stream()
+                .map(memberMapper::toDomainEntity)
+                .toList();
     }
 
     @Override

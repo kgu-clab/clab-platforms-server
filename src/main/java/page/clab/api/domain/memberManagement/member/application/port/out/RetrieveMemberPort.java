@@ -16,6 +16,8 @@ public interface RetrieveMemberPort {
 
     List<Member> findAll();
 
+    List<Member> findMemberRoleInfoByConditions(String memberId, String memberName, Role role, Pageable pageable);
+
     Page<Member> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     Member findByEmailOrThrow(String email);
