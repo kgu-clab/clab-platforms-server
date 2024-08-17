@@ -27,6 +27,7 @@ import page.clab.api.global.common.slack.domain.ExecutivesAlertType;
 import page.clab.api.global.common.slack.domain.GeneralAlertType;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.common.slack.domain.SlackBoardInfo;
+import page.clab.api.global.common.slack.domain.SlackBookLoanRecordInfo;
 import page.clab.api.global.common.slack.domain.SlackMembershipFeeInfo;
 import page.clab.api.global.config.SlackConfig;
 import page.clab.api.global.util.HttpReqResUtil;
@@ -132,6 +133,11 @@ public class SlackServiceHelper {
                     if (additionalData instanceof SlackMembershipFeeInfo) {
                         return createMembershipFeeBlocks((SlackMembershipFeeInfo) additionalData);
                     }
+                case NEW_BOOK_LOAN_REQUEST:
+                    if (additionalData instanceof SlackBookLoanRecordInfo) {
+                        return createBookLoanRecordBlocks((SlackBookLoanRecordInfo) additionalData);
+                    }
+                    break;
                 default:
                     log.error("Unknown alert type: {}", alertType);
                     return List.of();
@@ -194,13 +200,13 @@ public class SlackServiceHelper {
     private List<LayoutBlock> createApplicationBlocks(ApplicationRequestDto requestDto) {
         List<LayoutBlock> blocks = new ArrayList<>();
 
-        blocks.add(section(section -> section.text(markdownText(":sparkles: *New Application*"))));
+        blocks.add(section(section -> section.text(markdownText(":sparkles: *동아리 지원*"))));
         blocks.add(section(section -> section.fields(Arrays.asList(
-                markdownText("*Type:*\n" + requestDto.getApplicationType().getDescription()),
-                markdownText("*Student ID:*\n" + requestDto.getStudentId()),
-                markdownText("*Name:*\n" + requestDto.getName()),
-                markdownText("*Grade:*\n" + requestDto.getGrade() + "학년"),
-                markdownText("*Interests:*\n" + requestDto.getInterests())
+                markdownText("*구분:*\n" + requestDto.getApplicationType().getDescription()),
+                markdownText("*학번:*\n" + requestDto.getStudentId()),
+                markdownText("*이름:*\n" + requestDto.getName()),
+                markdownText("*학년:*\n" + requestDto.getGrade() + "학년"),
+                markdownText("*관심 분야:*\n" + requestDto.getInterests())
         ))));
 
         if (requestDto.getGithubUrl() != null && !requestDto.getGithubUrl().isEmpty()) {
@@ -216,11 +222,11 @@ public class SlackServiceHelper {
     private List<LayoutBlock> createBoardBlocks(SlackBoardInfo board) {
         List<LayoutBlock> blocks = new ArrayList<>();
 
-        blocks.add(section(section -> section.text(markdownText(":writing_hand: *New Board*"))));
+        blocks.add(section(section -> section.text(markdownText(":writing_hand: *새 게시글*"))));
         blocks.add(section(section -> section.fields(Arrays.asList(
-                markdownText("*Title:*\n" + board.getTitle()),
-                markdownText("*Category:*\n" + board.getCategory()),
-                markdownText("*User:*\n" + board.getUsername())
+                markdownText("*제목:*\n" + board.getTitle()),
+                markdownText("*분류:*\n" + board.getCategory()),
+                markdownText("*작성자:*\n" + board.getUsername())
         ))));
         return blocks;
     }
@@ -229,13 +235,27 @@ public class SlackServiceHelper {
         String username = additionalData.getMemberId() + " " + additionalData.getMemberName();
 
         return Arrays.asList(
-                section(section -> section.text(markdownText(":dollar: *New Membership Fee*"))),
+                section(section -> section.text(markdownText(":dollar: *회비 신청*"))),
                 section(section -> section.fields(Arrays.asList(
-                        markdownText("*User:*\n" + username),
-                        markdownText("*Category:*\n" + additionalData.getCategory()),
-                        markdownText("*Amount:*\n" + additionalData.getAmount() + "원")
+                        markdownText("*신청자:*\n" + username),
+                        markdownText("*분류:*\n" + additionalData.getCategory()),
+                        markdownText("*금액:*\n" + additionalData.getAmount() + "원")
                 ))),
                 section(section -> section.text(markdownText("*Content:*\n" + additionalData.getContent())))
+        );
+    }
+
+    private List<LayoutBlock> createBookLoanRecordBlocks(SlackBookLoanRecordInfo additionalData) {
+        String username = additionalData.getMemberId() + " " + additionalData.getMemberName();
+
+        return Arrays.asList(
+                section(section -> section.text(markdownText(":books: *도서 대여 신청*"))),
+                section(section -> section.fields(Arrays.asList(
+                        markdownText("*도서명:*\n" + additionalData.getBookTitle()),
+                        markdownText("*분류:*\n" + additionalData.getCategory()),
+                        markdownText("*신청자:*\n" + username),
+                        markdownText("*상태:*\n" + (additionalData.isAvailable() ? "대여 가능" : "대여 중"))
+                )))
         );
     }
 
