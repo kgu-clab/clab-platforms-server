@@ -112,7 +112,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             AuthenticationInfoNotFoundException.class,
             UnAuthorizeException.class,
-            AccessDeniedException.class,
             LoginFailedException.class,
             MemberLockedException.class,
             BadCredentialsException.class,
@@ -128,6 +127,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
+            AccessDeniedException.class,
             PermissionDeniedException.class,
             InvalidBorrowerException.class,
     })

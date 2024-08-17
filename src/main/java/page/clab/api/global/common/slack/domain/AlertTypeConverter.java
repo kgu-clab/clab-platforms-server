@@ -19,6 +19,9 @@ public class AlertTypeConverter implements AttributeConverter<AlertType, String>
         for (SecurityAlertType type : SecurityAlertType.values()) {
             CACHE.put(type.getTitle(), type);
         }
+        for (ExecutivesAlertType type : ExecutivesAlertType.values()) {
+            CACHE.put(type.getTitle(), type);
+        }
     }
 
     @Override
