@@ -195,7 +195,7 @@ public class FileHandler {
     }
 
     private void setFilePermissionsUnix(String filePath) throws IOException, InterruptedException {
-        ProcessBuilder processBuilder = new ProcessBuilder("chmod", "400", filePath);
+        ProcessBuilder processBuilder = new ProcessBuilder("/bin/chmod", "400", filePath);
         Process process = processBuilder.start();
         int exitCode = process.waitFor();
         if (exitCode != 0) {
