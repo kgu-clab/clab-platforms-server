@@ -17,4 +17,8 @@ public enum RecruitmentStatus {
     public boolean isRecruiting() {
         return this.equals(RecruitmentStatus.OPEN);
     }
+
+    public boolean isClosed() {
+        return this.equals(RecruitmentStatus.CLOSED);
+    }
 }
