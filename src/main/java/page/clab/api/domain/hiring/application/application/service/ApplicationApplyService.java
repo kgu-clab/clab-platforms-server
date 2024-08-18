@@ -23,7 +23,7 @@ public class ApplicationApplyService implements ApplyForApplicationUseCase {
     @Transactional
     @Override
     public String applyForClub(ApplicationRequestDto requestDto) {
-        externalRetrieveRecruitmentUseCase.ensureRecruitmentExists(requestDto.getRecruitmentId());
+        externalRetrieveRecruitmentUseCase.validateRecruitmentForApplication(requestDto.getRecruitmentId());
         Application application = ApplicationRequestDto.toEntity(requestDto);
         externalSendNotificationUseCase.sendNotificationToAdmins(requestDto.getStudentId() + " " +
                 requestDto.getName() + "님이 동아리에 지원하였습니다.");

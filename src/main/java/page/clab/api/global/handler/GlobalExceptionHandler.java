@@ -39,6 +39,7 @@ import page.clab.api.domain.auth.login.application.exception.LoginFailedExceptio
 import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.community.accuse.application.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.hiring.application.application.exception.NotApprovedApplicationException;
+import page.clab.api.domain.hiring.application.application.exception.RecruitmentNotActiveException;
 import page.clab.api.domain.library.book.application.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.library.book.application.exception.InvalidBorrowerException;
 import page.clab.api.domain.library.bookLoanRecord.application.exception.BookAlreadyAppliedForLoanException;
@@ -98,6 +99,7 @@ public class GlobalExceptionHandler {
             InvalidEmojiException.class,
             InvalidRoleChangeException.class,
             InvalidFileAttributeException.class,
+            RecruitmentNotActiveException.class,
             StringIndexOutOfBoundsException.class,
             MissingServletRequestParameterException.class,
             MalformedJsonException.class,

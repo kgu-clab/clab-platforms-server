@@ -45,6 +45,6 @@ admin:
     username: "admin" # Backend admin username
     password: "admin_password" # Backend admin password
 docker:
-    dockerfile-path: "/jenkins/Dockerfile" # Path to the Dockerfile
+    dockerfile-path: "/jenkins/stage/Dockerfile" # Path to the Dockerfile
     nginx-container-name: "nginx" # Nginx container name
     postgresql-container-name: "postgresql" # PostgreSQL container name
