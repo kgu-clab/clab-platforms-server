@@ -1,0 +1,50 @@
+jenkins-domain: "https://jenkins.example.com" # Jenkins domain
+
+slack:
+    webhook-url: "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX" # Slack webhook URL
+    color-success: "#F2C744" # Slack message color for success
+    color-failure: "#8D1E0E" # Slack message color for failure
+
+postgresql:
+    user: "postgres_user" # PostgreSQL username
+    password: "postgres_password" # PostgreSQL password
+    backup-dir: "/var/backups/postgresql" # Directory for PostgreSQL backups
+
+dockerhub:
+    repo: "yourdockerhub/repository" # Docker Hub repository name
+    user: "dockerhub_user" # Docker Hub username
+    password: "dockerhub_password" # Docker Hub password
+
+external-server:
+    config-path: "/path/to/external/config" # Path for external server configuration
+    cloud-path: "/path/to/external/cloud" # Path for external server cloud storage
+    logs-path: "/path/to/external/logs" # Path for external server logs
+
+internal-server:
+    config-path: "/path/to/internal/config" # Path for internal server configuration
+    cloud-path: "/path/to/internal/cloud" # Path for internal server cloud storage
+    logs-path: "/path/to/internal/logs" # Path for internal server logs
+
+containers:
+    blue: "blue-container" # Blue-Green deployment: Blue container name
+    green: "green-container" # Blue-Green deployment: Green container name
+    blue-url: "http://blue-container:8080" # URL for the Blue container environment
+    green-url: "http://green-container:8080" # URL for the Green container environment
+    image-name: "application-image" # Docker image name for the application
+
+networks:
+    application: "application-network" # Docker network for the application
+    monitoring: "monitoring-network" # Docker network for monitoring
+
+spring:
+    profile: "default" # Spring profile setting
+    port-a: 8080 # Application port A
+    port-b: 8081 # Application port B
+
+admin:
+    username: "admin" # Backend admin username
+    password: "admin_password" # Backend admin password
+docker:
+    dockerfile-path: "/jenkins/prod/Dockerfile" # Path to the Dockerfile
+    nginx-container-name: "nginx" # Nginx container name
+    postgresql-container-name: "postgresql" # PostgreSQL container name
