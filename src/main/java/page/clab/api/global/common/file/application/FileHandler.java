@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.global.util.FileUtil;
 import page.clab.api.global.util.ImageUtil;
+import page.clab.api.global.util.LogSanitizerUtil;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -89,7 +90,7 @@ public class FileHandler {
         File fileToDelete = new File(savedPath);
         boolean deleted = fileToDelete.delete();
         if (!deleted) {
-            log.error("Failed to delete file: {}", savedPath);
+            log.error("Failed to delete file: {}", LogSanitizerUtil.sanitizeForLog(savedPath));
         }
     }
 }
