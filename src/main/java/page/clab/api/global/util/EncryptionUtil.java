@@ -82,6 +82,10 @@ public class EncryptionUtil {
     }
 
     private byte[] concat(byte[] a, byte[] b) {
+        if ((long) a.length + (long) b.length > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Resulting array size is too large to handle.");
+        }
+
         byte[] combined = new byte[a.length + b.length];
         System.arraycopy(a, 0, combined, 0, a.length);
         System.arraycopy(b, 0, combined, a.length, b.length);
