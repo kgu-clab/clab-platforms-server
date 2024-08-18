@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import page.clab.api.global.common.email.domain.EmailTask;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
+import page.clab.api.global.util.LogSanitizerUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class EmailAsyncService {
 
     @Async
     public void sendEmailAsync(String to, String subject, String content, List<File> files, EmailTemplateType emailTemplateType) throws MessagingException {
-        log.debug("Sending email to: {}", to);
+        log.debug("Sending email to: {}", LogSanitizerUtil.sanitizeForLog(to));
         emailQueue.add(new EmailTask(to, subject, content, files, emailTemplateType));
     }
 

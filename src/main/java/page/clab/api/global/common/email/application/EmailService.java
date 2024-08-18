@@ -14,6 +14,7 @@ import page.clab.api.external.memberManagement.member.application.port.ExternalR
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.common.email.dto.request.EmailDto;
 import page.clab.api.global.common.email.exception.MessageSendingFailedException;
+import page.clab.api.global.util.LogSanitizerUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -130,7 +131,7 @@ public class EmailService {
         if (!file.getParentFile().exists()) {
             boolean isCreated = file.getParentFile().mkdirs();
             if (!isCreated) {
-                log.error("Failed to create directory: {}", file.getParentFile().getAbsolutePath());
+                log.error("Failed to create directory: {}", LogSanitizerUtil.sanitizeForLog(file.getParentFile().getAbsolutePath()));
             }
         }
     }

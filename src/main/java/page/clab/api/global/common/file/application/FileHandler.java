@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.util.ImageCompressionUtil;
+import page.clab.api.global.util.LogSanitizerUtil;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
@@ -169,7 +170,7 @@ public class FileHandler {
         if (!file.getParentFile().exists()) {
             boolean isCreated = file.getParentFile().mkdirs();
             if (!isCreated) {
-                log.error("Failed to create directory: {}", file.getParentFile().getAbsolutePath());
+                log.error("Failed to create directory: {}", LogSanitizerUtil.sanitizeForLog(file.getParentFile().getAbsolutePath()));
             }
         }
     }
@@ -183,7 +184,7 @@ public class FileHandler {
             if (os.contains("win")) {
                 boolean readOnly = file.setReadOnly();
                 if (!readOnly) {
-                    log.error("Failed to set file read-only: {}", savePath);
+                    log.error("Failed to set file read-only: {}", LogSanitizerUtil.sanitizeForLog(savePath));
                 }
             } else {
                 setFilePermissionsUnix(savePath);
@@ -198,7 +199,7 @@ public class FileHandler {
         Process process = processBuilder.start();
         int exitCode = process.waitFor();
         if (exitCode != 0) {
-            log.error("Failed to set file permissions for: {}", filePath);
+            log.error("Failed to set file permissions for: {}", LogSanitizerUtil.sanitizeForLog(filePath));
         }
     }
 
