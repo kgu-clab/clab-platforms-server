@@ -22,4 +22,10 @@ public class ApplicationPassResponseDto {
                 .isPass(application.getIsPass())
                 .build();
     }
+
+    public static ApplicationPassResponseDto defaultResponse() {
+        return ApplicationPassResponseDto.builder()
+                .isPass(false)
+                .build();
+    }
 }

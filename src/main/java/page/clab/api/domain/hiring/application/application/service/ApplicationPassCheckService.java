@@ -20,10 +20,6 @@ public class ApplicationPassCheckService implements CheckApplicationPassStatusUs
         ApplicationId id = ApplicationId.create(studentId, recruitmentId);
         return retrieveApplicationPort.findById(id)
                 .map(ApplicationPassResponseDto::toDto)
-                .orElseGet(() ->
-                        ApplicationPassResponseDto.builder()
-                                .isPass(false)
-                                .build()
-                );
+                .orElseGet(ApplicationPassResponseDto::defaultResponse);
     }
 }
