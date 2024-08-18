@@ -84,6 +84,9 @@ public class FileHandler {
             if (isImageFile(multipartFile)) {
                 BufferedImage originalImage = adjustImageDirection(multipartFile);
                 ImageIO.write(originalImage, Objects.requireNonNull(extension), file);
+                if (compressibleImageExtensions.contains(extension.toLowerCase())) {
+                    ImageCompressionUtil.compressImage(savePath, imageQuality);
+                }
             } else {
                 multipartFile.transferTo(file);
             }
@@ -91,7 +94,7 @@ public class FileHandler {
             throw new IOException("이미지의 뱡향을 조정하는 데 오류가 발생했습니다.", e);
         }
 
-        setFilePermissions(file, savePath, extension);
+        setFilePermissions(file, savePath);
         return savePath;
     }
 
@@ -154,12 +157,9 @@ public class FileHandler {
         return System.nanoTime() + "_" + UUID.randomUUID() + "." + extension;
     }
 
-    private void setFilePermissions(File file, String savePath, String extension) throws FileUploadFailException {
+    private void setFilePermissions(File file, String savePath) throws FileUploadFailException {
         try {
             String os = System.getProperty("os.name").toLowerCase();
-            if (compressibleImageExtensions.contains(extension.toLowerCase())) {
-                ImageCompressionUtil.compressImage(savePath, imageQuality);
-            }
             if (os.contains("win")) {
                 boolean readOnly = file.setReadOnly();
                 if (!readOnly) {
