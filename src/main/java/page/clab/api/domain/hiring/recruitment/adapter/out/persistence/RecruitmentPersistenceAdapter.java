@@ -8,6 +8,7 @@ import page.clab.api.domain.hiring.recruitment.application.port.out.UpdateRecrui
 import page.clab.api.domain.hiring.recruitment.domain.Recruitment;
 import page.clab.api.global.exception.NotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -56,9 +57,9 @@ public class RecruitmentPersistenceAdapter implements
     }
 
     @Override
-    public void existsByIdOrThrow(Long recruitmentId) {
-        if (!repository.existsById(recruitmentId)) {
-            throw new NotFoundException("[Recruitment] id: " + recruitmentId + "에 해당하는 모집 공고가 존재하지 않습니다.");
-        }
+    public List<Recruitment> findByEndDateBetween(LocalDateTime weekAgo, LocalDateTime now) {
+        return repository.findByEndDateBetween(weekAgo, now).stream()
+                .map(mapper::toDomainEntity)
+                .toList();
     }
 }
