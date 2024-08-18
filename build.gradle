@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'page.clab'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.0'
 
 jar {
     enabled = false
@@ -15,23 +15,12 @@ bootJar {
     archivesBaseName = "clab"
     archiveFileName = "clab.jar"
     archiveVersion = "1.0.0"
-
-    if (project.hasProperty('prod')) {
-        archiveFileName = "clab-prod.jar"
-    } else if (project.hasProperty('stage')) {
-        archiveFileName = "clab-stage.jar"
-    } else {
-        archiveFileName = "clab.jar"
-    }
 }
-
-test {
-	systemProperty 'spring.profiles.active', findProperty('env') ?: 'dev'
-}
-
 
 java {
-    sourceCompatibility = '21'
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 repositories {
@@ -106,10 +95,10 @@ dependencies {
 
     // Image
     implementation 'commons-io:commons-io:2.16.1'
-    implementation 'com.drewnoakes:metadata-extractor:2.14.0'
+    implementation 'com.drewnoakes:metadata-extractor:2.19.0'
     implementation 'org.imgscalr:imgscalr-lib:4.2'
 
-    //Emoji
+    // Emoji
     implementation 'com.ibm.icu:icu4j:75.1'
 
     // Test
@@ -121,13 +110,13 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-def querydslDir = "$buildDir/generated/querydsl"
+def querydslDir = layout.buildDirectory.dir("generated/querydsl").get().asFile
 
 sourceSets {
     main.java.srcDirs += [ querydslDir ]
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.generatedSourceOutputDirectory = file(querydslDir)
 }
 

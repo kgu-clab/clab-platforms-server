@@ -23,13 +23,14 @@ import page.clab.api.domain.activity.activitygroup.domain.GroupSchedule;
 import page.clab.api.domain.activity.activitygroup.dto.param.ActivityGroupDetails;
 import page.clab.api.domain.activity.activitygroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ApplyFormRequestDto;
-import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupProjectResponseDto;
+import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardResponseDto;
+import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupDetailResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupStatusResponseDto;
-import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupStudyResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidCategoryException;
+import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
@@ -58,7 +59,7 @@ public class ActivityGroupMemberService {
     }
 
     @Transactional(readOnly = true)
-    public Object getActivityGroup(Long activityGroupId) {
+    public ActivityGroupDetailResponseDto getActivityGroup(Long activityGroupId) {
         ActivityGroupDetails details = activityGroupDetailsRepository.fetchActivityGroupDetails(activityGroupId);
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
 
@@ -69,13 +70,15 @@ public class ActivityGroupMemberService {
                 .map(groupMember -> GroupMemberResponseDto.toDto(externalRetrieveMemberUseCase.findByIdOrThrow(groupMember.getMemberId()), groupMember))
                 .toList();
 
-        if (details.getActivityGroup().isStudy()) {
-            return ActivityGroupStudyResponseDto.create(details.getActivityGroup(), details.getGroupMembers(), details.getActivityGroupBoards(), groupMemberResponseDtos, isOwner);
-        } else if (details.getActivityGroup().isProject()) {
-            return ActivityGroupProjectResponseDto.create(details.getActivityGroup(), details.getGroupMembers(), details.getActivityGroupBoards(), groupMemberResponseDtos, isOwner);
-        } else {
-            throw new InvalidCategoryException("해당 카테고리가 존재하지 않습니다.");
-        }
+        List<ActivityGroupBoardResponseDto> activityGroupBoardResponseDtos =
+                details.getActivityGroupBoards().stream()
+                        .map(board -> {
+                            MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
+                            return ActivityGroupBoardResponseDto.toDto(board, memberBasicInfoDto);
+                        })
+                        .toList();
+
+        return ActivityGroupDetailResponseDto.create(details.getActivityGroup(), activityGroupBoardResponseDtos, groupMemberResponseDtos, isOwner);
     }
 
     @Transactional(readOnly = true)

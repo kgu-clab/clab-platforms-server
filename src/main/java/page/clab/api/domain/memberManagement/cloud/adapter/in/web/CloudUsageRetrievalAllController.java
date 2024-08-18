@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,7 +24,7 @@ public class CloudUsageRetrievalAllController {
     private final RetrieveAllCloudUsageUseCase retrieveAllCloudUsageUseCase;
 
     @Operation(summary = "[S] 모든 멤버의 클라우드 사용량 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({ "ROLE_SUPER" })
+    @PreAuthorize("hasRole('SUPER')")
     @GetMapping("")
     public ApiResponse<PagedResponseDto<CloudUsageInfo>> retrieveAllCloudUsages(
             @RequestParam(name = "page", defaultValue = "0") int page,

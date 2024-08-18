@@ -6,7 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -39,8 +39,8 @@ public class ActivityGroupReportController {
     private final PageableUtils pageableUtils;
 
     @Operation(summary = "[U] 활동 보고서 작성", description = "ROLE_USER 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     public ApiResponse<Long> writeReport(
             @Valid @RequestBody ActivityGroupReportRequestDto requestDto
     ) throws PermissionDeniedException, IllegalAccessException {
@@ -50,8 +50,8 @@ public class ActivityGroupReportController {
 
     @Operation(summary = "[U] 특정 그룹의 활동 보고서 전체 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     public ApiResponse<PagedResponseDto<ActivityGroupReportResponseDto>> getReports(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
@@ -65,8 +65,8 @@ public class ActivityGroupReportController {
     }
 
     @Operation(summary = "[U] 특정 그룹의 특정 차시 활동 보고서 검색", description = "ROLE_USER 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping("/search")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     public ApiResponse<ActivityGroupReportResponseDto> searchReport(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "turn") Long turn
@@ -76,8 +76,8 @@ public class ActivityGroupReportController {
     }
 
     @Operation(summary = "[U] 활동 보고서 수정", description = "ROLE_USER 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('USER')")
     @PatchMapping("/{reportId}")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
     public ApiResponse<Long> updateReport(
             @PathVariable(name = "reportId") Long reportId,
             @RequestParam(name = "activityGroupId") Long activityGroupId,
@@ -88,7 +88,7 @@ public class ActivityGroupReportController {
     }
 
     @Operation(summary = "[U] 활동보고서 삭제", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{reportId}")
     public ApiResponse<Long> deleteAward(
             @PathVariable(name = "reportId") Long reportId
@@ -98,9 +98,9 @@ public class ActivityGroupReportController {
     }
 
 
-    @GetMapping("/deleted")
     @Operation(summary = "[S] 삭제된 활동보고서 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({ "ROLE_SUPER" })
+    @PreAuthorize("hasRole('SUPER')")
+    @GetMapping("/deleted")
     public ApiResponse<PagedResponseDto<ActivityGroupReportResponseDto>> getDeletedActivityGroupReports(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size

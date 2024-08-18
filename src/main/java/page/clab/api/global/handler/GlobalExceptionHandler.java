@@ -26,9 +26,11 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
 import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotFinishedException;
 import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotProgressingException;
 import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedException;
+import page.clab.api.domain.activity.activitygroup.exception.AssignmentBoardHasNoDueDateTimeException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAttendanceException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateReportException;
+import page.clab.api.domain.activity.activitygroup.exception.FeedbackBoardHasNoContentException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidCategoryException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.activity.activitygroup.exception.LeaderStatusChangeNotAllowedException;
@@ -37,6 +39,8 @@ import page.clab.api.domain.auth.login.application.exception.LoginFailedExceptio
 import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.community.accuse.application.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.hiring.application.application.exception.NotApprovedApplicationException;
+import page.clab.api.domain.hiring.application.application.exception.RecruitmentEndDateExceededException;
+import page.clab.api.domain.hiring.application.application.exception.RecruitmentNotActiveException;
 import page.clab.api.domain.library.book.application.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.library.book.application.exception.InvalidBorrowerException;
 import page.clab.api.domain.library.bookLoanRecord.application.exception.BookAlreadyAppliedForLoanException;
@@ -48,6 +52,7 @@ import page.clab.api.domain.library.bookLoanRecord.application.exception.Overdue
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberContactException;
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberEmailException;
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberIdException;
+import page.clab.api.domain.memberManagement.member.application.exception.InvalidRoleChangeException;
 import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
@@ -90,6 +95,9 @@ public class GlobalExceptionHandler {
             InvalidDateRangeException.class,
             InvalidColumnException.class,
             InvalidEmojiException.class,
+            InvalidRoleChangeException.class,
+            RecruitmentNotActiveException.class,
+            RecruitmentEndDateExceededException.class,
             StringIndexOutOfBoundsException.class,
             MissingServletRequestParameterException.class,
             MalformedJsonException.class,
@@ -98,7 +106,9 @@ public class GlobalExceptionHandler {
             IllegalAccessException.class,
             NumberFormatException.class,
             SortingArgumentException.class,
-            UnknownPathException.class
+            UnknownPathException.class,
+            AssignmentBoardHasNoDueDateTimeException.class,
+            FeedbackBoardHasNoContentException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
@@ -108,7 +118,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             AuthenticationInfoNotFoundException.class,
             UnAuthorizeException.class,
-            AccessDeniedException.class,
             LoginFailedException.class,
             MemberLockedException.class,
             BadCredentialsException.class,
@@ -124,6 +133,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
+            AccessDeniedException.class,
             PermissionDeniedException.class,
             InvalidBorrowerException.class,
     })

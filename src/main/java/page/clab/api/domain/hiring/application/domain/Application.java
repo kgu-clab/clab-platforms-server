@@ -58,11 +58,11 @@ public class Application {
                 .build();
     }
 
-    public void delete() {
-        this.isDeleted = true;
+    public void approve() {
+        this.isPass = true;
     }
 
-    public void toggleApprovalStatus() {
-        this.isPass = !this.isPass;
+    public void reject() {
+        this.isPass = false;
     }
 }

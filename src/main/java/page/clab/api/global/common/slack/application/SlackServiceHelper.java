@@ -20,12 +20,15 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import page.clab.api.domain.community.board.domain.SlackBoardInfo;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
 import page.clab.api.global.common.slack.domain.AlertType;
+import page.clab.api.global.common.slack.domain.ExecutivesAlertType;
 import page.clab.api.global.common.slack.domain.GeneralAlertType;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
+import page.clab.api.global.common.slack.domain.SlackBoardInfo;
+import page.clab.api.global.common.slack.domain.SlackBookLoanRecordInfo;
+import page.clab.api.global.common.slack.domain.SlackMembershipFeeInfo;
 import page.clab.api.global.config.SlackConfig;
 import page.clab.api.global.util.HttpReqResUtil;
 
@@ -47,7 +50,6 @@ import java.util.stream.Collectors;
 public class SlackServiceHelper {
 
     private final Slack slack;
-    private final String webhookUrl;
     private final String webUrl;
     private final String apiUrl;
     private final String color;
@@ -56,7 +58,6 @@ public class SlackServiceHelper {
 
     public SlackServiceHelper(SlackConfig slackConfig, Environment environment, AttributeStrategy attributeStrategy) {
         this.slack = slackConfig.slack();
-        this.webhookUrl = slackConfig.getWebhookUrl();
         this.webUrl = slackConfig.getWebUrl();
         this.apiUrl = slackConfig.getApiUrl();
         this.color = slackConfig.getColor();
@@ -69,9 +70,8 @@ public class SlackServiceHelper {
         return (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
     }
 
-    public CompletableFuture<Boolean> sendSlackMessage(AlertType alertType, HttpServletRequest request, Object additionalData) {
+    public CompletableFuture<Boolean> sendSlackMessage(String webhookUrl, AlertType alertType, HttpServletRequest request, Object additionalData) {
         List<LayoutBlock> blocks = createBlocks(alertType, request, additionalData);
-
         return CompletableFuture.supplyAsync(() -> {
             Payload payload = Payload.builder()
                     .blocks(List.of(blocks.getFirst()))
@@ -106,21 +106,37 @@ public class SlackServiceHelper {
                         return createAdminLoginBlocks(request, (MemberLoginInfoDto) additionalData);
                     }
                     break;
-                case APPLICATION_CREATED:
-                    if (additionalData instanceof ApplicationRequestDto) {
-                        return createApplicationBlocks((ApplicationRequestDto) additionalData);
-                    }
-                    break;
-                case BOARD_CREATED:
-                    if (additionalData instanceof SlackBoardInfo) {
-                        return createBoardBlocks((SlackBoardInfo) additionalData);
-                    }
-                    break;
                 case SERVER_START:
                     return createServerStartBlocks();
                 case SERVER_ERROR:
                     if (additionalData instanceof Exception) {
                         return createErrorBlocks(request, (Exception) additionalData);
+                    }
+                    break;
+                default:
+                    log.error("Unknown alert type: {}", alertType);
+                    return List.of();
+            }
+        } else if (alertType instanceof ExecutivesAlertType) {
+            switch ((ExecutivesAlertType) alertType) {
+                case NEW_APPLICATION:
+                    if (additionalData instanceof ApplicationRequestDto) {
+                        return createApplicationBlocks((ApplicationRequestDto) additionalData);
+                    }
+                    break;
+                case NEW_BOARD:
+                    if (additionalData instanceof SlackBoardInfo) {
+                        return createBoardBlocks((SlackBoardInfo) additionalData);
+                    }
+                    break;
+                case NEW_MEMBERSHIP_FEE:
+                    if (additionalData instanceof SlackMembershipFeeInfo) {
+                        return createMembershipFeeBlocks((SlackMembershipFeeInfo) additionalData);
+                    }
+                    break;
+                case NEW_BOOK_LOAN_REQUEST:
+                    if (additionalData instanceof SlackBookLoanRecordInfo) {
+                        return createBookLoanRecordBlocks((SlackBookLoanRecordInfo) additionalData);
                     }
                     break;
                 default:
@@ -185,13 +201,13 @@ public class SlackServiceHelper {
     private List<LayoutBlock> createApplicationBlocks(ApplicationRequestDto requestDto) {
         List<LayoutBlock> blocks = new ArrayList<>();
 
-        blocks.add(section(section -> section.text(markdownText(":sparkles: *New Application*"))));
+        blocks.add(section(section -> section.text(markdownText(":sparkles: *동아리 지원*"))));
         blocks.add(section(section -> section.fields(Arrays.asList(
-                markdownText("*Type:*\n" + requestDto.getApplicationType().getDescription()),
-                markdownText("*Student ID:*\n" + requestDto.getStudentId()),
-                markdownText("*Name:*\n" + requestDto.getName()),
-                markdownText("*Grade:*\n" + requestDto.getGrade() + "학년"),
-                markdownText("*Interests:*\n" + requestDto.getInterests())
+                markdownText("*구분:*\n" + requestDto.getApplicationType().getDescription()),
+                markdownText("*학번:*\n" + requestDto.getStudentId()),
+                markdownText("*이름:*\n" + requestDto.getName()),
+                markdownText("*학년:*\n" + requestDto.getGrade() + "학년"),
+                markdownText("*관심 분야:*\n" + requestDto.getInterests())
         ))));
 
         if (requestDto.getGithubUrl() != null && !requestDto.getGithubUrl().isEmpty()) {
@@ -207,13 +223,41 @@ public class SlackServiceHelper {
     private List<LayoutBlock> createBoardBlocks(SlackBoardInfo board) {
         List<LayoutBlock> blocks = new ArrayList<>();
 
-        blocks.add(section(section -> section.text(markdownText(":writing_hand: *New Board*"))));
+        blocks.add(section(section -> section.text(markdownText(":writing_hand: *새 게시글*"))));
         blocks.add(section(section -> section.fields(Arrays.asList(
-                markdownText("*Title:*\n" + board.getTitle()),
-                markdownText("*Category:*\n" + board.getCategory()),
-                markdownText("*User:*\n" + board.getUsername())
+                markdownText("*제목:*\n" + board.getTitle()),
+                markdownText("*분류:*\n" + board.getCategory()),
+                markdownText("*작성자:*\n" + board.getUsername())
         ))));
         return blocks;
+    }
+
+    private List<LayoutBlock> createMembershipFeeBlocks(SlackMembershipFeeInfo additionalData) {
+        String username = additionalData.getMemberId() + " " + additionalData.getMemberName();
+
+        return Arrays.asList(
+                section(section -> section.text(markdownText(":dollar: *회비 신청*"))),
+                section(section -> section.fields(Arrays.asList(
+                        markdownText("*신청자:*\n" + username),
+                        markdownText("*분류:*\n" + additionalData.getCategory()),
+                        markdownText("*금액:*\n" + additionalData.getAmount() + "원")
+                ))),
+                section(section -> section.text(markdownText("*Content:*\n" + additionalData.getContent())))
+        );
+    }
+
+    private List<LayoutBlock> createBookLoanRecordBlocks(SlackBookLoanRecordInfo additionalData) {
+        String username = additionalData.getMemberId() + " " + additionalData.getMemberName();
+
+        return Arrays.asList(
+                section(section -> section.text(markdownText(":books: *도서 대여 신청*"))),
+                section(section -> section.fields(Arrays.asList(
+                        markdownText("*도서명:*\n" + additionalData.getBookTitle()),
+                        markdownText("*분류:*\n" + additionalData.getCategory()),
+                        markdownText("*신청자:*\n" + username),
+                        markdownText("*상태:*\n" + (additionalData.isAvailable() ? "대여 가능" : "대여 중"))
+                )))
+        );
     }
 
     private List<LayoutBlock> createServerStartBlocks() {

@@ -14,8 +14,6 @@ public interface RetrievePositionPort {
 
     List<Position> findAllByMemberIdAndYearOrderByPositionTypeAsc(String memberId, String year);
 
-    Page<Position> findAllByIsDeletedTrue(Pageable pageable);
-
     Optional<Position> findByMemberIdAndYearAndPositionType(String memberId, String year, PositionType positionType);
 
     Page<Position> findByConditions(String year, PositionType positionType, Pageable pageable);

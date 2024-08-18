@@ -6,11 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.community.news.application.dto.request.NewsUpdateRequestDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Getter
 @Setter
@@ -28,17 +26,4 @@ public class News {
     private LocalDate date;
     private Boolean isDeleted;
     private LocalDateTime createdAt;
-
-    public void update(NewsUpdateRequestDto newsUpdateRequestDto) {
-        Optional.ofNullable(newsUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
-        Optional.ofNullable(newsUpdateRequestDto.getCategory()).ifPresent(this::setCategory);
-        Optional.ofNullable(newsUpdateRequestDto.getContent()).ifPresent(this::setContent);
-        Optional.ofNullable(newsUpdateRequestDto.getArticleUrl()).ifPresent(this::setArticleUrl);
-        Optional.ofNullable(newsUpdateRequestDto.getSource()).ifPresent(this::setSource);
-        Optional.ofNullable(newsUpdateRequestDto.getDate()).ifPresent(this::setDate);
-    }
-
-    public void delete() {
-        this.isDeleted = true;
-    }
 }

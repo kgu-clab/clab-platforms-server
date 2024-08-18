@@ -8,7 +8,5 @@ public interface RetrieveNewsPort {
 
     News findByIdOrThrow(Long id);
 
-    Page<News> findAllByIsDeletedTrue(Pageable pageable);
-
     Page<News> findByConditions(String title, String category, Pageable pageable);
 }

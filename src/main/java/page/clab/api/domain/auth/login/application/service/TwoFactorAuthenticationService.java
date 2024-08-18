@@ -88,17 +88,17 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
     }
 
     @Override
-    public String revokeToken(String memberId) {
-        throw new UnsupportedOperationException("Method not implemented");
-    }
-
-    @Override
     public TokenHeader reissueToken(HttpServletRequest request) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
     public List<String> retrieveCurrentLoggedInUsers() {
+        throw new UnsupportedOperationException("Method not implemented");
+    }
+
+    @Override
+    public LoginResult guestLogin(HttpServletRequest request) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 }

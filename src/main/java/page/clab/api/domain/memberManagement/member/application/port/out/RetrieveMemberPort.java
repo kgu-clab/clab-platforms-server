@@ -3,6 +3,7 @@ package page.clab.api.domain.memberManagement.member.application.port.out;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.memberManagement.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.domain.Role;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,6 +16,8 @@ public interface RetrieveMemberPort {
 
     List<Member> findAll();
 
+    List<Member> findMemberRoleInfoByConditions(String memberId, String memberName, Role role, Pageable pageable);
+
     Page<Member> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     Member findByEmailOrThrow(String email);
@@ -22,4 +25,6 @@ public interface RetrieveMemberPort {
     Page<Member> findBirthdaysThisMonth(int month, Pageable pageable);
 
     Page<Member> findByConditions(String id, String name, Pageable pageable);
+
+    Member findFirstByRoleOrThrow(Role role);
 }

@@ -3,6 +3,7 @@ package page.clab.api.domain.memberManagement.member.adapter.in.web;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ public class MemberRegisterController {
     private final RegisterMemberUseCase registerMemberUseCase;
 
     @Operation(summary = "[S] 신규 멤버 생성", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('SUPER')")
     @PostMapping("")
     public ApiResponse<String> registerMember(
             @RequestBody MemberRequestDto requestDto

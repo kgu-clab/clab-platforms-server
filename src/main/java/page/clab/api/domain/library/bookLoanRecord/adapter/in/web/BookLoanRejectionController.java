@@ -3,7 +3,7 @@ package page.clab.api.domain.library.bookLoanRecord.adapter.in.web;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +20,7 @@ public class BookLoanRejectionController {
     private final RejectBookLoanUseCase rejectBookLoanUseCase;
 
     @Operation(summary = "[A] 도서 대출 거절", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/reject/{bookLoanRecordId}")
     public ApiResponse<Long> rejectBookLoan(
             @PathVariable(name = "bookLoanRecordId") Long bookLoanRecordId

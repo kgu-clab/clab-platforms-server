@@ -41,7 +41,7 @@ public class RedisTokenManagementService implements ManageRedisTokenUseCase {
         return StreamSupport.stream(iterableTokens.spliterator(), false)
                 .filter(Objects::nonNull)
                 .filter(redisToken -> jwtTokenProvider.validateTokenSilently(redisToken.getAccessToken()))
-                .map(RedisToken::getId)
+                .map(RedisToken::getMemberId)
                 .distinct()
                 .collect(Collectors.toList());
     }
@@ -54,9 +54,5 @@ public class RedisTokenManagementService implements ManageRedisTokenUseCase {
     public void deleteByAccessToken(String accessToken) {
         retrieveRedisTokenPort.findByAccessToken(accessToken)
                 .ifPresent(removeRedisTokenPort::delete);
-    }
-
-    public void deleteByMemberId(String memberId) {
-        removeRedisTokenPort.deleteByMemberId(memberId);
     }
 }

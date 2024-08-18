@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,7 +24,7 @@ public class DeletedProductsRetrievalController {
     private final RetrieveDeletedProductsUseCase retrieveDeletedProductsUseCase;
 
     @Operation(summary = "[S] 삭제된 서비스 조회하기", description = "ROLE_SUPER 이상의 권한이 필요함")
-    @Secured({ "ROLE_SUPER" })
+    @PreAuthorize("hasRole('SUPER')")
     @GetMapping("/deleted")
     public ApiResponse<PagedResponseDto<ProductResponseDto>> retrieveDeletedProducts(
             @RequestParam(name = "page", defaultValue = "0") int page,

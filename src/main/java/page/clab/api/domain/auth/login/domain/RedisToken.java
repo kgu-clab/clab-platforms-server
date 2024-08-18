@@ -1,6 +1,5 @@
 package page.clab.api.domain.auth.login.domain;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,6 +12,8 @@ import org.springframework.data.redis.core.index.Indexed;
 import page.clab.api.domain.auth.login.application.dto.response.TokenInfo;
 import page.clab.api.domain.memberManagement.member.domain.Role;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Builder
@@ -22,9 +23,8 @@ import page.clab.api.domain.memberManagement.member.domain.Role;
 public class RedisToken {
 
     @Id
-    @Column(name = "member_id")
-    private String id;
-
+    private UUID id;
+    private String memberId;
     private Role role;
     private String ip;
 
@@ -34,9 +34,10 @@ public class RedisToken {
     @Indexed
     private String refreshToken;
 
-    public static RedisToken create(String id, Role role, String ip, TokenInfo tokenInfo) {
+    public static RedisToken create(String memberId, Role role, String ip, TokenInfo tokenInfo) {
         return RedisToken.builder()
-                .id(id)
+                .id(UUID.randomUUID())
+                .memberId(memberId)
                 .role(role)
                 .ip(ip)
                 .accessToken(tokenInfo.getAccessToken())
@@ -49,6 +50,6 @@ public class RedisToken {
     }
 
     public boolean isAdminToken() {
-        return role == Role.ADMIN || role == Role.SUPER;
+        return role.isHigherThan(Role.ADMIN);
     }
 }

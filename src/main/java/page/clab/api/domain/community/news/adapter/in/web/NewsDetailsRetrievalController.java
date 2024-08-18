@@ -3,7 +3,7 @@ package page.clab.api.domain.community.news.adapter.in.web;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +20,8 @@ public class NewsDetailsRetrievalController {
 
     private final RetrieveNewsDetailsUseCase retrieveNewsDetailsUseCase;
 
-    @Operation(summary = "[U] 뉴스 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @Secured({ "ROLE_USER", "ROLE_ADMIN", "ROLE_SUPER" })
+    @Operation(summary = "[G] 뉴스 상세 조회", description = "ROLE_GUEST 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/{newsId}")
     public ApiResponse<NewsDetailsResponseDto> retrieveNewsDetails(
             @PathVariable(name = "newsId") Long newsId

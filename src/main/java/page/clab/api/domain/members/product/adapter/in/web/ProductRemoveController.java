@@ -3,7 +3,7 @@ package page.clab.api.domain.members.product.adapter.in.web;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,7 +20,7 @@ public class ProductRemoveController {
     private final RemoveProductUseCase removeProductUseCase;
 
     @Operation(summary = "[A] 서비스 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @Secured({ "ROLE_ADMIN", "ROLE_SUPER" })
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("")
     public ApiResponse<Long> removeProduct(
             @RequestParam Long productId

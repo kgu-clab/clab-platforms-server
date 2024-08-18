@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.auth.login.application.dto.response.TokenInfo;
 import page.clab.api.domain.auth.login.application.port.in.ManageRedisTokenUseCase;
+import page.clab.api.domain.auth.login.application.port.out.RemoveRedisTokenPort;
 import page.clab.api.domain.auth.login.domain.RedisToken;
 import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
@@ -14,6 +15,7 @@ import page.clab.api.external.auth.redisToken.application.port.ExternalManageRed
 public class ExternalRedisTokenManagementService implements ExternalManageRedisTokenUseCase {
 
     private final ManageRedisTokenUseCase manageRedisTokenUseCase;
+    private final RemoveRedisTokenPort removeRedisTokenPort;
 
     @Transactional(readOnly = true)
     @Override
@@ -42,6 +44,6 @@ public class ExternalRedisTokenManagementService implements ExternalManageRedisT
     @Transactional
     @Override
     public void deleteByMemberId(String memberId) {
-        manageRedisTokenUseCase.deleteByMemberId(memberId);
+        removeRedisTokenPort.deleteByMemberId(memberId);
     }
 }

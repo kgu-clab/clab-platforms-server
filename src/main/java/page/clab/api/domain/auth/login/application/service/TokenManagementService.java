@@ -43,14 +43,19 @@ public class TokenManagementService implements ManageLoginUseCase {
         validateMemberExistence(authentication);
         validateToken(redisToken);
 
-        TokenInfo newTokenInfo = jwtTokenProvider.generateToken(redisToken.getId(), redisToken.getRole());
-        manageRedisTokenUseCase.saveToken(redisToken.getId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
+        TokenInfo newTokenInfo = jwtTokenProvider.generateToken(redisToken.getMemberId(), redisToken.getRole());
+        manageRedisTokenUseCase.saveToken(redisToken.getMemberId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
         return TokenHeader.create(newTokenInfo);
     }
 
     @Override
     public List<String> retrieveCurrentLoggedInUsers() {
         return manageRedisTokenUseCase.getCurrentLoggedInUsers();
+    }
+
+    @Override
+    public LoginResult guestLogin(HttpServletRequest request) {
+        throw new UnsupportedOperationException("Method not implemented");
     }
 
     private void validateMemberExistence(Authentication authentication) {
@@ -81,11 +86,5 @@ public class TokenManagementService implements ManageLoginUseCase {
     @Override
     public String resetAuthenticator(String memberId) {
         throw new UnsupportedOperationException("Method not implemented");
-    }
-
-    @Override
-    public String revokeToken(String memberId) {
-        manageRedisTokenUseCase.deleteByMemberId(memberId);
-        return memberId;
     }
 }

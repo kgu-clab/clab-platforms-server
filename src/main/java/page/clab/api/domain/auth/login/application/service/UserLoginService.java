@@ -57,6 +57,15 @@ public class UserLoginService implements ManageLoginUseCase {
         return generateLoginResult(loginMember);
     }
 
+    @Transactional
+    @Override
+    public LoginResult guestLogin(HttpServletRequest request) {
+        MemberLoginInfoDto guestMember = externalRetrieveMemberUseCase.getGuestMemberLoginInfo();
+        registerAccountAccessLogUseCase.registerAccountAccessLog(request, guestMember.getMemberId(), AccountAccessResult.SUCCESS);
+        externalUpdateMemberUseCase.updateLastLoginTime(guestMember.getMemberId());
+        return generateLoginResult(guestMember);
+    }
+
     private void authenticateAndCheckStatus(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFailedException, MemberLockedException {
         try {
             UsernamePasswordAuthenticationToken authenticationToken =
@@ -107,11 +116,6 @@ public class UserLoginService implements ManageLoginUseCase {
 
     @Override
     public String resetAuthenticator(String memberId) {
-        throw new UnsupportedOperationException("Method not implemented");
-    }
-
-    @Override
-    public String revokeToken(String memberId) {
         throw new UnsupportedOperationException("Method not implemented");
     }
 

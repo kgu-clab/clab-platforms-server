@@ -13,4 +13,12 @@ public enum RecruitmentStatus {
 
     private final String key;
     private final String description;
+
+    public boolean isRecruiting() {
+        return this.equals(RecruitmentStatus.OPEN);
+    }
+
+    public boolean isClosed() {
+        return this.equals(RecruitmentStatus.CLOSED);
+    }
 }

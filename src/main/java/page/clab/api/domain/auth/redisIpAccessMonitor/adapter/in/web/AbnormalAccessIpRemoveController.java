@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +22,7 @@ public class AbnormalAccessIpRemoveController {
 
     @Operation(summary = "[S] 비정상 접근 IP 기록 삭제", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
             "지속적인 비정상 접근으로 인해 차단된 IP를 삭제")
-    @Secured({ "ROLE_SUPER" })
+    @PreAuthorize("hasRole('SUPER')")
     @DeleteMapping("/abnormal-access")
     public ApiResponse<String> removeAbnormalAccessBlacklistIp(
             HttpServletRequest request,

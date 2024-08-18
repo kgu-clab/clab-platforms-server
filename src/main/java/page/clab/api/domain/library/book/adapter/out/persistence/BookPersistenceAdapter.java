@@ -40,12 +40,6 @@ public class BookPersistenceAdapter implements
     }
 
     @Override
-    public Page<Book> findAllByIsDeletedTrue(Pageable pageable) {
-        return bookRepository.findAllByIsDeletedTrue(pageable)
-                .map(bookMapper::toDomain);
-    }
-
-    @Override
     public Page<Book> findByConditions(String title, String category, String publisher, String borrowerId, String borrowerName, Pageable pageable) {
         return bookRepository.findByConditions(title, category, publisher, borrowerId, borrowerName, pageable)
                 .map(bookMapper::toDomain);
