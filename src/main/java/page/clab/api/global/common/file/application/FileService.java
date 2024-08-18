@@ -20,6 +20,7 @@ import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.FileSystemUtil;
+import page.clab.api.global.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class FileService {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         String extension = "png";
         String originalFileName = path.replace(File.separator, "-") + nowDateTime;
-        String saveFilename = fileHandler.makeFileName(extension);
+        String saveFilename = FileUtil.makeFileName(extension);
         String savePath = filePath + File.separator + path + File.separator + saveFilename;
         String url = fileURL + "/" + path.replace(File.separator, "/") + "/" + saveFilename;
 

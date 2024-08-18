@@ -14,10 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.util.FileUtil;
 import page.clab.api.global.util.ImageCompressionUtil;
-import page.clab.api.global.util.LogSanitizerUtil;
 import page.clab.api.global.util.TempFileUtil;
 
 import java.awt.image.BufferedImage;
@@ -30,7 +28,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 @Component
 @Configuration
@@ -74,7 +71,7 @@ public class FileHandler {
         String extension = FilenameUtils.getExtension(originalFilename);
         FileUtil.validateFileAttributes(originalFilename, disallowExtensions);
 
-        String saveFilename = makeFileName(extension);
+        String saveFilename = FileUtil.makeFileName(extension);
         String savePath = filePath + File.separator + category + File.separator + saveFilename;
 
         File file = new File(savePath);
@@ -94,7 +91,7 @@ public class FileHandler {
             throw new IOException("이미지의 뱡향을 조정하는 데 오류가 발생했습니다.", e);
         }
 
-        setFilePermissions(file, savePath);
+        FileUtil.setFilePermissions(file, savePath);
         return savePath;
     }
 
@@ -151,26 +148,6 @@ public class FileHandler {
     private boolean isImageFile(MultipartFile file) {
         String contentType = file.getContentType();
         return contentType != null && contentType.startsWith("image/");
-    }
-
-    public String makeFileName(String extension) {
-        return System.nanoTime() + "_" + UUID.randomUUID() + "." + extension;
-    }
-
-    private void setFilePermissions(File file, String savePath) throws FileUploadFailException {
-        try {
-            String os = System.getProperty("os.name").toLowerCase();
-            if (os.contains("win")) {
-                boolean readOnly = file.setReadOnly();
-                if (!readOnly) {
-                    log.error("Failed to set file read-only: {}", LogSanitizerUtil.sanitizeForLog(savePath));
-                }
-            } else {
-                FileUtil.setReadOnlyPermissionsUnix(savePath);
-            }
-        } catch (Exception e) {
-            throw new FileUploadFailException("Failed to upload file: " + savePath, e);
-        }
     }
 
     public void deleteFile(String savedPath) {

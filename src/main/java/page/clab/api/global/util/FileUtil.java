@@ -2,6 +2,7 @@ package page.clab.api.global.util;
 
 import org.apache.commons.io.FilenameUtils;
 import page.clab.api.global.common.file.exception.DirectoryCreationException;
+import page.clab.api.global.common.file.exception.FilePermissionException;
 import page.clab.api.global.common.file.exception.InvalidFileAttributeException;
 
 import java.io.File;
@@ -13,6 +14,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.UUID;
 
 public class FileUtil {
 
@@ -46,6 +48,16 @@ public class FileUtil {
         if (!filePath.toFile().exists()) {
             throw new InvalidPathException(filePath.toString(), "File does not exist: " + filePath);
         }
+    }
+
+    /**
+     * 고유한 파일명을 생성합니다.
+     *
+     * @param extension 파일 확장자
+     * @return 생성된 고유 파일명
+     */
+    public static String makeFileName(String extension) {
+        return System.nanoTime() + "_" + UUID.randomUUID() + "." + extension;
     }
 
     /**
@@ -98,6 +110,39 @@ public class FileUtil {
      */
     private static boolean validateExtension(String extension, Set<String> disallowExtensions) {
         return !disallowExtensions.contains(extension.toLowerCase());
+    }
+
+    /**
+     * 파일의 읽기 전용 권한을 설정합니다. OS에 따라 적절한 권한을 설정합니다.
+     *
+     * @param file 파일 객체
+     * @param savePath 파일 경로
+     * @throws FilePermissionException 파일 권한 설정에 실패한 경우 발생
+     */
+    public static void setFilePermissions(File file, String savePath) {
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+            if (os.contains("win")) {
+                setReadOnlyPermissionsWindows(file, savePath);
+            } else {
+                FileUtil.setReadOnlyPermissionsUnix(savePath);
+            }
+        } catch (Exception e) {
+            throw new FilePermissionException("Failed to set file permissions: " + LogSanitizerUtil.sanitizeForLog(savePath));
+        }
+    }
+
+    /**
+     * 윈도우 시스템에서 파일을 읽기 전용으로 설정합니다.
+     *
+     * @param file 파일 객체
+     * @param savePath 파일 경로
+     * @throws FilePermissionException 파일 권한 설정에 실패한 경우 발생
+     */
+    public static void setReadOnlyPermissionsWindows(File file, String savePath) {
+        if (!file.setReadOnly()) {
+            throw new FilePermissionException("Failed to set file read-only: " + LogSanitizerUtil.sanitizeForLog(savePath));
+        }
     }
 
     /**

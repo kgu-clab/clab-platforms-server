@@ -62,6 +62,7 @@ import page.clab.api.global.common.dto.ErrorResponse;
 import page.clab.api.global.common.file.exception.AssignmentFileUploadFailException;
 import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
 import page.clab.api.global.common.file.exception.DirectoryCreationException;
+import page.clab.api.global.common.file.exception.FilePermissionException;
 import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.common.file.exception.InvalidFileAttributeException;
 import page.clab.api.global.common.slack.application.SlackService;
@@ -191,6 +192,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             IllegalStateException.class,
             FileUploadFailException.class,
+            FilePermissionException.class,
             DirectoryCreationException.class,
             DataIntegrityViolationException.class,
             IncorrectResultSizeDataAccessException.class,
