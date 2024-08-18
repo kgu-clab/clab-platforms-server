@@ -18,7 +18,7 @@ public class RecruitmentStatusUpdater {
     private final RetrieveRecruitmentPort retrieveRecruitmentPort;
     private final UpdateRecruitmentPort updateRecruitmentPort;
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     public void updateRecruitmentStatus() {
         List<Recruitment> recruitments = retrieveRecruitmentPort.findAll();
         recruitments.forEach(this::updateRecruitmentStatusByRecruitment);

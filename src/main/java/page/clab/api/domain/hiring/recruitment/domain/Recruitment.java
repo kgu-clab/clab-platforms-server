@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.hiring.application.application.exception.RecruitmentNotActiveException;
 import page.clab.api.domain.hiring.application.domain.ApplicationType;
 import page.clab.api.domain.hiring.recruitment.application.dto.request.RecruitmentUpdateRequestDto;
 import page.clab.api.global.exception.InvalidDateRangeException;
@@ -38,6 +39,16 @@ public class Recruitment {
 
     public void updateStatus(RecruitmentStatus status) {
         this.status = status;
+    }
+
+    public void validateRecruiting() {
+        LocalDateTime now = LocalDateTime.now();
+        if (!status.isRecruiting()) {
+            throw new RecruitmentNotActiveException("진행 중인 모집 공고가 아닙니다.");
+        }
+        if (now.isBefore(startDate) || now.isAfter(endDate)) {
+            throw new RecruitmentNotActiveException("모집 기간이 아닙니다.");
+        }
     }
 
     public void validateDateRange() {
