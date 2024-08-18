@@ -73,7 +73,7 @@ public class FileHandler {
                 BufferedImage originalImage = ImageUtil.adjustImageDirection(multipartFile);
                 ImageIO.write(originalImage, Objects.requireNonNull(extension), file);
                 if (compressibleImageExtensions.contains(extension.toLowerCase())) {
-                    ImageUtil.compressImage(savePath, imageQuality);
+                    ImageUtil.compressImage(filePath, savePath, imageQuality);
                 }
             } else {
                 multipartFile.transferTo(file);

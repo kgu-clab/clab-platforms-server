@@ -114,8 +114,9 @@ public class ImageUtil {
      *
      * @throws ImageCompressionException 이미지 압축이 실패한 경우 예외가 발생합니다.
      */
-    public static void compressImage(String filePath, float quality) {
+    public static void compressImage(String baseDirectory, String filePath, float quality) {
         try {
+            FileUtil.validateFilePath(filePath, baseDirectory);
             File inputFile = new File(filePath);
             BufferedImage image = ImageIO.read(inputFile);
             OutputStream os = new FileOutputStream(inputFile);
