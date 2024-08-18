@@ -6,7 +6,6 @@ import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
-import com.google.common.base.Strings;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -16,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.global.common.file.exception.FileUploadFailException;
+import page.clab.api.global.util.FileUtil;
 import page.clab.api.global.util.ImageCompressionUtil;
 import page.clab.api.global.util.LogSanitizerUtil;
 import page.clab.api.global.util.TempFileUtil;
@@ -25,12 +25,8 @@ import java.awt.image.BufferedImageOp;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFilePermission;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -68,7 +64,7 @@ public class FileHandler {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(image);
         BufferedImage bufferedImage = ImageIO.read(inputStream);
         File file = new File(savePath);
-        ensureParentDirectoryExists(file);
+        FileUtil.ensureParentDirectoryExists(file);
         ImageIO.write(bufferedImage, extension, file);
     }
 
@@ -76,13 +72,13 @@ public class FileHandler {
         init();
         String originalFilename = multipartFile.getOriginalFilename();
         String extension = FilenameUtils.getExtension(originalFilename);
-        validateFileAttributes(originalFilename, extension);
+        FileUtil.validateFileAttributes(originalFilename, disallowExtensions);
 
         String saveFilename = makeFileName(extension);
         String savePath = filePath + File.separator + category + File.separator + saveFilename;
 
         File file = new File(savePath);
-        ensureParentDirectoryExists(file);
+        FileUtil.ensureParentDirectoryExists(file);
 
         try {
             if (isImageFile(multipartFile)) {
@@ -92,7 +88,7 @@ public class FileHandler {
                 multipartFile.transferTo(file);
             }
         } catch (Exception e) {
-            throw new IOException("이미지의 뱡향을 조정하는데 오류가 발생했습니다.", e);
+            throw new IOException("이미지의 뱡향을 조정하는 데 오류가 발생했습니다.", e);
         }
 
         setFilePermissions(file, savePath, extension);
@@ -154,34 +150,8 @@ public class FileHandler {
         return contentType != null && contentType.startsWith("image/");
     }
 
-    private void validateFileAttributes(String originalFilename, String extension) throws FileUploadFailException {
-        if (!validateFilename(originalFilename)) {
-            throw new FileUploadFailException("허용되지 않은 파일명 : " + originalFilename);
-        }
-        if (!validateExtension(extension)) {
-            throw new FileUploadFailException("허용되지 않은 확장자 : " + originalFilename);
-        }
-    }
-
-    private boolean validateExtension(String extension) {
-        return !disallowExtensions.contains(extension.toLowerCase());
-    }
-
-    private boolean validateFilename(String fileName) {
-        return !Strings.isNullOrEmpty(fileName);
-    }
-
     public String makeFileName(String extension) {
-        return (System.nanoTime() + "_" + UUID.randomUUID() + "." + extension);
-    }
-
-    private void ensureParentDirectoryExists(File file) {
-        if (!file.getParentFile().exists()) {
-            boolean isCreated = file.getParentFile().mkdirs();
-            if (!isCreated) {
-                log.error("Failed to create directory: {}", LogSanitizerUtil.sanitizeForLog(file.getParentFile().getAbsolutePath()));
-            }
-        }
+        return System.nanoTime() + "_" + UUID.randomUUID() + "." + extension;
     }
 
     private void setFilePermissions(File file, String savePath, String extension) throws FileUploadFailException {
@@ -196,26 +166,10 @@ public class FileHandler {
                     log.error("Failed to set file read-only: {}", LogSanitizerUtil.sanitizeForLog(savePath));
                 }
             } else {
-                setFilePermissionsUnix(savePath);
+                FileUtil.setReadOnlyPermissionsUnix(savePath);
             }
         } catch (Exception e) {
             throw new FileUploadFailException("Failed to upload file: " + savePath, e);
-        }
-    }
-
-    private void setFilePermissionsUnix(String filePath) throws IOException {
-        Path path = Paths.get(filePath);
-
-        // POSIX 파일 권한을 소유자에게만 읽기 권한을 부여하도록 설정
-        Set<PosixFilePermission> permissions = EnumSet.of(
-                PosixFilePermission.OWNER_READ
-        );
-
-        try {
-            Files.setPosixFilePermissions(path, permissions);
-        } catch (IOException e) {
-            log.error("Failed to set file permissions for: {}", LogSanitizerUtil.sanitizeForLog(filePath), e);
-            throw e;
         }
     }
 
