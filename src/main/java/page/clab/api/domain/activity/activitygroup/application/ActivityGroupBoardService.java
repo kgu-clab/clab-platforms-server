@@ -181,7 +181,7 @@ public class ActivityGroupBoardService {
     public ActivityGroupBoardChildResponseDto toActivityGroupBoardChildResponseDtoWithMemberInfo(ActivityGroupBoard activityGroupBoard) {
         MemberBasicInfoDto memberBasicInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(activityGroupBoard.getMemberId());
         List<ActivityGroupBoardChildResponseDto> childrenDtos = activityGroupBoard.getChildren().stream()
-                .map(child -> toActivityGroupBoardChildResponseDtoWithMemberInfo(child))
+                .map(this::toActivityGroupBoardChildResponseDtoWithMemberInfo)
                 .toList();
         return ActivityGroupBoardChildResponseDto.toDto(activityGroupBoard, memberBasicInfo, childrenDtos);
     }
