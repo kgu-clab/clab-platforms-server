@@ -25,8 +25,12 @@ import java.awt.image.BufferedImageOp;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -199,12 +203,19 @@ public class FileHandler {
         }
     }
 
-    private void setFilePermissionsUnix(String filePath) throws IOException, InterruptedException {
-        ProcessBuilder processBuilder = new ProcessBuilder("/bin/chmod", "400", filePath);
-        Process process = processBuilder.start();
-        int exitCode = process.waitFor();
-        if (exitCode != 0) {
-            log.error("Failed to set file permissions for: {}", LogSanitizerUtil.sanitizeForLog(filePath));
+    private void setFilePermissionsUnix(String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+
+        // POSIX 파일 권한을 소유자에게만 읽기 권한을 부여하도록 설정
+        Set<PosixFilePermission> permissions = EnumSet.of(
+                PosixFilePermission.OWNER_READ
+        );
+
+        try {
+            Files.setPosixFilePermissions(path, permissions);
+        } catch (IOException e) {
+            log.error("Failed to set file permissions for: {}", LogSanitizerUtil.sanitizeForLog(filePath), e);
+            throw e;
         }
     }
 
