@@ -59,7 +59,7 @@ public class FileService {
         String savePath = filePath + File.separator + path + File.separator + saveFilename;
         String url = fileURL + "/" + path.replace(File.separator, "/") + "/" + saveFilename;
 
-        fileHandler.saveQRCodeImage(QRCodeImage, path, saveFilename, extension);
+        fileHandler.saveQRCodeImage(QRCodeImage, path, saveFilename, extension, filePath);
         UploadedFile uploadedFile = UploadedFile.create(currentMemberId, originalFileName, saveFilename, savePath, url, (long) QRCodeImage.length, "image/png", storagePeriod, path);
         uploadedFileService.saveUploadedFile(uploadedFile);
         return url;
@@ -81,7 +81,7 @@ public class FileService {
         validateMemberCloudUsage(multipartFile, path);
         checkAndRemoveExistingFile(path);
 
-        String savedFilePath = fileHandler.saveFile(multipartFile, path);
+        String savedFilePath = fileHandler.saveFile(multipartFile, path, filePath);
         String fileName = new File(savedFilePath).getName();
         String url = fileURL + "/" + path.replace(File.separator, "/") + "/" + fileName;
 

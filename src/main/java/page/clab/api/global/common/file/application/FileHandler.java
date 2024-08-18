@@ -46,17 +46,17 @@ public class FileHandler {
         filePath = filePath.replace("/", File.separator).replace("\\", File.separator);
     }
 
-    public void saveQRCodeImage(byte[] image, String category, String saveFilename, String extension) throws IOException {
+    public void saveQRCodeImage(byte[] image, String category, String saveFilename, String extension, String baseDirectory) throws IOException {
         init();
         String savePath = filePath + File.separator + category + File.separator + saveFilename;
         ByteArrayInputStream inputStream = new ByteArrayInputStream(image);
         BufferedImage bufferedImage = ImageIO.read(inputStream);
         File file = new File(savePath);
-        FileUtil.ensureParentDirectoryExists(file);
+        FileUtil.ensureParentDirectoryExists(file, baseDirectory);
         ImageIO.write(bufferedImage, extension, file);
     }
 
-    public String saveFile(MultipartFile multipartFile, String category) throws IOException {
+    public String saveFile(MultipartFile multipartFile, String category, String baseDirectory) throws IOException {
         init();
         String originalFilename = multipartFile.getOriginalFilename();
         String extension = FilenameUtils.getExtension(originalFilename);
@@ -66,7 +66,7 @@ public class FileHandler {
         String savePath = filePath + File.separator + category + File.separator + saveFilename;
 
         File file = new File(savePath);
-        FileUtil.ensureParentDirectoryExists(file);
+        FileUtil.ensureParentDirectoryExists(file, baseDirectory);
 
         try {
             if (ImageUtil.isImageFile(multipartFile)) {
@@ -82,7 +82,7 @@ public class FileHandler {
             throw new IOException("이미지의 뱡향을 조정하는 데 오류가 발생했습니다.", e);
         }
 
-        FileUtil.setFilePermissions(file, savePath);
+        FileUtil.setFilePermissions(file, savePath, filePath);
         return savePath;
     }
 
