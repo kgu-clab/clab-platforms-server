@@ -18,18 +18,15 @@ import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.util.ImageCompressionUtil;
 import page.clab.api.global.util.LogSanitizerUtil;
+import page.clab.api.global.util.TempFileUtil;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -99,7 +96,7 @@ public class FileHandler {
     }
 
     private BufferedImage adjustImageDirection(MultipartFile multipartFile) throws Exception {
-        Path tempFilePath = createSecureTempFile("temp", null);
+        Path tempFilePath = TempFileUtil.createSecureTempFile("temp", null);
 
         File tempFile = tempFilePath.toFile();
         multipartFile.transferTo(tempFile);
@@ -200,19 +197,6 @@ public class FileHandler {
         } catch (Exception e) {
             throw new FileUploadFailException("Failed to upload file: " + savePath, e);
         }
-    }
-
-    private Path createSecureTempFile(String prefix, String suffix) throws IOException {
-        Path tempFilePath = Files.createTempFile(prefix, suffix);
-        // POSIX 파일 시스템(UNIX, 리눅스 계열)인 경우 파일 소유자만 읽을 수 있도록 권한 설정
-        // 임시 파일에 대한 접근이 제한되어 다른 로컬 사용자가 파일에 접근하거나 파일 내용을 노출할 위험을 줄일 수 있음
-        if (tempFilePath.getFileSystem().supportedFileAttributeViews().contains("posix")) {
-            EnumSet<PosixFilePermission> permissions = EnumSet.of(
-                    PosixFilePermission.OWNER_READ
-            );
-            Files.setPosixFilePermissions(tempFilePath, permissions);
-        }
-        return tempFilePath;
     }
 
     private void setFilePermissionsUnix(String filePath) throws IOException, InterruptedException {
