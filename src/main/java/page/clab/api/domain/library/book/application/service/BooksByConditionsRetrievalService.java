@@ -10,7 +10,6 @@ import page.clab.api.domain.library.book.application.dto.response.BookResponseDt
 import page.clab.api.domain.library.book.application.port.in.RetrieveBooksByConditionsUseCase;
 import page.clab.api.domain.library.book.application.port.out.RetrieveBookPort;
 import page.clab.api.domain.library.book.domain.Book;
-import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.external.library.bookLoanRecord.application.port.ExternalRetrieveBookLoanRecordUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -34,9 +33,9 @@ public class BooksByConditionsRetrievalService implements RetrieveBooksByConditi
 
     @NotNull
     private BookResponseDto mapToBookResponseDto(Book book) {
-        String borrowerId = externalRetrieveBookLoanRecordUseCase.getBorrowerIdForBook(book.getId());
-        MemberBasicInfoDto memberBasicInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(borrowerId);
         LocalDateTime dueDate = externalRetrieveBookLoanRecordUseCase.getDueDateForBook(book.getId());
-        return BookResponseDto.toDto(book, memberBasicInfo.getMemberName(), dueDate);
+        String borrowerId = book.getBorrowerId();
+        String memberName = (borrowerId != null) ? externalRetrieveMemberUseCase.getMemberBasicInfoById(borrowerId).getMemberName() : null;
+        return BookResponseDto.toDto(book, memberName, dueDate);
     }
 }
