@@ -34,8 +34,9 @@ public class BooksByConditionsRetrievalService implements RetrieveBooksByConditi
 
     @NotNull
     private BookResponseDto mapToBookResponseDto(Book book) {
-        MemberBasicInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
+        String borrowerId = externalRetrieveBookLoanRecordUseCase.getBorrowerIdForBook(book.getId());
+        MemberBasicInfoDto memberBasicInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(borrowerId);
         LocalDateTime dueDate = externalRetrieveBookLoanRecordUseCase.getDueDateForBook(book.getId());
-        return BookResponseDto.toDto(book, currentMemberInfo.getMemberName(), dueDate);
+        return BookResponseDto.toDto(book, memberBasicInfo.getMemberName(), dueDate);
     }
 }

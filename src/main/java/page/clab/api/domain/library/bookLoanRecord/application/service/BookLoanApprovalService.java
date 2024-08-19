@@ -11,7 +11,6 @@ import page.clab.api.domain.library.bookLoanRecord.application.port.out.Retrieve
 import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanRecord;
 import page.clab.api.external.library.book.application.port.ExternalRegisterBookUseCase;
 import page.clab.api.external.library.book.application.port.ExternalRetrieveBookUseCase;
-import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +20,12 @@ public class BookLoanApprovalService implements ApproveBookLoanUseCase {
     private final RegisterBookLoanRecordPort registerBookLoanRecordPort;
     private final ExternalRetrieveBookUseCase externalRetrieveBookUseCase;
     private final ExternalRegisterBookUseCase externalRegisterBookUseCase;
-    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
     @Transactional
     @Override
     public Long approveBookLoan(Long bookLoanRecordId) {
-        String borrowerId = externalRetrieveMemberUseCase.getCurrentMemberId();
         BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByIdOrThrow(bookLoanRecordId);
+        String borrowerId = bookLoanRecord.getBorrowerId();
         Book book = externalRetrieveBookUseCase.findByIdOrThrow(bookLoanRecord.getBookId());
 
         book.validateBookIsNotBorrowed();
@@ -46,3 +44,4 @@ public class BookLoanApprovalService implements ApproveBookLoanUseCase {
         }
     }
 }
+
