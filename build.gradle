@@ -69,7 +69,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.11.0' // JSON 라이브러리
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0' // Swagger
     implementation 'commons-io:commons-io:2.16.1' // Apache Commons IO
-    implementation 'com.google.guava:guava:33.2.1-jre' // Google Core Libraries For Java
+    implementation 'com.google.guava:guava:33.3.0-jre' // Google Core Libraries For Java
     implementation 'org.springframework.boot:spring-boot-starter-mail' // Spring Mail
     implementation 'com.google.zxing:core:3.4.1' // QR 코드
     implementation 'com.google.zxing:javase:3.5.3' // QR 코드
