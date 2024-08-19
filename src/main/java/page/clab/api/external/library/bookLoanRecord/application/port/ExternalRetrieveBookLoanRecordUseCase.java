@@ -5,6 +5,4 @@ import java.time.LocalDateTime;
 public interface ExternalRetrieveBookLoanRecordUseCase {
 
     LocalDateTime getDueDateForBook(Long bookId);
-
-    String getBorrowerIdForBook(Long bookId);
 }

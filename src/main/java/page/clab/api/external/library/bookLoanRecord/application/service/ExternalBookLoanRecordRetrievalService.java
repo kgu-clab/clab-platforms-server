@@ -23,10 +23,4 @@ public class ExternalBookLoanRecordRetrievalService implements ExternalRetrieveB
                 .map(BookLoanRecord::getDueDate)
                 .orElse(null);
     }
-
-    @Override
-    public String getBorrowerIdForBook(Long bookId) {
-        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByIdOrThrow(bookId);
-        return bookLoanRecord.getBorrowerId();
-    }
 }
