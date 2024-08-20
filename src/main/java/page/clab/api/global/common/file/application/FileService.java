@@ -20,6 +20,7 @@ import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.FileSystemUtil;
+import page.clab.api.global.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,11 +55,11 @@ public class FileService {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         String extension = "png";
         String originalFileName = path.replace(File.separator, "-") + nowDateTime;
-        String saveFilename = fileHandler.makeFileName(extension);
+        String saveFilename = FileUtil.makeFileName(extension);
         String savePath = filePath + File.separator + path + File.separator + saveFilename;
         String url = fileURL + "/" + path.replace(File.separator, "/") + "/" + saveFilename;
 
-        fileHandler.saveQRCodeImage(QRCodeImage, path, saveFilename, extension);
+        fileHandler.saveQRCodeImage(QRCodeImage, path, saveFilename, extension, filePath);
         UploadedFile uploadedFile = UploadedFile.create(currentMemberId, originalFileName, saveFilename, savePath, url, (long) QRCodeImage.length, "image/png", storagePeriod, path);
         uploadedFileService.saveUploadedFile(uploadedFile);
         return url;
@@ -80,7 +81,7 @@ public class FileService {
         validateMemberCloudUsage(multipartFile, path);
         checkAndRemoveExistingFile(path);
 
-        String savedFilePath = fileHandler.saveFile(multipartFile, path);
+        String savedFilePath = fileHandler.saveFile(multipartFile, path, filePath);
         String fileName = new File(savedFilePath).getName();
         String url = fileURL + "/" + path.replace(File.separator, "/") + "/" + fileName;
 

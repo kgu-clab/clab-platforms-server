@@ -14,13 +14,13 @@ import page.clab.api.external.memberManagement.member.application.port.ExternalR
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.common.email.dto.request.EmailDto;
 import page.clab.api.global.common.email.exception.MessageSendingFailedException;
+import page.clab.api.global.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -103,10 +103,10 @@ public class EmailService {
     private File convertMultipartFileToFile(MultipartFile multipartFile) {
         String originalFilename = multipartFile.getOriginalFilename();
         String extension = FilenameUtils.getExtension(originalFilename);
-        String path = filePath + File.separator + "temp" + File.separator + System.nanoTime() + "_" + UUID.randomUUID() + "." + extension;
+        String path = filePath + File.separator + "temp" + File.separator + FileUtil.makeFileName(extension);
         path = path.replace("/", File.separator).replace("\\", File.separator);
         File file = new File(path);
-        checkDir(file);
+        FileUtil.ensureParentDirectoryExists(file, filePath);
 
         try {
             multipartFile.transferTo(file);
@@ -124,14 +124,5 @@ public class EmailService {
 
         String emailTemplate = emailDto.getEmailTemplateType().getTemplateName();
         return springTemplateEngine.process(emailTemplate, context);
-    }
-
-    private void checkDir(File file) {
-        if (!file.getParentFile().exists()) {
-            boolean isCreated = file.getParentFile().mkdirs();
-            if (!isCreated) {
-                log.error("Failed to create directory: {}", file.getParentFile().getAbsolutePath());
-            }
-        }
     }
 }
