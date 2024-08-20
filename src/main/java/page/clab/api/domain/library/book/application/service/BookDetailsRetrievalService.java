@@ -26,9 +26,16 @@ public class BookDetailsRetrievalService implements RetrieveBookDetailsUseCase {
     @Override
     public BookDetailsResponseDto retrieveBookDetails(Long bookId) {
         Book book = retrieveBookPort.findByIdOrThrow(bookId);
-        String borrowerId = book.getBorrowerId();
-        String borrowerName = (borrowerId != null) ? externalRetrieveMemberUseCase.getMemberBasicInfoById(borrowerId).getMemberName() : null;
+        String borrowerName = getBorrowerName(book);
         return mapToBookDetailsResponseDto(book, borrowerName);
+    }
+
+    private String getBorrowerName(Book book) {
+        String borrowerId = book.getBorrowerId();
+        if (borrowerId != null) {
+            return externalRetrieveMemberUseCase.getMemberBasicInfoById(borrowerId).getMemberName();
+        }
+        return null;
     }
 
     @NotNull
