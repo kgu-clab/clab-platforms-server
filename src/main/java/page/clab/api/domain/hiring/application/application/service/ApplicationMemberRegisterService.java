@@ -50,28 +50,30 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
     @Override
     public String registerMembersByRecruitment(Long recruitmentId, String studentId) {
         Application application = retrieveApplicationPort.findByRecruitmentIdAndStudentIdOrThrow(recruitmentId, studentId);
+        validateApplicationIsPass(application);
         return createMemberFromApplication(application);
     }
 
-    private String createMemberFromApplication(Application application) {
-        if (!application.getIsPass()) {
+    private void validateApplicationIsPass(Application application) {
+        if(!application.getIsPass()) {
             throw new NotApprovedApplicationException("승인되지 않은 지원서입니다.");
         }
+    }
+
+    private String createMemberFromApplication(Application application) {
         Member member = createMemberByApplication(application);
         createPositionByMember(member);
         return member.getId();
     }
 
     private Member createMemberByApplication(Application application) {
-        Member member = Application.toMember(application);
-        Member existingMember = externalRetrieveMemberUseCase.findById(member.getId())
-                .orElse(null);
-        if (existingMember != null) {
-            return existingMember;
-        }
-        setRandomPasswordAndSendEmail(member);
-        externalRegisterMemberUseCase.save(member);
-        return member;
+        return externalRetrieveMemberUseCase.findById(application.getStudentId())
+                .orElseGet(() -> {
+                    Member member = Application.toMember(application);
+                    setRandomPasswordAndSendEmail(member);
+                    externalRegisterMemberUseCase.save(member);
+                    return member;
+                });
     }
 
     private void setRandomPasswordAndSendEmail(Member member) {
@@ -87,11 +89,17 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
     }
 
     public void createPositionByMember(Member member) {
-        if (externalRetrievePositionUseCase.findByMemberIdAndYearAndPositionType
-                (member.getId(), String.valueOf(LocalDate.now().getYear()), PositionType.MEMBER).isPresent()) {
+        if(isRegisteredMember(member)) {
+            log.warn("이미 등록된 회원입니다: {}", member.getId());
             return;
         }
         Position position = Position.create(member.getId());
         externalRegisterPositionUseCase.save(position);
+    }
+
+    private boolean isRegisteredMember(Member member) {
+        return externalRetrievePositionUseCase
+                .findByMemberIdAndYearAndPositionType(member.getId(), String.valueOf(LocalDate.now().getYear()), PositionType.MEMBER)
+                .isPresent();
     }
 }
