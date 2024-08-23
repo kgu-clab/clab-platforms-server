@@ -183,6 +183,17 @@ public class ActivityGroupAdminService {
         return groupMember.isLeader() && member.isAdminRole();
     }
 
+    public boolean isMemberGroupLeaderRole(Long activityGroupId, String memberId) {
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        Member member = externalRetrieveMemberUseCase.findByIdOrThrow(memberId);
+        try{
+            GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member.getId());
+            return groupMember.isLeader() && member.isAdminRole();
+        } catch (NotFoundException e) {
+         return false;
+        }
+    }
+
     public boolean isMemberHasRoleInActivityGroup(Member member, ActivityGroupRole role, Long activityGroupId) {
         List<GroupMember> groupMemberList = activityGroupMemberService.getGroupMemberByMemberId(member.getId());
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(activityGroupId);

@@ -29,10 +29,12 @@ import page.clab.api.external.auth.redisIpAccessMonitor.application.port.Externa
 import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
 import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
+import page.clab.api.global.auth.filter.FileAccessControlFilter;
 import page.clab.api.global.auth.filter.InvalidEndpointAccessFilter;
 import page.clab.api.global.auth.filter.IpAuthenticationFilter;
 import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
+import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.filter.IPinfoSpringFilter;
 import page.clab.api.global.util.HttpReqResUtil;
@@ -60,6 +62,7 @@ public class SecurityConfig {
     private final AuthenticationConfig authenticationConfig;
     private final CorsConfigurationSource corsConfigurationSource;
     private final JwtTokenProvider jwtTokenProvider;
+    private final FileService fileService;
 
     @Value("${resource.file.url}")
     String fileURL;
@@ -97,6 +100,10 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(
                         new JwtAuthenticationFilter(slackService, jwtTokenProvider, externalManageRedisTokenUseCase, externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
+                        UsernamePasswordAuthenticationFilter.class
+                )
+                .addFilterBefore(
+                        new FileAccessControlFilter(fileService),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->

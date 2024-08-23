@@ -2,14 +2,19 @@ package page.clab.api.global.common.file.application;
 
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import page.clab.api.domain.activity.activitygroup.application.ActivityGroupAdminService;
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activity.activitygroup.dao.GroupMemberRepository;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
+import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.external.memberManagement.cloud.application.port.ExternalRetrieveCloudUsageByMemberIdUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.file.domain.UploadedFile;
@@ -31,11 +36,13 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class FileService {
 
     private final FileHandler fileHandler;
     private final UploadedFileService uploadedFileService;
+    private final ActivityGroupAdminService activityGroupAdminService;
     private final ActivityGroupRepository activityGroupRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final ActivityGroupBoardRepository activityGroupBoardRepository;
@@ -154,6 +161,51 @@ public class FileService {
                 fileHandler.deleteFile(fileToDelete.getSavedPath());
             }
         }
+    }
+
+    public boolean isUserAccessibleAtFile(Authentication authentication, String url) {
+        String category = getCategoryByUrl(url);
+        if (category == null)
+            return false;
+
+        return isUserAccessibleByCategory(category, url, authentication);
+    }
+
+    public boolean isUserAccessibleByCategory(String category, String url,  Authentication authentication) {
+        UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
+        String uploaderId = uploadedFile.getUploader();
+
+        GrantedAuthority authority = authentication.getAuthorities().iterator().next();
+        String roleName = authority.getAuthority().replace("ROLE_", "");
+        Role role = Role.valueOf(roleName);
+
+        switch (category) {
+            case "boards", "profiles", "activity-photos", "membership-fee":
+                return (role.toRoleLevel() >= Role.GUEST.toRoleLevel());
+
+            case "members":
+                return (authentication.getName().equals(uploaderId));
+
+            case "assignments":
+                String[] parts = url.split("/");
+                Long activityGroupId = Long.parseLong(parts[4]);
+                log.info(activityGroupId.toString());
+                return (authentication.getName().equals(uploaderId) || activityGroupAdminService.isMemberGroupLeaderRole(activityGroupId, authentication.getName()));
+        }
+        return false;
+    }
+
+    private String getCategoryByUrl(String url) {
+        String basePath = "/resources/files/";
+        String category = "";
+
+        if (url.startsWith(basePath)) {
+            category = url.substring(basePath.length());
+            if (category.contains("/")) {
+                category = category.substring(0, category.indexOf('/'));
+            }
+        }
+        return category;
     }
 }
 
