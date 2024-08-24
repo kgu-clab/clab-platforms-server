@@ -79,10 +79,10 @@ public class ActivityGroupBoardService {
 
     private void validateCanCreateBoard(ActivityGroup activityGroup, ActivityGroupBoardCategory category, Member currentMember) throws PermissionDeniedException {
         Role role = currentMember.getRole();
-        boolean isRequireAdminOrLeaderCategory = category == ActivityGroupBoardCategory.NOTICE ||
-                                                 category == ActivityGroupBoardCategory.WEEKLY_ACTIVITY ||
-                                                 category == ActivityGroupBoardCategory.ASSIGNMENT ||
-                                                 category == ActivityGroupBoardCategory.FEEDBACK;
+        boolean isRequireAdminOrLeaderCategory = category.isNotice() ||
+                                                 category.isWeeklyActivity() ||
+                                                 category.isAssignment() ||
+                                                 category.isFeedback();
 
         // NOTICE, WEEKLY_ACTIVITY, ASSIGNMENT, FEEDBACK 카테고리에서 권한이 ADMIN 이상이 아니거나, 리더가 아니면 예외처리
         if (isRequireAdminOrLeaderCategory && !(role.isHigherThanOrEqual(Role.ADMIN) || activityGroupAdminService.isMemberGroupLeaderRole(activityGroup, currentMember))) {
@@ -92,7 +92,7 @@ public class ActivityGroupBoardService {
 
     private boolean hasAccessToBoard(ActivityGroup activityGroup, ActivityGroupBoard board, Member currentMember) {
         // 카테고리가 SUBMIT이거나, FEEDBACK일 시, 제출자 또는 리더만이 해당 게시물에 접근 가능
-        if (board.getCategory() == ActivityGroupBoardCategory.SUBMIT || board.getCategory() == ActivityGroupBoardCategory.FEEDBACK) {
+        if (board.getCategory().isSubmit() || board.getCategory().isFeedback()) {
             return isSubmitterOrLeader(activityGroup, board, currentMember);
         }
         return true;
@@ -102,10 +102,10 @@ public class ActivityGroupBoardService {
         boolean isSubmitter = board.getMemberId().equals(currentMember.getId());
         boolean isLeader = activityGroupAdminService.isMemberGroupLeaderRole(activityGroup, currentMember);
         // FEEDBACK을 가져오기 위해, parent의 카테고리가 SUBMIT이고, 현재 로그인한 멤버인지 확인
-        if (board.getCategory() == ActivityGroupBoardCategory.FEEDBACK) {
+        if (board.getCategory().isFeedback()) {
             ActivityGroupBoard parentBoard = board.getParent();
             boolean isParentSubmitter = parentBoard != null
-                    && parentBoard.getCategory() == ActivityGroupBoardCategory.SUBMIT
+                    && parentBoard.getCategory().isSubmit()
                     && parentBoard.getMemberId().equals(currentMember.getId());
             return isLeader || isParentSubmitter;
         }
@@ -113,7 +113,7 @@ public class ActivityGroupBoardService {
     }
 
     private void validateAlreadySubmittedAssignmentThisWeek(ActivityGroupBoardCategory category, Long parentId, String memberId) {
-        if(category == ActivityGroupBoardCategory.SUBMIT) {
+        if(category.isSubmit()) {
             boolean hasSubmitted = activityGroupBoardRepository.existsByParentIdAndCategoryAndMemberId(parentId, ActivityGroupBoardCategory.SUBMIT, memberId);
             if(hasSubmitted) {
                 throw new AlreadySubmittedThisWeekAssignmentException();
@@ -255,7 +255,7 @@ public class ActivityGroupBoardService {
     }
 
     private void validateParentBoard(ActivityGroupBoardCategory category, Long parentId) throws InvalidParentBoardException {
-        if ((category == ActivityGroupBoardCategory.NOTICE || category == ActivityGroupBoardCategory.WEEKLY_ACTIVITY)) {
+        if ((category.isNotice() || category.isWeeklyActivity())) {
             if (parentId != null) {
                 throw new InvalidParentBoardException(category.getDescription() + " 게시물은 부모 게시판을 가질 수 없습니다.");
             } else {
@@ -263,7 +263,7 @@ public class ActivityGroupBoardService {
             }
         }
 
-        if ((category == ActivityGroupBoardCategory.ASSIGNMENT || category == ActivityGroupBoardCategory.SUBMIT || category == ActivityGroupBoardCategory.FEEDBACK) && parentId == null) {
+        if ((category.isAssignment() || category.isSubmit() || category.isFeedback()) && parentId == null) {
             throw new InvalidParentBoardException(category.getDescription() + " 게시물은 부모 게시판이 필요합니다.");
         }
 
