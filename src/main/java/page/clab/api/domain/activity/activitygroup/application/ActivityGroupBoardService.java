@@ -214,6 +214,19 @@ public class ActivityGroupBoardService {
         }
     }
 
+    /**
+     * 새 게시판 생성에 대한 알림을 활동 그룹 멤버들에게 전송합니다.
+     *
+     * <p>이 메서드는 활동 그룹에서 새 게시판이 생성될 때 관련 멤버들에게 알림을 전송합니다.
+     * 만약 게시판을 생성한 멤버가 그룹 리더일 경우, 본인을 제외한 다른 모든 멤버들에게 알림이 전송됩니다.
+     * 단, 게시판이 피드백 유형일 경우에는 과제 제출한 멤버에게만 알림이 전송됩니다.
+     * 만약 게시판을 생성한 멤버가 팀원인 경우, 그룹 리더에게만 알림이 전송됩니다.</p>
+     *
+     * @param activityGroupId 게시판이 생성된 활동 그룹의 ID
+     * @param activityGroup 게시판이 생성된 활동 그룹
+     * @param board 생성된 게시판 객체
+     * @param member 게시판을 생성한 멤버 객체
+     */
     private void notifyMembersAboutNewBoard(Long activityGroupId, ActivityGroup activityGroup, ActivityGroupBoard board, Member member) {
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member.getId());
         if (groupMember.isLeader()) {
