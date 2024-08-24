@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activity.activitygroup.dao.GroupMemberRepository;
+import page.clab.api.domain.activity.activitygroup.exception.MemberNotPartOfActivityException;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.cloud.application.port.ExternalRetrieveCloudUsageByMemberIdUseCase;
@@ -15,8 +16,8 @@ import page.clab.api.external.memberManagement.member.application.port.ExternalR
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
-import page.clab.api.global.common.file.exception.AssignmentFileUploadFailException;
 import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
+import page.clab.api.global.common.file.exception.InvalidPathVariableException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.FileSystemUtil;
@@ -115,33 +116,56 @@ public class FileService {
         return pathBuilder.toString();
     }
 
-    public void validatePathVariable(String path) throws AssignmentFileUploadFailException {
-        String pathStart = path.split(Pattern.quote(File.separator))[0];
-        if (pathStart.equals("assignments")) {
-            Long activityGroupId = Long.parseLong(path.split(Pattern.quote(File.separator))[1]);
-            Long activityGroupBoardId = Long.parseLong(path.split(Pattern.quote(File.separator))[2]);
-            String memberId = path.split(Pattern.quote(File.separator))[3];
-            Optional<Member> assignmentWriterOpt = externalRetrieveMemberUseCase.findById(memberId);
+    public void validatePathVariable(String path) throws InvalidPathVariableException {
+        String[] pathParts = path.split(Pattern.quote(File.separator));
+        String pathStart = pathParts[0];
 
-            if (!activityGroupRepository.existsById(activityGroupId)) {
-                throw new AssignmentFileUploadFailException("해당 활동은 존재하지 않습니다.");
-            }
-            if (assignmentWriterOpt.isEmpty() || !groupMemberRepository.existsByMemberIdAndActivityGroupId(assignmentWriterOpt.get().getId(), activityGroupId)) {
-                throw new AssignmentFileUploadFailException("해당 활동에 참여하고 있지 않은 멤버입니다.");
-            }
-            if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
-                throw new AssignmentFileUploadFailException("해당 활동 그룹 게시판이 존재하지 않습니다.");
-            }
-        } else if (pathStart.equals("weekly-activities")) {
-            Long activityGroupId = Long.parseLong(path.split(Pattern.quote(File.separator))[1]);
-            String memberId = externalRetrieveMemberUseCase.getCurrentMemberId();
+        switch (pathStart) {
+            case "assignments":
+                validateAssignmentPath(pathParts);
+                break;
+            case "weekly-activities":
+                validateWeeklyActivityPath(pathParts);
+                break;
+            default:
+                throw new InvalidPathVariableException("유효하지 않은 경로입니다.");
+        }
+    }
 
-            if (!activityGroupRepository.existsById(activityGroupId)) {
-                throw new AssignmentFileUploadFailException("해당 활동은 존재하지 않습니다.");
-            }
-            if (!groupMemberRepository.existsByMemberIdAndActivityGroupId(memberId, activityGroupId)) {
-                throw new AssignmentFileUploadFailException("해당 활동에 참여하고 있지 않은 멤버입니다.");
-            }
+    private void validateAssignmentPath(String[] pathParts) throws InvalidPathVariableException {
+        Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
+        Long activityGroupBoardId = parseId(pathParts[2], "활동 그룹 게시판 ID가 유효하지 않습니다.");
+        String memberId = pathParts[3];
+
+        if (!activityGroupRepository.existsById(activityGroupId)) {
+            throw new NotFoundException("해당 활동은 존재하지 않습니다.");
+        }
+        Optional<Member> assignmentWriterOpt = externalRetrieveMemberUseCase.findById(memberId);
+        if (assignmentWriterOpt.isEmpty() || !groupMemberRepository.existsByMemberIdAndActivityGroupId(assignmentWriterOpt.get().getId(), activityGroupId)) {
+            throw new MemberNotPartOfActivityException("해당 활동에 참여하고 있지 않은 멤버입니다.");
+        }
+        if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
+            throw new NotFoundException("해당 활동 그룹 게시판이 존재하지 않습니다.");
+        }
+    }
+
+    private void validateWeeklyActivityPath(String[] pathParts) throws InvalidPathVariableException {
+        Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
+        String memberId = externalRetrieveMemberUseCase.getCurrentMemberId();
+
+        if (!activityGroupRepository.existsById(activityGroupId)) {
+            throw new NotFoundException("해당 활동은 존재하지 않습니다.");
+        }
+        if (!groupMemberRepository.existsByMemberIdAndActivityGroupId(memberId, activityGroupId)) {
+            throw new MemberNotPartOfActivityException("해당 활동에 참여하고 있지 않은 멤버입니다.");
+        }
+    }
+
+    private Long parseId(String idStr, String errorMessage) throws InvalidPathVariableException {
+        try {
+            return Long.parseLong(idStr);
+        } catch (NumberFormatException e) {
+            throw new InvalidPathVariableException(errorMessage);
         }
     }
 
