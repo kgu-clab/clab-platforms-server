@@ -20,6 +20,7 @@ import org.hibernate.validator.constraints.Range;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotProgressingException;
+import page.clab.api.domain.activity.activitygroup.exception.ContentLengthExceededException;
 import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDate;
@@ -50,8 +51,8 @@ public class ActivityGroup extends BaseEntity {
     @Size(min = 1, max = 30, message = "{size.activityGroup.name}")
     private String name;
 
-    @Column(nullable = false, length = 1000)
-    @Size(min = 1, max = 1000, message = "{size.activityGroup.content}")
+    @Column(nullable = false, length = 200)
+    @Size(min = 1, max = 200, message = "{size.activityGroup.content}")
     private String content;
 
     @Column(nullable = false)
@@ -117,6 +118,12 @@ public class ActivityGroup extends BaseEntity {
     public void validateForApplication() {
         if (!this.isProgressing()) {
             throw new ActivityGroupNotProgressingException("해당 활동은 진행중인 활동이 아닙니다.");
+        }
+    }
+
+    public void validateContentLength() {
+        if (this.content != null && this.content.length() > 200) {
+            throw new ContentLengthExceededException("활동 설명은 200자 이하여야 합니다.");
         }
     }
 }

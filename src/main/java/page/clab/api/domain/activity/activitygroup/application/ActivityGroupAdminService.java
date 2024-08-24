@@ -48,6 +48,7 @@ public class ActivityGroupAdminService {
     public Long createActivityGroup(ActivityGroupRequestDto requestDto) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = ActivityGroupRequestDto.toEntity(requestDto);
+        activityGroup.validateContentLength();
         activityGroupRepository.save(activityGroup);
 
         GroupMember groupLeader = GroupMember.create(currentMember.getId(), activityGroup, ActivityGroupRole.LEADER, GroupMemberStatus.ACCEPTED);
@@ -65,6 +66,7 @@ public class ActivityGroupAdminService {
             throw new PermissionDeniedException("해당 활동을 수정할 권한이 없습니다.");
         }
         activityGroup.update(requestDto);
+        activityGroup.validateContentLength();
         return activityGroupRepository.save(activityGroup).getId();
     }
 
