@@ -33,6 +33,7 @@ import page.clab.api.domain.activity.activitygroup.exception.DuplicateAttendance
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateReportException;
 import page.clab.api.domain.activity.activitygroup.exception.FeedbackBoardHasNoContentException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidCategoryException;
+import page.clab.api.domain.activity.activitygroup.exception.InvalidGithubUrlException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.activity.activitygroup.exception.LeaderStatusChangeNotAllowedException;
 import page.clab.api.domain.activity.review.application.exception.AlreadyReviewedException;
@@ -101,6 +102,7 @@ public class GlobalExceptionHandler {
             InvalidEmojiException.class,
             InvalidRoleChangeException.class,
             InvalidFileAttributeException.class,
+            InvalidGithubUrlException.class,
             RecruitmentNotActiveException.class,
             RecruitmentEndDateExceededException.class,
             StringIndexOutOfBoundsException.class,

@@ -17,10 +17,10 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.Range;
-import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotProgressingException;
 import page.clab.api.domain.activity.activitygroup.exception.ContentLengthExceededException;
+import page.clab.api.domain.activity.activitygroup.exception.InvalidGithubUrlException;
 import page.clab.api.global.common.domain.BaseEntity;
 
 import java.time.LocalDate;
@@ -72,7 +72,6 @@ public class ActivityGroup extends BaseEntity {
 
     private String techStack;
 
-    @URL(message = "{url.activityGroup.githubUrl}")
     private String githubUrl;
 
     @Column(name = "is_deleted", nullable = false)
@@ -88,7 +87,7 @@ public class ActivityGroup extends BaseEntity {
         Optional.ofNullable(requestDto.getStartDate()).ifPresent(this::setStartDate);
         Optional.ofNullable(requestDto.getEndDate()).ifPresent(this::setEndDate);
         Optional.ofNullable(requestDto.getTechStack()).ifPresent(this::setTechStack);
-        Optional.ofNullable(requestDto.getGithubUrl()).ifPresent(this::setGithubUrl);
+        Optional.ofNullable(requestDto.getGithubUrl()).ifPresent(this::validateAndSetGithubUrl);
     }
 
     public boolean isProgressing() {
@@ -126,4 +125,44 @@ public class ActivityGroup extends BaseEntity {
             throw new ContentLengthExceededException("활동 설명은 200자 이하여야 합니다.");
         }
     }
+
+    /**
+     * GitHub URL을 검증하고 설정합니다.
+     * <p>
+     * 이 메소드는 다음과 같은 작업을 수행합니다:
+     * <ul>
+     *   <li>제공된 GitHub URL이 null이거나 빈 문자열인 경우, 아무 작업도 수행하지 않고 메소드를 종료합니다.</li>
+     *   <li>URL이 "https://"로 시작하지 않는 경우, "http://"로 시작하는지 확인합니다. "http://"로 시작하면 "https://"로 교정합니다.</li>
+     *   <li>URL이 "https://"로 시작하지도 않고, "github.com/"로 시작하는 경우 "https://"를 URL 앞에 붙입니다. 그렇지 않으면 {@link InvalidGithubUrlException} 예외를 발생시킵니다.</li>
+     *   <li>URL이 "https://"로 시작하는 경우, URL이 "https://github.com/"로 시작하는지 확인합니다. 그렇지 않으면 {@link InvalidGithubUrlException} 예외를 발생시킵니다.</li>
+     *   <li>모든 검증을 통과하면, 잘라낸(trimmed) URL을 {@link ActivityGroup} 객체의 {@code githubUrl} 필드에 설정합니다.</li>
+     * </ul>
+     *
+     * @param githubUrl 검증하고 설정할 GitHub URL. null이거나 빈 값일 수 있습니다.
+     * @throws InvalidGithubUrlException 제공된 GitHub URL이 규칙에 맞지 않는 경우 발생합니다.
+     */
+    public void validateAndSetGithubUrl(String githubUrl) {
+        if (githubUrl == null || githubUrl.isEmpty()) {
+            return;
+        }
+
+        String trimmedUrl = githubUrl.trim();
+
+        if (trimmedUrl.startsWith("http://")) {
+            trimmedUrl = "https://" + trimmedUrl.substring(7);
+        } else if (!trimmedUrl.startsWith("https://")) {
+            if (trimmedUrl.startsWith("github.com/")) {
+                trimmedUrl = "https://" + trimmedUrl;
+            } else {
+                throw new InvalidGithubUrlException("GitHub URL은 'https://github.com/'로 시작해야 합니다.");
+            }
+        }
+
+        if (!trimmedUrl.startsWith("https://github.com/")) {
+            throw new InvalidGithubUrlException("GitHub URL은 'https://github.com/'로 시작해야 합니다.");
+        }
+
+        this.githubUrl = trimmedUrl;
+    }
+
 }
