@@ -184,6 +184,10 @@ public class ActivityGroupMemberService {
         return groupMemberRepository.findAllByActivityGroupId(activityGroupId, pageable);
     }
 
+    public List<GroupMember> getGroupMemberByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status) {
+        return groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, status);
+    }
+
     public Page<GroupMember> getGroupMemberByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status, Pageable pageable) {
         return groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, status, pageable);
     }
