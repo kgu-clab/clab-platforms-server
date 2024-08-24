@@ -116,7 +116,8 @@ public class FileService {
     }
 
     public void validatePathVariable(String path) throws AssignmentFileUploadFailException {
-        if (path.split(Pattern.quote(File.separator))[0].equals("assignment")) {
+        String pathStart = path.split(Pattern.quote(File.separator))[0];
+        if (pathStart.equals("assignments")) {
             Long activityGroupId = Long.parseLong(path.split(Pattern.quote(File.separator))[1]);
             Long activityGroupBoardId = Long.parseLong(path.split(Pattern.quote(File.separator))[2]);
             String memberId = path.split(Pattern.quote(File.separator))[3];
@@ -130,6 +131,16 @@ public class FileService {
             }
             if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
                 throw new AssignmentFileUploadFailException("해당 활동 그룹 게시판이 존재하지 않습니다.");
+            }
+        } else if (pathStart.equals("weekly-activities")) {
+            Long activityGroupId = Long.parseLong(path.split(Pattern.quote(File.separator))[1]);
+            String memberId = externalRetrieveMemberUseCase.getCurrentMemberId();
+
+            if (!activityGroupRepository.existsById(activityGroupId)) {
+                throw new AssignmentFileUploadFailException("해당 활동은 존재하지 않습니다.");
+            }
+            if (!groupMemberRepository.existsByMemberIdAndActivityGroupId(memberId, activityGroupId)) {
+                throw new AssignmentFileUploadFailException("해당 활동에 참여하고 있지 않은 멤버입니다.");
             }
         }
     }
