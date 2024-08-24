@@ -58,9 +58,7 @@ public class ActivityGroupBoardService {
         }
 
         validateCanCreateBoard(activityGroup, requestDto.getCategory(), currentMember);
-
         validateParentBoard(requestDto.getCategory(), parentId);
-
         validateAlreadySubmittedAssignmentThisWeek(requestDto.getCategory(), parentId, currentMember.getId());
 
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrls());
