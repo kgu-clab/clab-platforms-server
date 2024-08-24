@@ -113,9 +113,9 @@ public class ActivityGroupBoardService {
     }
 
     private void validateAlreadySubmittedAssignmentThisWeek(ActivityGroupBoardCategory category, Long parentId, String memberId) {
-        if(category.isSubmit()) {
+        if (category.isSubmit()) {
             boolean hasSubmitted = activityGroupBoardRepository.existsByParentIdAndCategoryAndMemberId(parentId, ActivityGroupBoardCategory.SUBMIT, memberId);
-            if(hasSubmitted) {
+            if (hasSubmitted) {
                 throw new AlreadySubmittedThisWeekAssignmentException();
             }
         }
@@ -134,10 +134,10 @@ public class ActivityGroupBoardService {
     public ActivityGroupBoardResponseDto getActivityGroupBoardById(Long activityGroupBoardId) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        if(!activityGroupMemberService.isGroupMember(board.getActivityGroup(), currentMember.getId())) {
+        if (!activityGroupMemberService.isGroupMember(board.getActivityGroup(), currentMember.getId())) {
             throw new PermissionDeniedException("해당 활동 그룹의 멤버가 아닙니다.");
         }
-        if(!hasAccessToBoard(board.getActivityGroup(), board, currentMember)) {
+        if (!hasAccessToBoard(board.getActivityGroup(), board, currentMember)) {
             throw new PermissionDeniedException("해당 게시물을 조회할 권한이 없습니다.");
         }
         MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(board.getMemberId());
