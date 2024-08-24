@@ -31,10 +31,13 @@ import page.clab.api.domain.activity.activitygroup.exception.ContentLengthExceed
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAttendanceException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateReportException;
+import page.clab.api.domain.activity.activitygroup.exception.DuplicateRoleException;
 import page.clab.api.domain.activity.activitygroup.exception.FeedbackBoardHasNoContentException;
+import page.clab.api.domain.activity.activitygroup.exception.InactiveMemberException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidCategoryException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidGithubUrlException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
+import page.clab.api.domain.activity.activitygroup.exception.InvalidRoleException;
 import page.clab.api.domain.activity.activitygroup.exception.LeaderStatusChangeNotAllowedException;
 import page.clab.api.domain.activity.review.application.exception.AlreadyReviewedException;
 import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
@@ -101,8 +104,11 @@ public class GlobalExceptionHandler {
             InvalidColumnException.class,
             InvalidEmojiException.class,
             InvalidRoleChangeException.class,
+            InvalidRoleException.class,
             InvalidFileAttributeException.class,
             InvalidGithubUrlException.class,
+            InactiveMemberException.class,
+            DuplicateRoleException.class,
             RecruitmentNotActiveException.class,
             RecruitmentEndDateExceededException.class,
             StringIndexOutOfBoundsException.class,

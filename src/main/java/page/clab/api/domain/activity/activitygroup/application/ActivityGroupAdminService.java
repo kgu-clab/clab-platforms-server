@@ -22,6 +22,9 @@ import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupUpda
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardStatusUpdatedResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupMemberWithApplyReasonResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupResponseDto;
+import page.clab.api.domain.activity.activitygroup.exception.DuplicateRoleException;
+import page.clab.api.domain.activity.activitygroup.exception.InactiveMemberException;
+import page.clab.api.domain.activity.activitygroup.exception.InvalidRoleException;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
@@ -176,6 +179,22 @@ public class ActivityGroupAdminService {
         return activityGroup.getId();
     }
 
+    @Transactional
+    public Long changeGroupMemberPosition(Long activityGroupId, String memberId, ActivityGroupRole position) throws PermissionDeniedException {
+        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, memberId);
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
+
+        validateLeaderPermission(activityGroup, currentMember);
+        validateMemberIsActive(groupMember);
+        validateNewPosition(groupMember, position);
+
+        groupMember.updateRole(position);
+        activityGroupMemberService.save(groupMember);
+
+        return activityGroup.getId();
+    }
+
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
         return activityGroupRepository.findById(activityGroupId)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 활동입니다."));
@@ -202,5 +221,26 @@ public class ActivityGroupAdminService {
             throw new IllegalAccessException("활동이 진행 중인 그룹이 아닙니다. 차시 보고서를 작성할 수 없습니다.");
         }
         return activityGroup;
+    }
+
+    private void validateLeaderPermission(ActivityGroup activityGroup, Member member) throws PermissionDeniedException {
+        if (!isMemberGroupLeaderRole(activityGroup, member)) {
+            throw new PermissionDeniedException("해당 활동의 멤버 직책을 변경할 권한이 없습니다.");
+        }
+    }
+
+    private void validateMemberIsActive(GroupMember groupMember) {
+        if (groupMember.isInactive()) {
+            throw new InactiveMemberException("활동에 참여하지 않은 멤버의 직책을 변경할 수 없습니다.");
+        }
+    }
+
+    private void validateNewPosition(GroupMember groupMember, ActivityGroupRole position) {
+        if (position.isNone()) {
+            throw new InvalidRoleException("직책이 없는 멤버로 변경할 수 없습니다.");
+        }
+        if (groupMember.isSameRole(position)) {
+            throw new DuplicateRoleException("이미 해당 직책을 가지고 있습니다.");
+        }
     }
 }
