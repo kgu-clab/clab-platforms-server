@@ -79,6 +79,18 @@ public class FileController {
         return ApiResponse.success(responseDtos);
     }
 
+    @Operation(summary = "[U] 회비 증빙 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping(value = "/membership-fee", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponse<List<UploadedFileResponseDto>> assignmentUpload(
+            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam(name = "storagePeriod") long storagePeriod
+    ) throws PermissionDeniedException, IOException, NotFoundException {
+        String path = fileService.buildPath("membership-fees");
+        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, path, storagePeriod);
+        return ApiResponse.success(responseDtos);
+    }
+
     @Operation(summary = "[U] 주차별 활동 파일 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/weekly-activities/{activityGroupId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
