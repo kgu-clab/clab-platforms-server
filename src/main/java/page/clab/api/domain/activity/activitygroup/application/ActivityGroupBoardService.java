@@ -106,7 +106,7 @@ public class ActivityGroupBoardService {
             ActivityGroupBoard parentBoard = board.getParent();
             boolean isParentSubmitter = parentBoard != null
                     && parentBoard.getCategory().isSubmit()
-                    && parentBoard.getMemberId().equals(currentMember.getId());
+                    && parentBoard.isOwner(currentMember.getId());
             return isLeader || isParentSubmitter;
         }
         return isSubmitter || isLeader;
