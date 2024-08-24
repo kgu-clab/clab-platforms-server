@@ -1,8 +1,9 @@
 package page.clab.api.global.common.file.application;
 
 
+import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,7 +37,6 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class FileService {
 
@@ -57,6 +57,13 @@ public class FileService {
 
     @Value("${spring.servlet.multipart.max-file-size}")
     private String maxFileSize;
+
+    private static final Map<Role, Set<String>> roleCategoryMap = Map.of(
+            Role.GUEST, Set.of("boards", "profiles", "activity-photos", "membership-fee"),
+            Role.USER, Set.of("boards", "profiles", "activity-photos", "membership-fee", "assignments"),
+            Role.ADMIN, Set.of("boards", "profiles", "activity-photos", "membership-fee", "members", "assignments"),
+            Role.SUPER, Set.of("boards", "profiles", "activity-photos", "membership-fee", "members", "assignments")
+    );
 
     public String saveQRCodeImage(byte[] QRCodeImage, String path, long storagePeriod, String nowDateTime) throws IOException {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
@@ -165,23 +172,33 @@ public class FileService {
 
     public boolean isUserAccessibleAtFile(Authentication authentication, String url) {
         String category = getCategoryByUrl(url);
-        if (category == null)
+        if (category == null || category.isEmpty())
             return false;
-
         return isUserAccessibleByCategory(category, url, authentication);
     }
 
-    public boolean isUserAccessibleByCategory(String category, String url,  Authentication authentication) {
+    public boolean isUserAccessibleByCategory(String category, String url, Authentication authentication){
+
+        if (category.equals("activity-photos")) {
+            return true;
+        }
+
+        if (authentication == null || authentication.getAuthorities() == null || authentication.getAuthorities().isEmpty())
+            return false;
+
         UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
         String uploaderId = uploadedFile.getUploader();
-
         GrantedAuthority authority = authentication.getAuthorities().iterator().next();
         String roleName = authority.getAuthority().replace("ROLE_", "");
         Role role = Role.valueOf(roleName);
 
+        if (!roleCategoryMap.getOrDefault(role, Set.of()).contains(category)) {
+            return false;
+        }
+
         switch (category) {
-            case "boards", "profiles", "activity-photos", "membership-fee":
-                return (role.toRoleLevel() >= Role.GUEST.toRoleLevel());
+            case "boards", "profiles", "membership-fee", "activity-photos":
+                return true;
 
             case "members":
                 return (authentication.getName().equals(uploaderId));
@@ -189,16 +206,16 @@ public class FileService {
             case "assignments":
                 String[] parts = url.split("/");
                 Long activityGroupId = Long.parseLong(parts[4]);
-                log.info(activityGroupId.toString());
-                return (authentication.getName().equals(uploaderId) || activityGroupAdminService.isMemberGroupLeaderRole(activityGroupId, authentication.getName()));
+                return (authentication.getName().equals(uploaderId) ||
+                        activityGroupAdminService.isMemberGroupLeaderRole(activityGroupId, authentication.getName()));
+            default:
+                return false;
         }
-        return false;
     }
 
     private String getCategoryByUrl(String url) {
-        String basePath = "/resources/files/";
+        String basePath = fileURL + "/";
         String category = "";
-
         if (url.startsWith(basePath)) {
             category = url.substring(basePath.length());
             if (category.contains("/")) {
