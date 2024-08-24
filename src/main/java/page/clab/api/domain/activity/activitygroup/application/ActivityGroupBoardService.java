@@ -53,10 +53,8 @@ public class ActivityGroupBoardService {
     public ActivityGroupBoardReferenceDto createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroupMemberService.isGroupMember(activityGroup, currentMember.getId())) {
-            throw new PermissionDeniedException("활동 그룹 멤버만 게시글을 등록할 수 있습니다.");
-        }
 
+        validateGroupMember(activityGroup, currentMember);
         validateCanCreateBoard(activityGroup, requestDto.getCategory(), currentMember);
         validateParentBoard(requestDto.getCategory(), parentId);
         validateAlreadySubmittedAssignmentThisWeek(requestDto.getCategory(), parentId, currentMember.getId());
@@ -75,6 +73,12 @@ public class ActivityGroupBoardService {
 
         notifyMembersAboutNewBoard(activityGroupId, activityGroup, currentMember);
         return ActivityGroupBoardReferenceDto.toDto(board.getId(), activityGroupId, parentId);
+    }
+
+    private void validateGroupMember(ActivityGroup activityGroup, Member currentMember) throws PermissionDeniedException {
+        if (!activityGroupMemberService.isGroupMember(activityGroup, currentMember.getId())) {
+            throw new PermissionDeniedException("해당 활동 그룹의 멤버가 아닙니다.");
+        }
     }
 
     private void validateCanCreateBoard(ActivityGroup activityGroup, ActivityGroupBoardCategory category, Member currentMember) throws PermissionDeniedException {
@@ -134,9 +138,7 @@ public class ActivityGroupBoardService {
     public ActivityGroupBoardResponseDto getActivityGroupBoardById(Long activityGroupBoardId) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
-        if (!activityGroupMemberService.isGroupMember(board.getActivityGroup(), currentMember.getId())) {
-            throw new PermissionDeniedException("해당 활동 그룹의 멤버가 아닙니다.");
-        }
+        validateGroupMember(board.getActivityGroup(), currentMember);
         if (!hasAccessToBoard(board.getActivityGroup(), board, currentMember)) {
             throw new PermissionDeniedException("해당 게시물을 조회할 권한이 없습니다.");
         }
@@ -148,9 +150,7 @@ public class ActivityGroupBoardService {
     public PagedResponseDto<ActivityGroupBoardResponseDto> getActivityGroupBoardByCategory(Long activityGroupId, ActivityGroupBoardCategory category, Pageable pageable) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
-        if (!activityGroupMemberService.isGroupMember(activityGroup, currentMember.getId())) {
-            throw new PermissionDeniedException("해당 활동 그룹의 멤버가 아닙니다.");
-        }
+        validateGroupMember(activityGroup, currentMember);
         Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByActivityGroup_IdAndCategory(activityGroupId, category, pageable);
         List<ActivityGroupBoardResponseDto> filteredBoards = boards.stream()
                 .filter(board -> hasAccessToBoard(board.getActivityGroup(), board, currentMember))
@@ -167,9 +167,7 @@ public class ActivityGroupBoardService {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
         Long activityGroupId = parentBoard.getActivityGroup().getId();
-        if (!activityGroupMemberService.isGroupMember(parentBoard.getActivityGroup(), currentMember.getId())) {
-            throw new PermissionDeniedException("해당 활동 그룹의 멤버가 아닙니다.");
-        }
+        validateGroupMember(parentBoard.getActivityGroup(), currentMember);
 
         GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
         parentBoard.validateAccessPermission(currentMember, groupLeader);
