@@ -16,6 +16,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -132,6 +133,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
+            AuthenticationException.class,
             AuthenticationInfoNotFoundException.class,
             UnAuthorizeException.class,
             LoginFailedException.class,

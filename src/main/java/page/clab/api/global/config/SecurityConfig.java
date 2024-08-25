@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -107,12 +109,8 @@ public class SecurityConfig {
 //                )
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer
-                                .authenticationEntryPoint((request, response, authException) ->
-                                        handleAuthenticationEntryPoint(request, response)
-                                )
-                                .accessDeniedHandler((request, response, accessDeniedException) ->
-                                        handleAccessDenied(request, response)
-                                )
+                                .authenticationEntryPoint(this::handleException)
+                                .accessDeniedHandler(this::handleException)
                 );
         return http.build();
     }
@@ -126,17 +124,24 @@ public class SecurityConfig {
                 .anyRequest().authenticated();
     }
 
-    private void handleAuthenticationEntryPoint(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception) throws IOException {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        apiLogger.logRequest(request, response, clientIpAddress, "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.");
-        externalRegisterIpAccessMonitorUseCase.registerIpAccessMonitor(request, clientIpAddress);
-        ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
-    }
+        String message;
+        int statusCode;
 
-    private void handleAccessDenied(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        apiLogger.logRequest(request, response, clientIpAddress, "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.");
+        if (exception instanceof AuthenticationException) {
+            message = "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.";
+            statusCode = HttpServletResponse.SC_UNAUTHORIZED;
+        } else if (exception instanceof AccessDeniedException) {
+            message = "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.";
+            statusCode = HttpServletResponse.SC_FORBIDDEN;
+        } else {
+            message = "비정상적인 접근이 감지되었습니다.";
+            statusCode = HttpServletResponse.SC_BAD_REQUEST;
+        }
+
+        apiLogger.logRequest(request, response, clientIpAddress, message);
         externalRegisterIpAccessMonitorUseCase.registerIpAccessMonitor(request, clientIpAddress);
-        ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN);
+        ResponseUtil.sendErrorResponse(response, statusCode);
     }
 }
