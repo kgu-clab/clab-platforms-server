@@ -15,4 +15,24 @@ public enum ActivityGroupBoardCategory {
 
     private final String key;
     private final String description;
+
+    public boolean isNotice() {
+        return this == NOTICE;
+    }
+
+    public boolean isWeeklyActivity() {
+        return this == WEEKLY_ACTIVITY;
+    }
+
+    public boolean isFeedback() {
+        return this == FEEDBACK;
+    }
+
+    public boolean isAssignment() {
+        return this == ASSIGNMENT;
+    }
+
+    public boolean isSubmit() {
+        return this == SUBMIT;
+    }
 }
