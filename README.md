@@ -1,6 +1,4 @@
-# C-Lab Platforms Server
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Spring Boot Gradle CI](https://github.com/KGU-C-Lab/clab-platforms-server/actions/workflows/spring-boot-gradle-ci.yml/badge.svg)](https://github.com/KGU-C-Lab/clab-platforms-server/actions/workflows/spring-boot-gradle-ci.yml)
+# C-Lab Platforms Server &middot; [![GitHub License](https://img.shields.io/github/license/KGU-C-Lab/clab-platforms-server)](https://github.com/KGU-C-Lab/clab-platforms-server/blob/main/LICENSE) [![Spring Boot Gradle CI](https://github.com/KGU-C-Lab/clab-platforms-server/actions/workflows/spring-boot-gradle-ci.yml/badge.svg)](https://github.com/KGU-C-Lab/clab-platforms-server/actions/workflows/spring-boot-gradle-ci.yml)
 
 - [한국어](README.md)
 - [English](README_EN.md)
