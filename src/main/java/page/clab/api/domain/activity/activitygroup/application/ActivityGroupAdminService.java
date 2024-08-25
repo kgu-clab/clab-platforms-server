@@ -70,7 +70,6 @@ public class ActivityGroupAdminService {
             throw new PermissionDeniedException("해당 활동을 수정할 권한이 없습니다.");
         }
         activityGroup.update(requestDto);
-        activityGroup.validateContentLength();
         return activityGroupRepository.save(activityGroup).getId();
     }
 

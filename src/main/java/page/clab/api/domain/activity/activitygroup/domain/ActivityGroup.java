@@ -81,7 +81,7 @@ public class ActivityGroup extends BaseEntity {
         Optional.ofNullable(requestDto.getCategory()).ifPresent(this::setCategory);
         Optional.ofNullable(requestDto.getSubject()).ifPresent(this::setSubject);
         Optional.ofNullable(requestDto.getName()).ifPresent(this::setName);
-        Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
+        Optional.ofNullable(requestDto.getContent()).ifPresent(this::validateAndSetContentLength);
         Optional.ofNullable(requestDto.getImageUrl()).ifPresent(this::setImageUrl);
         Optional.ofNullable(requestDto.getCurriculum()).ifPresent(this::setCurriculum);
         Optional.ofNullable(requestDto.getStartDate()).ifPresent(this::setStartDate);
@@ -126,6 +126,13 @@ public class ActivityGroup extends BaseEntity {
         }
     }
 
+    public void validateAndSetContentLength(String content) {
+        if (content != null && content.length() > 200) {
+            throw new ContentLengthExceededException("활동 설명은 200자 이하여야 합니다.");
+        }
+        this.content = content;
+    }
+
     /**
      * GitHub URL을 검증하고 설정합니다.
      * <p>
@@ -164,5 +171,4 @@ public class ActivityGroup extends BaseEntity {
 
         this.githubUrl = trimmedUrl;
     }
-
 }
