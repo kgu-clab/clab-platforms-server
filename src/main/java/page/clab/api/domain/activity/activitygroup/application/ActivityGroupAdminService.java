@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activity.activitygroup.dao.ApplyFormRepository;
 import page.clab.api.domain.activity.activitygroup.dao.GroupScheduleRepository;
@@ -79,9 +80,9 @@ public class ActivityGroupAdminService {
         activityGroup.updateStatus(status);
         activityGroupRepository.save(activityGroup);
 
-        GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
-        if (groupLeader != null) {
-            externalSendNotificationUseCase.sendNotificationToMember(groupLeader.getMemberId(), "활동 그룹이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
+        List<GroupMember> groupLeaders = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
+        if (!CollectionUtils.isEmpty(groupLeaders)) {
+            groupLeaders.forEach(leader -> externalSendNotificationUseCase.sendNotificationToMember(leader.getMemberId(), "활동 그룹이 [" + status.getDescription() + "] 상태로 변경되었습니다."));
         }
         return ActivityGroupBoardStatusUpdatedResponseDto.toDto(activityGroupId, status);
     }
@@ -97,14 +98,14 @@ public class ActivityGroupAdminService {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
         List<GroupSchedule> groupSchedules = groupScheduleRepository.findAllByActivityGroupIdOrderByIdDesc(activityGroupId);
-        GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
+        List<GroupMember> groupLeaders = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
 
         activityGroupMemberService.deleteAll(groupMembers);
         groupScheduleRepository.deleteAll(groupSchedules);
         activityGroupRepository.delete(activityGroup);
 
-        if (groupLeader != null) {
-            externalSendNotificationUseCase.sendNotificationToMember(groupLeader.getMemberId(), "활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다.");
+        if (!CollectionUtils.isEmpty(groupLeaders)) {
+            groupLeaders.forEach(leader -> externalSendNotificationUseCase.sendNotificationToMember(leader.getMemberId(), "활동 그룹 [" + activityGroup.getName() + "]이 삭제되었습니다."));
         }
         return activityGroup.getId();
     }

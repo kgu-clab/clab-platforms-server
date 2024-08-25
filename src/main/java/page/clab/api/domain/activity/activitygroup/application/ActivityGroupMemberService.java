@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupDetailsRepository;
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupRepository;
@@ -143,9 +144,9 @@ public class ActivityGroupMemberService {
         GroupMember groupMember = GroupMember.create(currentMember.getId(), activityGroup, ActivityGroupRole.NONE, GroupMemberStatus.WAITING);
         groupMemberRepository.save(groupMember);
 
-        GroupMember groupLeader = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
-        if (groupLeader != null) {
-            externalSendNotificationUseCase.sendNotificationToMember(groupLeader.getMemberId(), "[" + activityGroup.getName() + "] " + currentMember.getName() + "님이 활동 참가 신청을 하였습니다.");
+        List<GroupMember> groupLeaders = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
+        if (!CollectionUtils.isEmpty(groupLeaders)) {
+            groupLeaders.forEach(leader -> externalSendNotificationUseCase.sendNotificationToMember(leader.getMemberId(), "[" + activityGroup.getName() + "] " + currentMember.getName() + "님이 활동 참가 신청을 하였습니다."));
         }
         return activityGroup.getId();
     }
@@ -217,9 +218,8 @@ public class ActivityGroupMemberService {
         return groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, status, pageable);
     }
 
-    public GroupMember getGroupMemberByActivityGroupIdAndRole(Long activityGroupId, ActivityGroupRole role) {
-        return groupMemberRepository.findByActivityGroupIdAndRole(activityGroupId, role)
-                .orElse(null);
+    public List<GroupMember> getGroupMemberByActivityGroupIdAndRole(Long activityGroupId, ActivityGroupRole role) {
+        return groupMemberRepository.findByActivityGroupIdAndRole(activityGroupId, role);
     }
 
     public List<GroupMember> getGroupMemberByMemberId(String memberId) {
