@@ -53,12 +53,12 @@ public class ActivityGroupMemberController {
     @Operation(summary = "[G] 나의 활동 목록 조회", description = "ROLE_GUEST 이상의 권한이 필요함")
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/my")
-    public ApiResponse<PagedResponseDto<ActivityGroupResponseDto>> getMyActivityGroups(
+    public ApiResponse<PagedResponseDto<ActivityGroupStatusResponseDto>> getMyActivityGroups(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getMyActivityGroups(pageable);
+        PagedResponseDto<ActivityGroupStatusResponseDto> activityGroups = activityGroupMemberService.getMyActivityGroups(pageable);
         return ApiResponse.success(activityGroups);
     }
 

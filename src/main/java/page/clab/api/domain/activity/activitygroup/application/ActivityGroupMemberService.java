@@ -75,17 +75,21 @@ public class ActivityGroupMemberService {
     }
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<ActivityGroupResponseDto> getMyActivityGroups(Pageable pageable) {
+    public PagedResponseDto<ActivityGroupStatusResponseDto> getMyActivityGroups(Pageable pageable) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         List<GroupMember> groupMembers = getGroupMemberByMemberId(currentMemberId);
 
-        List<ActivityGroupResponseDto> activityGroups = groupMembers.stream()
+        List<ActivityGroup> activityGroups = groupMembers.stream()
                 .filter(GroupMember::isAccepted)
                 .map(GroupMember::getActivityGroup)
-                .map(ActivityGroupResponseDto::toDto)
+                .distinct()
                 .toList();
 
-        return new PagedResponseDto<>(activityGroups, pageable, activityGroups.size());
+        List<ActivityGroupStatusResponseDto> activityGroupDtos = activityGroups.stream()
+                .map(this::getActivityGroupStatusResponseDto)
+                .toList();
+
+        return new PagedResponseDto<>(activityGroupDtos, pageable, activityGroupDtos.size());
     }
 
     @Transactional(readOnly = true)
