@@ -25,7 +25,11 @@ public class ApiLoggingInterceptor implements HandlerInterceptor {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String id = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+
         String requestUrl = request.getRequestURI();
+        String queryString = request.getQueryString();
+        String fullUrl = queryString == null ? requestUrl : requestUrl + "?" + queryString;
+
         String httpMethod = request.getMethod();
         int httpStatus = response.getStatus();
 
@@ -34,9 +38,9 @@ public class ApiLoggingInterceptor implements HandlerInterceptor {
         long duration = endTime - startTime;
 
         if (ex == null) {
-            log.info("[{}:{}] {} {} {} {}ms", clientIpAddress, id, requestUrl, httpMethod, httpStatus, duration);
+            log.info("[{}:{}] {} {} {} {}ms", clientIpAddress, id, fullUrl, httpMethod, httpStatus, duration);
         } else {
-            log.error("[{}:{}] {} {} {} {}ms, Exception: {}", clientIpAddress, id, requestUrl, httpMethod, httpStatus, duration, ex.getMessage());
+            log.error("[{}:{}] {} {} {} {}ms, Exception: {}", clientIpAddress, id, fullUrl, httpMethod, httpStatus, duration, ex.getMessage());
         }
     }
 }

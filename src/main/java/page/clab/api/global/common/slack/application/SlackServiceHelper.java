@@ -150,6 +150,8 @@ public class SlackServiceHelper {
     private List<LayoutBlock> createErrorBlocks(HttpServletRequest request, Exception e) {
         String httpMethod = request.getMethod();
         String requestUrl = request.getRequestURI();
+        String queryString = request.getQueryString();
+        String fullUrl = queryString == null ? requestUrl : requestUrl + "?" + queryString;
         String username = getUsername();
 
         String errorMessage = e.getMessage() == null ? "No error message provided" : e.getMessage();
@@ -159,7 +161,7 @@ public class SlackServiceHelper {
                 section(section -> section.text(markdownText(":firecracker: *Server Error*"))),
                 section(section -> section.fields(Arrays.asList(
                         markdownText("*User:*\n" + username),
-                        markdownText("*Endpoint:*\n[" + httpMethod + "] " + requestUrl)
+                        markdownText("*Endpoint:*\n[" + httpMethod + "] " + fullUrl)
                 ))),
                 section(section -> section.text(markdownText("*Error Message:*\n" + detailedMessage))),
                 section(section -> section.text(markdownText("*Stack Trace:*\n```" + getStackTraceSummary(e) + "```")))
@@ -169,6 +171,8 @@ public class SlackServiceHelper {
     private List<LayoutBlock> createSecurityAlertBlocks(HttpServletRequest request, AlertType alertType, String additionalMessage) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String requestUrl = request.getRequestURI();
+        String queryString = request.getQueryString();
+        String fullUrl = queryString == null ? requestUrl : requestUrl + "?" + queryString;
         String username = getUsername(request);
         String location = getLocation(request);
 
@@ -178,7 +182,7 @@ public class SlackServiceHelper {
                         markdownText("*User:*\n" + username),
                         markdownText("*IP Address:*\n" + clientIpAddress),
                         markdownText("*Location:*\n" + location),
-                        markdownText("*Endpoint:*\n" + requestUrl)
+                        markdownText("*Endpoint:*\n" + fullUrl)
                 ))),
                 section(section -> section.text(markdownText("*Details:*\n" + alertType.getDefaultMessage() + "\n" + additionalMessage)))
         );

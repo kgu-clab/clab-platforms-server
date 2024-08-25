@@ -146,9 +146,14 @@ public class SecurityConfig {
     private void apiLogging(HttpServletRequest request, HttpServletResponse response, String clientIpAddress, String message) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String id = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
+
         String requestUrl = request.getRequestURI();
+        String queryString = request.getQueryString();
+        String fullUrl = queryString == null ? requestUrl : requestUrl + "?" + queryString;
+
         String httpMethod = request.getMethod();
         int httpStatus = response.getStatus();
-        log.info("[{}:{}] {} {} {} {}", clientIpAddress, id, requestUrl, httpMethod, httpStatus, message);
+        log.info("[{}:{}] {} {} {} {}", clientIpAddress, id, fullUrl, httpMethod, httpStatus, message);
     }
+
 }
