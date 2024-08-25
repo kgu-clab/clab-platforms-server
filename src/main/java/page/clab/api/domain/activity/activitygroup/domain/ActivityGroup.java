@@ -98,6 +98,10 @@ public class ActivityGroup extends BaseEntity {
         return this.status.equals(ActivityGroupStatus.END);
     }
 
+    public boolean isSameStatus(ActivityGroupStatus status) {
+        return this.status.equals(status);
+    }
+
     public void updateStatus(ActivityGroupStatus status) {
         this.status = status;
     }

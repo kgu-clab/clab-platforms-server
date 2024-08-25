@@ -75,13 +75,14 @@ public class ActivityGroupMemberService {
     }
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<ActivityGroupStatusResponseDto> getMyActivityGroups(Pageable pageable) {
+    public PagedResponseDto<ActivityGroupStatusResponseDto> getMyActivityGroups(ActivityGroupStatus status, Pageable pageable) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         List<GroupMember> groupMembers = getGroupMemberByMemberId(currentMemberId);
 
         List<ActivityGroup> activityGroups = groupMembers.stream()
                 .filter(GroupMember::isAccepted)
                 .map(GroupMember::getActivityGroup)
+                .filter(activityGroup -> status == null || activityGroup.isSameStatus(status))
                 .distinct()
                 .toList();
 
