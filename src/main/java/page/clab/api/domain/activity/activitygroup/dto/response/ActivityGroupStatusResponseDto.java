@@ -5,7 +5,6 @@ import lombok.Getter;
 import org.springframework.util.CollectionUtils;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupCategory;
-import page.clab.api.domain.memberManagement.member.domain.Member;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +24,7 @@ public class ActivityGroupStatusResponseDto {
     private Long weeklyActivityCount;
     private LocalDateTime createdAt;
 
-    public static ActivityGroupStatusResponseDto toDto(ActivityGroup activityGroup, List<Member> leader, Long participantCount, Long weeklyActivityCount) {
+    public static ActivityGroupStatusResponseDto toDto(ActivityGroup activityGroup, List<LeaderInfo> leader, Long participantCount, Long weeklyActivityCount) {
         return ActivityGroupStatusResponseDto.builder()
                 .id(activityGroup.getId())
                 .name(activityGroup.getName())
@@ -33,7 +32,7 @@ public class ActivityGroupStatusResponseDto {
                 .category(activityGroup.getCategory())
                 .subject(activityGroup.getSubject())
                 .imageUrl(activityGroup.getImageUrl())
-                .leaders(CollectionUtils.isEmpty(leader) ? null : LeaderInfo.create(leader))
+                .leaders(CollectionUtils.isEmpty(leader) ? null : leader)
                 .participantCount(participantCount)
                 .weeklyActivityCount(weeklyActivityCount)
                 .createdAt(activityGroup.getCreatedAt())

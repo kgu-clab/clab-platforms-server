@@ -28,6 +28,7 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupDet
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupStatusResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.GroupMemberResponseDto;
+import page.clab.api.domain.activity.activitygroup.dto.response.LeaderInfo;
 import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
@@ -36,6 +37,8 @@ import page.clab.api.external.memberManagement.notification.application.port.Ext
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -164,9 +167,15 @@ public class ActivityGroupMemberService {
         Long activityGroupId = activityGroup.getId();
 
         Long participantCount = groupMemberRepository.countAcceptedMembersByActivityGroupId(activityGroupId);
-        List<Member> leaderMembers = groupMemberRepository.findLeaderByActivityGroupId(activityGroupId)
+        List<LeaderInfo> leaderMembers = groupMemberRepository.findLeaderByActivityGroupId(activityGroupId)
                 .stream()
-                .map(leader -> externalRetrieveMemberUseCase.findByIdOrThrow(leader.getMemberId()))
+                .map(leader -> {
+                    Member member = externalRetrieveMemberUseCase.findByIdOrThrow(leader.getMemberId());
+                    LocalDateTime createdAt = leader.getCreatedAt();
+                    return LeaderInfo.create(member, createdAt);
+                })
+                // LEADER 직책을 가진 사람 중 가장 먼저 활동에 참여한 사람 순으로 정렬
+                .sorted(Comparator.comparing(LeaderInfo::getCreatedAt))
                 .toList();
 
         Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroupId, ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
