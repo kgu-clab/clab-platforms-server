@@ -23,7 +23,7 @@ public class AuthUtil {
         return getAuthenticationInfo().getUsername();
     }
 
-    public static Boolean isUserUnAuthenticated (Authentication authentication) {
+    public static Boolean isUserUnAuthenticated(Authentication authentication) {
         return (authentication == null || authentication.getAuthorities() == null || authentication.getAuthorities().isEmpty());
     }
 }

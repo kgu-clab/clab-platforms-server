@@ -223,42 +223,6 @@ public class FileService {
                 activityGroupAdminService.isMemberGroupLeaderRole(activityGroupId, authentication.getName());
     }
 
-/*    public boolean isUserAccessibleByCategory(String category, String url, Authentication authentication) {
-
-        if (category.equals("activity-photos")) {
-            return true;
-        }
-
-        if (authentication == null || authentication.getAuthorities() == null || authentication.getAuthorities().isEmpty())
-            return false;
-
-        UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
-        String uploaderId = uploadedFile.getUploader();
-        GrantedAuthority authority = authentication.getAuthorities().iterator().next();
-        String roleName = authority.getAuthority().replace("ROLE_", "");
-        Role role = Role.valueOf(roleName);
-
-        if (!roleCategoryMap.getOrDefault(role, Set.of()).contains(category)) {
-            return false;
-        }
-
-        switch (category) {
-            case "boards", "profiles", "membership-fee", "activity-photos":
-                return true;
-
-            case "members":
-                return (authentication.getName().equals(uploaderId));
-
-            case "assignments":
-                String[] parts = url.split("/");
-                Long activityGroupId = Long.parseLong(parts[4]);
-                return (authentication.getName().equals(uploaderId) ||
-                        activityGroupAdminService.isMemberGroupLeaderRole(activityGroupId, authentication.getName()));
-            default:
-                return false;
-        }
-    }*/
-
     private String getCategoryByUrl(String url) {
         String basePath = fileURL + "/";
         String category = "";
