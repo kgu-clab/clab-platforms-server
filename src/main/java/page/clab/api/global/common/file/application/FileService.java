@@ -61,10 +61,10 @@ public class FileService {
     private String maxFileSize;
 
     private static final Map<Role, Set<String>> roleCategoryMap = Map.of(
-            Role.GUEST, Set.of("boards", "profiles", "activity-photos", "membership-fees"),
-            Role.USER, Set.of("boards", "profiles", "activity-photos", "membership-fees", "assignments"),
-            Role.ADMIN, Set.of("boards", "profiles", "activity-photos", "membership-fees", "members", "assignments"),
-            Role.SUPER, Set.of("boards", "profiles", "activity-photos", "membership-fees", "members", "assignments")
+            Role.GUEST, Set.of("boards", "profiles", "activity-photos", "membership-fees", "weekly-activities"),
+            Role.USER, Set.of("boards", "profiles", "activity-photos", "membership-fees" , "weekly-activities", "assignments"),
+            Role.ADMIN, Set.of("boards", "profiles", "activity-photos", "membership-fees", "weekly-activities", "members", "assignments"),
+            Role.SUPER, Set.of("boards", "profiles", "activity-photos", "membership-fees", "weekly-activities", "members", "assignments")
     );
 
     private final Map<String, BiFunction<String, Authentication, Boolean>> categoryAccessMap = Map.of(
@@ -72,6 +72,7 @@ public class FileService {
             "profiles", (url, auth) -> true,
             "membership-fees", (url, auth) -> true,
             "activity-photos", (url, auth) -> true,
+            "weekly-activities", (url, auth) -> true,
             "members", this::isMemberAccessible,
             "assignments", this::isAssignmentAccessible
     );
