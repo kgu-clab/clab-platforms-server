@@ -14,6 +14,7 @@ import page.clab.api.domain.activity.activitygroup.application.ActivityGroupAdmi
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activity.activitygroup.dao.GroupMemberRepository;
+import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.memberManagement.member.domain.Role;
@@ -61,7 +62,7 @@ public class FileService {
     private String maxFileSize;
 
     private static final Map<Role, Set<String>> roleCategoryMap = Map.of(
-            Role.GUEST, Set.of("boards", "profiles", "activity-photos", "membership-fees", "weekly-activities"),
+            Role.GUEST, Set.of("boards", "profiles", "activity-photos", "membership-fees"),
             Role.USER, Set.of("boards", "profiles", "activity-photos", "membership-fees" , "weekly-activities", "assignments"),
             Role.ADMIN, Set.of("boards", "profiles", "activity-photos", "membership-fees", "weekly-activities", "members", "assignments"),
             Role.SUPER, Set.of("boards", "profiles", "activity-photos", "membership-fees", "weekly-activities", "members", "assignments")
@@ -72,7 +73,7 @@ public class FileService {
             "profiles", (url, auth) -> true,
             "membership-fees", (url, auth) -> true,
             "activity-photos", (url, auth) -> true,
-            "weekly-activities", (url, auth) -> true,
+            "weekly-activities", this::isWeeklyActivityAccessible,
             "members", this::isMemberAccessible,
             "assignments", this::isAssignmentAccessible
     );
@@ -222,6 +223,14 @@ public class FileService {
 
         return authentication.getName().equals(uploaderId) ||
                 activityGroupAdminService.isMemberGroupLeaderRole(activityGroupId, authentication.getName());
+    }
+
+    private boolean isWeeklyActivityAccessible(String url, Authentication authentication) {
+        String memberId = authentication.getName();
+        String[] parts = url.split("/");
+        Long activityGroupId = Long.parseLong(parts[4]);
+
+        return groupMemberRepository.existsByActivityGroupIdAndMemberIdAndStatus(activityGroupId, memberId, GroupMemberStatus.ACCEPTED);
     }
 
     private String getCategoryByUrl(String url) {
