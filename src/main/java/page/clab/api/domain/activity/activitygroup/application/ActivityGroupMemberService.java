@@ -69,7 +69,7 @@ public class ActivityGroupMemberService {
         List<ActivityGroupBoardResponseDto> activityGroupBoardResponseDtos =
                 details.getActivityGroupBoards().stream()
                         .map(board -> {
-                            MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
+                            MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(board.getMemberId());
                             return ActivityGroupBoardResponseDto.toDto(board, memberBasicInfoDto);
                         })
                         .toList();
@@ -209,6 +209,10 @@ public class ActivityGroupMemberService {
         return groupMemberRepository.findAllByActivityGroupId(activityGroupId, pageable);
     }
 
+    public List<GroupMember> getGroupMemberByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status) {
+        return groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, status);
+    }
+
     public Page<GroupMember> getGroupMemberByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status, Pageable pageable) {
         return groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, status, pageable);
     }
@@ -223,7 +227,7 @@ public class ActivityGroupMemberService {
     }
 
     public boolean isGroupMember(ActivityGroup activityGroup, String memberId) {
-        return groupMemberRepository.existsByActivityGroupAndMemberId(activityGroup, memberId);
+        return groupMemberRepository.existsByActivityGroupAndMemberIdAndStatus(activityGroup, memberId, GroupMemberStatus.ACCEPTED);
     }
 
     public GroupMember save(GroupMember groupMember) {
