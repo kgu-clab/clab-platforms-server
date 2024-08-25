@@ -102,10 +102,10 @@ public class SecurityConfig {
                         new JwtAuthenticationFilter(slackService, jwtTokenProvider, externalManageRedisTokenUseCase, externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
                         UsernamePasswordAuthenticationFilter.class
                 )
-                .addFilterBefore(
-                        new FileAccessControlFilter(fileService, fileURL),
-                        UsernamePasswordAuthenticationFilter.class
-                )
+//                .addFilterBefore(
+//                        new FileAccessControlFilter(fileService, fileURL),
+//                        UsernamePasswordAuthenticationFilter.class
+//                )
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer
                                 .authenticationEntryPoint((request, response, authException) ->
