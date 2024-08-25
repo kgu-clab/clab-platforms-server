@@ -29,7 +29,6 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupRes
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupStatusResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedException;
-import page.clab.api.domain.activity.activitygroup.exception.InvalidCategoryException;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
@@ -99,18 +98,9 @@ public class ActivityGroupMemberService {
     public PagedResponseDto<ActivityGroupStatusResponseDto> getActivityGroupsByStatus(ActivityGroupStatus status, Pageable pageable) {
         List<ActivityGroup> activityGroups = activityGroupRepository.findActivityGroupsByStatus(status);
 
-        List<ActivityGroupStatusResponseDto> activityGroupDtos = activityGroups.stream().map(activityGroup -> {
-            Long participantCount = groupMemberRepository.countAcceptedMembersByActivityGroupId(activityGroup.getId());
-            GroupMember leader = groupMemberRepository.findLeaderByActivityGroupId(activityGroup.getId());
-
-            Member leaderMember = null;
-            if (leader != null) {
-                leaderMember = externalRetrieveMemberUseCase.findByIdOrThrow(leader.getMemberId());
-            }
-            Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroup.getId(), ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
-
-            return ActivityGroupStatusResponseDto.toDto(activityGroup, leaderMember, participantCount, weeklyActivityCount);
-        }).toList();
+        List<ActivityGroupStatusResponseDto> activityGroupDtos = activityGroups.stream()
+                .map(this::getActivityGroupStatusResponseDto)
+                .toList();
 
         return new PagedResponseDto<>(activityGroupDtos, pageable, activityGroupDtos.size());
     }
@@ -156,6 +146,32 @@ public class ActivityGroupMemberService {
             externalSendNotificationUseCase.sendNotificationToMember(groupLeader.getMemberId(), "[" + activityGroup.getName() + "] " + currentMember.getName() + "님이 활동 참가 신청을 하였습니다.");
         }
         return activityGroup.getId();
+    }
+
+    public PagedResponseDto<ActivityGroupStatusResponseDto> getAppliedActivityGroups(Pageable pageable) {
+        String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
+        List<GroupMember> groupMembers = getGroupMemberByMemberId(currentMemberId);
+
+        List<ActivityGroupStatusResponseDto> activityGroups = groupMembers.stream()
+                .map(GroupMember::getActivityGroup)
+                .distinct()
+                .map(this::getActivityGroupStatusResponseDto)
+                .toList();
+        return new PagedResponseDto<>(activityGroups, pageable, activityGroups.size());
+    }
+
+    private ActivityGroupStatusResponseDto getActivityGroupStatusResponseDto(ActivityGroup activityGroup) {
+        Long activityGroupId = activityGroup.getId();
+
+        Long participantCount = groupMemberRepository.countAcceptedMembersByActivityGroupId(activityGroupId);
+        List<Member> leaderMember = groupMemberRepository.findLeaderByActivityGroupId(activityGroupId)
+                .stream()
+                .map(groupMember -> externalRetrieveMemberUseCase.findByIdOrThrow(groupMember.getMemberId()))
+                .toList();
+
+        Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroupId, ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
+
+        return ActivityGroupStatusResponseDto.toDto(activityGroup, leaderMember, participantCount, weeklyActivityCount);
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
