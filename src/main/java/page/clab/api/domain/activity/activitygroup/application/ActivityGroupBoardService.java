@@ -1,8 +1,7 @@
 package page.clab.api.domain.activity.activitygroup.application;
 
-import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +13,7 @@ import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
+import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoardRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardChildResponseDto;
@@ -39,7 +39,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class ActivityGroupBoardService {
 
     private final ActivityGroupBoardRepository activityGroupBoardRepository;
@@ -71,7 +70,7 @@ public class ActivityGroupBoardService {
         }
         activityGroupBoardRepository.save(board);
 
-        notifyMembersAboutNewBoard(activityGroupId, activityGroup, currentMember);
+        notifyMembersAboutNewBoard(activityGroupId, activityGroup, board, currentMember);
         return ActivityGroupBoardReferenceDto.toDto(board.getId(), activityGroupId, parentId);
     }
 
@@ -285,20 +284,37 @@ public class ActivityGroupBoardService {
         }
     }
 
-    private void notifyMembersAboutNewBoard(Long activityGroupId, ActivityGroup activityGroup, Member member) {
+    /**
+     * 새 게시판 생성에 대한 알림을 활동 그룹 멤버들에게 전송합니다.
+     *
+     * <p>이 메서드는 활동 그룹에서 새 게시판이 생성될 때 관련 멤버들에게 알림을 전송합니다.
+     * 만약 게시판을 생성한 멤버가 그룹 리더일 경우, 본인을 제외한 다른 모든 멤버들에게 알림이 전송됩니다.
+     * 단, 게시판이 피드백 유형일 경우에는 과제 제출한 멤버에게만 알림이 전송됩니다.
+     * 만약 게시판을 생성한 멤버가 팀원인 경우, 그룹 리더에게만 알림이 전송됩니다.</p>
+     *
+     * @param activityGroupId 게시판이 생성된 활동 그룹의 ID
+     * @param activityGroup 게시판이 생성된 활동 그룹
+     * @param board 생성된 게시판 객체
+     * @param member 게시판을 생성한 멤버 객체
+     */
+    private void notifyMembersAboutNewBoard(Long activityGroupId, ActivityGroup activityGroup, ActivityGroupBoard board, Member member) {
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member.getId());
         if (groupMember.isLeader()) {
-            List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
-            groupMembers
-                    .forEach(gMember -> {
-                        if (!gMember.isOwner(member.getId())) {
-                            externalSendNotificationUseCase.sendNotificationToMember(gMember.getMemberId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
-                        }
-                    });
+            if (board.isFeedback()) {
+                String submitMemberId = board.getParent().getMemberId();
+                externalSendNotificationUseCase.sendNotificationToMember(submitMemberId, "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 피드백을 등록하였습니다.");
+            } else {
+                List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.ACCEPTED);
+                List<String> groupMembersId = groupMembers.stream()
+                        .map(GroupMember::getMemberId)
+                        .filter(memberId -> !memberId.equals(groupMember.getMemberId()))
+                        .collect(Collectors.toList());
+                externalSendNotificationUseCase.sendNotificationToMembers(groupMembersId, "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 " + board.getCategory().getDescription() + "을(를) 등록하였습니다.");
+            }
         } else {
             GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
             if (groupLeader != null) {
-                externalSendNotificationUseCase.sendNotificationToMember(groupLeader.getMemberId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 게시글을 등록하였습니다.");
+                externalSendNotificationUseCase.sendNotificationToMember(groupLeader.getMemberId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 " + board.getCategory().getDescription() + "을(를) 등록하였습니다.");
             }
         }
     }
