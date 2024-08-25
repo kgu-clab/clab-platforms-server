@@ -28,13 +28,19 @@ import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotPro
 import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.activity.activitygroup.exception.AlreadySubmittedThisWeekAssignmentException;
 import page.clab.api.domain.activity.activitygroup.exception.AssignmentBoardHasNoDueDateTimeException;
+import page.clab.api.domain.activity.activitygroup.exception.ContentLengthExceededException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAttendanceException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateReportException;
+import page.clab.api.domain.activity.activitygroup.exception.DuplicateRoleException;
 import page.clab.api.domain.activity.activitygroup.exception.FeedbackBoardHasNoContentException;
+import page.clab.api.domain.activity.activitygroup.exception.InactiveMemberException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidCategoryException;
+import page.clab.api.domain.activity.activitygroup.exception.InvalidGithubUrlException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
+import page.clab.api.domain.activity.activitygroup.exception.InvalidRoleException;
 import page.clab.api.domain.activity.activitygroup.exception.LeaderStatusChangeNotAllowedException;
+import page.clab.api.domain.activity.activitygroup.exception.MemberNotPartOfActivityException;
 import page.clab.api.domain.activity.review.application.exception.AlreadyReviewedException;
 import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
 import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
@@ -62,12 +68,12 @@ import page.clab.api.global.auth.exception.TokenValidateException;
 import page.clab.api.global.auth.exception.UnAuthorizeException;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.ErrorResponse;
-import page.clab.api.global.common.file.exception.AssignmentFileUploadFailException;
 import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
 import page.clab.api.global.common.file.exception.DirectoryCreationException;
 import page.clab.api.global.common.file.exception.FilePermissionException;
 import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.common.file.exception.InvalidFileAttributeException;
+import page.clab.api.global.common.file.exception.InvalidPathVariableException;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.DecryptionException;
@@ -100,7 +106,11 @@ public class GlobalExceptionHandler {
             InvalidColumnException.class,
             InvalidEmojiException.class,
             InvalidRoleChangeException.class,
+            InvalidRoleException.class,
             InvalidFileAttributeException.class,
+            InvalidGithubUrlException.class,
+            InactiveMemberException.class,
+            DuplicateRoleException.class,
             RecruitmentNotActiveException.class,
             RecruitmentEndDateExceededException.class,
             StringIndexOutOfBoundsException.class,
@@ -113,7 +123,8 @@ public class GlobalExceptionHandler {
             SortingArgumentException.class,
             UnknownPathException.class,
             AssignmentBoardHasNoDueDateTimeException.class,
-            FeedbackBoardHasNoContentException.class
+            FeedbackBoardHasNoContentException.class,
+            ContentLengthExceededException.class,
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
@@ -141,6 +152,7 @@ public class GlobalExceptionHandler {
             AccessDeniedException.class,
             PermissionDeniedException.class,
             InvalidBorrowerException.class,
+            MemberNotPartOfActivityException.class,
     })
     public ApiResponse<Void> deniedException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -159,9 +171,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-            AssignmentFileUploadFailException.class
+            InvalidPathVariableException.class
     })
-    public ApiResponse<Void> notFoundException(HttpServletResponse response, AssignmentFileUploadFailException e) {
+    public ApiResponse<Void> notFoundException(HttpServletResponse response, InvalidPathVariableException e) {
         response.setStatus(HttpServletResponse.SC_OK);
         return ApiResponse.failure();
     }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activity.activitygroup.application.ActivityGroupAdminService;
+import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupStatus;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activity.activitygroup.dto.param.GroupScheduleDto;
@@ -134,6 +135,21 @@ public class ActivityGroupAdminController {
             @RequestParam(name = "status") GroupMemberStatus status
     ) throws PermissionDeniedException {
         Long id = activityGroupAdminService.manageGroupMemberStatus(activityGroupId, memberId, status);
+        return ApiResponse.success(id);
+    }
+
+    @Operation(summary = "[U] 활동 멤버 직책 변경", description = "ROLE_USER 이상의 권한이 필요함<br><br>" +
+            "직책은 팀장만 변경 가능<br>" +
+            "LEADER: 팀장, MEMBER: 팀원, NONE: 없음<br>" +
+            "LEADER -> MEMBER, MEMBER -> LEADER 변경만 허용함")
+    @PreAuthorize("hasRole('USER')")
+    @PatchMapping("/position")
+    public ApiResponse<Long> changeGroupMemberPosition(
+            @RequestParam(name = "activityGroupId") Long activityGroupId,
+            @RequestParam(name = "memberId") String memberId,
+            @RequestParam(name = "position") ActivityGroupRole position
+    ) throws PermissionDeniedException {
+        Long id = activityGroupAdminService.changeGroupMemberPosition(activityGroupId, memberId, position);
         return ApiResponse.success(id);
     }
 
