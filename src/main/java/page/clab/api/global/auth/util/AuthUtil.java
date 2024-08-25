@@ -22,4 +22,8 @@ public class AuthUtil {
     public static String getAuthenticationInfoMemberId() {
         return getAuthenticationInfo().getUsername();
     }
+
+    public static Boolean isUserUnAuthenticated (Authentication authentication) {
+        return (authentication == null || authentication.getAuthorities() == null || authentication.getAuthorities().isEmpty());
+    }
 }

@@ -3,6 +3,7 @@ package page.clab.api.global.common.file.application;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -18,6 +19,7 @@ import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.external.memberManagement.cloud.application.port.ExternalRetrieveCloudUsageByMemberIdUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
+import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
@@ -59,10 +61,19 @@ public class FileService {
     private String maxFileSize;
 
     private static final Map<Role, Set<String>> roleCategoryMap = Map.of(
-            Role.GUEST, Set.of("boards", "profiles", "activity-photos", "membership-fee"),
-            Role.USER, Set.of("boards", "profiles", "activity-photos", "membership-fee", "assignments"),
-            Role.ADMIN, Set.of("boards", "profiles", "activity-photos", "membership-fee", "members", "assignments"),
-            Role.SUPER, Set.of("boards", "profiles", "activity-photos", "membership-fee", "members", "assignments")
+            Role.GUEST, Set.of("boards", "profiles", "activity-photos", "membership-fees"),
+            Role.USER, Set.of("boards", "profiles", "activity-photos", "membership-fees", "assignments"),
+            Role.ADMIN, Set.of("boards", "profiles", "activity-photos", "membership-fees", "members", "assignments"),
+            Role.SUPER, Set.of("boards", "profiles", "activity-photos", "membership-fees", "members", "assignments")
+    );
+
+    private final Map<String, BiFunction<String, Authentication, Boolean>> categoryAccessMap = Map.of(
+            "boards", (url, auth) -> true,
+            "profiles", (url, auth) -> true,
+            "membership-fees", (url, auth) -> true,
+            "activity-photos", (url, auth) -> true,
+            "members", this::isMemberAccessible,
+            "assignments", this::isAssignmentAccessible
     );
 
     public String saveQRCodeImage(byte[] QRCodeImage, String path, long storagePeriod, String nowDateTime) throws IOException {
@@ -177,7 +188,42 @@ public class FileService {
         return isUserAccessibleByCategory(category, url, authentication);
     }
 
-    public boolean isUserAccessibleByCategory(String category, String url, Authentication authentication){
+    public boolean isUserAccessibleByCategory(String category, String url, Authentication authentication) {
+        if (category.equals("activity-photos")) {
+            return true;
+        }
+        if (AuthUtil.isUserUnAuthenticated(authentication)) {
+            return false;
+        }
+
+        GrantedAuthority authority = authentication.getAuthorities().iterator().next();
+        String roleName = authority.getAuthority().replace("ROLE_", "");
+        Role role = Role.valueOf(roleName);
+
+        if (!roleCategoryMap.getOrDefault(role, Set.of()).contains(category)) {
+            return false;
+        }
+
+        return categoryAccessMap.getOrDefault(category, (u, a) -> false).apply(url, authentication);
+    }
+
+    private boolean isMemberAccessible(String url, Authentication authentication) {
+        UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
+        String uploaderId = uploadedFile.getUploader();
+        return authentication.getName().equals(uploaderId);
+    }
+
+    private boolean isAssignmentAccessible(String url, Authentication authentication) {
+        UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
+        String uploaderId = uploadedFile.getUploader();
+        String[] parts = url.split("/");
+        Long activityGroupId = Long.parseLong(parts[4]);
+
+        return authentication.getName().equals(uploaderId) ||
+                activityGroupAdminService.isMemberGroupLeaderRole(activityGroupId, authentication.getName());
+    }
+
+/*    public boolean isUserAccessibleByCategory(String category, String url, Authentication authentication) {
 
         if (category.equals("activity-photos")) {
             return true;
@@ -211,7 +257,7 @@ public class FileService {
             default:
                 return false;
         }
-    }
+    }*/
 
     private String getCategoryByUrl(String url) {
         String basePath = fileURL + "/";
