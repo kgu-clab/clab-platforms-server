@@ -28,6 +28,7 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupDet
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupStatusResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.GroupMemberResponseDto;
+import page.clab.api.domain.activity.activitygroup.dto.response.LeaderInfo;
 import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
@@ -36,6 +37,8 @@ import page.clab.api.external.memberManagement.notification.application.port.Ext
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -50,12 +53,6 @@ public class ActivityGroupMemberService {
     private final ActivityGroupDetailsRepository activityGroupDetailsRepository;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
-
-    @Transactional(readOnly = true)
-    public PagedResponseDto<ActivityGroupResponseDto> getActivityGroups(Pageable pageable) {
-        Page<ActivityGroup> activityGroups = activityGroupRepository.findAll(pageable);
-        return new PagedResponseDto<>(activityGroups.map(ActivityGroupResponseDto::toDto));
-    }
 
     @Transactional(readOnly = true)
     public ActivityGroupDetailResponseDto getActivityGroup(Long activityGroupId) {
@@ -81,35 +78,31 @@ public class ActivityGroupMemberService {
     }
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<ActivityGroupResponseDto> getMyActivityGroups(Pageable pageable) {
+    public PagedResponseDto<ActivityGroupStatusResponseDto> getMyActivityGroups(ActivityGroupStatus status, Pageable pageable) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         List<GroupMember> groupMembers = getGroupMemberByMemberId(currentMemberId);
 
-        List<ActivityGroupResponseDto> activityGroups = groupMembers.stream()
+        List<ActivityGroup> activityGroups = groupMembers.stream()
                 .filter(GroupMember::isAccepted)
                 .map(GroupMember::getActivityGroup)
-                .map(ActivityGroupResponseDto::toDto)
+                .filter(activityGroup -> status == null || activityGroup.isSameStatus(status))
+                .distinct()
                 .toList();
 
-        return new PagedResponseDto<>(activityGroups, pageable, activityGroups.size());
+        List<ActivityGroupStatusResponseDto> activityGroupDtos = activityGroups.stream()
+                .map(this::getActivityGroupStatusResponseDto)
+                .toList();
+
+        return new PagedResponseDto<>(activityGroupDtos, pageable, activityGroupDtos.size());
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupStatusResponseDto> getActivityGroupsByStatus(ActivityGroupStatus status, Pageable pageable) {
         List<ActivityGroup> activityGroups = activityGroupRepository.findActivityGroupsByStatus(status);
 
-        List<ActivityGroupStatusResponseDto> activityGroupDtos = activityGroups.stream().map(activityGroup -> {
-            Long participantCount = groupMemberRepository.countAcceptedMembersByActivityGroupId(activityGroup.getId());
-            GroupMember leader = groupMemberRepository.findLeaderByActivityGroupId(activityGroup.getId());
-
-            Member leaderMember = null;
-            if (leader != null) {
-                leaderMember = externalRetrieveMemberUseCase.findByIdOrThrow(leader.getMemberId());
-            }
-            Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroup.getId(), ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
-
-            return ActivityGroupStatusResponseDto.toDto(activityGroup, leaderMember, participantCount, weeklyActivityCount);
-        }).toList();
+        List<ActivityGroupStatusResponseDto> activityGroupDtos = activityGroups.stream()
+                .map(this::getActivityGroupStatusResponseDto)
+                .toList();
 
         return new PagedResponseDto<>(activityGroupDtos, pageable, activityGroupDtos.size());
     }
@@ -155,6 +148,39 @@ public class ActivityGroupMemberService {
             externalSendNotificationUseCase.sendNotificationToMember(groupLeader.getMemberId(), "[" + activityGroup.getName() + "] " + currentMember.getName() + "님이 활동 참가 신청을 하였습니다.");
         }
         return activityGroup.getId();
+    }
+
+    public PagedResponseDto<ActivityGroupStatusResponseDto> getAppliedActivityGroups(Pageable pageable) {
+        String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
+        List<GroupMember> groupMembers = getGroupMemberByMemberId(currentMemberId);
+
+        List<ActivityGroupStatusResponseDto> activityGroups = groupMembers.stream()
+                .map(GroupMember::getActivityGroup)
+                .filter(ActivityGroup::isProgressing)
+                .distinct()
+                .map(this::getActivityGroupStatusResponseDto)
+                .toList();
+        return new PagedResponseDto<>(activityGroups, pageable, activityGroups.size());
+    }
+
+    private ActivityGroupStatusResponseDto getActivityGroupStatusResponseDto(ActivityGroup activityGroup) {
+        Long activityGroupId = activityGroup.getId();
+
+        Long participantCount = groupMemberRepository.countAcceptedMembersByActivityGroupId(activityGroupId);
+        List<LeaderInfo> leaderMembers = groupMemberRepository.findLeaderByActivityGroupId(activityGroupId)
+                .stream()
+                .map(leader -> {
+                    Member member = externalRetrieveMemberUseCase.findByIdOrThrow(leader.getMemberId());
+                    LocalDateTime createdAt = leader.getCreatedAt();
+                    return LeaderInfo.create(member, createdAt);
+                })
+                // LEADER 직책을 가진 사람 중 가장 먼저 활동에 참여한 사람 순으로 정렬
+                .sorted(Comparator.comparing(LeaderInfo::getCreatedAt))
+                .toList();
+
+        Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroupId, ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
+
+        return ActivityGroupStatusResponseDto.toDto(activityGroup, leaderMembers, participantCount, weeklyActivityCount);
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {

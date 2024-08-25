@@ -79,6 +79,10 @@ public class GroupMember extends BaseEntity {
         return status.equals(GroupMemberStatus.ACCEPTED);
     }
 
+    public boolean isInactive() {
+        return !isAccepted() && role.isNone();
+    }
+
     public void updateRole(ActivityGroupRole role) {
         this.role = role;
     }

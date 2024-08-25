@@ -13,4 +13,8 @@ public enum ActivityGroupRole {
 
     private final String key;
     private final String description;
+
+    public boolean isNone() {
+        return this.equals(NONE);
+    }
 }

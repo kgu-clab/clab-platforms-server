@@ -9,6 +9,8 @@ import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activity.activitygroup.domain.QGroupMember;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class GroupMemberRepositoryImpl implements GroupMemberRepositoryCustom {
@@ -29,7 +31,7 @@ public class GroupMemberRepositoryImpl implements GroupMemberRepositoryCustom {
     }
 
     @Override
-    public GroupMember findLeaderByActivityGroupId(Long activityGroupId) {
+    public List<GroupMember> findLeaderByActivityGroupId(Long activityGroupId) {
         QGroupMember qGroupMember = QGroupMember.groupMember;
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -38,6 +40,6 @@ public class GroupMemberRepositoryImpl implements GroupMemberRepositoryCustom {
 
         return queryFactory.selectFrom(qGroupMember)
                 .where(builder)
-                .fetchOne();
+                .fetch();
     }
 }
