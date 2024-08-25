@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -17,8 +18,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -29,7 +29,6 @@ import page.clab.api.external.auth.redisIpAccessMonitor.application.port.Externa
 import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
 import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
-import page.clab.api.global.auth.filter.FileAccessControlFilter;
 import page.clab.api.global.auth.filter.InvalidEndpointAccessFilter;
 import page.clab.api.global.auth.filter.IpAuthenticationFilter;
 import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
@@ -37,12 +36,11 @@ import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.filter.IPinfoSpringFilter;
+import page.clab.api.global.util.ApiLogger;
 import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
 
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 
 @Configuration
 @EnableWebSecurity
@@ -65,6 +63,7 @@ public class SecurityConfig {
     private final CorsConfigurationSource corsConfigurationSource;
     private final JwtTokenProvider jwtTokenProvider;
     private final FileService fileService;
+    private final ApiLogger apiLogger;
 
     @Value("${resource.file.url}")
     String fileURL;
@@ -110,12 +109,8 @@ public class SecurityConfig {
 //                )
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer
-                                .authenticationEntryPoint((request, response, authException) ->
-                                        handleAuthenticationEntryPoint(request, response)
-                                )
-                                .accessDeniedHandler((request, response, accessDeniedException) ->
-                                        handleAccessDenied(request, response)
-                                )
+                                .authenticationEntryPoint(this::handleException)
+                                .accessDeniedHandler(this::handleException)
                 );
         return http.build();
     }
@@ -129,26 +124,24 @@ public class SecurityConfig {
                 .anyRequest().authenticated();
     }
 
-    private void handleAuthenticationEntryPoint(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception) throws IOException {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        apiLogging(request, response, clientIpAddress, "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.");
-        externalRegisterIpAccessMonitorUseCase.registerIpAccessMonitor(request, clientIpAddress);
-        ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
-    }
+        String message;
+        int statusCode;
 
-    private void handleAccessDenied(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        apiLogging(request, response, clientIpAddress, "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.");
-        externalRegisterIpAccessMonitorUseCase.registerIpAccessMonitor(request, clientIpAddress);
-        ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN);
-    }
+        if (exception instanceof AuthenticationException) {
+            message = "인증되지 않은 사용자의 비정상적인 접근이 감지되었습니다.";
+            statusCode = HttpServletResponse.SC_UNAUTHORIZED;
+        } else if (exception instanceof AccessDeniedException) {
+            message = "권한이 없는 엔드포인트에 대한 접근이 감지되었습니다.";
+            statusCode = HttpServletResponse.SC_FORBIDDEN;
+        } else {
+            message = "비정상적인 접근이 감지되었습니다.";
+            statusCode = HttpServletResponse.SC_BAD_REQUEST;
+        }
 
-    private void apiLogging(HttpServletRequest request, HttpServletResponse response, String clientIpAddress, String message) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String id = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
-        String requestUrl = request.getRequestURI();
-        String httpMethod = request.getMethod();
-        int httpStatus = response.getStatus();
-        log.info("[{}:{}] {} {} {} {}", clientIpAddress, id, requestUrl, httpMethod, httpStatus, message);
+        apiLogger.logRequest(request, response, clientIpAddress, message);
+        externalRegisterIpAccessMonitorUseCase.registerIpAccessMonitor(request, clientIpAddress);
+        ResponseUtil.sendErrorResponse(response, statusCode);
     }
 }
