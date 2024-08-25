@@ -52,12 +52,6 @@ public class ActivityGroupMemberService {
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<ActivityGroupResponseDto> getActivityGroups(Pageable pageable) {
-        Page<ActivityGroup> activityGroups = activityGroupRepository.findAll(pageable);
-        return new PagedResponseDto<>(activityGroups.map(ActivityGroupResponseDto::toDto));
-    }
-
-    @Transactional(readOnly = true)
     public ActivityGroupDetailResponseDto getActivityGroup(Long activityGroupId) {
         ActivityGroupDetails details = activityGroupDetailsRepository.fetchActivityGroupDetails(activityGroupId);
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
