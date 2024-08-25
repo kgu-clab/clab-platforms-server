@@ -20,6 +20,8 @@ public interface ActivityGroupBoardRepository extends JpaRepository<ActivityGrou
 
     List<ActivityGroupBoard> findAllChildrenByParentId(Long activityGroupBoardId);
 
+    boolean existsByParentIdAndCategoryAndMemberId(Long parentId, ActivityGroupBoardCategory category, String memberId);
+
     @Query(value = "SELECT a.* FROM activity_group_board a WHERE a.is_deleted = true", nativeQuery = true)
     Page<ActivityGroupBoard> findAllByIsDeletedTrue(Pageable pageable);
 }
