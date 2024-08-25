@@ -65,11 +65,6 @@ public class SlackServiceHelper {
         this.attributeStrategy = attributeStrategy;
     }
 
-    private static String getUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
-    }
-
     public CompletableFuture<Boolean> sendSlackMessage(String webhookUrl, AlertType alertType, HttpServletRequest request, Object additionalData) {
         List<LayoutBlock> blocks = createBlocks(alertType, request, additionalData);
         return CompletableFuture.supplyAsync(() -> {
@@ -152,7 +147,7 @@ public class SlackServiceHelper {
         String requestUrl = request.getRequestURI();
         String queryString = request.getQueryString();
         String fullUrl = queryString == null ? requestUrl : requestUrl + "?" + queryString;
-        String username = getUsername();
+        String username = getUsername(request);
 
         String errorMessage = e.getMessage() == null ? "No error message provided" : e.getMessage();
         String detailedMessage = extractMessageAfterException(errorMessage);
