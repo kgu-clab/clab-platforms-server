@@ -127,8 +127,6 @@ public class FileService {
             case "weekly-activities":
                 validateWeeklyActivityPath(pathParts);
                 break;
-            default:
-                throw new InvalidPathVariableException("유효하지 않은 경로입니다.");
         }
     }
 
