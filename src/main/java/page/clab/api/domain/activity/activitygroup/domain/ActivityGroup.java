@@ -106,14 +106,6 @@ public class ActivityGroup extends BaseEntity {
         this.progress = progress;
     }
 
-    public boolean isStudy() {
-        return this.category.equals(ActivityGroupCategory.STUDY);
-    }
-
-    public boolean isProject() {
-        return this.category.equals(ActivityGroupCategory.PROJECT);
-    }
-
     public void validateForApplication() {
         if (!this.isProgressing()) {
             throw new ActivityGroupNotProgressingException("해당 활동은 진행중인 활동이 아닙니다.");
