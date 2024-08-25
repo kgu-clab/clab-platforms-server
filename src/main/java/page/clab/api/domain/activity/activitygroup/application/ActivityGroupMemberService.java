@@ -152,6 +152,7 @@ public class ActivityGroupMemberService {
 
         List<ActivityGroupStatusResponseDto> activityGroups = groupMembers.stream()
                 .map(GroupMember::getActivityGroup)
+                .filter(ActivityGroup::isProgressing)
                 .distinct()
                 .map(this::getActivityGroupStatusResponseDto)
                 .toList();
