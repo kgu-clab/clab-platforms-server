@@ -41,6 +41,8 @@ import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 @EnableWebSecurity
@@ -102,10 +104,10 @@ public class SecurityConfig {
                         new JwtAuthenticationFilter(slackService, jwtTokenProvider, externalManageRedisTokenUseCase, externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
                         UsernamePasswordAuthenticationFilter.class
                 )
-                .addFilterBefore(
-                        new FileAccessControlFilter(fileService, fileURL),
-                        UsernamePasswordAuthenticationFilter.class
-                )
+//                .addFilterBefore(
+//                        new FileAccessControlFilter(fileService, fileURL),
+//                        UsernamePasswordAuthenticationFilter.class
+//                )
                 .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
                         httpSecurityExceptionHandlingConfigurer
                                 .authenticationEntryPoint((request, response, authException) ->
@@ -145,6 +147,13 @@ public class SecurityConfig {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String id = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
         String requestUrl = request.getRequestURI();
+
+        String queryString = request.getQueryString();
+        if (queryString != null && !queryString.isEmpty()) {
+            String decodedQueryString = URLDecoder.decode(queryString, StandardCharsets.UTF_8);
+            requestUrl += "?" + decodedQueryString;
+        }
+
         String httpMethod = request.getMethod();
         int httpStatus = response.getStatus();
         log.info("[{}:{}] {} {} {} {}", clientIpAddress, id, requestUrl, httpMethod, httpStatus, message);
