@@ -164,14 +164,14 @@ public class ActivityGroupMemberService {
         Long activityGroupId = activityGroup.getId();
 
         Long participantCount = groupMemberRepository.countAcceptedMembersByActivityGroupId(activityGroupId);
-        List<Member> leaderMember = groupMemberRepository.findLeaderByActivityGroupId(activityGroupId)
+        List<Member> leaderMembers = groupMemberRepository.findLeaderByActivityGroupId(activityGroupId)
                 .stream()
-                .map(groupMember -> externalRetrieveMemberUseCase.findByIdOrThrow(groupMember.getMemberId()))
+                .map(leader -> externalRetrieveMemberUseCase.findByIdOrThrow(leader.getMemberId()))
                 .toList();
 
         Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroupId, ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
 
-        return ActivityGroupStatusResponseDto.toDto(activityGroup, leaderMember, participantCount, weeklyActivityCount);
+        return ActivityGroupStatusResponseDto.toDto(activityGroup, leaderMembers, participantCount, weeklyActivityCount);
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
