@@ -22,7 +22,6 @@ import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoar
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardChildResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardReferenceDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardResponseDto;
-import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardUpdateResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.AssignmentSubmissionWithFeedbackResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -80,7 +79,7 @@ public class ActivityGroupBoardController {
     @GetMapping("")
     public ApiResponse<ActivityGroupBoardResponseDto> getActivityGroupBoardById(
             @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId
-    ) {
+    ) throws PermissionDeniedException {
         ActivityGroupBoardResponseDto board = activityGroupBoardService.getActivityGroupBoardById(activityGroupBoardId);
         return ApiResponse.success(board);
     }
@@ -96,7 +95,7 @@ public class ActivityGroupBoardController {
             @RequestParam(name = "size", defaultValue = "20") int size,
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException, InvalidColumnException {
+    ) throws SortingArgumentException, InvalidColumnException, PermissionDeniedException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupBoardResponseDto.class);
         PagedResponseDto<ActivityGroupBoardResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByCategory(activityGroupId, category, pageable);
         return ApiResponse.success(boards);

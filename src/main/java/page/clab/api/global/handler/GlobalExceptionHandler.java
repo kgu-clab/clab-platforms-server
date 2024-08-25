@@ -26,6 +26,7 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
 import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotFinishedException;
 import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotProgressingException;
 import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedException;
+import page.clab.api.domain.activity.activitygroup.exception.AlreadySubmittedThisWeekAssignmentException;
 import page.clab.api.domain.activity.activitygroup.exception.AssignmentBoardHasNoDueDateTimeException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAttendanceException;
@@ -174,6 +175,7 @@ public class GlobalExceptionHandler {
             CloudStorageNotEnoughException.class,
             ActivityGroupNotFinishedException.class,
             ActivityGroupNotProgressingException.class,
+            AlreadySubmittedThisWeekAssignmentException.class,
             LeaderStatusChangeNotAllowedException.class,
             AlreadyAppliedException.class,
             DuplicateReportException.class,
