@@ -86,7 +86,7 @@ dependencies {
     // Slack
     implementation 'com.slack.api:slack-api-model:1.42.0'
     implementation 'com.slack.api:slack-api-client:1.42.0'
-    implementation 'com.slack.api:slack-app-backend:1.40.3'
+    implementation 'com.slack.api:slack-app-backend:1.42.0'
 
     // XSS Filter
     implementation 'com.navercorp.lucy:lucy-xss-servlet:2.0.1' // Lucy XSS Servlet Filter
