@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
@@ -168,8 +169,8 @@ public class ActivityGroupBoardService {
         Long activityGroupId = parentBoard.getActivityGroup().getId();
         validateGroupMember(parentBoard.getActivityGroup(), currentMember);
 
-        GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
-        parentBoard.validateAccessPermission(currentMember, groupLeader);
+        List<GroupMember> groupLeaders = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
+        parentBoard.validateAccessPermission(currentMember, groupLeaders);
 
         List<ActivityGroupBoard> childBoards = getChildBoards(parentId);
         List<ActivityGroupBoardChildResponseDto> filteredBoards = childBoards.stream()
@@ -312,9 +313,9 @@ public class ActivityGroupBoardService {
                 externalSendNotificationUseCase.sendNotificationToMembers(groupMembersId, "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 " + board.getCategory().getDescription() + "을(를) 등록하였습니다.");
             }
         } else {
-            GroupMember groupLeader = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
-            if (groupLeader != null) {
-                externalSendNotificationUseCase.sendNotificationToMember(groupLeader.getMemberId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 " + board.getCategory().getDescription() + "을(를) 등록하였습니다.");
+            List<GroupMember> groupLeaders = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
+            if (!CollectionUtils.isEmpty(groupLeaders)) {
+                groupLeaders.forEach(leader -> externalSendNotificationUseCase.sendNotificationToMember(leader.getMemberId(), "[" + activityGroup.getName() + "] " + member.getName() + "님이 새 " + board.getCategory().getDescription() + "을(를) 등록하였습니다."));
             }
         }
     }
