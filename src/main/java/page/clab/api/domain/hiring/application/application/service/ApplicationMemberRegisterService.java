@@ -70,15 +70,15 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
     }
 
     public void createPositionByMember(Member member) {
-        if(isRegisteredMember(member)) {
-            log.warn("이미 등록된 회원입니다: {}", member.getId());
+        if(isMemberPositionRegistered(member)) {
+            log.warn("이미 직책이 있는 회원입니다: {}", member.getId());
             return;
         }
         Position position = Position.create(member.getId());
         externalRegisterPositionUseCase.save(position);
     }
 
-    private boolean isRegisteredMember(Member member) {
+    private boolean isMemberPositionRegistered(Member member) {
         return externalRetrievePositionUseCase
                 .findByMemberIdAndYearAndPositionType(member.getId(), String.valueOf(LocalDate.now().getYear()), PositionType.MEMBER)
                 .isPresent();
