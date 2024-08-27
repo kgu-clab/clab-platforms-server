@@ -38,9 +38,4 @@ public class PositionEventProcessor implements MemberEventProcessor {
     public void processMemberUpdated(String memberId) {
         // do nothing
     }
-
-    @Override
-    public void processMemberCreated(Application application) {
-        // do nothing
-    }
 }

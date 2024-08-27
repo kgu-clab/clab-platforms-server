@@ -5,11 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.hiring.application.application.event.ApplicationApprovedEvent;
+import page.clab.api.domain.hiring.application.application.event.PositionCreatedByApplicationEvent;
 import page.clab.api.domain.hiring.application.application.exception.NotApprovedApplicationException;
 import page.clab.api.domain.hiring.application.application.port.in.RegisterMembersByRecruitmentUseCase;
 import page.clab.api.domain.hiring.application.application.port.out.RetrieveApplicationPort;
 import page.clab.api.domain.hiring.application.domain.Application;
-import page.clab.api.domain.memberManagement.member.application.event.MemberCreatedEvent;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.memberManagement.position.domain.Position;
 import page.clab.api.domain.memberManagement.position.domain.PositionType;
@@ -64,7 +65,7 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
         return externalRetrieveMemberUseCase.findById(application.getStudentId())
                 .orElseGet(() -> {
                     Member member = Member.fromApplication(application);
-                    eventPublisher.publishEvent(new MemberCreatedEvent(this, application));
+                    eventPublisher.publishEvent(new ApplicationApprovedEvent(this, application));
                     return member;
                 });
     }
@@ -75,7 +76,7 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
             return;
         }
         Position position = Position.create(member.getId());
-        externalRegisterPositionUseCase.save(position);
+        eventPublisher.publishEvent(new PositionCreatedByApplicationEvent(this, position));
     }
 
     private boolean isMemberPositionRegistered(Member member) {
