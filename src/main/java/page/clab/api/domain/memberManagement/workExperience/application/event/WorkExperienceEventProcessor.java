@@ -4,7 +4,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.hiring.application.domain.Application;
 import page.clab.api.domain.memberManagement.member.application.event.MemberEventProcessor;
 import page.clab.api.domain.memberManagement.member.application.event.MemberEventProcessorRegistry;
 import page.clab.api.domain.memberManagement.workExperience.application.port.out.RegisterWorkExperiencePort;
@@ -36,11 +35,6 @@ public class WorkExperienceEventProcessor implements MemberEventProcessor {
 
     @Override
     public void processMemberUpdated(String memberId) {
-        // do nothing
-    }
-
-    @Override
-    public void processMemberCreated(Application application) {
         // do nothing
     }
 }

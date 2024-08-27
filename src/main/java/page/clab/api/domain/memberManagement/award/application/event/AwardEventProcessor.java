@@ -4,7 +4,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.hiring.application.domain.Application;
 import page.clab.api.domain.memberManagement.award.application.port.out.RegisterAwardPort;
 import page.clab.api.domain.memberManagement.award.application.port.out.RetrieveAwardPort;
 import page.clab.api.domain.memberManagement.award.domain.Award;
@@ -36,11 +35,6 @@ public class AwardEventProcessor implements MemberEventProcessor {
 
     @Override
     public void processMemberUpdated(String memberId) {
-        // do nothing
-    }
-
-    @Override
-    public void processMemberCreated(Application application) {
         // do nothing
     }
 }
