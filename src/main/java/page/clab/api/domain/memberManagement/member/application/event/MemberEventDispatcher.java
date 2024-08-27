@@ -21,4 +21,9 @@ public class MemberEventDispatcher {
     public void handleMemberUpdatedEvent(MemberUpdatedEvent event) {
         processors.forEach(processor -> processor.processMemberUpdated(event.getMemberId()));
     }
+
+    @EventListener
+    public void handleMemberCreatedEvent(MemberCreatedEvent event) {
+        processors.forEach(processor -> processor.processMemberCreated(event.getApplication()));
+    }
 }

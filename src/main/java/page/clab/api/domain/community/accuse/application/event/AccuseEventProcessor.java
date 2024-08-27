@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.accuse.application.port.out.RegisterAccusePort;
 import page.clab.api.domain.community.accuse.application.port.out.RetrieveAccusePort;
 import page.clab.api.domain.community.accuse.domain.Accuse;
+import page.clab.api.domain.hiring.application.domain.Application;
 import page.clab.api.domain.memberManagement.member.application.event.MemberEventProcessor;
 import page.clab.api.domain.memberManagement.member.application.event.MemberEventProcessorRegistry;
 
@@ -35,6 +36,11 @@ public class AccuseEventProcessor implements MemberEventProcessor {
 
     @Override
     public void processMemberUpdated(String memberId) {
+        // do nothing
+    }
+
+    @Override
+    public void processMemberCreated(Application application) {
         // do nothing
     }
 }
