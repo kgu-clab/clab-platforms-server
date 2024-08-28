@@ -5,17 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.hiring.application.application.event.ApplicationApprovedEvent;
+import page.clab.api.domain.hiring.application.application.event.ApplicationMemberCreatedEvent;
 import page.clab.api.domain.hiring.application.application.event.PositionCreatedByApplicationEvent;
 import page.clab.api.domain.hiring.application.application.exception.NotApprovedApplicationException;
 import page.clab.api.domain.hiring.application.application.port.in.RegisterMembersByRecruitmentUseCase;
 import page.clab.api.domain.hiring.application.application.port.out.RetrieveApplicationPort;
 import page.clab.api.domain.hiring.application.domain.Application;
 import page.clab.api.domain.memberManagement.member.domain.Member;
-import page.clab.api.domain.memberManagement.position.domain.Position;
 import page.clab.api.domain.memberManagement.position.domain.PositionType;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.external.memberManagement.position.application.port.ExternalRegisterPositionUseCase;
 import page.clab.api.external.memberManagement.position.application.port.ExternalRetrievePositionUseCase;
 
 import java.time.LocalDate;
@@ -28,7 +26,6 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
 
     private final RetrieveApplicationPort retrieveApplicationPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final ExternalRegisterPositionUseCase externalRegisterPositionUseCase;
     private final ExternalRetrievePositionUseCase externalRetrievePositionUseCase;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -64,9 +61,8 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
     private Member createMemberByApplication(Application application) {
         return externalRetrieveMemberUseCase.findById(application.getStudentId())
                 .orElseGet(() -> {
-                    Member member = Member.fromApplication(application);
-                    eventPublisher.publishEvent(new ApplicationApprovedEvent(this, application));
-                    return member;
+                    eventPublisher.publishEvent(new ApplicationMemberCreatedEvent(this, application));
+                    return externalRetrieveMemberUseCase.findByIdOrThrow(application.getStudentId());
                 });
     }
 
@@ -75,8 +71,7 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
             log.warn("이미 직책이 있는 회원입니다: {}", member.getId());
             return;
         }
-        Position position = Position.create(member.getId());
-        eventPublisher.publishEvent(new PositionCreatedByApplicationEvent(this, position));
+        eventPublisher.publishEvent(new PositionCreatedByApplicationEvent(this, member.getId()));
     }
 
     private boolean isMemberPositionRegistered(Member member) {
