@@ -31,8 +31,7 @@ public class PositionCreatedByApplicationProcessor implements ApplicationEventPr
 
     @Override
     public void processPositionCreated(String memberId) {
-        Member member = externalRetrieveMemberUseCase.findByIdOrThrow(memberId);
-        Position position = Position.create(member.getId());
+        Position position = Position.create(memberId);
         registerPositionPort.save(position);
     }
 }
