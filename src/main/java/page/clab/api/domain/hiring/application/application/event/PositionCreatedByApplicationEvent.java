@@ -2,15 +2,14 @@ package page.clab.api.domain.hiring.application.application.event;
 
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
-import page.clab.api.domain.memberManagement.position.domain.Position;
 
 @Getter
 public class PositionCreatedByApplicationEvent extends ApplicationEvent {
 
-    private final Position position;
+    private final String memberId;
 
-    public PositionCreatedByApplicationEvent(Object source, Position position) {
+    public PositionCreatedByApplicationEvent(Object source, String memberId) {
         super(source);
-        this.position = position;
+        this.memberId = memberId;
     }
 }
