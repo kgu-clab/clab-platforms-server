@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.hiring.application.application.dto.request.ApplicationMemberCreationDto;
 import page.clab.api.domain.hiring.application.application.event.ApplicationMemberCreatedEvent;
 import page.clab.api.domain.hiring.application.application.event.PositionCreatedByApplicationEvent;
 import page.clab.api.domain.hiring.application.application.exception.NotApprovedApplicationException;
@@ -61,7 +62,8 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
     private Member createMemberByApplication(Application application) {
         return externalRetrieveMemberUseCase.findById(application.getStudentId())
                 .orElseGet(() -> {
-                    eventPublisher.publishEvent(new ApplicationMemberCreatedEvent(this, application));
+                    ApplicationMemberCreationDto dto = ApplicationMemberCreationDto.toDto(application);
+                    eventPublisher.publishEvent(new ApplicationMemberCreatedEvent(this, dto));
                     return externalRetrieveMemberUseCase.findByIdOrThrow(application.getStudentId());
                 });
     }

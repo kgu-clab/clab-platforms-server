@@ -14,7 +14,7 @@ public class ApplicationEventDispatcher {
 
     @EventListener
     public void handleApplicationMemberCreatedEvent(ApplicationMemberCreatedEvent event) {
-        processors.forEach(processor -> processor.processApplicationMemberCreated(event.getApplication()));
+        processors.forEach(processor -> processor.processApplicationMemberCreated(event.getDto()));
     }
 
     @EventListener

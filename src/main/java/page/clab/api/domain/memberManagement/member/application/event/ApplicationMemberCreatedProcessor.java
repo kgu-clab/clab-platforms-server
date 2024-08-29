@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import page.clab.api.domain.hiring.application.application.dto.request.ApplicationMemberCreationDto;
 import page.clab.api.domain.hiring.application.application.event.ApplicationEventProcessor;
 import page.clab.api.domain.hiring.application.application.event.ApplicationEventProcessorRegistry;
-import page.clab.api.domain.hiring.application.domain.Application;
 import page.clab.api.domain.memberManagement.member.application.port.out.RegisterMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.email.application.EmailService;
@@ -32,8 +32,8 @@ public class ApplicationMemberCreatedProcessor implements ApplicationEventProces
     }
 
     @Override
-    public void processApplicationMemberCreated(Application application) {
-        Member member = Member.fromApplication(application);
+    public void processApplicationMemberCreated(ApplicationMemberCreationDto dto) {
+        Member member = Member.toMember(dto);
         setRandomPasswordAndSendEmail(member);
         registerMemberPort.save(member);
     }
