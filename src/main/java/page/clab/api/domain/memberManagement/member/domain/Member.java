@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import page.clab.api.domain.hiring.application.application.dto.request.ApplicationMemberCreationDto;
 import page.clab.api.domain.memberManagement.member.application.dto.request.MemberUpdateRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -160,5 +161,25 @@ public class Member implements UserDetails {
 
     public void clearImageUrl() {
         this.imageUrl = null;
+    }
+
+    public static Member toMember(ApplicationMemberCreationDto dto) {
+        return Member.builder()
+                .id(dto.getStudentId())
+                .name(dto.getName())
+                .contact(dto.getContact())
+                .email(dto.getEmail())
+                .department(dto.getDepartment())
+                .grade(dto.getGrade())
+                .birth(dto.getBirth())
+                .address(dto.getAddress())
+                .interests(dto.getInterests())
+                .githubUrl(dto.getGithubUrl())
+                .studentStatus(StudentStatus.CURRENT)
+                .imageUrl("")
+                .role(Role.USER)
+                .isOtpEnabled(false)
+                .isDeleted(false)
+                .build();
     }
 }
