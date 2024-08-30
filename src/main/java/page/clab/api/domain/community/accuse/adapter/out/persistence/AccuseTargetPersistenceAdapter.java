@@ -24,7 +24,7 @@ public class AccuseTargetPersistenceAdapter implements
 
     @Override
     public AccuseTarget save(AccuseTarget accuseTarget) {
-        AccuseTargetJpaEntity entity = accuseTargetMapper.toJpaEntity(accuseTarget);
+        AccuseTargetJpaEntity entity = accuseTargetMapper.toEntity(accuseTarget);
         AccuseTargetJpaEntity savedEntity = accuseTargetRepository.save(entity);
         return accuseTargetMapper.toDomain(savedEntity);
     }
