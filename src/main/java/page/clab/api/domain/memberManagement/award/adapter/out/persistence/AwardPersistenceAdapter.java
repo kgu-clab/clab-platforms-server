@@ -44,7 +44,7 @@ public class AwardPersistenceAdapter implements
     }
 
     @Override
-    public Award findByIdOrThrow(Long awardId) {
+    public Award getById(Long awardId) {
         return awardRepository.findById(awardId)
                 .map(awardMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[Award] id: " + awardId + "에 해당하는 수상 이력이 존재하지 않습니다."));
