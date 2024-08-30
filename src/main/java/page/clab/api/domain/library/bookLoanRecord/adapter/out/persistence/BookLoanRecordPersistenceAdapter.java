@@ -31,7 +31,7 @@ public class BookLoanRecordPersistenceAdapter implements
     }
 
     @Override
-    public BookLoanRecord findByIdOrThrow(Long bookLoanRecordId) {
+    public BookLoanRecord getById(Long bookLoanRecordId) {
         return bookLoanRecordRepository.findById(bookLoanRecordId)
                 .map(bookLoanRecordMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[BookLoanRecord] id: " + bookLoanRecordId + "에 해당하는 대출 기록이 존재하지 않습니다."));
@@ -54,7 +54,7 @@ public class BookLoanRecordPersistenceAdapter implements
     }
 
     @Override
-    public BookLoanRecord findByBookIdAndReturnedAtIsNullAndStatusOrThrow(Long bookId, BookLoanStatus bookLoanStatus) {
+    public BookLoanRecord getByBookIdAndReturnedAtIsNullAndStatus(Long bookId, BookLoanStatus bookLoanStatus) {
         return bookLoanRecordRepository.findByBookIdAndReturnedAtIsNullAndStatus(bookId, bookLoanStatus)
                 .map(bookLoanRecordMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[Book] id: " + bookId + "에 해당하는 대출 기록이 존재하지 않습니다."));
