@@ -20,7 +20,7 @@ public class BlogPersistenceAdapter implements
 
     @Override
     public Blog save(Blog blog) {
-        BlogJpaEntity entity = blogMapper.toJpaEntity(blog);
+        BlogJpaEntity entity = blogMapper.toEntity(blog);
         BlogJpaEntity savedEntity = blogRepository.save(entity);
         return blogMapper.toDomain(savedEntity);
     }
