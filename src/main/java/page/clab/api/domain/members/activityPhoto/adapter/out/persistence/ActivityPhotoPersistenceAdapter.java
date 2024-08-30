@@ -20,7 +20,7 @@ public class ActivityPhotoPersistenceAdapter implements
 
     @Override
     public ActivityPhoto save(ActivityPhoto activityPhoto) {
-        ActivityPhotoJpaEntity entity = activityPhotoMapper.toJpaEntity(activityPhoto);
+        ActivityPhotoJpaEntity entity = activityPhotoMapper.toEntity(activityPhoto);
         ActivityPhotoJpaEntity savedEntity = activityPhotoRepository.save(entity);
         return activityPhotoMapper.toDomain(savedEntity);
     }
