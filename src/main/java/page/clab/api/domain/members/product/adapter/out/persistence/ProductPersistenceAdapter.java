@@ -35,7 +35,7 @@ public class ProductPersistenceAdapter implements
     }
 
     @Override
-    public Product findByIdOrThrow(Long productId) {
+    public Product getById(Long productId) {
         return repository.findById(productId)
                 .map(mapper::toDomainEntity)
                 .orElseThrow(() -> new NotFoundException("[Product] id: " + productId + "에 해당하는 상품이 존재하지 않습니다."));
