@@ -27,7 +27,7 @@ public class BoardPersistenceAdapter implements
     }
 
     @Override
-    public Board findByIdOrThrow(Long boardId) {
+    public Board getById(Long boardId) {
         return boardRepository.findById(boardId)
                 .map(boardMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[Board] id: " + boardId + "에 해당하는 게시글이 존재하지 않습니다."));

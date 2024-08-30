@@ -32,8 +32,8 @@ public class BoardRetrievalService implements RetrieveBoardUseCase {
     }
 
     @Override
-    public Board findByIdOrThrow(Long boardId) {
-        return retrieveBoardPort.findByIdOrThrow(boardId);
+    public Board getById(Long boardId) {
+        return retrieveBoardPort.getById(boardId);
     }
 
     private MemberDetailedInfoDto getMemberDetailedInfoByBoard(Board board) {

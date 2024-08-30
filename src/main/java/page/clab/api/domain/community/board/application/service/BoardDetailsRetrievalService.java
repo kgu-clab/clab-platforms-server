@@ -28,7 +28,7 @@ public class BoardDetailsRetrievalService implements RetrieveBoardDetailsUseCase
     @Override
     public BoardDetailsResponseDto retrieveBoardDetails(Long boardId) {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
-        Board board = retrieveBoardPort.findByIdOrThrow(boardId);
+        Board board = retrieveBoardPort.getById(boardId);
         MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(board.getMemberId());
         boolean isOwner = board.isOwner(currentMemberInfo.getMemberId());
         List<BoardEmojiCountResponseDto> emojiInfos = getBoardEmojiCountResponseDtoList(boardId, currentMemberInfo.getMemberId());
