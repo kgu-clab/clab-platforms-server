@@ -23,7 +23,7 @@ public class ApplicationPersistenceAdapter implements
 
     @Override
     public Application save(Application application) {
-        ApplicationJpaEntity entity = applicationMapper.toJpaEntity(application);
+        ApplicationJpaEntity entity = applicationMapper.toEntity(application);
         ApplicationJpaEntity savedEntity = applicationRepository.save(entity);
         return applicationMapper.toDomain(savedEntity);
     }
