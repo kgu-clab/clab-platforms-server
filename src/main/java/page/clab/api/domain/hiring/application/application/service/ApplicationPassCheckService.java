@@ -21,7 +21,7 @@ public class ApplicationPassCheckService implements CheckApplicationPassStatusUs
     @Override
     public ApplicationPassResponseDto checkPassStatus(Long recruitmentId, String studentId) {
         ApplicationId id = ApplicationId.create(studentId, recruitmentId);
-        Recruitment recruitment = retrieveRecruitmentPort.findByIdOrThrow(recruitmentId);
+        Recruitment recruitment = retrieveRecruitmentPort.getById(recruitmentId);
 
         recruitment.validateEndDateWithin7Days();
 

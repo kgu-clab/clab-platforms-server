@@ -42,7 +42,7 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
     @Transactional
     @Override
     public String registerMembersByRecruitment(Long recruitmentId, String studentId) {
-        Application application = retrieveApplicationPort.findByRecruitmentIdAndStudentIdOrThrow(recruitmentId, studentId);
+        Application application = retrieveApplicationPort.getByRecruitmentIdAndStudentId(recruitmentId, studentId);
         validateApplicationIsPass(application);
         return createMemberFromApplication(application);
     }
@@ -64,7 +64,7 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
                 .orElseGet(() -> {
                     ApplicationMemberCreationDto dto = ApplicationMemberCreationDto.toDto(application);
                     eventPublisher.publishEvent(new ApplicationMemberCreatedEvent(this, dto));
-                    return externalRetrieveMemberUseCase.findByIdOrThrow(application.getStudentId());
+                    return externalRetrieveMemberUseCase.getById(application.getStudentId());
                 });
     }
 
