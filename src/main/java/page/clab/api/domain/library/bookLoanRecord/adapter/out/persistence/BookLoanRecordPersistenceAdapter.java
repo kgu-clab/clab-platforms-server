@@ -25,7 +25,7 @@ public class BookLoanRecordPersistenceAdapter implements
 
     @Override
     public BookLoanRecord save(BookLoanRecord bookLoanRecord) {
-        BookLoanRecordJpaEntity entity = bookLoanRecordMapper.toJpaEntity(bookLoanRecord);
+        BookLoanRecordJpaEntity entity = bookLoanRecordMapper.toEntity(bookLoanRecord);
         BookLoanRecordJpaEntity savedEntity = bookLoanRecordRepository.save(entity);
         return bookLoanRecordMapper.toDomain(savedEntity);
     }
