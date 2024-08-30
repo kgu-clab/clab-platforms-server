@@ -34,7 +34,7 @@ public class CommentRegisterService implements RegisterCommentUseCase {
 
     private Comment createAndStoreComment(Long parentId, Long boardId, CommentRequestDto requestDto) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
-        Board board = externalRetrieveBoardUseCase.findByIdOrThrow(boardId);
+        Board board = externalRetrieveBoardUseCase.getById(boardId);
         Comment parent = findParentComment(parentId);
         Comment comment = CommentRequestDto.toEntity(requestDto, board.getId(), currentMemberId, parent);
         if (parent != null) {

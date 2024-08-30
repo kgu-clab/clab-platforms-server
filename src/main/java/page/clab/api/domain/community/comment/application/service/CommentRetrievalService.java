@@ -30,8 +30,8 @@ public class CommentRetrievalService implements RetrieveCommentUseCase {
     }
 
     @Override
-    public Comment findByIdOrThrow(Long commentId) {
-        return retrieveCommentPort.findByIdOrThrow(commentId);
+    public Comment getById(Long commentId) {
+        return retrieveCommentPort.getById(commentId);
     }
 
     @Transactional(readOnly = true)

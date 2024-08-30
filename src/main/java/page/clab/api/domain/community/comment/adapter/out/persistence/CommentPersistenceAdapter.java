@@ -43,7 +43,7 @@ public class CommentPersistenceAdapter implements
     }
 
     @Override
-    public Comment findByIdOrThrow(Long commentId) {
+    public Comment getById(Long commentId) {
         return commentRepository.findById(commentId)
                 .map(commentMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[Comment] id: " + commentId + "에 해당하는 댓글이 존재하지 않습니다."));
