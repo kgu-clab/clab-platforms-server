@@ -51,21 +51,21 @@ public class ExternalMemberRetrievalService implements ExternalRetrieveMemberUse
 
     @Transactional(readOnly = true)
     @Override
-    public Member findByIdOrThrow(String memberId) {
-        return retrieveMemberPort.findByIdOrThrow(memberId);
+    public Member getById(String memberId) {
+        return retrieveMemberPort.getById(memberId);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Member findByEmail(String address) {
-        return retrieveMemberPort.findByEmailOrThrow(address);
+        return retrieveMemberPort.getByEmail(address);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Member getCurrentMember() {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
-        return retrieveMemberPort.findByIdOrThrow(memberId);
+        return retrieveMemberPort.getById(memberId);
     }
 
     @Transactional(readOnly = true)
@@ -115,7 +115,7 @@ public class ExternalMemberRetrievalService implements ExternalRetrieveMemberUse
     @Transactional(readOnly = true)
     @Override
     public MemberBasicInfoDto getMemberBasicInfoById(String memberId) {
-        Member member = retrieveMemberPort.findByIdOrThrow(memberId);
+        Member member = retrieveMemberPort.getById(memberId);
         return MemberBasicInfoDto.create(member);
     }
 
@@ -123,14 +123,14 @@ public class ExternalMemberRetrievalService implements ExternalRetrieveMemberUse
     @Override
     public MemberBasicInfoDto getCurrentMemberBasicInfo() {
         String currentMemberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = retrieveMemberPort.findByIdOrThrow(currentMemberId);
+        Member member = retrieveMemberPort.getById(currentMemberId);
         return MemberBasicInfoDto.create(member);
     }
 
     @Transactional(readOnly = true)
     @Override
     public MemberDetailedInfoDto getMemberDetailedInfoById(String memberId) {
-        Member member = retrieveMemberPort.findByIdOrThrow(memberId);
+        Member member = retrieveMemberPort.getById(memberId);
         return MemberDetailedInfoDto.create(member);
     }
 
@@ -138,7 +138,7 @@ public class ExternalMemberRetrievalService implements ExternalRetrieveMemberUse
     @Override
     public MemberDetailedInfoDto getCurrentMemberDetailedInfo() {
         String currentMemberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = retrieveMemberPort.findByIdOrThrow(currentMemberId);
+        Member member = retrieveMemberPort.getById(currentMemberId);
         return MemberDetailedInfoDto.create(member);
     }
 
@@ -146,21 +146,21 @@ public class ExternalMemberRetrievalService implements ExternalRetrieveMemberUse
     @Override
     public MemberBorrowerInfoDto getCurrentMemberBorrowerInfo() {
         String currentMemberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = retrieveMemberPort.findByIdOrThrow(currentMemberId);
+        Member member = retrieveMemberPort.getById(currentMemberId);
         return MemberBorrowerInfoDto.create(member);
     }
 
     @Transactional(readOnly = true)
     @Override
     public MemberLoginInfoDto getMemberLoginInfoById(String memberId) {
-        Member member = retrieveMemberPort.findByIdOrThrow(memberId);
+        Member member = retrieveMemberPort.getById(memberId);
         return MemberLoginInfoDto.create(member);
     }
 
     @Transactional(readOnly = true)
     @Override
     public MemberLoginInfoDto getGuestMemberLoginInfo() {
-        Member guestMember = retrieveMemberPort.findFirstByRoleOrThrow(Role.GUEST);
+        Member guestMember = retrieveMemberPort.getFirstByRole(Role.GUEST);
         return MemberLoginInfoDto.create(guestMember);
     }
 
@@ -168,14 +168,14 @@ public class ExternalMemberRetrievalService implements ExternalRetrieveMemberUse
     @Override
     public MemberPositionInfoDto getCurrentMemberPositionInfo() {
         String currentMemberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = retrieveMemberPort.findByIdOrThrow(currentMemberId);
+        Member member = retrieveMemberPort.getById(currentMemberId);
         return MemberPositionInfoDto.create(member);
     }
 
     @Transactional(readOnly = true)
     @Override
     public MemberReviewInfoDto getMemberReviewInfoById(String memberId) {
-        Member member = retrieveMemberPort.findByIdOrThrow(memberId);
+        Member member = retrieveMemberPort.getById(memberId);
         return MemberReviewInfoDto.create(member);
     }
 

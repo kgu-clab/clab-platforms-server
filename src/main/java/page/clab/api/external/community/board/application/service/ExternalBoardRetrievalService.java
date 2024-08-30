@@ -18,8 +18,8 @@ public class ExternalBoardRetrievalService implements ExternalRetrieveBoardUseCa
 
     @Transactional(readOnly = true)
     @Override
-    public Board findByIdOrThrow(Long targetId) {
-        return boardRetrievalService.findByIdOrThrow(targetId);
+    public Board getById(Long targetId) {
+        return boardRetrievalService.getById(targetId);
     }
 
     @Transactional(readOnly = true)
