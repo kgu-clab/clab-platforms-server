@@ -17,7 +17,7 @@ public class JobPostingDetailsRetrievalService implements RetrieveJobPostingDeta
     @Transactional(readOnly = true)
     @Override
     public JobPostingDetailsResponseDto retrieveJobPostingDetails(Long jobPostingId) {
-        JobPosting jobPosting = retrieveJobPostingPort.findByIdOrThrow(jobPostingId);
+        JobPosting jobPosting = retrieveJobPostingPort.getById(jobPostingId);
         return JobPostingDetailsResponseDto.toDto(jobPosting);
     }
 }
