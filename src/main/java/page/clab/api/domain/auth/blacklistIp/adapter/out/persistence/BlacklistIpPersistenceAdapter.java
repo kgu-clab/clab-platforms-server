@@ -25,7 +25,7 @@ public class BlacklistIpPersistenceAdapter implements
 
     @Override
     public BlacklistIp save(BlacklistIp blacklistIp) {
-        BlacklistIpJpaEntity entity = blacklistIpMapper.toJpaEntity(blacklistIp);
+        BlacklistIpJpaEntity entity = blacklistIpMapper.toEntity(blacklistIp);
         BlacklistIpJpaEntity savedEntity = blacklistIpRepository.save(entity);
         return blacklistIpMapper.toDomain(savedEntity);
     }
@@ -50,7 +50,7 @@ public class BlacklistIpPersistenceAdapter implements
 
     @Override
     public void delete(BlacklistIp blacklistIp) {
-        BlacklistIpJpaEntity entity = blacklistIpMapper.toJpaEntity(blacklistIp);
+        BlacklistIpJpaEntity entity = blacklistIpMapper.toEntity(blacklistIp);
         blacklistIpRepository.delete(entity);
     }
 
