@@ -22,7 +22,7 @@ public class MembershipFeePersistenceAdapter implements
     private final MembershipFeeMapper mapper;
 
     @Override
-    public MembershipFee findByIdOrThrow(Long id) {
+    public MembershipFee getById(Long id) {
         return repository.findById(id)
                 .map(mapper::toDomainEntity)
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 회비 내역입니다."));
