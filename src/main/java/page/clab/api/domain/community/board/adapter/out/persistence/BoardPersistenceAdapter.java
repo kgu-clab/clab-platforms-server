@@ -21,7 +21,7 @@ public class BoardPersistenceAdapter implements
 
     @Override
     public Board save(Board board) {
-        BoardJpaEntity entity = boardMapper.toJpaEntity(board);
+        BoardJpaEntity entity = boardMapper.toEntity(board);
         BoardJpaEntity savedEntity = boardRepository.save(entity);
         return boardMapper.toDomain(savedEntity);
     }
