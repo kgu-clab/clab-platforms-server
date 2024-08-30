@@ -31,7 +31,7 @@ public class MemberUpdateService implements UpdateMemberUseCase {
     @Override
     public String updateMember(String memberId, MemberUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
-        Member member = retrieveMemberPort.findByIdOrThrow(memberId);
+        Member member = retrieveMemberPort.getById(memberId);
         member.validateAccessPermission(currentMember);
         updateMember(requestDto, member);
         updateMemberPort.update(member);

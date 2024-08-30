@@ -62,7 +62,7 @@ public class MemberPersistenceAdapter implements
     }
 
     @Override
-    public Member findFirstByRoleOrThrow(Role role) {
+    public Member getFirstByRole(Role role) {
         MemberJpaEntity jpaEntity = memberRepository.findFirstByRole(role)
                 .orElseThrow(() -> new NotFoundException("[Member] role: " + role + "에 해당하는 회원이 존재하지 않습니다."));
         return memberMapper.toDomainEntity(jpaEntity);
@@ -74,7 +74,7 @@ public class MemberPersistenceAdapter implements
     }
 
     @Override
-    public Member findByIdOrThrow(String memberId) {
+    public Member getById(String memberId) {
         MemberJpaEntity jpaEntity = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException("[Member] id: " + memberId + "에 해당하는 회원이 존재하지 않습니다."));
         return memberMapper.toDomainEntity(jpaEntity);
@@ -100,7 +100,7 @@ public class MemberPersistenceAdapter implements
     }
 
     @Override
-    public Member findByEmailOrThrow(String email) {
+    public Member getByEmail(String email) {
         MemberJpaEntity jpaEntity = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("[Member] email: " + email + "을 사용하는 회원이 존재하지 않습니다."));
         return memberMapper.toDomainEntity(jpaEntity);
