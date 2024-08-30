@@ -28,7 +28,7 @@ public class CloudUsageRetrievalByMemberIdService implements RetrieveCloudUsageB
     @Transactional(readOnly = true)
     public CloudUsageInfo retrieveCloudUsage(String memberId) throws PermissionDeniedException {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
-        Member targetMember = retrieveMemberPort.findByIdOrThrow(memberId);
+        Member targetMember = retrieveMemberPort.getById(memberId);
         targetMember.validateAccessPermissionForCloud(currentMember);
         File directory = getMemberDirectory(targetMember.getId());
         long usage = FileSystemUtil.calculateDirectorySize(directory);
