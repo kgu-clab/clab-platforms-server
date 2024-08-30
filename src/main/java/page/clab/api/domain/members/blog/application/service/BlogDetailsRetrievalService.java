@@ -21,7 +21,7 @@ public class BlogDetailsRetrievalService implements RetrieveBlogDetailsUseCase {
     @Override
     public BlogDetailsResponseDto retrieveBlogDetails(Long blogId) {
         MemberBasicInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
-        Blog blog = retrieveBlogPort.findByIdOrThrow(blogId);
+        Blog blog = retrieveBlogPort.getById(blogId);
         boolean isOwner = blog.isOwner(currentMemberInfo.getMemberId());
         return BlogDetailsResponseDto.toDto(blog, currentMemberInfo, isOwner);
     }

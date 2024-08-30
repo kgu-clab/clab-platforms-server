@@ -26,7 +26,7 @@ public class BlogPersistenceAdapter implements
     }
 
     @Override
-    public Blog findByIdOrThrow(Long blogId) {
+    public Blog getById(Long blogId) {
         return blogRepository.findById(blogId)
                 .map(blogMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[Blog] id: " + blogId + "에 해당하는 게시글이 존재하지 않습니다."));
