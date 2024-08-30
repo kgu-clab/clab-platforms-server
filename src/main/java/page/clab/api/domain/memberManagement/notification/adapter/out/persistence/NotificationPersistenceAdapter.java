@@ -36,7 +36,7 @@ public class NotificationPersistenceAdapter implements
     }
 
     @Override
-    public Notification findByIdOrThrow(Long id) {
+    public Notification getById(Long id) {
         return repository.findById(id)
                 .map(mapper::toDomainEntity)
                 .orElseThrow(() -> new NotFoundException("[Notification] id: " + id + "에 해당하는 알림이 존재하지 않습니다."));
