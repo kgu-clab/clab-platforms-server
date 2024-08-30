@@ -72,7 +72,7 @@ public class WorkExperiencePersistenceAdapter implements
     }
 
     @Override
-    public WorkExperience findByIdOrThrow(Long id) {
+    public WorkExperience getById(Long id) {
         return repository.findById(id)
                 .map(mapper::toDomainEntity)
                 .orElseThrow(() -> new NotFoundException("[WorkExperience] id: " + id + "에 해당하는 경력사항이 존재하지 않습니다."));
