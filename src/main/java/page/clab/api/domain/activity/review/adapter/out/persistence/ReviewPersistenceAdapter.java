@@ -27,7 +27,7 @@ public class ReviewPersistenceAdapter implements
     }
 
     @Override
-    public Review findByIdOrThrow(Long reviewId) {
+    public Review getById(Long reviewId) {
         return repository.findById(reviewId)
                 .map(mapper::toDomainEntity)
                 .orElseThrow(() -> new NotFoundException("[Review] id: " + reviewId + "에 해당하는 리뷰가 존재하지 않습니다."));
