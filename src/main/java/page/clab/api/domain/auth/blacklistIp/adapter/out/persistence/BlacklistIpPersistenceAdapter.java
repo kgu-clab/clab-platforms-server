@@ -37,7 +37,7 @@ public class BlacklistIpPersistenceAdapter implements
     }
 
     @Override
-    public BlacklistIp findByIpAddressOrThrow(String ipAddress) {
+    public BlacklistIp getByIpAddress(String ipAddress) {
         return blacklistIpRepository.findByIpAddress(ipAddress)
                 .map(blacklistIpMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[BlacklistIp] IP: " + ipAddress + "에 해당하는 블랙리스트 IP가 존재하지 않습니다."));
