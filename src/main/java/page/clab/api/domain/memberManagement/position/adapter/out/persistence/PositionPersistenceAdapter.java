@@ -47,7 +47,7 @@ public class PositionPersistenceAdapter implements
     }
 
     @Override
-    public Position findByIdOrThrow(Long id) {
+    public Position getById(Long id) {
         return repository.findById(id)
                 .map(mapper::toDomainEntity)
                 .orElseThrow(() -> new NotFoundException("[Position] id: " + id + "에 해당하는 직책이 존재하지 않습니다."));
