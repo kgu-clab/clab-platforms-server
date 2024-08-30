@@ -33,7 +33,7 @@ public class AuthenticatorPersistenceAdapter implements
     }
 
     @Override
-    public Authenticator findByIdOrThrow(String memberId) {
+    public Authenticator getById(String memberId) {
         return authenticatorRepository.findById(memberId)
                 .map(authenticatorMapper::toDomainEntity)
                 .orElseThrow(() -> new NotFoundException("[Authenticator] memberId: " + memberId + "에 해당하는 Authenticator가 존재하지 않습니다."));
