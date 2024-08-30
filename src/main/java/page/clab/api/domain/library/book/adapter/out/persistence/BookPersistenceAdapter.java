@@ -22,7 +22,7 @@ public class BookPersistenceAdapter implements
 
     @Override
     public Book save(Book book) {
-        BookJpaEntity entity = bookMapper.toJpaEntity(book);
+        BookJpaEntity entity = bookMapper.toEntity(book);
         BookJpaEntity savedEntity = bookRepository.save(entity);
         return bookMapper.toDomain(savedEntity);
     }
