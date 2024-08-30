@@ -28,7 +28,7 @@ pipeline {
     stages {
         stage('Load Environment Variables') {
             steps {
-                withCredentials([file(credentialsId: 'platforms_prod_config_yml', variable: 'CONFIG_FILE')]) {
+                withCredentials([file(credentialsId: 'members_prod_config_yml', variable: 'CONFIG_FILE')]) {
                     script {
                         def config = readYaml(file: env.CONFIG_FILE)
 
@@ -75,18 +75,24 @@ pipeline {
                     }
                 }
             }
+            post {
+                failure {
+                    script {
+                        sendSlackBuildNotification(":scream_cat: Stage 'Load Environment Variables' failed.", env.SLACK_COLOR_FAILURE)
+                    }
+                }
+            }
         }
 
         stage('Check Java Version') {
             steps {
                 sh 'java -version'
             }
-        }
-
-        stage('Slack Notification: Production Server Testing') {
-            steps {
-                script {
-                    sendSlackNotification(":test_tube: Testing the Production server...", env.SLACK_COLOR_SUCCESS)
+            post {
+                failure {
+                    script {
+                        sendSlackBuildNotification(":scream_cat: Stage 'Check Java Version' failed.", env.SLACK_COLOR_FAILURE)
+                    }
                 }
             }
         }
@@ -97,12 +103,26 @@ pipeline {
                     env.GIT_CHANGELOG = getChangeLog()
                 }
             }
+            post {
+                failure {
+                    script {
+                        sendSlackBuildNotification(":scream_cat: Stage 'Get Git Change Log' failed.", env.SLACK_COLOR_FAILURE)
+                    }
+                }
+            }
         }
 
         stage('PostgreSQL Backup') {
             steps {
                 script {
                     backupPostgres()
+                }
+            }
+            post {
+                failure {
+                    script {
+                        sendSlackBuildNotification(":scream_cat: Stage 'PostgreSQL Backup' failed.", env.SLACK_COLOR_FAILURE)
+                    }
                 }
             }
         }
@@ -113,12 +133,26 @@ pipeline {
                     dockerLogin()
                 }
             }
+            post {
+                failure {
+                    script {
+                        sendSlackBuildNotification(":scream_cat: Stage 'Docker Hub Login' failed.", env.SLACK_COLOR_FAILURE)
+                    }
+                }
+            }
         }
 
         stage('Determine Containers') {
             steps {
                 script {
                     determineContainers()
+                }
+            }
+            post {
+                failure {
+                    script {
+                        sendSlackBuildNotification(":scream_cat: Stage 'Determine Containers' failed.", env.SLACK_COLOR_FAILURE)
+                    }
                 }
             }
         }
@@ -129,12 +163,26 @@ pipeline {
                     buildApplication()
                 }
             }
+            post {
+                failure {
+                    script {
+                        sendSlackBuildNotification(":scream_cat: Stage 'Build Application' failed.", env.SLACK_COLOR_FAILURE)
+                    }
+                }
+            }
         }
 
         stage('Build and Push Docker Image') {
             steps {
                 script {
                     buildAndPushDockerImage()
+                }
+            }
+            post {
+                failure {
+                    script {
+                        sendSlackBuildNotification(":scream_cat: Stage 'Build and Push Docker Image' failed.", env.SLACK_COLOR_FAILURE)
+                    }
                 }
             }
         }
@@ -145,6 +193,13 @@ pipeline {
                     deployNewInstance()
                 }
             }
+            post {
+                failure {
+                    script {
+                        sendSlackBuildNotification(":scream_cat: Stage 'Deploy New Instance' failed.", env.SLACK_COLOR_FAILURE)
+                    }
+                }
+            }
         }
 
         stage('Health Check') {
@@ -153,12 +208,26 @@ pipeline {
                     performHealthCheck()
                 }
             }
+            post {
+                failure {
+                    script {
+                        sendSlackBuildNotification(":scream_cat: Stage 'Health Check' failed.", env.SLACK_COLOR_FAILURE)
+                    }
+                }
+            }
         }
 
         stage('Switch Traffic and Cleanup') {
             steps {
                 script {
                     switchTrafficAndCleanup()
+                }
+            }
+            post {
+                failure {
+                    script {
+                        sendSlackBuildNotification(":scream_cat: Stage 'Switch Traffic and Cleanup' failed.", env.SLACK_COLOR_FAILURE)
+                    }
                 }
             }
         }
@@ -178,25 +247,6 @@ pipeline {
         }
     }
 }
-
-def sendSlackNotification(String message, String color) {
-    def payload = [
-        attachments: [
-            [
-                color: color,
-                text: message.replaceAll('"', '\\"').replaceAll('\n', '\\\\n')
-            ]
-        ]
-    ]
-
-    withEnv(["SLACK_WEBHOOK_URL=${env.SLACK_WEBHOOK_URL}"]) {
-        def payloadJson = groovy.json.JsonOutput.toJson(payload)
-        sh """
-            curl -X POST -H 'Content-type: application/json' --data '${payloadJson}' ${SLACK_WEBHOOK_URL}
-        """
-    }
-}
-
 
 def sendSlackBuildNotification(String message, String color) {
     def jobUrl = "${env.JENKINS_DOMAIN}/job/${env.JOB_NAME}"
@@ -291,7 +341,6 @@ def backupPostgres() {
             docker exec -e PGPASSWORD=${PG_PASSWORD} ${POSTGRESQL_CONTAINER_NAME} sh -c 'pg_dumpall -c -U ${PG_USER} > ${BACKUP_DIR}/${BACKUP_FILE}'
         """
     }
-    sendSlackNotification(":floppy_disk: PostgreSQL backup completed successfully: ${BACKUP_FILE}", env.SLACK_COLOR_SUCCESS)
 }
 
 def dockerLogin() {
@@ -403,7 +452,6 @@ def deployNewInstance() {
             docker ps -a
         """
     }
-    sendSlackNotification(":low_battery: Restarting the Production server...", env.SLACK_COLOR_SUCCESS)
 }
 
 def performHealthCheck() {
@@ -433,7 +481,6 @@ def performHealthCheck() {
         }
 
         if (System.currentTimeMillis() >= timeout) {
-            sendSlackNotification(":scream_cat: New Production application did not start successfully within 2.5 minutes.", env.SLACK_COLOR_FAILURE)
             sh "docker stop ${env.DEPLOY_CONTAINER}"
             sh "docker rm ${env.DEPLOY_CONTAINER}"
             error "Health check failed"
