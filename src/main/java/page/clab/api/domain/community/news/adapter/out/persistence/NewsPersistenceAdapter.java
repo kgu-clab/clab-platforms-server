@@ -17,7 +17,7 @@ public class NewsPersistenceAdapter implements
     private final NewsMapper mapper;
 
     @Override
-    public News findByIdOrThrow(Long id) {
+    public News getById(Long id) {
         return repository.findById(id)
                 .map(mapper::toDomainEntity)
                 .orElseThrow(() -> new NotFoundException("[News] id: " + id + "에 해당하는 뉴스가 존재하지 않습니다."));

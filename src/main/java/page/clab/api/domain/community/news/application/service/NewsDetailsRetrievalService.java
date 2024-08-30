@@ -17,7 +17,7 @@ public class NewsDetailsRetrievalService implements RetrieveNewsDetailsUseCase {
     @Transactional(readOnly = true)
     @Override
     public NewsDetailsResponseDto retrieveNewsDetails(Long newsId) {
-        News news = retrieveNewsPort.findByIdOrThrow(newsId);
+        News news = retrieveNewsPort.getById(newsId);
         return NewsDetailsResponseDto.toDto(news);
     }
 }
