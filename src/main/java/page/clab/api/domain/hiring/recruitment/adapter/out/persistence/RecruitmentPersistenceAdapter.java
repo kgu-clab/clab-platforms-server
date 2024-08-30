@@ -36,7 +36,7 @@ public class RecruitmentPersistenceAdapter implements
     }
 
     @Override
-    public Recruitment findByIdOrThrow(Long recruitmentId) {
+    public Recruitment getById(Long recruitmentId) {
         return repository.findById(recruitmentId)
                 .map(mapper::toDomainEntity)
                 .orElseThrow(() -> new NotFoundException("[Recruitment] id: " + recruitmentId + "에 해당하는 모집 공고가 존재하지 않습니다."));
