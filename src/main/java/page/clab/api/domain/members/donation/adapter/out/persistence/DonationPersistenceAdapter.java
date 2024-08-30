@@ -22,7 +22,7 @@ public class DonationPersistenceAdapter implements
 
     @Override
     public Donation save(Donation donation) {
-        DonationJpaEntity entity = donationMapper.toJpaEntity(donation);
+        DonationJpaEntity entity = donationMapper.toEntity(donation);
         DonationJpaEntity savedEntity = repository.save(entity);
         return donationMapper.toDomain(savedEntity);
     }
