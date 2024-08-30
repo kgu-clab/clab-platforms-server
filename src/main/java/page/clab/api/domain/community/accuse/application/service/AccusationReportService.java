@@ -56,13 +56,13 @@ public class AccusationReportService implements ReportAccusationUseCase {
     private void validateAccusationRequest(TargetType type, Long targetId, String currentMemberId) {
         switch (type) {
             case BOARD:
-                Board board = externalRetrieveBoardUseCase.findByIdOrThrow(targetId);
+                Board board = externalRetrieveBoardUseCase.getById(targetId);
                 if (board.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 게시글은 신고할 수 없습니다.");
                 }
                 break;
             case COMMENT:
-                Comment comment = externalRetrieveCommentUseCase.findByIdOrThrow(targetId);
+                Comment comment = externalRetrieveCommentUseCase.getById(targetId);
                 if (comment.isOwner(currentMemberId)) {
                     throw new AccuseTargetTypeIncorrectException("자신의 댓글은 신고할 수 없습니다.");
                 }

@@ -36,7 +36,7 @@ public class AccuseTargetPersistenceAdapter implements
     }
 
     @Override
-    public AccuseTarget findByIdOrThrow(AccuseTargetId accuseTargetId) {
+    public AccuseTarget getById(AccuseTargetId accuseTargetId) {
         return accuseTargetRepository.findById(accuseTargetId)
                 .map(accuseTargetMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[AccuseTarget] id: " + accuseTargetId + "에 해당하는 신고 대상이 존재하지 않습니다."));
