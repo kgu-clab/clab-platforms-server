@@ -17,6 +17,7 @@
  * Ensure the plugin is up-to-date to avoid compatibility issues.
  */
 
+def FAILED_STAGE = ""
 
 pipeline {
     agent any
@@ -28,6 +29,9 @@ pipeline {
     stages {
         stage('Load Environment Variables') {
             steps {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                }
                 withCredentials([file(credentialsId: 'members_stage_config_yml', variable: 'CONFIG_FILE')]) {
                     script {
                         def config = readYaml(file: env.CONFIG_FILE)
@@ -75,39 +79,22 @@ pipeline {
                     }
                 }
             }
-             post {
-                failure {
-                    script {
-                        sendSlackBuildNotification(":scream_cat: Stage 'Load Environment Variables' failed.", env.SLACK_COLOR_FAILURE)
-                    }
-                }
-            }
         }
 
         stage('Check Java Version') {
             steps {
-                sh 'java -version'
-            }
-            post {
-                failure {
-                    script {
-                        sendSlackBuildNotification(":scream_cat: Stage 'Check Java Version' failed.", env.SLACK_COLOR_FAILURE)
-                    }
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
                 }
+                sh 'java -version'
             }
         }
 
         stage('Get Git Change Log') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     env.GIT_CHANGELOG = getChangeLog()
-                }
-            }
-            post {
-                failure {
-                    script {
-                        sendSlackBuildNotification(":scream_cat: Stage 'Get Git Change Log' failed.", env.SLACK_COLOR_FAILURE)
-                    }
                 }
             }
         }
@@ -115,14 +102,8 @@ pipeline {
         stage('PostgreSQL Backup') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     backupPostgres()
-                }
-            }
-            post {
-                failure {
-                    script {
-                        sendSlackBuildNotification(":scream_cat: Stage 'PostgreSQL Backup' failed.", env.SLACK_COLOR_FAILURE)
-                    }
                 }
             }
         }
@@ -130,14 +111,8 @@ pipeline {
         stage('Docker Hub Login') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     dockerLogin()
-                }
-            }
-            post {
-                failure {
-                    script {
-                        sendSlackBuildNotification(":scream_cat: Stage 'Docker Hub Login' failed.", env.SLACK_COLOR_FAILURE)
-                    }
                 }
             }
         }
@@ -145,14 +120,8 @@ pipeline {
         stage('Determine Containers') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     determineContainers()
-                }
-            }
-            post {
-                failure {
-                    script {
-                        sendSlackBuildNotification(":scream_cat: Stage 'Determine Containers' failed.", env.SLACK_COLOR_FAILURE)
-                    }
                 }
             }
         }
@@ -160,14 +129,8 @@ pipeline {
         stage('Build Application') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     buildApplication()
-                }
-            }
-             post {
-                failure {
-                    script {
-                        sendSlackBuildNotification(":scream_cat: Stage 'Build Application' failed.", env.SLACK_COLOR_FAILURE)
-                    }
                 }
             }
         }
@@ -175,14 +138,8 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     buildAndPushDockerImage()
-                }
-            }
-            post {
-                failure {
-                    script {
-                        sendSlackBuildNotification(":scream_cat: Stage 'Build and Push Docker Image' failed.", env.SLACK_COLOR_FAILURE)
-                    }
                 }
             }
         }
@@ -190,14 +147,8 @@ pipeline {
         stage('Deploy New Instance') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     deployNewInstance()
-                }
-            }
-            post {
-                failure {
-                    script {
-                        sendSlackBuildNotification(":scream_cat: Stage 'Deploy New Instance' failed.", env.SLACK_COLOR_FAILURE)
-                    }
                 }
             }
         }
@@ -205,14 +156,8 @@ pipeline {
         stage('Health Check') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     performHealthCheck()
-                }
-            }
-            post {
-                failure {
-                    script {
-                        sendSlackBuildNotification(":scream_cat: Stage 'Health Check' failed.", env.SLACK_COLOR_FAILURE)
-                    }
                 }
             }
         }
@@ -220,14 +165,8 @@ pipeline {
         stage('Switch Traffic and Cleanup') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     switchTrafficAndCleanup()
-                }
-            }
-            post {
-                failure {
-                    script {
-                        sendSlackBuildNotification(":scream_cat: Stage 'Switch Traffic and Cleanup' failed.", env.SLACK_COLOR_FAILURE)
-                    }
                 }
             }
         }
@@ -236,7 +175,7 @@ pipeline {
     post {
         failure {
             script {
-                sendSlackBuildNotification(":scream_cat: Deployment failed.", env.SLACK_COLOR_FAILURE)
+                sendSlackBuildNotification(":scream_cat: Stage '${FAILED_STAGE}' failed.", env.SLACK_COLOR_FAILURE)
             }
         }
 
