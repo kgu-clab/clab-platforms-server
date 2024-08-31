@@ -112,8 +112,6 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
-                    echo "FAILED_STAGE value is ${FAILED_STAGE}"
                     dockerLogin()
                 }
             }
@@ -123,8 +121,6 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
-                    echo "FAILED_STAGE value is ${FAILED_STAGE}"
                     determineContainers()
                 }
             }
@@ -134,8 +130,6 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
-                    echo "FAILED_STAGE value is ${FAILED_STAGE}"
                     buildApplication()
                 }
             }
