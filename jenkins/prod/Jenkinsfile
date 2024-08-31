@@ -17,12 +17,10 @@
  * Ensure the plugin is up-to-date to avoid compatibility issues.
  */
 
+def FAILED_STAGE = ""
+
 pipeline {
     agent any
-
-    environment {
-        FAILED_STAGE = ""
-    }
 
     triggers {
         githubPush()
@@ -32,8 +30,7 @@ pipeline {
         stage('Load Environment Variables') {
             steps {
                 script {
-                    env.FAILED_STAGE = env.STAGE_NAME
-                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
+                    FAILED_STAGE = env.STAGE_NAME
                 }
                 withCredentials([file(credentialsId: 'members_prod_config_yml', variable: 'CONFIG_FILE')]) {
                     script {
@@ -87,8 +84,7 @@ pipeline {
         stage('Check Java Version') {
             steps {
                 script {
-                    env.FAILED_STAGE = env.STAGE_NAME
-                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
+                    FAILED_STAGE = env.STAGE_NAME
                 }
                 sh 'java -version'
             }
@@ -97,8 +93,7 @@ pipeline {
         stage('Get Git Change Log') {
             steps {
                 script {
-                    env.FAILED_STAGE = env.STAGE_NAME
-                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
+                    FAILED_STAGE = env.STAGE_NAME
                     env.GIT_CHANGELOG = getChangeLog()
                 }
             }
@@ -107,8 +102,7 @@ pipeline {
         stage('PostgreSQL Backup') {
             steps {
                 script {
-                    env.FAILED_STAGE = env.STAGE_NAME
-                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
+                    FAILED_STAGE = env.STAGE_NAME
                     backupPostgres()
                 }
             }
@@ -117,8 +111,9 @@ pipeline {
         stage('Docker Hub Login') {
             steps {
                 script {
-                    env.FAILED_STAGE = env.STAGE_NAME
+                    FAILED_STAGE = env.STAGE_NAME
                     echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
+                    echo "FAILED_STAGE value is ${env.FAILED_STAGE}"
                     dockerLogin()
                 }
             }
@@ -127,7 +122,7 @@ pipeline {
         stage('Determine Containers') {
             steps {
                 script {
-                    env.FAILED_STAGE = env.STAGE_NAME
+                    FAILED_STAGE = env.STAGE_NAME
                     echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
                     echo "FAILED_STAGE value is ${env.FAILED_STAGE}"
                     determineContainers()
@@ -138,7 +133,7 @@ pipeline {
         stage('Build Application') {
             steps {
                 script {
-                    env.FAILED_STAGE = env.STAGE_NAME
+                    FAILED_STAGE = env.STAGE_NAME
                     echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
                     echo "FAILED_STAGE value is ${env.FAILED_STAGE}"
                     buildApplication()
@@ -149,9 +144,7 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 script {
-                    env.FAILED_STAGE = env.STAGE_NAME
-                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
-                    echo "FAILED_STAGE value is ${env.FAILED_STAGE}"
+                    FAILED_STAGE = env.STAGE_NAME
                     buildAndPushDockerImage()
                 }
             }
@@ -160,9 +153,7 @@ pipeline {
         stage('Deploy New Instance') {
             steps {
                 script {
-                    env.FAILED_STAGE = env.STAGE_NAME
-                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
-                    echo "FAILED_STAGE value is ${env.FAILED_STAGE}"
+                    FAILED_STAGE = env.STAGE_NAME
                     deployNewInstance()
                 }
             }
@@ -171,9 +162,7 @@ pipeline {
         stage('Health Check') {
             steps {
                 script {
-                    env.FAILED_STAGE = env.STAGE_NAME
-                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
-                    echo "FAILED_STAGE value is ${env.FAILED_STAGE}"
+                    FAILED_STAGE = env.STAGE_NAME
                     performHealthCheck()
                 }
             }
@@ -182,8 +171,7 @@ pipeline {
         stage('Switch Traffic and Cleanup') {
             steps {
                 script {
-                    env.FAILED_STAGE = env.STAGE_NAME
-                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
+                    FAILED_STAGE = env.STAGE_NAME
                     switchTrafficAndCleanup()
                 }
             }
@@ -193,7 +181,7 @@ pipeline {
     post {
         failure {
             script {
-                sendSlackBuildNotification(":scream_cat: Stage ${env.FAILED_STAGE} failed.", env.SLACK_COLOR_FAILURE)
+                sendSlackBuildNotification(":scream_cat: Stage '${FAILED_STAGE}' failed.", env.SLACK_COLOR_FAILURE)
             }
         }
 
