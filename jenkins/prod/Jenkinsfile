@@ -129,6 +129,7 @@ pipeline {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
                     echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
+                    echo "FAILED_STAGE value is ${env.FAILED_STAGE}"
                     determineContainers()
                 }
             }
@@ -139,6 +140,7 @@ pipeline {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
                     echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
+                    echo "FAILED_STAGE value is ${env.FAILED_STAGE}"
                     buildApplication()
                 }
             }
@@ -149,6 +151,7 @@ pipeline {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
                     echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
+                    echo "FAILED_STAGE value is ${env.FAILED_STAGE}"
                     buildAndPushDockerImage()
                 }
             }
@@ -159,6 +162,7 @@ pipeline {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
                     echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
+                    echo "FAILED_STAGE value is ${env.FAILED_STAGE}"
                     deployNewInstance()
                 }
             }
@@ -169,6 +173,7 @@ pipeline {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
                     echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
+                    echo "FAILED_STAGE value is ${env.FAILED_STAGE}"
                     performHealthCheck()
                 }
             }
@@ -188,7 +193,7 @@ pipeline {
     post {
         failure {
             script {
-                sendSlackBuildNotification(":scream_cat: Stage '${env.FAILED_STAGE}' failed.", env.SLACK_COLOR_FAILURE)
+                sendSlackBuildNotification(":scream_cat: Stage ${env.FAILED_STAGE} failed.", env.SLACK_COLOR_FAILURE)
             }
         }
 
