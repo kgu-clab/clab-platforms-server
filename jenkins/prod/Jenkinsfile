@@ -33,6 +33,7 @@ pipeline {
             steps {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
+                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
                 }
                 withCredentials([file(credentialsId: 'members_prod_config_yml', variable: 'CONFIG_FILE')]) {
                     script {
@@ -87,6 +88,7 @@ pipeline {
             steps {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
+                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
                 }
                 sh 'java -version'
             }
@@ -96,6 +98,7 @@ pipeline {
             steps {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
+                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
                     env.GIT_CHANGELOG = getChangeLog()
                 }
             }
@@ -105,6 +108,7 @@ pipeline {
             steps {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
+                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
                     backupPostgres()
                 }
             }
@@ -114,6 +118,7 @@ pipeline {
             steps {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
+                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
                     dockerLogin()
                 }
             }
@@ -123,6 +128,7 @@ pipeline {
             steps {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
+                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
                     determineContainers()
                 }
             }
@@ -132,6 +138,7 @@ pipeline {
             steps {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
+                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
                     buildApplication()
                 }
             }
@@ -141,6 +148,7 @@ pipeline {
             steps {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
+                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
                     buildAndPushDockerImage()
                 }
             }
@@ -150,6 +158,7 @@ pipeline {
             steps {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
+                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
                     deployNewInstance()
                 }
             }
@@ -159,6 +168,7 @@ pipeline {
             steps {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
+                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
                     performHealthCheck()
                 }
             }
@@ -168,6 +178,7 @@ pipeline {
             steps {
                 script {
                     env.FAILED_STAGE = env.STAGE_NAME
+                    echo "Setting FAILED_STAGE to ${env.STAGE_NAME}"
                     switchTrafficAndCleanup()
                 }
             }
