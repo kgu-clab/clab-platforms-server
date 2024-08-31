@@ -181,7 +181,7 @@ pipeline {
     post {
         failure {
             script {
-                sendSlackBuildNotification(":scream_cat: Stage '${FAILED_STAGE}' failed.", env.SLACK_COLOR_FAILURE)
+                sendSlackBuildNotification(":scream_cat: Stage ${FAILED_STAGE} failed.", env.SLACK_COLOR_FAILURE)
             }
         }
 
