@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.community.board.domain.BoardCategory;
 
@@ -22,6 +23,6 @@ public interface BoardRepository extends JpaRepository<BoardJpaEntity, Long> {
 
     List<BoardJpaEntity> findByMemberId(String memberId);
 
-    @Query(value = "SELECT b FROM BoardJpaEntity b WHERE b.id = ?1", nativeQuery = true)
-    Optional<BoardJpaEntity> findByIdRegardlessOfDeletion(Long boardId);
+    @Query(value = "SELECT b FROM board b WHERE b.id = :boardId", nativeQuery = true)
+    Optional<BoardJpaEntity> findByIdRegardlessOfDeletion(@Param("boardId") Long boardId);
 }
