@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface BoardRepository extends JpaRepository<BoardJpaEntity, Long> {
 
-    Page<BoardJpaEntity> findAllByMemberId(String memberId, Pageable pageable);
+    Page<BoardJpaEntity> findAllByMemberIdAndIsDeletedFalse(String memberId, Pageable pageable);
 
     Page<BoardJpaEntity> findAllByCategory(BoardCategory category, Pageable pageable);
 

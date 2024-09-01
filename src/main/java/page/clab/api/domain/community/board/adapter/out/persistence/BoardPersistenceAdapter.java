@@ -47,7 +47,7 @@ public class BoardPersistenceAdapter implements
 
     @Override
     public Page<Board> findAllByMemberId(String memberId, Pageable pageable) {
-        return boardRepository.findAllByMemberId(memberId, pageable)
+        return boardRepository.findAllByMemberIdAndIsDeletedFalse(memberId, pageable)
                 .map(boardMapper::toDomain);
     }
 
