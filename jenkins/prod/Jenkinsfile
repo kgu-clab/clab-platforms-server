@@ -303,6 +303,7 @@ def backupPostgres() {
     ]) {
         sh """
             echo "Backing up PostgreSQL database to ${BACKUP_DIR}/${BACKUP_FILE}..."
+            echo "Executing as user: \$(whoami)"
             docker exec -e PGPASSWORD=${PG_PASSWORD} ${POSTGRESQL_CONTAINER_NAME} sh -c 'pg_dumpall -c -U ${PG_USER} > ${BACKUP_DIR}/${BACKUP_FILE}'
         """
     }
@@ -457,8 +458,8 @@ def performHealthCheck() {
 def transferBackupToStaging(String BACKUP_FILE) {
     withCredentials([sshUserPrivateKey(credentialsId: 'members-staging-server-ssh-key', keyFileVariable: 'SSH_KEY')]) {
         sh """
-            echo "Transferring backup file to staging server..."
-            scp -i $SSH_KEY -o StrictHostKeyChecking=no -P ${env.STAGING_SSH_PORT} ${env.BACKUP_DIR}/${BACKUP_FILE} ${env.STAGING_USER}@${env.STAGING_HOST}:${env.STAGING_BACKUP_DIR_PATH}/
+            echo "Executing as user: \$(whoami)"
+            scp -i $SSH_KEY -P ${env.STAGING_SSH_PORT} ${env.BACKUP_DIR}/${BACKUP_FILE} ${env.STAGING_USER}@${env.STAGING_HOST}:${env.STAGING_BACKUP_DIR_PATH}/
         """
     }
 }
