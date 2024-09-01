@@ -23,6 +23,6 @@ public interface BoardRepository extends JpaRepository<BoardJpaEntity, Long> {
 
     List<BoardJpaEntity> findByMemberId(String memberId);
 
-    @Query(value = "SELECT b FROM board b WHERE b.id = :boardId", nativeQuery = true)
+    @Query(value = "SELECT * FROM board b WHERE b.id = :boardId", nativeQuery = true)
     Optional<BoardJpaEntity> findByIdRegardlessOfDeletion(@Param("boardId") Long boardId);
 }
