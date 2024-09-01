@@ -12,6 +12,7 @@ import java.util.List;
 @Repository
 public interface BoardRepository extends JpaRepository<BoardJpaEntity, Long> {
 
+    @Query("SELECT b FROM BoardJpaEntity b WHERE b.memberId = ?1 AND b.isDeleted = false")
     Page<BoardJpaEntity> findAllByMemberIdAndIsDeletedFalse(String memberId, Pageable pageable);
 
     Page<BoardJpaEntity> findAllByCategory(BoardCategory category, Pageable pageable);
