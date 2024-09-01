@@ -458,6 +458,7 @@ def transferBackupToStaging(String BACKUP_FILE) {
     withCredentials([sshUserPrivateKey(credentialsId: 'members-staging-server-ssh-key', keyFileVariable: 'SSH_KEY')]) {
         sh """
             echo "Transferring backup file to staging server..."
+            ssh -i $SSH_KEY -o StrictHostKeyChecking=no -p ${env.STAGING_SSH_PORT} ${env.STAGING_USER}@${env.STAGING_HOST} echo 'SSH connection successful'
             scp -i $SSH_KEY -P ${env.STAGING_SSH_PORT} ${env.BACKUP_DIR}/${BACKUP_FILE} ${env.STAGING_USER}@${env.STAGING_HOST}:${env.STAGING_BACKUP_DIR_PATH}/
         """
     }
