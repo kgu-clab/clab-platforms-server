@@ -53,8 +53,8 @@ docker:
 staging:
     user: "user" # Staging user name
     host: "host" # Staging host name or IP address
-    backup-dir: "/var/backups/postgresql" # Staging Directory for PostgreSQL backups
+    backup-dir-path: "/var/backups/postgresql" # Staging Directory Path for PostgreSQL backups
+    restore-backup-script-path: "/var/restore.sh" # Staging Restore Backup Script Path
     ssh-port: 22 # Staging SSH Port
-    postgresql-user: "postgresql-user" # Staging Postgresql User
-    postgresql-container-name: "postgresql" # Staging PostgreSQL container name
+    postgresql-user: "postgres_user" # Staging Postgresql User
 
