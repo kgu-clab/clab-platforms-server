@@ -9,6 +9,8 @@ public interface RetrieveBoardPort {
 
     Board findByIdOrThrow(Long boardId);
 
+    Board findByIdRegardlessOfDeletion(Long boardId);
+
     Page<Board> findAll(Pageable pageable);
 
     Page<Board> findAllByCategory(BoardCategory category, Pageable pageable);
