@@ -45,6 +45,12 @@ pipeline {
                         env.PG_PASSWORD = config.postgresql.password
                         env.BACKUP_DIR = config.postgresql.'backup-dir'
 
+                        env.STAGING_USER = config.staging.'user'
+                        env.STAGING_HOST = config.staging.'host'
+                        env.STAGING_BACKUP_DIR = config.staging.'backup-dir'
+                        env.STAGING_SSH_PORT = config.staging.'ssh-port'
+                        env.STAGING_POSTGRESQL_CONTAINER_NAME = config.staging.'postgresql-container-name'
+
                         env.DOCKER_HUB_REPO = config.dockerhub.repo
                         env.DOCKER_HUB_USER = config.dockerhub.user
                         env.DOCKER_HUB_PASSWORD = config.dockerhub.password
@@ -158,6 +164,24 @@ pipeline {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
                     performHealthCheck()
+                }
+            }
+        }
+
+         stage('Transfer Backup to Staging') {
+            steps {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                    transferBackupToStaging()
+                }
+            }
+        }
+
+        stage('Restore Backup on Staging') {
+            steps {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                    restoreBackupOnStaging()
                 }
             }
         }
@@ -425,6 +449,22 @@ def performHealthCheck() {
             error "Health check failed"
         }
     }
+}
+
+def transferBackupToStaging() {
+    def BACKUP_FILE = "postgres_backup_${new Date().format('yyyy-MM-dd_HH-mm-ss')}.sql"
+    sh """
+        echo "Transferring backup file to staging server..."
+        scp ${BACKUP_DIR}/${BACKUP_FILE} ${env.STAGING_USER}@${env.STAGING_HOST}:${env.STAGING_BACKUP_DIR}/
+    """
+}
+
+def restoreBackupOnStaging() {
+    def BACKUP_FILE = "postgres_backup_${new Date().format('yyyy-MM-dd_HH-mm-ss')}.sql"
+    sh """
+        echo "Restoring backup on the staging server..."
+        ssh -p ${env.STAGING_SSH_PORT} ${env.STAGING_USER}@${env.STAGING_HOST} "docker exec -i ${env.STAGING_POSTGRESQL_CONTAINER_NAME} psql -U ${env.PG_USER} < ${env.STAGING_BACKUP_DIR}/${BACKUP_FILE}"
+    """
 }
 
 def switchTrafficAndCleanup() {
