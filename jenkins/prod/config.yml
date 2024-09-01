@@ -55,5 +55,6 @@ staging:
     host: "host" # Staging host name or IP address
     backup-dir: "/var/backups/postgresql" # Staging Directory for PostgreSQL backups
     ssh-port: 22 # Staging SSH Port
+    postgresql-user: "postgresql-user" # Staging Postgresql User
     postgresql-container-name: "postgresql" # Staging PostgreSQL container name
 

@@ -50,6 +50,7 @@ pipeline {
                         env.STAGING_HOST = config.staging.'host'
                         env.STAGING_BACKUP_DIR = config.staging.'backup-dir'
                         env.STAGING_SSH_PORT = config.staging.'ssh-port'
+                        env.STAGING_PG_USER = config.staging.'postgresql-user'
                         env.STAGING_POSTGRESQL_CONTAINER_NAME = config.staging.'postgresql-container-name'
 
                         env.DOCKER_HUB_REPO = config.dockerhub.repo
@@ -463,7 +464,7 @@ def transferBackupToStaging(String BACKUP_FILE) {
 def restoreBackupOnStaging(String BACKUP_FILE) {
     sh """
         echo "Restoring backup on the staging server..."
-        ssh -p ${env.STAGING_SSH_PORT} ${env.STAGING_USER}@${env.STAGING_HOST} "docker exec -i ${env.STAGING_POSTGRESQL_CONTAINER_NAME} psql -U ${env.PG_USER} < ${env.STAGING_BACKUP_DIR}/${BACKUP_FILE}"
+        ssh -p ${env.STAGING_SSH_PORT} ${env.STAGING_USER}@${env.STAGING_HOST} "docker exec -i ${env.STAGING_POSTGRESQL_CONTAINER_NAME} psql -U ${env.STAGING_PG_USER} < ${env.STAGING_BACKUP_DIR}/${BACKUP_FILE}"
     """
 }
 
