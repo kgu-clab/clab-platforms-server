@@ -57,4 +57,3 @@ staging:
     restore-backup-script-path: "/var/restore.sh" # Staging Restore Backup Script Path
     ssh-port: 22 # Staging SSH Port
     postgresql-user: "postgres_user" # Staging Postgresql User
-
