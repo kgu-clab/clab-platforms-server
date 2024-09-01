@@ -34,6 +34,13 @@ public class BoardPersistenceAdapter implements
     }
 
     @Override
+    public Board findByIdRegardlessOfDeletion(Long boardId) {
+        return boardRepository.findByIdRegardlessOfDeletion(boardId)
+                .map(boardMapper::toDomain)
+                .orElseThrow(() -> new NotFoundException("[Board] id: " + boardId + "에 해당하는 게시글이 존재하지 않습니다."));
+    }
+
+    @Override
     public Page<Board> findAllByCategory(BoardCategory category, Pageable pageable) {
         return boardRepository.findAllByCategory(category, pageable)
                 .map(boardMapper::toDomain);
@@ -47,7 +54,7 @@ public class BoardPersistenceAdapter implements
 
     @Override
     public Page<Board> findAllByMemberId(String memberId, Pageable pageable) {
-        return boardRepository.findAllByMemberId(memberId, pageable)
+        return boardRepository.findAllByMemberIdAndIsDeletedFalse(memberId, pageable)
                 .map(boardMapper::toDomain);
     }
 
