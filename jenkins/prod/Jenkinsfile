@@ -18,6 +18,7 @@
  */
 
 def FAILED_STAGE = ""
+def BACKUP_FILE = ""
 
 pipeline {
     agent any
@@ -109,7 +110,7 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    backupPostgres()
+                    BACKUP_FILE = backupPostgres()
                 }
             }
         }
@@ -172,7 +173,7 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    transferBackupToStaging()
+                    transferBackupToStaging(BACKUP_FILE)
                 }
             }
         }
@@ -181,7 +182,7 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    restoreBackupOnStaging()
+                    restoreBackupOnStaging(BACKUP_FILE)
                 }
             }
         }
@@ -304,6 +305,7 @@ def backupPostgres() {
             docker exec -e PGPASSWORD=${PG_PASSWORD} ${POSTGRESQL_CONTAINER_NAME} sh -c 'pg_dumpall -c -U ${PG_USER} > ${BACKUP_DIR}/${BACKUP_FILE}'
         """
     }
+    return BACKUP_FILE
 }
 
 def dockerLogin() {
@@ -451,16 +453,14 @@ def performHealthCheck() {
     }
 }
 
-def transferBackupToStaging() {
-    def BACKUP_FILE = "postgres_backup_${new Date().format('yyyy-MM-dd_HH-mm-ss')}.sql"
+def transferBackupToStaging(String BACKUP_FILE) {
     sh """
         echo "Transferring backup file to staging server..."
-        scp ${BACKUP_DIR}/${BACKUP_FILE} ${env.STAGING_USER}@${env.STAGING_HOST}:${env.STAGING_BACKUP_DIR}/
+        scp ${env.BACKUP_DIR}/${BACKUP_FILE} ${env.STAGING_USER}@${env.STAGING_HOST}:${env.STAGING_BACKUP_DIR}/
     """
 }
 
-def restoreBackupOnStaging() {
-    def BACKUP_FILE = "postgres_backup_${new Date().format('yyyy-MM-dd_HH-mm-ss')}.sql"
+def restoreBackupOnStaging(String BACKUP_FILE) {
     sh """
         echo "Restoring backup on the staging server..."
         ssh -p ${env.STAGING_SSH_PORT} ${env.STAGING_USER}@${env.STAGING_HOST} "docker exec -i ${env.STAGING_POSTGRESQL_CONTAINER_NAME} psql -U ${env.PG_USER} < ${env.STAGING_BACKUP_DIR}/${BACKUP_FILE}"
