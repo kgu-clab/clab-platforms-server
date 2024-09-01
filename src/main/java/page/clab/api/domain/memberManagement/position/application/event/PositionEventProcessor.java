@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.hiring.application.domain.Application;
 import page.clab.api.domain.memberManagement.member.application.event.MemberEventProcessor;
 import page.clab.api.domain.memberManagement.member.application.event.MemberEventProcessorRegistry;
 import page.clab.api.domain.memberManagement.position.application.port.out.RegisterPositionPort;

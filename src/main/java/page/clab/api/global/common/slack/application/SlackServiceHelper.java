@@ -65,11 +65,6 @@ public class SlackServiceHelper {
         this.attributeStrategy = attributeStrategy;
     }
 
-    private static String getUsername() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
-    }
-
     public CompletableFuture<Boolean> sendSlackMessage(String webhookUrl, AlertType alertType, HttpServletRequest request, Object additionalData) {
         List<LayoutBlock> blocks = createBlocks(alertType, request, additionalData);
         return CompletableFuture.supplyAsync(() -> {
@@ -150,7 +145,9 @@ public class SlackServiceHelper {
     private List<LayoutBlock> createErrorBlocks(HttpServletRequest request, Exception e) {
         String httpMethod = request.getMethod();
         String requestUrl = request.getRequestURI();
-        String username = getUsername();
+        String queryString = request.getQueryString();
+        String fullUrl = queryString == null ? requestUrl : requestUrl + "?" + queryString;
+        String username = getUsername(request);
 
         String errorMessage = e.getMessage() == null ? "No error message provided" : e.getMessage();
         String detailedMessage = extractMessageAfterException(errorMessage);
@@ -159,7 +156,7 @@ public class SlackServiceHelper {
                 section(section -> section.text(markdownText(":firecracker: *Server Error*"))),
                 section(section -> section.fields(Arrays.asList(
                         markdownText("*User:*\n" + username),
-                        markdownText("*Endpoint:*\n[" + httpMethod + "] " + requestUrl)
+                        markdownText("*Endpoint:*\n[" + httpMethod + "] " + fullUrl)
                 ))),
                 section(section -> section.text(markdownText("*Error Message:*\n" + detailedMessage))),
                 section(section -> section.text(markdownText("*Stack Trace:*\n```" + getStackTraceSummary(e) + "```")))
@@ -169,6 +166,8 @@ public class SlackServiceHelper {
     private List<LayoutBlock> createSecurityAlertBlocks(HttpServletRequest request, AlertType alertType, String additionalMessage) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String requestUrl = request.getRequestURI();
+        String queryString = request.getQueryString();
+        String fullUrl = queryString == null ? requestUrl : requestUrl + "?" + queryString;
         String username = getUsername(request);
         String location = getLocation(request);
 
@@ -178,7 +177,7 @@ public class SlackServiceHelper {
                         markdownText("*User:*\n" + username),
                         markdownText("*IP Address:*\n" + clientIpAddress),
                         markdownText("*Location:*\n" + location),
-                        markdownText("*Endpoint:*\n" + requestUrl)
+                        markdownText("*Endpoint:*\n" + fullUrl)
                 ))),
                 section(section -> section.text(markdownText("*Details:*\n" + alertType.getDefaultMessage() + "\n" + additionalMessage)))
         );

@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoardRequestDto;
+import org.springframework.util.CollectionUtils;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.activity.activitygroup.exception.AssignmentBoardHasNoDueDateTimeException;
 import page.clab.api.domain.activity.activitygroup.exception.FeedbackBoardHasNoContentException;
@@ -111,8 +111,8 @@ public class ActivityGroupBoard extends BaseEntity {
         return this.category.equals(ActivityGroupBoardCategory.FEEDBACK);
     }
 
-    public void validateAccessPermission(Member member, GroupMember leader) throws PermissionDeniedException {
-        if (!member.isAdminRole() && leader != null && !leader.isOwner(member.getId())) {
+    public void validateAccessPermission(Member member, List<GroupMember> leaders) throws PermissionDeniedException {
+        if (!member.isAdminRole() && !CollectionUtils.isEmpty(leaders) && leaders.stream().noneMatch(leader -> leader.isOwner(member.getId()))) {
             if (this.isAssignment()) {
                 throw new PermissionDeniedException("과제 게시판에 접근할 권한이 없습니다.");
             }

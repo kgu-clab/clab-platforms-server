@@ -3,6 +3,7 @@ package page.clab.api.domain.members.schedule.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import page.clab.api.domain.activity.activitygroup.application.ActivityGroupAdminService;
 import page.clab.api.domain.activity.activitygroup.application.ActivityGroupMemberService;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
@@ -17,6 +18,7 @@ import page.clab.api.domain.members.schedule.domain.ScheduleType;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.exception.PermissionDeniedException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -52,8 +54,8 @@ public class ScheduleRegisterService implements RegisterScheduleUseCase {
     }
 
     private void validateMemberIsGroupLeaderOrAdmin(MemberDetailedInfoDto memberInfo, ActivityGroup activityGroup) throws PermissionDeniedException {
-        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
-        if (groupMember != null && !memberInfo.isAdminRole() && !groupMember.isOwner(memberInfo.getMemberId())) {
+        List<GroupMember> groupLeaders = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
+        if (!CollectionUtils.isEmpty(groupLeaders) && !memberInfo.isAdminRole() && groupLeaders.stream().noneMatch(leader -> leader.isOwner(memberInfo.getMemberId()))) {
             throw new PermissionDeniedException("해당 스터디 또는 프로젝트의 LEADER, 관리자만 그룹 일정을 추가할 수 있습니다.");
         }
     }

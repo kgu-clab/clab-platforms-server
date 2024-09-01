@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupCategory;
+import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupStatus;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +16,7 @@ public class ActivityGroupResponseDto {
     private String name;
     private ActivityGroupCategory category;
     private String subject;
+    private ActivityGroupStatus status;
     private String imageUrl;
     private LocalDateTime createdAt;
 
@@ -24,6 +26,7 @@ public class ActivityGroupResponseDto {
                 .name(activityGroup.getName())
                 .category(activityGroup.getCategory())
                 .subject(activityGroup.getSubject())
+                .status(activityGroup.getStatus())
                 .imageUrl(activityGroup.getImageUrl())
                 .createdAt(activityGroup.getCreatedAt())
                 .build();

@@ -88,11 +88,9 @@ public class MemberPersistenceAdapter implements
                 .toList();
     }
 
-    public List<Member> findMemberRoleInfoByConditions(String memberId, String memberName, Role role, Pageable pageable) {
+    public Page<Member> findMemberRoleInfoByConditions(String memberId, String memberName, Role role, Pageable pageable) {
         Page<MemberJpaEntity> jpaEntities = memberRepository.findMemberRoleInfoByConditions(memberId, memberName, role, pageable);
-        return jpaEntities.stream()
-                .map(memberMapper::toDomainEntity)
-                .toList();
+        return jpaEntities.map(memberMapper::toDomainEntity);
     }
 
     @Override

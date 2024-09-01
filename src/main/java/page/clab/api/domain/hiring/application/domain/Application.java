@@ -6,9 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.memberManagement.member.domain.Member;
-import page.clab.api.domain.memberManagement.member.domain.Role;
-import page.clab.api.domain.memberManagement.member.domain.StudentStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,26 +34,6 @@ public class Application {
     private Boolean isDeleted;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    public static Member toMember(Application application) {
-        return Member.builder()
-                .id(application.getStudentId())
-                .name(application.getName())
-                .contact(application.getContact())
-                .email(application.getEmail())
-                .department(application.getDepartment())
-                .grade(application.getGrade())
-                .birth(application.getBirth())
-                .address(application.getAddress())
-                .interests(application.getInterests())
-                .githubUrl(application.getGithubUrl())
-                .studentStatus(StudentStatus.CURRENT)
-                .imageUrl("")
-                .role(Role.USER)
-                .isOtpEnabled(false)
-                .isDeleted(false)
-                .build();
-    }
 
     public void approve() {
         this.isPass = true;

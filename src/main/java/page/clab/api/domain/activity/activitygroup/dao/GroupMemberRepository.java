@@ -21,7 +21,7 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupM
 
     boolean existsByMemberIdAndActivityGroupId(String memberId, Long activityGroupId);
 
-    Optional<GroupMember> findByActivityGroupIdAndRole(Long activityGroupId, ActivityGroupRole role);
+    List<GroupMember> findByActivityGroupIdAndRole(Long activityGroupId, ActivityGroupRole role);
 
     Optional<GroupMember> findByActivityGroupAndMemberId(ActivityGroup activityGroup, String memberId);
 
@@ -31,5 +31,11 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupM
 
     Page<GroupMember> findAllByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status, org.springframework.data.domain.Pageable pageable);
 
+    List<GroupMember> findAllByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status);
+
     boolean existsByActivityGroupAndMemberId(ActivityGroup activityGroup, String memberId);
+
+    boolean existsByActivityGroupAndMemberIdAndStatus(ActivityGroup activityGroup, String memberId, GroupMemberStatus status);
+
+    boolean existsByActivityGroupIdAndMemberIdAndStatus(Long activityGroupId, String memberId, GroupMemberStatus status);
 }

@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.3.2'
+    id 'org.springframework.boot' version '3.3.3'
     id 'io.spring.dependency-management' version '1.1.6'
 }
 
@@ -46,11 +46,11 @@ dependencies {
     // Monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator' // Spring Boot Actuator
     implementation 'io.micrometer:micrometer-registry-prometheus' // Prometheus
-    implementation 'ch.qos.logback:logback-classic:1.5.6' // Logback
-    implementation 'ch.qos.logback:logback-core:1.5.6' // Logback
+    implementation 'ch.qos.logback:logback-classic:1.5.7' // Logback
+    implementation 'ch.qos.logback:logback-core:1.5.7' // Logback
 
     // DB
-    implementation 'org.postgresql:postgresql:42.7.3' // PostgreSQL JDBC Driver
+    implementation 'org.postgresql:postgresql:42.7.4' // PostgreSQL JDBC Driver
     implementation 'org.springframework.boot:spring-boot-starter-data-redis' // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
     implementation 'org.springframework.boot:spring-boot-starter-validation' // Hibernate Validator
@@ -69,14 +69,14 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.11.0' // JSON 라이브러리
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0' // Swagger
     implementation 'commons-io:commons-io:2.16.1' // Apache Commons IO
-    implementation 'com.google.guava:guava:33.2.1-jre' // Google Core Libraries For Java
+    implementation 'com.google.guava:guava:33.3.0-jre' // Google Core Libraries For Java
     implementation 'org.springframework.boot:spring-boot-starter-mail' // Spring Mail
     implementation 'com.google.zxing:core:3.4.1' // QR 코드
     implementation 'com.google.zxing:javase:3.5.3' // QR 코드
 
     // MapStruct
-    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+    implementation 'org.mapstruct:mapstruct:1.6.0'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.0'
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
     // IPInfo
@@ -84,9 +84,9 @@ dependencies {
     implementation 'io.ipinfo:ipinfo-api:3.0.0' // IPInfo API
 
     // Slack
-    implementation 'com.slack.api:slack-api-model:1.40.3'
-    implementation 'com.slack.api:slack-api-client:1.40.3'
-    implementation 'com.slack.api:slack-app-backend:1.40.3'
+    implementation 'com.slack.api:slack-api-model:1.42.0'
+    implementation 'com.slack.api:slack-api-client:1.42.0'
+    implementation 'com.slack.api:slack-app-backend:1.42.0'
 
     // XSS Filter
     implementation 'com.navercorp.lucy:lucy-xss-servlet:2.0.1' // Lucy XSS Servlet Filter

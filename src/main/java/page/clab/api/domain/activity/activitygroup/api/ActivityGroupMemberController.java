@@ -40,21 +40,6 @@ public class ActivityGroupMemberController {
     private final ActivityGroupMemberService activityGroupMemberService;
     private final PageableUtils pageableUtils;
 
-    @Operation(summary = "[G] 활동 전체 목록 조회", description = "ROLE_GUEST 이상의 권한이 필요함<br>" +
-            "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
-    @PreAuthorize("hasRole('GUEST')")
-    @GetMapping("")
-    public ApiResponse<PagedResponseDto<ActivityGroupResponseDto>> getActivityGroups(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
-            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupResponseDto.class);
-        PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getActivityGroups(pageable);
-        return ApiResponse.success(activityGroups);
-    }
-
     @Operation(summary = "[U] 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{activityGroupId}")
@@ -68,12 +53,13 @@ public class ActivityGroupMemberController {
     @Operation(summary = "[G] 나의 활동 목록 조회", description = "ROLE_GUEST 이상의 권한이 필요함")
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/my")
-    public ApiResponse<PagedResponseDto<ActivityGroupResponseDto>> getMyActivityGroups(
+    public ApiResponse<PagedResponseDto<ActivityGroupStatusResponseDto>> getMyActivityGroups(
+            @RequestParam(name = "status", required = false) ActivityGroupStatus status,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ActivityGroupResponseDto> activityGroups = activityGroupMemberService.getMyActivityGroups(pageable);
+        PagedResponseDto<ActivityGroupStatusResponseDto> activityGroups = activityGroupMemberService.getMyActivityGroups(status, pageable);
         return ApiResponse.success(activityGroups);
     }
 
@@ -148,5 +134,19 @@ public class ActivityGroupMemberController {
     ) {
         Long id = activityGroupMemberService.applyActivityGroup(activityGroupId, requestDto);
         return ApiResponse.success(id);
+    }
+    
+    @Operation(summary = "[U] 내가 지원한 활동 목록 조회", description = "ROLE_USER 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/applied")
+    public ApiResponse<PagedResponseDto<ActivityGroupStatusResponseDto>> getAppliedActivityGroups(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+            @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
+    ) throws InvalidColumnException, SortingArgumentException {
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupStatusResponseDto.class);
+        PagedResponseDto<ActivityGroupStatusResponseDto> activityGroups = activityGroupMemberService.getAppliedActivityGroups(pageable);
+        return ApiResponse.success(activityGroups);
     }
 }

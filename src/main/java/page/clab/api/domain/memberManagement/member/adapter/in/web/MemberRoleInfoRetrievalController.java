@@ -13,6 +13,7 @@ import page.clab.api.domain.memberManagement.member.application.dto.response.Mem
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberRoleInfoUseCase;
 import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.global.common.dto.ApiResponse;
+import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
@@ -34,7 +35,7 @@ public class MemberRoleInfoRetrievalController {
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/roles")
-    public ApiResponse<List<MemberRoleInfoResponseDto>> retrieveMemberRoleInfo(
+    public ApiResponse<PagedResponseDto<MemberRoleInfoResponseDto>> retrieveMemberRoleInfo(
             @RequestParam(required = false) String memberId,
             @RequestParam(required = false) String memberName,
             @RequestParam(required = false) Role role,
@@ -44,7 +45,7 @@ public class MemberRoleInfoRetrievalController {
             @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws InvalidColumnException, SortingArgumentException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, MemberRoleInfoResponseDto.class);
-        List<MemberRoleInfoResponseDto> memberRoles = retrieveMemberRoleInfoUseCase.retrieveMemberRoleInfo(memberId, memberName, role, pageable);
+        PagedResponseDto<MemberRoleInfoResponseDto> memberRoles = retrieveMemberRoleInfoUseCase.retrieveMemberRoleInfo(memberId, memberName, role, pageable);
         return ApiResponse.success(memberRoles);
     }
 }

@@ -25,9 +25,17 @@ public class BookDetailsRetrievalService implements RetrieveBookDetailsUseCase {
     @Transactional(readOnly = true)
     @Override
     public BookDetailsResponseDto retrieveBookDetails(Long bookId) {
-        MemberBasicInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
         Book book = retrieveBookPort.findByIdOrThrow(bookId);
-        return mapToBookDetailsResponseDto(book, currentMemberInfo.getMemberName());
+        String borrowerName = getBorrowerName(book);
+        return mapToBookDetailsResponseDto(book, borrowerName);
+    }
+
+    private String getBorrowerName(Book book) {
+        String borrowerId = book.getBorrowerId();
+        if (borrowerId != null) {
+            return externalRetrieveMemberUseCase.getMemberBasicInfoById(borrowerId).getMemberName();
+        }
+        return null;
     }
 
     @NotNull

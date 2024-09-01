@@ -17,6 +17,7 @@
  * Ensure the plugin is up-to-date to avoid compatibility issues.
  */
 
+def FAILED_STAGE = ""
 
 pipeline {
     agent any
@@ -28,7 +29,10 @@ pipeline {
     stages {
         stage('Load Environment Variables') {
             steps {
-                withCredentials([file(credentialsId: 'platforms_stage_config_yml', variable: 'CONFIG_FILE')]) {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                }
+                withCredentials([file(credentialsId: 'members_stage_config_yml', variable: 'CONFIG_FILE')]) {
                     script {
                         def config = readYaml(file: env.CONFIG_FILE)
 
@@ -79,21 +83,17 @@ pipeline {
 
         stage('Check Java Version') {
             steps {
-                sh 'java -version'
-            }
-        }
-
-        stage('Slack Notification: Staging Server Testing') {
-            steps {
                 script {
-                    sendSlackNotification(":test_tube: Testing the Staging server...", env.SLACK_COLOR_SUCCESS)
+                    FAILED_STAGE = env.STAGE_NAME
                 }
+                sh 'java -version'
             }
         }
 
         stage('Get Git Change Log') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     env.GIT_CHANGELOG = getChangeLog()
                 }
             }
@@ -102,6 +102,7 @@ pipeline {
         stage('PostgreSQL Backup') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     backupPostgres()
                 }
             }
@@ -110,6 +111,7 @@ pipeline {
         stage('Docker Hub Login') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     dockerLogin()
                 }
             }
@@ -118,6 +120,7 @@ pipeline {
         stage('Determine Containers') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     determineContainers()
                 }
             }
@@ -126,6 +129,7 @@ pipeline {
         stage('Build Application') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     buildApplication()
                 }
             }
@@ -134,6 +138,7 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     buildAndPushDockerImage()
                 }
             }
@@ -142,6 +147,7 @@ pipeline {
         stage('Deploy New Instance') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     deployNewInstance()
                 }
             }
@@ -150,6 +156,7 @@ pipeline {
         stage('Health Check') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     performHealthCheck()
                 }
             }
@@ -158,6 +165,7 @@ pipeline {
         stage('Switch Traffic and Cleanup') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     switchTrafficAndCleanup()
                 }
             }
@@ -167,7 +175,7 @@ pipeline {
     post {
         failure {
             script {
-                sendSlackBuildNotification(":scream_cat: Deployment failed.", env.SLACK_COLOR_FAILURE)
+                sendSlackBuildNotification(":scream_cat: Stage *${FAILED_STAGE}* failed.", env.SLACK_COLOR_FAILURE)
             }
         }
 
@@ -178,25 +186,6 @@ pipeline {
         }
     }
 }
-
-def sendSlackNotification(String message, String color) {
-    def payload = [
-        attachments: [
-            [
-                color: color,
-                text: message.replaceAll('"', '\\"').replaceAll('\n', '\\\\n')
-            ]
-        ]
-    ]
-
-    withEnv(["SLACK_WEBHOOK_URL=${env.SLACK_WEBHOOK_URL}"]) {
-        def payloadJson = groovy.json.JsonOutput.toJson(payload)
-        sh """
-            curl -X POST -H 'Content-type: application/json' --data '${payloadJson}' ${SLACK_WEBHOOK_URL}
-        """
-    }
-}
-
 
 def sendSlackBuildNotification(String message, String color) {
     def jobUrl = "${env.JENKINS_DOMAIN}/job/${env.JOB_NAME}"
@@ -291,7 +280,6 @@ def backupPostgres() {
             docker exec -e PGPASSWORD=${PG_PASSWORD} ${POSTGRESQL_CONTAINER_NAME} sh -c 'pg_dumpall -c -U ${PG_USER} > ${BACKUP_DIR}/${BACKUP_FILE}'
         """
     }
-    sendSlackNotification(":floppy_disk: PostgreSQL backup completed successfully: ${BACKUP_FILE}", env.SLACK_COLOR_SUCCESS)
 }
 
 def dockerLogin() {
@@ -403,7 +391,6 @@ def deployNewInstance() {
             docker ps -a
         """
     }
-    sendSlackNotification(":low_battery: Restarting the Staging server...", env.SLACK_COLOR_SUCCESS)
 }
 
 def performHealthCheck() {
@@ -433,7 +420,6 @@ def performHealthCheck() {
         }
 
         if (System.currentTimeMillis() >= timeout) {
-            sendSlackNotification(":scream_cat: New Staging application did not start successfully within 2.5 minutes.", env.SLACK_COLOR_FAILURE)
             sh "docker stop ${env.DEPLOY_CONTAINER}"
             sh "docker rm ${env.DEPLOY_CONTAINER}"
             error "Health check failed"

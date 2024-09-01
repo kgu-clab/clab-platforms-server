@@ -17,6 +17,8 @@
  * Ensure the plugin is up-to-date to avoid compatibility issues.
  */
 
+def FAILED_STAGE = ""
+def BACKUP_FILE = ""
 
 pipeline {
     agent any
@@ -28,7 +30,10 @@ pipeline {
     stages {
         stage('Load Environment Variables') {
             steps {
-                withCredentials([file(credentialsId: 'platforms_prod_config_yml', variable: 'CONFIG_FILE')]) {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                }
+                withCredentials([file(credentialsId: 'members_prod_config_yml', variable: 'CONFIG_FILE')]) {
                     script {
                         def config = readYaml(file: env.CONFIG_FILE)
 
@@ -40,6 +45,13 @@ pipeline {
                         env.PG_USER = config.postgresql.user
                         env.PG_PASSWORD = config.postgresql.password
                         env.BACKUP_DIR = config.postgresql.'backup-dir'
+
+                        env.STAGING_USER = config.staging.'user'
+                        env.STAGING_HOST = config.staging.'host'
+                        env.STAGING_BACKUP_DIR_PATH = config.staging.'backup-dir-path'
+                        env.STAGING_RESTORE_BACKUP_SCRIPT_PATH = config.staging.'restore-backup-script-path'
+                        env.STAGING_SSH_PORT = config.staging.'ssh-port'
+                        env.STAGING_PG_USER = config.staging.'postgresql-user'
 
                         env.DOCKER_HUB_REPO = config.dockerhub.repo
                         env.DOCKER_HUB_USER = config.dockerhub.user
@@ -79,21 +91,17 @@ pipeline {
 
         stage('Check Java Version') {
             steps {
-                sh 'java -version'
-            }
-        }
-
-        stage('Slack Notification: Production Server Testing') {
-            steps {
                 script {
-                    sendSlackNotification(":test_tube: Testing the Production server...", env.SLACK_COLOR_SUCCESS)
+                    FAILED_STAGE = env.STAGE_NAME
                 }
+                sh 'java -version'
             }
         }
 
         stage('Get Git Change Log') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     env.GIT_CHANGELOG = getChangeLog()
                 }
             }
@@ -102,7 +110,8 @@ pipeline {
         stage('PostgreSQL Backup') {
             steps {
                 script {
-                    backupPostgres()
+                    FAILED_STAGE = env.STAGE_NAME
+                    BACKUP_FILE = backupPostgres()
                 }
             }
         }
@@ -110,6 +119,7 @@ pipeline {
         stage('Docker Hub Login') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     dockerLogin()
                 }
             }
@@ -118,6 +128,7 @@ pipeline {
         stage('Determine Containers') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     determineContainers()
                 }
             }
@@ -126,6 +137,7 @@ pipeline {
         stage('Build Application') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     buildApplication()
                 }
             }
@@ -134,6 +146,7 @@ pipeline {
         stage('Build and Push Docker Image') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     buildAndPushDockerImage()
                 }
             }
@@ -142,6 +155,7 @@ pipeline {
         stage('Deploy New Instance') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     deployNewInstance()
                 }
             }
@@ -150,7 +164,26 @@ pipeline {
         stage('Health Check') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     performHealthCheck()
+                }
+            }
+        }
+
+         stage('Transfer Backup to Staging') {
+            steps {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                    transferBackupToStaging(BACKUP_FILE)
+                }
+            }
+        }
+
+        stage('Restore Backup on Staging') {
+            steps {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                    restoreBackupOnStaging(BACKUP_FILE)
                 }
             }
         }
@@ -158,6 +191,7 @@ pipeline {
         stage('Switch Traffic and Cleanup') {
             steps {
                 script {
+                    FAILED_STAGE = env.STAGE_NAME
                     switchTrafficAndCleanup()
                 }
             }
@@ -167,7 +201,7 @@ pipeline {
     post {
         failure {
             script {
-                sendSlackBuildNotification(":scream_cat: Deployment failed.", env.SLACK_COLOR_FAILURE)
+                sendSlackBuildNotification(":scream_cat: Stage *${FAILED_STAGE}* failed.", env.SLACK_COLOR_FAILURE)
             }
         }
 
@@ -178,25 +212,6 @@ pipeline {
         }
     }
 }
-
-def sendSlackNotification(String message, String color) {
-    def payload = [
-        attachments: [
-            [
-                color: color,
-                text: message.replaceAll('"', '\\"').replaceAll('\n', '\\\\n')
-            ]
-        ]
-    ]
-
-    withEnv(["SLACK_WEBHOOK_URL=${env.SLACK_WEBHOOK_URL}"]) {
-        def payloadJson = groovy.json.JsonOutput.toJson(payload)
-        sh """
-            curl -X POST -H 'Content-type: application/json' --data '${payloadJson}' ${SLACK_WEBHOOK_URL}
-        """
-    }
-}
-
 
 def sendSlackBuildNotification(String message, String color) {
     def jobUrl = "${env.JENKINS_DOMAIN}/job/${env.JOB_NAME}"
@@ -291,7 +306,7 @@ def backupPostgres() {
             docker exec -e PGPASSWORD=${PG_PASSWORD} ${POSTGRESQL_CONTAINER_NAME} sh -c 'pg_dumpall -c -U ${PG_USER} > ${BACKUP_DIR}/${BACKUP_FILE}'
         """
     }
-    sendSlackNotification(":floppy_disk: PostgreSQL backup completed successfully: ${BACKUP_FILE}", env.SLACK_COLOR_SUCCESS)
+    return BACKUP_FILE
 }
 
 def dockerLogin() {
@@ -403,7 +418,6 @@ def deployNewInstance() {
             docker ps -a
         """
     }
-    sendSlackNotification(":low_battery: Restarting the Production server...", env.SLACK_COLOR_SUCCESS)
 }
 
 def performHealthCheck() {
@@ -433,12 +447,26 @@ def performHealthCheck() {
         }
 
         if (System.currentTimeMillis() >= timeout) {
-            sendSlackNotification(":scream_cat: New Production application did not start successfully within 2.5 minutes.", env.SLACK_COLOR_FAILURE)
             sh "docker stop ${env.DEPLOY_CONTAINER}"
             sh "docker rm ${env.DEPLOY_CONTAINER}"
             error "Health check failed"
         }
     }
+}
+
+def transferBackupToStaging(String BACKUP_FILE) {
+    sh """
+        echo "Transferring backup file to staging server..."
+        scp -P ${env.STAGING_SSH_PORT} ${env.BACKUP_DIR}/${BACKUP_FILE} ${env.STAGING_USER}@${env.STAGING_HOST}:${env.STAGING_BACKUP_DIR_PATH}/
+    """
+}
+
+def restoreBackupOnStaging(String BACKUP_FILE) {
+    sh """
+        echo "Restoring backup on the staging server..."
+        ssh -p ${env.STAGING_SSH_PORT} ${env.STAGING_USER}@${env.STAGING_HOST} \
+        "${env.STAGING_RESTORE_BACKUP_SCRIPT_PATH} ${env.STAGING_BACKUP_DIR_PATH}/${BACKUP_FILE}"
+    """
 }
 
 def switchTrafficAndCleanup() {
