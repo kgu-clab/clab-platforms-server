@@ -457,7 +457,7 @@ def performHealthCheck() {
 def transferBackupToStaging(String BACKUP_FILE) {
     sh """
         echo "Transferring backup file to staging server..."
-        scp ${env.BACKUP_DIR}/${BACKUP_FILE} ${env.STAGING_USER}@${env.STAGING_HOST}:${env.STAGING_BACKUP_DIR_PATH}/
+        scp -P ${env.STAGING_SSH_PORT} ${env.BACKUP_DIR}/${BACKUP_FILE} ${env.STAGING_USER}@${env.STAGING_HOST}:${env.STAGING_BACKUP_DIR_PATH}/
     """
 }
 
