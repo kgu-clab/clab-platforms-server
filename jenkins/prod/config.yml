@@ -44,7 +44,17 @@ spring:
 admin:
     username: "admin" # Backend admin username
     password: "admin_password" # Backend admin password
+
 docker:
     dockerfile-path: "/jenkins/prod/Dockerfile" # Path to the Dockerfile
     nginx-container-name: "nginx" # Nginx container name
     postgresql-container-name: "postgresql" # PostgreSQL container name
+
+staging:
+    user: "user" # Staging user name
+    host: "host" # Staging host name or IP address
+    backup-dir-path: "/var/backups/postgresql" # Staging Directory Path for PostgreSQL backups
+    restore-backup-script-path: "/var/restore.sh" # Staging Restore Backup Script Path
+    ssh-port: 22 # Staging SSH Port
+    postgresql-user: "postgres_user" # Staging Postgresql User
+

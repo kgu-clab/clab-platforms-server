@@ -18,6 +18,7 @@
  */
 
 def FAILED_STAGE = ""
+def BACKUP_FILE = ""
 
 pipeline {
     agent any
@@ -44,6 +45,13 @@ pipeline {
                         env.PG_USER = config.postgresql.user
                         env.PG_PASSWORD = config.postgresql.password
                         env.BACKUP_DIR = config.postgresql.'backup-dir'
+
+                        env.STAGING_USER = config.staging.'user'
+                        env.STAGING_HOST = config.staging.'host'
+                        env.STAGING_BACKUP_DIR_PATH = config.staging.'backup-dir-path'
+                        env.STAGING_RESTORE_BACKUP_SCRIPT_PATH = config.staging.'restore-backup-script-path'
+                        env.STAGING_SSH_PORT = config.staging.'ssh-port'
+                        env.STAGING_PG_USER = config.staging.'postgresql-user'
 
                         env.DOCKER_HUB_REPO = config.dockerhub.repo
                         env.DOCKER_HUB_USER = config.dockerhub.user
@@ -103,7 +111,7 @@ pipeline {
             steps {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
-                    backupPostgres()
+                    BACKUP_FILE = backupPostgres()
                 }
             }
         }
@@ -158,6 +166,24 @@ pipeline {
                 script {
                     FAILED_STAGE = env.STAGE_NAME
                     performHealthCheck()
+                }
+            }
+        }
+
+         stage('Transfer Backup to Staging') {
+            steps {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                    transferBackupToStaging(BACKUP_FILE)
+                }
+            }
+        }
+
+        stage('Restore Backup on Staging') {
+            steps {
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                    restoreBackupOnStaging(BACKUP_FILE)
                 }
             }
         }
@@ -280,6 +306,7 @@ def backupPostgres() {
             docker exec -e PGPASSWORD=${PG_PASSWORD} ${POSTGRESQL_CONTAINER_NAME} sh -c 'pg_dumpall -c -U ${PG_USER} > ${BACKUP_DIR}/${BACKUP_FILE}'
         """
     }
+    return BACKUP_FILE
 }
 
 def dockerLogin() {
@@ -425,6 +452,21 @@ def performHealthCheck() {
             error "Health check failed"
         }
     }
+}
+
+def transferBackupToStaging(String BACKUP_FILE) {
+    sh """
+        echo "Transferring backup file to staging server..."
+        scp -P ${env.STAGING_SSH_PORT} ${env.BACKUP_DIR}/${BACKUP_FILE} ${env.STAGING_USER}@${env.STAGING_HOST}:${env.STAGING_BACKUP_DIR_PATH}/
+    """
+}
+
+def restoreBackupOnStaging(String BACKUP_FILE) {
+    sh """
+        echo "Restoring backup on the staging server..."
+        ssh -p ${env.STAGING_SSH_PORT} ${env.STAGING_USER}@${env.STAGING_HOST} \
+        "${env.STAGING_RESTORE_BACKUP_SCRIPT_PATH} ${env.STAGING_BACKUP_DIR_PATH}/${BACKUP_FILE}"
+    """
 }
 
 def switchTrafficAndCleanup() {
