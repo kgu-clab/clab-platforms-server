@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class WhitelistService {
+public class IpWhitelistValidator {
 
     @Value("${security.whitelist.enabled}")
     private boolean whitelistEnabled;

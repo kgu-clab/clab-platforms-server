@@ -20,7 +20,7 @@ import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
-import page.clab.api.global.util.WhitelistUtil;
+import page.clab.api.global.util.WhitelistPathMatcher;
 
 import java.io.IOException;
 
@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         String path = httpServletRequest.getRequestURI();
-        if (WhitelistUtil.isWhitelistRequest(path)) {
+        if (WhitelistPathMatcher.isWhitelistRequest(path)) {
             chain.doFilter(request, response);
             return;
         }
