@@ -23,7 +23,6 @@ import page.clab.api.global.util.WhitelistUtil;
 
 import java.io.IOException;
 import java.util.Base64;
-import java.util.List;
 
 @Slf4j
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
@@ -93,8 +92,7 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
     private boolean verifyIpAddressAccess(HttpServletResponse response) throws IOException {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        List<String> whitelistIps = whitelistService.loadWhitelistIps();
-        if (!(whitelistIps.contains(clientIpAddress) || whitelistIps.contains("*")) ||
+        if (!whitelistService.isIpWhitelisted(clientIpAddress) ||
                 externalRetrieveBlacklistIpUseCase.existsByIpAddress(clientIpAddress) ||
                 externalCheckIpBlockedUseCase.isIpBlocked(clientIpAddress)
         ) {
