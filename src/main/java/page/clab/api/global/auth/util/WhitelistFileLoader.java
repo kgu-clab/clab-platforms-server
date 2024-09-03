@@ -90,7 +90,10 @@ public class WhitelistFileLoader {
             List<String> fixedIps = whitelist.getOrDefault("fixedIps", List.of());
             List<String> temporaryIps = whitelist.getOrDefault("temporaryIps", List.of());
 
-            return Stream.concat(fixedIps.stream(), temporaryIps.stream()).toList();
+            return Stream.concat(
+                    fixedIps != null ? fixedIps.stream() : Stream.empty(),
+                    temporaryIps != null ? temporaryIps.stream() : Stream.empty()
+            ).toList();
         } catch (Exception e) {
             log.error("Failed to parse IP whitelist", e);
             return List.of();
