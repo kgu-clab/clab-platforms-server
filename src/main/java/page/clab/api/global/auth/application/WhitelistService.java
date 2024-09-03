@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.yaml.snakeyaml.Yaml;
 import page.clab.api.global.util.IpAddressUtil;
 
@@ -92,12 +93,21 @@ public class WhitelistService {
     private List<String> parseWhitelistFile(Yaml yaml, Path path) throws IOException {
         try (InputStream inputStream = Files.newInputStream(path)) {
             Map<String, Map<String, List<String>>> data = yaml.load(inputStream);
+
+            if (CollectionUtils.isEmpty(data)) {
+                log.warn("YAML file is empty or invalid");
+                return List.of("*");
+            }
+
             Map<String, List<String>> whitelist = data.getOrDefault("whitelist", Map.of());
 
             List<String> fixedIps = whitelist.getOrDefault("fixedIps", List.of());
             List<String> temporaryIps = whitelist.getOrDefault("temporaryIps", List.of());
 
             return Stream.concat(fixedIps.stream(), temporaryIps.stream()).toList();
+        } catch (Exception e) {
+            log.error("Failed to parse IP whitelist", e);
+            return List.of("*");
         }
     }
 }
