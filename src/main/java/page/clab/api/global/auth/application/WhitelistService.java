@@ -16,6 +16,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Stream;
 
 @Service
@@ -30,6 +32,7 @@ public class WhitelistService {
     private String whitelistPath;
 
     private final Yaml yaml;
+    private final Lock fileLock = new ReentrantLock();
 
     /**
      * 요청된 IP가 화이트리스트에 포함되는지 확인합니다.
@@ -53,15 +56,20 @@ public class WhitelistService {
      * @return 화이트리스트에 포함된 IP 목록
      */
     private List<String> loadWhitelistIps() {
+        fileLock.lock();
         try {
             Path path = Paths.get(whitelistPath);
+
             if (Files.notExists(path)) {
                 createDefaultWhitelistFile(path, yaml);
             }
+
             return parseWhitelistFile(yaml, path);
         } catch (IOException e) {
             log.error("Failed to load or create IP whitelist from path: {}", whitelistPath, e);
             return List.of("*");
+        } finally {
+            fileLock.unlock();
         }
     }
 
