@@ -14,7 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import page.clab.api.external.auth.blacklistIp.application.port.ExternalRetrieveBlacklistIpUseCase;
 import page.clab.api.external.auth.redisIpAccessMonitor.application.port.ExternalCheckIpBlockedUseCase;
-import page.clab.api.global.auth.application.IpWhitelistValidator;
+import page.clab.api.global.auth.util.IpWhitelistValidator;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;

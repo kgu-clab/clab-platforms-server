@@ -1,4 +1,4 @@
-package page.clab.api.global.auth.application;
+package page.clab.api.global.auth.util;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
