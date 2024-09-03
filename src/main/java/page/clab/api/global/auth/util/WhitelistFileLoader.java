@@ -44,7 +44,7 @@ public class WhitelistFileLoader {
 
             return parseWhitelistFile(yaml, path);
         } catch (IOException e) {
-            log.error("Failed to load or create IP whitelist from path: {}", whitelistPath, e);
+            log.error("Failed to load or create IP whitelist", e);
             return List.of("*");
         } finally {
             fileLock.unlock();
