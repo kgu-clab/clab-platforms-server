@@ -45,7 +45,7 @@ public class WhitelistFileLoader {
             return parseWhitelistFile(yaml, path);
         } catch (IOException e) {
             log.error("Failed to load or create IP whitelist", e);
-            return List.of("*");
+            return List.of();
         } finally {
             fileLock.unlock();
         }
@@ -82,7 +82,7 @@ public class WhitelistFileLoader {
 
             if (CollectionUtils.isEmpty(data)) {
                 log.warn("YAML file is empty or invalid");
-                return List.of("*");
+                return List.of();
             }
 
             Map<String, List<String>> whitelist = data.getOrDefault("whitelist", Map.of());
@@ -93,7 +93,7 @@ public class WhitelistFileLoader {
             return Stream.concat(fixedIps.stream(), temporaryIps.stream()).toList();
         } catch (Exception e) {
             log.error("Failed to parse IP whitelist", e);
-            return List.of("*");
+            return List.of();
         }
     }
 }

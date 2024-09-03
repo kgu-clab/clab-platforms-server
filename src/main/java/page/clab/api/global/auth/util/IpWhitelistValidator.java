@@ -29,6 +29,10 @@ public class IpWhitelistValidator {
 
         List<String> whitelistIps = whitelistFileLoader.loadWhitelistIps();
 
+        if (whitelistIps.isEmpty()) {
+            return false;
+        }
+
         return whitelistIps.stream()
                 .filter(Objects::nonNull)
                 .anyMatch(ip -> "*".equals(ip) || IpAddressUtil.isIpInRange(ipAddress, ip));
