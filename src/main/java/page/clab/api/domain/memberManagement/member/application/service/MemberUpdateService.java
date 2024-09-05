@@ -13,7 +13,7 @@ import page.clab.api.domain.memberManagement.member.application.port.out.Retriev
 import page.clab.api.domain.memberManagement.member.application.port.out.UpdateMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.file.application.FileService;
-import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
+import page.clab.api.global.common.file.dto.mapper.FileDtoMapper;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
@@ -44,7 +44,7 @@ public class MemberUpdateService implements UpdateMemberUseCase {
         member.update(requestDto, passwordEncoder);
         if (requestDto.getImageUrl() != null && requestDto.getImageUrl().isEmpty()) {
             member.clearImageUrl();
-            fileService.deleteFile(DeleteFileRequestDto.create(previousImageUrl));
+            fileService.deleteFile(FileDtoMapper.toDeletedFileRequestDto(previousImageUrl));
         }
     }
 }
