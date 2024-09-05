@@ -25,6 +25,7 @@ import page.clab.api.external.memberManagement.cloud.application.port.ExternalRe
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.common.file.domain.UploadedFile;
+import page.clab.api.global.common.file.dto.mapper.FileDtoMapper;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
@@ -118,7 +119,7 @@ public class FileService {
 
         UploadedFile uploadedFile = UploadedFile.create(currentMemberId, multipartFile.getOriginalFilename(), fileName, savedFilePath, url, multipartFile.getSize(), multipartFile.getContentType(), storagePeriod, path);
         uploadedFileService.saveUploadedFile(uploadedFile);
-        return UploadedFileResponseDto.toDto(uploadedFile);
+        return FileDtoMapper.toUploadedFileResponseDto(uploadedFile);
     }
 
     public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) throws PermissionDeniedException {

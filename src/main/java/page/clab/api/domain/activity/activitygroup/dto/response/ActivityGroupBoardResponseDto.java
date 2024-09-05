@@ -5,8 +5,7 @@ import lombok.Getter;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
-import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
+import page.clab.api.global.common.file.dto.mapper.FileDtoMapper;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 
 import java.time.LocalDateTime;
@@ -37,7 +36,7 @@ public class ActivityGroupBoardResponseDto {
                 .category(board.getCategory())
                 .title(board.getTitle())
                 .content(board.getContent())
-                .files(UploadedFileResponseDto.toDto(board.getUploadedFiles()))
+                .files(FileDtoMapper.toUploadedFileResponseDto(board.getUploadedFiles()))
                 .dueDateTime(board.getDueDateTime())
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())

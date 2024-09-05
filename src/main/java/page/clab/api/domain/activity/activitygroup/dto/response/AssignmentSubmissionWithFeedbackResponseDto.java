@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
+import page.clab.api.global.common.file.dto.mapper.FileDtoMapper;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 
 import java.time.LocalDateTime;
@@ -30,7 +31,7 @@ public class AssignmentSubmissionWithFeedbackResponseDto {
                 .memberName(memberBasicInfo.getMemberName())
                 .parentId(board.getParent() != null ? board.getParent().getId() : null)
                 .content(board.getContent())
-                .files(UploadedFileResponseDto.toDto(board.getUploadedFiles()))
+                .files(FileDtoMapper.toUploadedFileResponseDto(board.getUploadedFiles()))
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
                 .feedbacks(feedbackDtos)
