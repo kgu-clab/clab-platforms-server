@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.library.book.application.dto.mapper.BookDtoMapper;
 import page.clab.api.domain.library.book.application.dto.response.BookDetailsResponseDto;
 import page.clab.api.domain.library.book.application.port.in.RetrieveBookDetailsUseCase;
 import page.clab.api.domain.library.book.application.port.out.RetrieveBookPort;
@@ -41,6 +42,6 @@ public class BookDetailsRetrievalService implements RetrieveBookDetailsUseCase {
     @NotNull
     private BookDetailsResponseDto mapToBookDetailsResponseDto(Book book, String borrowerName) {
         LocalDateTime dueDate = externalRetrieveBookLoanRecordUseCase.getDueDateForBook(book.getId());
-        return BookDetailsResponseDto.toDto(book, borrowerName, dueDate);
+        return BookDtoMapper.toBookDetailsResponseDto(book, borrowerName, dueDate);
     }
 }
