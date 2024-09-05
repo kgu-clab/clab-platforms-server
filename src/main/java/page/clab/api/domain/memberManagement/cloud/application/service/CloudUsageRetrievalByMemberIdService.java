@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.memberManagement.cloud.application.dto.mapper.CloudDtoMapper;
 import page.clab.api.domain.memberManagement.cloud.application.dto.response.CloudUsageInfo;
 import page.clab.api.domain.memberManagement.cloud.application.port.in.RetrieveCloudUsageByMemberIdUseCase;
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
@@ -32,7 +33,7 @@ public class CloudUsageRetrievalByMemberIdService implements RetrieveCloudUsageB
         targetMember.validateAccessPermissionForCloud(currentMember);
         File directory = getMemberDirectory(targetMember.getId());
         long usage = FileSystemUtil.calculateDirectorySize(directory);
-        return CloudUsageInfo.create(targetMember.getId(), usage);
+        return CloudDtoMapper.toCloudUsageInfo(targetMember.getId(), usage);
     }
 
     private File getMemberDirectory(String memberId) {
