@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.accuse.adapter.out.persistence.AccuseTargetId;
+import page.clab.api.domain.community.accuse.application.dto.mapper.AccuseDtoMapper;
 import page.clab.api.domain.community.accuse.application.dto.request.AccuseRequestDto;
 import page.clab.api.domain.community.accuse.application.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.community.accuse.application.port.in.ReportAccusationUseCase;
@@ -74,7 +75,7 @@ public class AccusationReportService implements ReportAccusationUseCase {
 
     private AccuseTarget getOrCreateAccuseTarget(AccuseRequestDto requestDto, TargetType type, Long targetId) {
         return retrieveAccuseTargetPort.findById(AccuseTargetId.create(type, targetId))
-                .orElseGet(() -> AccuseRequestDto.toTargetEntity(requestDto));
+                .orElseGet(() -> AccuseDtoMapper.toAccuseTarget(requestDto));
     }
 
     private Accuse findOrCreateAccusation(AccuseRequestDto requestDto, String memberId, AccuseTarget target) {
@@ -85,7 +86,7 @@ public class AccusationReportService implements ReportAccusationUseCase {
                 })
                 .orElseGet(() -> {
                     target.increaseAccuseCount();
-                    return AccuseRequestDto.toEntity(requestDto, memberId, target);
+                    return AccuseDtoMapper.toAccuse(requestDto, memberId, target);
                 });
     }
 }
