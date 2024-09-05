@@ -3,6 +3,7 @@ package page.clab.api.domain.community.jobPosting.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.community.jobPosting.application.dto.mapper.JobPostingDtoMapper;
 import page.clab.api.domain.community.jobPosting.application.dto.response.JobPostingDetailsResponseDto;
 import page.clab.api.domain.community.jobPosting.application.port.in.RetrieveJobPostingDetailsUseCase;
 import page.clab.api.domain.community.jobPosting.application.port.out.RetrieveJobPostingPort;
@@ -18,6 +19,6 @@ public class JobPostingDetailsRetrievalService implements RetrieveJobPostingDeta
     @Override
     public JobPostingDetailsResponseDto retrieveJobPostingDetails(Long jobPostingId) {
         JobPosting jobPosting = retrieveJobPostingPort.getById(jobPostingId);
-        return JobPostingDetailsResponseDto.toDto(jobPosting);
+        return JobPostingDtoMapper.toJobPostingDetailsResponseDto(jobPosting);
     }
 }
