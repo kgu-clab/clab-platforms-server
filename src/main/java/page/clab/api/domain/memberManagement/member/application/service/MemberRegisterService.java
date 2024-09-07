@@ -42,11 +42,14 @@ public class MemberRegisterService implements RegisterMemberUseCase {
         checkMemberUniqueness(requestDto);
         Member member = MemberRequestDto.toEntity(requestDto);
 
-        String finalPassword = generateOrRetrievePassword(member);
+        String finalPassword = StringUtils.isEmpty(member.getPassword())
+                ? verificationService.generateVerificationCode()
+                : member.getPassword();
         member.updatePassword(finalPassword, passwordEncoder);
 
         registerMemberPort.save(member);
         createPositionByMember(member);
+
         emailService.broadcastEmailToApprovedMember(member, finalPassword);
         return member.getId();
     }
@@ -58,11 +61,6 @@ public class MemberRegisterService implements RegisterMemberUseCase {
             throw new DuplicateMemberContactException("이미 사용 중인 연락처입니다.");
         if (checkMemberExistencePort.existsByEmail(requestDto.getEmail()))
             throw new DuplicateMemberEmailException("이미 사용 중인 이메일입니다.");
-    }
-
-    private String generateOrRetrievePassword(Member member) {
-        String password = member.getPassword();
-        return StringUtils.isEmpty(password) ? verificationService.generateVerificationCode() : password;
     }
 
     public void createPositionByMember(Member member) {
