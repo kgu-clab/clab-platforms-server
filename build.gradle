@@ -73,6 +73,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail' // Spring Mail
     implementation 'com.google.zxing:core:3.4.1' // QR 코드
     implementation 'com.google.zxing:javase:3.5.3' // QR 코드
+    implementation 'org.apache.commons:commons-lang3:3.17.0' // Apache Commons Lang
 
     // MapStruct
     implementation 'org.mapstruct:mapstruct:1.6.0'

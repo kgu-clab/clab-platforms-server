@@ -2,6 +2,7 @@ package page.clab.api.domain.memberManagement.member.application.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,6 @@ import page.clab.api.global.common.email.application.EmailService;
 import page.clab.api.global.common.verification.application.VerificationService;
 
 import java.time.LocalDate;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -41,9 +41,13 @@ public class MemberRegisterService implements RegisterMemberUseCase {
     public String registerMember(MemberRequestDto requestDto) {
         checkMemberUniqueness(requestDto);
         Member member = MemberRequestDto.toEntity(requestDto);
-        setupMemberPassword(member);
+
+        String finalPassword = generateOrRetrievePassword(member);
+        member.updatePassword(finalPassword, passwordEncoder);
+
         registerMemberPort.save(member);
         createPositionByMember(member);
+        emailService.broadcastEmailToApprovedMember(member, finalPassword);
         return member.getId();
     }
 
@@ -56,12 +60,9 @@ public class MemberRegisterService implements RegisterMemberUseCase {
             throw new DuplicateMemberEmailException("이미 사용 중인 이메일입니다.");
     }
 
-    private void setupMemberPassword(Member member) {
-        if (member.getPassword().isEmpty()) {
-            setRandomPasswordAndSendEmail(member);
-        } else {
-            member.updatePassword(member.getPassword(), passwordEncoder);
-        }
+    private String generateOrRetrievePassword(Member member) {
+        String password = member.getPassword();
+        return StringUtils.isEmpty(password) ? verificationService.generateVerificationCode() : password;
     }
 
     public void createPositionByMember(Member member) {
@@ -70,17 +71,5 @@ public class MemberRegisterService implements RegisterMemberUseCase {
         }
         Position position = Position.create(member.getId());
         externalRegisterPositionUseCase.save(position);
-    }
-
-    private void setRandomPasswordAndSendEmail(Member member) {
-        String password = verificationService.generateVerificationCode();
-        member.updatePassword(password, passwordEncoder);
-        CompletableFuture.runAsync(() -> {
-            try {
-                emailService.broadcastEmailToApprovedMember(member, password);
-            } catch (Exception e) {
-                log.error("이메일 전송 실패: {}", e.getMessage());
-            }
-        });
     }
 }
