@@ -69,9 +69,7 @@ public class ActivityGroupAdminService {
     public Long updateActivityGroup(Long activityGroupId, ActivityGroupUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
-            throw new PermissionDeniedException("해당 활동을 수정할 권한이 없습니다.");
-        }
+        validateLeaderPermission(activityGroup, currentMember, "해당 활동을 수정할 권한이 없습니다.");
         activityGroup.update(requestDto);
         return activityGroupRepository.save(activityGroup).getId();
     }
@@ -103,9 +101,7 @@ public class ActivityGroupAdminService {
         List<GroupMember> groupLeaders = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
 
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
-        if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
-            throw new PermissionDeniedException("해당 활동을 삭제할 권한이 없습니다.");
-        }
+        validateLeaderPermission(activityGroup, currentMember, "해당 활동을 삭제할 권한이 없습니다.");
 
         activityGroupMemberService.deleteAll(groupMembers);
         groupScheduleRepository.deleteAll(groupSchedules);
@@ -121,9 +117,7 @@ public class ActivityGroupAdminService {
     public Long updateProjectProgress(Long activityGroupId, Long progress) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
-            throw new PermissionDeniedException("해당 활동을 수정할 권한이 없습니다.");
-        }
+        validateLeaderPermission(activityGroup, currentMember, "해당 활동을 수정할 권한이 업습니다.");
         activityGroup.updateProgress(progress);
         return activityGroupRepository.save(activityGroup).getId();
     }
@@ -132,9 +126,7 @@ public class ActivityGroupAdminService {
     public Long addSchedule(Long activityGroupId, List<GroupScheduleDto> scheduleDtos) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
-            throw new PermissionDeniedException("해당 일정을 등록할 권한이 없습니다.");
-        }
+        validateLeaderPermission(activityGroup, currentMember, "해당 일정을 등록할 권한이 없습니다.");
         List<GroupSchedule> groupSchedules = scheduleDtos.stream()
                 .map(scheduleDto -> GroupScheduleDto.toEntity(scheduleDto, activityGroup))
                 .toList();
@@ -146,9 +138,7 @@ public class ActivityGroupAdminService {
     public PagedResponseDto<ActivityGroupMemberWithApplyReasonResponseDto> getGroupMembersWithApplyReason(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!(isMemberGroupLeaderRole(activityGroup, currentMember) || currentMember.isAdminRole())) {
-            throw new PermissionDeniedException("해당 활동의 멤버를 조회할 권한이 없습니다.");
-        }
+        validateLeaderPermission(activityGroup, currentMember, "해당 활동의 멤버를 조회할 권한이 없습니다.");
 
         List<ApplyForm> applyForms = applyFormRepository.findAllByActivityGroup(activityGroup);
         Map<String, String> memberIdToApplyReasonMap = applyForms.stream()
@@ -174,9 +164,7 @@ public class ActivityGroupAdminService {
     public Long manageGroupMemberStatus(Long activityGroupId, String memberId, GroupMemberStatus status) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
-            throw new PermissionDeniedException("해당 활동의 신청 멤버를 조회할 권한이 없습니다.");
-        }
+        validateLeaderPermission(activityGroup, currentMember, "해당 활동의 신청 멤버를 조회할 권한이 없습니다.");
 
         Member member = externalRetrieveMemberUseCase.findByIdOrThrow(memberId);
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member.getId());
@@ -194,7 +182,7 @@ public class ActivityGroupAdminService {
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, memberId);
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
 
-        validateLeaderPermission(activityGroup, currentMember);
+        validateLeaderPermission(activityGroup, currentMember, "해당 활동의 멤버 직책을 변경할 권한이 없습니다.");
         validateLeaderRoleChange(activityGroup, groupMember);
         validateMemberIsActive(groupMember);
         validateNewPosition(groupMember, position);
@@ -251,9 +239,9 @@ public class ActivityGroupAdminService {
         return activityGroup;
     }
 
-    private void validateLeaderPermission(ActivityGroup activityGroup, Member member) throws PermissionDeniedException {
+    private void validateLeaderPermission(ActivityGroup activityGroup, Member member, String message) throws PermissionDeniedException {
         if (!isMemberGroupLeaderRole(activityGroup, member)) {
-            throw new PermissionDeniedException("해당 활동의 멤버 직책을 변경할 권한이 없습니다.");
+            throw new PermissionDeniedException(message);
         }
     }
 
