@@ -224,7 +224,7 @@ public class ActivityGroupAdminService {
     private void validateLeaderRoleChange(ActivityGroup activityGroup, GroupMember groupMember) {
         List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         if(groupMembers.size() == 1 && groupMember.isLeader()) {
-            throw new SingleLeaderModificationException("그룹에 한 명의 리더만 존재할 때는 리더의 역할을 변경할 수 없습니다.");
+            throw new SingleLeaderModificationException("그룹에는 최소 한 명의 리더가 있어야 하므로, 리더의 역할을 변경할 수 없습니다.");
         }
     }
 
