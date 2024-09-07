@@ -96,11 +96,16 @@ public class ActivityGroupAdminService {
     }
 
     @Transactional
-    public Long deleteActivityGroup(Long activityGroupId) {
+    public Long deleteActivityGroup(Long activityGroupId) throws PermissionDeniedException {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
         List<GroupSchedule> groupSchedules = groupScheduleRepository.findAllByActivityGroupIdOrderByIdDesc(activityGroupId);
         List<GroupMember> groupLeaders = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroupId, ActivityGroupRole.LEADER);
+
+        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
+        if (!isMemberGroupLeaderRole(activityGroup, currentMember)) {
+            throw new PermissionDeniedException("해당 활동을 삭제할 권한이 없습니다.");
+        }
 
         activityGroupMemberService.deleteAll(groupMembers);
         groupScheduleRepository.deleteAll(groupSchedules);
