@@ -10,4 +10,6 @@ public interface ManageMemberPasswordUseCase {
     String requestMemberPasswordReset(MemberResetPasswordRequestDto requestDto);
 
     String verifyMemberPasswordReset(VerificationRequestDto requestDto);
+
+    String generateOrRetrievePassword(String password);
 }

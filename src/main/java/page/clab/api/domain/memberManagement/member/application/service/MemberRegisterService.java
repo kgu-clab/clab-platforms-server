@@ -1,7 +1,6 @@
 package page.clab.api.domain.memberManagement.member.application.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +8,7 @@ import page.clab.api.domain.memberManagement.member.application.dto.request.Memb
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberContactException;
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberEmailException;
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberIdException;
+import page.clab.api.domain.memberManagement.member.application.port.in.ManageMemberPasswordUseCase;
 import page.clab.api.domain.memberManagement.member.application.port.in.RegisterMemberUseCase;
 import page.clab.api.domain.memberManagement.member.application.port.out.CheckMemberExistencePort;
 import page.clab.api.domain.memberManagement.member.application.port.out.RegisterMemberPort;
@@ -18,7 +18,6 @@ import page.clab.api.domain.memberManagement.position.domain.PositionType;
 import page.clab.api.external.memberManagement.position.application.port.ExternalRegisterPositionUseCase;
 import page.clab.api.external.memberManagement.position.application.port.ExternalRetrievePositionUseCase;
 import page.clab.api.global.common.email.application.EmailService;
-import page.clab.api.global.common.verification.application.VerificationService;
 
 import java.time.LocalDate;
 
@@ -28,9 +27,9 @@ public class MemberRegisterService implements RegisterMemberUseCase {
 
     private final CheckMemberExistencePort checkMemberExistencePort;
     private final RegisterMemberPort registerMemberPort;
+    private final ManageMemberPasswordUseCase manageMemberPasswordUseCase;
     private final ExternalRegisterPositionUseCase externalRegisterPositionUseCase;
     private final ExternalRetrievePositionUseCase externalRetrievePositionUseCase;
-    private final VerificationService verificationService;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
@@ -39,15 +38,10 @@ public class MemberRegisterService implements RegisterMemberUseCase {
     public String registerMember(MemberRequestDto requestDto) {
         checkMemberUniqueness(requestDto);
         Member member = MemberRequestDto.toEntity(requestDto);
-
-        String finalPassword = StringUtils.isEmpty(member.getPassword())
-                ? verificationService.generateVerificationCode()
-                : member.getPassword();
+        String finalPassword = manageMemberPasswordUseCase.generateOrRetrievePassword(requestDto.getPassword());
         member.updatePassword(finalPassword, passwordEncoder);
-
         registerMemberPort.save(member);
         createPositionByMember(member);
-
         emailService.broadcastEmailToApprovedMember(member, finalPassword);
         return member.getId();
     }

@@ -1,6 +1,7 @@
 package page.clab.api.domain.memberManagement.member.application.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +56,13 @@ public class MemberPasswordManagementService implements ManageMemberPasswordUseC
         Verification verification = verificationService.validateVerificationCode(requestDto, member);
         updateMemberPasswordWithVerificationCode(verification.getVerificationCode(), member);
         return registerMemberPort.save(member).getId();
+    }
+
+    @Override
+    public String generateOrRetrievePassword(String password) {
+        return StringUtils.isEmpty(password)
+                ? verificationService.generateVerificationCode()
+                : password;
     }
 
     private Member validateResetPasswordRequest(MemberResetPasswordRequestDto requestDto) {
