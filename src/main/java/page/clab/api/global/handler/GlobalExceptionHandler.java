@@ -42,6 +42,7 @@ import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardE
 import page.clab.api.domain.activity.activitygroup.exception.InvalidRoleException;
 import page.clab.api.domain.activity.activitygroup.exception.LeaderStatusChangeNotAllowedException;
 import page.clab.api.domain.activity.activitygroup.exception.MemberNotPartOfActivityException;
+import page.clab.api.domain.activity.activitygroup.exception.SingleLeaderModificationException;
 import page.clab.api.domain.activity.review.application.exception.AlreadyReviewedException;
 import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
 import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
@@ -191,6 +192,7 @@ public class GlobalExceptionHandler {
             ActivityGroupNotProgressingException.class,
             AlreadySubmittedThisWeekAssignmentException.class,
             LeaderStatusChangeNotAllowedException.class,
+            SingleLeaderModificationException.class,
             AlreadyAppliedException.class,
             DuplicateReportException.class,
             DuplicateAttendanceException.class,
