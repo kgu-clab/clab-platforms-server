@@ -286,10 +286,12 @@ public class FileService {
 
     private boolean isNonSubmitCategoryAccessible(String url, Authentication authentication) {
         String memberId = authentication.getName();
+        Member member = externalRetrieveMemberUseCase.findByIdOrThrow(memberId);
         String[] parts = url.split("/");
         Long activityGroupId = Long.parseLong(parts[4]);
 
-        return groupMemberRepository.existsByActivityGroupIdAndMemberIdAndStatus(activityGroupId, memberId, GroupMemberStatus.ACCEPTED);
+        return member.isSuperAdminRole() ||
+                groupMemberRepository.existsByActivityGroupIdAndMemberIdAndStatus(activityGroupId, memberId, GroupMemberStatus.ACCEPTED);
     }
 
     private boolean isMemberAccessible(String url, Authentication authentication) {
@@ -301,10 +303,12 @@ public class FileService {
     private boolean isSubmitAccessible(String url, Authentication authentication) {
         UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
         String uploaderId = uploadedFile.getUploader();
+        String memberId = authentication.getName();
+        Member member = externalRetrieveMemberUseCase.findByIdOrThrow(memberId);
         String[] parts = url.split("/");
         Long activityGroupId = Long.parseLong(parts[4]);
 
-        return authentication.getName().equals(uploaderId) ||
+        return memberId.equals(uploaderId) || member.isSuperAdminRole() ||
                 activityGroupAdminService.isMemberGroupLeaderRole(activityGroupId, authentication.getName());
     }
 
