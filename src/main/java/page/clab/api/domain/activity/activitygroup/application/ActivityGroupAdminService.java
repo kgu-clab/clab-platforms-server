@@ -26,6 +26,7 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupRes
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateRoleException;
 import page.clab.api.domain.activity.activitygroup.exception.InactiveMemberException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidRoleException;
+import page.clab.api.domain.activity.activitygroup.exception.SingleLeaderModificationException;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
@@ -186,6 +187,7 @@ public class ActivityGroupAdminService {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
 
         validateLeaderPermission(activityGroup, currentMember);
+        validateLeaderRoleChange(activityGroup, groupMember);
         validateMemberIsActive(groupMember);
         validateNewPosition(groupMember, position);
 
@@ -221,6 +223,13 @@ public class ActivityGroupAdminService {
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(activityGroupId);
         return groupMemberList.stream()
                 .anyMatch(groupMember -> groupMember.isSameRoleAndActivityGroup(role, activityGroup));
+    }
+
+    private void validateLeaderRoleChange(ActivityGroup activityGroup, GroupMember groupMember) {
+        List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
+        if(groupMembers.size() == 1 && groupMember.isLeader()) {
+            throw new SingleLeaderModificationException("그룹에 한 명의 리더만 존재할 때는 리더의 역할을 변경할 수 없습니다.");
+        }
     }
 
     public ActivityGroup validateAndGetActivityGroupForReporting(Long activityGroupId, Member member) throws PermissionDeniedException, IllegalAccessException {
