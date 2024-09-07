@@ -34,6 +34,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -157,7 +158,9 @@ public class ActivityGroupAdminService {
                     String applyReason = memberIdToApplyReasonMap.getOrDefault(groupMember.getMemberId(), "");
                     Member member = externalRetrieveMemberUseCase.findByIdOrThrow(groupMember.getMemberId());
                     return ActivityGroupMemberWithApplyReasonResponseDto.create(member, groupMember, applyReason);
-                }).toList();
+                })
+                .sorted(Comparator.comparing(ActivityGroupMemberWithApplyReasonResponseDto::getStatus))
+                .toList();
 
         return new PagedResponseDto<>(new PageImpl<>(groupMembersWithApplyReason, pageable, groupMembers.getTotalElements()));
     }
@@ -204,7 +207,7 @@ public class ActivityGroupAdminService {
 
     public boolean isMemberGroupLeaderRole(ActivityGroup activityGroup, Member member) {
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member.getId());
-        return groupMember.isLeader() && member.isAdminRole();
+        return groupMember.isLeader() || member.isAdminRole();
     }
 
     public boolean isMemberGroupLeaderRole(Long activityGroupId, String memberId) {
@@ -212,7 +215,7 @@ public class ActivityGroupAdminService {
         Member member = externalRetrieveMemberUseCase.findByIdOrThrow(memberId);
         try{
             GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member.getId());
-            return groupMember.isLeader() && member.isAdminRole();
+            return groupMember.isLeader() || member.isAdminRole();
         } catch (NotFoundException e) {
          return false;
         }
