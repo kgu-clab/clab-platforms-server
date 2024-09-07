@@ -11,10 +11,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.domain.activity.activitygroup.application.ActivityGroupAdminService;
+import page.clab.api.domain.activity.activitygroup.application.ActivityGroupBoardService;
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activity.activitygroup.dao.GroupMemberRepository;
+import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupRole;
+import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.activity.activitygroup.exception.MemberNotPartOfActivityException;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
@@ -48,6 +51,7 @@ public class FileService {
     private final FileHandler fileHandler;
     private final UploadedFileService uploadedFileService;
     private final ActivityGroupAdminService activityGroupAdminService;
+    private final ActivityGroupBoardService activityGroupBoardService;
     private final ActivityGroupRepository activityGroupRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final ActivityGroupBoardRepository activityGroupBoardRepository;
@@ -211,7 +215,7 @@ public class FileService {
         }
     }
 
-    private void validateSubmitPath(String[] pathParts) throws InvalidPathVariableException {
+    private void validateSubmitPath(String[] pathParts) throws InvalidPathVariableException, PermissionDeniedException {
         Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
         Long activityGroupBoardId = parseId(pathParts[2], "활동 그룹 게시판 ID가 유효하지 않습니다.");
         String memberId = pathParts[3];
@@ -223,8 +227,10 @@ public class FileService {
         if (assignmentWriterOpt.isEmpty() || !groupMemberRepository.existsByMemberIdAndActivityGroupId(assignmentWriterOpt.get().getId(), activityGroupId)) {
             throw new MemberNotPartOfActivityException("해당 활동에 참여하고 있지 않은 멤버입니다.");
         }
-        if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
-            throw new NotFoundException("해당 활동 그룹 과제 게시판이 존재하지 않습니다.");
+
+        ActivityGroupBoard activityGroupBoard = activityGroupBoardService.getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
+        if (!activityGroupBoard.isAssignment()) {
+            throw new InvalidParentBoardException("부모 게시판이 ASSIGNMENT가 아닙니다.");
         }
     }
 

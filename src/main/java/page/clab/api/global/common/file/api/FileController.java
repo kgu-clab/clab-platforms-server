@@ -133,14 +133,14 @@ public class FileController {
     @Operation(summary = "[U] 활동 그룹 제출 파일 업로드", description = "ROLE_USER 이상의 권한이 필요함 <br> 그룹원이 SUBMIT 게시판에 올릴 파일을 업로드할 때 사용하는 API 입니다." +
             "<br> activityGroupBoardId는 ASSIGNMENT 게시판의 id를 입력하도록 합니다.")
     @PreAuthorize("hasRole('USER')")
-    @PostMapping(value = "/submits/{activityGroupId}/{activityGroupBoardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/submits/{activityGroupId}/{parentBoardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiResponse<List<UploadedFileResponseDto>> submitUpload(
             @PathVariable(name = "activityGroupId") Long activityGroupId,
-            @PathVariable(name = "activityGroupBoardId") Long activityGroupBoardId,
+            @PathVariable(name = "parentBoardId") Long parentBoardId,
             @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
             @RequestParam(name = "storagePeriod") long storagePeriod
     ) throws PermissionDeniedException, IOException, NotFoundException {
-        String path = fileService.buildPath("submits", activityGroupId, activityGroupBoardId);
+        String path = fileService.buildPath("submits", activityGroupId, parentBoardId);
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, path, storagePeriod);
         return ApiResponse.success(responseDtos);
     }
