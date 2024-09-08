@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -34,6 +35,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -193,6 +195,19 @@ public class ActivityGroupAdminService {
         activityGroupMemberService.save(groupMember);
 
         return activityGroup.getId();
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void updateActivityGroupStatusEnd() {
+        List<ActivityGroup> activityGroups = activityGroupRepository.findByEndDateBefore(LocalDate.now());
+        activityGroups.forEach(this::updateActivityGroupStatusEnd);
+    }
+
+    private void updateActivityGroupStatusEnd(ActivityGroup activityGroup) {
+        if (!activityGroup.getStatus().equals(ActivityGroupStatus.END)) {
+            activityGroup.updateStatus(ActivityGroupStatus.END);
+            activityGroupRepository.save(activityGroup);
+        }
     }
 
     private void updateGroupMemberStatus(String memberId, GroupMemberStatus status, ActivityGroup activityGroup) {
