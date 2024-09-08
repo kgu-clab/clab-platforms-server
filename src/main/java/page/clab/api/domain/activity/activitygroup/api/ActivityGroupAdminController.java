@@ -126,7 +126,7 @@ public class ActivityGroupAdminController {
         return ApiResponse.success(groupMembers);
     }
 
-    @Operation(summary = "[U] 신청 멤버 상태 변경", description = "ROLE_USER 이상의 권한이 필요함")
+    @Operation(summary = "[U] 신청 멤버 상태 개별 변경", description = "ROLE_USER 이상의 권한이 필요함")
     @PreAuthorize("hasRole('USER')")
     @PatchMapping("/accept")
     public ApiResponse<Long> acceptGroupMember(
@@ -135,6 +135,18 @@ public class ActivityGroupAdminController {
             @RequestParam(name = "status") GroupMemberStatus status
     ) throws PermissionDeniedException {
         Long id = activityGroupAdminService.manageGroupMemberStatus(activityGroupId, memberId, status);
+        return ApiResponse.success(id);
+    }
+
+    @Operation(summary = "[U] 신청 멤버 상태 통합 변경", description = "ROLE_USER 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('USER')")
+    @PatchMapping("/accept-multiple")
+    public ApiResponse<Long> acceptGroupMembers(
+            @RequestParam(name = "activityGroupId") Long activityGroupId,
+            @RequestParam(name = "memberId") List<String> memberIds,
+            @RequestParam(name = "status") GroupMemberStatus status
+    ) throws PermissionDeniedException {
+        Long id = activityGroupAdminService.manageGroupMemberStatus(activityGroupId, memberIds, status);
         return ApiResponse.success(id);
     }
 
