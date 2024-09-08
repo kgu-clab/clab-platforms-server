@@ -12,6 +12,7 @@ import javax.imageio.ImageWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.imgscalr.Scalr;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.global.exception.ImageCompressionException;
 
@@ -39,29 +40,31 @@ public class ImageUtil {
 
         File tempFile = tempFilePath.toFile();
         multipartFile.transferTo(tempFile);
+        BufferedImage bufferedImage = null;
+        try {
+            bufferedImage = ImageIO.read(tempFile);
+            int originalDirection = getImageDirection(tempFile);
+            switch (originalDirection) {
+                case 1:
+                    break;
+                case 3:
+                    bufferedImage = Scalr.rotate(bufferedImage, Scalr.Rotation.CW_180, (BufferedImageOp[]) null);
+                    break;
+                case 6:
+                    bufferedImage = Scalr.rotate(bufferedImage, Scalr.Rotation.CW_90, (BufferedImageOp[]) null);
+                    break;
+                case 8:
+                    bufferedImage = Scalr.rotate(bufferedImage, Scalr.Rotation.CW_270, (BufferedImageOp[]) null);
+                    break;
+            }
 
-        int originalDirection = getImageDirection(tempFile);
-        BufferedImage bufferedImage = ImageIO.read(tempFile);
-
-        switch (originalDirection) {
-            case 1:
-                break;
-            case 3:
-                bufferedImage = Scalr.rotate(bufferedImage, Scalr.Rotation.CW_180, (BufferedImageOp[]) null);
-                break;
-            case 6:
-                bufferedImage = Scalr.rotate(bufferedImage, Scalr.Rotation.CW_90, (BufferedImageOp[]) null);
-                break;
-            case 8:
-                bufferedImage = Scalr.rotate(bufferedImage, Scalr.Rotation.CW_270, (BufferedImageOp[]) null);
-                break;
+            if (tempFile.exists() && !tempFile.delete()) {
+                throw new IOException("Failed to delete image file: " + tempFile.getAbsolutePath());
+            }
+            return bufferedImage;
+        } catch (Exception e) {
+            return bufferedImage;
         }
-
-        if (tempFile.exists() && !tempFile.delete()) {
-            throw new IOException("Failed to delete image file: " + tempFile.getAbsolutePath());
-        }
-
-        return bufferedImage;
     }
 
     /**
@@ -70,7 +73,7 @@ public class ImageUtil {
      * @param tempFile 임시 이미지 파일
      * @return 이미지 방향 정보
      */
-    public static int getImageDirection(File tempFile) {
+    public static int getImageDirection(File tempFile) throws IOException, ImageProcessingException, MetadataException {
         int originalDirection = 1;
         try {
             Metadata metadata = ImageMetadataReader.readMetadata(tempFile);
@@ -79,13 +82,17 @@ public class ImageUtil {
                 originalDirection = directory.getInt(ExifIFD0Directory.TAG_ORIENTATION);
             }
         } catch (IOException e) {
-            log.error("이미지 파일을 읽는 중 IO 오류 발생: {}", e.getMessage());
+            log.warn("이미지 파일을 읽는 중 IO 오류 발생: {}", e.getMessage());
+            throw e;
         } catch (ImageProcessingException e) {
-            log.error("이미지 파일 처리 중 오류 발생: {}", e.getMessage());
+            log.warn("이미지 파일 처리 중 오류 발생: {}", e.getMessage());
+            throw e;
         } catch (MetadataException e) {
-            log.error("이미지 파일의 메타데이터를 읽는 중 오류 발생: {}", e.getMessage());
+            log.warn("이미지 파일의 메타데이터를 읽는 중 오류 발생: {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
-            log.error("예기치 않은 오류 발생: {}", e.getMessage());
+            log.warn("예기치 않은 오류 발생: {}", e.getMessage());
+            throw e;
         }
         return originalDirection;
     }

@@ -231,9 +231,9 @@ public class ActivityGroupBoardService {
         }));
     }
 
-    private ActivityGroupBoard getActivityGroupBoardByIdOrThrow(Long activityGroupBoardId) {
+    public ActivityGroupBoard getActivityGroupBoardByIdOrThrow(Long activityGroupBoardId) {
         return activityGroupBoardRepository.findById(activityGroupBoardId)
-                .orElseThrow(() -> new NotFoundException("해당 게시글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("해당 활동 그룹 게시글을 찾을 수 없습니다."));
     }
 
     private List<ActivityGroupBoard> getChildBoards(Long activityGroupBoardId) {
