@@ -196,13 +196,13 @@ public class FileService {
         validateIsMemberGroupLeader(activityGroupId, memberId, "활동의 과제 관련 파일은 리더만 등록할 수 있습니다.");
     }
 
-    private void validateSubmitPath(String[] pathParts) throws InvalidPathVariableException, PermissionDeniedException {
+    private void validateSubmitPath(String[] pathParts) throws InvalidPathVariableException {
         Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
         Long activityGroupBoardId = parseId(pathParts[2], "활동 그룹 게시판 ID가 유효하지 않습니다.");
         String memberId = pathParts[3];
 
         validateActivityGroupExist(activityGroupId);
-        validateIsSubmitter(memberId, activityGroupId);
+        validateIsMemberPartOfActivity(memberId, activityGroupId);
         ActivityGroupBoard activityGroupBoard = activityGroupBoardService.getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
         validateIsParentBoardAssignment(activityGroupBoard);
     }
@@ -228,13 +228,6 @@ public class FileService {
     private void validateIsParentBoardAssignment(ActivityGroupBoard activityGroupBoard) {
         if (!activityGroupBoard.isAssignment()) {
             throw new InvalidParentBoardException("부모 게시판이 ASSIGNMENT가 아닙니다.");
-        }
-    }
-
-    private void validateIsSubmitter(String memberId, Long activityGroupId) {
-        Optional<Member> assignmentWriterOpt = externalRetrieveMemberUseCase.findById(memberId);
-        if (assignmentWriterOpt.isEmpty() || !groupMemberRepository.existsByMemberIdAndActivityGroupId(assignmentWriterOpt.get().getId(), activityGroupId)) {
-            throw new MemberNotPartOfActivityException("해당 활동에 참여하고 있지 않은 멤버입니다.");
         }
     }
 
