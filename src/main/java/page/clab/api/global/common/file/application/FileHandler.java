@@ -73,13 +73,7 @@ public class FileHandler {
             if (ImageUtil.isImageFile(multipartFile)) {
                 BufferedImage originalImage = ImageUtil.adjustImageDirection(multipartFile);
                 ImageIO.write(originalImage, Objects.requireNonNull(extension), file);
-                if (compressibleImageExtensions.contains(extension.toLowerCase())) {
-                    try {
-                        ImageUtil.compressImage(filePath, savePath, imageQuality);
-                    } catch (ImageCompressionException e) {
-                        log.warn("이미지 압축 중 오류가 발생했습니다. 압축 없이 저장합니다: {}", e.getMessage());
-                    }
-                }
+                compressImageIfPossible(extension, savePath);
             } else {
                 multipartFile.transferTo(file);
             }
@@ -89,6 +83,16 @@ public class FileHandler {
 
         FileUtil.setFilePermissions(file, savePath, filePath);
         return savePath;
+    }
+
+    private void compressImageIfPossible(String extension, String savePath) {
+        if (compressibleImageExtensions.contains(extension.toLowerCase())) {
+            try {
+                ImageUtil.compressImage(filePath, savePath, imageQuality);
+            } catch (ImageCompressionException e) {
+                log.warn("이미지 압축 중 오류가 발생했습니다. 압축 없이 저장합니다: {}", e.getMessage());
+            }
+        }
     }
 
     public void deleteFile(String savedPath) {
