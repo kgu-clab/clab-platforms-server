@@ -20,6 +20,7 @@ import org.hibernate.validator.constraints.Range;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotProgressingException;
 import page.clab.api.domain.activity.activitygroup.exception.ContentLengthExceededException;
+import page.clab.api.domain.activity.activitygroup.exception.CurriculumLengthExceededException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidGithubUrlException;
 import page.clab.api.global.common.domain.BaseEntity;
 
@@ -51,8 +52,8 @@ public class ActivityGroup extends BaseEntity {
     @Size(min = 1, max = 30, message = "{size.activityGroup.name}")
     private String name;
 
-    @Column(nullable = false, length = 200)
-    @Size(min = 1, max = 200, message = "{size.activityGroup.content}")
+    @Column(nullable = false, length = 1000)
+    @Size(min = 1, max = 1000, message = "{size.activityGroup.content}")
     private String content;
 
     @Column(nullable = false)
@@ -64,6 +65,8 @@ public class ActivityGroup extends BaseEntity {
 
     private String imageUrl;
 
+    @Column(length = 1000)
+    @Size(min = 1, max = 1000, message = "{size.activityGroup.curriculum}")
     private String curriculum;
 
     private LocalDate startDate;
@@ -83,7 +86,7 @@ public class ActivityGroup extends BaseEntity {
         Optional.ofNullable(requestDto.getName()).ifPresent(this::setName);
         Optional.ofNullable(requestDto.getContent()).ifPresent(this::validateAndSetContentLength);
         Optional.ofNullable(requestDto.getImageUrl()).ifPresent(this::setImageUrl);
-        Optional.ofNullable(requestDto.getCurriculum()).ifPresent(this::setCurriculum);
+        Optional.ofNullable(requestDto.getCurriculum()).ifPresent(this::validateAndSetCurriculumLength);
         Optional.ofNullable(requestDto.getStartDate()).ifPresent(this::setStartDate);
         Optional.ofNullable(requestDto.getEndDate()).ifPresent(this::setEndDate);
         Optional.ofNullable(requestDto.getTechStack()).ifPresent(this::setTechStack);
@@ -116,15 +119,28 @@ public class ActivityGroup extends BaseEntity {
         }
     }
 
+    public void validateCurriculumLength() {
+        if (this.curriculum != null && this.curriculum.length() > 1000) {
+            throw new CurriculumLengthExceededException("활동 커리큘럼은 1000자 이하여야 합니다.");
+        }
+    }
+
+    public void validateAndSetCurriculumLength(String curriculum) {
+        if (curriculum != null && curriculum.length() > 1000) {
+            throw new CurriculumLengthExceededException("활동 커리큘럼은 1000자 이하여야 합니다.");
+        }
+        this.curriculum = curriculum;
+    }
+
     public void validateContentLength() {
-        if (this.content != null && this.content.length() > 200) {
-            throw new ContentLengthExceededException("활동 설명은 200자 이하여야 합니다.");
+        if (this.content != null && this.content.length() > 1000) {
+            throw new ContentLengthExceededException("활동 설명은 1000자 이하여야 합니다.");
         }
     }
 
     public void validateAndSetContentLength(String content) {
-        if (content != null && content.length() > 200) {
-            throw new ContentLengthExceededException("활동 설명은 200자 이하여야 합니다.");
+        if (content != null && content.length() > 1000) {
+            throw new ContentLengthExceededException("활동 설명은 1000자 이하여야 합니다.");
         }
         this.content = content;
     }

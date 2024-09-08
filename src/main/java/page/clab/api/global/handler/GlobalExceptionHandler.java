@@ -30,6 +30,7 @@ import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedExcep
 import page.clab.api.domain.activity.activitygroup.exception.AlreadySubmittedThisWeekAssignmentException;
 import page.clab.api.domain.activity.activitygroup.exception.AssignmentBoardHasNoDueDateTimeException;
 import page.clab.api.domain.activity.activitygroup.exception.ContentLengthExceededException;
+import page.clab.api.domain.activity.activitygroup.exception.CurriculumLengthExceededException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAttendanceException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateReportException;
@@ -127,6 +128,7 @@ public class GlobalExceptionHandler {
             AssignmentBoardHasNoDueDateTimeException.class,
             FeedbackBoardHasNoContentException.class,
             ContentLengthExceededException.class,
+            CurriculumLengthExceededException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
