@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.domain.activity.activitygroup.application.ActivityGroupAdminService;
 import page.clab.api.domain.activity.activitygroup.application.ActivityGroupBoardService;
-import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupBoardRepository;
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activity.activitygroup.dao.GroupMemberRepository;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
@@ -40,7 +39,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
@@ -53,7 +51,6 @@ public class FileService {
     private final ActivityGroupBoardService activityGroupBoardService;
     private final ActivityGroupRepository activityGroupRepository;
     private final GroupMemberRepository groupMemberRepository;
-    private final ActivityGroupBoardRepository activityGroupBoardRepository;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalRetrieveCloudUsageByMemberIdUseCase externalRetrieveCloudUsageByMemberIdUseCase;
 
