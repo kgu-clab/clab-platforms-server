@@ -90,22 +90,22 @@ public class ActivityGroupMemberService {
                 .distinct()
                 .toList();
 
-        List<ActivityGroupStatusResponseDto> activityGroupDtos = activityGroups.stream()
+        List<ActivityGroup> paginatedActivityGroups = activityGroups.stream()
+                .skip(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .toList();
+
+        List<ActivityGroupStatusResponseDto> activityGroupDtos = paginatedActivityGroups.stream()
                 .map(this::getActivityGroupStatusResponseDto)
                 .toList();
 
-        return new PagedResponseDto<>(activityGroupDtos, pageable, activityGroupDtos.size());
+        return new PagedResponseDto<>(activityGroupDtos, activityGroups.size(), pageable);
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupStatusResponseDto> getActivityGroupsByStatus(ActivityGroupStatus status, Pageable pageable) {
-        List<ActivityGroup> activityGroups = activityGroupRepository.findActivityGroupsByStatus(status);
-
-        List<ActivityGroupStatusResponseDto> activityGroupDtos = activityGroups.stream()
-                .map(this::getActivityGroupStatusResponseDto)
-                .toList();
-
-        return new PagedResponseDto<>(activityGroupDtos, pageable, activityGroupDtos.size());
+        Page<ActivityGroup> activityGroups = activityGroupRepository.findActivityGroupsByStatus(status, pageable);
+        return new PagedResponseDto<>(activityGroups.map(this::getActivityGroupStatusResponseDto));
     }
 
     @Transactional(readOnly = true)
@@ -161,7 +161,13 @@ public class ActivityGroupMemberService {
                 .distinct()
                 .map(this::getActivityGroupStatusResponseDto)
                 .toList();
-        return new PagedResponseDto<>(activityGroups, pageable, activityGroups.size());
+
+        List<ActivityGroupStatusResponseDto> paginatedActivityGroups = activityGroups.stream()
+                .skip(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .toList();
+
+        return new PagedResponseDto<>(paginatedActivityGroups, activityGroups.size(), pageable);
     }
 
     private ActivityGroupStatusResponseDto getActivityGroupStatusResponseDto(ActivityGroup activityGroup) {
