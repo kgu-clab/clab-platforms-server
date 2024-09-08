@@ -8,12 +8,10 @@ import org.springframework.stereotype.Component;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationMemberCreationDto;
 import page.clab.api.domain.hiring.application.application.event.ApplicationEventProcessor;
 import page.clab.api.domain.hiring.application.application.event.ApplicationEventProcessorRegistry;
+import page.clab.api.domain.memberManagement.member.application.port.in.ManageMemberPasswordUseCase;
 import page.clab.api.domain.memberManagement.member.application.port.out.RegisterMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.email.application.EmailService;
-import page.clab.api.global.common.verification.application.VerificationService;
-
-import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
@@ -21,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class ApplicationMemberCreatedProcessor implements ApplicationEventProcessor {
 
     private final RegisterMemberPort registerMemberPort;
-    private final VerificationService verificationService;
+    private final ManageMemberPasswordUseCase manageMemberPasswordUseCase;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventProcessorRegistry processorRegistry;
@@ -34,24 +32,14 @@ public class ApplicationMemberCreatedProcessor implements ApplicationEventProces
     @Override
     public void processApplicationMemberCreated(ApplicationMemberCreationDto dto) {
         Member member = Member.toMember(dto);
-        setRandomPasswordAndSendEmail(member);
+        String finalPassword = manageMemberPasswordUseCase.generateOrRetrievePassword(member.getPassword());
+        member.updatePassword(finalPassword, passwordEncoder);
         registerMemberPort.save(member);
+        emailService.broadcastEmailToApprovedMember(member, finalPassword);
     }
 
     @Override
     public void processPositionCreated(String memberId) {
         // do nothing
-    }
-
-    private void setRandomPasswordAndSendEmail(Member member) {
-        String password = verificationService.generateVerificationCode();
-        member.updatePassword(password, passwordEncoder);
-        CompletableFuture.runAsync(() -> {
-            try {
-                emailService.broadcastEmailToApprovedMember(member, password);
-            } catch (Exception e) {
-                log.error("이메일 전송 실패: {}", e.getMessage());
-            }
-        });
     }
 }
