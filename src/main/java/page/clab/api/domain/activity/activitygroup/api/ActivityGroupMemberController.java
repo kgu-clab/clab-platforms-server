@@ -40,7 +40,7 @@ public class ActivityGroupMemberController {
     private final ActivityGroupMemberService activityGroupMemberService;
     private final PageableUtils pageableUtils;
 
-    @Operation(summary = "[U] 활동 상세 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
+    @Operation(summary = "[U] 활동 상세 조회", description = "ROLE_USER 이상의 권한이 필요함")
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{activityGroupId}")
     public ApiResponse<ActivityGroupDetailResponseDto> getActivityGroup(
