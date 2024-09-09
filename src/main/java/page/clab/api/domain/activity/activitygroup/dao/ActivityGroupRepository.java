@@ -8,6 +8,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupCategory;
+import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupStatus;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,5 +21,5 @@ public interface ActivityGroupRepository extends JpaRepository<ActivityGroup, Lo
     @Query(value = "SELECT a.* FROM activity_group a WHERE a.is_deleted = true", nativeQuery = true)
     Page<ActivityGroup> findAllByIsDeletedTrue(Pageable pageable);
 
-    List<ActivityGroup> findByEndDateBefore(LocalDate now);
+    List<ActivityGroup> findByEndDateBeforeAndStatusNot(LocalDate now, ActivityGroupStatus status);
 }

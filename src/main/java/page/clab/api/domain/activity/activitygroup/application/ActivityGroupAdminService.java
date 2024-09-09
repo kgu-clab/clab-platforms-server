@@ -199,15 +199,15 @@ public class ActivityGroupAdminService {
 
     @Scheduled(cron = "0 0 0 * * *")
     public void updateActivityGroupStatusEnd() {
-        List<ActivityGroup> activityGroups = activityGroupRepository.findByEndDateBefore(LocalDate.now());
-        activityGroups.forEach(this::updateActivityGroupStatusEnd);
+        List<ActivityGroup> activityGroups = activityGroupRepository.findByEndDateBeforeAndStatusNot(LocalDate.now(), ActivityGroupStatus.END);
+        if(!activityGroups.isEmpty()){
+            activityGroups.forEach(this::updateActivityGroupStatusEnd);
+        }
     }
 
     private void updateActivityGroupStatusEnd(ActivityGroup activityGroup) {
-        if (!activityGroup.getStatus().equals(ActivityGroupStatus.END)) {
-            activityGroup.updateStatus(ActivityGroupStatus.END);
-            activityGroupRepository.save(activityGroup);
-        }
+        activityGroup.updateStatus(ActivityGroupStatus.END);
+        activityGroupRepository.save(activityGroup);
     }
 
     private void updateGroupMemberStatus(String memberId, GroupMemberStatus status, ActivityGroup activityGroup) {
