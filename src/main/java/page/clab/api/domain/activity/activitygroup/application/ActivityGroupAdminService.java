@@ -54,7 +54,6 @@ public class ActivityGroupAdminService {
     public Long createActivityGroup(ActivityGroupRequestDto requestDto) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = ActivityGroupRequestDto.toEntity(requestDto);
-        activityGroup.validateContentLength();
         activityGroup.validateAndSetGithubUrl(activityGroup.getGithubUrl());
         activityGroupRepository.save(activityGroup);
 
