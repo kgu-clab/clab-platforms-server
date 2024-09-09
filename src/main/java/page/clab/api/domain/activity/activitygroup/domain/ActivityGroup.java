@@ -19,8 +19,6 @@ import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.Range;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupUpdateRequestDto;
 import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotProgressingException;
-import page.clab.api.domain.activity.activitygroup.exception.ContentLengthExceededException;
-import page.clab.api.domain.activity.activitygroup.exception.CurriculumLengthExceededException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidGithubUrlException;
 import page.clab.api.global.common.domain.BaseEntity;
 
@@ -84,9 +82,9 @@ public class ActivityGroup extends BaseEntity {
         Optional.ofNullable(requestDto.getCategory()).ifPresent(this::setCategory);
         Optional.ofNullable(requestDto.getSubject()).ifPresent(this::setSubject);
         Optional.ofNullable(requestDto.getName()).ifPresent(this::setName);
-        Optional.ofNullable(requestDto.getContent()).ifPresent(this::validateAndSetContentLength);
+        Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
         Optional.ofNullable(requestDto.getImageUrl()).ifPresent(this::setImageUrl);
-        Optional.ofNullable(requestDto.getCurriculum()).ifPresent(this::validateAndSetCurriculumLength);
+        Optional.ofNullable(requestDto.getCurriculum()).ifPresent(this::setCurriculum);
         Optional.ofNullable(requestDto.getStartDate()).ifPresent(this::setStartDate);
         Optional.ofNullable(requestDto.getEndDate()).ifPresent(this::setEndDate);
         Optional.ofNullable(requestDto.getTechStack()).ifPresent(this::setTechStack);
@@ -117,32 +115,6 @@ public class ActivityGroup extends BaseEntity {
         if (!this.isProgressing()) {
             throw new ActivityGroupNotProgressingException("해당 활동은 진행중인 활동이 아닙니다.");
         }
-    }
-
-    public void validateCurriculumLength() {
-        if (this.curriculum != null && this.curriculum.length() > 1000) {
-            throw new CurriculumLengthExceededException("활동 커리큘럼은 1000자 이하여야 합니다.");
-        }
-    }
-
-    public void validateAndSetCurriculumLength(String curriculum) {
-        if (curriculum != null && curriculum.length() > 1000) {
-            throw new CurriculumLengthExceededException("활동 커리큘럼은 1000자 이하여야 합니다.");
-        }
-        this.curriculum = curriculum;
-    }
-
-    public void validateContentLength() {
-        if (this.content != null && this.content.length() > 1000) {
-            throw new ContentLengthExceededException("활동 설명은 1000자 이하여야 합니다.");
-        }
-    }
-
-    public void validateAndSetContentLength(String content) {
-        if (content != null && content.length() > 1000) {
-            throw new ContentLengthExceededException("활동 설명은 1000자 이하여야 합니다.");
-        }
-        this.content = content;
     }
 
     /**
