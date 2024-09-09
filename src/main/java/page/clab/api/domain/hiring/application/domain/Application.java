@@ -44,6 +44,6 @@ public class Application {
     }
 
     public String getApplicationTypeForNotificationPrefix() {
-        return "[" + this.applicationType + "] ";
+        return "[" + this.applicationType.getDescription() + "] ";
     }
 }
