@@ -163,15 +163,6 @@ public class ActivityGroupAdminService {
     }
 
     @Transactional
-    public Long manageGroupMemberStatus(Long activityGroupId, String memberId, GroupMemberStatus status) throws PermissionDeniedException {
-        Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        validateLeaderPermission(activityGroup, currentMember, "해당 활동의 신청 멤버를 조회할 권한이 없습니다.");
-        updateGroupMemberStatus(memberId, status, activityGroup);
-        return activityGroup.getId();
-    }
-
-    @Transactional
     public Long manageGroupMemberStatus(Long activityGroupId, List<String> memberIds, GroupMemberStatus status) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
