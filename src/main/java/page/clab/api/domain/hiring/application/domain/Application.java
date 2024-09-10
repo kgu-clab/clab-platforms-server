@@ -1,5 +1,6 @@
 package page.clab.api.domain.hiring.application.domain;
 
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,10 @@ public class Application {
     private LocalDate birth;
     private String address;
     private String interests;
+
+    @Size(min = 1, max = 1000, message = "{size.application.otherActivities}")
     private String otherActivities;
+
     private String githubUrl;
     private ApplicationType applicationType;
     private Boolean isPass;
