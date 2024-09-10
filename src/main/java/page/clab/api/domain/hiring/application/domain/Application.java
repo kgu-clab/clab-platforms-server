@@ -1,5 +1,6 @@
 package page.clab.api.domain.hiring.application.domain;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,7 @@ public class Application {
     private String interests;
 
     @Size(min = 1, max = 1000, message = "{size.application.otherActivities}")
+    @Column(nullable = false)
     private String otherActivities;
 
     private String githubUrl;
