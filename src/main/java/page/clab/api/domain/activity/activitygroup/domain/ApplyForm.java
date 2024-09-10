@@ -34,7 +34,7 @@ public class ApplyForm extends BaseEntity {
 
     private String memberId;
 
-    @Size(min = 1, max = 1000, message = "{size.applyForm.applyReason}")
     @Column(nullable = false)
+    @Size(min = 1, max = 1000, message = "{size.applyForm.applyReason}")
     private String applyReason;
 }
