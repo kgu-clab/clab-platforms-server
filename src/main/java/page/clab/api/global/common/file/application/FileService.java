@@ -287,7 +287,7 @@ public class FileService {
 
     private boolean isNonSubmitCategoryAccessible(String url, Authentication authentication) {
         String memberId = authentication.getName();
-        Member member = externalRetrieveMemberUseCase.findByIdOrThrow(memberId);
+        Member member = externalRetrieveMemberUseCase.getById(memberId);
         String[] parts = url.split("/");
         Long activityGroupId = Long.parseLong(parts[4]);
 
@@ -305,7 +305,7 @@ public class FileService {
         UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
         String uploaderId = uploadedFile.getUploader();
         String memberId = authentication.getName();
-        Member member = externalRetrieveMemberUseCase.findByIdOrThrow(memberId);
+        Member member = externalRetrieveMemberUseCase.getById(memberId);
         String[] parts = url.split("/");
         Long activityGroupId = Long.parseLong(parts[4]);
 
