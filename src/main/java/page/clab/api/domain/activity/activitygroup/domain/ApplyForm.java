@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +34,7 @@ public class ApplyForm extends BaseEntity {
 
     private String memberId;
 
+    @Size(min = 1, max = 1000, message = "{size.applyForm.applyReason}")
     @Column(nullable = false)
     private String applyReason;
 }
