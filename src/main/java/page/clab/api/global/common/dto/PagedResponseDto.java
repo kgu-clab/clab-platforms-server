@@ -104,6 +104,24 @@ public class PagedResponseDto<T> {
     }
 
     /**
+     * List와 Pageable 객체를 사용하여 PagedResponseDto를 생성하는 생성자입니다.
+     * 페이지네이션과 정렬이 적용됩니다.
+     *
+     * @param ts 콘텐츠 아이템 리스트
+     * @param totalItems 전체 아이템 수
+     * @param pageable 페이지네이션 정보와 정렬 기준을 포함하는 Pageable 객체
+     */
+    public PagedResponseDto(List<T> ts, int totalItems, Pageable pageable) {
+        this.currentPage = pageable.getPageNumber();
+        this.hasPrevious = pageable.getPageNumber() > 0;
+        this.hasNext = pageable.getOffset() + pageable.getPageSize() < totalItems;
+        this.totalPages = (totalItems != 0) ? (int) Math.ceil((double) totalItems / pageable.getPageSize()) : 0;
+        this.totalItems = totalItems;
+        this.take = ts.size();
+        this.items = applySortingIfNecessary(ts, pageable.getSort());
+    }
+
+    /**
      * 정렬이 필요한 경우 아이템 리스트에 정렬을 적용하는 메서드입니다.
      *
      * @param items 정렬되지 않은 아이템 리스트

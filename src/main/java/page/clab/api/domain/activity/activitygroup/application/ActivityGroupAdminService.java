@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -34,6 +35,7 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -160,18 +162,11 @@ public class ActivityGroupAdminService {
     }
 
     @Transactional
-    public Long manageGroupMemberStatus(Long activityGroupId, String memberId, GroupMemberStatus status) throws PermissionDeniedException {
+    public Long manageGroupMemberStatus(Long activityGroupId, List<String> memberIds, GroupMemberStatus status) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         validateLeaderPermission(activityGroup, currentMember, "해당 활동의 신청 멤버를 조회할 권한이 없습니다.");
-
-        Member member = externalRetrieveMemberUseCase.findByIdOrThrow(memberId);
-        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member.getId());
-        groupMember.validateAccessPermission();
-        groupMember.updateStatus(status);
-        activityGroupMemberService.save(groupMember);
-
-        externalSendNotificationUseCase.sendNotificationToMember(member.getId(), "활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
+        memberIds.forEach(memberId -> updateGroupMemberStatus(memberId, status, activityGroup));
         return activityGroup.getId();
     }
 
@@ -190,6 +185,28 @@ public class ActivityGroupAdminService {
         activityGroupMemberService.save(groupMember);
 
         return activityGroup.getId();
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void updateActivityGroupStatusEnd() {
+        List<ActivityGroup> activityGroups = activityGroupRepository.findByEndDateBeforeAndStatusNot(LocalDate.now(), ActivityGroupStatus.END);
+        if(!activityGroups.isEmpty()){
+            activityGroups.forEach(this::updateActivityGroupStatusEnd);
+        }
+    }
+
+    private void updateActivityGroupStatusEnd(ActivityGroup activityGroup) {
+        activityGroup.updateStatus(ActivityGroupStatus.END);
+        activityGroupRepository.save(activityGroup);
+    }
+
+    private void updateGroupMemberStatus(String memberId, GroupMemberStatus status, ActivityGroup activityGroup) {
+        Member member = externalRetrieveMemberUseCase.findByIdOrThrow(memberId);
+        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member.getId());
+        groupMember.validateAccessPermission();
+        groupMember.updateStatus(status);
+        activityGroupMemberService.save(groupMember);
+        externalSendNotificationUseCase.sendNotificationToMember(member.getId(), "활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {

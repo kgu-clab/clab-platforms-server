@@ -131,10 +131,10 @@ public class ActivityGroupAdminController {
     @PatchMapping("/accept")
     public ApiResponse<Long> acceptGroupMember(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
-            @RequestParam(name = "memberId") String memberId,
+            @RequestParam(name = "memberId") List<String> memberIds,
             @RequestParam(name = "status") GroupMemberStatus status
     ) throws PermissionDeniedException {
-        Long id = activityGroupAdminService.manageGroupMemberStatus(activityGroupId, memberId, status);
+        Long id = activityGroupAdminService.manageGroupMemberStatus(activityGroupId, memberIds, status);
         return ApiResponse.success(id);
     }
 
