@@ -42,4 +42,8 @@ public class Application {
     public void reject() {
         this.isPass = false;
     }
+
+    public String getApplicationTypeForNotificationPrefix() {
+        return "[" + this.applicationType.getDescription() + "] ";
+    }
 }
