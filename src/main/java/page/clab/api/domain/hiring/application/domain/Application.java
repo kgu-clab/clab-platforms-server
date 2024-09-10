@@ -28,7 +28,6 @@ public class Application {
     private String address;
     private String interests;
     private String otherActivities;
-
     private String githubUrl;
     private ApplicationType applicationType;
     private Boolean isPass;
