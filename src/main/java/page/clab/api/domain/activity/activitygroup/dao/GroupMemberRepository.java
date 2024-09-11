@@ -27,6 +27,8 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupM
 
     List<GroupMember> findAllByActivityGroupIdOrderByMemberIdAsc(Long activityGroupId);
 
+    GroupMember findFirstByActivityGroupIdOrderByCreatedAtAsc(Long activityGroupId);
+
     Page<GroupMember> findAllByActivityGroupId(Long activityGroupId, Pageable pageable);
 
     Page<GroupMember> findAllByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status, org.springframework.data.domain.Pageable pageable);
