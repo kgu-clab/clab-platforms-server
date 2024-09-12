@@ -35,8 +35,6 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupM
 
     List<GroupMember> findAllByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status);
 
-    boolean existsByActivityGroupAndMemberId(ActivityGroup activityGroup, String memberId);
-
     boolean existsByActivityGroupAndMemberIdAndStatus(ActivityGroup activityGroup, String memberId, GroupMemberStatus status);
 
     boolean existsByActivityGroupIdAndMemberIdAndStatus(Long activityGroupId, String memberId, GroupMemberStatus status);
