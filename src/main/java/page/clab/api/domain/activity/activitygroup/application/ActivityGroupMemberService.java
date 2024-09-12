@@ -209,11 +209,10 @@ public class ActivityGroupMemberService {
     }
 
     public Map<Long, GroupMember> findActivityGroupOwners(List<Long> activityGroupIds) {
-        return groupMemberRepository.findByActivityGroupIdIn(activityGroupIds).stream()
+        return groupMemberRepository.findFirstByActivityGroupIdIn(activityGroupIds).stream()
                 .collect(Collectors.toMap(
                         groupMember -> groupMember.getActivityGroup().getId(),
-                        Function.identity(),
-                        BinaryOperator.minBy(Comparator.comparing(GroupMember::getCreatedAt))
+                        Function.identity()
                 ));
     }
 
