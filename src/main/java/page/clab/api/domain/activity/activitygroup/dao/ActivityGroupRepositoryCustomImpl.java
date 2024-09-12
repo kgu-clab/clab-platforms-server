@@ -28,6 +28,7 @@ public class ActivityGroupRepositoryCustomImpl implements ActivityGroupRepositor
 
         List<ActivityGroup> activityGroups = queryFactory.selectFrom(qActivityGroup)
                 .where(builder)
+                .orderBy(qActivityGroup.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

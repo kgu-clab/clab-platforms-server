@@ -141,11 +141,9 @@ public class ActivityGroupMemberController {
     @GetMapping("/applied")
     public ApiResponse<PagedResponseDto<ActivityGroupStatusResponseDto>> getAppliedActivityGroups(
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
-            @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
-    ) throws InvalidColumnException, SortingArgumentException {
-        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupStatusResponseDto.class);
+            @RequestParam(name = "size", defaultValue = "20") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ActivityGroupStatusResponseDto> activityGroups = activityGroupMemberService.getAppliedActivityGroups(pageable);
         return ApiResponse.success(activityGroups);
     }

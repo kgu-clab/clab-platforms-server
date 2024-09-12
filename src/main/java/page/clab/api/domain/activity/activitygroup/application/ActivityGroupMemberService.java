@@ -42,7 +42,6 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -95,6 +94,7 @@ public class ActivityGroupMemberService {
                 .toList();
 
         List<ActivityGroup> paginatedActivityGroups = activityGroups.stream()
+                .sorted(Comparator.comparing(ActivityGroup::getCreatedAt).reversed())
                 .skip(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .toList();
@@ -172,6 +172,7 @@ public class ActivityGroupMemberService {
                 .map(GroupMember::getActivityGroup)
                 .filter(ActivityGroup::isProgressing)
                 .distinct()
+                .sorted(Comparator.comparing(ActivityGroup::getCreatedAt).reversed())
                 .map(this::getActivityGroupStatusResponseDto)
                 .toList();
 
