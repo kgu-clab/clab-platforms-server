@@ -213,7 +213,8 @@ public class ActivityGroupMemberService {
                 .collect(Collectors.toMap(
                         groupMember -> groupMember.getActivityGroup().getId(),
                         Function.identity(),
-                        BinaryOperator.minBy(Comparator.comparing(GroupMember::getCreatedAt))));
+                        BinaryOperator.minBy(Comparator.comparing(GroupMember::getCreatedAt))
+                ));
     }
 
     public GroupMember getGroupMemberByActivityGroupAndMemberOrThrow(ActivityGroup activityGroup, String memberId) {
