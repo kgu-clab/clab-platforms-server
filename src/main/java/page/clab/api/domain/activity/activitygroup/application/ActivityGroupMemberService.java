@@ -42,6 +42,8 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -157,13 +159,13 @@ public class ActivityGroupMemberService {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         List<GroupMember> groupMembers = getGroupMemberByMemberId(currentMemberId);
 
-        Map<Long, GroupMember> activityGroupOwners = groupMembers.stream()
+        List<Long> activityGroupIds = groupMembers.stream()
                 .map(GroupMember::getActivityGroup)
+                .map(ActivityGroup::getId)
                 .distinct()
-                .collect(Collectors.toMap(
-                        ActivityGroup::getId,
-                        this::findActivityGroupOwner
-                ));
+                .toList();
+
+        Map<Long, GroupMember> activityGroupOwners = findActivityGroupOwners(activityGroupIds);
 
         List<ActivityGroupStatusResponseDto> activityGroups = groupMembers.stream()
                 .filter(groupMember -> !isActivityGroupOwner(groupMember, activityGroupOwners))
@@ -206,8 +208,12 @@ public class ActivityGroupMemberService {
                 .orElseThrow(() -> new NotFoundException("해당 활동이 존재하지 않습니다."));
     }
 
-    public GroupMember findActivityGroupOwner(ActivityGroup activityGroup) {
-        return groupMemberRepository.findFirstByActivityGroupIdOrderByCreatedAtAsc(activityGroup.getId());
+    public Map<Long, GroupMember> findActivityGroupOwners(List<Long> activityGroupIds) {
+        return groupMemberRepository.findByActivityGroupIdIn(activityGroupIds).stream()
+                .collect(Collectors.toMap(
+                        gm -> gm.getActivityGroup().getId(),
+                        Function.identity(),
+                        BinaryOperator.minBy(Comparator.comparing(GroupMember::getCreatedAt))));
     }
 
     public GroupMember getGroupMemberByActivityGroupAndMemberOrThrow(ActivityGroup activityGroup, String memberId) {
