@@ -211,7 +211,7 @@ public class ActivityGroupMemberService {
     public Map<Long, GroupMember> findActivityGroupOwners(List<Long> activityGroupIds) {
         return groupMemberRepository.findByActivityGroupIdIn(activityGroupIds).stream()
                 .collect(Collectors.toMap(
-                        gm -> gm.getActivityGroup().getId(),
+                        groupMember -> groupMember.getActivityGroup().getId(),
                         Function.identity(),
                         BinaryOperator.minBy(Comparator.comparing(GroupMember::getCreatedAt))));
     }
