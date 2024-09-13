@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupStatus;
 import page.clab.api.domain.activity.activitygroup.domain.QActivityGroup;
+import page.clab.api.global.util.OrderSpecifierUtil;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class ActivityGroupRepositoryCustomImpl implements ActivityGroupRepositor
 
         List<ActivityGroup> activityGroups = queryFactory.selectFrom(qActivityGroup)
                 .where(builder)
+                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, qActivityGroup))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
