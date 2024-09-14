@@ -29,7 +29,8 @@ public class ActivityGroupDetailsRepositoryImpl implements ActivityGroupDetailsR
         QActivityGroupBoard qActivityGroupBoard = QActivityGroupBoard.activityGroupBoard;
 
         BooleanBuilder groupMemberCondition = new BooleanBuilder();
-        if (activityGroupId != null) groupMemberCondition.and(qGroupMember.activityGroup.id.eq(activityGroupId).and(qGroupMember.status.eq(GroupMemberStatus.ACCEPTED)));
+        if (activityGroupId != null) groupMemberCondition.and(qGroupMember.activityGroup.id.eq(activityGroupId)
+                .and(qGroupMember.status.eq(GroupMemberStatus.ACCEPTED)));
 
         List<GroupMember> groupMembers = queryFactory.selectFrom(qGroupMember)
                 .where(groupMemberCondition)
