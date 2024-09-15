@@ -8,6 +8,7 @@ import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoardCategory;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
+import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activity.activitygroup.domain.QActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.QActivityGroupBoard;
 import page.clab.api.domain.activity.activitygroup.domain.QGroupMember;
@@ -28,7 +29,8 @@ public class ActivityGroupDetailsRepositoryImpl implements ActivityGroupDetailsR
         QActivityGroupBoard qActivityGroupBoard = QActivityGroupBoard.activityGroupBoard;
 
         BooleanBuilder groupMemberCondition = new BooleanBuilder();
-        if (activityGroupId != null) groupMemberCondition.and(qGroupMember.activityGroup.id.eq(activityGroupId));
+        if (activityGroupId != null) groupMemberCondition.and(qGroupMember.activityGroup.id.eq(activityGroupId)
+                .and(qGroupMember.status.eq(GroupMemberStatus.ACCEPTED)));
 
         List<GroupMember> groupMembers = queryFactory.selectFrom(qGroupMember)
                 .where(groupMemberCondition)
