@@ -75,8 +75,8 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.17.0' // Apache Commons Lang
 
     // MapStruct
-    implementation 'org.mapstruct:mapstruct:1.6.0'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.0'
+    implementation 'org.mapstruct:mapstruct:1.6.2'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.2'
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
     // IPInfo
