@@ -215,8 +215,9 @@ public class ActivityGroupAdminService {
     }
 
     public boolean isMemberGroupLeaderRole(ActivityGroup activityGroup, Member member) {
-        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member.getId());
-        return groupMember.isLeader() || member.isAdminRole();
+        return activityGroupMemberService.getGroupMemberByActivityGroupAndMember(activityGroup, member.getId())
+                .map(GroupMember::isLeader)
+                .orElse(member.isAdminRole());
     }
 
     public boolean isMemberGroupLeaderRole(Long activityGroupId, String memberId) {

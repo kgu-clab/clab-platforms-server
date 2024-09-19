@@ -42,6 +42,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -213,6 +214,10 @@ public class ActivityGroupMemberService {
                         groupMember -> groupMember.getActivityGroup().getId(),
                         Function.identity()
                 ));
+    }
+
+    public Optional<GroupMember> getGroupMemberByActivityGroupAndMember(ActivityGroup activityGroup, String memberId) {
+        return groupMemberRepository.findByActivityGroupAndMemberId(activityGroup, memberId);
     }
 
     public GroupMember getGroupMemberByActivityGroupAndMemberOrThrow(ActivityGroup activityGroup, String memberId) {
