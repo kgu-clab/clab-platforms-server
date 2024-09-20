@@ -6,14 +6,13 @@ import com.google.gson.stream.MalformedJsonException;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.query.sqm.UnknownPathException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -238,10 +237,12 @@ public class GlobalExceptionHandler {
         return ApiResponse.failure();
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<String>> handleValidationException(MethodArgumentNotValidException ex) {
-        String errorMessage = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
-        ApiResponse<String> response = ApiResponse.failure(errorMessage);
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({
+            MethodArgumentNotValidException.class,
+            ConstraintViolationException.class
+    })
+    public ApiResponse<Void> handleValidationException(HttpServletResponse response, Exception e) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return ApiResponse.failure();
     }
 }
