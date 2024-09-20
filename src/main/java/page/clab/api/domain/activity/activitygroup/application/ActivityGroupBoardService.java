@@ -64,6 +64,7 @@ public class ActivityGroupBoardService {
         ActivityGroupBoard parentBoard = parentId != null ? getActivityGroupBoardByIdOrThrow(parentId) : null;
         ActivityGroupBoard board = ActivityGroupBoardRequestDto.toEntity(requestDto, currentMember, activityGroup, parentBoard, uploadedFiles);
         board.validateEssentialElementByCategory();
+        board.validateDueDateTime();
 
         if (parentId != null) {
             parentBoard.addChild(board);

@@ -24,6 +24,7 @@ import org.springframework.util.CollectionUtils;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.activity.activitygroup.exception.AssignmentBoardHasNoDueDateTimeException;
 import page.clab.api.domain.activity.activitygroup.exception.FeedbackBoardHasNoContentException;
+import page.clab.api.domain.activity.activitygroup.exception.InvalidDueDateTimeException;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.application.UploadedFileService;
@@ -131,6 +132,15 @@ public class ActivityGroupBoard extends BaseEntity {
             if (content.isEmpty()) {
                 throw new FeedbackBoardHasNoContentException();
             }
+        }
+    }
+
+    public void validateDueDateTime() {
+        LocalDateTime dueDateTime = this.getDueDateTime();
+        if (dueDateTime == null)
+            return;
+        if (dueDateTime.isBefore(LocalDateTime.now())) {
+            throw new InvalidDueDateTimeException("마감일자는 현재 시간 이후로 설정되어야 합니다.");
         }
     }
 }

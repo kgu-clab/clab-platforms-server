@@ -36,6 +36,7 @@ import page.clab.api.domain.activity.activitygroup.exception.DuplicateRoleExcept
 import page.clab.api.domain.activity.activitygroup.exception.FeedbackBoardHasNoContentException;
 import page.clab.api.domain.activity.activitygroup.exception.InactiveMemberException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidCategoryException;
+import page.clab.api.domain.activity.activitygroup.exception.InvalidDueDateTimeException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidGithubUrlException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidRoleException;
@@ -124,7 +125,8 @@ public class GlobalExceptionHandler {
             SortingArgumentException.class,
             UnknownPathException.class,
             AssignmentBoardHasNoDueDateTimeException.class,
-            FeedbackBoardHasNoContentException.class
+            FeedbackBoardHasNoContentException.class,
+            InvalidDueDateTimeException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
