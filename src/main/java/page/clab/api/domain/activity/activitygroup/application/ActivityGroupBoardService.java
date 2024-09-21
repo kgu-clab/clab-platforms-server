@@ -89,7 +89,7 @@ public class ActivityGroupBoardService {
                                                  category.isFeedback();
 
         // NOTICE, WEEKLY_ACTIVITY, ASSIGNMENT, FEEDBACK 카테고리에서 권한이 ADMIN 이상이 아니거나, 리더가 아니면 예외처리
-        if (isRequireAdminOrLeaderCategory && !(role.isHigherThanOrEqual(Role.ADMIN) || activityGroupAdminService.isMemberGroupLeaderRole(activityGroup, currentMember))) {
+        if (isRequireAdminOrLeaderCategory && !(role.isHigherThanOrEqual(Role.ADMIN) || activityGroupAdminService.hasLeaderOrAdminRole(activityGroup, currentMember))) {
             throw new PermissionDeniedException("해당 카테고리에서 게시글을 작성할 권한이 없습니다.");
         }
     }
@@ -104,7 +104,7 @@ public class ActivityGroupBoardService {
 
     private boolean isSubmitterOrLeader(ActivityGroup activityGroup, ActivityGroupBoard board, Member currentMember) {
         boolean isSubmitter = board.getMemberId().equals(currentMember.getId());
-        boolean isLeader = activityGroupAdminService.isMemberGroupLeaderRole(activityGroup, currentMember);
+        boolean isLeader = activityGroupAdminService.hasLeaderOrAdminRole(activityGroup, currentMember);
         // FEEDBACK을 가져오기 위해, parent의 카테고리가 SUBMIT이고, 현재 로그인한 멤버인지 확인
         if (board.getCategory().isFeedback()) {
             ActivityGroupBoard parentBoard = board.getParent();
