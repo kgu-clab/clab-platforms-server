@@ -206,7 +206,7 @@ public class ActivityGroupAdminService {
         groupMember.validateAccessPermission();
         groupMember.updateStatus(status);
         activityGroupMemberService.save(groupMember);
-        externalSendNotificationUseCase.sendNotificationToMember(member.getId(), "활동 그룹 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
+        externalSendNotificationUseCase.sendNotificationToMember(member.getId(), "[" + activityGroup.getName() + "]" + " 신청이 [" + status.getDescription() + "] 상태로 변경되었습니다.");
     }
 
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
