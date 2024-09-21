@@ -7,7 +7,7 @@ import page.clab.api.global.config.WhitelistPatternsProperties;
 import java.util.regex.Pattern;
 
 @Component
-public class WhitelistUtil implements InitializingBean {
+public class WhitelistPathMatcher implements InitializingBean {
 
     private static String[] swaggerPatterns;
     private static String[] actuatorPatterns;
@@ -15,7 +15,7 @@ public class WhitelistUtil implements InitializingBean {
 
     private final WhitelistPatternsProperties whitelistPatternsProperties;
 
-    public WhitelistUtil(WhitelistPatternsProperties whitelistPatternsProperties) {
+    public WhitelistPathMatcher(WhitelistPatternsProperties whitelistPatternsProperties) {
         this.whitelistPatternsProperties = whitelistPatternsProperties;
     }
 

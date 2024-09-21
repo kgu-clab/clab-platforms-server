@@ -11,9 +11,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import page.clab.api.domain.activity.activitygroup.application.ActivityGroupAdminService;
-import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupBoardRepository;
+import page.clab.api.domain.activity.activitygroup.application.ActivityGroupBoardService;
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activity.activitygroup.dao.GroupMemberRepository;
+import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
+import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.activity.activitygroup.exception.MemberNotPartOfActivityException;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
@@ -37,7 +39,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
@@ -47,9 +48,9 @@ public class FileService {
     private final FileHandler fileHandler;
     private final UploadedFileService uploadedFileService;
     private final ActivityGroupAdminService activityGroupAdminService;
+    private final ActivityGroupBoardService activityGroupBoardService;
     private final ActivityGroupRepository activityGroupRepository;
     private final GroupMemberRepository groupMemberRepository;
-    private final ActivityGroupBoardRepository activityGroupBoardRepository;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalRetrieveCloudUsageByMemberIdUseCase externalRetrieveCloudUsageByMemberIdUseCase;
 
@@ -64,19 +65,21 @@ public class FileService {
 
     private static final Map<Role, Set<String>> roleCategoryMap = Map.of(
             Role.GUEST, Set.of("boards", "profiles", "activity-photos", "membership-fees"),
-            Role.USER, Set.of("boards", "profiles", "activity-photos", "membership-fees" , "weekly-activities", "assignments"),
-            Role.ADMIN, Set.of("boards", "profiles", "activity-photos", "membership-fees", "weekly-activities", "members", "assignments"),
-            Role.SUPER, Set.of("boards", "profiles", "activity-photos", "membership-fees", "weekly-activities", "members", "assignments")
+            Role.USER, Set.of("boards", "profiles", "activity-photos", "membership-fees" , "notices", "weekly-activities", "members", "assignments", "submits"),
+            Role.ADMIN, Set.of("boards", "profiles", "activity-photos", "membership-fees", "notices", "weekly-activities", "members", "assignments", "submits"),
+            Role.SUPER, Set.of("boards", "profiles", "activity-photos", "membership-fees", "notices", "weekly-activities", "members", "assignments", "submits")
     );
 
     private final Map<String, BiFunction<String, Authentication, Boolean>> categoryAccessMap = Map.of(
             "boards", (url, auth) -> true,
             "profiles", (url, auth) -> true,
-            "membership-fees", (url, auth) -> true,
             "activity-photos", (url, auth) -> true,
-            "weekly-activities", this::isWeeklyActivityAccessible,
+            "membership-fees", (url, auth) -> true,
+            "notices", this::isNonSubmitCategoryAccessible,
+            "weekly-activities", this::isNonSubmitCategoryAccessible,
+            "assignments", this::isNonSubmitCategoryAccessible,
             "members", this::isMemberAccessible,
-            "assignments", this::isAssignmentAccessible
+            "submits", this::isSubmitAccessible
     );
 
     public String saveQRCodeImage(byte[] QRCodeImage, String path, long storagePeriod, String nowDateTime) throws IOException {
@@ -143,46 +146,85 @@ public class FileService {
         return pathBuilder.toString();
     }
 
-    public void validatePathVariable(String path) throws InvalidPathVariableException {
+    public void validatePathVariable(String path) throws InvalidPathVariableException, PermissionDeniedException {
         String[] pathParts = path.split(Pattern.quote(File.separator));
         String pathStart = pathParts[0];
 
         switch (pathStart) {
-            case "assignments":
-                validateAssignmentPath(pathParts);
+            case "notices":
+                validateNoticePath(pathParts);
                 break;
             case "weekly-activities":
                 validateWeeklyActivityPath(pathParts);
                 break;
+            case "assignments":
+                validateAssignmentPath(pathParts);
+                break;
+            case "submits":
+                validateSubmitPath(pathParts);
+                break;
         }
     }
 
-    private void validateAssignmentPath(String[] pathParts) throws InvalidPathVariableException {
+    private void validateNoticePath(String[] pathParts) throws InvalidPathVariableException, PermissionDeniedException {
+        Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
+        String memberId = externalRetrieveMemberUseCase.getCurrentMemberId();
+
+        validateActivityGroupExist(activityGroupId);
+        validateIsMemberPartOfActivity(memberId, activityGroupId);
+        validateIsMemberGroupLeader(activityGroupId, memberId, "활동의 공지 관련 파일은 리더만 등록할 수 있습니다.");
+    }
+
+    private void validateWeeklyActivityPath(String[] pathParts) throws InvalidPathVariableException, PermissionDeniedException {
+        Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
+        String memberId = externalRetrieveMemberUseCase.getCurrentMemberId();
+
+        validateActivityGroupExist(activityGroupId);
+        validateIsMemberPartOfActivity(memberId, activityGroupId);
+        validateIsMemberGroupLeader(activityGroupId, memberId, "활동의 주차별 활동 관련 파일은 리더만 등록할 수 있습니다.");
+    }
+
+    private void validateAssignmentPath(String[] pathParts) throws InvalidPathVariableException, PermissionDeniedException {
+        Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
+        String memberId = externalRetrieveMemberUseCase.getCurrentMemberId();
+
+        validateActivityGroupExist(activityGroupId);
+        validateIsMemberPartOfActivity(memberId, activityGroupId);
+        validateIsMemberGroupLeader(activityGroupId, memberId, "활동의 과제 관련 파일은 리더만 등록할 수 있습니다.");
+    }
+
+    private void validateSubmitPath(String[] pathParts) throws InvalidPathVariableException {
         Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
         Long activityGroupBoardId = parseId(pathParts[2], "활동 그룹 게시판 ID가 유효하지 않습니다.");
         String memberId = pathParts[3];
 
+        validateActivityGroupExist(activityGroupId);
+        validateIsMemberPartOfActivity(memberId, activityGroupId);
+        ActivityGroupBoard activityGroupBoard = activityGroupBoardService.getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
+        validateIsParentBoardAssignment(activityGroupBoard);
+    }
+
+    private void validateActivityGroupExist(Long activityGroupId) {
         if (!activityGroupRepository.existsById(activityGroupId)) {
             throw new NotFoundException("해당 활동은 존재하지 않습니다.");
-        }
-        Optional<Member> assignmentWriterOpt = externalRetrieveMemberUseCase.findById(memberId);
-        if (assignmentWriterOpt.isEmpty() || !groupMemberRepository.existsByMemberIdAndActivityGroupId(assignmentWriterOpt.get().getId(), activityGroupId)) {
-            throw new MemberNotPartOfActivityException("해당 활동에 참여하고 있지 않은 멤버입니다.");
-        }
-        if (!activityGroupBoardRepository.existsById(activityGroupBoardId)) {
-            throw new NotFoundException("해당 활동 그룹 게시판이 존재하지 않습니다.");
         }
     }
 
-    private void validateWeeklyActivityPath(String[] pathParts) throws InvalidPathVariableException {
-        Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
-        String memberId = externalRetrieveMemberUseCase.getCurrentMemberId();
-
-        if (!activityGroupRepository.existsById(activityGroupId)) {
-            throw new NotFoundException("해당 활동은 존재하지 않습니다.");
-        }
+    private void validateIsMemberPartOfActivity(String memberId, Long activityGroupId) {
         if (!groupMemberRepository.existsByMemberIdAndActivityGroupId(memberId, activityGroupId)) {
             throw new MemberNotPartOfActivityException("해당 활동에 참여하고 있지 않은 멤버입니다.");
+        }
+    }
+
+    private void validateIsMemberGroupLeader(Long activityGroupId, String memberId, String exceptionMessage) throws PermissionDeniedException {
+        if (!activityGroupAdminService.isMemberGroupLeaderRole(activityGroupId, memberId)) {
+            throw new PermissionDeniedException(exceptionMessage);
+        }
+    }
+
+    private void validateIsParentBoardAssignment(ActivityGroupBoard activityGroupBoard) {
+        if (!activityGroupBoard.isAssignment()) {
+            throw new InvalidParentBoardException("부모 게시판이 ASSIGNMENT가 아닙니다.");
         }
     }
 
@@ -242,28 +284,32 @@ public class FileService {
         return categoryAccessMap.getOrDefault(category, (u, a) -> false).apply(url, authentication);
     }
 
+    private boolean isNonSubmitCategoryAccessible(String url, Authentication authentication) {
+        String memberId = authentication.getName();
+        Member member = externalRetrieveMemberUseCase.findByIdOrThrow(memberId);
+        String[] parts = url.split("/");
+        Long activityGroupId = Long.parseLong(parts[4]);
+
+        return member.isSuperAdminRole() ||
+                groupMemberRepository.existsByActivityGroupIdAndMemberIdAndStatus(activityGroupId, memberId, GroupMemberStatus.ACCEPTED);
+    }
+
     private boolean isMemberAccessible(String url, Authentication authentication) {
         UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
         String uploaderId = uploadedFile.getUploader();
         return authentication.getName().equals(uploaderId);
     }
 
-    private boolean isAssignmentAccessible(String url, Authentication authentication) {
+    private boolean isSubmitAccessible(String url, Authentication authentication) {
         UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(url);
         String uploaderId = uploadedFile.getUploader();
-        String[] parts = url.split("/");
-        Long activityGroupId = Long.parseLong(parts[4]);
-
-        return authentication.getName().equals(uploaderId) ||
-                activityGroupAdminService.isMemberGroupLeaderRole(activityGroupId, authentication.getName());
-    }
-
-    private boolean isWeeklyActivityAccessible(String url, Authentication authentication) {
         String memberId = authentication.getName();
+        Member member = externalRetrieveMemberUseCase.findByIdOrThrow(memberId);
         String[] parts = url.split("/");
         Long activityGroupId = Long.parseLong(parts[4]);
 
-        return groupMemberRepository.existsByActivityGroupIdAndMemberIdAndStatus(activityGroupId, memberId, GroupMemberStatus.ACCEPTED);
+        return memberId.equals(uploaderId) || member.isSuperAdminRole() ||
+                activityGroupAdminService.isMemberGroupLeaderRole(activityGroupId, authentication.getName());
     }
 
     private String getCategoryByUrl(String url) {

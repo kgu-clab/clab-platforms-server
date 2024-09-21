@@ -25,8 +25,9 @@ public class ApplicationApplyService implements ApplyForApplicationUseCase {
     public String applyForClub(ApplicationRequestDto requestDto) {
         externalRetrieveRecruitmentUseCase.validateRecruitmentForApplication(requestDto.getRecruitmentId());
         Application application = ApplicationRequestDto.toEntity(requestDto);
-        externalSendNotificationUseCase.sendNotificationToAdmins(requestDto.getStudentId() + " " +
-                requestDto.getName() + "님이 동아리에 지원하였습니다.");
+        String applicationType = application.getApplicationTypeForNotificationPrefix();
+        externalSendNotificationUseCase.sendNotificationToAdmins(applicationType + requestDto.getStudentId() + " " +
+                requestDto.getName() + "님이 지원하였습니다.");
         slackService.sendNewApplicationNotification(requestDto);
         return registerApplicationPort.save(application).getStudentId();
     }

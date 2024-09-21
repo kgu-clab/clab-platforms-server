@@ -11,7 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Future;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -77,6 +77,7 @@ public class ActivityGroupBoard extends BaseEntity {
     @JoinColumn(name = "activity_group_board_files")
     private List<UploadedFile> uploadedFiles;
 
+    @Future(message = "invalid.activityGroupBoard.dueDateTime")
     private LocalDateTime dueDateTime;
 
     @Column(name = "is_deleted", nullable = false)

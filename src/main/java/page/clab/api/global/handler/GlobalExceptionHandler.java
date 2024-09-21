@@ -29,7 +29,6 @@ import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotPro
 import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.activity.activitygroup.exception.AlreadySubmittedThisWeekAssignmentException;
 import page.clab.api.domain.activity.activitygroup.exception.AssignmentBoardHasNoDueDateTimeException;
-import page.clab.api.domain.activity.activitygroup.exception.ContentLengthExceededException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateAttendanceException;
 import page.clab.api.domain.activity.activitygroup.exception.DuplicateReportException;
@@ -42,6 +41,7 @@ import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardE
 import page.clab.api.domain.activity.activitygroup.exception.InvalidRoleException;
 import page.clab.api.domain.activity.activitygroup.exception.LeaderStatusChangeNotAllowedException;
 import page.clab.api.domain.activity.activitygroup.exception.MemberNotPartOfActivityException;
+import page.clab.api.domain.activity.activitygroup.exception.SingleLeaderModificationException;
 import page.clab.api.domain.activity.review.application.exception.AlreadyReviewedException;
 import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
 import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
@@ -124,8 +124,7 @@ public class GlobalExceptionHandler {
             SortingArgumentException.class,
             UnknownPathException.class,
             AssignmentBoardHasNoDueDateTimeException.class,
-            FeedbackBoardHasNoContentException.class,
-            ContentLengthExceededException.class,
+            FeedbackBoardHasNoContentException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
@@ -191,6 +190,7 @@ public class GlobalExceptionHandler {
             ActivityGroupNotProgressingException.class,
             AlreadySubmittedThisWeekAssignmentException.class,
             LeaderStatusChangeNotAllowedException.class,
+            SingleLeaderModificationException.class,
             AlreadyAppliedException.class,
             DuplicateReportException.class,
             DuplicateAttendanceException.class,

@@ -76,12 +76,12 @@ public class ActivityGroupAdminController {
         return ApiResponse.success(updatedStatusDto);
     }
 
-    @Operation(summary = "[A] 활동 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
-    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "[A] 활동 삭제", description = "ROLE_USER 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{activityGroupId}")
     public ApiResponse<Long> deleteActivityGroup(
             @PathVariable(name = "activityGroupId") Long activityGroupId
-    ) {
+    ) throws PermissionDeniedException {
         Long id = activityGroupAdminService.deleteActivityGroup(activityGroupId);
         return ApiResponse.success(id);
     }
@@ -131,10 +131,10 @@ public class ActivityGroupAdminController {
     @PatchMapping("/accept")
     public ApiResponse<Long> acceptGroupMember(
             @RequestParam(name = "activityGroupId") Long activityGroupId,
-            @RequestParam(name = "memberId") String memberId,
+            @RequestParam(name = "memberId") List<String> memberIds,
             @RequestParam(name = "status") GroupMemberStatus status
     ) throws PermissionDeniedException {
-        Long id = activityGroupAdminService.manageGroupMemberStatus(activityGroupId, memberId, status);
+        Long id = activityGroupAdminService.manageGroupMemberStatus(activityGroupId, memberIds, status);
         return ApiResponse.success(id);
     }
 

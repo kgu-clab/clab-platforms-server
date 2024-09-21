@@ -27,12 +27,12 @@ import page.clab.api.external.auth.blacklistIp.application.port.ExternalRetrieve
 import page.clab.api.external.auth.redisIpAccessMonitor.application.port.ExternalCheckIpBlockedUseCase;
 import page.clab.api.external.auth.redisIpAccessMonitor.application.port.ExternalRegisterIpAccessMonitorUseCase;
 import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
-import page.clab.api.global.auth.application.WhitelistService;
 import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
 import page.clab.api.global.auth.filter.InvalidEndpointAccessFilter;
 import page.clab.api.global.auth.filter.IpAuthenticationFilter;
 import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
+import page.clab.api.global.auth.util.IpWhitelistValidator;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.filter.IPinfoSpringFilter;
@@ -55,7 +55,7 @@ public class SecurityConfig {
     private final ExternalRegisterBlacklistIpUseCase externalRegisterBlacklistIpUseCase;
     private final ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase;
     private final SlackService slackService;
-    private final WhitelistService whitelistService;
+    private final IpWhitelistValidator ipWhitelistValidator;
     private final WhitelistAccountProperties whitelistAccountProperties;
     private final WhitelistPatternsProperties whitelistPatternsProperties;
     private final IPInfoConfig ipInfoConfig;
@@ -96,7 +96,7 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new CustomBasicAuthenticationFilter(authenticationManager, whitelistService, slackService, externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
+                        new CustomBasicAuthenticationFilter(authenticationManager, ipWhitelistValidator, slackService, externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(

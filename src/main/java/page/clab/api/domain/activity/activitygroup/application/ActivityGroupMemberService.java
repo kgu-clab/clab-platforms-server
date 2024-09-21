@@ -41,6 +41,10 @@ import page.clab.api.global.exception.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -90,22 +94,22 @@ public class ActivityGroupMemberService {
                 .distinct()
                 .toList();
 
-        List<ActivityGroupStatusResponseDto> activityGroupDtos = activityGroups.stream()
+        List<ActivityGroup> paginatedActivityGroups = activityGroups.stream()
+                .skip(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .toList();
+
+        List<ActivityGroupStatusResponseDto> activityGroupDtos = paginatedActivityGroups.stream()
                 .map(this::getActivityGroupStatusResponseDto)
                 .toList();
 
-        return new PagedResponseDto<>(activityGroupDtos, pageable, activityGroupDtos.size());
+        return new PagedResponseDto<>(activityGroupDtos, activityGroups.size(), pageable);
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupStatusResponseDto> getActivityGroupsByStatus(ActivityGroupStatus status, Pageable pageable) {
-        List<ActivityGroup> activityGroups = activityGroupRepository.findActivityGroupsByStatus(status);
-
-        List<ActivityGroupStatusResponseDto> activityGroupDtos = activityGroups.stream()
-                .map(this::getActivityGroupStatusResponseDto)
-                .toList();
-
-        return new PagedResponseDto<>(activityGroupDtos, pageable, activityGroupDtos.size());
+        Page<ActivityGroup> activityGroups = activityGroupRepository.findActivityGroupsByStatus(status, pageable);
+        return new PagedResponseDto<>(activityGroups.map(this::getActivityGroupStatusResponseDto));
     }
 
     @Transactional(readOnly = true)
@@ -155,13 +159,28 @@ public class ActivityGroupMemberService {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         List<GroupMember> groupMembers = getGroupMemberByMemberId(currentMemberId);
 
+        List<Long> activityGroupIds = groupMembers.stream()
+                .map(GroupMember::getActivityGroup)
+                .map(ActivityGroup::getId)
+                .distinct()
+                .toList();
+
+        Map<Long, GroupMember> activityGroupOwners = findActivityGroupOwners(activityGroupIds);
+
         List<ActivityGroupStatusResponseDto> activityGroups = groupMembers.stream()
+                .filter(groupMember -> !isActivityGroupOwner(groupMember, activityGroupOwners))
                 .map(GroupMember::getActivityGroup)
                 .filter(ActivityGroup::isProgressing)
                 .distinct()
                 .map(this::getActivityGroupStatusResponseDto)
                 .toList();
-        return new PagedResponseDto<>(activityGroups, pageable, activityGroups.size());
+
+        List<ActivityGroupStatusResponseDto> paginatedActivityGroups = activityGroups.stream()
+                .skip(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .toList();
+
+        return new PagedResponseDto<>(paginatedActivityGroups, activityGroups.size(), pageable);
     }
 
     private ActivityGroupStatusResponseDto getActivityGroupStatusResponseDto(ActivityGroup activityGroup) {
@@ -187,6 +206,18 @@ public class ActivityGroupMemberService {
     public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
         return activityGroupRepository.findById(activityGroupId)
                 .orElseThrow(() -> new NotFoundException("해당 활동이 존재하지 않습니다."));
+    }
+
+    public Map<Long, GroupMember> findActivityGroupOwners(List<Long> activityGroupIds) {
+        return groupMemberRepository.findFirstByActivityGroupIdIn(activityGroupIds).stream()
+                .collect(Collectors.toMap(
+                        groupMember -> groupMember.getActivityGroup().getId(),
+                        Function.identity()
+                ));
+    }
+
+    public Optional<GroupMember> getGroupMemberByActivityGroupAndMember(ActivityGroup activityGroup, String memberId) {
+        return groupMemberRepository.findByActivityGroupAndMemberId(activityGroup, memberId);
     }
 
     public GroupMember getGroupMemberByActivityGroupAndMemberOrThrow(ActivityGroup activityGroup, String memberId) {
@@ -228,6 +259,11 @@ public class ActivityGroupMemberService {
 
     public boolean isGroupMember(ActivityGroup activityGroup, String memberId) {
         return groupMemberRepository.existsByActivityGroupAndMemberIdAndStatus(activityGroup, memberId, GroupMemberStatus.ACCEPTED);
+    }
+
+    private boolean isActivityGroupOwner(GroupMember groupMember, Map<Long, GroupMember> activityGroupOwners) {
+        ActivityGroup activityGroup = groupMember.getActivityGroup();
+        return activityGroupOwners.get(activityGroup.getId()).equals(groupMember);
     }
 
     public GroupMember save(GroupMember groupMember) {

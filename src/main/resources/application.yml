@@ -106,7 +106,7 @@ security:
   # Whitelist configuration
   whitelist:
     enabled: true
-    path: ${user.dir}/config/whitelist.json # Path to the whitelist file
+    path: ${user.dir}/config/whitelist.yml # Path to the whitelist file
     patterns:
       actuator: # Default Actuator paths
         - /actuator
