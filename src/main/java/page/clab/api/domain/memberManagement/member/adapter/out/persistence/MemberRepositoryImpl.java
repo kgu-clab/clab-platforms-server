@@ -84,7 +84,6 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
         return new PageImpl<>(members, pageable, total);
     }
 
-
     @Override
     public Page<MemberJpaEntity> findMemberRoleInfoByConditions(String memberId, String memberName, Role role, Pageable pageable) {
         QMemberJpaEntity member = QMemberJpaEntity.memberJpaEntity;
