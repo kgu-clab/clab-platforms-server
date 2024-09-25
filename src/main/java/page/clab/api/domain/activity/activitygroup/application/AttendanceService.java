@@ -110,7 +110,7 @@ public class AttendanceService {
 
     @Transactional
     public Long writeAbsentExcuse(AbsentRequestDto requestDto) throws IllegalAccessException, DuplicateAbsentExcuseException {
-        Member absentee = externalRetrieveMemberUseCase.findByIdOrThrow(requestDto.getAbsenteeId());
+        Member absentee = externalRetrieveMemberUseCase.getById(requestDto.getAbsenteeId());
         ActivityGroup activityGroup = getValidActivityGroup(requestDto.getActivityGroupId());
         validateAbsentExcuseConditions(absentee, activityGroup, requestDto.getAbsentDate());
         Absent absent = AbsentRequestDto.toEntity(requestDto, absentee, activityGroup);
@@ -123,7 +123,7 @@ public class AttendanceService {
         ActivityGroup activityGroup = getActivityGroupWithPermissionCheck(activityGroupId, currentMember);
         Page<Absent> absents = absentRepository.findAllByActivityGroup(activityGroup, pageable);
         return new PagedResponseDto<>(absents.map(absent -> {
-            Member member = externalRetrieveMemberUseCase.findByIdOrThrow(absent.getMemberId());
+            Member member = externalRetrieveMemberUseCase.getById(absent.getMemberId());
             return AbsentResponseDto.toDto(absent, member);
         }));
     }

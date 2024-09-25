@@ -68,7 +68,7 @@ public class ActivityGroupMemberService {
                 .anyMatch(groupMember -> groupMember.isOwnerAndLeader(currentMember));
 
         List<GroupMemberResponseDto> groupMemberResponseDtos = details.getGroupMembers().stream()
-                .map(groupMember -> GroupMemberResponseDto.toDto(externalRetrieveMemberUseCase.findByIdOrThrow(groupMember.getMemberId()), groupMember))
+                .map(groupMember -> GroupMemberResponseDto.toDto(externalRetrieveMemberUseCase.getById(groupMember.getMemberId()), groupMember))
                 .toList();
 
         List<ActivityGroupBoardResponseDto> activityGroupBoardResponseDtos =
@@ -128,7 +128,7 @@ public class ActivityGroupMemberService {
     public PagedResponseDto<GroupMemberResponseDto> getActivityGroupMembers(Long activityGroupId, Pageable pageable) {
         Page<GroupMember> groupMembers = getGroupMemberByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.ACCEPTED, pageable);
         return new PagedResponseDto<>(groupMembers.map(groupMember -> {
-            Member member = externalRetrieveMemberUseCase.findByIdOrThrow(groupMember.getMemberId());
+            Member member = externalRetrieveMemberUseCase.getById(groupMember.getMemberId());
             return GroupMemberResponseDto.toDto(member, groupMember);
         }));
     }
@@ -190,7 +190,7 @@ public class ActivityGroupMemberService {
         List<LeaderInfo> leaderMembers = groupMemberRepository.findLeaderByActivityGroupId(activityGroupId)
                 .stream()
                 .map(leader -> {
-                    Member member = externalRetrieveMemberUseCase.findByIdOrThrow(leader.getMemberId());
+                    Member member = externalRetrieveMemberUseCase.getById(leader.getMemberId());
                     LocalDateTime createdAt = leader.getCreatedAt();
                     return LeaderInfo.create(member, createdAt);
                 })

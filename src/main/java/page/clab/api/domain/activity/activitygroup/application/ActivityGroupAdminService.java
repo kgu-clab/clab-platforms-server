@@ -152,7 +152,7 @@ public class ActivityGroupAdminService {
         List<ActivityGroupMemberWithApplyReasonResponseDto> groupMembersWithApplyReason = groupMembers.getContent().stream()
                 .map(groupMember -> {
                     String applyReason = memberIdToApplyReasonMap.getOrDefault(groupMember.getMemberId(), "");
-                    Member member = externalRetrieveMemberUseCase.findByIdOrThrow(groupMember.getMemberId());
+                    Member member = externalRetrieveMemberUseCase.getById(groupMember.getMemberId());
                     return ActivityGroupMemberWithApplyReasonResponseDto.create(member, groupMember, applyReason);
                 })
                 .sorted(Comparator.comparing(ActivityGroupMemberWithApplyReasonResponseDto::getStatus))
@@ -201,7 +201,7 @@ public class ActivityGroupAdminService {
     }
 
     private void updateGroupMemberStatus(String memberId, GroupMemberStatus status, ActivityGroup activityGroup) {
-        Member member = externalRetrieveMemberUseCase.findByIdOrThrow(memberId);
+        Member member = externalRetrieveMemberUseCase.getById(memberId);
         GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member.getId());
         groupMember.validateAccessPermission();
         groupMember.updateStatus(status);
@@ -222,7 +222,7 @@ public class ActivityGroupAdminService {
 
     public boolean isMemberGroupLeaderRole(Long activityGroupId, String memberId) {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
-        Member member = externalRetrieveMemberUseCase.findByIdOrThrow(memberId);
+        Member member = externalRetrieveMemberUseCase.getById(memberId);
         try{
             GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member.getId());
             return groupMember.isLeader() || member.isAdminRole();
