@@ -2,6 +2,7 @@ package page.clab.api.domain.activity.activitygroup.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -146,8 +147,8 @@ public class ActivityGroupAdminService {
                         ApplyForm::getApplyReason
                 ));
 
-        List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId);
-        List<ActivityGroupMemberWithApplyReasonResponseDto> groupMembersWithApplyReason = groupMembers.stream()
+        Page<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupId(activityGroupId, pageable);
+        List<ActivityGroupMemberWithApplyReasonResponseDto> groupMembersWithApplyReason = groupMembers.getContent().stream()
                 .map(groupMember -> {
                     String applyReason = memberIdToApplyReasonMap.getOrDefault(groupMember.getMemberId(), "");
                     Member member = externalRetrieveMemberUseCase.findByIdOrThrow(groupMember.getMemberId());
@@ -155,7 +156,8 @@ public class ActivityGroupAdminService {
                 })
                 .toList();
 
-        return new PagedResponseDto<>(groupMembersWithApplyReason, pageable, true);
+        Page<ActivityGroupMemberWithApplyReasonResponseDto> paginatedGroupMembersWithApplyReason = new PageImpl<>(groupMembersWithApplyReason, pageable, groupMembers.getTotalElements());
+        return new PagedResponseDto<>(paginatedGroupMembersWithApplyReason, groupMembers.getTotalElements(), groupMembersWithApplyReason.size());
     }
 
     @Transactional

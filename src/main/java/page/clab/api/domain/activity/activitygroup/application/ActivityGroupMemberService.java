@@ -227,6 +227,10 @@ public class ActivityGroupMemberService {
         return groupMemberRepository.findAllByActivityGroupIdOrderByMemberIdAsc(activityGroupId);
     }
 
+    public Page<GroupMember> getGroupMemberByActivityGroupId(Long activityGroupId, Pageable pageable) {
+        return groupMemberRepository.findAllByActivityGroupId(activityGroupId, pageable);
+    }
+
     public List<GroupMember> getGroupMemberByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status) {
         return groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, status);
     }

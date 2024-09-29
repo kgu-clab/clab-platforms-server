@@ -110,6 +110,24 @@ public class PagedResponseDto<T> {
      * @param ts 콘텐츠 아이템 리스트
      * @param pageable 페이지네이션 정보와 정렬 기준을 포함하는 Pageable 객체
      */
+    public PagedResponseDto(List<T> ts, int totalItems, Pageable pageable) {
+        this.currentPage = pageable.getPageNumber();
+        this.hasPrevious = pageable.getPageNumber() > 0;
+        this.hasNext = pageable.getOffset() + pageable.getPageSize() < totalItems;
+        this.totalPages = (totalItems != 0) ? (int) Math.ceil((double) totalItems / pageable.getPageSize()) : 0;
+        this.totalItems = totalItems;
+        this.take = ts.size();
+        this.items = applySortingIfNecessary(ts, pageable.getSort());
+    }
+
+    /**
+     * List와 Pageable 객체를 사용하여 PagedResponseDto를 생성하는 생성자입니다.
+     * 페이지네이션과 정렬이 적용됩니다.
+     * 전체 아이템 정렬 후, 슬라이싱이 적용됩니다.
+     *
+     * @param ts 콘텐츠 아이템 리스트
+     * @param pageable 페이지네이션 정보와 정렬 기준을 포함하는 Pageable 객체
+     */
     public PagedResponseDto(List<T> ts, Pageable pageable) {
         this.currentPage = pageable.getPageNumber();
         this.hasPrevious = pageable.getPageNumber() > 0;
@@ -117,26 +135,7 @@ public class PagedResponseDto<T> {
         this.totalPages = (!ts.isEmpty()) ? (int) Math.ceil((double) ts.size() / pageable.getPageSize()) : 0;
         this.totalItems = ts.size();
         this.take = slicePageFromList(ts, pageable).size();
-        this.items = applySortingAndSlicingIfNecessary(ts, pageable, false);
-    }
-
-    /**
-     * List와 Pageable 객체를 사용하여 PagedResponseDto를 생성하는 생성자입니다.
-     * ActivityGroup 도메인에서 GroupMember 정렬 시 활용 가능합니다.
-     * 페이지네이션과 정렬이 적용됩니다.
-     *
-     * @param ts 콘텐츠 아이템 리스트
-     * @param pageable 페이지네이션 정보와 정렬 기준을 포함하는 Pageable 객체
-     * @param leaderUp 리더를 우선 배치할지 여부를 나타내는 플래그 (true일 경우 리더 우선 정렬 적용)
-     */
-    public PagedResponseDto(List<T> ts, Pageable pageable, boolean leaderUp) {
-        this.currentPage = pageable.getPageNumber();
-        this.hasPrevious = pageable.getPageNumber() > 0;
-        this.hasNext = pageable.getOffset() + pageable.getPageSize() < ts.size();
-        this.totalPages = (!ts.isEmpty()) ? (int) Math.ceil((double) ts.size() / pageable.getPageSize()) : 0;
-        this.totalItems = ts.size();
-        this.take = slicePageFromList(ts, pageable).size();
-        this.items = applySortingAndSlicingIfNecessary(ts, pageable, leaderUp);
+        this.items = applySortingAndSlicing(ts, pageable);
     }
 
     /**
@@ -154,19 +153,14 @@ public class PagedResponseDto<T> {
     }
 
     /**
-     * 정렬 및 페이지네이션(슬라이싱)을 적용하는 메서드입니다.
-     * 주어진 아이템 리스트에 대해 필요한 경우 정렬을 먼저 적용하고, 그 후 페이지네이션을 적용하여 슬라이스된 리스트를 반환합니다.
+     * 아이템 리스트에 정렬과 슬라이싱을 적용하는 메서드입니다.
      *
-     * @param items 정렬 및 페이지네이션이 적용되지 않은 아이템 리스트
-     * @param pageable 페이지네이션 정보와 정렬 기준을 포함한 Pageable 객체
-     * @param leaderUp 리더를 우선 배치할지 여부를 나타내는 플래그 (true일 경우 리더 우선 정렬 적용)
-     * @return 정렬 및 페이지네이션이 적용된 아이템 리스트
+     * @param items 정렬되지 않은 아이템 리스트
+     * @param pageable 페이지네이션 정보와 정렬 기준을 포함하는 Pageable 객체
+     * @return 정렬 및 슬라이싱된 아이템 리스트
      */
-    private List<T> applySortingAndSlicingIfNecessary(List<T> items, Pageable pageable, boolean leaderUp) {
-        Sort sort = pageable.getSort();
-        if (sort.isSorted()) {
-            items = leaderUp ? sortItemsLeaderUp(items, sort) : sortItems(items, sort);
-        }
+    private List<T> applySortingAndSlicing(List<T> items, Pageable pageable) {
+        items = sortItems(items, pageable.getSort());
         return slicePageFromList(items, pageable);
     }
 
@@ -196,46 +190,6 @@ public class PagedResponseDto<T> {
 
         return items.stream()
                 .sorted(comparator)
-                .toList();
-    }
-
-    /**
-     * Sort 객체를 사용하여 아이템 리스트를 정렬하는 메서드입니다.
-     * ActivityGroup의 Leader가 최상단에 위치하도록 정렬됩니다.
-     *
-     * @param items 정렬되지 않은 아이템 리스트
-     * @param sort 정렬 기준을 포함한 Sort 객체
-     * @return 정렬된 아이템 리스트
-     */
-    private List<T> sortItemsLeaderUp(List<T> items, Sort sort) {
-        Comparator<T> leaderComparator = Comparator.comparing(item -> {
-            try {
-                return "LEADER".equals(extractFieldValue(item, "role")) ? 0 : 1;
-            } catch (InvalidColumnException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-        Comparator<T> comparator = sort.stream()
-                .map(order -> {
-                    Comparator<T> itemComparator = Comparator.comparing(
-                            item -> {
-                                try {
-                                    return (Comparable) extractFieldValue(item, order.getProperty());
-                                } catch (InvalidColumnException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                    );
-                    return order.isAscending() ? itemComparator : itemComparator.reversed();
-                })
-                .reduce(Comparator::thenComparing)
-                .orElseThrow(IllegalArgumentException::new);
-
-        Comparator<T> finalComparator = leaderComparator.thenComparing(comparator);
-
-        return items.stream()
-                .sorted(finalComparator)
                 .toList();
     }
 
