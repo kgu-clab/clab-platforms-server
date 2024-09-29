@@ -94,16 +94,11 @@ public class ActivityGroupMemberService {
                 .distinct()
                 .toList();
 
-        List<ActivityGroup> paginatedActivityGroups = activityGroups.stream()
-                .skip(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .toList();
-
-        List<ActivityGroupStatusResponseDto> activityGroupDtos = paginatedActivityGroups.stream()
+        List<ActivityGroupStatusResponseDto> activityGroupDtos = activityGroups.stream()
                 .map(this::getActivityGroupStatusResponseDto)
                 .toList();
 
-        return new PagedResponseDto<>(activityGroupDtos, activityGroups.size(), pageable);
+        return new PagedResponseDto<>(activityGroupDtos, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -175,12 +170,7 @@ public class ActivityGroupMemberService {
                 .map(this::getActivityGroupStatusResponseDto)
                 .toList();
 
-        List<ActivityGroupStatusResponseDto> paginatedActivityGroups = activityGroups.stream()
-                .skip(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .toList();
-
-        return new PagedResponseDto<>(paginatedActivityGroups, activityGroups.size(), pageable);
+        return new PagedResponseDto<>(activityGroups, pageable);
     }
 
     private ActivityGroupStatusResponseDto getActivityGroupStatusResponseDto(ActivityGroup activityGroup) {

@@ -35,7 +35,6 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -154,15 +153,9 @@ public class ActivityGroupAdminService {
                     Member member = externalRetrieveMemberUseCase.findByIdOrThrow(groupMember.getMemberId());
                     return ActivityGroupMemberWithApplyReasonResponseDto.create(member, groupMember, applyReason);
                 })
-                .sorted(Comparator.comparing(ActivityGroupMemberWithApplyReasonResponseDto::getStatus))
                 .toList();
 
-        List<ActivityGroupMemberWithApplyReasonResponseDto> paginatedMembersWithApplyReason = groupMembersWithApplyReason.stream()
-                .skip(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .toList();
-
-        return new PagedResponseDto<>(paginatedMembersWithApplyReason, groupMembersWithApplyReason.size(), pageable);
+        return new PagedResponseDto<>(groupMembersWithApplyReason, pageable, true);
     }
 
     @Transactional
