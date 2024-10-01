@@ -35,7 +35,7 @@ public class ApplicationMemberCreatedProcessor implements ApplicationEventProces
         String finalPassword = manageMemberPasswordUseCase.generateOrRetrievePassword(member.getPassword());
         member.updatePassword(finalPassword, passwordEncoder);
         registerMemberPort.save(member);
-        emailService.broadcastEmailToApprovedMember(member, finalPassword);
+        emailService.sendAccountCreationEmail(member, finalPassword);
     }
 
     @Override

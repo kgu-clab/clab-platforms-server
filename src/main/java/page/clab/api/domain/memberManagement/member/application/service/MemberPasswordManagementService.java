@@ -35,7 +35,7 @@ public class MemberPasswordManagementService implements ManageMemberPasswordUseC
         member.updatePassword(newPassword, passwordEncoder);
         registerMemberPort.save(member);
 
-        emailService.broadcastEmailToApprovedMember(member, newPassword);
+        emailService.sendAccountCreationEmail(member, newPassword);
         return member.getId();
     }
 

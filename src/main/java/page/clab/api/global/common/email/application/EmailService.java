@@ -56,7 +56,7 @@ public class EmailService {
         return successfulAddresses;
     }
 
-    public void broadcastEmailToApprovedMember(Member member, String password) {
+    public void sendAccountCreationEmail(Member member, String password) {
         EmailTemplateProperties.Template template = emailTemplateProperties.getTemplate(EmailTemplateType.ACCOUNT_CREATION);
 
         String subject = template.getSubject();
