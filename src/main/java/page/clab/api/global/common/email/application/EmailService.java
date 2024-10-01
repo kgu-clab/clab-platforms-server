@@ -38,12 +38,7 @@ public class EmailService {
                 EmailTemplateType.ACCOUNT_CREATION
         );
 
-        try {
-            String emailContent = generateEmailContent(emailDto, member.getName());
-            emailAsyncService.sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, null, emailDto.getEmailTemplateType());
-        } catch (MessagingException e) {
-            throw new MessageSendingFailedException(member.getEmail() + " 계정 발급 안내 메일 전송에 실패했습니다.");
-        }
+        sendEmail(emailDto, member, " 계정 발급 안내 메일 전송에 실패했습니다.");
     }
 
     public void sendPasswordResetCodeEmail(Member member, String code) {
@@ -60,12 +55,7 @@ public class EmailService {
                 EmailTemplateType.PASSWORD_RESET_CODE
         );
 
-        try {
-            String emailContent = generateEmailContent(emailDto, member.getName());
-            emailAsyncService.sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, null, emailDto.getEmailTemplateType());
-        } catch (Exception e) {
-            throw new MessageSendingFailedException(member.getEmail() + " 비밀번호 재발급 인증 메일 전송에 실패했습니다.");
-        }
+        sendEmail(emailDto, member, " 비밀번호 재발급 인증 메일 전송에 실패했습니다.");
     }
 
     public void sendNewPasswordEmail(Member member, String newPassword) {
@@ -83,11 +73,15 @@ public class EmailService {
                 EmailTemplateType.NEW_PASSWORD
         );
 
+        sendEmail(emailDto, member, " 비밀번호 재설정 안내 메일 전송에 실패했습니다.");
+    }
+
+    private void sendEmail(EmailDto emailDto, Member member, String message) {
         try {
             String emailContent = generateEmailContent(emailDto, member.getName());
             emailAsyncService.sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, null, emailDto.getEmailTemplateType());
         } catch (MessagingException e) {
-            throw new MessageSendingFailedException(member.getEmail() + " 비밀번호 재설정 안내 메일 전송에 실패했습니다.");
+            throw new MessageSendingFailedException(member.getEmail() + message);
         }
     }
 
