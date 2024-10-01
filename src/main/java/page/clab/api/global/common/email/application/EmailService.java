@@ -79,7 +79,7 @@ public class EmailService {
         }
     }
 
-    public void sendPasswordResetEmail(Member member, String code) {
+    public void sendPasswordResetCodeEmail(Member member, String code) {
         EmailTemplateProperties.Template template = emailTemplateProperties.getTemplate(EmailTemplateType.PASSWORD_RESET);
 
         String subject = template.getSubject();
