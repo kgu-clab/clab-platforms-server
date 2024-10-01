@@ -14,6 +14,7 @@ import page.clab.api.external.memberManagement.member.application.port.ExternalR
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.common.email.dto.request.EmailDto;
 import page.clab.api.global.common.email.exception.MessageSendingFailedException;
+import page.clab.api.global.config.EmailTemplateProperties;
 import page.clab.api.global.util.FileUtil;
 
 import java.io.File;
@@ -30,6 +31,7 @@ public class EmailService {
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final SpringTemplateEngine springTemplateEngine;
     private final EmailAsyncService emailAsyncService;
+    private final EmailTemplateProperties emailTemplateProperties;
 
     @Value("${resource.file.path}")
     private String filePath;
@@ -55,18 +57,20 @@ public class EmailService {
     }
 
     public void broadcastEmailToApprovedMember(Member member, String password) {
-        String subject = "C-Lab 계정 발급 안내";
-        String content = """
-            정식으로 C-Lab의 일원이 된 것을 축하드립니다.
-            C-Lab과 함께하는 동안 불타는 열정으로 모든 원하는 목표를 이루어 내시기를 바라고,
-            훗날, 당신의 합류가 C-Lab에겐 최고의 행운이었다고 기억되기를 희망합니다.
+        EmailTemplateProperties.Template template = emailTemplateProperties.getTemplate(EmailTemplateType.ACCOUNT_CREATION);
 
-            로그인을 위해 아래의 계정 정보를 확인해주세요.
-            ID: %s
-            Password: %s
-            로그인 후 비밀번호를 변경해주세요.
-            """.formatted(member.getId(), password);
-        EmailDto emailDto = EmailDto.create(List.of(member.getEmail()), subject, content, EmailTemplateType.NORMAL);
+        String subject = template.getSubject();
+        String content = template.getContent()
+                .replace("{{id}}", member.getId())
+                .replace("{{password}}", password);
+
+        EmailDto emailDto = EmailDto.create(
+                List.of(member.getEmail()),
+                subject,
+                content,
+                EmailTemplateType.ACCOUNT_CREATION
+        );
+
         try {
             String emailContent = generateEmailContent(emailDto, member.getName());
             emailAsyncService.sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, null, emailDto.getEmailTemplateType());
@@ -76,16 +80,22 @@ public class EmailService {
     }
 
     public void sendPasswordResetEmail(Member member, String code) {
-        String subject = "C-Lab 비밀번호 재발급 인증 안내";
-        String content = """
-            C-Lab 비밀번호 재발급 인증 안내 메일입니다.
-            인증번호는 %s입니다.
-            해당 인증번호를 비밀번호 재설정 페이지에 입력해주세요.
-            재설정시 비밀번호는 인증번호로 대체됩니다.
-            """.formatted(code);
-        EmailDto emailDto = EmailDto.create(List.of(member.getEmail()), subject, content, EmailTemplateType.NORMAL);
+        EmailTemplateProperties.Template template = emailTemplateProperties.getTemplate(EmailTemplateType.PASSWORD_RESET);
+
+        String subject = template.getSubject();
+        String content = template.getContent()
+                .replace("{{code}}", code);
+
+        EmailDto emailDto = EmailDto.create(
+                List.of(member.getEmail()),
+                subject,
+                content,
+                EmailTemplateType.PASSWORD_RESET
+        );
+
         try {
-            broadcastEmail(emailDto, null);
+            String emailContent = generateEmailContent(emailDto, member.getName());
+            emailAsyncService.sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, null, emailDto.getEmailTemplateType());
         } catch (Exception e) {
             throw new MessageSendingFailedException(member.getEmail() + " 비밀번호 재발급 인증 메일 전송에 실패했습니다.");
         }
