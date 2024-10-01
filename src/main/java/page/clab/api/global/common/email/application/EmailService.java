@@ -80,7 +80,7 @@ public class EmailService {
     }
 
     public void sendPasswordResetCodeEmail(Member member, String code) {
-        EmailTemplateProperties.Template template = emailTemplateProperties.getTemplate(EmailTemplateType.PASSWORD_RESET);
+        EmailTemplateProperties.Template template = emailTemplateProperties.getTemplate(EmailTemplateType.PASSWORD_RESET_CODE);
 
         String subject = template.getSubject();
         String content = template.getContent()
@@ -90,7 +90,7 @@ public class EmailService {
                 List.of(member.getEmail()),
                 subject,
                 content,
-                EmailTemplateType.PASSWORD_RESET
+                EmailTemplateType.PASSWORD_RESET_CODE
         );
 
         try {
@@ -98,6 +98,21 @@ public class EmailService {
             emailAsyncService.sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, null, emailDto.getEmailTemplateType());
         } catch (Exception e) {
             throw new MessageSendingFailedException(member.getEmail() + " 비밀번호 재발급 인증 메일 전송에 실패했습니다.");
+        }
+    }
+
+    public void sendNewPasswordEmail(Member member, String newPassword) {
+        EmailTemplateProperties.Template template = emailTemplateProperties.getTemplate(EmailTemplateType.NEW_PASSWORD);
+        String content = template.getContent()
+                .replace("{{id}}", member.getId())
+                .replace("{{password}}", newPassword);
+
+        EmailDto emailDto = EmailDto.create(List.of(member.getEmail()), template.getSubject(), content, EmailTemplateType.NEW_PASSWORD);
+        try {
+            String emailContent = generateEmailContent(emailDto, member.getName());
+            emailAsyncService.sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, null, emailDto.getEmailTemplateType());
+        } catch (MessagingException e) {
+            throw new MessageSendingFailedException(member.getEmail() + " 비밀번호 재설정 안내 메일 전송에 실패했습니다.");
         }
     }
 
