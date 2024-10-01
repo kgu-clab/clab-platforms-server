@@ -1,7 +1,5 @@
 package page.clab.api.global.common.email.domain;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -9,9 +7,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum EmailTemplateType {
 
-    NORMAL("NORMAL", "기본", "clabEmail.html");
+    ACCOUNT_CREATION("account-creation", "계정 생성", "clabEmail.html"),
+    PASSWORD_RESET_CODE("password-reset-code", "비밀번호 재설정", "clabEmail.html"),
+    NEW_PASSWORD("new-password", "새 비밀번호", "clabEmail.html");
 
-    @Enumerated(EnumType.STRING)
     private final String key;
     private final String description;
     private final String templateName;

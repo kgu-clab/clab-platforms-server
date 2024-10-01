@@ -73,7 +73,9 @@ public class EmailAsyncService {
             messageHelper.setTo(task.getTo());
             messageHelper.setSubject(task.getSubject());
             messageHelper.setText(task.getContent(), true);
+
             setImageInTemplate(messageHelper, task.getTemplateType());
+
             if (task.getFiles() != null) {
                 for (File file : task.getFiles()) {
                     messageHelper.addAttachment(MimeUtility.encodeText(file.getName(), "UTF-8", "B"), file);
@@ -91,7 +93,7 @@ public class EmailAsyncService {
     }
 
     private void setImageInTemplate(MimeMessageHelper messageHelper, EmailTemplateType templateType) throws MessagingException {
-        if (Objects.requireNonNull(templateType) == EmailTemplateType.NORMAL) {
+        if (Objects.equals(templateType.getTemplateName(), "clabEmail.html")) {
             messageHelper.addInline("image-1", new ClassPathResource("images/image-1.png"));
         }
     }

@@ -35,7 +35,7 @@ public class MemberPasswordManagementService implements ManageMemberPasswordUseC
         member.updatePassword(newPassword, passwordEncoder);
         registerMemberPort.save(member);
 
-        emailService.broadcastEmailToApprovedMember(member, newPassword);
+        emailService.sendNewPasswordEmail(member, newPassword);
         return member.getId();
     }
 
@@ -45,7 +45,7 @@ public class MemberPasswordManagementService implements ManageMemberPasswordUseC
         Member member = validateResetPasswordRequest(requestDto);
         String code = verificationService.generateVerificationCode();
         verificationService.saveVerificationCode(member.getId(), code);
-        emailService.sendPasswordResetEmail(member, code);
+        emailService.sendPasswordResetCodeEmail(member, code);
         return member.getId();
     }
 
