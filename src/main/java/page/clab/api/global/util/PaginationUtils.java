@@ -19,6 +19,10 @@ public class PaginationUtils {
      * @return 정렬된 아이템 리스트
      */
     public <T> List<T> applySorting(List<T> items, Sort sort) {
+        if (!sort.isSorted()) {
+            return items;
+        }
+
         Comparator<T> comparator = sort.stream()
                 .map(order -> {
                     Comparator<T> itemComparator = Comparator.comparing(
