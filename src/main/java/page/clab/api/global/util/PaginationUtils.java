@@ -18,7 +18,7 @@ public class PaginationUtils {
      * @param sort 정렬 기준을 포함한 Sort 객체
      * @return 정렬된 아이템 리스트
      */
-    public <T> List<T> applySorting(List<T> items, Sort sort) {
+    public static <T> List<T> applySorting(List<T> items, Sort sort) {
         if (!sort.isSorted()) {
             return items;
         }
@@ -51,7 +51,7 @@ public class PaginationUtils {
      * @param pageable 페이지네이션 정보를 포함하는 Pageable 객체
      * @return 슬라이싱된 아이템 리스트
      */
-    public <T> List<T> applySlicing(List<T> items, Pageable pageable) {
+    public static <T> List<T> applySlicing(List<T> items, Pageable pageable) {
         return items.stream()
                 .skip(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -65,7 +65,7 @@ public class PaginationUtils {
      * @param pageable 페이지네이션 정보와 정렬 기준을 포함하는 Pageable 객체
      * @return 정렬 및 슬라이싱된 아이템 리스트
      */
-    public <T> List<T> applySortingAndSlicing(List<T> items, Pageable pageable) {
+    public static <T> List<T> applySortingAndSlicing(List<T> items, Pageable pageable) {
         List<T> sortedItems = applySorting(items, pageable.getSort());
         return applySlicing(sortedItems, pageable);
     }
@@ -77,7 +77,7 @@ public class PaginationUtils {
      * @param fieldName 추출할 필드 이름
      * @return 추출된 필드 값
      */
-    private <T> Object extractFieldValue(T item, String fieldName) throws InvalidColumnException {
+    private static <T> Object extractFieldValue(T item, String fieldName) throws InvalidColumnException {
         try {
             var field = item.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);

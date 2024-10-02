@@ -59,7 +59,6 @@ public class ActivityGroupMemberService {
     private final ActivityGroupDetailsRepository activityGroupDetailsRepository;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
-    private final PaginationUtils paginationUtils;
 
     @Transactional(readOnly = true)
     public ActivityGroupDetailResponseDto getActivityGroup(Long activityGroupId) {
@@ -100,7 +99,7 @@ public class ActivityGroupMemberService {
                 .map(this::getActivityGroupStatusResponseDto)
                 .toList();
 
-        List<ActivityGroupStatusResponseDto> paginatedActivityGroupDtos = paginationUtils.applySortingAndSlicing(activityGroupDtos, pageable);
+        List<ActivityGroupStatusResponseDto> paginatedActivityGroupDtos = PaginationUtils.applySortingAndSlicing(activityGroupDtos, pageable);
 
         return new PagedResponseDto<>(paginatedActivityGroupDtos, activityGroups.size(), pageable);
     }
@@ -174,7 +173,7 @@ public class ActivityGroupMemberService {
                 .map(this::getActivityGroupStatusResponseDto)
                 .toList();
 
-        List<ActivityGroupStatusResponseDto> paginatedActivityGroups = paginationUtils.applySortingAndSlicing(activityGroups, pageable);
+        List<ActivityGroupStatusResponseDto> paginatedActivityGroups = PaginationUtils.applySortingAndSlicing(activityGroups, pageable);
 
         return new PagedResponseDto<>(paginatedActivityGroups, activityGroups.size(), pageable);
     }
