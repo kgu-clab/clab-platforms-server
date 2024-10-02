@@ -48,7 +48,7 @@ public class ScheduleRegisterService implements RegisterScheduleUseCase {
         if (!scheduleType.equals(ScheduleType.ALL)) {
             Long activityGroupId = Optional.ofNullable(requestDto.getActivityGroupId())
                     .orElseThrow(() -> new NullPointerException("스터디 또는 프로젝트 일정은 그룹 id를 입력해야 합니다."));
-            activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
+            activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
             validateMemberIsGroupLeaderOrAdmin(memberInfo, activityGroup);
         }
         return activityGroup;
