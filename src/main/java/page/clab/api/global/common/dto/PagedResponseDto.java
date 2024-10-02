@@ -92,7 +92,10 @@ public class PagedResponseDto<T> {
      * @param ts 콘텐츠 아이템 리스트
      * @param pageable 페이지네이션 정보와 정렬 기준을 포함하는 Pageable 객체
      * @param size 전체 아이템 수
+     *
+     * @deprecated 슬라이싱과 정렬을 담당하는 새로운 Util 클래스의 도입으로 사라질 메서드입니다.
      */
+    @Deprecated
     public PagedResponseDto(List<T> ts, Pageable pageable, int size) {
         this.currentPage = pageable.getPageNumber();
         this.hasPrevious = pageable.getPageNumber() > 0;
@@ -105,9 +108,9 @@ public class PagedResponseDto<T> {
 
     /**
      * List와 Pageable 객체를 사용하여 PagedResponseDto를 생성하는 생성자입니다.
-     * 페이지네이션과 정렬이 적용됩니다.
      *
      * @param ts 콘텐츠 아이템 리스트
+     * @param totalItems 전체 아이템 수
      * @param pageable 페이지네이션 정보와 정렬 기준을 포함하는 Pageable 객체
      */
     public PagedResponseDto(List<T> ts, int totalItems, Pageable pageable) {
@@ -117,25 +120,7 @@ public class PagedResponseDto<T> {
         this.totalPages = (totalItems != 0) ? (int) Math.ceil((double) totalItems / pageable.getPageSize()) : 0;
         this.totalItems = totalItems;
         this.take = ts.size();
-        this.items = applySortingIfNecessary(ts, pageable.getSort());
-    }
-
-    /**
-     * List와 Pageable 객체를 사용하여 PagedResponseDto를 생성하는 생성자입니다.
-     * 페이지네이션과 정렬이 적용됩니다.
-     * 전체 아이템 정렬 후, 슬라이싱이 적용됩니다.
-     *
-     * @param ts 콘텐츠 아이템 리스트
-     * @param pageable 페이지네이션 정보와 정렬 기준을 포함하는 Pageable 객체
-     */
-    public PagedResponseDto(List<T> ts, Pageable pageable) {
-        this.currentPage = pageable.getPageNumber();
-        this.hasPrevious = pageable.getPageNumber() > 0;
-        this.hasNext = pageable.getOffset() + pageable.getPageSize() < ts.size();
-        this.totalPages = (!ts.isEmpty()) ? (int) Math.ceil((double) ts.size() / pageable.getPageSize()) : 0;
-        this.totalItems = ts.size();
-        this.take = slicePageFromList(ts, pageable).size();
-        this.items = applySortingAndSlicing(ts, pageable);
+        this.items = ts;
     }
 
     /**
@@ -144,7 +129,10 @@ public class PagedResponseDto<T> {
      * @param items 정렬되지 않은 아이템 리스트
      * @param sort 정렬 기준을 포함한 Sort 객체
      * @return 정렬된 아이템 리스트
+     *
+     * @deprecated 슬라이싱과 정렬을 담당하는 새로운 Util 클래스의 도입으로 사라질 메서드입니다.
      */
+    @Deprecated
     private List<T> applySortingIfNecessary(List<T> items, Sort sort) {
         if (sort.isSorted()) {
             return sortItems(items, sort);
@@ -153,24 +141,15 @@ public class PagedResponseDto<T> {
     }
 
     /**
-     * 아이템 리스트에 정렬과 슬라이싱을 적용하는 메서드입니다.
-     *
-     * @param items 정렬되지 않은 아이템 리스트
-     * @param pageable 페이지네이션 정보와 정렬 기준을 포함하는 Pageable 객체
-     * @return 정렬 및 슬라이싱된 아이템 리스트
-     */
-    private List<T> applySortingAndSlicing(List<T> items, Pageable pageable) {
-        items = sortItems(items, pageable.getSort());
-        return slicePageFromList(items, pageable);
-    }
-
-    /**
      * Sort 객체를 사용하여 아이템 리스트를 정렬하는 메서드입니다.
      *
      * @param items 정렬되지 않은 아이템 리스트
      * @param sort 정렬 기준을 포함한 Sort 객체
      * @return 정렬된 아이템 리스트
+     *
+     * @deprecated 슬라이싱과 정렬을 담당하는 새로운 Util 클래스의 도입으로 사라질 메서드입니다.
      */
+    @Deprecated
     private List<T> sortItems(List<T> items, Sort sort) {
         Comparator<T> comparator = sort.stream()
                 .map(order -> {
@@ -194,26 +173,15 @@ public class PagedResponseDto<T> {
     }
 
     /**
-     * 주어진 아이템 리스트에 슬라이싱을 적용하여 해당 페이지의 아이템을 반환하는 메서드입니다.
-     *
-     * @param items 슬라이싱이 적용되지 않은 전체 아이템 리스트
-     * @param pageable 페이지네이션 정보와 페이지 크기를 포함한 Pageable 객체
-     * @return 해당 페이지에 속하는 아이템 리스트
-     */
-    private List<T> slicePageFromList(List<T> items, Pageable pageable) {
-        return items.stream()
-                .skip(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .toList();
-    }
-
-    /**
      * 리플렉션을 사용하여 객체의 특정 필드 값을 추출하는 메서드입니다.
      *
      * @param item 값을 추출할 객체
      * @param fieldName 추출할 필드 이름
      * @return 추출된 필드 값
+     *
+     * @deprecated 슬라이싱과 정렬을 담당하는 새로운 Util 클래스의 도입으로 사라질 메서드입니다.
      */
+    @Deprecated
     private Object extractFieldValue(T item, String fieldName) throws InvalidColumnException {
         try {
             var field = item.getClass().getDeclaredField(fieldName);
