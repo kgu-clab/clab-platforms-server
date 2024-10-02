@@ -23,18 +23,4 @@ public class AssignmentSubmissionWithFeedbackResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<FeedbackResponseDto> feedbacks;
-
-    public static AssignmentSubmissionWithFeedbackResponseDto toDto(ActivityGroupBoard board, MemberBasicInfoDto memberBasicInfo, List<FeedbackResponseDto> feedbackDtos) {
-        return AssignmentSubmissionWithFeedbackResponseDto.builder()
-                .id(board.getId())
-                .memberId(memberBasicInfo.getMemberId())
-                .memberName(memberBasicInfo.getMemberName())
-                .parentId(board.getParent() != null ? board.getParent().getId() : null)
-                .content(board.getContent())
-                .files(FileDtoMapper.toUploadedFileResponseDto(board.getUploadedFiles()))
-                .createdAt(board.getCreatedAt())
-                .updatedAt(board.getUpdatedAt())
-                .feedbacks(feedbackDtos)
-                .build();
-    }
 }

@@ -29,14 +29,4 @@ public class AbsentRequestDto {
     @NotNull(message = "{notNull.absent.absentDate}")
     @Schema(description = "불참 날짜", example = "2023-11-12", required = true)
     private LocalDate absentDate;
-
-    public static Absent toEntity(AbsentRequestDto requestDto, Member absentee, ActivityGroup activityGroup) {
-        return Absent.builder()
-                .memberId(absentee.getId())
-                .activityGroup(activityGroup)
-                .absentDate(requestDto.getAbsentDate())
-                .reason(requestDto.getReason())
-                .build();
-
-    }
 }

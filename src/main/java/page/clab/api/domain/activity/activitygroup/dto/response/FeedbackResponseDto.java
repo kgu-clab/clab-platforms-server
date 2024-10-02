@@ -21,16 +21,4 @@ public class FeedbackResponseDto {
     private List<UploadedFileResponseDto> files;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    public static FeedbackResponseDto toDto(ActivityGroupBoard board, MemberBasicInfoDto memberBasicInfo) {
-        return FeedbackResponseDto.builder()
-                .id(board.getId())
-                .memberId(memberBasicInfo.getMemberId())
-                .memberName(memberBasicInfo.getMemberName())
-                .content(board.getContent())
-                .files(FileDtoMapper.toUploadedFileResponseDto(board.getUploadedFiles()))
-                .createdAt(board.getCreatedAt())
-                .updatedAt(board.getUpdatedAt())
-                .build();
-    }
 }

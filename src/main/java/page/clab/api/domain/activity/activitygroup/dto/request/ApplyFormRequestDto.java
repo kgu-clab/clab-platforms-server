@@ -15,12 +15,4 @@ public class ApplyFormRequestDto {
     @NotNull(message = "{notnull.applyForm.applyReason}")
     @Schema(description = "지원 동기", example = "백엔드에 관심이 있어서")
     private String applyReason;
-
-    public static ApplyForm toEntity(ApplyFormRequestDto requestDto, ActivityGroup activityGroup, Member member) {
-        return ApplyForm.builder()
-                .activityGroup(activityGroup)
-                .memberId(member.getId())
-                .applyReason(requestDto.getApplyReason())
-                .build();
-    }
 }

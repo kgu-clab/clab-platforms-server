@@ -15,14 +15,4 @@ public class ActivityGroupMemberWithApplyReasonResponseDto {
     private String role;
     private GroupMemberStatus status;
     private String applyReason;
-
-    public static ActivityGroupMemberWithApplyReasonResponseDto create(Member member, GroupMember groupMember, String applyReason) {
-        return ActivityGroupMemberWithApplyReasonResponseDto.builder()
-                .memberId(member.getId())
-                .memberName(member.getName())
-                .role(groupMember.getRole().toString())
-                .status(groupMember.getStatus())
-                .applyReason(applyReason)
-                .build();
-    }
 }

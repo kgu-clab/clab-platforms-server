@@ -16,12 +16,4 @@ public class LeaderInfo {
 
     @JsonIgnore
     private LocalDateTime createdAt;
-
-    public static LeaderInfo create(Member leader, LocalDateTime createdAt) {
-        return LeaderInfo.builder()
-                .id(leader.getId())
-                .name(leader.getName())
-                .createdAt(createdAt)
-                .build();
-    }
 }

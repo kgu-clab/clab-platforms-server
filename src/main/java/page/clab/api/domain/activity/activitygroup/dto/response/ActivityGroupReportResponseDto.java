@@ -17,16 +17,4 @@ public class ActivityGroupReportResponseDto {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    public static ActivityGroupReportResponseDto toDto(ActivityGroupReport report) {
-        return ActivityGroupReportResponseDto.builder()
-                .activityGroupId(report.getActivityGroup().getId())
-                .activityGroupName(report.getActivityGroup().getName())
-                .turn(report.getTurn())
-                .title(report.getTitle())
-                .content(report.getContent())
-                .createdAt(report.getCreatedAt())
-                .updatedAt(report.getUpdatedAt())
-                .build();
-    }
 }

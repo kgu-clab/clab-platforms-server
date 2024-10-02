@@ -46,22 +46,4 @@ public class ActivityGroupRequestDto {
 
     @Schema(description = "Github URL", example = "https://github.com/KGU-C-Lab")
     private String githubUrl;
-
-    public static ActivityGroup toEntity(ActivityGroupRequestDto requestDto) {
-        return ActivityGroup.builder()
-                .category(requestDto.getCategory())
-                .subject(requestDto.getSubject())
-                .name(requestDto.getName())
-                .content(requestDto.getContent())
-                .status(ActivityGroupStatus.WAITING)
-                .progress(0L)
-                .imageUrl(requestDto.getImageUrl())
-                .curriculum(requestDto.getCurriculum())
-                .startDate(requestDto.getStartDate())
-                .endDate(requestDto.getEndDate())
-                .techStack(requestDto.getTechStack())
-                .githubUrl(requestDto.getGithubUrl())
-                .isDeleted(false)
-                .build();
-    }
 }

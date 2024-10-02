@@ -26,20 +26,4 @@ public class ActivityGroupBoardChildResponseDto {
     private LocalDateTime createdAt;
     private List<UploadedFileResponseDto> files;
     private List<ActivityGroupBoardChildResponseDto> children;
-
-    public static ActivityGroupBoardChildResponseDto toDto(ActivityGroupBoard board, MemberBasicInfoDto memberBasicInfoDto, List<ActivityGroupBoardChildResponseDto> childrenDtos) {
-        return ActivityGroupBoardChildResponseDto.builder()
-                .id(board.getId())
-                .memberId(memberBasicInfoDto.getMemberId())
-                .memberName(memberBasicInfoDto.getMemberName())
-                .category(board.getCategory())
-                .title(board.getTitle())
-                .content(board.getContent())
-                .dueDateTime(board.getDueDateTime())
-                .updatedAt(board.getUpdatedAt())
-                .createdAt(board.getCreatedAt())
-                .files(FileDtoMapper.toUploadedFileResponseDto(board.getUploadedFiles()))
-                .children(childrenDtos)
-                .build();
-    }
 }
