@@ -6,10 +6,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
-import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupCategory;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupStatus;
-import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
 
 @Getter
 @Builder

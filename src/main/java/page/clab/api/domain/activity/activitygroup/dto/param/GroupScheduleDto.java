@@ -3,8 +3,6 @@ package page.clab.api.domain.activity.activitygroup.dto.param;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
-import page.clab.api.domain.activity.activitygroup.domain.GroupSchedule;
 
 import java.time.LocalDateTime;
 

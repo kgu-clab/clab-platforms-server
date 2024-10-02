@@ -2,10 +2,7 @@ package page.clab.api.domain.activity.activitygroup.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoardCategory;
-import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
-import page.clab.api.global.common.file.dto.mapper.FileDtoMapper;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 
 import java.time.LocalDateTime;

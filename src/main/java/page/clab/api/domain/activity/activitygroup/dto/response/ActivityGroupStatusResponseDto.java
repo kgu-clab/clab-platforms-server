@@ -2,8 +2,6 @@ package page.clab.api.domain.activity.activitygroup.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.util.CollectionUtils;
-import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupCategory;
 
 import java.time.LocalDateTime;

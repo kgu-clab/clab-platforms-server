@@ -13,7 +13,6 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoa
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardReferenceDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardStatusUpdatedResponseDto;
-import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardUpdateResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupDetailResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupMemberWithApplyReasonResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupReportResponseDto;

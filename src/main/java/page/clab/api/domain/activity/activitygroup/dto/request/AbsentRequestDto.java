@@ -4,9 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import page.clab.api.domain.activity.activitygroup.domain.Absent;
-import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
-import page.clab.api.domain.memberManagement.member.domain.Member;
 
 import java.time.LocalDate;
 
