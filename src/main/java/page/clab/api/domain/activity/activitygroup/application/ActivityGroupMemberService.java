@@ -37,6 +37,7 @@ import page.clab.api.external.memberManagement.member.application.port.ExternalR
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.util.PaginationUtils;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -58,6 +59,7 @@ public class ActivityGroupMemberService {
     private final ActivityGroupDetailsRepository activityGroupDetailsRepository;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
+    private final PaginationUtils paginationUtils;
 
     @Transactional(readOnly = true)
     public ActivityGroupDetailResponseDto getActivityGroup(Long activityGroupId) {
@@ -98,7 +100,9 @@ public class ActivityGroupMemberService {
                 .map(this::getActivityGroupStatusResponseDto)
                 .toList();
 
-        return new PagedResponseDto<>(activityGroupDtos, pageable);
+        List<ActivityGroupStatusResponseDto> paginatedActivityGroupDtos = paginationUtils.applySortingAndSlicing(activityGroupDtos, pageable);
+
+        return new PagedResponseDto<>(paginatedActivityGroupDtos, activityGroups.size(), pageable);
     }
 
     @Transactional(readOnly = true)
@@ -170,7 +174,9 @@ public class ActivityGroupMemberService {
                 .map(this::getActivityGroupStatusResponseDto)
                 .toList();
 
-        return new PagedResponseDto<>(activityGroups, pageable);
+        List<ActivityGroupStatusResponseDto> paginatedActivityGroups = paginationUtils.applySortingAndSlicing(activityGroups, pageable);
+
+        return new PagedResponseDto<>(paginatedActivityGroups, activityGroups.size(), pageable);
     }
 
     private ActivityGroupStatusResponseDto getActivityGroupStatusResponseDto(ActivityGroup activityGroup) {
