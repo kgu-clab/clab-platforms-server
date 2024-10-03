@@ -16,9 +16,9 @@ import page.clab.api.external.auth.blacklistIp.application.port.ExternalRegister
 import page.clab.api.external.auth.blacklistIp.application.port.ExternalRetrieveBlacklistIpUseCase;
 import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.common.slack.domain.SecurityAlertType;
-import page.clab.api.global.config.SuspiciousPatterns;
 import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
+import page.clab.api.global.util.SecurityPatternChecker;
 
 import java.io.IOException;
 
@@ -36,7 +36,7 @@ public class InvalidEndpointAccessFilter extends GenericFilterBean {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String path = httpRequest.getRequestURI();
         boolean isUploadedFileAccess = path.startsWith(fileURL);
-        boolean isSuspicious = SuspiciousPatterns.getSuspiciousPatterns().stream().anyMatch(pattern -> pattern.matcher(path).matches());
+        boolean isSuspicious = SecurityPatternChecker.matchesSuspiciousPattern(path);
 
         if (!isUploadedFileAccess && isSuspicious) {
             logAndRespondToSuspiciousAccess(httpRequest, (HttpServletResponse) response);
