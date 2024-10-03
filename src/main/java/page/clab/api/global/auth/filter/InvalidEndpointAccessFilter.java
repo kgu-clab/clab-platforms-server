@@ -39,30 +39,47 @@ public class InvalidEndpointAccessFilter extends GenericFilterBean {
         boolean isSuspicious = SecurityPatternChecker.matchesSuspiciousPattern(path);
 
         if (!isUploadedFileAccess && isSuspicious) {
-            logAndRespondToSuspiciousAccess(httpRequest, (HttpServletResponse) response);
+            handleSuspiciousAccess(httpRequest, (HttpServletResponse) response);
         } else {
             chain.doFilter(request, response);
         }
     }
 
-    private void logAndRespondToSuspiciousAccess(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void handleSuspiciousAccess(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        int statusCode = HttpServletResponse.SC_FORBIDDEN;
+
+        logSuspiciousAccess(request, clientIpAddress);
+        sendSecurityAlertIfNotBlacklisted(request, clientIpAddress);
+
+        ResponseUtil.sendErrorResponse(response, statusCode);
+    }
+
+    private void logSuspiciousAccess(HttpServletRequest request, String clientIpAddress) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String id = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String requestUrl = request.getRequestURI();
         String httpMethod = request.getMethod();
-        int httpStatus = HttpServletResponse.SC_FORBIDDEN;
+        int statusCode = HttpServletResponse.SC_FORBIDDEN;
         String message = "서버 내부 파일 및 디렉토리에 대한 접근이 감지되었습니다.";
 
-        log.info("[{}:{}] {} {} {} {}", clientIpAddress, id, requestUrl, httpMethod, httpStatus, message);
+        log.info("[{}:{}] {} {} {} {}", clientIpAddress, id, requestUrl, httpMethod, statusCode, message);
+    }
 
+    private void sendSecurityAlertIfNotBlacklisted(HttpServletRequest request, String clientIpAddress) {
         if (!externalRetrieveBlacklistIpUseCase.existsByIpAddress(clientIpAddress)) {
             externalRegisterBlacklistIpUseCase.save(
                     BlacklistIp.create(clientIpAddress, "서버 내부 파일 및 디렉토리에 대한 접근 시도")
             );
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS, message);
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Added IP: " + clientIpAddress);
+            sendSecurityAlerts(request, clientIpAddress);
         }
-        ResponseUtil.sendErrorResponse(response, httpStatus);
+    }
+
+    private void sendSecurityAlerts(HttpServletRequest request, String clientIpAddress) {
+        String abnormalAccessMessage = "서버 내부 파일 및 디렉토리에 대한 접근이 감지되었습니다.";
+        String blacklistAddedMessage = "Added IP: " + clientIpAddress;
+
+        slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS, abnormalAccessMessage);
+        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, blacklistAddedMessage);
     }
 }
