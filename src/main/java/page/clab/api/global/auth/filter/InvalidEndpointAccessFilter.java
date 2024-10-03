@@ -55,12 +55,12 @@ public class InvalidEndpointAccessFilter extends GenericFilterBean {
         String message = "서버 내부 파일 및 디렉토리에 대한 접근이 감지되었습니다.";
 
         log.info("[{}:{}] {} {} {} {}", clientIpAddress, id, requestUrl, httpMethod, httpStatus, message);
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS, message);
 
         if (!externalRetrieveBlacklistIpUseCase.existsByIpAddress(clientIpAddress)) {
             externalRegisterBlacklistIpUseCase.save(
                     BlacklistIp.create(clientIpAddress, "서버 내부 파일 및 디렉토리에 대한 접근 시도")
             );
+            slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS, message);
             slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Added IP: " + clientIpAddress);
         }
         ResponseUtil.sendErrorResponse(response, httpStatus);
