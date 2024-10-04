@@ -104,6 +104,7 @@ public class FileUtil {
         }
         return !fileName.contains("..") && !fileName.contains("/") && !fileName.contains("\\");
     }
+
     /**
      * 확장자가 허용된 것인지 확인합니다.
      *
