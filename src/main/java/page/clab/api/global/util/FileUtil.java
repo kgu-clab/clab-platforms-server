@@ -99,9 +99,11 @@ public class FileUtil {
      * @return 유효한 파일명일 경우 true, 그렇지 않을 경우 false
      */
     private static boolean validateFilename(String fileName) {
-        return fileName != null && !fileName.trim().isEmpty();
+        if (fileName == null || fileName.trim().isEmpty()) {
+            return false;
+        }
+        return !fileName.contains("..") && !fileName.contains("/") && !fileName.contains("\\");
     }
-
     /**
      * 확장자가 허용된 것인지 확인합니다.
      *
