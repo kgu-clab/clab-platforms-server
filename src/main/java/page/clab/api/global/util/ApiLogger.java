@@ -20,9 +20,9 @@ public class ApiLogger {
         String fullUrl = queryString == null ? requestUrl : requestUrl + "?" + queryString;
 
         String httpMethod = request.getMethod();
-        int httpStatus = response.getStatus();
+        int statusCode = response.getStatus();
 
-        log.info("[{}:{}] {} {} {} {}", clientIpAddress, id, fullUrl, httpMethod, httpStatus, message);
+        log.info("[{}:{}] {} {} {} {}", clientIpAddress, id, fullUrl, httpMethod, statusCode, message);
     }
 
     public void logRequestDuration(HttpServletRequest request, HttpServletResponse response, Exception ex) {
@@ -35,16 +35,16 @@ public class ApiLogger {
         String fullUrl = queryString == null ? requestUrl : requestUrl + "?" + queryString;
 
         String httpMethod = request.getMethod();
-        int httpStatus = response.getStatus();
+        int statusCode = response.getStatus();
 
         long startTime = (Long) request.getAttribute("startTime");
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
 
         if (ex == null) {
-            log.info("[{}:{}] {} {} {} {}ms", clientIpAddress, id, fullUrl, httpMethod, httpStatus, duration);
+            log.info("[{}:{}] {} {} {} {}ms", clientIpAddress, id, fullUrl, httpMethod, statusCode, duration);
         } else {
-            log.error("[{}:{}] {} {} {} {}ms, Exception: {}", clientIpAddress, id, fullUrl, httpMethod, httpStatus, duration, ex.getMessage());
+            log.error("[{}:{}] {} {} {} {}ms, Exception: {}", clientIpAddress, id, fullUrl, httpMethod, statusCode, duration, ex.getMessage());
         }
     }
 }

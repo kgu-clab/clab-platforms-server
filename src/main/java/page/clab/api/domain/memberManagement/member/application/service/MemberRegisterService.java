@@ -42,7 +42,7 @@ public class MemberRegisterService implements RegisterMemberUseCase {
         member.updatePassword(finalPassword, passwordEncoder);
         registerMemberPort.save(member);
         createPositionByMember(member);
-        emailService.broadcastEmailToApprovedMember(member, finalPassword);
+        emailService.sendAccountCreationEmail(member, finalPassword);
         return member.getId();
     }
 

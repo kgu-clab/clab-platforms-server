@@ -27,7 +27,7 @@ public class EmailDto {
     private String content;
 
     @NotNull(message = "{notNull.email.templateType}")
-    @Schema(description = "이메일 템플릿", example = "NORMAL")
+    @Schema(description = "이메일 템플릿", example = "ACCOUNT_CREATION")
     private EmailTemplateType emailTemplateType;
 
     public static EmailDto create(List<String> to, String subject, String content, EmailTemplateType emailTemplateType) {

@@ -3,23 +3,15 @@ package page.clab.api.global.common.email.application;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import page.clab.api.domain.memberManagement.member.domain.Member;
-import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
 import page.clab.api.global.common.email.dto.request.EmailDto;
 import page.clab.api.global.common.email.exception.MessageSendingFailedException;
-import page.clab.api.global.util.FileUtil;
+import page.clab.api.global.config.EmailTemplateProperties;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -27,93 +19,70 @@ import java.util.List;
 @Slf4j
 public class EmailService {
 
-    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final SpringTemplateEngine springTemplateEngine;
     private final EmailAsyncService emailAsyncService;
+    private final EmailTemplateProperties emailTemplateProperties;
+    private final SpringTemplateEngine springTemplateEngine;
 
-    @Value("${resource.file.path}")
-    private String filePath;
+    public void sendAccountCreationEmail(Member member, String password) {
+        EmailTemplateProperties.Template template = emailTemplateProperties.getTemplate(EmailTemplateType.ACCOUNT_CREATION);
 
-    public List<String> broadcastEmail(EmailDto emailDto, List<MultipartFile> multipartFiles) {
-        List<File> convertedFiles = multipartFiles != null && !multipartFiles.isEmpty()
-                ? convertMultipartFiles(multipartFiles)
-                : new ArrayList<>();
+        String subject = template.getSubject();
+        String content = template.getContent()
+                .replace("{{id}}", member.getId())
+                .replace("{{password}}", password);
 
-        List<String> successfulAddresses = Collections.synchronizedList(new ArrayList<>());
+        EmailDto emailDto = EmailDto.create(
+                List.of(member.getEmail()),
+                subject,
+                content,
+                EmailTemplateType.ACCOUNT_CREATION
+        );
 
-        emailDto.getTo().parallelStream().forEach(address -> {
-            try {
-                Member recipient = externalRetrieveMemberUseCase.findByEmail(address);
-                String emailContent = generateEmailContent(emailDto, recipient.getName());
-                emailAsyncService.sendEmailAsync(address, emailDto.getSubject(), emailContent, convertedFiles, emailDto.getEmailTemplateType());
-                successfulAddresses.add(address);
-            } catch (MessagingException e) {
-                throw new MessageSendingFailedException(address + "에게 이메일을 보내는데 실패했습니다.");
-            }
-        });
-        return successfulAddresses;
+        sendEmail(emailDto, member, " 계정 발급 안내 메일 전송에 실패했습니다.");
     }
 
-    public void broadcastEmailToApprovedMember(Member member, String password) {
-        String subject = "C-Lab 계정 발급 안내";
-        String content = """
-            정식으로 C-Lab의 일원이 된 것을 축하드립니다.
-            C-Lab과 함께하는 동안 불타는 열정으로 모든 원하는 목표를 이루어 내시기를 바라고,
-            훗날, 당신의 합류가 C-Lab에겐 최고의 행운이었다고 기억되기를 희망합니다.
+    public void sendPasswordResetCodeEmail(Member member, String code) {
+        EmailTemplateProperties.Template template = emailTemplateProperties.getTemplate(EmailTemplateType.PASSWORD_RESET_CODE);
 
-            로그인을 위해 아래의 계정 정보를 확인해주세요.
-            ID: %s
-            Password: %s
-            로그인 후 비밀번호를 변경해주세요.
-            """.formatted(member.getId(), password);
-        EmailDto emailDto = EmailDto.create(List.of(member.getEmail()), subject, content, EmailTemplateType.NORMAL);
+        String subject = template.getSubject();
+        String content = template.getContent()
+                .replace("{{code}}", code);
+
+        EmailDto emailDto = EmailDto.create(
+                List.of(member.getEmail()),
+                subject,
+                content,
+                EmailTemplateType.PASSWORD_RESET_CODE
+        );
+
+        sendEmail(emailDto, member, " 비밀번호 재발급 인증 메일 전송에 실패했습니다.");
+    }
+
+    public void sendNewPasswordEmail(Member member, String newPassword) {
+        EmailTemplateProperties.Template template = emailTemplateProperties.getTemplate(EmailTemplateType.NEW_PASSWORD);
+
+        String subject = template.getSubject();
+        String content = template.getContent()
+                .replace("{{id}}", member.getId())
+                .replace("{{password}}", newPassword);
+
+        EmailDto emailDto = EmailDto.create(
+                List.of(member.getEmail()),
+                subject,
+                content,
+                EmailTemplateType.NEW_PASSWORD
+        );
+
+        sendEmail(emailDto, member, " 비밀번호 재설정 안내 메일 전송에 실패했습니다.");
+    }
+
+    private void sendEmail(EmailDto emailDto, Member member, String message) {
         try {
             String emailContent = generateEmailContent(emailDto, member.getName());
             emailAsyncService.sendEmailAsync(member.getEmail(), emailDto.getSubject(), emailContent, null, emailDto.getEmailTemplateType());
         } catch (MessagingException e) {
-            throw new MessageSendingFailedException(member.getEmail() + " 계정 발급 안내 메일 전송에 실패했습니다.");
+            throw new MessageSendingFailedException(member.getEmail() + message);
         }
-    }
-
-    public void sendPasswordResetEmail(Member member, String code) {
-        String subject = "C-Lab 비밀번호 재발급 인증 안내";
-        String content = """
-            C-Lab 비밀번호 재발급 인증 안내 메일입니다.
-            인증번호는 %s입니다.
-            해당 인증번호를 비밀번호 재설정 페이지에 입력해주세요.
-            재설정시 비밀번호는 인증번호로 대체됩니다.
-            """.formatted(code);
-        EmailDto emailDto = EmailDto.create(List.of(member.getEmail()), subject, content, EmailTemplateType.NORMAL);
-        try {
-            broadcastEmail(emailDto, null);
-        } catch (Exception e) {
-            throw new MessageSendingFailedException(member.getEmail() + " 비밀번호 재발급 인증 메일 전송에 실패했습니다.");
-        }
-    }
-
-    private List<File> convertMultipartFiles(List<MultipartFile> multipartFiles) {
-        List<File> convertedFiles = new ArrayList<>();
-        for (MultipartFile multipartFile : multipartFiles) {
-            File file = convertMultipartFileToFile(multipartFile);
-            convertedFiles.add(file);
-        }
-        return convertedFiles;
-    }
-
-    private File convertMultipartFileToFile(MultipartFile multipartFile) {
-        String originalFilename = multipartFile.getOriginalFilename();
-        String extension = FilenameUtils.getExtension(originalFilename);
-        String path = filePath + File.separator + "temp" + File.separator + FileUtil.makeFileName(extension);
-        path = path.replace("/", File.separator).replace("\\", File.separator);
-        File file = new File(path);
-        FileUtil.ensureParentDirectoryExists(file, filePath);
-
-        try {
-            multipartFile.transferTo(file);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to convert MultipartFile to File", e);
-        }
-        return file;
     }
 
     private String generateEmailContent(EmailDto emailDto, String name) {

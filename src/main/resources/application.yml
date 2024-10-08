@@ -93,6 +93,35 @@ spring:
             enable: true
             required: true
 
+email:
+  templates:
+    account-creation:
+      subject: "C-Lab Account Creation Notice"
+      content: |
+        Congratulations on becoming an official member of C-Lab!
+        During your time with C-Lab, we hope that you achieve all your desired goals with burning passion,
+        and in the future, we hope that your joining C-Lab will be remembered as one of our greatest fortunes.
+
+        Please review the account details below to log in:
+        ID: {{id}}
+        Password: {{password}}
+        Please change your password after logging in.
+    password-reset-code:
+      subject: "C-Lab Password Reset Verification Notice"
+      content: |
+        This is a C-Lab password reset verification email.
+        Your verification code is {{code}}.
+        Please enter this verification code on the password reset page.
+        After resetting, your new password will be replaced with the verification code.
+    new-password:
+      subject: "C-Lab Password Reset Notice"
+      content: |
+        This is a C-Lab password reset notice.
+        Please log in using the new password below:
+        ID: {{id}}
+        Password: {{password}}
+        Please change your password after logging in.
+
 security:
   # C-Lab Auth
   auth:
