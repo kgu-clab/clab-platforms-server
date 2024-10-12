@@ -1,5 +1,7 @@
 package page.clab.api.domain.members.activityPhoto.application.dto.mapper;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import page.clab.api.domain.members.activityPhoto.application.dto.request.ActivityPhotoRequestDto;
 import page.clab.api.domain.members.activityPhoto.application.dto.response.ActivityPhotoResponseDto;
 import page.clab.api.domain.members.activityPhoto.domain.ActivityPhoto;
@@ -8,9 +10,13 @@ import page.clab.api.global.common.file.dto.mapper.FileDtoMapper;
 
 import java.util.List;
 
+@Component
+@RequiredArgsConstructor
 public class ActivityPhotoDtoMapper {
 
-    public static ActivityPhoto toActivityPhoto(ActivityPhotoRequestDto requestDto, List<UploadedFile> uploadedFiles) {
+    private final FileDtoMapper dtoMapper;
+
+    public ActivityPhoto fromDto(ActivityPhotoRequestDto requestDto, List<UploadedFile> uploadedFiles) {
         return ActivityPhoto.builder()
                 .title(requestDto.getTitle())
                 .uploadedFiles(uploadedFiles)
@@ -20,11 +26,11 @@ public class ActivityPhotoDtoMapper {
                 .build();
     }
 
-    public static ActivityPhotoResponseDto toActivityPhotoResponseDto(ActivityPhoto activityPhoto) {
+    public ActivityPhotoResponseDto toDto(ActivityPhoto activityPhoto) {
         return ActivityPhotoResponseDto.builder()
                 .id(activityPhoto.getId())
                 .title(activityPhoto.getTitle())
-                .files(FileDtoMapper.toUploadedFileResponseDto(activityPhoto.getUploadedFiles()))
+                .files(dtoMapper.toDto(activityPhoto.getUploadedFiles()))
                 .date(activityPhoto.getDate())
                 .isPublic(activityPhoto.getIsPublic())
                 .createdAt(activityPhoto.getCreatedAt())

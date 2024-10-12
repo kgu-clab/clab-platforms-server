@@ -17,11 +17,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class ActivityPhotoRetrievalService implements RetrieveActivityPhotoUseCase {
 
     private final RetrieveActivityPhotoPort retrieveActivityPhotoPort;
+    private final ActivityPhotoDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<ActivityPhotoResponseDto> retrieveActivityPhotos(Boolean isPublic, Pageable pageable) {
         Page<ActivityPhoto> activityPhotos = retrieveActivityPhotoPort.findByConditions(isPublic, pageable);
-        return new PagedResponseDto<>(activityPhotos.map(ActivityPhotoDtoMapper::toActivityPhotoResponseDto));
+        return new PagedResponseDto<>(activityPhotos.map(dtoMapper::toDto));
     }
 }
