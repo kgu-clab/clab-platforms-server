@@ -41,14 +41,14 @@ public class ActivityGroupReportService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupReportResponseDto> getReports(Long activityGroupId, Pageable pageable) {
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         Page<ActivityGroupReport> reports = activityGroupReportRepository.findAllByActivityGroup(activityGroup, pageable);
         return new PagedResponseDto<>(reports.map(dtoMapper::toDto));
     }
 
     @Transactional(readOnly = true)
     public ActivityGroupReportResponseDto searchReport(Long activityGroupId, Long turn) {
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         ActivityGroupReport report = activityGroupReportRepository.findByActivityGroupAndTurn(activityGroup, turn);
         return dtoMapper.toDto(report);
     }
@@ -56,9 +56,9 @@ public class ActivityGroupReportService {
     @Transactional
     public Long updateReport(Long reportId, Long activityGroupId, ActivityGroupReportUpdateRequestDto requestDto) throws PermissionDeniedException, IllegalAccessException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         validateReportUpdatePermission(activityGroupId, currentMember, activityGroup);
-        ActivityGroupReport report = getReportByIdOrThrow(reportId);
+        ActivityGroupReport report = getReportById(reportId);
         report.update(requestDto);
         return activityGroupReportRepository.save(report).getId();
     }
@@ -76,7 +76,7 @@ public class ActivityGroupReportService {
         return new PagedResponseDto<>(activityGroupReports.map(dtoMapper::toDto));
     }
 
-    public ActivityGroupReport getReportByIdOrThrow(Long reportId) {
+    public ActivityGroupReport getReportById(Long reportId) {
         return activityGroupReportRepository.findById(reportId)
                 .orElseThrow(() -> new NotFoundException("활동 보고서를 찾을 수 없습니다."));
     }
@@ -99,7 +99,7 @@ public class ActivityGroupReportService {
 
     @NotNull
     private ActivityGroupReport validateReportDeletionPermission(Long reportId, Member member) throws PermissionDeniedException {
-        ActivityGroupReport report = getReportByIdOrThrow(reportId);
+        ActivityGroupReport report = getReportById(reportId);
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, report.getActivityGroup().getId())) {
             throw new PermissionDeniedException("해당 그룹의 리더만 보고서를 삭제할 수 있습니다.");
         }

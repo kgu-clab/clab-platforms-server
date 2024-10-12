@@ -138,7 +138,7 @@ public class ActivityGroupMemberService {
     @Transactional
     public Long applyActivityGroup(Long activityGroupId, ApplyFormRequestDto formRequestDto) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
-        ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = getActivityGroupById(activityGroupId);
         activityGroup.validateForApplication();
         if (isGroupMember(activityGroup, currentMember.getId())) {
             throw new AlreadyAppliedException("해당 활동에 신청한 내역이 존재합니다.");
@@ -205,7 +205,7 @@ public class ActivityGroupMemberService {
         return dtoMapper.toDto(activityGroup, leaderMembers, participantCount, weeklyActivityCount);
     }
 
-    public ActivityGroup getActivityGroupByIdOrThrow(Long activityGroupId) {
+    public ActivityGroup getActivityGroupById(Long activityGroupId) {
         return activityGroupRepository.findById(activityGroupId)
                 .orElseThrow(() -> new NotFoundException("해당 활동이 존재하지 않습니다."));
     }
@@ -218,11 +218,11 @@ public class ActivityGroupMemberService {
                 ));
     }
 
-    public Optional<GroupMember> getGroupMemberByActivityGroupAndMember(ActivityGroup activityGroup, String memberId) {
+    public Optional<GroupMember> findGroupMemberByActivityGroupAndMember(ActivityGroup activityGroup, String memberId) {
         return groupMemberRepository.findByActivityGroupAndMemberId(activityGroup, memberId);
     }
 
-    public GroupMember getGroupMemberByActivityGroupAndMemberOrThrow(ActivityGroup activityGroup, String memberId) {
+    public GroupMember getGroupMemberByActivityGroupAndMember(ActivityGroup activityGroup, String memberId) {
         return groupMemberRepository.findByActivityGroupAndMemberId(activityGroup, memberId)
                 .orElseThrow(() -> new NotFoundException("해당 멤버가 활동에 참여하지 않았습니다."));
     }

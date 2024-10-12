@@ -37,7 +37,7 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
     @Override
     public Long registerReview(ReviewRequestDto requestDto) {
         MemberBasicInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
-        ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(requestDto.getActivityGroupId());
+        ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupById(requestDto.getActivityGroupId());
         validateReviewCreationPermission(activityGroup, currentMemberInfo.getMemberId());
         Review review = dtoMapper.fromDto(requestDto, currentMemberInfo.getMemberId(), activityGroup);
         notifyGroupLeaderOfNewReview(activityGroup, currentMemberInfo.getMemberName());

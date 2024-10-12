@@ -154,7 +154,7 @@ public class AttendanceService {
 
     @NotNull
     private ActivityGroup validateAttendanceQRCodeGeneration(Long activityGroupId, Member member) throws PermissionDeniedException, IllegalAccessException {
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
 
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
             throw new PermissionDeniedException("해당 그룹의 LEADER만 출석체크 QR을 생성할 수 있습니다.");
@@ -166,7 +166,7 @@ public class AttendanceService {
     }
 
     private ActivityGroup validateMemberForAttendance(Member member, Long activityGroupId) throws IllegalAccessException, DuplicateAttendanceException {
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.MEMBER, activityGroupId)) {
             throw new IllegalAccessException("해당 그룹의 멤버가 아닙니다. 출석체크 인증을 진행할 수 없습니다.");
         }
@@ -185,7 +185,7 @@ public class AttendanceService {
 
     @NotNull
     private ActivityGroup validateGroupAndMemberForAttendance(Long activityGroupId, Member member) throws IllegalAccessException {
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.MEMBER, activityGroupId)) {
             throw new IllegalAccessException("해당 그룹의 멤버가 아닙니다. 출석체크 인증을 진행할 수 없습니다.");
         }
@@ -196,7 +196,7 @@ public class AttendanceService {
     }
 
     private ActivityGroup getActivityGroupWithValidPermissions(Long activityGroupId, Member member) throws PermissionDeniedException {
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         if (!member.isAdminRole() || !activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
             throw new PermissionDeniedException("그룹의 출석기록을 조회할 권한이 없습니다.");
         }
@@ -204,7 +204,7 @@ public class AttendanceService {
     }
 
     private ActivityGroup getValidActivityGroup(Long activityGroupId) throws IllegalAccessException {
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         if (!activityGroup.isProgressing()) {
             throw new IllegalAccessException("활동이 진행 중인 그룹이 아닙니다. 불참 사유서를 등록할 수 없습니다.");
         }
@@ -227,7 +227,7 @@ public class AttendanceService {
     }
 
     private ActivityGroup getActivityGroupWithPermissionCheck(Long activityGroupId, Member member) throws PermissionDeniedException {
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         if (!member.isAdminRole() && !activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
             throw new PermissionDeniedException("해당 그룹의 불참사유서를 열람할 권한이 부족합니다.");
         }

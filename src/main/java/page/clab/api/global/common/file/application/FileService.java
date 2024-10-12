@@ -202,7 +202,7 @@ public class FileService {
 
         validateActivityGroupExist(activityGroupId);
         validateIsMemberPartOfActivity(memberId, activityGroupId);
-        ActivityGroupBoard activityGroupBoard = activityGroupBoardService.getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
+        ActivityGroupBoard activityGroupBoard = activityGroupBoardService.getActivityGroupBoardById(activityGroupBoardId);
         validateIsParentBoardAssignment(activityGroupBoard);
     }
 
