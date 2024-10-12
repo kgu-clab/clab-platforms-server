@@ -21,11 +21,12 @@ public class PositionsByConditionsRetrievalService implements RetrievePositionsB
 
     private final RetrievePositionPort retrievePositionPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final PositionDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     public PagedResponseDto<PositionResponseDto> retrievePositions(String year, PositionType positionType, Pageable pageable) {
         MemberPositionInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberPositionInfo();
         Page<Position> positions = retrievePositionPort.findByConditions(year, positionType, pageable);
-        return new PagedResponseDto<>(positions.map(position -> PositionDtoMapper.toPositionResponseDto(position, currentMemberInfo)));
+        return new PagedResponseDto<>(positions.map(position -> dtoMapper.toDto(position, currentMemberInfo)));
     }
 }

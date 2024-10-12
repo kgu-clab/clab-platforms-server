@@ -18,6 +18,7 @@ public class PositionRegisterService implements RegisterPositionUseCase {
     private final RegisterPositionPort registerPositionPort;
     private final RetrievePositionPort retrievePositionPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final PositionDtoMapper dtoMapper;
 
     @Transactional
     public Long registerPosition(PositionRequestDto requestDto) {
@@ -26,7 +27,7 @@ public class PositionRegisterService implements RegisterPositionUseCase {
                         requestDto.getMemberId(), requestDto.getYear(), requestDto.getPositionType())
                 .map(Position::getId)
                 .orElseGet(() -> {
-                    Position position = PositionDtoMapper.toPosition(requestDto);
+                    Position position = dtoMapper.fromDto(requestDto);
                     return registerPositionPort.save(position).getId();
                 });
     }

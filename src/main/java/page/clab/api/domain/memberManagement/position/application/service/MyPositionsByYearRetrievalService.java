@@ -20,6 +20,7 @@ public class MyPositionsByYearRetrievalService implements RetrieveMyPositionsByY
 
     private final RetrievePositionPort retrievePositionPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final PositionDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     public PositionMyResponseDto retrieveMyPositionsByYear(String year) {
@@ -29,6 +30,6 @@ public class MyPositionsByYearRetrievalService implements RetrieveMyPositionsByY
         if (positions.isEmpty()) {
             throw new NotFoundException("해당 멤버의 " + year + "년도 직책이 존재하지 않습니다.");
         }
-        return PositionDtoMapper.toPositionMyResponseDto(positions, currentMemberInfo);
+        return dtoMapper.toDto(positions, currentMemberInfo);
     }
 }

@@ -1,5 +1,6 @@
 package page.clab.api.domain.memberManagement.position.application.dto.mapper;
 
+import org.springframework.stereotype.Component;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberPositionInfoDto;
 import page.clab.api.domain.memberManagement.position.application.dto.request.PositionRequestDto;
 import page.clab.api.domain.memberManagement.position.application.dto.response.PositionMyResponseDto;
@@ -11,9 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Component
 public class PositionDtoMapper {
 
-    public static Position toPosition(PositionRequestDto positionRequestDto) {
+    public Position fromDto(PositionRequestDto positionRequestDto) {
         return Position.builder()
                 .memberId(positionRequestDto.getMemberId())
                 .positionType(positionRequestDto.getPositionType())
@@ -22,7 +24,7 @@ public class PositionDtoMapper {
                 .build();
     }
 
-    public static PositionMyResponseDto toPositionMyResponseDto(List<Position> positions, MemberPositionInfoDto memberInfo) {
+    public PositionMyResponseDto toDto(List<Position> positions, MemberPositionInfoDto memberInfo) {
         Map<String, List<PositionType>> positionTypesByYear = positions.stream()
                 .collect(Collectors.groupingBy(
                         Position::getYear,
@@ -38,7 +40,7 @@ public class PositionDtoMapper {
                 .build();
     }
 
-    public static PositionResponseDto toPositionResponseDto(Position position, MemberPositionInfoDto memberInfo) {
+    public PositionResponseDto toDto(Position position, MemberPositionInfoDto memberInfo) {
         return PositionResponseDto.builder()
                 .id(position.getId())
                 .name(memberInfo.getMemberName())
