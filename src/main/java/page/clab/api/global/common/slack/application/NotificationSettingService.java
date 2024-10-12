@@ -18,11 +18,12 @@ public class NotificationSettingService {
 
     private final AlertTypeResolver alertTypeResolver;
     private final NotificationSettingRepository settingRepository;
+    private final SlackDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     public List<NotificationSettingResponseDto> getNotificationSettings() {
         return settingRepository.findAll().stream()
-                .map(SlackDtoMapper::toNotificationSettingResponseDto)
+                .map(dtoMapper::toDto)
                 .toList();
     }
 
