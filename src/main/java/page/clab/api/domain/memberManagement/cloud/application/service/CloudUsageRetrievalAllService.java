@@ -21,6 +21,7 @@ import java.io.File;
 public class CloudUsageRetrievalAllService implements RetrieveAllCloudUsageUseCase {
 
     private final RetrieveMemberPort retrieveMemberPort;
+    private final CloudDtoMapper dtoMapper;
 
     @Value("${resource.file.path}")
     private String filePath;
@@ -35,7 +36,7 @@ public class CloudUsageRetrievalAllService implements RetrieveAllCloudUsageUseCa
     private CloudUsageInfo getCloudUsageForMember(Member member) {
         File directory = getMemberDirectory(member.getId());
         long usage = FileSystemUtil.calculateDirectorySize(directory);
-        return CloudDtoMapper.toCloudUsageInfo(member.getId(), usage);
+        return dtoMapper.of(member.getId(), usage);
     }
 
     private File getMemberDirectory(String memberId) {
