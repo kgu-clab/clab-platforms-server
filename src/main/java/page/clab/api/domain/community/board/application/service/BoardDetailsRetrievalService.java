@@ -24,6 +24,7 @@ public class BoardDetailsRetrievalService implements RetrieveBoardDetailsUseCase
     private final RetrieveBoardPort retrieveBoardPort;
     private final RetrieveBoardEmojiPort retrieveBoardEmojiPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final BoardDtoMapper dtoMapper;
 
     @Transactional
     @Override
@@ -33,7 +34,7 @@ public class BoardDetailsRetrievalService implements RetrieveBoardDetailsUseCase
         MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(board.getMemberId());
         boolean isOwner = board.isOwner(currentMemberInfo.getMemberId());
         List<BoardEmojiCountResponseDto> emojiInfos = getBoardEmojiCountResponseDtoList(boardId, currentMemberInfo.getMemberId());
-        return BoardDtoMapper.toBoardDetailsResponseDto(board, memberInfo, isOwner, emojiInfos);
+        return dtoMapper.toDto(board, memberInfo, isOwner, emojiInfos);
     }
 
     @Transactional(readOnly = true)

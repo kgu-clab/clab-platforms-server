@@ -28,13 +28,14 @@ public class BoardRegisterService implements RegisterBoardUseCase {
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
     private final UploadedFileService uploadedFileService;
     private final SlackService slackService;
+    private final BoardDtoMapper dtoMapper;
 
     @Transactional
     @Override
     public String registerBoard(BoardRequestDto requestDto) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
-        Board board = BoardDtoMapper.toBoard(requestDto, currentMemberInfo.getMemberId(), uploadedFiles);
+        Board board = dtoMapper.fromDto(requestDto, currentMemberInfo.getMemberId(), uploadedFiles);
         board.validateAccessPermissionForCreation(currentMemberInfo);
         if (board.shouldNotifyForNewBoard(currentMemberInfo)) {
             externalSendNotificationUseCase.sendNotificationToMember(currentMemberInfo.getMemberId(), "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.");
