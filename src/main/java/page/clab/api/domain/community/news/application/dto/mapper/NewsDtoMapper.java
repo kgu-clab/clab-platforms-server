@@ -1,12 +1,14 @@
 package page.clab.api.domain.community.news.application.dto.mapper;
 
+import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.news.application.dto.response.NewsDetailsResponseDto;
 import page.clab.api.domain.community.news.application.dto.response.NewsResponseDto;
 import page.clab.api.domain.community.news.domain.News;
 
+@Component
 public class NewsDtoMapper {
 
-    public static NewsDetailsResponseDto toNewsDetailsResponseDto(News news) {
+    public NewsDetailsResponseDto toNewsDetailsResponseDto(News news) {
         return NewsDetailsResponseDto.builder()
                 .id(news.getId())
                 .title(news.getTitle())
@@ -19,7 +21,7 @@ public class NewsDtoMapper {
                 .build();
     }
 
-    public static NewsResponseDto toNewsResponseDto(News news) {
+    public NewsResponseDto toNewsResponseDto(News news) {
         return NewsResponseDto.builder()
                 .id(news.getId())
                 .title(news.getTitle())

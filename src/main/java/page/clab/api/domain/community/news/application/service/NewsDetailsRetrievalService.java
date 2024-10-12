@@ -14,11 +14,12 @@ import page.clab.api.domain.community.news.domain.News;
 public class NewsDetailsRetrievalService implements RetrieveNewsDetailsUseCase {
 
     private final RetrieveNewsPort retrieveNewsPort;
+    private final NewsDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
     public NewsDetailsResponseDto retrieveNewsDetails(Long newsId) {
         News news = retrieveNewsPort.getById(newsId);
-        return NewsDtoMapper.toNewsDetailsResponseDto(news);
+        return dtoMapper.toNewsDetailsResponseDto(news);
     }
 }
