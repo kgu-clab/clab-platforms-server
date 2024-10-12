@@ -22,6 +22,7 @@ public class DonationsByConditionsRetrievalService implements RetrieveDonationsB
 
     private final RetrieveDonationPort retrieveDonationPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final DonationDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -29,7 +30,7 @@ public class DonationsByConditionsRetrievalService implements RetrieveDonationsB
         Page<Donation> donations = retrieveDonationPort.findByConditions(memberId, name, startDate, endDate, pageable);
         return new PagedResponseDto<>(donations.map(donation -> {
             MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(donation.getMemberId());
-            return DonationDtoMapper.toDonationResponseDto(donation, memberInfo.getMemberName());
+            return dtoMapper.toDto(donation, memberInfo.getMemberName());
         }));
     }
 }

@@ -20,6 +20,7 @@ public class DeletedDonationsRetrievalService implements RetrieveDeletedDonation
 
     private final RetrieveDonationPort retrieveDonationPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final DonationDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -27,7 +28,7 @@ public class DeletedDonationsRetrievalService implements RetrieveDeletedDonation
         Page<Donation> donations = retrieveDonationPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(donations.map(donation -> {
             MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(donation.getMemberId());
-            return DonationDtoMapper.toDonationResponseDto(donation, memberInfo.getMemberName());
+            return dtoMapper.toDto(donation, memberInfo.getMemberName());
         }));
     }
 }
