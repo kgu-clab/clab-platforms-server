@@ -34,6 +34,7 @@ public class AccusationReportService implements ReportAccusationUseCase {
     private final ExternalRetrieveCommentUseCase externalRetrieveCommentUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
+    private final AccuseDtoMapper dtoMapper;
 
     @Transactional
     @Override
@@ -75,7 +76,7 @@ public class AccusationReportService implements ReportAccusationUseCase {
 
     private AccuseTarget getOrCreateAccuseTarget(AccuseRequestDto requestDto, TargetType type, Long targetId) {
         return retrieveAccuseTargetPort.findById(AccuseTargetId.create(type, targetId))
-                .orElseGet(() -> AccuseDtoMapper.toAccuseTarget(requestDto));
+                .orElseGet(() -> dtoMapper.fromDto(requestDto));
     }
 
     private Accuse findOrCreateAccusation(AccuseRequestDto requestDto, String memberId, AccuseTarget target) {
@@ -86,7 +87,7 @@ public class AccusationReportService implements ReportAccusationUseCase {
                 })
                 .orElseGet(() -> {
                     target.increaseAccuseCount();
-                    return AccuseDtoMapper.toAccuse(requestDto, memberId, target);
+                    return dtoMapper.fromDto(requestDto, memberId, target);
                 });
     }
 }
