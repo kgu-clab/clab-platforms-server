@@ -1,12 +1,14 @@
 package page.clab.api.domain.memberManagement.workExperience.application.dto.mapper;
 
+import org.springframework.stereotype.Component;
 import page.clab.api.domain.memberManagement.workExperience.application.dto.request.WorkExperienceRequestDto;
 import page.clab.api.domain.memberManagement.workExperience.application.dto.response.WorkExperienceResponseDto;
 import page.clab.api.domain.memberManagement.workExperience.domain.WorkExperience;
 
+@Component
 public class WorkExperienceDtoMapper {
 
-    public static WorkExperience toWorkExperience(WorkExperienceRequestDto requestDto, String memberId) {
+    public WorkExperience fromDto(WorkExperienceRequestDto requestDto, String memberId) {
         return WorkExperience.builder()
                 .companyName(requestDto.getCompanyName())
                 .position(requestDto.getPosition())
@@ -17,7 +19,7 @@ public class WorkExperienceDtoMapper {
                 .build();
     }
 
-    public static WorkExperienceResponseDto toWorkExperienceResponseDto(WorkExperience workExperience) {
+    public WorkExperienceResponseDto toDto(WorkExperience workExperience) {
         return WorkExperienceResponseDto.builder()
                 .id(workExperience.getId())
                 .companyName(workExperience.getCompanyName())

@@ -17,11 +17,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class DeletedWorkExperiencesRetrievalService implements RetrieveDeletedWorkExperiencesUseCase {
 
     private final RetrieveWorkExperiencePort retrieveWorkExperiencePort;
+    private final WorkExperienceDtoMapper dtoMapper;
 
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<WorkExperienceResponseDto> retrieveDeletedWorkExperiences(Pageable pageable) {
         Page<WorkExperience> workExperiences = retrieveWorkExperiencePort.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(workExperiences.map(WorkExperienceDtoMapper::toWorkExperienceResponseDto));
+        return new PagedResponseDto<>(workExperiences.map(dtoMapper::toDto));
     }
 }
