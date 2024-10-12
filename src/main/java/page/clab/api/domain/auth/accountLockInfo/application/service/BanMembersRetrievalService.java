@@ -21,6 +21,7 @@ public class BanMembersRetrievalService implements RetrieveBannedMembersUseCase 
 
     private final RetrieveAccountLockInfoPort retrieveAccountLockInfoPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final AccountLockInfoDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -29,7 +30,7 @@ public class BanMembersRetrievalService implements RetrieveBannedMembersUseCase 
         Page<AccountLockInfo> banMembers = retrieveAccountLockInfoPort.findByLockUntil(banDate, pageable);
         return new PagedResponseDto<>(banMembers.map(accountLockInfo -> {
             String memberName = externalRetrieveMemberUseCase.getMemberBasicInfoById(accountLockInfo.getMemberId()).getMemberName();
-            return AccountLockInfoDtoMapper.toAccountLockInfoResponseDto(accountLockInfo, memberName);
+            return dtoMapper.toDto(accountLockInfo, memberName);
         }));
     }
 }
