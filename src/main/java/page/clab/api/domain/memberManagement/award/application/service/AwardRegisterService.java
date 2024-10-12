@@ -16,12 +16,13 @@ public class AwardRegisterService implements RegisterAwardUseCase {
 
     private final RegisterAwardPort registerAwardPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final AwardDtoMapper dtoMapper;
 
     @Transactional
     @Override
     public Long registerAward(AwardRequestDto requestDto) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
-        Award award = AwardDtoMapper.toAward(requestDto, currentMemberId);
+        Award award = dtoMapper.fromDto(requestDto, currentMemberId);
         return registerAwardPort.save(award).getId();
     }
 }

@@ -19,12 +19,13 @@ public class MyAwardRetrievalService implements RetrieveMyAwardsUseCase {
 
     private final RetrieveAwardPort retrieveAwardPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final AwardDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<AwardResponseDto> retrieveMyAwards(Pageable pageable) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         Page<Award> awards = retrieveAwardPort.findByMemberId(currentMemberId, pageable);
-        return new PagedResponseDto<>(awards.map(AwardDtoMapper::toAwardResponseDto));
+        return new PagedResponseDto<>(awards.map(dtoMapper::toDto));
     }
 }

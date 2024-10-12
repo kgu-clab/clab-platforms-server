@@ -1,12 +1,14 @@
 package page.clab.api.domain.memberManagement.award.application.dto.mapper;
 
+import org.springframework.stereotype.Component;
 import page.clab.api.domain.memberManagement.award.application.dto.request.AwardRequestDto;
 import page.clab.api.domain.memberManagement.award.application.dto.response.AwardResponseDto;
 import page.clab.api.domain.memberManagement.award.domain.Award;
 
+@Component
 public class AwardDtoMapper {
 
-    public static Award toAward(AwardRequestDto requestDto, String memberId) {
+    public Award fromDto(AwardRequestDto requestDto, String memberId) {
         return Award.builder()
                 .competitionName(requestDto.getCompetitionName())
                 .organizer(requestDto.getOrganizer())
@@ -17,7 +19,7 @@ public class AwardDtoMapper {
                 .build();
     }
 
-    public static AwardResponseDto toAwardResponseDto(Award award) {
+    public AwardResponseDto toDto(Award award) {
         return AwardResponseDto.builder()
                 .id(award.getId())
                 .competitionName(award.getCompetitionName())

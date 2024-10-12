@@ -17,11 +17,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class DeletedAwardRetrievalService implements RetrieveDeletedAwardsUseCase {
 
     private final RetrieveAwardPort retrieveAwardPort;
+    private final AwardDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<AwardResponseDto> retrieveDeletedAwards(Pageable pageable) {
         Page<Award> awards = retrieveAwardPort.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(awards.map(AwardDtoMapper::toAwardResponseDto));
+        return new PagedResponseDto<>(awards.map(dtoMapper::toDto));
     }
 }
