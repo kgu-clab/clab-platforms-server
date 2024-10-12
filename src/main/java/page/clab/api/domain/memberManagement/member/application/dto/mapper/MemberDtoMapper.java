@@ -1,5 +1,6 @@
 package page.clab.api.domain.memberManagement.member.application.dto.mapper;
 
+import org.springframework.stereotype.Component;
 import page.clab.api.domain.memberManagement.member.application.dto.request.MemberRequestDto;
 import page.clab.api.domain.memberManagement.member.application.dto.response.MemberBirthdayResponseDto;
 import page.clab.api.domain.memberManagement.member.application.dto.response.MemberResponseDto;
@@ -16,9 +17,10 @@ import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.global.common.domain.Contact;
 
+@Component
 public class MemberDtoMapper {
 
-    public static Member toMember(MemberRequestDto requestDto) {
+    public Member fromDto(MemberRequestDto requestDto) {
         return Member.builder()
                 .id(requestDto.getId())
                 .password(requestDto.getPassword())
@@ -39,7 +41,7 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public static MemberBirthdayResponseDto toMemberBirthdayResponseDto(Member member) {
+    public MemberBirthdayResponseDto toMemberBirthdayResponseDto(Member member) {
         return MemberBirthdayResponseDto.builder()
                 .id(member.getId())
                 .name(member.getName())
@@ -48,7 +50,7 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public static MemberResponseDto toMemberResponseDto(Member member) {
+    public MemberResponseDto toMemberResponseDto(Member member) {
         return MemberResponseDto.builder()
                 .id(member.getId())
                 .name(member.getName())
@@ -70,7 +72,7 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public static MemberRoleInfoResponseDto toMemberRoleInfoResponseDto(Member member) {
+    public MemberRoleInfoResponseDto toMemberRoleInfoResponseDto(Member member) {
         return MemberRoleInfoResponseDto.builder()
                 .id(member.getId())
                 .name(member.getName())
@@ -78,7 +80,7 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public static MyProfileResponseDto toMyProfileResponseDto(Member member) {
+    public MyProfileResponseDto toMyProfileResponseDto(Member member) {
         return MyProfileResponseDto.builder()
                 .name(member.getName())
                 .id(member.getId())
@@ -96,7 +98,7 @@ public class MemberDtoMapper {
     }
 
 
-    public static MemberReviewInfoDto toMemberReviewInfoDto(Member member) {
+    public MemberReviewInfoDto toMemberReviewInfoDto(Member member) {
         return MemberReviewInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())
@@ -104,7 +106,7 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public static MemberPositionInfoDto toMemberPositionInfoDto(Member member) {
+    public MemberPositionInfoDto toMemberPositionInfoDto(Member member) {
         return MemberPositionInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())
@@ -115,7 +117,7 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public static MemberLoginInfoDto toMemberLoginInfoDto(Member member) {
+    public MemberLoginInfoDto toMemberLoginInfoDto(Member member) {
         return MemberLoginInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())
@@ -124,14 +126,14 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public static MemberEmailInfoDto toMemberEmailInfoDto(Member member) {
+    public MemberEmailInfoDto toMemberEmailInfoDto(Member member) {
         return MemberEmailInfoDto.builder()
                 .memberName(member.getName())
                 .email(member.getEmail())
                 .build();
     }
 
-    public static MemberDetailedInfoDto toMemberDetailedInfoDto(Member member) {
+    public MemberDetailedInfoDto toMemberDetailedInfoDto(Member member) {
         return MemberDetailedInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())
@@ -141,7 +143,7 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public static MemberBorrowerInfoDto toMemberBorrowerInfoDto(Member member) {
+    public MemberBorrowerInfoDto toMemberBorrowerInfoDto(Member member) {
         return MemberBorrowerInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())
@@ -149,7 +151,7 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public static MemberBasicInfoDto toMemberBasicInfoDto(Member member) {
+    public MemberBasicInfoDto toMemberBasicInfoDto(Member member) {
         return MemberBasicInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())

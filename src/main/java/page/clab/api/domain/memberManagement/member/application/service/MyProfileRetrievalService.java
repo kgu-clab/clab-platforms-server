@@ -14,11 +14,12 @@ import page.clab.api.domain.memberManagement.member.domain.Member;
 public class MyProfileRetrievalService implements RetrieveMyProfileUseCase {
 
     private final RetrieveMemberUseCase retrieveMemberUseCase;
+    private final MemberDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
     public MyProfileResponseDto retrieveMyProfile() {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
-        return MemberDtoMapper.toMyProfileResponseDto(currentMember);
+        return dtoMapper.toMyProfileResponseDto(currentMember);
     }
 }

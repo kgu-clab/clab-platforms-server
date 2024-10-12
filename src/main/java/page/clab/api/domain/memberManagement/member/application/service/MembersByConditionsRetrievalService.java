@@ -17,11 +17,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class MembersByConditionsRetrievalService implements RetrieveMembersByConditionsUseCase {
 
     private final RetrieveMemberPort retrieveMemberPort;
+    private final MemberDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<MemberResponseDto> retrieveMembers(String id, String name, Pageable pageable) {
         Page<Member> members = retrieveMemberPort.findByConditions(id, name, pageable);
-        return new PagedResponseDto<>(members.map(MemberDtoMapper::toMemberResponseDto));
+        return new PagedResponseDto<>(members.map(dtoMapper::toMemberResponseDto));
     }
 }
