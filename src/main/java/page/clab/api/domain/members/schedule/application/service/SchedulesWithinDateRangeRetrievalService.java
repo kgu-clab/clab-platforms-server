@@ -27,6 +27,7 @@ public class SchedulesWithinDateRangeRetrievalService implements RetrieveSchedul
     private final RetrieveSchedulePort retrieveSchedulePort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
+    private final ScheduleDtoMapper dtoMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -35,7 +36,7 @@ public class SchedulesWithinDateRangeRetrievalService implements RetrieveSchedul
         List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByMemberId(currentMemberId);
         List<ActivityGroup> myGroups = getMyActivityGroups(groupMembers);
         Page<Schedule> schedules = retrieveSchedulePort.findByDateRangeAndMember(startDate, endDate, myGroups, pageable);
-        return new PagedResponseDto<>(schedules.map(ScheduleDtoMapper::toScheduleResponseDto));
+        return new PagedResponseDto<>(schedules.map(dtoMapper::toDto));
     }
 
     private List<ActivityGroup> getMyActivityGroups(List<GroupMember> groupMembers) {

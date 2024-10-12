@@ -23,6 +23,7 @@ import java.util.List;
 public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final ScheduleDtoMapper dtoMapper;
 
     @Override
     public Page<ScheduleJpaEntity> findByDateRangeAndMember(LocalDate startDate, LocalDate endDate, List<ActivityGroup> myGroups, Pageable pageable) {
@@ -133,6 +134,6 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
                 .where(builder)
                 .fetchCount();
 
-        return ScheduleDtoMapper.toScheduleCollectResponseDto(total, highPriorityCount);
+        return dtoMapper.of(total, highPriorityCount);
     }
 }

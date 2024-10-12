@@ -30,13 +30,14 @@ public class ScheduleRegisterService implements RegisterScheduleUseCase {
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
     private final ActivityGroupAdminService activityGroupAdminService;
+    private final ScheduleDtoMapper dtoMapper;
 
     @Override
     @Transactional
     public Long registerSchedule(ScheduleRequestDto requestDto) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         ActivityGroup activityGroup = resolveActivityGroupForSchedule(requestDto, currentMemberInfo);
-        Schedule schedule = ScheduleDtoMapper.toSchedule(requestDto, currentMemberInfo.getMemberId(), activityGroup);
+        Schedule schedule = dtoMapper.fromDto(requestDto, currentMemberInfo.getMemberId(), activityGroup);
         schedule.validateAccessPermissionForCreation(currentMemberInfo);
         schedule.validateBusinessRules();
         return registerSchedulePort.save(schedule).getId();
