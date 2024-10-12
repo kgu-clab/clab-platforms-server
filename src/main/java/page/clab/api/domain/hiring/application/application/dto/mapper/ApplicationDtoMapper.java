@@ -1,5 +1,6 @@
 package page.clab.api.domain.hiring.application.application.dto.mapper;
 
+import org.springframework.stereotype.Component;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationMemberCreationDto;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.hiring.application.application.dto.response.ApplicationPassResponseDto;
@@ -7,24 +8,10 @@ import page.clab.api.domain.hiring.application.application.dto.response.Applicat
 import page.clab.api.domain.hiring.application.domain.Application;
 import page.clab.api.global.common.domain.Contact;
 
+@Component
 public class ApplicationDtoMapper {
 
-    public static ApplicationMemberCreationDto toApplicationMemberCreationDto(Application application) {
-        return ApplicationMemberCreationDto.builder()
-                .studentId(application.getStudentId())
-                .name(application.getName())
-                .contact(application.getContact())
-                .email(application.getEmail())
-                .department(application.getDepartment())
-                .grade(application.getGrade())
-                .birth(application.getBirth())
-                .address(application.getAddress())
-                .interests(application.getInterests())
-                .githubUrl(application.getGithubUrl())
-                .build();
-    }
-
-    public static Application toApplication(ApplicationRequestDto requestDto) {
+    public Application fromDto(ApplicationRequestDto requestDto) {
         return Application.builder()
                 .studentId(requestDto.getStudentId())
                 .recruitmentId(requestDto.getRecruitmentId())
@@ -44,7 +31,22 @@ public class ApplicationDtoMapper {
                 .build();
     }
 
-    public static ApplicationPassResponseDto toApplicationPassResponseDto(Application application) {
+    public ApplicationMemberCreationDto toApplicationMemberCreationDto(Application application) {
+        return ApplicationMemberCreationDto.builder()
+                .studentId(application.getStudentId())
+                .name(application.getName())
+                .contact(application.getContact())
+                .email(application.getEmail())
+                .department(application.getDepartment())
+                .grade(application.getGrade())
+                .birth(application.getBirth())
+                .address(application.getAddress())
+                .interests(application.getInterests())
+                .githubUrl(application.getGithubUrl())
+                .build();
+    }
+
+    public ApplicationPassResponseDto toApplicationPassResponseDto(Application application) {
         return ApplicationPassResponseDto.builder()
                 .recruitmentId(application.getRecruitmentId())
                 .name(application.getName())
@@ -53,7 +55,7 @@ public class ApplicationDtoMapper {
                 .build();
     }
 
-    public static ApplicationResponseDto toApplicationResponseDto(Application application) {
+    public ApplicationResponseDto toApplicationResponseDto(Application application) {
         return ApplicationResponseDto.builder()
                 .studentId(application.getStudentId())
                 .recruitmentId(application.getRecruitmentId())

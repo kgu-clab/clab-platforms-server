@@ -30,6 +30,7 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalRetrievePositionUseCase externalRetrievePositionUseCase;
     private final ApplicationEventPublisher eventPublisher;
+    private final ApplicationDtoMapper dtoMapper;
 
     @Transactional
     @Override
@@ -63,7 +64,7 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
     private Member createMemberByApplication(Application application) {
         return externalRetrieveMemberUseCase.findById(application.getStudentId())
                 .orElseGet(() -> {
-                    ApplicationMemberCreationDto dto = ApplicationDtoMapper.toApplicationMemberCreationDto(application);
+                    ApplicationMemberCreationDto dto = dtoMapper.toApplicationMemberCreationDto(application);
                     eventPublisher.publishEvent(new ApplicationMemberCreatedEvent(this, dto));
                     return externalRetrieveMemberUseCase.getById(application.getStudentId());
                 });

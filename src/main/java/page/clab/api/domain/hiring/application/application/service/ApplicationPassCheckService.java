@@ -17,6 +17,7 @@ public class ApplicationPassCheckService implements CheckApplicationPassStatusUs
 
     private final RetrieveApplicationPort retrieveApplicationPort;
     private final RetrieveRecruitmentPort retrieveRecruitmentPort;
+    private final ApplicationDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -27,7 +28,7 @@ public class ApplicationPassCheckService implements CheckApplicationPassStatusUs
         recruitment.validateEndDateWithin7Days();
 
         return retrieveApplicationPort.findById(id)
-                .map(ApplicationDtoMapper::toApplicationPassResponseDto)
+                .map(dtoMapper::toApplicationPassResponseDto)
                 .orElseGet(ApplicationPassResponseDto::defaultResponse);
     }
 }

@@ -17,11 +17,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class ApplicationRetrievalService implements RetrieveApplicationsUseCase {
 
     private final RetrieveApplicationPort retrieveApplicationPort;
+    private final ApplicationDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<ApplicationResponseDto> retrieveApplications(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable) {
         Page<Application> applications = retrieveApplicationPort.findByConditions(recruitmentId, studentId, isPass, pageable);
-        return new PagedResponseDto<>(applications.map(ApplicationDtoMapper::toApplicationResponseDto));
+        return new PagedResponseDto<>(applications.map(dtoMapper::toApplicationResponseDto));
     }
 }
