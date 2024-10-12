@@ -1,5 +1,6 @@
 package page.clab.api.domain.library.book.application.dto.mapper;
 
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import page.clab.api.domain.library.book.application.dto.request.BookRequestDto;
 import page.clab.api.domain.library.book.application.dto.response.BookDetailsResponseDto;
@@ -9,9 +10,10 @@ import page.clab.api.domain.library.book.domain.Book;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Component
 public class BookDtoMapper {
 
-    public static Book toBook(BookRequestDto requestDto) {
+    public Book fromDto(BookRequestDto requestDto) {
         return Book.builder()
                 .category(requestDto.getCategory())
                 .title(requestDto.getTitle())
@@ -23,7 +25,7 @@ public class BookDtoMapper {
                 .build();
     }
 
-    public static BookDetailsResponseDto toBookDetailsResponseDto(Book book, String borrowerName, LocalDateTime dueDate) {
+    public BookDetailsResponseDto toBookDetailsResponseDto(Book book, String borrowerName, LocalDateTime dueDate) {
         return BookDetailsResponseDto.builder()
                 .id(book.getId())
                 .borrowerId(book.getBorrowerId() == null ? null : book.getBorrowerId())
@@ -40,7 +42,7 @@ public class BookDtoMapper {
                 .build();
     }
 
-    public static BookResponseDto toBookResponseDto(Book book, String borrowerName, LocalDateTime dueDate) {
+    public BookResponseDto toBookResponseDto(Book book, String borrowerName, LocalDateTime dueDate) {
         return BookResponseDto.builder()
                 .id(book.getId())
                 .borrowerId(book.getBorrowerId() == null ? null : book.getBorrowerId())

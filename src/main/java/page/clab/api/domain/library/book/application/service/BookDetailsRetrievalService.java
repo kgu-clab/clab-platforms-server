@@ -22,6 +22,7 @@ public class BookDetailsRetrievalService implements RetrieveBookDetailsUseCase {
     private final RetrieveBookPort retrieveBookPort;
     private final ExternalRetrieveBookLoanRecordUseCase externalRetrieveBookLoanRecordUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final BookDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -42,6 +43,6 @@ public class BookDetailsRetrievalService implements RetrieveBookDetailsUseCase {
     @NotNull
     private BookDetailsResponseDto mapToBookDetailsResponseDto(Book book, String borrowerName) {
         LocalDateTime dueDate = externalRetrieveBookLoanRecordUseCase.getDueDateForBook(book.getId());
-        return BookDtoMapper.toBookDetailsResponseDto(book, borrowerName, dueDate);
+        return dtoMapper.toBookDetailsResponseDto(book, borrowerName, dueDate);
     }
 }
