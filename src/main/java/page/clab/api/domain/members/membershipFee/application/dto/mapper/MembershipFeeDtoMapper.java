@@ -1,13 +1,15 @@
 package page.clab.api.domain.members.membershipFee.application.dto.mapper;
 
+import org.springframework.stereotype.Component;
 import page.clab.api.domain.members.membershipFee.application.dto.request.MembershipFeeRequestDto;
 import page.clab.api.domain.members.membershipFee.application.dto.response.MembershipFeeResponseDto;
 import page.clab.api.domain.members.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.members.membershipFee.domain.MembershipFeeStatus;
 
+@Component
 public class MembershipFeeDtoMapper {
 
-    public static MembershipFee toMembershipFee(MembershipFeeRequestDto requestDto, String memberId) {
+    public MembershipFee fromDto(MembershipFeeRequestDto requestDto, String memberId) {
         return MembershipFee.builder()
                 .memberId(memberId)
                 .category(requestDto.getCategory())
@@ -20,7 +22,7 @@ public class MembershipFeeDtoMapper {
                 .build();
     }
 
-    public static MembershipFeeResponseDto toMembershipFeeResponseDto(MembershipFee membershipFee, String memberName, boolean isAdminRole) {
+    public MembershipFeeResponseDto toDto(MembershipFee membershipFee, String memberName, boolean isAdminRole) {
         return MembershipFeeResponseDto.builder()
                 .id(membershipFee.getId())
                 .memberId(membershipFee.getMemberId())

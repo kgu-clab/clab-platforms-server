@@ -22,12 +22,13 @@ public class MembershipFeeRegisterService implements RegisterMembershipFeeUseCas
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
     private final SlackService slackService;
+    private final MembershipFeeDtoMapper dtoMapper;
 
     @Transactional
     @Override
     public Long registerMembershipFee(MembershipFeeRequestDto requestDto) {
         MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
-        MembershipFee membershipFee = MembershipFeeDtoMapper.toMembershipFee(requestDto, memberInfo.getMemberId());
+        MembershipFee membershipFee = dtoMapper.fromDto(requestDto, memberInfo.getMemberId());
         externalSendNotificationUseCase.sendNotificationToAdmins("새로운 회비 내역이 등록되었습니다.");
         SlackMembershipFeeInfo membershipFeeInfo = SlackMembershipFeeInfo.create(membershipFee, memberInfo);
         slackService.sendNewMembershipFeeNotification(membershipFeeInfo);

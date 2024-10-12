@@ -20,6 +20,7 @@ public class DeletedMembershipFeesRetrievalService implements RetrieveDeletedMem
 
     private final RetrieveMembershipFeePort retrieveMembershipFeePort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final MembershipFeeDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -27,6 +28,6 @@ public class DeletedMembershipFeesRetrievalService implements RetrieveDeletedMem
         MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         Page<MembershipFee> membershipFees = retrieveMembershipFeePort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(membershipFees.map(membershipFee ->
-                MembershipFeeDtoMapper.toMembershipFeeResponseDto(membershipFee, memberInfo.getMemberName(), memberInfo.isAdminRole())));
+                dtoMapper.toDto(membershipFee, memberInfo.getMemberName(), memberInfo.isAdminRole())));
     }
 }
