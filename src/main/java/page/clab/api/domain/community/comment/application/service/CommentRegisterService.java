@@ -24,6 +24,7 @@ public class CommentRegisterService implements RegisterCommentUseCase {
     private final ExternalRetrieveBoardUseCase externalRetrieveBoardUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
+    private final CommentDtoMapper dtoMapper;
 
     @Transactional
     @Override
@@ -37,7 +38,7 @@ public class CommentRegisterService implements RegisterCommentUseCase {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         Board board = externalRetrieveBoardUseCase.getById(boardId);
         Comment parent = findParentComment(parentId);
-        Comment comment = CommentDtoMapper.toComment(requestDto, board.getId(), currentMemberId, parent);
+        Comment comment = dtoMapper.fromDto(requestDto, board.getId(), currentMemberId, parent);
         if (parent != null) {
             parent.addChildComment(comment);
         }

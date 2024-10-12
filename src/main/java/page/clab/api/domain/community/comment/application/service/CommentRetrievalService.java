@@ -23,6 +23,7 @@ public class CommentRetrievalService implements RetrieveCommentUseCase {
 
     private final RetrieveCommentPort retrieveCommentPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final CommentDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -53,7 +54,7 @@ public class CommentRetrievalService implements RetrieveCommentUseCase {
                 .map(child -> toCommentResponseDtoWithMemberInfo(child, currentMemberId))
                 .toList();
         boolean isOwner = comment.isOwner(currentMemberId);
-        return CommentDtoMapper.toCommentResponseDto(comment, memberInfo, isOwner, childrenDtos);
+        return dtoMapper.toDto(comment, memberInfo, isOwner, childrenDtos);
     }
 
     private int getNumberOfCurrentPageComments(Page<Comment> comments, List<CommentResponseDto> commentDtos) {

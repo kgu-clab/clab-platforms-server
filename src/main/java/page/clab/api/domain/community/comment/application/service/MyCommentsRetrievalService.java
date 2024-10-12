@@ -27,6 +27,7 @@ public class MyCommentsRetrievalService implements RetrieveMyCommentsUseCase {
     private final RetrieveCommentPort retrieveCommentPort;
     private final ExternalRetrieveBoardUseCase externalRetrieveBoardUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final CommentDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -43,6 +44,6 @@ public class MyCommentsRetrievalService implements RetrieveMyCommentsUseCase {
     private CommentMyResponseDto toCommentMyResponseDto(Comment comment) {
         MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(comment.getWriterId());
         BoardCommentInfoDto boardInfo = externalRetrieveBoardUseCase.getBoardCommentInfoById(comment.getBoardId());
-        return CommentDtoMapper.toCommentMyResponseDto(comment, memberInfo, boardInfo, false);
+        return dtoMapper.toDto(comment, memberInfo, boardInfo, false);
     }
 }

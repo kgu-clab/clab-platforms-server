@@ -1,5 +1,6 @@
 package page.clab.api.domain.community.comment.application.dto.mapper;
 
+import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.board.application.dto.shared.BoardCommentInfoDto;
 import page.clab.api.domain.community.comment.application.dto.request.CommentRequestDto;
 import page.clab.api.domain.community.comment.application.dto.response.CommentMyResponseDto;
@@ -11,9 +12,10 @@ import page.clab.api.global.util.RandomNicknameUtil;
 
 import java.util.List;
 
+@Component
 public class CommentDtoMapper {
 
-    public static Comment toComment(CommentRequestDto requestDto, Long boardId, String writerId, Comment parent) {
+    public Comment fromDto(CommentRequestDto requestDto, Long boardId, String writerId, Comment parent) {
         return Comment.builder()
                 .boardId(boardId)
                 .writerId(writerId)
@@ -26,7 +28,7 @@ public class CommentDtoMapper {
                 .build();
     }
 
-    public static CommentMyResponseDto toCommentMyResponseDto(Comment comment, MemberDetailedInfoDto memberInfo, BoardCommentInfoDto boardInfo, boolean hasLikeByMe) {
+    public CommentMyResponseDto toDto(Comment comment, MemberDetailedInfoDto memberInfo, BoardCommentInfoDto boardInfo, boolean hasLikeByMe) {
         if (comment.getBoardId() == null || comment.getIsDeleted()) {
             return null;
         }
@@ -43,7 +45,7 @@ public class CommentDtoMapper {
                 .build();
     }
 
-    public static CommentResponseDto toCommentResponseDto(Comment comment, MemberDetailedInfoDto memberInfo, boolean isOwner, List<CommentResponseDto> children) {
+    public CommentResponseDto toDto(Comment comment, MemberDetailedInfoDto memberInfo, boolean isOwner, List<CommentResponseDto> children) {
         if (comment.getIsDeleted()) {
             return CommentResponseDto.builder()
                     .id(comment.getId())
@@ -68,7 +70,7 @@ public class CommentDtoMapper {
                 .build();
     }
 
-    public static DeletedCommentResponseDto toDeletedCommentResponseDto(Comment comment, MemberDetailedInfoDto memberInfo, boolean isOwner) {
+    public DeletedCommentResponseDto toDto(Comment comment, MemberDetailedInfoDto memberInfo, boolean isOwner) {
         return DeletedCommentResponseDto.builder()
                 .id(comment.getId())
                 .writerId(comment.isWantAnonymous() ? null : memberInfo.getMemberId())
