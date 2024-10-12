@@ -12,7 +12,7 @@ import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activity.activitygroup.domain.QActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.QActivityGroupBoard;
 import page.clab.api.domain.activity.activitygroup.domain.QGroupMember;
-import page.clab.api.domain.activity.activitygroup.dto.mapper.param.ActivityGroupParamDtoMapper;
+import page.clab.api.domain.activity.activitygroup.dto.mapper.ActivityGroupDtoMapper;
 import page.clab.api.domain.activity.activitygroup.dto.param.ActivityGroupDetails;
 
 import java.util.List;
@@ -22,6 +22,7 @@ import java.util.List;
 public class ActivityGroupDetailsRepositoryImpl implements ActivityGroupDetailsRepository {
 
     private final JPAQueryFactory queryFactory;
+    private final ActivityGroupDtoMapper dtoMapper;
 
     @Override
     public ActivityGroupDetails fetchActivityGroupDetails(Long activityGroupId) {
@@ -57,6 +58,6 @@ public class ActivityGroupDetailsRepositoryImpl implements ActivityGroupDetailsR
                 .where(activityGroupCondition)
                 .fetchOne();
 
-        return ActivityGroupParamDtoMapper.toActivityGroupDetails(foundActivityGroup, groupMembers, boards);
+        return dtoMapper.of(foundActivityGroup, groupMembers, boards);
     }
 }

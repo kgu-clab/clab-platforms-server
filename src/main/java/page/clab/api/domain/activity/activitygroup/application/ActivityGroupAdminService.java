@@ -18,9 +18,7 @@ import page.clab.api.domain.activity.activitygroup.domain.ApplyForm;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activity.activitygroup.domain.GroupSchedule;
-import page.clab.api.domain.activity.activitygroup.dto.mapper.param.ActivityGroupParamDtoMapper;
-import page.clab.api.domain.activity.activitygroup.dto.mapper.request.ActivityGroupRequestDtoMapper;
-import page.clab.api.domain.activity.activitygroup.dto.mapper.response.ActivityGroupResponseDtoMapper;
+import page.clab.api.domain.activity.activitygroup.dto.mapper.ActivityGroupDtoMapper;
 import page.clab.api.domain.activity.activitygroup.dto.param.GroupScheduleDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupUpdateRequestDto;
@@ -54,11 +52,12 @@ public class ActivityGroupAdminService {
     private final ApplyFormRepository applyFormRepository;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
+    private final ActivityGroupDtoMapper dtoMapper;
 
     @Transactional
     public Long createActivityGroup(ActivityGroupRequestDto requestDto) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
-        ActivityGroup activityGroup = ActivityGroupRequestDtoMapper.toActivityGroup(requestDto);
+        ActivityGroup activityGroup = dtoMapper.fromDto(requestDto);
         activityGroup.validateAndSetGithubUrl(activityGroup.getGithubUrl());
         activityGroupRepository.save(activityGroup);
 
@@ -88,13 +87,13 @@ public class ActivityGroupAdminService {
         if (!CollectionUtils.isEmpty(groupLeaders)) {
             groupLeaders.forEach(leader -> externalSendNotificationUseCase.sendNotificationToMember(leader.getMemberId(), "활동 그룹이 [" + status.getDescription() + "] 상태로 변경되었습니다."));
         }
-        return ActivityGroupResponseDtoMapper.toActivityGroupBoardStatusUpdatedResponseDto(activityGroupId, status);
+        return dtoMapper.of(activityGroupId, status);
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupResponseDto> getDeletedActivityGroups(Pageable pageable) {
         Page<ActivityGroup> activityGroups = activityGroupRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(activityGroups.map(ActivityGroupResponseDtoMapper::toActivityGroupResponseDto));
+        return new PagedResponseDto<>(activityGroups.map(dtoMapper::toDto));
     }
 
     @Transactional
@@ -132,7 +131,7 @@ public class ActivityGroupAdminService {
         ActivityGroup activityGroup = getActivityGroupByIdOrThrow(activityGroupId);
         validateLeaderOrAdminPermission(activityGroup, currentMember, "해당 일정을 등록할 권한이 없습니다.");
         List<GroupSchedule> groupSchedules = scheduleDtos.stream()
-                .map(scheduleDto -> ActivityGroupParamDtoMapper.toGroupSchedule(scheduleDto, activityGroup))
+                .map(scheduleDto -> dtoMapper.fromDto(scheduleDto, activityGroup))
                 .toList();
         groupScheduleRepository.saveAll(groupSchedules);
         return activityGroup.getId();
@@ -156,7 +155,7 @@ public class ActivityGroupAdminService {
                 .map(groupMember -> {
                     String applyReason = memberIdToApplyReasonMap.getOrDefault(groupMember.getMemberId(), "");
                     Member member = externalRetrieveMemberUseCase.getById(groupMember.getMemberId());
-                    return ActivityGroupResponseDtoMapper.toActivityGroupMemberWithApplyReasonResponseDto(member, groupMember, applyReason);
+                    return dtoMapper.toDto(member, groupMember, applyReason);
                 })
                 .sorted(Comparator.comparing(ActivityGroupMemberWithApplyReasonResponseDto::getStatus))
                 .toList();
