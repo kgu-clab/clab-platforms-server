@@ -20,6 +20,7 @@ public class ReviewsByConditionsRetrievalService implements RetrieveReviewsByCon
 
     private final RetrieveReviewPort retrieveReviewPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final ReviewDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -28,7 +29,7 @@ public class ReviewsByConditionsRetrievalService implements RetrieveReviewsByCon
         Page<Review> reviews = retrieveReviewPort.findByConditions(memberId, memberName, activityId, isPublic, pageable);
         return new PagedResponseDto<>(reviews.map(review -> {
             MemberReviewInfoDto reviewer = externalRetrieveMemberUseCase.getMemberReviewInfoById(review.getMemberId());
-            return ReviewDtoMapper.toReviewResponseDto(review, reviewer, review.isOwner(currentMemberId));
+            return dtoMapper.toDto(review, reviewer, review.isOwner(currentMemberId));
         }));
     }
 }
