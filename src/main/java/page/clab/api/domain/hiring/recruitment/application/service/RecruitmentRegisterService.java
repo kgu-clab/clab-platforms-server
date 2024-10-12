@@ -17,11 +17,12 @@ public class RecruitmentRegisterService implements RegisterRecruitmentUseCase {
     private final RegisterRecruitmentPort registerRecruitmentPort;
     private final RecruitmentStatusUpdater recruitmentStatusUpdater;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
+    private final RecruitmentDtoMapper dtoMapper;
 
     @Transactional
     @Override
     public Long registerRecruitment(RecruitmentRequestDto requestDto) {
-        Recruitment recruitment = RecruitmentDtoMapper.toRecruitment(requestDto);
+        Recruitment recruitment = dtoMapper.fromDto(requestDto);
         recruitmentStatusUpdater.updateRecruitmentStatus(recruitment);
         recruitment.validateDateRange();
         externalSendNotificationUseCase.sendNotificationToAllMembers("새로운 모집 공고가 등록되었습니다.");
