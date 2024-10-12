@@ -17,6 +17,7 @@ public class BlogDetailsRetrievalService implements RetrieveBlogDetailsUseCase {
 
     private final RetrieveBlogPort retrieveBlogPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final BlogDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -24,6 +25,6 @@ public class BlogDetailsRetrievalService implements RetrieveBlogDetailsUseCase {
         MemberBasicInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
         Blog blog = retrieveBlogPort.getById(blogId);
         boolean isOwner = blog.isOwner(currentMemberInfo.getMemberId());
-        return BlogDtoMapper.toBlogDetailsResponseDto(blog, currentMemberInfo, isOwner);
+        return dtoMapper.toDto(blog, currentMemberInfo, isOwner);
     }
 }

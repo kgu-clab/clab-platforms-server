@@ -17,11 +17,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class BlogsRetrievalService implements RetrieveBlogsUseCase {
 
     private final RetrieveBlogPort retrieveBlogPort;
+    private final BlogDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<BlogResponseDto> retrieveBlogs(String title, String memberName, Pageable pageable) {
         Page<Blog> blogs = retrieveBlogPort.findByConditions(title, memberName, pageable);
-        return new PagedResponseDto<>(blogs.map(BlogDtoMapper::toBlogResponseDto));
+        return new PagedResponseDto<>(blogs.map(dtoMapper::toDto));
     }
 }

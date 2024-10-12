@@ -1,14 +1,16 @@
 package page.clab.api.domain.members.blog.application.dto.mapper;
 
+import org.springframework.stereotype.Component;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.members.blog.application.dto.request.BlogRequestDto;
 import page.clab.api.domain.members.blog.application.dto.response.BlogDetailsResponseDto;
 import page.clab.api.domain.members.blog.application.dto.response.BlogResponseDto;
 import page.clab.api.domain.members.blog.domain.Blog;
 
+@Component
 public class BlogDtoMapper {
 
-    public static Blog toBlog(BlogRequestDto requestDto, String memberId) {
+    public Blog fromDto(BlogRequestDto requestDto, String memberId) {
         return Blog.builder()
                 .memberId(memberId)
                 .title(requestDto.getTitle())
@@ -20,7 +22,7 @@ public class BlogDtoMapper {
                 .build();
     }
 
-    public static BlogDetailsResponseDto toBlogDetailsResponseDto(Blog blog, MemberBasicInfoDto memberInfo, boolean isOwner) {
+    public BlogDetailsResponseDto toDto(Blog blog, MemberBasicInfoDto memberInfo, boolean isOwner) {
         return BlogDetailsResponseDto.builder()
                 .id(blog.getId())
                 .memberId(memberInfo.getMemberId())
@@ -35,7 +37,7 @@ public class BlogDtoMapper {
                 .build();
     }
 
-    public static BlogResponseDto toBlogResponseDto(Blog blog) {
+    public BlogResponseDto toDto(Blog blog) {
         return BlogResponseDto.builder()
                 .id(blog.getId())
                 .title(blog.getTitle())
