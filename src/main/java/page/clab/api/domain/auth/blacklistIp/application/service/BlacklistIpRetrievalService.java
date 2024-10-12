@@ -17,11 +17,13 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class BlacklistIpRetrievalService implements RetrieveBlacklistIpsUseCase {
 
     private final RetrieveBlacklistIpPort retrieveBlacklistIpPort;
+    private final BlacklistIpDtoMapper dtoMapper;
+
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<BlacklistIpResponseDto> retrieveBlacklistIps(Pageable pageable) {
         Page<BlacklistIp> blacklistedIps = retrieveBlacklistIpPort.findAll(pageable);
-        return new PagedResponseDto<>(blacklistedIps.map(BlacklistIpDtoMapper::toBlacklistIpResponseDto));
+        return new PagedResponseDto<>(blacklistedIps.map(dtoMapper::toDto));
     }
 }
