@@ -1,5 +1,6 @@
 package page.clab.api.global.common.file.dto.mapper;
 
+import org.springframework.stereotype.Component;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.common.file.dto.response.FileInfo;
@@ -9,15 +10,31 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
+@Component
 public class FileDtoMapper {
 
-    public static DeleteFileRequestDto toDeletedFileRequestDto(String url) {
+    public List<UploadedFileResponseDto> toDto(List<UploadedFile> uploadedFiles) {
+        return uploadedFiles.stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    public UploadedFileResponseDto toDto(UploadedFile uploadedFile) {
+        return UploadedFileResponseDto.builder()
+                .fileUrl(uploadedFile.getUrl())
+                .originalFileName(uploadedFile.getOriginalFileName())
+                .storagePeriod(uploadedFile.getStoragePeriod())
+                .createdAt(uploadedFile.getCreatedAt())
+                .build();
+    }
+
+    public DeleteFileRequestDto of(String url) {
         return DeleteFileRequestDto.builder()
                 .url(url)
                 .build();
     }
 
-    public static FileInfo toFileInfo(File file) {
+    public FileInfo create(File file) {
         if (file == null || !file.exists() || !file.isFile()) {
             return null;
         }
@@ -27,21 +44,6 @@ public class FileDtoMapper {
                 .fileSizeInBytes(file.length())
                 .creationDate(new Date(file.lastModified()))
                 .modificationDate(new Date(file.lastModified()))
-                .build();
-    }
-
-    public static List<UploadedFileResponseDto> toUploadedFileResponseDto(List<UploadedFile> uploadedFiles) {
-        return uploadedFiles.stream()
-                .map(FileDtoMapper::toUploadedFileResponseDto)
-                .toList();
-    }
-
-    public static UploadedFileResponseDto toUploadedFileResponseDto(UploadedFile uploadedFile) {
-        return UploadedFileResponseDto.builder()
-                .fileUrl(uploadedFile.getUrl())
-                .originalFileName(uploadedFile.getOriginalFileName())
-                .storagePeriod(uploadedFile.getStoragePeriod())
-                .createdAt(uploadedFile.getCreatedAt())
                 .build();
     }
 }

@@ -54,6 +54,7 @@ public class FileService {
     private final GroupMemberRepository groupMemberRepository;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalRetrieveCloudUsageByMemberIdUseCase externalRetrieveCloudUsageByMemberIdUseCase;
+    private final FileDtoMapper dtoMapper;
 
     @Value("${resource.file.url}")
     private String fileURL;
@@ -119,7 +120,7 @@ public class FileService {
 
         UploadedFile uploadedFile = UploadedFile.create(currentMemberId, multipartFile.getOriginalFilename(), fileName, savedFilePath, url, multipartFile.getSize(), multipartFile.getContentType(), storagePeriod, path);
         uploadedFileService.saveUploadedFile(uploadedFile);
-        return FileDtoMapper.toUploadedFileResponseDto(uploadedFile);
+        return dtoMapper.toDto(uploadedFile);
     }
 
     public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) throws PermissionDeniedException {
