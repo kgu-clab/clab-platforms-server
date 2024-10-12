@@ -17,11 +17,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class ProductsByConditionsRetrievalService implements RetrieveProductsByConditionsUseCase {
 
     private final RetrieveProductPort retrieveProductPort;
+    private final ProductDtoMapper dtoMapper;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<ProductResponseDto> retrieveProducts(String productName, Pageable pageable) {
         Page<Product> products = retrieveProductPort.findByConditions(productName, pageable);
-        return new PagedResponseDto<>(products.map(ProductDtoMapper::toProductResponseDto));
+        return new PagedResponseDto<>(products.map(dtoMapper::toDto));
     }
 }
