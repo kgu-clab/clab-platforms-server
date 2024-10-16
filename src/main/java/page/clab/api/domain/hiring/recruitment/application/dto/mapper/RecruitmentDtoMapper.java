@@ -19,14 +19,7 @@ public class RecruitmentDtoMapper {
                 .build();
     }
 
-    public RecruitmentEndDateResponseDto toRecruitmentEndDateResponseDto(Recruitment recruitment) {
-        return RecruitmentEndDateResponseDto.builder()
-                .id(recruitment.getId())
-                .applicationType(recruitment.getApplicationType())
-                .build();
-    }
-
-    public RecruitmentResponseDto toRecruitmentResponseDto(Recruitment recruitment) {
+    public RecruitmentResponseDto toDto(Recruitment recruitment) {
         return RecruitmentResponseDto.builder()
                 .id(recruitment.getId())
                 .startDate(recruitment.getStartDate())
@@ -35,6 +28,13 @@ public class RecruitmentDtoMapper {
                 .target(recruitment.getTarget())
                 .status(recruitment.getStatus().getDescription())
                 .updatedAt(recruitment.getUpdatedAt())
+                .build();
+    }
+
+    public RecruitmentEndDateResponseDto toEndDateDto(Recruitment recruitment) {
+        return RecruitmentEndDateResponseDto.builder()
+                .id(recruitment.getId())
+                .applicationType(recruitment.getApplicationType())
                 .build();
     }
 }

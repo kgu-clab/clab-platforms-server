@@ -45,6 +45,6 @@ public class BoardRetrievalService implements RetrieveBoardUseCase {
     @NotNull
     private BoardListResponseDto mapToBoardListResponseDto(Board board, MemberDetailedInfoDto memberInfo) {
         Long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
-        return mapper.toBoardListResponseDto(board, memberInfo, commentCount);
+        return mapper.toListDto(board, memberInfo, commentCount);
     }
 }

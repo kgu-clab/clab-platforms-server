@@ -31,31 +31,7 @@ public class ApplicationDtoMapper {
                 .build();
     }
 
-    public ApplicationMemberCreationDto toApplicationMemberCreationDto(Application application) {
-        return ApplicationMemberCreationDto.builder()
-                .studentId(application.getStudentId())
-                .name(application.getName())
-                .contact(application.getContact())
-                .email(application.getEmail())
-                .department(application.getDepartment())
-                .grade(application.getGrade())
-                .birth(application.getBirth())
-                .address(application.getAddress())
-                .interests(application.getInterests())
-                .githubUrl(application.getGithubUrl())
-                .build();
-    }
-
-    public ApplicationPassResponseDto toApplicationPassResponseDto(Application application) {
-        return ApplicationPassResponseDto.builder()
-                .recruitmentId(application.getRecruitmentId())
-                .name(application.getName())
-                .applicationType(application.getApplicationType())
-                .isPass(application.getIsPass())
-                .build();
-    }
-
-    public ApplicationResponseDto toApplicationResponseDto(Application application) {
+    public ApplicationResponseDto toDto(Application application) {
         return ApplicationResponseDto.builder()
                 .studentId(application.getStudentId())
                 .recruitmentId(application.getRecruitmentId())
@@ -73,6 +49,30 @@ public class ApplicationDtoMapper {
                 .isPass(application.getIsPass())
                 .updatedAt(application.getUpdatedAt())
                 .createdAt(application.getCreatedAt())
+                .build();
+    }
+
+    public ApplicationMemberCreationDto toCreationDto(Application application) {
+        return ApplicationMemberCreationDto.builder()
+                .studentId(application.getStudentId())
+                .name(application.getName())
+                .contact(application.getContact())
+                .email(application.getEmail())
+                .department(application.getDepartment())
+                .grade(application.getGrade())
+                .birth(application.getBirth())
+                .address(application.getAddress())
+                .interests(application.getInterests())
+                .githubUrl(application.getGithubUrl())
+                .build();
+    }
+
+    public ApplicationPassResponseDto toPassDto(Application application) {
+        return ApplicationPassResponseDto.builder()
+                .recruitmentId(application.getRecruitmentId())
+                .name(application.getName())
+                .applicationType(application.getApplicationType())
+                .isPass(application.getIsPass())
                 .build();
     }
 }

@@ -20,6 +20,6 @@ public class NewsDetailsRetrievalService implements RetrieveNewsDetailsUseCase {
     @Override
     public NewsDetailsResponseDto retrieveNewsDetails(Long newsId) {
         News news = retrieveNewsPort.getById(newsId);
-        return mapper.toNewsDetailsResponseDto(news);
+        return mapper.toDetailsDto(news);
     }
 }

@@ -77,7 +77,7 @@ public class ActivityGroupMemberService {
                 details.getActivityGroupBoards().stream()
                         .map(board -> {
                             MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(board.getMemberId());
-                            return mapper.toActivityGroupBoardResponseDto(board, memberBasicInfoDto);
+                            return mapper.toBoardDto(board, memberBasicInfoDto);
                         })
                         .toList();
 

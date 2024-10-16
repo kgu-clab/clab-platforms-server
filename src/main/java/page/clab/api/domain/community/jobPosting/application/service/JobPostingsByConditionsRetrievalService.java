@@ -25,6 +25,6 @@ public class JobPostingsByConditionsRetrievalService implements RetrieveJobPosti
     @Override
     public PagedResponseDto<JobPostingResponseDto> retrieveJobPostings(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable) {
         Page<JobPosting> jobPostings = retrieveJobPostingPort.findByConditions(title, companyName, careerLevel, employmentType, pageable);
-        return new PagedResponseDto<>(jobPostings.map(mapper::toJobPostingResponseDto));
+        return new PagedResponseDto<>(jobPostings.map(mapper::toDto));
     }
 }

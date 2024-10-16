@@ -28,7 +28,7 @@ public class ApplicationPassCheckService implements CheckApplicationPassStatusUs
         recruitment.validateEndDateWithin7Days();
 
         return retrieveApplicationPort.findById(id)
-                .map(mapper::toApplicationPassResponseDto)
+                .map(mapper::toPassDto)
                 .orElseGet(ApplicationPassResponseDto::defaultResponse);
     }
 }

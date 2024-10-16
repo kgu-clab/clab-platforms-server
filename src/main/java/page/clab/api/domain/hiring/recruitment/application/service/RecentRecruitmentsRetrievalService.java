@@ -24,7 +24,7 @@ public class RecentRecruitmentsRetrievalService implements RetrieveRecentRecruit
     @Override
     public List<RecruitmentResponseDto> retrieveRecentRecruitments() {
         return retrieveRecruitmentPort.findTop5ByOrderByCreatedAtDesc().stream()
-                .map(mapper::toRecruitmentResponseDto)
+                .map(mapper::toDto)
                 .toList();
     }
 
@@ -36,7 +36,7 @@ public class RecentRecruitmentsRetrievalService implements RetrieveRecentRecruit
         LocalDateTime endOfDay = now.with(LocalTime.MAX);
 
         return retrieveRecruitmentPort.findByEndDateBetween(weekAgo, endOfDay).stream()
-                .map(mapper::toRecruitmentEndDateResponseDto)
+                .map(mapper::toEndDateDto)
                 .toList();
     }
 }

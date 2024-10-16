@@ -24,6 +24,6 @@ public class MemberRoleInfoRetrievalService implements RetrieveMemberRoleInfoUse
     @Override
     public PagedResponseDto<MemberRoleInfoResponseDto> retrieveMemberRoleInfo(String memberId, String memberName, Role role, Pageable pageable) {
         Page<Member> members = retrieveMemberPort.findMemberRoleInfoByConditions(memberId, memberName, role, pageable);
-        return new PagedResponseDto<>(members.map(mapper::toMemberRoleInfoResponseDto));
+        return new PagedResponseDto<>(members.map(mapper::toRoleInfoDto));
     }
 }

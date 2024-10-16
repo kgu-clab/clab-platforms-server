@@ -222,7 +222,7 @@ public class ActivityGroupDtoMapper {
                 .build();
     }
 
-    public ActivityGroupBoardChildResponseDto toActivityGroupBoardChildResponseDto(ActivityGroupBoard board, MemberBasicInfoDto memberBasicInfoDto, List<ActivityGroupBoardChildResponseDto> childrenDtos) {
+    public ActivityGroupBoardChildResponseDto toChildDto(ActivityGroupBoard board, MemberBasicInfoDto memberBasicInfoDto, List<ActivityGroupBoardChildResponseDto> childrenDtos) {
         return ActivityGroupBoardChildResponseDto.builder()
                 .id(board.getId())
                 .memberId(memberBasicInfoDto.getMemberId())
@@ -238,7 +238,7 @@ public class ActivityGroupDtoMapper {
                 .build();
     }
 
-    public AssignmentSubmissionWithFeedbackResponseDto toAssignmentSubmissionWithFeedbackResponseDto(ActivityGroupBoard board, MemberBasicInfoDto memberBasicInfo, List<FeedbackResponseDto> feedbackDtos) {
+    public AssignmentSubmissionWithFeedbackResponseDto toAssignmentDto(ActivityGroupBoard board, MemberBasicInfoDto memberBasicInfo, List<FeedbackResponseDto> feedbackDtos) {
         return AssignmentSubmissionWithFeedbackResponseDto.builder()
                 .id(board.getId())
                 .memberId(memberBasicInfo.getMemberId())
@@ -252,7 +252,7 @@ public class ActivityGroupDtoMapper {
                 .build();
     }
 
-    public ActivityGroupBoardResponseDto toActivityGroupBoardResponseDto(ActivityGroupBoard board, MemberBasicInfoDto memberBasicInfoDto) {
+    public ActivityGroupBoardResponseDto toBoardDto(ActivityGroupBoard board, MemberBasicInfoDto memberBasicInfoDto) {
         return ActivityGroupBoardResponseDto.builder()
                 .id(board.getId())
                 .memberId(memberBasicInfoDto.getMemberId())
@@ -268,7 +268,7 @@ public class ActivityGroupDtoMapper {
                 .build();
     }
 
-    public FeedbackResponseDto toFeedbackResponseDto(ActivityGroupBoard board, MemberBasicInfoDto memberBasicInfo) {
+    public FeedbackResponseDto toFeedbackDto(ActivityGroupBoard board, MemberBasicInfoDto memberBasicInfo) {
         return FeedbackResponseDto.builder()
                 .id(board.getId())
                 .memberId(memberBasicInfo.getMemberId())

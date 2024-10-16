@@ -9,7 +9,6 @@ import page.clab.api.domain.library.book.application.dto.response.BookDetailsRes
 import page.clab.api.domain.library.book.application.port.in.RetrieveBookDetailsUseCase;
 import page.clab.api.domain.library.book.application.port.out.RetrieveBookPort;
 import page.clab.api.domain.library.book.domain.Book;
-import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.external.library.bookLoanRecord.application.port.ExternalRetrieveBookLoanRecordUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 
@@ -43,6 +42,6 @@ public class BookDetailsRetrievalService implements RetrieveBookDetailsUseCase {
     @NotNull
     private BookDetailsResponseDto mapToBookDetailsResponseDto(Book book, String borrowerName) {
         LocalDateTime dueDate = externalRetrieveBookLoanRecordUseCase.getDueDateForBook(book.getId());
-        return mapper.toBookDetailsResponseDto(book, borrowerName, dueDate);
+        return mapper.toDetailsDto(book, borrowerName, dueDate);
     }
 }

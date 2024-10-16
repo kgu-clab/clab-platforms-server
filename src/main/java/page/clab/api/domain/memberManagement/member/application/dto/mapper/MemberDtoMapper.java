@@ -41,16 +41,7 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public MemberBirthdayResponseDto toMemberBirthdayResponseDto(Member member) {
-        return MemberBirthdayResponseDto.builder()
-                .id(member.getId())
-                .name(member.getName())
-                .birth(member.getBirth())
-                .imageUrl(member.getImageUrl())
-                .build();
-    }
-
-    public MemberResponseDto toMemberResponseDto(Member member) {
+    public MemberResponseDto toDto(Member member) {
         return MemberResponseDto.builder()
                 .id(member.getId())
                 .name(member.getName())
@@ -72,7 +63,16 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public MemberRoleInfoResponseDto toMemberRoleInfoResponseDto(Member member) {
+    public MemberBirthdayResponseDto toBirthdayDto(Member member) {
+        return MemberBirthdayResponseDto.builder()
+                .id(member.getId())
+                .name(member.getName())
+                .birth(member.getBirth())
+                .imageUrl(member.getImageUrl())
+                .build();
+    }
+
+    public MemberRoleInfoResponseDto toRoleInfoDto(Member member) {
         return MemberRoleInfoResponseDto.builder()
                 .id(member.getId())
                 .name(member.getName())
@@ -80,7 +80,7 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public MyProfileResponseDto toMyProfileResponseDto(Member member) {
+    public MyProfileResponseDto toMyProfileDto(Member member) {
         return MyProfileResponseDto.builder()
                 .name(member.getName())
                 .id(member.getId())
@@ -98,7 +98,7 @@ public class MemberDtoMapper {
     }
 
 
-    public MemberReviewInfoDto toMemberReviewInfoDto(Member member) {
+    public MemberReviewInfoDto toReviewInfoDto(Member member) {
         return MemberReviewInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())
@@ -106,7 +106,7 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public MemberPositionInfoDto toMemberPositionInfoDto(Member member) {
+    public MemberPositionInfoDto toPositionInfoDto(Member member) {
         return MemberPositionInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())
@@ -117,7 +117,7 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public MemberLoginInfoDto toMemberLoginInfoDto(Member member) {
+    public MemberLoginInfoDto toLoginInfoDto(Member member) {
         return MemberLoginInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())
@@ -126,14 +126,14 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public MemberEmailInfoDto toMemberEmailInfoDto(Member member) {
+    public MemberEmailInfoDto toEmailInfoDto(Member member) {
         return MemberEmailInfoDto.builder()
                 .memberName(member.getName())
                 .email(member.getEmail())
                 .build();
     }
 
-    public MemberDetailedInfoDto toMemberDetailedInfoDto(Member member) {
+    public MemberDetailedInfoDto toDetailedInfoDto(Member member) {
         return MemberDetailedInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())
@@ -143,7 +143,7 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public MemberBorrowerInfoDto toMemberBorrowerInfoDto(Member member) {
+    public MemberBorrowerInfoDto toBorrowerInfoDto(Member member) {
         return MemberBorrowerInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())
@@ -151,7 +151,7 @@ public class MemberDtoMapper {
                 .build();
     }
 
-    public MemberBasicInfoDto toMemberBasicInfoDto(Member member) {
+    public MemberBasicInfoDto toBasicInfoDto(Member member) {
         return MemberBasicInfoDto.builder()
                 .memberId(member.getId())
                 .memberName(member.getName())

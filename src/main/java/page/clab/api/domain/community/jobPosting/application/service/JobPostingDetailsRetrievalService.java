@@ -20,6 +20,6 @@ public class JobPostingDetailsRetrievalService implements RetrieveJobPostingDeta
     @Override
     public JobPostingDetailsResponseDto retrieveJobPostingDetails(Long jobPostingId) {
         JobPosting jobPosting = retrieveJobPostingPort.getById(jobPostingId);
-        return mapper.toJobPostingDetailsResponseDto(jobPosting);
+        return mapper.toDetailsDto(jobPosting);
     }
 }

@@ -23,6 +23,6 @@ public class MemberBirthdayRetrievalThisMonthService implements RetrieveMemberBi
     @Override
     public PagedResponseDto<MemberBirthdayResponseDto> retrieveBirthdaysThisMonth(int month, Pageable pageable) {
         Page<Member> birthdayMembers = retrieveMemberPort.findBirthdaysThisMonth(month, pageable);
-        return new PagedResponseDto<>(birthdayMembers.map(mapper::toMemberBirthdayResponseDto));
+        return new PagedResponseDto<>(birthdayMembers.map(mapper::toBirthdayDto));
     }
 }

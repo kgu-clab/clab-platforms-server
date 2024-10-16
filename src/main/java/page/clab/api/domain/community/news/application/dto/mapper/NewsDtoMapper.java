@@ -8,7 +8,18 @@ import page.clab.api.domain.community.news.domain.News;
 @Component
 public class NewsDtoMapper {
 
-    public NewsDetailsResponseDto toNewsDetailsResponseDto(News news) {
+    public NewsResponseDto toDto(News news) {
+        return NewsResponseDto.builder()
+                .id(news.getId())
+                .title(news.getTitle())
+                .category(news.getCategory())
+                .articleUrl(news.getArticleUrl())
+                .date(news.getDate())
+                .createdAt(news.getCreatedAt())
+                .build();
+    }
+
+    public NewsDetailsResponseDto toDetailsDto(News news) {
         return NewsDetailsResponseDto.builder()
                 .id(news.getId())
                 .title(news.getTitle())
@@ -16,17 +27,6 @@ public class NewsDtoMapper {
                 .content(news.getContent())
                 .articleUrl(news.getArticleUrl())
                 .source(news.getSource())
-                .date(news.getDate())
-                .createdAt(news.getCreatedAt())
-                .build();
-    }
-
-    public NewsResponseDto toNewsResponseDto(News news) {
-        return NewsResponseDto.builder()
-                .id(news.getId())
-                .title(news.getTitle())
-                .category(news.getCategory())
-                .articleUrl(news.getArticleUrl())
                 .date(news.getDate())
                 .createdAt(news.getCreatedAt())
                 .build();

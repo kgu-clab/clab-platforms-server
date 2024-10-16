@@ -25,7 +25,23 @@ public class BookDtoMapper {
                 .build();
     }
 
-    public BookDetailsResponseDto toBookDetailsResponseDto(Book book, String borrowerName, LocalDateTime dueDate) {
+    public BookResponseDto toDto(Book book, String borrowerName, LocalDateTime dueDate) {
+        return BookResponseDto.builder()
+                .id(book.getId())
+                .borrowerId(book.getBorrowerId() == null ? null : book.getBorrowerId())
+                .borrowerName(book.getBorrowerId() == null ? null : borrowerName)
+                .category(book.getCategory())
+                .title(book.getTitle())
+                .author(book.getAuthor())
+                .publisher(book.getPublisher())
+                .imageUrl(book.getImageUrl())
+                .dueDate(dueDate)
+                .createdAt(book.getCreatedAt())
+                .updatedAt(book.getUpdatedAt())
+                .build();
+    }
+
+    public BookDetailsResponseDto toDetailsDto(Book book, String borrowerName, LocalDateTime dueDate) {
         return BookDetailsResponseDto.builder()
                 .id(book.getId())
                 .borrowerId(book.getBorrowerId() == null ? null : book.getBorrowerId())
@@ -36,22 +52,6 @@ public class BookDtoMapper {
                 .publisher(book.getPublisher())
                 .imageUrl(book.getImageUrl())
                 .reviewLinks(book.getReviewLinks())
-                .dueDate(dueDate)
-                .createdAt(book.getCreatedAt())
-                .updatedAt(book.getUpdatedAt())
-                .build();
-    }
-
-    public BookResponseDto toBookResponseDto(Book book, String borrowerName, LocalDateTime dueDate) {
-        return BookResponseDto.builder()
-                .id(book.getId())
-                .borrowerId(book.getBorrowerId() == null ? null : book.getBorrowerId())
-                .borrowerName(book.getBorrowerId() == null ? null : borrowerName)
-                .category(book.getCategory())
-                .title(book.getTitle())
-                .author(book.getAuthor())
-                .publisher(book.getPublisher())
-                .imageUrl(book.getImageUrl())
                 .dueDate(dueDate)
                 .createdAt(book.getCreatedAt())
                 .updatedAt(book.getUpdatedAt())

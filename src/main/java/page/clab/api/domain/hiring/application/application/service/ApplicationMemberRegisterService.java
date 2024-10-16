@@ -64,7 +64,7 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
     private Member createMemberByApplication(Application application) {
         return externalRetrieveMemberUseCase.findById(application.getStudentId())
                 .orElseGet(() -> {
-                    ApplicationMemberCreationDto dto = mapper.toApplicationMemberCreationDto(application);
+                    ApplicationMemberCreationDto dto = mapper.toCreationDto(application);
                     eventPublisher.publishEvent(new ApplicationMemberCreatedEvent(this, dto));
                     return externalRetrieveMemberUseCase.getById(application.getStudentId());
                 });

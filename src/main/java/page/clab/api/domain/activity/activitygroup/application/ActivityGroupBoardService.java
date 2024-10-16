@@ -132,7 +132,7 @@ public class ActivityGroupBoardService {
         Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAll(pageable);
         return new PagedResponseDto<>(boards.map(board -> {
             MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(board.getMemberId());
-            return mapper.toActivityGroupBoardResponseDto(board, memberBasicInfoDto);
+            return mapper.toBoardDto(board, memberBasicInfoDto);
         }));
     }
 
@@ -145,7 +145,7 @@ public class ActivityGroupBoardService {
             throw new PermissionDeniedException("해당 게시물을 조회할 권한이 없습니다.");
         }
         MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(board.getMemberId());
-        return mapper.toActivityGroupBoardResponseDto(board, memberBasicInfoDto);
+        return mapper.toBoardDto(board, memberBasicInfoDto);
     }
 
     @Transactional(readOnly = true)
@@ -158,7 +158,7 @@ public class ActivityGroupBoardService {
                 .filter(board -> hasAccessToBoard(board.getActivityGroup(), board, currentMember))
                 .map(board -> {
                     MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(board.getMemberId());
-                    return mapper.toActivityGroupBoardResponseDto(board, memberBasicInfoDto);
+                    return mapper.toBoardDto(board, memberBasicInfoDto);
                 })
                 .toList();
         return new PagedResponseDto<>(new PageImpl<>(filteredBoards, pageable, boards.getTotalElements()));
@@ -194,11 +194,11 @@ public class ActivityGroupBoardService {
                             .filter(ActivityGroupBoard::isFeedback)
                             .map(board ->  {
                                 MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(board.getMemberId());
-                                return mapper.toFeedbackResponseDto(board, memberBasicInfoDto);
+                                return mapper.toFeedbackDto(board, memberBasicInfoDto);
                             })
                             .toList();
                     MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(submission.getMemberId());
-                    return mapper.toAssignmentSubmissionWithFeedbackResponseDto(submission, memberBasicInfoDto, feedbackDtos);
+                    return mapper.toAssignmentDto(submission, memberBasicInfoDto, feedbackDtos);
                 })
                 .toList();
     }
@@ -229,7 +229,7 @@ public class ActivityGroupBoardService {
         Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(boards.map(board -> {
             MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(board.getMemberId());
-            return mapper.toActivityGroupBoardResponseDto(board, memberBasicInfoDto);
+            return mapper.toBoardDto(board, memberBasicInfoDto);
         }));
     }
 
@@ -251,7 +251,7 @@ public class ActivityGroupBoardService {
                 .filter(children -> hasAccessToBoard(children.getActivityGroup(), children, currentMember))
                 .map(this::toActivityGroupBoardChildResponseDtoWithMemberInfo)
                 .toList();
-        return mapper.toActivityGroupBoardChildResponseDto(activityGroupBoard, memberBasicInfo, childrenDtos);
+        return mapper.toChildDto(activityGroupBoard, memberBasicInfo, childrenDtos);
     }
 
     private void validateParentBoard(ActivityGroupBoardCategory category, Long parentId) throws InvalidParentBoardException {

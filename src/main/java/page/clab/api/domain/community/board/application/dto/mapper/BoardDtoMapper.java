@@ -40,7 +40,7 @@ public class BoardDtoMapper {
     }
 
     public BoardDetailsResponseDto toDto(Board board, MemberDetailedInfoDto memberInfo, boolean isOwner, List<BoardEmojiCountResponseDto> emojiInfos) {
-        WriterInfo writerInfo = createDetailWriterInfo(board, memberInfo);
+        WriterInfo writerInfo = createDetail(board, memberInfo);
         return BoardDetailsResponseDto.builder()
                 .id(board.getId())
                 .writerId(writerInfo.getId())
@@ -78,8 +78,8 @@ public class BoardDtoMapper {
                 .build();
     }
 
-    public BoardCategoryResponseDto toBoardCategoryResponseDto(Board board, MemberDetailedInfoDto memberInfo, Long commentCount) {
-        WriterInfo writerInfo = createWriterInfo(board, memberInfo);
+    public BoardCategoryResponseDto toCategoryDto(Board board, MemberDetailedInfoDto memberInfo, Long commentCount) {
+        WriterInfo writerInfo = create(board, memberInfo);
         return BoardCategoryResponseDto.builder()
                 .id(board.getId())
                 .category(board.getCategory().getKey())
@@ -92,8 +92,8 @@ public class BoardDtoMapper {
                 .build();
     }
 
-    public BoardListResponseDto toBoardListResponseDto(Board board, MemberDetailedInfoDto memberInfo, Long commentCount) {
-        WriterInfo writerInfo = createWriterInfo(board, memberInfo);
+    public BoardListResponseDto toListDto(Board board, MemberDetailedInfoDto memberInfo, Long commentCount) {
+        WriterInfo writerInfo = create(board, memberInfo);
         return BoardListResponseDto.builder()
                 .id(board.getId())
                 .writerId(writerInfo.getId())
@@ -107,7 +107,7 @@ public class BoardDtoMapper {
                 .build();
     }
 
-    public WriterInfo createWriterInfo(Board board, MemberDetailedInfoDto memberInfo) {
+    public WriterInfo create(Board board, MemberDetailedInfoDto memberInfo) {
         if (memberInfo.isAdminRole() && board.isNotice()) {
             return new WriterInfo(null, "운영진");
         } else if (board.isWantAnonymous()) {
@@ -116,7 +116,7 @@ public class BoardDtoMapper {
         return new WriterInfo(memberInfo.getMemberId(), memberInfo.getMemberName());
     }
 
-    public WriterInfo createDetailWriterInfo(Board board, MemberDetailedInfoDto memberInfo) {
+    public WriterInfo createDetail(Board board, MemberDetailedInfoDto memberInfo) {
         if (memberInfo.isAdminRole() && board.isNotice()) {
             return new WriterInfo(null, "운영진", memberInfo.getRoleLevel(), null);
         } else if (board.isWantAnonymous()) {

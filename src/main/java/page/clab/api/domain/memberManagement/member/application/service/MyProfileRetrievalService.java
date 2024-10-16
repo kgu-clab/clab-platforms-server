@@ -20,6 +20,6 @@ public class MyProfileRetrievalService implements RetrieveMyProfileUseCase {
     @Override
     public MyProfileResponseDto retrieveMyProfile() {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
-        return mapper.toMyProfileResponseDto(currentMember);
+        return mapper.toMyProfileDto(currentMember);
     }
 }
