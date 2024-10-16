@@ -24,7 +24,7 @@ public class BooksByConditionsRetrievalService implements RetrieveBooksByConditi
     private final RetrieveBookPort retrieveBookPort;
     private final ExternalRetrieveBookLoanRecordUseCase externalRetrieveBookLoanRecordUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final BookDtoMapper dtoMapper;
+    private final BookDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -37,7 +37,7 @@ public class BooksByConditionsRetrievalService implements RetrieveBooksByConditi
     private BookResponseDto mapToBookResponseDto(Book book) {
         LocalDateTime dueDate = externalRetrieveBookLoanRecordUseCase.getDueDateForBook(book.getId());
         String borrowerName = getBorrowerName(book);
-        return dtoMapper.toBookResponseDto(book, borrowerName, dueDate);
+        return mapper.toBookResponseDto(book, borrowerName, dueDate);
     }
 
     private String getBorrowerName(Book book) {

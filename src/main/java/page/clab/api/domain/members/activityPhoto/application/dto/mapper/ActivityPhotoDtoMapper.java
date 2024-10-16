@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ActivityPhotoDtoMapper {
 
-    private final FileDtoMapper dtoMapper;
+    private final FileDtoMapper mapper;
 
     public ActivityPhoto fromDto(ActivityPhotoRequestDto requestDto, List<UploadedFile> uploadedFiles) {
         return ActivityPhoto.builder()
@@ -30,7 +30,7 @@ public class ActivityPhotoDtoMapper {
         return ActivityPhotoResponseDto.builder()
                 .id(activityPhoto.getId())
                 .title(activityPhoto.getTitle())
-                .files(dtoMapper.toDto(activityPhoto.getUploadedFiles()))
+                .files(mapper.toDto(activityPhoto.getUploadedFiles()))
                 .date(activityPhoto.getDate())
                 .isPublic(activityPhoto.getIsPublic())
                 .createdAt(activityPhoto.getCreatedAt())

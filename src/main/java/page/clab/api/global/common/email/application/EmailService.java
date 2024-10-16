@@ -23,7 +23,7 @@ public class EmailService {
     private final EmailAsyncService emailAsyncService;
     private final EmailTemplateProperties emailTemplateProperties;
     private final SpringTemplateEngine springTemplateEngine;
-    private final EmailDtoMapper dtoMapper;
+    private final EmailDtoMapper mapper;
 
     public void sendAccountCreationEmail(Member member, String password) {
         EmailTemplateProperties.Template template = emailTemplateProperties.getTemplate(EmailTemplateType.ACCOUNT_CREATION);
@@ -33,7 +33,7 @@ public class EmailService {
                 .replace("{{id}}", member.getId())
                 .replace("{{password}}", password);
 
-        EmailDto emailDto = dtoMapper.of(
+        EmailDto emailDto = mapper.of(
                 List.of(member.getEmail()),
                 subject,
                 content,
@@ -50,7 +50,7 @@ public class EmailService {
         String content = template.getContent()
                 .replace("{{code}}", code);
 
-        EmailDto emailDto = dtoMapper.of(
+        EmailDto emailDto = mapper.of(
                 List.of(member.getEmail()),
                 subject,
                 content,
@@ -68,7 +68,7 @@ public class EmailService {
                 .replace("{{id}}", member.getId())
                 .replace("{{password}}", newPassword);
 
-        EmailDto emailDto = dtoMapper.of(
+        EmailDto emailDto = mapper.of(
                 List.of(member.getEmail()),
                 subject,
                 content,

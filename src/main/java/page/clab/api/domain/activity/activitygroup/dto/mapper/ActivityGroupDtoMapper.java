@@ -46,7 +46,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ActivityGroupDtoMapper {
 
-    private final FileDtoMapper dtoMapper;
+    private final FileDtoMapper mapper;
 
     public GroupSchedule fromDto(GroupScheduleDto groupScheduleDto, ActivityGroup activityGroup) {
         return GroupSchedule.builder()
@@ -233,7 +233,7 @@ public class ActivityGroupDtoMapper {
                 .dueDateTime(board.getDueDateTime())
                 .updatedAt(board.getUpdatedAt())
                 .createdAt(board.getCreatedAt())
-                .files(dtoMapper.toDto(board.getUploadedFiles()))
+                .files(mapper.toDto(board.getUploadedFiles()))
                 .children(childrenDtos)
                 .build();
     }
@@ -245,7 +245,7 @@ public class ActivityGroupDtoMapper {
                 .memberName(memberBasicInfo.getMemberName())
                 .parentId(board.getParent() != null ? board.getParent().getId() : null)
                 .content(board.getContent())
-                .files(dtoMapper.toDto(board.getUploadedFiles()))
+                .files(mapper.toDto(board.getUploadedFiles()))
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
                 .feedbacks(feedbackDtos)
@@ -261,7 +261,7 @@ public class ActivityGroupDtoMapper {
                 .category(board.getCategory())
                 .title(board.getTitle())
                 .content(board.getContent())
-                .files(dtoMapper.toDto(board.getUploadedFiles()))
+                .files(mapper.toDto(board.getUploadedFiles()))
                 .dueDateTime(board.getDueDateTime())
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
@@ -274,7 +274,7 @@ public class ActivityGroupDtoMapper {
                 .memberId(memberBasicInfo.getMemberId())
                 .memberName(memberBasicInfo.getMemberName())
                 .content(board.getContent())
-                .files(dtoMapper.toDto(board.getUploadedFiles()))
+                .files(mapper.toDto(board.getUploadedFiles()))
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
                 .build();

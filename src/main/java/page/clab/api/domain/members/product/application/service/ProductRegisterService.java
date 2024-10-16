@@ -14,12 +14,12 @@ import page.clab.api.domain.members.product.domain.Product;
 public class ProductRegisterService implements RegisterProductUseCase {
 
     private final RegisterProductPort registerProductPort;
-    private final ProductDtoMapper dtoMapper;
+    private final ProductDtoMapper mapper;
 
     @Transactional
     @Override
     public Long registerProduct(ProductRequestDto requestDto) {
-        Product product = dtoMapper.fromDto(requestDto);
+        Product product = mapper.fromDto(requestDto);
         return registerProductPort.save(product).getId();
     }
 }

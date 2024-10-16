@@ -16,13 +16,13 @@ public class DonationRegisterService implements RegisterDonationUseCase {
 
     private final RegisterDonationPort registerDonationPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final DonationDtoMapper dtoMapper;
+    private final DonationDtoMapper mapper;
 
     @Transactional
     @Override
     public Long registerDonation(DonationRequestDto requestDto) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
-        Donation donation = dtoMapper.fromDto(requestDto, currentMemberId);
+        Donation donation = mapper.fromDto(requestDto, currentMemberId);
         return registerDonationPort.save(donation).getId();
     }
 }

@@ -21,13 +21,13 @@ public class ActivitySchedulesRetrievalService implements RetrieveActivitySchedu
 
     private final RetrieveSchedulePort retrieveSchedulePort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final ScheduleDtoMapper dtoMapper;
+    private final ScheduleDtoMapper mapper;
 
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> retrieveActivitySchedules(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         Page<Schedule> schedules = retrieveSchedulePort.findActivitySchedulesByDateRangeAndMemberId(startDate, endDate, currentMemberId, pageable);
-        return new PagedResponseDto<>(schedules.map(dtoMapper::toDto));
+        return new PagedResponseDto<>(schedules.map(mapper::toDto));
     }
 }

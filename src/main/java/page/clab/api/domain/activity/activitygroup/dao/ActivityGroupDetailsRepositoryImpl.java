@@ -22,7 +22,7 @@ import java.util.List;
 public class ActivityGroupDetailsRepositoryImpl implements ActivityGroupDetailsRepository {
 
     private final JPAQueryFactory queryFactory;
-    private final ActivityGroupDtoMapper dtoMapper;
+    private final ActivityGroupDtoMapper mapper;
 
     @Override
     public ActivityGroupDetails fetchActivityGroupDetails(Long activityGroupId) {
@@ -58,6 +58,6 @@ public class ActivityGroupDetailsRepositoryImpl implements ActivityGroupDetailsR
                 .where(activityGroupCondition)
                 .fetchOne();
 
-        return dtoMapper.of(foundActivityGroup, groupMembers, boards);
+        return mapper.of(foundActivityGroup, groupMembers, boards);
     }
 }

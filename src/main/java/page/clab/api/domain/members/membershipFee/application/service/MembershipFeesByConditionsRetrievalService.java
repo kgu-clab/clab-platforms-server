@@ -21,7 +21,7 @@ public class MembershipFeesByConditionsRetrievalService implements RetrieveMembe
 
     private final RetrieveMembershipFeePort retrieveMembershipFeePort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final MembershipFeeDtoMapper dtoMapper;
+    private final MembershipFeeDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -33,6 +33,6 @@ public class MembershipFeesByConditionsRetrievalService implements RetrieveMembe
 
     private MembershipFeeResponseDto getMembershipFeeResponseDto(MembershipFee membershipFee, boolean isAdminRole) {
         MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(membershipFee.getMemberId());
-        return dtoMapper.toDto(membershipFee, memberInfo.getMemberName(), isAdminRole);
+        return mapper.toDto(membershipFee, memberInfo.getMemberName(), isAdminRole);
     }
 }

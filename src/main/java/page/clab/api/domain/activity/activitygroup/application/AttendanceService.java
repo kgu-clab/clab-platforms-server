@@ -49,7 +49,7 @@ public class AttendanceService {
     private final GoogleAuthenticator googleAuthenticator;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final FileService fileService;
-    private final ActivityGroupDtoMapper dtoMapper;
+    private final ActivityGroupDtoMapper mapper;
 
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -99,7 +99,7 @@ public class AttendanceService {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = validateGroupAndMemberForAttendance(activityGroupId, currentMember);
         Page<Attendance> attendances = getAttendanceByMemberId(activityGroup, currentMember.getId(), pageable);
-        return new PagedResponseDto<>(attendances.map(dtoMapper::toDto));
+        return new PagedResponseDto<>(attendances.map(mapper::toDto));
     }
 
     @Transactional(readOnly = true)
@@ -107,7 +107,7 @@ public class AttendanceService {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupWithValidPermissions(activityGroupId, currentMember);
         Page<Attendance> attendances = getAttendanceByActivityGroup(activityGroup, pageable);
-        return new PagedResponseDto<>(attendances.map(dtoMapper::toDto));
+        return new PagedResponseDto<>(attendances.map(mapper::toDto));
     }
 
     @Transactional
@@ -115,7 +115,7 @@ public class AttendanceService {
         Member absentee = externalRetrieveMemberUseCase.getById(requestDto.getAbsenteeId());
         ActivityGroup activityGroup = getValidActivityGroup(requestDto.getActivityGroupId());
         validateAbsentExcuseConditions(absentee, activityGroup, requestDto.getAbsentDate());
-        Absent absent = dtoMapper.fromDto(requestDto, absentee, activityGroup);
+        Absent absent = mapper.fromDto(requestDto, absentee, activityGroup);
         return absentRepository.save(absent).getId();
     }
 
@@ -126,7 +126,7 @@ public class AttendanceService {
         Page<Absent> absents = absentRepository.findAllByActivityGroup(activityGroup, pageable);
         return new PagedResponseDto<>(absents.map(absent -> {
             Member member = externalRetrieveMemberUseCase.getById(absent.getMemberId());
-            return dtoMapper.toDto(absent, member);
+            return mapper.toDto(absent, member);
         }));
     }
 

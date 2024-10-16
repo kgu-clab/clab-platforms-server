@@ -18,13 +18,13 @@ import java.util.List;
 public class RecentRecruitmentsRetrievalService implements RetrieveRecentRecruitmentsUseCase {
 
     private final RetrieveRecruitmentPort retrieveRecruitmentPort;
-    private final RecruitmentDtoMapper dtoMapper;
+    private final RecruitmentDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
     public List<RecruitmentResponseDto> retrieveRecentRecruitments() {
         return retrieveRecruitmentPort.findTop5ByOrderByCreatedAtDesc().stream()
-                .map(dtoMapper::toRecruitmentResponseDto)
+                .map(mapper::toRecruitmentResponseDto)
                 .toList();
     }
 
@@ -36,7 +36,7 @@ public class RecentRecruitmentsRetrievalService implements RetrieveRecentRecruit
         LocalDateTime endOfDay = now.with(LocalTime.MAX);
 
         return retrieveRecruitmentPort.findByEndDateBetween(weekAgo, endOfDay).stream()
-                .map(dtoMapper::toRecruitmentEndDateResponseDto)
+                .map(mapper::toRecruitmentEndDateResponseDto)
                 .toList();
     }
 }

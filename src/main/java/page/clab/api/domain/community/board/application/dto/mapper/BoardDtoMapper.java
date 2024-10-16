@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardDtoMapper {
 
-    private final FileDtoMapper dtoMapper;
+    private final FileDtoMapper mapper;
 
     public Board fromDto(BoardRequestDto requestDto, String memberId, List<UploadedFile> uploadedFiles) {
         return Board.builder()
@@ -50,7 +50,7 @@ public class BoardDtoMapper {
                 .category(board.getCategory().getKey())
                 .title(board.getTitle())
                 .content(board.getContent())
-                .files(dtoMapper.toDto(board.getUploadedFiles()))
+                .files(mapper.toDto(board.getUploadedFiles()))
                 .imageUrl(board.getImageUrl())
                 .isOwner(isOwner)
                 .emojiInfos(emojiInfos)

@@ -33,13 +33,13 @@ public class MemberRegisterService implements RegisterMemberUseCase {
     private final ExternalRetrievePositionUseCase externalRetrievePositionUseCase;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
-    private final MemberDtoMapper dtoMapper;
+    private final MemberDtoMapper mapper;
 
     @Transactional
     @Override
     public String registerMember(MemberRequestDto requestDto) {
         checkMemberUniqueness(requestDto);
-        Member member = dtoMapper.fromDto(requestDto);
+        Member member = mapper.fromDto(requestDto);
         String finalPassword = manageMemberPasswordUseCase.generateOrRetrievePassword(requestDto.getPassword());
         member.updatePassword(finalPassword, passwordEncoder);
         registerMemberPort.save(member);

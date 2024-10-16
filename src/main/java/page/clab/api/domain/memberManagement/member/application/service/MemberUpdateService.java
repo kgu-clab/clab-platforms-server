@@ -26,7 +26,7 @@ public class MemberUpdateService implements UpdateMemberUseCase {
     private final FileService fileService;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher eventPublisher;
-    private final FileDtoMapper dtoMapper;
+    private final FileDtoMapper mapper;
 
     @Transactional
     @Override
@@ -45,7 +45,7 @@ public class MemberUpdateService implements UpdateMemberUseCase {
         member.update(requestDto, passwordEncoder);
         if (requestDto.getImageUrl() != null && requestDto.getImageUrl().isEmpty()) {
             member.clearImageUrl();
-            fileService.deleteFile(dtoMapper.of(previousImageUrl));
+            fileService.deleteFile(mapper.of(previousImageUrl));
         }
     }
 }

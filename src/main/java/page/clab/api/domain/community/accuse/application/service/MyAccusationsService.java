@@ -19,13 +19,13 @@ public class MyAccusationsService implements RetrieveMyAccusationsUseCase {
 
     private final RetrieveAccusePort retrieveAccusePort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final AccuseDtoMapper dtoMapper;
+    private final AccuseDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<AccuseMyResponseDto> retrieveMyAccusations(Pageable pageable) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         Page<Accuse> accuses = retrieveAccusePort.findByMemberId(currentMemberId, pageable);
-        return new PagedResponseDto<>(accuses.map(dtoMapper::toDto));
+        return new PagedResponseDto<>(accuses.map(mapper::toDto));
     }
 }

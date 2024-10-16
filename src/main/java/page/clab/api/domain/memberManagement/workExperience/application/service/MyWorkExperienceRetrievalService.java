@@ -19,13 +19,13 @@ public class MyWorkExperienceRetrievalService implements RetrieveMyWorkExperienc
 
     private final RetrieveWorkExperiencePort retrieveWorkExperiencePort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final WorkExperienceDtoMapper dtoMapper;
+    private final WorkExperienceDtoMapper mapper;
 
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<WorkExperienceResponseDto> retrieveMyWorkExperience(Pageable pageable) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         Page<WorkExperience> workExperiences = retrieveWorkExperiencePort.findByMemberId(currentMemberId, pageable);
-        return new PagedResponseDto<>(workExperiences.map(dtoMapper::toDto));
+        return new PagedResponseDto<>(workExperiences.map(mapper::toDto));
     }
 }

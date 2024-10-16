@@ -20,7 +20,7 @@ public class MyDonationsRetrievalService implements RetrieveMyDonationsUseCase {
 
     private final RetrieveDonationPort retrieveDonationPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final DonationDtoMapper dtoMapper;
+    private final DonationDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -29,7 +29,7 @@ public class MyDonationsRetrievalService implements RetrieveMyDonationsUseCase {
         Page<Donation> donations = retrieveDonationPort.findByMemberId(currentMemberId, pageable);
         return new PagedResponseDto<>(donations.map(donation -> {
             MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(donation.getMemberId());
-            return dtoMapper.toDto(donation, memberInfo.getMemberName());
+            return mapper.toDto(donation, memberInfo.getMemberName());
         }));
     }
 }

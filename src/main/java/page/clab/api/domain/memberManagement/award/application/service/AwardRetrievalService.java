@@ -17,12 +17,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class AwardRetrievalService implements RetrieveAwardsUseCase {
 
     private final RetrieveAwardPort retrieveAwardPort;
-    private final AwardDtoMapper dtoMapper;
+    private final AwardDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<AwardResponseDto> retrieveAwards(String memberId, Long year, Pageable pageable) {
         Page<Award> awards = retrieveAwardPort.findByConditions(memberId, year, pageable);
-        return new PagedResponseDto<>(awards.map(dtoMapper::toDto));
+        return new PagedResponseDto<>(awards.map(mapper::toDto));
     }
 }

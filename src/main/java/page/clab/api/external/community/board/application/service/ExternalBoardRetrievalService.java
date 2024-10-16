@@ -16,7 +16,7 @@ public class ExternalBoardRetrievalService implements ExternalRetrieveBoardUseCa
 
     private final BoardRetrievalService boardRetrievalService;
     private final RetrieveBoardPort retrieveBoardPort;
-    private final BoardDtoMapper dtoMapper;
+    private final BoardDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -28,6 +28,6 @@ public class ExternalBoardRetrievalService implements ExternalRetrieveBoardUseCa
     @Override
     public BoardCommentInfoDto getBoardCommentInfoById(Long boardId) {
         Board board = retrieveBoardPort.findByIdRegardlessOfDeletion(boardId);
-        return dtoMapper.toDto(board);
+        return mapper.toDto(board);
     }
 }

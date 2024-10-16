@@ -28,7 +28,7 @@ public class ActivityGroupReportService {
     private final ActivityGroupAdminService activityGroupAdminService;
     private final ActivityGroupReportRepository activityGroupReportRepository;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final ActivityGroupDtoMapper dtoMapper;
+    private final ActivityGroupDtoMapper mapper;
 
     @Transactional
     public Long writeReport(ActivityGroupReportRequestDto requestDto) throws PermissionDeniedException, IllegalAccessException {
@@ -43,14 +43,14 @@ public class ActivityGroupReportService {
     public PagedResponseDto<ActivityGroupReportResponseDto> getReports(Long activityGroupId, Pageable pageable) {
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         Page<ActivityGroupReport> reports = activityGroupReportRepository.findAllByActivityGroup(activityGroup, pageable);
-        return new PagedResponseDto<>(reports.map(dtoMapper::toDto));
+        return new PagedResponseDto<>(reports.map(mapper::toDto));
     }
 
     @Transactional(readOnly = true)
     public ActivityGroupReportResponseDto searchReport(Long activityGroupId, Long turn) {
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         ActivityGroupReport report = activityGroupReportRepository.findByActivityGroupAndTurn(activityGroup, turn);
-        return dtoMapper.toDto(report);
+        return mapper.toDto(report);
     }
 
     @Transactional
@@ -73,7 +73,7 @@ public class ActivityGroupReportService {
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupReportResponseDto> getDeletedActivityGroupReports(Pageable pageable) {
         Page<ActivityGroupReport> activityGroupReports = activityGroupReportRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(activityGroupReports.map(dtoMapper::toDto));
+        return new PagedResponseDto<>(activityGroupReports.map(mapper::toDto));
     }
 
     public ActivityGroupReport getReportById(Long reportId) {
@@ -85,7 +85,7 @@ public class ActivityGroupReportService {
         if (activityGroupReportRepository.existsByActivityGroupAndTurn(activityGroup, requestDto.getTurn())) {
             throw new DuplicateReportException("이미 해당 차시의 보고서가 존재합니다.");
         }
-        return dtoMapper.fromDto(requestDto, activityGroup);
+        return mapper.fromDto(requestDto, activityGroup);
     }
 
     private void validateReportUpdatePermission(Long activityGroupId, Member currentMember, ActivityGroup activityGroup) throws PermissionDeniedException, IllegalAccessException {

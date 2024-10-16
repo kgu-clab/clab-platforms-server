@@ -18,12 +18,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class MemberRoleInfoRetrievalService implements RetrieveMemberRoleInfoUseCase {
 
     private final RetrieveMemberPort retrieveMemberPort;
-    private final MemberDtoMapper dtoMapper;
+    private final MemberDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<MemberRoleInfoResponseDto> retrieveMemberRoleInfo(String memberId, String memberName, Role role, Pageable pageable) {
         Page<Member> members = retrieveMemberPort.findMemberRoleInfoByConditions(memberId, memberName, role, pageable);
-        return new PagedResponseDto<>(members.map(dtoMapper::toMemberRoleInfoResponseDto));
+        return new PagedResponseDto<>(members.map(mapper::toMemberRoleInfoResponseDto));
     }
 }

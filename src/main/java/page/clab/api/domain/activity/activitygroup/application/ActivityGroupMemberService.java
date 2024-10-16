@@ -59,7 +59,7 @@ public class ActivityGroupMemberService {
     private final ActivityGroupDetailsRepository activityGroupDetailsRepository;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
-    private final ActivityGroupDtoMapper dtoMapper;
+    private final ActivityGroupDtoMapper mapper;
 
     @Transactional(readOnly = true)
     public ActivityGroupDetailResponseDto getActivityGroup(Long activityGroupId) {
@@ -70,18 +70,18 @@ public class ActivityGroupMemberService {
                 .anyMatch(groupMember -> groupMember.isOwnerAndLeader(currentMember));
 
         List<GroupMemberResponseDto> groupMemberResponseDtos = details.getGroupMembers().stream()
-                .map(groupMember -> dtoMapper.toDto(externalRetrieveMemberUseCase.getById(groupMember.getMemberId()), groupMember))
+                .map(groupMember -> mapper.toDto(externalRetrieveMemberUseCase.getById(groupMember.getMemberId()), groupMember))
                 .toList();
 
         List<ActivityGroupBoardResponseDto> activityGroupBoardResponseDtos =
                 details.getActivityGroupBoards().stream()
                         .map(board -> {
                             MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(board.getMemberId());
-                            return dtoMapper.toActivityGroupBoardResponseDto(board, memberBasicInfoDto);
+                            return mapper.toActivityGroupBoardResponseDto(board, memberBasicInfoDto);
                         })
                         .toList();
 
-        return dtoMapper.toDto(details.getActivityGroup(), activityGroupBoardResponseDtos, groupMemberResponseDtos, isOwner);
+        return mapper.toDto(details.getActivityGroup(), activityGroupBoardResponseDtos, groupMemberResponseDtos, isOwner);
     }
 
     @Transactional(readOnly = true)
@@ -117,13 +117,13 @@ public class ActivityGroupMemberService {
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByCategory(ActivityGroupCategory category, Pageable pageable) {
         Page<ActivityGroup> activityGroupList = getActivityGroupByCategory(category, pageable);
-        return new PagedResponseDto<>(activityGroupList.map(dtoMapper::toDto));
+        return new PagedResponseDto<>(activityGroupList.map(mapper::toDto));
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<GroupScheduleDto> getGroupSchedules(Long activityGroupId, Pageable pageable) {
         Page<GroupSchedule> groupSchedules = getGroupScheduleByActivityGroupId(activityGroupId, pageable);
-        return new PagedResponseDto<>(groupSchedules.map(dtoMapper::toDto));
+        return new PagedResponseDto<>(groupSchedules.map(mapper::toDto));
     }
 
     @Transactional(readOnly = true)
@@ -131,7 +131,7 @@ public class ActivityGroupMemberService {
         Page<GroupMember> groupMembers = getGroupMemberByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.ACCEPTED, pageable);
         return new PagedResponseDto<>(groupMembers.map(groupMember -> {
             Member member = externalRetrieveMemberUseCase.getById(groupMember.getMemberId());
-            return dtoMapper.toDto(member, groupMember);
+            return mapper.toDto(member, groupMember);
         }));
     }
 
@@ -144,7 +144,7 @@ public class ActivityGroupMemberService {
             throw new AlreadyAppliedException("해당 활동에 신청한 내역이 존재합니다.");
         }
 
-        ApplyForm form = dtoMapper.fromDto(formRequestDto, activityGroup, currentMember);
+        ApplyForm form = mapper.fromDto(formRequestDto, activityGroup, currentMember);
         applyFormRepository.save(form);
 
         GroupMember groupMember = GroupMember.create(currentMember.getId(), activityGroup, ActivityGroupRole.NONE, GroupMemberStatus.WAITING);
@@ -194,7 +194,7 @@ public class ActivityGroupMemberService {
                 .map(leader -> {
                     Member member = externalRetrieveMemberUseCase.getById(leader.getMemberId());
                     LocalDateTime createdAt = leader.getCreatedAt();
-                    return dtoMapper.create(member, createdAt);
+                    return mapper.create(member, createdAt);
                 })
                 // LEADER 직책을 가진 사람 중 가장 먼저 활동에 참여한 사람 순으로 정렬
                 .sorted(Comparator.comparing(LeaderInfo::getCreatedAt))
@@ -202,7 +202,7 @@ public class ActivityGroupMemberService {
 
         Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroupId, ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
 
-        return dtoMapper.toDto(activityGroup, leaderMembers, participantCount, weeklyActivityCount);
+        return mapper.toDto(activityGroup, leaderMembers, participantCount, weeklyActivityCount);
     }
 
     public ActivityGroup getActivityGroupById(Long activityGroupId) {

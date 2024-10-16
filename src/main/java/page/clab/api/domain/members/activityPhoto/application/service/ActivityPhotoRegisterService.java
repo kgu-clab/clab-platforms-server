@@ -19,13 +19,13 @@ public class ActivityPhotoRegisterService implements RegisterActivityPhotoUseCas
 
     private final RegisterActivityPhotoPort registerActivityPhotoPort;
     private final UploadedFileService uploadedFileService;
-    private final ActivityPhotoDtoMapper dtoMapper;
+    private final ActivityPhotoDtoMapper mapper;
 
     @Transactional
     @Override
     public Long registerActivityPhoto(ActivityPhotoRequestDto requestDto) {
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
-        ActivityPhoto activityPhoto = dtoMapper.fromDto(requestDto, uploadedFiles);
+        ActivityPhoto activityPhoto = mapper.fromDto(requestDto, uploadedFiles);
         return registerActivityPhotoPort.save(activityPhoto).getId();
     }
 }

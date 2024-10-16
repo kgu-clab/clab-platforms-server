@@ -20,13 +20,13 @@ public class DeletedBlogsRetrievalService implements RetrieveDeletedBlogsUseCase
 
     private final RetrieveBlogPort retrieveBlogPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final BlogDtoMapper dtoMapper;
+    private final BlogDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<BlogDetailsResponseDto> retrieveDeletedBlogs(Pageable pageable) {
         MemberBasicInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
         Page<Blog> blogs = retrieveBlogPort.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(blogs.map(blog -> dtoMapper.toDto(blog, currentMemberInfo, blog.isOwner(currentMemberInfo.getMemberId()))));
+        return new PagedResponseDto<>(blogs.map(blog -> mapper.toDto(blog, currentMemberInfo, blog.isOwner(currentMemberInfo.getMemberId()))));
     }
 }

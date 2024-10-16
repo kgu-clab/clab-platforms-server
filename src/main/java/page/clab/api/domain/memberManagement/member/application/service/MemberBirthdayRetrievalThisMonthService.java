@@ -17,12 +17,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class MemberBirthdayRetrievalThisMonthService implements RetrieveMemberBirthdaysThisMonthUseCase {
 
     private final RetrieveMemberPort retrieveMemberPort;
-    private final MemberDtoMapper dtoMapper;
+    private final MemberDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<MemberBirthdayResponseDto> retrieveBirthdaysThisMonth(int month, Pageable pageable) {
         Page<Member> birthdayMembers = retrieveMemberPort.findBirthdaysThisMonth(month, pageable);
-        return new PagedResponseDto<>(birthdayMembers.map(dtoMapper::toMemberBirthdayResponseDto));
+        return new PagedResponseDto<>(birthdayMembers.map(mapper::toMemberBirthdayResponseDto));
     }
 }

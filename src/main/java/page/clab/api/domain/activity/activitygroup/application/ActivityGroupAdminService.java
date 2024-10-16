@@ -52,12 +52,12 @@ public class ActivityGroupAdminService {
     private final ApplyFormRepository applyFormRepository;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
-    private final ActivityGroupDtoMapper dtoMapper;
+    private final ActivityGroupDtoMapper mapper;
 
     @Transactional
     public Long createActivityGroup(ActivityGroupRequestDto requestDto) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
-        ActivityGroup activityGroup = dtoMapper.fromDto(requestDto);
+        ActivityGroup activityGroup = mapper.fromDto(requestDto);
         activityGroup.validateAndSetGithubUrl(activityGroup.getGithubUrl());
         activityGroupRepository.save(activityGroup);
 
@@ -87,13 +87,13 @@ public class ActivityGroupAdminService {
         if (!CollectionUtils.isEmpty(groupLeaders)) {
             groupLeaders.forEach(leader -> externalSendNotificationUseCase.sendNotificationToMember(leader.getMemberId(), "활동 그룹이 [" + status.getDescription() + "] 상태로 변경되었습니다."));
         }
-        return dtoMapper.of(activityGroupId, status);
+        return mapper.of(activityGroupId, status);
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupResponseDto> getDeletedActivityGroups(Pageable pageable) {
         Page<ActivityGroup> activityGroups = activityGroupRepository.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(activityGroups.map(dtoMapper::toDto));
+        return new PagedResponseDto<>(activityGroups.map(mapper::toDto));
     }
 
     @Transactional
@@ -131,7 +131,7 @@ public class ActivityGroupAdminService {
         ActivityGroup activityGroup = getActivityGroupById(activityGroupId);
         validateLeaderOrAdminPermission(activityGroup, currentMember, "해당 일정을 등록할 권한이 없습니다.");
         List<GroupSchedule> groupSchedules = scheduleDtos.stream()
-                .map(scheduleDto -> dtoMapper.fromDto(scheduleDto, activityGroup))
+                .map(scheduleDto -> mapper.fromDto(scheduleDto, activityGroup))
                 .toList();
         groupScheduleRepository.saveAll(groupSchedules);
         return activityGroup.getId();
@@ -155,7 +155,7 @@ public class ActivityGroupAdminService {
                 .map(groupMember -> {
                     String applyReason = memberIdToApplyReasonMap.getOrDefault(groupMember.getMemberId(), "");
                     Member member = externalRetrieveMemberUseCase.getById(groupMember.getMemberId());
-                    return dtoMapper.toDto(member, groupMember, applyReason);
+                    return mapper.toDto(member, groupMember, applyReason);
                 })
                 .sorted(Comparator.comparing(ActivityGroupMemberWithApplyReasonResponseDto::getStatus))
                 .toList();

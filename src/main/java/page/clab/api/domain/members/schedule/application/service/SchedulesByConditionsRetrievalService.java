@@ -18,12 +18,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class SchedulesByConditionsRetrievalService implements RetrieveSchedulesByConditionsUseCase {
 
     private final RetrieveSchedulePort retrieveSchedulePort;
-    private final ScheduleDtoMapper dtoMapper;
+    private final ScheduleDtoMapper mapper;
 
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> retrieveSchedules(Integer year, Integer month, SchedulePriority priority, Pageable pageable) {
         Page<Schedule> schedules = retrieveSchedulePort.findByConditions(year, month, priority, pageable);
-        return new PagedResponseDto<>(schedules.map(dtoMapper::toDto));
+        return new PagedResponseDto<>(schedules.map(mapper::toDto));
     }
 }

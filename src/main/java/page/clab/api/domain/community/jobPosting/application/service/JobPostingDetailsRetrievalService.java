@@ -14,12 +14,12 @@ import page.clab.api.domain.community.jobPosting.domain.JobPosting;
 public class JobPostingDetailsRetrievalService implements RetrieveJobPostingDetailsUseCase {
 
     private final RetrieveJobPostingPort retrieveJobPostingPort;
-    private final JobPostingDtoMapper dtoMapper;
+    private final JobPostingDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
     public JobPostingDetailsResponseDto retrieveJobPostingDetails(Long jobPostingId) {
         JobPosting jobPosting = retrieveJobPostingPort.getById(jobPostingId);
-        return dtoMapper.toJobPostingDetailsResponseDto(jobPosting);
+        return mapper.toJobPostingDetailsResponseDto(jobPosting);
     }
 }

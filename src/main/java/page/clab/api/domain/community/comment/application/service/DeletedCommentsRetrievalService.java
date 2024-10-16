@@ -23,7 +23,7 @@ public class DeletedCommentsRetrievalService implements RetrieveDeletedCommentsU
 
     private final RetrieveCommentPort retrieveCommentPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final CommentDtoMapper dtoMapper;
+    private final CommentDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -33,7 +33,7 @@ public class DeletedCommentsRetrievalService implements RetrieveDeletedCommentsU
         List<DeletedCommentResponseDto> deletedCommentDtos = comments.stream()
                 .map(comment -> {
                     MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(comment.getWriterId());
-                    return dtoMapper.toDto(comment, memberInfo, comment.isOwner(currentMemberId));
+                    return mapper.toDto(comment, memberInfo, comment.isOwner(currentMemberId));
                 })
                 .toList();
         return new PagedResponseDto<>(new PageImpl<>(deletedCommentDtos, pageable, comments.getTotalElements()));

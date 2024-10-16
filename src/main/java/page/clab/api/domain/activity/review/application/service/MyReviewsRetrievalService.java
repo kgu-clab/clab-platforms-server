@@ -20,7 +20,7 @@ public class MyReviewsRetrievalService implements RetrieveMyReviewsUseCase {
 
     private final RetrieveReviewPort retrieveReviewPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final ReviewDtoMapper dtoMapper;
+    private final ReviewDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -29,7 +29,7 @@ public class MyReviewsRetrievalService implements RetrieveMyReviewsUseCase {
         Page<Review> reviews = retrieveReviewPort.findAllByMemberId(currentMemberId, pageable);
         return new PagedResponseDto<>(reviews.map(review -> {
             MemberReviewInfoDto reviewer = externalRetrieveMemberUseCase.getMemberReviewInfoById(review.getMemberId());
-            return dtoMapper.toDto(review, reviewer, review.isOwner(currentMemberId));
+            return mapper.toDto(review, reviewer, review.isOwner(currentMemberId));
         }));
     }
 }

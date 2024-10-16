@@ -17,12 +17,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class DeletedProductsRetrievalService implements RetrieveDeletedProductsUseCase {
 
     private final RetrieveProductPort retrieveProductPort;
-    private final ProductDtoMapper dtoMapper;
+    private final ProductDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<ProductResponseDto> retrieveDeletedProducts(Pageable pageable) {
         Page<Product> products = retrieveProductPort.findAllByIsDeletedTrue(pageable);
-        return new PagedResponseDto<>(products.map(dtoMapper::toDto));
+        return new PagedResponseDto<>(products.map(mapper::toDto));
     }
 }

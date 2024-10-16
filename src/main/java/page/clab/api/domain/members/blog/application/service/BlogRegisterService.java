@@ -16,13 +16,13 @@ public class BlogRegisterService implements RegisterBlogUseCase {
 
     private final RegisterBlogPort registerBlogPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final BlogDtoMapper dtoMapper;
+    private final BlogDtoMapper mapper;
 
     @Transactional
     @Override
     public Long registerBlog(BlogRequestDto requestDto) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
-        Blog blog = dtoMapper.fromDto(requestDto, currentMemberId);
+        Blog blog = mapper.fromDto(requestDto, currentMemberId);
         return registerBlogPort.save(blog).getId();
     }
 }

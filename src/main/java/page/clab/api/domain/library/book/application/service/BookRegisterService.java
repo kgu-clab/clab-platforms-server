@@ -14,12 +14,12 @@ import page.clab.api.domain.library.book.domain.Book;
 public class BookRegisterService implements RegisterBookUseCase {
 
     private final RegisterBookPort registerBookPort;
-    private final BookDtoMapper dtoMapper;
+    private final BookDtoMapper mapper;
 
     @Transactional
     @Override
     public Long registerBook(BookRequestDto requestDto) {
-        Book book = dtoMapper.fromDto(requestDto);
+        Book book = mapper.fromDto(requestDto);
         return registerBookPort.save(book).getId();
     }
 }

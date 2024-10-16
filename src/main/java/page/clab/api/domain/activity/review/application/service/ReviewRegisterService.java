@@ -31,7 +31,7 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
     private final ActivityGroupMemberService activityGroupMemberService;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
-    private final ReviewDtoMapper dtoMapper;
+    private final ReviewDtoMapper mapper;
 
     @Transactional
     @Override
@@ -39,7 +39,7 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
         MemberBasicInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
         ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupById(requestDto.getActivityGroupId());
         validateReviewCreationPermission(activityGroup, currentMemberInfo.getMemberId());
-        Review review = dtoMapper.fromDto(requestDto, currentMemberInfo.getMemberId(), activityGroup);
+        Review review = mapper.fromDto(requestDto, currentMemberInfo.getMemberId(), activityGroup);
         notifyGroupLeaderOfNewReview(activityGroup, currentMemberInfo.getMemberName());
         return registerReviewPort.save(review).getId();
     }

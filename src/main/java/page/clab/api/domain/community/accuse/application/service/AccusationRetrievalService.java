@@ -28,7 +28,7 @@ public class AccusationRetrievalService implements RetrieveAccusationUseCase {
     private final RetrieveAccusePort retrieveAccusePort;
     private final RetrieveAccuseTargetPort retrieveAccuseByTargetPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final AccuseDtoMapper dtoMapper;
+    private final AccuseDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -48,7 +48,7 @@ public class AccusationRetrievalService implements RetrieveAccusationUseCase {
                     List<MemberBasicInfoDto> members = accuses.stream()
                             .map(accuse -> externalRetrieveMemberUseCase.getMemberBasicInfoById(accuse.getMemberId()))
                             .toList();
-                    return dtoMapper.toDto(accuses.getFirst(), members);
+                    return mapper.toDto(accuses.getFirst(), members);
                 })
                 .filter(Objects::nonNull)
                 .toList();

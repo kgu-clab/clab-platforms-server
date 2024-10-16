@@ -20,13 +20,13 @@ public class ApplicationApplyService implements ApplyForApplicationUseCase {
     private final ExternalRetrieveRecruitmentUseCase externalRetrieveRecruitmentUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
     private final SlackService slackService;
-    private final ApplicationDtoMapper dtoMapper;
+    private final ApplicationDtoMapper mapper;
 
     @Transactional
     @Override
     public String applyForClub(ApplicationRequestDto requestDto) {
         externalRetrieveRecruitmentUseCase.validateRecruitmentForApplication(requestDto.getRecruitmentId());
-        Application application = dtoMapper.fromDto(requestDto);
+        Application application = mapper.fromDto(requestDto);
         String applicationType = application.getApplicationTypeForNotificationPrefix();
         externalSendNotificationUseCase.sendNotificationToAdmins(applicationType + requestDto.getStudentId() + " " +
                 requestDto.getName() + "님이 지원하였습니다.");

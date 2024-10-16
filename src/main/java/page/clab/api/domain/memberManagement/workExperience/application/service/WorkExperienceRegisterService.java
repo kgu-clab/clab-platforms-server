@@ -16,13 +16,13 @@ public class WorkExperienceRegisterService implements RegisterWorkExperienceUseC
 
     private final RegisterWorkExperiencePort registerWorkExperiencePort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final WorkExperienceDtoMapper dtoMapper;
+    private final WorkExperienceDtoMapper mapper;
 
     @Override
     @Transactional
     public Long registerWorkExperience(WorkExperienceRequestDto requestDto) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
-        WorkExperience workExperience = dtoMapper.fromDto(requestDto, currentMemberId);
+        WorkExperience workExperience = mapper.fromDto(requestDto, currentMemberId);
         workExperience.validateBusinessRules();
         return registerWorkExperiencePort.save(workExperience).getId();
     }

@@ -17,12 +17,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class WorkExperiencesByConditionsRetrievalService implements RetrieveWorkExperiencesByConditionsUseCase {
 
     private final RetrieveWorkExperiencePort retrieveWorkExperiencePort;
-    private final WorkExperienceDtoMapper dtoMapper;
+    private final WorkExperienceDtoMapper mapper;
 
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<WorkExperienceResponseDto> retrieveWorkExperiences(String memberId, Pageable pageable) {
         Page<WorkExperience> workExperiences = retrieveWorkExperiencePort.findByConditions(memberId, pageable);
-        return new PagedResponseDto<>(workExperiences.map(dtoMapper::toDto));
+        return new PagedResponseDto<>(workExperiences.map(mapper::toDto));
     }
 }

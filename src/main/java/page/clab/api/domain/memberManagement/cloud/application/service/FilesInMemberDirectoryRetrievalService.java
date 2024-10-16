@@ -21,7 +21,7 @@ import java.util.List;
 public class FilesInMemberDirectoryRetrievalService implements RetrieveFilesInMemberDirectoryUseCase {
 
     private final RetrieveMemberPort retrieveMemberPort;
-    private final FileDtoMapper dtoMapper;
+    private final FileDtoMapper mapper;
 
     @Value("${resource.file.path}")
     private String filePath;
@@ -32,7 +32,7 @@ public class FilesInMemberDirectoryRetrievalService implements RetrieveFilesInMe
         Member member = retrieveMemberPort.getById(memberId);
         File directory = getMemberDirectory(member.getId());
         List<File> files = FileSystemUtil.getFilesInDirectory(directory);
-        return new PagedResponseDto<>(files.stream().map(dtoMapper::create).toList(), pageable, files.size());
+        return new PagedResponseDto<>(files.stream().map(mapper::create).toList(), pageable, files.size());
     }
 
     private File getMemberDirectory(String memberId) {

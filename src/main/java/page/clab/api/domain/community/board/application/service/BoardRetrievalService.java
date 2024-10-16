@@ -23,7 +23,7 @@ public class BoardRetrievalService implements RetrieveBoardUseCase {
     private final RetrieveBoardPort retrieveBoardPort;
     private final ExternalRetrieveCommentUseCase externalRetrieveCommentUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final BoardDtoMapper dtoMapper;
+    private final BoardDtoMapper mapper;
 
     @Transactional
     @Override
@@ -45,6 +45,6 @@ public class BoardRetrievalService implements RetrieveBoardUseCase {
     @NotNull
     private BoardListResponseDto mapToBoardListResponseDto(Board board, MemberDetailedInfoDto memberInfo) {
         Long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
-        return dtoMapper.toBoardListResponseDto(board, memberInfo, commentCount);
+        return mapper.toBoardListResponseDto(board, memberInfo, commentCount);
     }
 }

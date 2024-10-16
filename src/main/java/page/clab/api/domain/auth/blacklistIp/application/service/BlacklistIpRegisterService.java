@@ -20,7 +20,7 @@ public class BlacklistIpRegisterService implements RegisterBlacklistIpUseCase {
     private final RegisterBlacklistIpPort registerBlacklistIpPort;
     private final RetrieveBlacklistIpPort retrieveBlacklistIpPort;
     private final SlackService slackService;
-    private final BlacklistIpDtoMapper dtoMapper;
+    private final BlacklistIpDtoMapper mapper;
 
     @Transactional
     @Override
@@ -29,7 +29,7 @@ public class BlacklistIpRegisterService implements RegisterBlacklistIpUseCase {
         return retrieveBlacklistIpPort.findByIpAddress(ipAddress)
                 .map(BlacklistIp::getIpAddress)
                 .orElseGet(() -> {
-                    BlacklistIp blacklistIp = dtoMapper.fromDto(requestDto);
+                    BlacklistIp blacklistIp = mapper.fromDto(requestDto);
                     registerBlacklistIpPort.save(blacklistIp);
                     slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Added IP: " + ipAddress);
                     return ipAddress;

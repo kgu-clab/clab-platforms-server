@@ -17,12 +17,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class NewsByConditionsRetrievalService implements RetrieveNewsByConditionsUseCase {
 
     private final RetrieveNewsPort retrieveNewsPort;
-    private final NewsDtoMapper dtoMapper;
+    private final NewsDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<NewsResponseDto> retrieveNews(String title, String category, Pageable pageable) {
         Page<News> newsPage = retrieveNewsPort.findByConditions(title, category, pageable);
-        return new PagedResponseDto<>(newsPage.map(dtoMapper::toNewsResponseDto));
+        return new PagedResponseDto<>(newsPage.map(mapper::toNewsResponseDto));
     }
 }

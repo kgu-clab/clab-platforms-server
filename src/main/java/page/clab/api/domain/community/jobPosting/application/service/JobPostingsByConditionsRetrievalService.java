@@ -19,12 +19,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class JobPostingsByConditionsRetrievalService implements RetrieveJobPostingsByConditionsUseCase {
 
     private final RetrieveJobPostingPort retrieveJobPostingPort;
-    private final JobPostingDtoMapper dtoMapper;
+    private final JobPostingDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<JobPostingResponseDto> retrieveJobPostings(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable) {
         Page<JobPosting> jobPostings = retrieveJobPostingPort.findByConditions(title, companyName, careerLevel, employmentType, pageable);
-        return new PagedResponseDto<>(jobPostings.map(dtoMapper::toJobPostingResponseDto));
+        return new PagedResponseDto<>(jobPostings.map(mapper::toJobPostingResponseDto));
     }
 }

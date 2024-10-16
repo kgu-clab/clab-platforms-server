@@ -23,7 +23,7 @@ public class BoardsByCategoryRetrievalService implements RetrieveBoardsByCategor
     private final RetrieveBoardPort retrieveBoardPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalRetrieveCommentUseCase externalRetrieveCommentUseCase;
-    private final BoardDtoMapper dtoMapper;
+    private final BoardDtoMapper mapper;
 
     @Transactional
     @Override
@@ -31,7 +31,7 @@ public class BoardsByCategoryRetrievalService implements RetrieveBoardsByCategor
         Page<Board> boards = retrieveBoardPort.findAllByCategory(category, pageable);
         return new PagedResponseDto<>(boards.map(board -> {
             long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
-            return dtoMapper.toBoardCategoryResponseDto(board, getMemberDetailedInfoByBoard(board), commentCount);
+            return mapper.toBoardCategoryResponseDto(board, getMemberDetailedInfoByBoard(board), commentCount);
         }));
     }
 
