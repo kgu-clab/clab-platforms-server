@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberPositionInfoDto;
+import page.clab.api.domain.memberManagement.position.application.dto.mapper.PositionDtoMapper;
 import page.clab.api.domain.memberManagement.position.application.dto.response.PositionMyResponseDto;
 import page.clab.api.domain.memberManagement.position.application.port.in.RetrieveMyPositionsByYearUseCase;
 import page.clab.api.domain.memberManagement.position.application.port.out.RetrievePositionPort;
@@ -19,6 +20,7 @@ public class MyPositionsByYearRetrievalService implements RetrieveMyPositionsByY
 
     private final RetrievePositionPort retrievePositionPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final PositionDtoMapper mapper;
 
     @Transactional(readOnly = true)
     public PositionMyResponseDto retrieveMyPositionsByYear(String year) {
@@ -28,6 +30,6 @@ public class MyPositionsByYearRetrievalService implements RetrieveMyPositionsByY
         if (positions.isEmpty()) {
             throw new NotFoundException("해당 멤버의 " + year + "년도 직책이 존재하지 않습니다.");
         }
-        return PositionMyResponseDto.toDto(positions, currentMemberInfo);
+        return mapper.toDto(positions, currentMemberInfo);
     }
 }

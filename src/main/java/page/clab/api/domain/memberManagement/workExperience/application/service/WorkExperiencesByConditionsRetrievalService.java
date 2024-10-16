@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.memberManagement.workExperience.application.dto.mapper.WorkExperienceDtoMapper;
 import page.clab.api.domain.memberManagement.workExperience.application.dto.response.WorkExperienceResponseDto;
 import page.clab.api.domain.memberManagement.workExperience.application.port.in.RetrieveWorkExperiencesByConditionsUseCase;
 import page.clab.api.domain.memberManagement.workExperience.application.port.out.RetrieveWorkExperiencePort;
@@ -16,11 +17,12 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 public class WorkExperiencesByConditionsRetrievalService implements RetrieveWorkExperiencesByConditionsUseCase {
 
     private final RetrieveWorkExperiencePort retrieveWorkExperiencePort;
+    private final WorkExperienceDtoMapper mapper;
 
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<WorkExperienceResponseDto> retrieveWorkExperiences(String memberId, Pageable pageable) {
         Page<WorkExperience> workExperiences = retrieveWorkExperiencePort.findByConditions(memberId, pageable);
-        return new PagedResponseDto<>(workExperiences.map(WorkExperienceResponseDto::toDto));
+        return new PagedResponseDto<>(workExperiences.map(mapper::toDto));
     }
 }

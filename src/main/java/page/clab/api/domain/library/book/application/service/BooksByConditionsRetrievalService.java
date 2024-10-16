@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.library.book.application.dto.mapper.BookDtoMapper;
 import page.clab.api.domain.library.book.application.dto.response.BookResponseDto;
 import page.clab.api.domain.library.book.application.port.in.RetrieveBooksByConditionsUseCase;
 import page.clab.api.domain.library.book.application.port.out.RetrieveBookPort;
@@ -23,6 +24,7 @@ public class BooksByConditionsRetrievalService implements RetrieveBooksByConditi
     private final RetrieveBookPort retrieveBookPort;
     private final ExternalRetrieveBookLoanRecordUseCase externalRetrieveBookLoanRecordUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final BookDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -35,7 +37,7 @@ public class BooksByConditionsRetrievalService implements RetrieveBooksByConditi
     private BookResponseDto mapToBookResponseDto(Book book) {
         LocalDateTime dueDate = externalRetrieveBookLoanRecordUseCase.getDueDateForBook(book.getId());
         String borrowerName = getBorrowerName(book);
-        return BookResponseDto.toDto(book, borrowerName, dueDate);
+        return mapper.toDto(book, borrowerName, dueDate);
     }
 
     private String getBorrowerName(Book book) {

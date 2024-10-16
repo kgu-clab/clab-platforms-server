@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.board.application.dto.shared.BoardCommentInfoDto;
 import page.clab.api.domain.community.board.domain.Board;
+import page.clab.api.domain.community.comment.application.dto.mapper.CommentDtoMapper;
 import page.clab.api.domain.community.comment.application.dto.request.CommentRequestDto;
 import page.clab.api.domain.community.comment.application.port.in.RegisterCommentUseCase;
 import page.clab.api.domain.community.comment.application.port.out.RegisterCommentPort;
@@ -23,6 +24,7 @@ public class CommentRegisterService implements RegisterCommentUseCase {
     private final ExternalRetrieveBoardUseCase externalRetrieveBoardUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
+    private final CommentDtoMapper mapper;
 
     @Transactional
     @Override
@@ -34,9 +36,9 @@ public class CommentRegisterService implements RegisterCommentUseCase {
 
     private Comment createAndStoreComment(Long parentId, Long boardId, CommentRequestDto requestDto) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
-        Board board = externalRetrieveBoardUseCase.findByIdOrThrow(boardId);
+        Board board = externalRetrieveBoardUseCase.getById(boardId);
         Comment parent = findParentComment(parentId);
-        Comment comment = CommentRequestDto.toEntity(requestDto, board.getId(), currentMemberId, parent);
+        Comment comment = mapper.fromDto(requestDto, board.getId(), currentMemberId, parent);
         if (parent != null) {
             parent.addChildComment(comment);
         }

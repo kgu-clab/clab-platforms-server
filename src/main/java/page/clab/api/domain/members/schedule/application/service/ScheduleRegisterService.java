@@ -10,6 +10,7 @@ import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
+import page.clab.api.domain.members.schedule.application.dto.mapper.ScheduleDtoMapper;
 import page.clab.api.domain.members.schedule.application.dto.request.ScheduleRequestDto;
 import page.clab.api.domain.members.schedule.application.port.in.RegisterScheduleUseCase;
 import page.clab.api.domain.members.schedule.application.port.out.RegisterSchedulePort;
@@ -29,13 +30,14 @@ public class ScheduleRegisterService implements RegisterScheduleUseCase {
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
     private final ActivityGroupAdminService activityGroupAdminService;
+    private final ScheduleDtoMapper mapper;
 
     @Override
     @Transactional
     public Long registerSchedule(ScheduleRequestDto requestDto) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         ActivityGroup activityGroup = resolveActivityGroupForSchedule(requestDto, currentMemberInfo);
-        Schedule schedule = ScheduleRequestDto.toEntity(requestDto, currentMemberInfo.getMemberId(), activityGroup);
+        Schedule schedule = mapper.fromDto(requestDto, currentMemberInfo.getMemberId(), activityGroup);
         schedule.validateAccessPermissionForCreation(currentMemberInfo);
         schedule.validateBusinessRules();
         return registerSchedulePort.save(schedule).getId();
@@ -47,7 +49,7 @@ public class ScheduleRegisterService implements RegisterScheduleUseCase {
         if (!scheduleType.equals(ScheduleType.ALL)) {
             Long activityGroupId = Optional.ofNullable(requestDto.getActivityGroupId())
                     .orElseThrow(() -> new NullPointerException("스터디 또는 프로젝트 일정은 그룹 id를 입력해야 합니다."));
-            activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+            activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
             validateMemberIsGroupLeaderOrAdmin(memberInfo, activityGroup);
         }
         return activityGroup;
