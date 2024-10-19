@@ -38,6 +38,7 @@ import page.clab.api.external.memberManagement.member.application.port.ExternalR
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.util.PaginationUtils;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -96,16 +97,13 @@ public class ActivityGroupMemberService {
                 .distinct()
                 .toList();
 
-        List<ActivityGroup> paginatedActivityGroups = activityGroups.stream()
-                .skip(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .toList();
-
-        List<ActivityGroupStatusResponseDto> activityGroupDtos = paginatedActivityGroups.stream()
+        List<ActivityGroupStatusResponseDto> activityGroupDtos = activityGroups.stream()
                 .map(this::getActivityGroupStatusResponseDto)
                 .toList();
 
-        return new PagedResponseDto<>(activityGroupDtos, activityGroups.size(), pageable);
+        List<ActivityGroupStatusResponseDto> paginatedActivityGroupDtos = PaginationUtils.applySortingAndSlicing(activityGroupDtos, pageable);
+
+        return new PagedResponseDto<>(paginatedActivityGroupDtos, activityGroups.size(), pageable);
     }
 
     @Transactional(readOnly = true)
@@ -177,10 +175,7 @@ public class ActivityGroupMemberService {
                 .map(this::getActivityGroupStatusResponseDto)
                 .toList();
 
-        List<ActivityGroupStatusResponseDto> paginatedActivityGroups = activityGroups.stream()
-                .skip(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .toList();
+        List<ActivityGroupStatusResponseDto> paginatedActivityGroups = PaginationUtils.applySortingAndSlicing(activityGroups, pageable);
 
         return new PagedResponseDto<>(paginatedActivityGroups, activityGroups.size(), pageable);
     }
