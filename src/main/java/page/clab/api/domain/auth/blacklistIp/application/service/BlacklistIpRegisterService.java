@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.auth.blacklistIp.application.dto.mapper.BlacklistIpDtoMapper;
 import page.clab.api.domain.auth.blacklistIp.application.dto.request.BlacklistIpRequestDto;
 import page.clab.api.domain.auth.blacklistIp.application.port.in.RegisterBlacklistIpUseCase;
 import page.clab.api.domain.auth.blacklistIp.application.port.out.RegisterBlacklistIpPort;
@@ -19,6 +20,7 @@ public class BlacklistIpRegisterService implements RegisterBlacklistIpUseCase {
     private final RegisterBlacklistIpPort registerBlacklistIpPort;
     private final RetrieveBlacklistIpPort retrieveBlacklistIpPort;
     private final SlackService slackService;
+    private final BlacklistIpDtoMapper mapper;
 
     @Transactional
     @Override
@@ -27,7 +29,7 @@ public class BlacklistIpRegisterService implements RegisterBlacklistIpUseCase {
         return retrieveBlacklistIpPort.findByIpAddress(ipAddress)
                 .map(BlacklistIp::getIpAddress)
                 .orElseGet(() -> {
-                    BlacklistIp blacklistIp = BlacklistIpRequestDto.toEntity(requestDto);
+                    BlacklistIp blacklistIp = mapper.fromDto(requestDto);
                     registerBlacklistIpPort.save(blacklistIp);
                     slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED, "Added IP: " + ipAddress);
                     return ipAddress;

@@ -15,6 +15,7 @@ import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoardCate
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
+import page.clab.api.domain.activity.activitygroup.dto.mapper.ActivityGroupDtoMapper;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoardRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupBoardUpdateRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardChildResponseDto;
@@ -48,11 +49,12 @@ public class ActivityGroupBoardService {
     private final UploadedFileService uploadedFileService;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
+    private final ActivityGroupDtoMapper mapper;
 
     @Transactional
     public ActivityGroupBoardReferenceDto createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
 
         validateGroupMember(activityGroup, currentMember);
         validateCanCreateBoard(activityGroup, requestDto.getCategory(), currentMember);
@@ -61,8 +63,8 @@ public class ActivityGroupBoardService {
 
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrls());
 
-        ActivityGroupBoard parentBoard = parentId != null ? getActivityGroupBoardByIdOrThrow(parentId) : null;
-        ActivityGroupBoard board = ActivityGroupBoardRequestDto.toEntity(requestDto, currentMember, activityGroup, parentBoard, uploadedFiles);
+        ActivityGroupBoard parentBoard = parentId != null ? getActivityGroupBoardById(parentId) : null;
+        ActivityGroupBoard board = mapper.fromDto(requestDto, currentMember, activityGroup, parentBoard, uploadedFiles);
         board.validateEssentialElementByCategory();
 
         if (parentId != null) {
@@ -72,7 +74,7 @@ public class ActivityGroupBoardService {
         activityGroupBoardRepository.save(board);
 
         notifyMembersAboutNewBoard(activityGroupId, activityGroup, board, currentMember);
-        return ActivityGroupBoardReferenceDto.toDto(board.getId(), activityGroupId, parentId);
+        return mapper.of(board.getId(), activityGroupId, parentId);
     }
 
     private void validateGroupMember(ActivityGroup activityGroup, Member currentMember) throws PermissionDeniedException {
@@ -130,33 +132,33 @@ public class ActivityGroupBoardService {
         Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAll(pageable);
         return new PagedResponseDto<>(boards.map(board -> {
             MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(board.getMemberId());
-            return ActivityGroupBoardResponseDto.toDto(board, memberBasicInfoDto);
+            return mapper.toBoardDto(board, memberBasicInfoDto);
         }));
     }
 
     @Transactional(readOnly = true)
-    public ActivityGroupBoardResponseDto getActivityGroupBoardById(Long activityGroupBoardId) throws PermissionDeniedException {
+    public ActivityGroupBoardResponseDto getActivityGroupBoard(Long activityGroupBoardId) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
-        ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
+        ActivityGroupBoard board = getActivityGroupBoardById(activityGroupBoardId);
         validateGroupMember(board.getActivityGroup(), currentMember);
         if (!hasAccessToBoard(board.getActivityGroup(), board, currentMember)) {
             throw new PermissionDeniedException("해당 게시물을 조회할 권한이 없습니다.");
         }
         MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(board.getMemberId());
-        return ActivityGroupBoardResponseDto.toDto(board, memberBasicInfoDto);
+        return mapper.toBoardDto(board, memberBasicInfoDto);
     }
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardResponseDto> getActivityGroupBoardByCategory(Long activityGroupId, ActivityGroupBoardCategory category, Pageable pageable) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         validateGroupMember(activityGroup, currentMember);
         Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByActivityGroup_IdAndCategory(activityGroupId, category, pageable);
         List<ActivityGroupBoardResponseDto> filteredBoards = boards.stream()
                 .filter(board -> hasAccessToBoard(board.getActivityGroup(), board, currentMember))
                 .map(board -> {
                     MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(board.getMemberId());
-                    return ActivityGroupBoardResponseDto.toDto(board, memberBasicInfoDto);
+                    return mapper.toBoardDto(board, memberBasicInfoDto);
                 })
                 .toList();
         return new PagedResponseDto<>(new PageImpl<>(filteredBoards, pageable, boards.getTotalElements()));
@@ -165,7 +167,7 @@ public class ActivityGroupBoardService {
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
-        ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
+        ActivityGroupBoard parentBoard = getActivityGroupBoardById(parentId);
         Long activityGroupId = parentBoard.getActivityGroup().getId();
         validateGroupMember(parentBoard.getActivityGroup(), currentMember);
 
@@ -192,11 +194,11 @@ public class ActivityGroupBoardService {
                             .filter(ActivityGroupBoard::isFeedback)
                             .map(board ->  {
                                 MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(board.getMemberId());
-                                return FeedbackResponseDto.toDto(board, memberBasicInfoDto);
+                                return mapper.toFeedbackDto(board, memberBasicInfoDto);
                             })
                             .toList();
                     MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(submission.getMemberId());
-                    return AssignmentSubmissionWithFeedbackResponseDto.toDto(submission, memberBasicInfoDto, feedbackDtos);
+                    return mapper.toAssignmentDto(submission, memberBasicInfoDto, feedbackDtos);
                 })
                 .toList();
     }
@@ -204,22 +206,22 @@ public class ActivityGroupBoardService {
     @Transactional
     public ActivityGroupBoardReferenceDto updateActivityGroupBoard(Long activityGroupBoardId, ActivityGroupBoardUpdateRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
-        ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
+        ActivityGroupBoard board = getActivityGroupBoardById(activityGroupBoardId);
         board.validateAccessPermission(currentMember);
 
         board.update(requestDto, uploadedFileService);
         activityGroupBoardRepository.save(board);
         Long parentId = (board.getParent() != null) ? board.getParent().getId() : null;
-        return ActivityGroupBoardReferenceDto.toDto(board.getId(), board.getActivityGroup().getId(), parentId);
+        return mapper.of(board.getId(), board.getActivityGroup().getId(), parentId);
     }
 
     public ActivityGroupBoardReferenceDto deleteActivityGroupBoard(Long activityGroupBoardId) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
-        ActivityGroupBoard board = getActivityGroupBoardByIdOrThrow(activityGroupBoardId);
+        ActivityGroupBoard board = getActivityGroupBoardById(activityGroupBoardId);
         board.validateAccessPermission(currentMember);
         activityGroupBoardRepository.delete(board);
         Long parentId = (board.getParent() != null) ? board.getParent().getId() : null;
-        return ActivityGroupBoardReferenceDto.toDto(board.getId(), board.getActivityGroup().getId(), parentId);
+        return mapper.of(board.getId(), board.getActivityGroup().getId(), parentId);
     }
 
     @Transactional(readOnly = true)
@@ -227,11 +229,11 @@ public class ActivityGroupBoardService {
         Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(boards.map(board -> {
             MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(board.getMemberId());
-            return ActivityGroupBoardResponseDto.toDto(board, memberBasicInfoDto);
+            return mapper.toBoardDto(board, memberBasicInfoDto);
         }));
     }
 
-    public ActivityGroupBoard getActivityGroupBoardByIdOrThrow(Long activityGroupBoardId) {
+    public ActivityGroupBoard getActivityGroupBoardById(Long activityGroupBoardId) {
         return activityGroupBoardRepository.findById(activityGroupBoardId)
                 .orElseThrow(() -> new NotFoundException("해당 활동 그룹 게시글을 찾을 수 없습니다."));
     }
@@ -249,7 +251,7 @@ public class ActivityGroupBoardService {
                 .filter(children -> hasAccessToBoard(children.getActivityGroup(), children, currentMember))
                 .map(this::toActivityGroupBoardChildResponseDtoWithMemberInfo)
                 .toList();
-        return ActivityGroupBoardChildResponseDto.toDto(activityGroupBoard, memberBasicInfo, childrenDtos);
+        return mapper.toChildDto(activityGroupBoard, memberBasicInfo, childrenDtos);
     }
 
     private void validateParentBoard(ActivityGroupBoardCategory category, Long parentId) throws InvalidParentBoardException {
@@ -265,7 +267,7 @@ public class ActivityGroupBoardService {
             throw new InvalidParentBoardException(category.getDescription() + " 게시물은 부모 게시판이 필요합니다.");
         }
 
-        ActivityGroupBoard parentBoard = getActivityGroupBoardByIdOrThrow(parentId);
+        ActivityGroupBoard parentBoard = getActivityGroupBoardById(parentId);
 
         ActivityGroupBoardCategory expectedParentCategory = switch (category) {
             case ASSIGNMENT -> ActivityGroupBoardCategory.WEEKLY_ACTIVITY;
@@ -299,7 +301,7 @@ public class ActivityGroupBoardService {
      * @param member 게시판을 생성한 멤버 객체
      */
     private void notifyMembersAboutNewBoard(Long activityGroupId, ActivityGroup activityGroup, ActivityGroupBoard board, Member member) {
-        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMemberOrThrow(activityGroup, member.getId());
+        GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMember(activityGroup, member.getId());
         if (groupMember.isLeader()) {
             if (board.isFeedback()) {
                 String submitMemberId = board.getParent().getMemberId();

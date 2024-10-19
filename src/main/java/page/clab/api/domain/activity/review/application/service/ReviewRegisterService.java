@@ -9,6 +9,7 @@ import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
 import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotFinishedException;
+import page.clab.api.domain.activity.review.application.dto.mapper.ReviewDtoMapper;
 import page.clab.api.domain.activity.review.application.dto.request.ReviewRequestDto;
 import page.clab.api.domain.activity.review.application.exception.AlreadyReviewedException;
 import page.clab.api.domain.activity.review.application.port.in.RegisterReviewUseCase;
@@ -30,14 +31,15 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
     private final ActivityGroupMemberService activityGroupMemberService;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
+    private final ReviewDtoMapper mapper;
 
     @Transactional
     @Override
     public Long registerReview(ReviewRequestDto requestDto) {
         MemberBasicInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
-        ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupByIdOrThrow(requestDto.getActivityGroupId());
+        ActivityGroup activityGroup = activityGroupMemberService.getActivityGroupById(requestDto.getActivityGroupId());
         validateReviewCreationPermission(activityGroup, currentMemberInfo.getMemberId());
-        Review review = ReviewRequestDto.toEntity(requestDto, currentMemberInfo.getMemberId(), activityGroup);
+        Review review = mapper.fromDto(requestDto, currentMemberInfo.getMemberId(), activityGroup);
         notifyGroupLeaderOfNewReview(activityGroup, currentMemberInfo.getMemberName());
         return registerReviewPort.save(review).getId();
     }

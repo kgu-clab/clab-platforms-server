@@ -3,6 +3,7 @@ package page.clab.api.domain.members.activityPhoto.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.members.activityPhoto.application.dto.mapper.ActivityPhotoDtoMapper;
 import page.clab.api.domain.members.activityPhoto.application.dto.request.ActivityPhotoRequestDto;
 import page.clab.api.domain.members.activityPhoto.application.port.in.RegisterActivityPhotoUseCase;
 import page.clab.api.domain.members.activityPhoto.application.port.out.RegisterActivityPhotoPort;
@@ -18,12 +19,13 @@ public class ActivityPhotoRegisterService implements RegisterActivityPhotoUseCas
 
     private final RegisterActivityPhotoPort registerActivityPhotoPort;
     private final UploadedFileService uploadedFileService;
+    private final ActivityPhotoDtoMapper mapper;
 
     @Transactional
     @Override
     public Long registerActivityPhoto(ActivityPhotoRequestDto requestDto) {
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
-        ActivityPhoto activityPhoto = ActivityPhotoRequestDto.toEntity(requestDto, uploadedFiles);
+        ActivityPhoto activityPhoto = mapper.fromDto(requestDto, uploadedFiles);
         return registerActivityPhotoPort.save(activityPhoto).getId();
     }
 }

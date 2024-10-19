@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.activity.activitygroup.application.ActivityGroupMemberService;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
+import page.clab.api.domain.members.schedule.application.dto.mapper.ScheduleDtoMapper;
 import page.clab.api.domain.members.schedule.application.dto.response.ScheduleResponseDto;
 import page.clab.api.domain.members.schedule.application.port.in.RetrieveSchedulesWithinDateRangeUseCase;
 import page.clab.api.domain.members.schedule.application.port.out.RetrieveSchedulePort;
@@ -26,6 +27,7 @@ public class SchedulesWithinDateRangeRetrievalService implements RetrieveSchedul
     private final RetrieveSchedulePort retrieveSchedulePort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ActivityGroupMemberService activityGroupMemberService;
+    private final ScheduleDtoMapper mapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -34,7 +36,7 @@ public class SchedulesWithinDateRangeRetrievalService implements RetrieveSchedul
         List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByMemberId(currentMemberId);
         List<ActivityGroup> myGroups = getMyActivityGroups(groupMembers);
         Page<Schedule> schedules = retrieveSchedulePort.findByDateRangeAndMember(startDate, endDate, myGroups, pageable);
-        return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
+        return new PagedResponseDto<>(schedules.map(mapper::toDto));
     }
 
     private List<ActivityGroup> getMyActivityGroups(List<GroupMember> groupMembers) {
