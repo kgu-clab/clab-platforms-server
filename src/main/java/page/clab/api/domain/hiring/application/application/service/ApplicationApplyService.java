@@ -3,6 +3,7 @@ package page.clab.api.domain.hiring.application.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.hiring.application.application.dto.mapper.ApplicationDtoMapper;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.hiring.application.application.port.in.ApplyForApplicationUseCase;
 import page.clab.api.domain.hiring.application.application.port.out.RegisterApplicationPort;
@@ -19,12 +20,13 @@ public class ApplicationApplyService implements ApplyForApplicationUseCase {
     private final ExternalRetrieveRecruitmentUseCase externalRetrieveRecruitmentUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
     private final SlackService slackService;
+    private final ApplicationDtoMapper mapper;
 
     @Transactional
     @Override
     public String applyForClub(ApplicationRequestDto requestDto) {
         externalRetrieveRecruitmentUseCase.validateRecruitmentForApplication(requestDto.getRecruitmentId());
-        Application application = ApplicationRequestDto.toEntity(requestDto);
+        Application application = mapper.fromDto(requestDto);
         String applicationType = application.getApplicationTypeForNotificationPrefix();
         externalSendNotificationUseCase.sendNotificationToAdmins(applicationType + requestDto.getStudentId() + " " +
                 requestDto.getName() + "님이 지원하였습니다.");

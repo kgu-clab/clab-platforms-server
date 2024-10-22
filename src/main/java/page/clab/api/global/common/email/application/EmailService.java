@@ -8,6 +8,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
+import page.clab.api.global.common.email.dto.mapper.EmailDtoMapper;
 import page.clab.api.global.common.email.dto.request.EmailDto;
 import page.clab.api.global.common.email.exception.MessageSendingFailedException;
 import page.clab.api.global.config.EmailTemplateProperties;
@@ -22,6 +23,7 @@ public class EmailService {
     private final EmailAsyncService emailAsyncService;
     private final EmailTemplateProperties emailTemplateProperties;
     private final SpringTemplateEngine springTemplateEngine;
+    private final EmailDtoMapper mapper;
 
     public void sendAccountCreationEmail(Member member, String password) {
         EmailTemplateProperties.Template template = emailTemplateProperties.getTemplate(EmailTemplateType.ACCOUNT_CREATION);
@@ -31,7 +33,7 @@ public class EmailService {
                 .replace("{{id}}", member.getId())
                 .replace("{{password}}", password);
 
-        EmailDto emailDto = EmailDto.create(
+        EmailDto emailDto = mapper.of(
                 List.of(member.getEmail()),
                 subject,
                 content,
@@ -48,7 +50,7 @@ public class EmailService {
         String content = template.getContent()
                 .replace("{{code}}", code);
 
-        EmailDto emailDto = EmailDto.create(
+        EmailDto emailDto = mapper.of(
                 List.of(member.getEmail()),
                 subject,
                 content,
@@ -66,7 +68,7 @@ public class EmailService {
                 .replace("{{id}}", member.getId())
                 .replace("{{password}}", newPassword);
 
-        EmailDto emailDto = EmailDto.create(
+        EmailDto emailDto = mapper.of(
                 List.of(member.getEmail()),
                 subject,
                 content,

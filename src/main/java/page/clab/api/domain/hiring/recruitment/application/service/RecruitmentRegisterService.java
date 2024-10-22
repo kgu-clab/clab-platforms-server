@@ -3,6 +3,7 @@ package page.clab.api.domain.hiring.recruitment.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.hiring.recruitment.application.dto.mapper.RecruitmentDtoMapper;
 import page.clab.api.domain.hiring.recruitment.application.dto.request.RecruitmentRequestDto;
 import page.clab.api.domain.hiring.recruitment.application.port.in.RegisterRecruitmentUseCase;
 import page.clab.api.domain.hiring.recruitment.application.port.out.RegisterRecruitmentPort;
@@ -16,11 +17,12 @@ public class RecruitmentRegisterService implements RegisterRecruitmentUseCase {
     private final RegisterRecruitmentPort registerRecruitmentPort;
     private final RecruitmentStatusUpdater recruitmentStatusUpdater;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
+    private final RecruitmentDtoMapper mapper;
 
     @Transactional
     @Override
     public Long registerRecruitment(RecruitmentRequestDto requestDto) {
-        Recruitment recruitment = RecruitmentRequestDto.toEntity(requestDto);
+        Recruitment recruitment = mapper.fromDto(requestDto);
         recruitmentStatusUpdater.updateRecruitmentStatus(recruitment);
         recruitment.validateDateRange();
         externalSendNotificationUseCase.sendNotificationToAllMembers("새로운 모집 공고가 등록되었습니다.");

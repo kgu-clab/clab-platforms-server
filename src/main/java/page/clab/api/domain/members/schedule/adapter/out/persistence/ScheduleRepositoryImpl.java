@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
+import page.clab.api.domain.members.schedule.application.dto.mapper.ScheduleDtoMapper;
 import page.clab.api.domain.members.schedule.application.dto.response.ScheduleCollectResponseDto;
 import page.clab.api.domain.members.schedule.domain.SchedulePriority;
 import page.clab.api.domain.members.schedule.domain.ScheduleType;
@@ -22,6 +23,7 @@ import java.util.List;
 public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final ScheduleDtoMapper mapper;
 
     @Override
     public Page<ScheduleJpaEntity> findByDateRangeAndMember(LocalDate startDate, LocalDate endDate, List<ActivityGroup> myGroups, Pageable pageable) {
@@ -132,6 +134,6 @@ public class ScheduleRepositoryImpl implements ScheduleRepositoryCustom {
                 .where(builder)
                 .fetchCount();
 
-        return ScheduleCollectResponseDto.toDto(total, highPriorityCount);
+        return mapper.of(total, highPriorityCount);
     }
 }

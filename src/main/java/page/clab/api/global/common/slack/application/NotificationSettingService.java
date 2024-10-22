@@ -7,6 +7,7 @@ import page.clab.api.global.common.slack.dao.NotificationSettingRepository;
 import page.clab.api.global.common.slack.domain.AlertType;
 import page.clab.api.global.common.slack.domain.AlertTypeResolver;
 import page.clab.api.global.common.slack.domain.NotificationSetting;
+import page.clab.api.global.common.slack.dto.mapper.SlackDtoMapper;
 import page.clab.api.global.common.slack.dto.response.NotificationSettingResponseDto;
 
 import java.util.List;
@@ -17,11 +18,12 @@ public class NotificationSettingService {
 
     private final AlertTypeResolver alertTypeResolver;
     private final NotificationSettingRepository settingRepository;
+    private final SlackDtoMapper mapper;
 
     @Transactional(readOnly = true)
     public List<NotificationSettingResponseDto> getNotificationSettings() {
         return settingRepository.findAll().stream()
-                .map(NotificationSettingResponseDto::toDto)
+                .map(mapper::toDto)
                 .toList();
     }
 
