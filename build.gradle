@@ -45,8 +45,8 @@ dependencies {
     // Monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator' // Spring Boot Actuator
     implementation 'io.micrometer:micrometer-registry-prometheus' // Prometheus
-    implementation 'ch.qos.logback:logback-classic:1.5.10' // Logback
-    implementation 'ch.qos.logback:logback-core:1.5.10' // Logback
+    implementation 'ch.qos.logback:logback-classic:1.5.11' // Logback
+    implementation 'ch.qos.logback:logback-core:1.5.11' // Logback
 
     // DB
     implementation 'org.postgresql:postgresql:42.7.4' // PostgreSQL JDBC Driver
@@ -84,9 +84,9 @@ dependencies {
     implementation 'io.ipinfo:ipinfo-api:3.0.0' // IPInfo API
 
     // Slack
-    implementation 'com.slack.api:slack-api-model:1.43.1'
-    implementation 'com.slack.api:slack-api-client:1.43.1'
-    implementation 'com.slack.api:slack-app-backend:1.43.1'
+    implementation 'com.slack.api:slack-api-model:1.44.0'
+    implementation 'com.slack.api:slack-api-client:1.44.0'
+    implementation 'com.slack.api:slack-app-backend:1.44.0'
 
     // XSS Filter
     implementation 'com.navercorp.lucy:lucy-xss-servlet:2.0.1' // Lucy XSS Servlet Filter
