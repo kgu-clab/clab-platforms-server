@@ -46,7 +46,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator' // Spring Boot Actuator
     implementation 'io.micrometer:micrometer-registry-prometheus' // Prometheus
     implementation 'ch.qos.logback:logback-classic:1.5.12' // Logback
-    implementation 'ch.qos.logback:logback-core:1.5.11' // Logback
+    implementation 'ch.qos.logback:logback-core:1.5.12' // Logback
 
     // DB
     implementation 'org.postgresql:postgresql:42.7.4' // PostgreSQL JDBC Driver
