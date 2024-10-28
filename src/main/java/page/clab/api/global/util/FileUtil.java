@@ -98,8 +98,11 @@ public class FileUtil {
      * @param fileName 파일명
      * @return 유효한 파일명일 경우 true, 그렇지 않을 경우 false
      */
-    private static boolean validateFilename(String fileName) {
-        return fileName != null && !fileName.trim().isEmpty();
+    public static boolean validateFilename(String fileName) {
+        if (fileName == null || fileName.trim().isEmpty()) {
+            return false;
+        }
+        return !fileName.contains("..") && !fileName.contains("/") && !fileName.contains("\\");
     }
 
     /**
@@ -109,7 +112,7 @@ public class FileUtil {
      * @param disallowExtensions 허용되지 않은 확장자 목록
      * @return 허용된 확장자일 경우 true, 그렇지 않을 경우 false
      */
-    private static boolean validateExtension(String extension, Set<String> disallowExtensions) {
+    public static boolean validateExtension(String extension, Set<String> disallowExtensions) {
         return !disallowExtensions.contains(extension.toLowerCase());
     }
 

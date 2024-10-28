@@ -92,7 +92,10 @@ public class PagedResponseDto<T> {
      * @param ts 콘텐츠 아이템 리스트
      * @param pageable 페이지네이션 정보와 정렬 기준을 포함하는 Pageable 객체
      * @param size 전체 아이템 수
+     *
+     * @deprecated 슬라이싱과 정렬을 담당하는 새로운 Util 클래스의 도입으로 사라질 메서드입니다.
      */
+    @Deprecated
     public PagedResponseDto(List<T> ts, Pageable pageable, int size) {
         this.currentPage = pageable.getPageNumber();
         this.hasPrevious = pageable.getPageNumber() > 0;
@@ -105,7 +108,6 @@ public class PagedResponseDto<T> {
 
     /**
      * List와 Pageable 객체를 사용하여 PagedResponseDto를 생성하는 생성자입니다.
-     * 페이지네이션과 정렬이 적용됩니다.
      *
      * @param ts 콘텐츠 아이템 리스트
      * @param totalItems 전체 아이템 수
@@ -118,7 +120,7 @@ public class PagedResponseDto<T> {
         this.totalPages = (totalItems != 0) ? (int) Math.ceil((double) totalItems / pageable.getPageSize()) : 0;
         this.totalItems = totalItems;
         this.take = ts.size();
-        this.items = applySortingIfNecessary(ts, pageable.getSort());
+        this.items = ts;
     }
 
     /**
@@ -127,7 +129,10 @@ public class PagedResponseDto<T> {
      * @param items 정렬되지 않은 아이템 리스트
      * @param sort 정렬 기준을 포함한 Sort 객체
      * @return 정렬된 아이템 리스트
+     *
+     * @deprecated 슬라이싱과 정렬을 담당하는 새로운 Util 클래스의 도입으로 사라질 메서드입니다.
      */
+    @Deprecated
     private List<T> applySortingIfNecessary(List<T> items, Sort sort) {
         if (sort.isSorted()) {
             return sortItems(items, sort);
@@ -141,7 +146,10 @@ public class PagedResponseDto<T> {
      * @param items 정렬되지 않은 아이템 리스트
      * @param sort 정렬 기준을 포함한 Sort 객체
      * @return 정렬된 아이템 리스트
+     *
+     * @deprecated 슬라이싱과 정렬을 담당하는 새로운 Util 클래스의 도입으로 사라질 메서드입니다.
      */
+    @Deprecated
     private List<T> sortItems(List<T> items, Sort sort) {
         Comparator<T> comparator = sort.stream()
                 .map(order -> {
@@ -170,7 +178,10 @@ public class PagedResponseDto<T> {
      * @param item 값을 추출할 객체
      * @param fieldName 추출할 필드 이름
      * @return 추출된 필드 값
+     *
+     * @deprecated 슬라이싱과 정렬을 담당하는 새로운 Util 클래스의 도입으로 사라질 메서드입니다.
      */
+    @Deprecated
     private Object extractFieldValue(T item, String fieldName) throws InvalidColumnException {
         try {
             var field = item.getClass().getDeclaredField(fieldName);

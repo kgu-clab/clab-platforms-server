@@ -118,7 +118,7 @@ public class ActivityGroupAdminController {
             @RequestParam(name = "activityGroupId") Long activityGroupId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "memberId") List<String> sortBy,
+            @RequestParam(name = "sortBy", defaultValue = "status") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, PermissionDeniedException, InvalidColumnException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupMemberWithApplyReasonResponseDto.class);
