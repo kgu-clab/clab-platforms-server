@@ -45,6 +45,25 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+/**
+ * SlackServiceHelper는 다양한 알림 유형에 따라 Slack 메시지를 구성하고 전송하는 클래스입니다.
+ *
+ * <p>주요 기능:</p>
+ * <ul>
+ *     <li>{@link #sendSlackMessage(String, AlertType, HttpServletRequest, Object)}: Slack에 알림 메시지를 비동기적으로 전송</li>
+ *     <li>{@link #createBlocks(AlertType, HttpServletRequest, Object)}: 알림 유형에 따라 Slack 메시지 블록 생성</li>
+ *     <li>다양한 알림 유형에 맞는 메시지 형식을 생성하는 전용 메서드</li>
+ * </ul>
+ *
+ * <p>Slack API와 통합하여 웹훅 URL을 통해 메시지를 전송하며, 메시지 전송 실패 시 로그에 오류를 기록합니다.</p>
+ *
+ * <p>AlertType을 기반으로 여러 도메인에서 발생하는 이벤트를 Slack을 통해 모니터링할 수 있도록 지원하며,
+ * Slack 알림은 주로 서버 이벤트, 보안 경고, 신규 신청, 관리자 로그인 등의 이벤트를 다룹니다.</p>
+ *
+ * @see Slack
+ * @see Payload
+ * @see LayoutBlock
+ */
 @Component
 @Slf4j
 public class SlackServiceHelper {
@@ -65,6 +84,18 @@ public class SlackServiceHelper {
         this.attributeStrategy = attributeStrategy;
     }
 
+    /**
+     * Slack에 알림 메시지를 전송합니다.
+     *
+     * <p>주어진 webhookUrl과 alertType, HttpServletRequest 및 추가 데이터(additionalData)를 사용하여 알림 메시지를
+     * 비동기적으로 Slack에 전송합니다.</p>
+     *
+     * @param webhookUrl 메시지를 보낼 Slack 웹훅 URL
+     * @param alertType  알림 유형을 나타내는 {@link AlertType}
+     * @param request    HttpServletRequest 객체, 클라이언트 요청 정보
+     * @param additionalData 추가 데이터
+     * @return 메시지 전송 성공 여부를 나타내는 CompletableFuture<Boolean>
+     */
     public CompletableFuture<Boolean> sendSlackMessage(String webhookUrl, AlertType alertType, HttpServletRequest request, Object additionalData) {
         List<LayoutBlock> blocks = createBlocks(alertType, request, additionalData);
         return CompletableFuture.supplyAsync(() -> {
@@ -91,6 +122,16 @@ public class SlackServiceHelper {
         });
     }
 
+    /**
+     * 특정 알림 유형과 요청 정보 및 추가 데이터를 사용하여 Slack 메시지의 블록을 생성합니다.
+     *
+     * <p>AlertType에 따라 보안 경고, 일반 알림, 운영진 알림 등 다양한 형식의 메시지를 생성합니다.</p>
+     *
+     * @param alertType 알림 유형
+     * @param request   HttpServletRequest 객체
+     * @param additionalData 추가 데이터
+     * @return 생성된 LayoutBlock 목록
+     */
     public List<LayoutBlock> createBlocks(AlertType alertType, HttpServletRequest request, Object additionalData) {
         if (alertType instanceof SecurityAlertType) {
             return createSecurityAlertBlocks(request, alertType, additionalData.toString());

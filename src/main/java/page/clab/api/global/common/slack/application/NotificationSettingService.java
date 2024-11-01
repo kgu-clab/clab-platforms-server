@@ -12,6 +12,19 @@ import page.clab.api.global.common.slack.dto.response.NotificationSettingRespons
 
 import java.util.List;
 
+/**
+ * NotificationSettingService는 알림 설정을 조회 및 업데이트하는 서비스입니다.
+ *
+ * <p>이 서비스는 알림 유형에 따라 활성화 또는 비활성화할 수 있는 설정 기능을 제공하며,
+ * 기본 알림 설정을 생성하거나 조회할 수 있습니다.</p>
+ *
+ * 주요 기능:
+ * <ul>
+ *     <li>{@link #getNotificationSettings()} - 모든 알림 설정을 조회합니다.</li>
+ *     <li>{@link #updateNotificationSetting(String, boolean)} - 주어진 알림 유형에 대해 알림 설정을 업데이트합니다.</li>
+ *     <li>{@link #getOrCreateDefaultSetting(AlertType)} - 주어진 알림 유형에 대한 기본 알림 설정을 조회하거나, 존재하지 않으면 생성합니다.</li>
+ * </ul>
+ */
 @Service
 @RequiredArgsConstructor
 public class NotificationSettingService {
