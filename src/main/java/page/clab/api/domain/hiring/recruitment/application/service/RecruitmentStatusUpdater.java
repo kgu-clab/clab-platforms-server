@@ -18,6 +18,7 @@ public class RecruitmentStatusUpdater {
     private final RetrieveRecruitmentPort retrieveRecruitmentPort;
     private final UpdateRecruitmentPort updateRecruitmentPort;
 
+    // 매시 5분마다 시작일과 종료일 기준으로 모집 공고의 상태를 변경합니다.
     @Scheduled(cron = "0 */5 * * * *")
     public void updateRecruitmentStatus() {
         List<Recruitment> recruitments = retrieveRecruitmentPort.findAll();
