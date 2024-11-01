@@ -5,6 +5,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * {@code FileSystemUtil}은 파일 시스템 관련 작업을 지원하는 유틸리티 클래스입니다.
+ * 디렉토리의 크기를 계산하고, 디렉토리에 포함된 파일 목록을 반환하며, 크기 문자열을 바이트 단위로 변환하는 기능을 제공합니다.
+ *
+ * <p>주요 기능:
+ * <ul>
+ *     <li>{@link #calculateDirectorySize(File)} - 디렉토리의 총 크기를 계산합니다.</li>
+ *     <li>{@link #getFilesInDirectory(File)} - 디렉토리 내 모든 파일 목록을 반환합니다.</li>
+ *     <li>{@link #convertToBytes(String)} - 주어진 크기 문자열을 바이트 단위로 변환합니다.</li>
+ * </ul>
+ */
 public class FileSystemUtil {
 
     public static long calculateDirectorySize(File directory) {

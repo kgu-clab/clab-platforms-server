@@ -7,6 +7,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Arrays;
 
+/**
+ * {@code HttpReqResUtil}은 HTTP 요청 및 응답에 관련된 유틸리티 메서드를 제공하는 클래스입니다.
+ * 이 클래스는 클라이언트 IP 주소를 가져오거나, IP 주소가 비공개 IP 대역인지 확인하는 등의 기능을 포함합니다.
+ */
 public class HttpReqResUtil {
 
     private static final IPRequest.IpAddressMatcher[] IpAddressMatcherList = {

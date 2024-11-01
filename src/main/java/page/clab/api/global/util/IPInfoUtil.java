@@ -11,6 +11,10 @@ import org.springframework.web.client.RestClient;
 import page.clab.api.global.common.dto.IPInfoResponse;
 import page.clab.api.global.config.IPInfoConfig;
 
+/**
+ * {@code IPInfoUtil} 클래스는 IP 주소에 대한 정보를 가져오기 위한 유틸리티 메서드를 제공합니다.
+ * IP 정보를 가져오기 위해 IPInfo API를 호출하고, IP 기반 위치 데이터를 요청으로부터 가져옵니다.
+ */
 @Component
 @Slf4j
 public class IPInfoUtil {
