@@ -31,6 +31,16 @@ public class ExternalAccountLockManagementService implements ExternalManageAccou
     @Value("${security.login-attempt.lock-duration-minutes}")
     private int lockDurationMinutes;
 
+    /**
+     * 계정 잠금 정보를 처리합니다.
+     *
+     * <p>해당 멤버가 존재하는지 확인하고, 계정 잠금 상태를 검증한 후,
+     * 계정을 잠금 해제하고 업데이트된 계정 잠금 정보를 저장합니다.</p>
+     *
+     * @param memberId 잠금 해제하려는 멤버의 ID
+     * @throws MemberLockedException 계정이 현재 잠겨 있을 경우 예외 발생
+     * @throws LoginFailedException 멤버가 존재하지 않을 경우 예외 발생
+     */
     @Transactional
     @Override
     public void handleAccountLockInfo(String memberId) throws MemberLockedException, LoginFailedException {
@@ -41,6 +51,18 @@ public class ExternalAccountLockManagementService implements ExternalManageAccou
         registerAccountLockInfoPort.save(accountLockInfo);
     }
 
+    /**
+     * 로그인 실패를 처리하고 계정 잠금을 관리합니다.
+     *
+     * <p>로그인 실패 시 멤버의 존재 여부와 계정 잠금 상태를 확인합니다.
+     * 로그인 실패 횟수를 증가시키며, 설정된 최대 실패 횟수에 도달하면 계정을 잠그고
+     * Slack에 보안 알림을 전송합니다.</p>
+     *
+     * @param request 현재 HTTP 요청 객체
+     * @param memberId 로그인 실패를 기록할 멤버의 ID
+     * @throws MemberLockedException 계정이 현재 잠겨 있을 경우 예외 발생
+     * @throws LoginFailedException 멤버가 존재하지 않을 경우 예외 발생
+     */
     @Transactional
     @Override
     public void handleLoginFailure(HttpServletRequest request, String memberId) throws MemberLockedException, LoginFailedException {
