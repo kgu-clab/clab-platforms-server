@@ -32,6 +32,7 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
     private final ApplicationEventPublisher eventPublisher;
     private final ApplicationDtoMapper mapper;
 
+    // 해당 모집의 합격자들의 계정을 일괄 생성합니다.
     @Transactional
     @Override
     public List<String> registerMembersByRecruitment(Long recruitmentId) {
@@ -41,6 +42,7 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
                 .toList();
     }
 
+    // 해당 모집에서 합격한 특정 지원자의 계정을 생성합니다.
     @Transactional
     @Override
     public String registerMembersByRecruitment(Long recruitmentId, String studentId) {
