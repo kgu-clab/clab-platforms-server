@@ -66,6 +66,9 @@ public class AttendanceService {
         return "clab.page/attendance?activityGroupId=" + activityGroupId.toString() + "&secretKey=" + secretKey;
     }
 
+    // 활동 그룹의 출석체크 QR 코드를 생성합니다.
+    // 현재 로그인한 멤버가 그룹의 리더인지 확인하고, 활동이 진행 중인 경우에만 QR 코드를 생성합니다.
+    // 생성된 QR 코드 이미지는 파일로 저장됩니다.
     @Transactional
     public String generateAttendanceQRCode(Long activityGroupId) throws IOException, WriterException, PermissionDeniedException, IllegalAccessException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
@@ -85,6 +88,8 @@ public class AttendanceService {
         return fileService.saveQRCodeImage(QRCodeImage, path, 1, nowDateTime);
     }
 
+    // 현재 로그인한 멤버의 출석을 기록합니다.
+    // 오늘의 출석 기록이 없는 경우 출석을 저장합니다.
     @Transactional
     public Long checkMemberAttendance(AttendanceRequestDto requestDto) throws IllegalAccessException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
@@ -94,6 +99,7 @@ public class AttendanceService {
         return attendanceRepository.save(attendance).getId();
     }
 
+    // 나의 출석 상황을 조회합니다.
     @Transactional(readOnly = true)
     public PagedResponseDto<AttendanceResponseDto> getMyAttendances(Long activityGroupId, Pageable pageable) throws IllegalAccessException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
@@ -102,6 +108,7 @@ public class AttendanceService {
         return new PagedResponseDto<>(attendances.map(mapper::toDto));
     }
 
+    // 활동 그룹의 출석 상황을 조회합니다.
     @Transactional(readOnly = true)
     public PagedResponseDto<AttendanceResponseDto> getGroupAttendances(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
@@ -110,6 +117,8 @@ public class AttendanceService {
         return new PagedResponseDto<>(attendances.map(mapper::toDto));
     }
 
+    // 결석 사유서를 작성합니다.
+    // 동일한 날짜에 이미 출석을 했거나, 또는 결석 사유가 이미 있는지 검증합니다.
     @Transactional
     public Long writeAbsentExcuse(AbsentRequestDto requestDto) throws IllegalAccessException, DuplicateAbsentExcuseException {
         Member absentee = externalRetrieveMemberUseCase.getById(requestDto.getAbsenteeId());
@@ -119,6 +128,7 @@ public class AttendanceService {
         return absentRepository.save(absent).getId();
     }
 
+    // 활동 그룹의 결석 사유서들을 조회합니다.
     @Transactional(readOnly = true)
     public PagedResponseDto<AbsentResponseDto> getActivityGroupAbsentExcuses(Long activityGroupId, Pageable pageable) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
@@ -152,6 +162,7 @@ public class AttendanceService {
         return absentHistory != null;
     }
 
+    // 출석 QR 코드의 생성 가능 여부를 검증합니다.
     @NotNull
     private ActivityGroup validateAttendanceQRCodeGeneration(Long activityGroupId, Member member) throws PermissionDeniedException, IllegalAccessException {
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
@@ -165,6 +176,7 @@ public class AttendanceService {
         return activityGroup;
     }
 
+    // 출석 체크 인증 가능 여부를 검증합니다.
     private ActivityGroup validateMemberForAttendance(Member member, Long activityGroupId) throws IllegalAccessException, DuplicateAttendanceException {
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.MEMBER, activityGroupId)) {
@@ -177,12 +189,14 @@ public class AttendanceService {
         return activityGroup;
     }
 
+    // QR 코드를 검증합니다.
     private void validateQRCodeData(String QRCodeData) throws InvalidInformationException, NotFoundException {
         if (QRCodeData == null || !redisQRKeyRepository.existsByQRCodeKey(QRCodeData)) {
             throw new NotFoundException("QRCode 정보가 없거나 잘못 되었습니다.");
         }
     }
 
+    // 출석 체크를 위해 해당 그룹의 멤버인지, 활동 진행중인 그룹인지 검증합니다.
     @NotNull
     private ActivityGroup validateGroupAndMemberForAttendance(Long activityGroupId, Member member) throws IllegalAccessException {
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
@@ -195,6 +209,7 @@ public class AttendanceService {
         return activityGroup;
     }
 
+    // 활동 그룹의 출석 기록을 조회할 권한이 있는지 검증합니다.
     private ActivityGroup getActivityGroupWithValidPermissions(Long activityGroupId, Member member) throws PermissionDeniedException {
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         if (!member.isAdminRole() || !activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
@@ -203,6 +218,7 @@ public class AttendanceService {
         return activityGroup;
     }
 
+    // 불참 사유서 작성을 위해 활동 진행중인 그룹을 조회합니다.
     private ActivityGroup getValidActivityGroup(Long activityGroupId) throws IllegalAccessException {
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         if (!activityGroup.isProgressing()) {
@@ -211,6 +227,7 @@ public class AttendanceService {
         return activityGroup;
     }
 
+    // 불참 사유서 등록 가능 여부를 검증합니다.
     private void validateAbsentExcuseConditions(Member absentee, ActivityGroup activityGroup, LocalDate absentDate) throws IllegalAccessException, DuplicateAbsentExcuseException {
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(absentee, ActivityGroupRole.MEMBER, activityGroup.getId())) {
             throw new IllegalAccessException("해당 그룹의 멤버가 아닙니다. 불참 사유서를 등록할 수 없습니다.");

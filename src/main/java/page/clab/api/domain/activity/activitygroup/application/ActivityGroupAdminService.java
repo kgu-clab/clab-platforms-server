@@ -76,6 +76,7 @@ public class ActivityGroupAdminService {
         return activityGroupRepository.save(activityGroup).getId();
     }
 
+    // 활동 그룹의 status를 수정합니다.
     @Transactional
     public ActivityGroupBoardStatusUpdatedResponseDto manageActivityGroup(Long activityGroupId, ActivityGroupStatus status) {
         ActivityGroup activityGroup = getActivityGroupById(activityGroupId);
@@ -162,6 +163,7 @@ public class ActivityGroupAdminService {
         return new PagedResponseDto<>(paginatedGroupMembersWithApplyReason, groupMembers.getTotalElements(), groupMembersWithApplyReason.size());
     }
 
+    // 활동 멤버들의 status를 수정합니다.
     @Transactional
     public Long manageGroupMemberStatus(Long activityGroupId, List<String> memberIds, GroupMemberStatus status) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
@@ -188,6 +190,7 @@ public class ActivityGroupAdminService {
         return activityGroup.getId();
     }
 
+    // 매일 자정마다 종료일이 지난 활동 그룹을 찾아 종료 상태로 변경합니다.
     @Scheduled(cron = "0 0 0 * * *")
     public void updateActivityGroupStatusEnd() {
         List<ActivityGroup> activityGroups = activityGroupRepository.findByEndDateBeforeAndStatusNot(LocalDate.now(), ActivityGroupStatus.END);
@@ -215,12 +218,16 @@ public class ActivityGroupAdminService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 활동입니다."));
     }
 
+    // 해당 멤버가 특정 활동 그룹의 리더 또는 관리자인지 검증합니다.
+    // 예외가 발생하지 않고 안전하게 처리됩니다.
     public boolean hasLeaderOrAdminRole(ActivityGroup activityGroup, Member member) {
         return activityGroupMemberService.findGroupMemberByActivityGroupAndMember(activityGroup, member.getId())
                 .map(GroupMember::isLeader)
                 .orElseGet(member::isAdminRole);
     }
 
+    // 해당 멤버가 특정 활동 그룹의 리더 또는 관리자인지 검증합니다.
+    // 활동 멤버가 아닌 경우 false를 반환합니다.
     public boolean isMemberGroupLeaderRole(Long activityGroupId, String memberId) {
         ActivityGroup activityGroup = getActivityGroupById(activityGroupId);
         Member member = externalRetrieveMemberUseCase.getById(memberId);
@@ -228,7 +235,7 @@ public class ActivityGroupAdminService {
             GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMember(activityGroup, member.getId());
             return groupMember.isLeader() || member.isAdminRole();
         } catch (NotFoundException e) {
-         return false;
+            return false;
         }
     }
 
@@ -239,6 +246,7 @@ public class ActivityGroupAdminService {
                 .anyMatch(groupMember -> groupMember.isSameRoleAndActivityGroup(role, activityGroup));
     }
 
+    // 활동 그룹에 한 명의 리더만 존재해 리더의 역할을 변경할 수 없는지 검증합니다.
     private void validateLeaderRoleChange(ActivityGroup activityGroup, GroupMember groupMember) {
         List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         if(groupMembers.size() == 1 && groupMember.isLeader()) {
@@ -246,6 +254,8 @@ public class ActivityGroupAdminService {
         }
     }
 
+    // 보고서를 작성할 활동 그룹을 조회합니다.
+    // 보고서 작성자가 리더인지, 그룹이 활동중인지 검증합니다.
     public ActivityGroup validateAndGetActivityGroupForReporting(Long activityGroupId, Member member) throws PermissionDeniedException, IllegalAccessException {
         ActivityGroup activityGroup = getActivityGroupById(activityGroupId);
         if (!isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
