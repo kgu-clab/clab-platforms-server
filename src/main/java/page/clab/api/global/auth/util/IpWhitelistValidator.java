@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * IpWhitelistValidator는 요청된 IP 주소가 화이트리스트에 포함되는지 확인하는 유틸리티 클래스입니다.
+ * {@code IpWhitelistValidator}는 요청된 IP 주소가 화이트리스트에 포함되는지 확인하는 유틸리티 클래스입니다.
  *
  * <p>화이트리스트 검증 기능은 애플리케이션 설정에 따라 활성화되며, 외부에서 설정된 IP 목록을 통해
  * IP 접근을 제한할 수 있습니다.</p>

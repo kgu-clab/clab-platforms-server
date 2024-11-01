@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * FileHandler는 파일 처리 기능을 담당하는 클래스입니다.
+ * {@code FileHandler}는 파일 처리 기능을 담당하는 클래스입니다.
  *
  * <p>이 클래스는 파일의 저장, 삭제, 이미지 압축 등을 수행하며, 파일 관련 속성 및 경로를 구성합니다.</p>
  *

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * UploadedFileService는 업로드된 파일을 저장, 조회, 및 유효성 검사를 수행하는 서비스입니다.
+ * {@code UploadedFileService}는 업로드된 파일을 저장, 조회, 및 유효성 검사를 수행하는 서비스입니다.
  *
  * <p>이 서비스는 파일의 URL을 기반으로 파일을 조회하거나, 특정 카테고리에 속하는 최신 파일을 조회하며,
  * 여러 URL 목록을 받아 해당하는 파일들을 검색하는 등의 기능을 제공합니다.</p>

@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.Base64;
 
 /**
- * CustomBasicAuthenticationFilter는 기본 인증 필터를 확장하여 추가적인 보안 기능을 제공합니다.
+ * {@code CustomBasicAuthenticationFilter}는 기본 인증 필터를 확장하여 추가적인 보안 기능을 제공합니다.
  *
  * <p>IP 주소 기반 접근 제한, 화이트리스트 경로 검증, 사용자 인증 정보를 바탕으로
  * Slack 보안 알림을 전송하는 기능을 포함합니다. 또한 Swagger 또는 Actuator에 대한

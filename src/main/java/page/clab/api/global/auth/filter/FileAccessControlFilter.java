@@ -13,7 +13,7 @@ import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.util.ResponseUtil;
 
 /**
- * FileAccessControlFilter는 파일 접근 요청에 대한 접근 제어를 수행하는 필터입니다.
+ * {@code FileAccessControlFilter}는 파일 접근 요청에 대한 접근 제어를 수행하는 필터입니다.
  *
  * <p>특정 URL로 시작하는 요청에 대해 사용자의 인증 정보를 검증하여, 접근 권한이 있는지 확인합니다.
  * 파일에 대한 접근 권한이 없는 경우 401 Unauthorized 응답을 반환하며, 권한이 있는 경우 요청을

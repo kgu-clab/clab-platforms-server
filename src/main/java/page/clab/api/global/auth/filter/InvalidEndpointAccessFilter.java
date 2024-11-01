@@ -23,7 +23,7 @@ import page.clab.api.global.util.SecurityPatternChecker;
 import java.io.IOException;
 
 /**
- * InvalidEndpointAccessFilter는 서버 내부 파일 및 디렉토리에 대한 비정상적인 접근을 차단하고
+ * {@code InvalidEndpointAccessFilter}는 서버 내부 파일 및 디렉토리에 대한 비정상적인 접근을 차단하고
  * 보안 경고를 전송하는 필터입니다.
  *
  * <p>특정 패턴을 통해 비정상적인 접근 시도를 탐지하며, 비정상적인 경로로 접근을 시도한 IP를

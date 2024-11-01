@@ -25,7 +25,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * EmailAsyncService는 비동기적으로 이메일을 전송하고 이메일 대기열을 관리하는 서비스 클래스입니다.
+ * {@code EmailAsyncService}는 비동기적으로 이메일을 전송하고 이메일 대기열을 관리하는 서비스 클래스입니다.
  *
  * <p>이 클래스는 Spring의 JavaMailSender를 사용하여 이메일을 전송하며, 대용량 이메일 전송을 위해 배치 처리를 지원합니다.
  * 이메일은 일정 간격으로 대기열에서 가져와 전송됩니다. 또한, 이메일 템플릿에 포함된 이미지를 지원하며 첨부 파일도 추가할 수 있습니다.</p>

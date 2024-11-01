@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * AutoDeleteService는 지정된 경로의 파일을 자동으로 삭제하는 서비스입니다.
+ * {@code AutoDeleteService}는 지정된 경로의 파일을 자동으로 삭제하는 서비스입니다.
  *
  * <p>이 서비스는 매일 자정에 스케줄된 작업을 수행하며, 파일의 유효 기간이 만료되었거나
  * 데이터베이스에서 해당 파일의 정보가 존재하지 않는 경우 해당 파일을 삭제합니다.

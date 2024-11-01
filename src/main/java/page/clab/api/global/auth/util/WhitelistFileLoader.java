@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Stream;
 
 /**
- * WhitelistFileLoader는 지정된 경로의 YAML 파일에서 IP 화이트리스트 목록을 로드하는 클래스입니다.
+ * {@code WhitelistFileLoader}는 지정된 경로의 YAML 파일에서 IP 화이트리스트 목록을 로드하는 클래스입니다.
  *
  * <p>IP 화이트리스트 파일이 존재하지 않을 경우 기본 화이트리스트 파일을 생성하며, 로드된 IP 목록은
  * 보안 접근 제한 등에 사용됩니다. 화이트리스트 파일의 수정 및 접근은 스레드 안전하게 처리됩니다.</p>

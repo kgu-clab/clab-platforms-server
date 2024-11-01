@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.User;
 import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
 
 /**
- * AuthUtil은 인증 정보에 접근하기 위한 유틸리티 클래스로, 인증 정보 조회 및 사용자 인증 상태를 확인하는 메서드를 제공합니다.
+ * {@code AuthUtil}은 인증 정보에 접근하기 위한 유틸리티 클래스로, 인증 정보 조회 및 사용자 인증 상태를 확인하는 메서드를 제공합니다.
  *
  * <p>이 클래스는 인증된 사용자의 정보를 가져오거나, 현재 인증 상태를 확인하는 데 사용됩니다.
  * 인증 정보가 없을 경우 예외를 발생시킵니다.</p>

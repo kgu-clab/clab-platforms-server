@@ -17,7 +17,7 @@ import page.clab.api.global.common.slack.event.NotificationEvent;
 import page.clab.api.global.config.SlackConfig;
 
 /**
- * SlackService는 다양한 알림 유형에 따라 Slack 알림을 전송하는 서비스입니다.
+ * {@code SlackService}는 다양한 알림 유형에 따라 Slack 알림을 전송하는 서비스입니다.
  *
  * <p>이 서비스는 `NotificationEvent`를 통해 Slack 알림을 발송하며,
  * 서버 시작, 서버 오류, 보안 경고, 관리자 로그인 등의 알림 유형을 제공합니다.</p>

@@ -16,7 +16,7 @@ import page.clab.api.global.config.EmailTemplateProperties;
 import java.util.List;
 
 /**
- * EmailService는 사용자의 계정 생성, 비밀번호 재설정, 새 비밀번호 전송을 포함한 이메일 전송을 관리하는 서비스입니다.
+ * {@code EmailService}는 사용자의 계정 생성, 비밀번호 재설정, 새 비밀번호 전송을 포함한 이메일 전송을 관리하는 서비스입니다.
  *
  * <p>이 클래스는 템플릿을 기반으로 이메일 콘텐츠를 생성하고, 비동기적으로 이메일을 전송하는 {@link EmailAsyncService}를 활용하여
  * 이메일을 전송합니다. 각 이메일 유형에 대해 적절한 템플릿을 적용하여 이메일의 제목과 내용을 동적으로 설정합니다.</p>

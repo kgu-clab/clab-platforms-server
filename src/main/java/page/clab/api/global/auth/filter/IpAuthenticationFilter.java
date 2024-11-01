@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * IpAuthenticationFilter는 IP 주소를 기반으로 클라이언트의 접근 권한을 검증하는 필터입니다.
+ * {@code IpAuthenticationFilter}는 IP 주소를 기반으로 클라이언트의 접근 권한을 검증하는 필터입니다.
  *
  * <p>클라이언트의 IP 주소를 사용하여 국가 정보를 조회하고, 허용된 국가 목록에 포함되지 않은 경우
  * 접근을 차단합니다. 주로 국가별 접근 제한이 필요한 상황에서 사용됩니다.</p>

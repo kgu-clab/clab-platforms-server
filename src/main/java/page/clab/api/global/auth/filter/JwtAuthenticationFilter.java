@@ -25,7 +25,7 @@ import page.clab.api.global.util.WhitelistPathMatcher;
 import java.io.IOException;
 
 /**
- * JwtAuthenticationFilter는 JWT 토큰을 검증하고, IP 주소 기반 접근 제한을 수행하는 필터입니다.
+ * {@code JwtAuthenticationFilter}는 JWT 토큰을 검증하고, IP 주소 기반 접근 제한을 수행하는 필터입니다.
  *
  * <p>이 필터는 다음과 같은 보안 검증을 수행합니다:</p>
  * <ul>

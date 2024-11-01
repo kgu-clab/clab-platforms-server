@@ -46,7 +46,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
- * SlackServiceHelper는 다양한 알림 유형에 따라 Slack 메시지를 구성하고 전송하는 클래스입니다.
+ * {@code SlackServiceHelper}는 다양한 알림 유형에 따라 Slack 메시지를 구성하고 전송하는 클래스입니다.
  *
  * <p>주요 기능:</p>
  * <ul>
