@@ -26,8 +26,6 @@ public class MemberPasswordManagementService implements ManageMemberPasswordUseC
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
-    // 멤버의 비밀번호를 재전송합니다.
-    // 새롭게 생성된 비밀번호는 이메일을 통해 전송됩니다.
     @Transactional
     @Override
     public String resendMemberPassword(String memberId) {
@@ -41,8 +39,6 @@ public class MemberPasswordManagementService implements ManageMemberPasswordUseC
         return member.getId();
     }
 
-    // 비밀번호 재설정을 요청합니다.
-    // 비밀번호 재설정을 위한 인증 코드 생성 후, 이메일로 인증 코드를 전송합니다.
     @Transactional
     @Override
     public String requestMemberPasswordReset(MemberResetPasswordRequestDto requestDto) {
@@ -53,8 +49,6 @@ public class MemberPasswordManagementService implements ManageMemberPasswordUseC
         return member.getId();
     }
 
-    // 비밀번호 재설정 인증을 처리합니다.
-    // 사용자가 입력한 인증 코드를 검증한 후, 해당 코드를 새로운 비밀번호로 설정합니다.
     @Transactional
     @Override
     public String verifyMemberPasswordReset(VerificationRequestDto requestDto) {

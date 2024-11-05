@@ -190,7 +190,6 @@ public class ActivityGroupAdminService {
         return activityGroup.getId();
     }
 
-    // 매일 자정마다 종료일이 지난 활동 그룹을 찾아 종료 상태로 변경합니다.
     @Scheduled(cron = "0 0 0 * * *")
     public void updateActivityGroupStatusEnd() {
         List<ActivityGroup> activityGroups = activityGroupRepository.findByEndDateBeforeAndStatusNot(LocalDate.now(), ActivityGroupStatus.END);
@@ -246,7 +245,6 @@ public class ActivityGroupAdminService {
                 .anyMatch(groupMember -> groupMember.isSameRoleAndActivityGroup(role, activityGroup));
     }
 
-    // 활동 그룹에 한 명의 리더만 존재해 리더의 역할을 변경할 수 없는지 검증합니다.
     private void validateLeaderRoleChange(ActivityGroup activityGroup, GroupMember groupMember) {
         List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
         if(groupMembers.size() == 1 && groupMember.isLeader()) {
@@ -254,8 +252,6 @@ public class ActivityGroupAdminService {
         }
     }
 
-    // 보고서를 작성할 활동 그룹을 조회합니다.
-    // 보고서 작성자가 리더인지, 그룹이 활동중인지 검증합니다.
     public ActivityGroup validateAndGetActivityGroupForReporting(Long activityGroupId, Member member) throws PermissionDeniedException, IllegalAccessException {
         ActivityGroup activityGroup = getActivityGroupById(activityGroupId);
         if (!isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {

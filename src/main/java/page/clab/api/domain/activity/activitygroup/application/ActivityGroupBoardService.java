@@ -165,14 +165,13 @@ public class ActivityGroupBoardService {
         return mapper.toBoardDto(board, memberBasicInfoDto);
     }
 
-    // 특정 활동 그룹과 카테고리에 해당하는 게시판 목록을 조회합니다.
-    // 사용자 권한에 따라 접근 가능한 게시판만 반환합니다.
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardResponseDto> getActivityGroupBoardByCategory(Long activityGroupId, ActivityGroupBoardCategory category, Pageable pageable) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         validateGroupMember(activityGroup, currentMember);
         Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByActivityGroup_IdAndCategory(activityGroupId, category, pageable);
+        // 사용자 권한에 따라 접근 가능한 게시판만 반환합니다.
         List<ActivityGroupBoardResponseDto> filteredBoards = boards.stream()
                 .filter(board -> hasAccessToBoard(board.getActivityGroup(), board, currentMember))
                 .map(board -> {
@@ -183,8 +182,6 @@ public class ActivityGroupBoardService {
         return new PagedResponseDto<>(new PageImpl<>(filteredBoards, pageable, boards.getTotalElements()));
     }
 
-    // 부모 게시판에 속한 자식 게시판 목록을 조회합니다.
-    // 부모 게시판에 대한 접근 권한을 검증하고, 접근 가능한 자식 게시판만 반환합니다.
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId, Pageable pageable) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
@@ -196,6 +193,7 @@ public class ActivityGroupBoardService {
         parentBoard.validateAccessPermission(currentMember, groupLeaders);
 
         List<ActivityGroupBoard> childBoards = getChildBoards(parentId);
+        // 접근 가능한 자식 게시판만 조회합니다.
         List<ActivityGroupBoardChildResponseDto> filteredBoards = childBoards.stream()
                 .filter(board -> hasAccessToBoard(board.getActivityGroup(), board, currentMember))
                 .map(this::toActivityGroupBoardChildResponseDtoWithMemberInfo)
@@ -204,12 +202,12 @@ public class ActivityGroupBoardService {
         return new PagedResponseDto<>(new PageImpl<>(filteredBoards, pageable, filteredBoards.size()));
     }
 
-    // 제출한 과제와 해당 과제에 대한 피드백 목록을 조회합니다.
     @Transactional(readOnly = true)
     public List<AssignmentSubmissionWithFeedbackResponseDto> getMyAssignmentsWithFeedbacks(Long parentId) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
 
         List<ActivityGroupBoard> mySubmissions = activityGroupBoardRepository.findMySubmissionsWithFeedbacks(parentId, currentMember.getId());
+        // 해당 과제에 대한 피드백 목록을 조회합니다.
         return mySubmissions.stream()
                 .map(submission -> {
                     List<FeedbackResponseDto> feedbackDtos = submission.getChildren().stream()

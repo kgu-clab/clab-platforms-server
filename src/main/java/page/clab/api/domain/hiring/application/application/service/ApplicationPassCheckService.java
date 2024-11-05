@@ -19,7 +19,6 @@ public class ApplicationPassCheckService implements CheckApplicationPassStatusUs
     private final RetrieveRecruitmentPort retrieveRecruitmentPort;
     private final ApplicationDtoMapper mapper;
 
-    // 모집 종료일이 현재 기준 7일 이내인지 검증 후 특정 지원자의 합격 여부를 조회합니다.
     @Transactional(readOnly = true)
     @Override
     public ApplicationPassResponseDto checkPassStatus(Long recruitmentId, String studentId) {

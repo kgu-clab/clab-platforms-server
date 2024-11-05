@@ -62,7 +62,6 @@ public class ActivityGroupMemberService {
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
     private final ActivityGroupDtoMapper mapper;
 
-    // 특정 활동 그룹의 상세 정보를 조회합니다.
     @Transactional(readOnly = true)
     public ActivityGroupDetailResponseDto getActivityGroup(Long activityGroupId) {
         ActivityGroupDetails details = activityGroupDetailsRepository.fetchActivityGroupDetails(activityGroupId);
@@ -71,10 +70,12 @@ public class ActivityGroupMemberService {
         boolean isOwner = details.getGroupMembers().stream()
                 .anyMatch(groupMember -> groupMember.isOwnerAndLeader(currentMember));
 
+        // 활동 그룹 멤버를 조회합니다.
         List<GroupMemberResponseDto> groupMemberResponseDtos = details.getGroupMembers().stream()
                 .map(groupMember -> mapper.toDto(externalRetrieveMemberUseCase.getById(groupMember.getMemberId()), groupMember))
                 .toList();
 
+        // 활동 그룹 게시판을 조회합니다.
         List<ActivityGroupBoardResponseDto> activityGroupBoardResponseDtos =
                 details.getActivityGroupBoards().stream()
                         .map(board -> {
@@ -86,13 +87,13 @@ public class ActivityGroupMemberService {
         return mapper.toDto(details.getActivityGroup(), activityGroupBoardResponseDtos, groupMemberResponseDtos, isOwner);
     }
 
-    // 현재 사용자가 참여한 활동 그룹 중 특정 상태에 해당하는 그룹 목록을 조회합니다.
-    // 상태가 전달되지 않으면 모든 그룹을 조회합니다.
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupStatusResponseDto> getMyActivityGroups(ActivityGroupStatus status, Pageable pageable) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         List<GroupMember> groupMembers = getGroupMemberByMemberId(currentMemberId);
 
+        // 현재 로그인한 멤버가 활동중인 그룹을 조회합니다.
+        // 상태가 전달되지 않으면 모든 그룹을 조회합니다.
         List<ActivityGroup> activityGroups = groupMembers.stream()
                 .filter(GroupMember::isAccepted)
                 .map(GroupMember::getActivityGroup)
@@ -136,9 +137,6 @@ public class ActivityGroupMemberService {
         }));
     }
 
-    // 활동 그룹에 참가 신청을 합니다.
-    // 활동 그룹에 이미 신청했는지 확인하고, 중복 신청을 방지합니다.
-    // 신청 후, 그룹 리더에게 참가 신청 알림을 전송합니다.
     @Transactional
     public Long applyActivityGroup(Long activityGroupId, ApplyFormRequestDto formRequestDto) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
@@ -161,7 +159,6 @@ public class ActivityGroupMemberService {
         return activityGroup.getId();
     }
 
-    // 내가 지원한 활동 그룹을 조회합니다.
     public PagedResponseDto<ActivityGroupStatusResponseDto> getAppliedActivityGroups(Pageable pageable) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         List<GroupMember> groupMembers = getGroupMemberByMemberId(currentMemberId);
@@ -187,7 +184,6 @@ public class ActivityGroupMemberService {
         return new PagedResponseDto<>(paginatedActivityGroups, activityGroups.size(), pageable);
     }
 
-    // 활동 그룹의 상태(참여자 정보)를 조회합니다.
     private ActivityGroupStatusResponseDto getActivityGroupStatusResponseDto(ActivityGroup activityGroup) {
         Long activityGroupId = activityGroup.getId();
 

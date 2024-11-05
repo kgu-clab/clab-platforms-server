@@ -33,9 +33,6 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
     private final ReviewDtoMapper mapper;
 
-    // 활동 그룹에 대한 리뷰를 작성합니다.
-    // 활동 그룹이 종료된 상태인지 확인하고, 이미 작성된 리뷰가 있는지 확인합니다.
-    // 등록된 리뷰에 대해 그룹 리더에게 알림을 전송합니다.
     @Transactional
     @Override
     public Long registerReview(ReviewRequestDto requestDto) {

@@ -21,9 +21,7 @@ public class ApplicationApplyService implements ApplyForApplicationUseCase {
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
     private final SlackService slackService;
     private final ApplicationDtoMapper mapper;
-
-    // 동아리 지원 신청을 처리합니다.
-    // 지원자에 대한 알림을 관리자에게 전송하고, Slack에도 알림을 보냅니다.
+    
     @Transactional
     @Override
     public String applyForClub(ApplicationRequestDto requestDto) {
