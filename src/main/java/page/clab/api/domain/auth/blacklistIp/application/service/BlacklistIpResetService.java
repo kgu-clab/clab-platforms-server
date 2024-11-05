@@ -21,6 +21,15 @@ public class BlacklistIpResetService implements ResetBlacklistIpsUseCase {
     private final RemoveBlacklistIpPort removeBlacklistIpPort;
     private final SlackService slackService;
 
+    /**
+     * 블랙리스트에 등록된 모든 IP 주소를 초기화합니다.
+     *
+     * <p>블랙리스트에 등록된 모든 IP 주소를 조회하고 삭제합니다.
+     * 삭제 완료 후, Slack을 통해 모든 IP 주소가 제거되었음을 알리는 보안 알림이 전송됩니다.</p>
+     *
+     * @param request 현재 요청 객체
+     * @return 삭제된 블랙리스트 IP 주소 목록
+     */
     @Transactional
     @Override
     public List<String> resetBlacklistIps(HttpServletRequest request) {

@@ -36,6 +36,15 @@ public class AccusationReportService implements ReportAccusationUseCase {
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
     private final AccuseDtoMapper mapper;
 
+    /**
+     * 신고 요청을 처리하고 신고 내역을 저장합니다.
+     *
+     * <p>신고 유형과 대상을 검사하고, 기존 신고 대상이 있으면 조회하여 신고 횟수를 증가시킵니다.
+     * 새로운 신고라면 신고 대상과 내역을 생성하고 저장한 후, 신고자와 관리자를 대상으로 알림을 전송합니다.</p>
+     *
+     * @param requestDto 신고 요청 정보
+     * @return 생성된 신고의 ID
+     */
     @Transactional
     @Override
     public Long reportAccusation(AccuseRequestDto requestDto) {

@@ -24,6 +24,16 @@ public class MemberBanService implements BanMemberUseCase {
     private final ExternalManageRedisTokenUseCase externalManageRedisTokenUseCase;
     private final SlackService slackService;
 
+    /**
+     * 멤버를 영구적으로 차단합니다.
+     *
+     * <p>해당 멤버의 계정 잠금 정보를 조회하고, 없으면 새로 생성합니다.
+     * Redis에 저장된 해당 멤버의 인증 토큰을 삭제하며, Slack에 밴 알림을 전송합니다.</p>
+     *
+     * @param request 현재 요청 객체
+     * @param memberId 차단할 멤버의 ID
+     * @return 저장된 계정 잠금 정보의 ID
+     */
     @Transactional
     @Override
     public Long banMember(HttpServletRequest request, String memberId) {

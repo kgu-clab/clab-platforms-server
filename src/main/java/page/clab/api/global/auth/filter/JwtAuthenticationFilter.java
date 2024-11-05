@@ -24,6 +24,23 @@ import page.clab.api.global.util.WhitelistPathMatcher;
 
 import java.io.IOException;
 
+/**
+ * {@code JwtAuthenticationFilter}는 JWT 토큰을 검증하고, IP 주소 기반 접근 제한을 수행하는 필터입니다.
+ *
+ * <p>이 필터는 다음과 같은 보안 검증을 수행합니다:</p>
+ * <ul>
+ *     <li>화이트리스트 경로 확인: 화이트리스트에 있는 요청 경로에 대해서는 필터링을 생략</li>
+ *     <li>IP 주소 검증: 블랙리스트에 포함된 IP 주소이거나 차단된 IP인 경우 접근 차단</li>
+ *     <li>JWT 토큰 검증: 유효한 토큰인지 확인하고, 관리자 토큰의 경우 발급된 IP와 동일한지 검증</li>
+ * </ul>
+ *
+ * <p>특히, 관리자 토큰이 발급된 IP와 다른 IP로부터의 접근이 발생하면 해당 토큰을 삭제하고,
+ * Slack을 통해 보안 경고 메시지를 전송합니다.</p>
+ *
+ * <p>검증 실패 시, 401 Unauthorized 응답을 반환하여 접근을 제한합니다.</p>
+ *
+ * @see GenericFilterBean
+ */
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends GenericFilterBean {

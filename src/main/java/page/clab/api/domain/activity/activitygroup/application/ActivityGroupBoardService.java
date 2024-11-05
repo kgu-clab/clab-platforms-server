@@ -51,6 +51,23 @@ public class ActivityGroupBoardService {
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
     private final ActivityGroupDtoMapper mapper;
 
+    /**
+     * 새로운 활동 그룹 게시판을 생성합니다.
+     *
+     * <p>새 게시판을 생성하기 전 다음 검증이 수행됩니다:</p>
+     * - 현재 사용자가 해당 활동 그룹의 멤버인지 확인
+     * - 공지, 주차별 활동, 과제, 피드백 카테고리는 관리자 또는 리더 권한 필요
+     * - 부모 게시판의 유효성 확인
+     * - 이번 주에 이미 과제를 제출했는지 확인
+     *
+     * <p>부모 게시판이 있을 경우 자식 게시판으로 추가하며, 게시판 생성 후 알림을 전송합니다.</p>
+     *
+     * @param parentId 부모 게시판의 ID (없을 수 있음)
+     * @param activityGroupId 활동 그룹의 ID
+     * @param requestDto 게시판 생성 요청 DTO
+     * @return ActivityGroupBoardReferenceDto
+     * @throws PermissionDeniedException 권한이 없는 경우 예외 발생
+     */
     @Transactional
     public ActivityGroupBoardReferenceDto createActivityGroupBoard(Long parentId, Long activityGroupId, ActivityGroupBoardRequestDto requestDto) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
@@ -154,6 +171,7 @@ public class ActivityGroupBoardService {
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         validateGroupMember(activityGroup, currentMember);
         Page<ActivityGroupBoard> boards = activityGroupBoardRepository.findAllByActivityGroup_IdAndCategory(activityGroupId, category, pageable);
+        // 사용자 권한에 따라 접근 가능한 게시판만 반환합니다.
         List<ActivityGroupBoardResponseDto> filteredBoards = boards.stream()
                 .filter(board -> hasAccessToBoard(board.getActivityGroup(), board, currentMember))
                 .map(board -> {
@@ -175,6 +193,7 @@ public class ActivityGroupBoardService {
         parentBoard.validateAccessPermission(currentMember, groupLeaders);
 
         List<ActivityGroupBoard> childBoards = getChildBoards(parentId);
+        // 접근 가능한 자식 게시판만 조회합니다.
         List<ActivityGroupBoardChildResponseDto> filteredBoards = childBoards.stream()
                 .filter(board -> hasAccessToBoard(board.getActivityGroup(), board, currentMember))
                 .map(this::toActivityGroupBoardChildResponseDtoWithMemberInfo)
@@ -188,6 +207,7 @@ public class ActivityGroupBoardService {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
 
         List<ActivityGroupBoard> mySubmissions = activityGroupBoardRepository.findMySubmissionsWithFeedbacks(parentId, currentMember.getId());
+        // 해당 과제에 대한 피드백 목록을 조회합니다.
         return mySubmissions.stream()
                 .map(submission -> {
                     List<FeedbackResponseDto> feedbackDtos = submission.getChildren().stream()
@@ -254,6 +274,20 @@ public class ActivityGroupBoardService {
         return mapper.toChildDto(activityGroupBoard, memberBasicInfo, childrenDtos);
     }
 
+    /**
+     * 주어진 카테고리와 부모 게시판의 유효성을 검증합니다.
+     *
+     * <p>다음 규칙을 따릅니다:</p>
+     * - 공지와 주차별 활동 게시판은 부모 게시판을 가질 수 없습니다.
+     * - 과제, 제출, 피드백 게시판은 부모 게시판이 반드시 필요합니다.
+     * - 과제의 부모는 주차별 활동 게시판이어야 합니다.
+     * - 제출의 부모는 과제 게시판이어야 합니다.
+     * - 피드백의 부모는 제출 게시판이어야 합니다.
+     *
+     * @param category 게시판 카테고리
+     * @param parentId 부모 게시판의 ID
+     * @throws InvalidParentBoardException 부모 게시판이 유효하지 않은 경우 예외 발생
+     */
     private void validateParentBoard(ActivityGroupBoardCategory category, Long parentId) throws InvalidParentBoardException {
         if ((category.isNotice() || category.isWeeklyActivity())) {
             if (parentId != null) {

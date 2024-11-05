@@ -19,6 +19,16 @@ public class BlacklistIpRemoveService implements RemoveBlacklistIpUseCase {
     private final RemoveBlacklistIpPort removeBlacklistIpPort;
     private final SlackService slackService;
 
+    /**
+     * 지정된 IP 주소를 블랙리스트에서 제거합니다.
+     *
+     * <p>블랙리스트에 등록된 IP 주소 정보를 조회하고 해당 정보를 삭제합니다.
+     * 삭제가 완료되면 Slack을 통해 보안 알림이 전송됩니다.</p>
+     *
+     * @param request 현재 요청 객체
+     * @param ipAddress 제거할 블랙리스트 IP 주소
+     * @return 삭제된 블랙리스트 IP 주소
+     */
     @Transactional
     @Override
     public String removeBlacklistIp(HttpServletRequest request, String ipAddress) {

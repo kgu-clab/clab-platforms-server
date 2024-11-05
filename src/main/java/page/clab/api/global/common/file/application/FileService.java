@@ -42,6 +42,23 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
+/**
+ * {@code FileService}는 파일 저장, 삭제, 경로 검증 및 파일 접근 권한 관리와 같은 파일 관리 기능을 제공하는 클래스입니다.
+ *
+ * <p>이 서비스는 다양한 카테고리에 대해 파일 업로드 및 QR 코드 이미지 저장, 파일 삭제, 멤버의 클라우드 사용량 검증 등의 기능을 수행합니다.
+ * 또한 파일 접근 권한을 역할(Role) 및 경로에 따라 관리하여 안전한 파일 접근을 보장합니다.</p>
+ *
+ * 주요 기능:
+ * <ul>
+ *     <li>{@link #saveQRCodeImage(byte[], String, long, String)} - QR 코드 이미지를 파일로 저장합니다.</li>
+ *     <li>{@link #saveFiles(List, String, long)} - 여러 개의 파일을 저장하고 파일 접근 권한을 검증합니다.</li>
+ *     <li>{@link #saveFile(MultipartFile, String, long)} - 단일 파일을 저장하고 접근 권한을 검증합니다.</li>
+ *     <li>{@link #deleteFile(DeleteFileRequestDto)} - 파일을 삭제하고 파일의 존재 여부와 접근 권한을 확인합니다.</li>
+ *     <li>{@link #validatePathVariable(String)} - 경로 유효성 및 접근 권한을 검증하여 파일 저장 경로의 적합성을 확인합니다.</li>
+ * </ul>
+ *
+ * <p>각 역할(Role)에 따른 파일 접근 제한 및 유효성 검증을 통해 파일 시스템의 보안을 유지하며, 유저별 클라우드 저장 용량을 제한하는 검증 로직을 포함하고 있습니다.</p>
+ */
 @Service
 @RequiredArgsConstructor
 public class FileService {

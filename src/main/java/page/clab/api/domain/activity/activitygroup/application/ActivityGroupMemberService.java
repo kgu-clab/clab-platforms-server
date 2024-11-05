@@ -70,10 +70,12 @@ public class ActivityGroupMemberService {
         boolean isOwner = details.getGroupMembers().stream()
                 .anyMatch(groupMember -> groupMember.isOwnerAndLeader(currentMember));
 
+        // 활동 그룹 멤버를 조회합니다.
         List<GroupMemberResponseDto> groupMemberResponseDtos = details.getGroupMembers().stream()
                 .map(groupMember -> mapper.toDto(externalRetrieveMemberUseCase.getById(groupMember.getMemberId()), groupMember))
                 .toList();
 
+        // 활동 그룹 게시판을 조회합니다.
         List<ActivityGroupBoardResponseDto> activityGroupBoardResponseDtos =
                 details.getActivityGroupBoards().stream()
                         .map(board -> {
@@ -90,6 +92,8 @@ public class ActivityGroupMemberService {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         List<GroupMember> groupMembers = getGroupMemberByMemberId(currentMemberId);
 
+        // 현재 로그인한 멤버가 활동중인 그룹을 조회합니다.
+        // 상태가 전달되지 않으면 모든 그룹을 조회합니다.
         List<ActivityGroup> activityGroups = groupMembers.stream()
                 .filter(GroupMember::isAccepted)
                 .map(GroupMember::getActivityGroup)

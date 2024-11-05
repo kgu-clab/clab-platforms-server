@@ -21,7 +21,7 @@ public class ApplicationApplyService implements ApplyForApplicationUseCase {
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
     private final SlackService slackService;
     private final ApplicationDtoMapper mapper;
-
+    
     @Transactional
     @Override
     public String applyForClub(ApplicationRequestDto requestDto) {

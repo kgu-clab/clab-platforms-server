@@ -76,6 +76,7 @@ public class ActivityGroupAdminService {
         return activityGroupRepository.save(activityGroup).getId();
     }
 
+    // 활동 그룹의 status를 수정합니다.
     @Transactional
     public ActivityGroupBoardStatusUpdatedResponseDto manageActivityGroup(Long activityGroupId, ActivityGroupStatus status) {
         ActivityGroup activityGroup = getActivityGroupById(activityGroupId);
@@ -162,6 +163,7 @@ public class ActivityGroupAdminService {
         return new PagedResponseDto<>(paginatedGroupMembersWithApplyReason, groupMembers.getTotalElements(), groupMembersWithApplyReason.size());
     }
 
+    // 활동 멤버들의 status를 수정합니다.
     @Transactional
     public Long manageGroupMemberStatus(Long activityGroupId, List<String> memberIds, GroupMemberStatus status) throws PermissionDeniedException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
@@ -215,12 +217,16 @@ public class ActivityGroupAdminService {
                 .orElseThrow(() -> new NotFoundException("존재하지 않는 활동입니다."));
     }
 
+    // 해당 멤버가 특정 활동 그룹의 리더 또는 관리자인지 검증합니다.
+    // 예외가 발생하지 않고 안전하게 처리됩니다.
     public boolean hasLeaderOrAdminRole(ActivityGroup activityGroup, Member member) {
         return activityGroupMemberService.findGroupMemberByActivityGroupAndMember(activityGroup, member.getId())
                 .map(GroupMember::isLeader)
                 .orElseGet(member::isAdminRole);
     }
 
+    // 해당 멤버가 특정 활동 그룹의 리더 또는 관리자인지 검증합니다.
+    // 활동 멤버가 아닌 경우 false를 반환합니다.
     public boolean isMemberGroupLeaderRole(Long activityGroupId, String memberId) {
         ActivityGroup activityGroup = getActivityGroupById(activityGroupId);
         Member member = externalRetrieveMemberUseCase.getById(memberId);
@@ -228,7 +234,7 @@ public class ActivityGroupAdminService {
             GroupMember groupMember = activityGroupMemberService.getGroupMemberByActivityGroupAndMember(activityGroup, member.getId());
             return groupMember.isLeader() || member.isAdminRole();
         } catch (NotFoundException e) {
-         return false;
+            return false;
         }
     }
 

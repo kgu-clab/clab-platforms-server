@@ -24,6 +24,25 @@ import page.clab.api.global.util.WhitelistPathMatcher;
 import java.io.IOException;
 import java.util.Base64;
 
+/**
+ * {@code CustomBasicAuthenticationFilter}는 기본 인증 필터를 확장하여 추가적인 보안 기능을 제공합니다.
+ *
+ * <p>IP 주소 기반 접근 제한, 화이트리스트 경로 검증, 사용자 인증 정보를 바탕으로
+ * Slack 보안 알림을 전송하는 기능을 포함합니다. 또한 Swagger 또는 Actuator에 대한
+ * 접근이 성공하거나 실패할 경우 이를 Slack에 알립니다.</p>
+ *
+ * <p>이 필터는 다음과 같은 추가 검증을 수행합니다:</p>
+ * <ul>
+ *     <li>화이트리스트 경로 검증: 화이트리스트에 있는 경로에 대해서만 필터링 수행</li>
+ *     <li>IP 주소 검증: 허용된 IP 주소인지, 블랙리스트에 포함되어 있는지, IP가 차단되어 있는지 확인</li>
+ *     <li>사용자 인증: Basic Authentication 헤더를 확인하고 인증을 수행</li>
+ * </ul>
+ *
+ * <p>IP 또는 인증 정보가 유효하지 않은 경우, 응답으로 401 Unauthorized를 반환합니다.
+ * 또한 인증 성공 또는 실패에 대한 정보를 Slack 보안 채널로 전송합니다.</p>
+ *
+ * @see BasicAuthenticationFilter
+ */
 @Slf4j
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 

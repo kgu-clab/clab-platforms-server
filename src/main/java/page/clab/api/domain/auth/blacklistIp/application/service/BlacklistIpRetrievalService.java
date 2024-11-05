@@ -19,7 +19,6 @@ public class BlacklistIpRetrievalService implements RetrieveBlacklistIpsUseCase 
     private final RetrieveBlacklistIpPort retrieveBlacklistIpPort;
     private final BlacklistIpDtoMapper mapper;
 
-
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<BlacklistIpResponseDto> retrieveBlacklistIps(Pageable pageable) {

@@ -30,6 +30,16 @@ public class BoardRegisterService implements RegisterBoardUseCase {
     private final SlackService slackService;
     private final BoardDtoMapper mapper;
 
+    /**
+     * 새로운 게시글을 등록합니다.
+     *
+     * <p>현재 로그인한 멤버의 정보를 가져와 게시글을 생성하고, 필요한 경우 알림을 전송합니다.
+     * 게시글 작성 권한을 검증하며, 공지사항일 경우 Slack과 사용자에게 알림을 보냅니다.</p>
+     *
+     * @param requestDto 게시글 요청 정보 DTO
+     * @return 등록된 게시글의 카테고리 키
+     * @throws PermissionDeniedException 게시글 작성 권한이 없는 경우 예외 발생
+     */
     @Transactional
     @Override
     public String registerBoard(BoardRequestDto requestDto) throws PermissionDeniedException {
