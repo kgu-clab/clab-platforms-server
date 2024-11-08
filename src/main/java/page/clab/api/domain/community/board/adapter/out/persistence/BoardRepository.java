@@ -1,5 +1,6 @@
 package page.clab.api.domain.community.board.adapter.out.persistence;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,9 @@ public interface BoardRepository extends JpaRepository<BoardJpaEntity, Long> {
 
     @Query("SELECT b FROM BoardJpaEntity b WHERE b.memberId = ?1 AND b.isDeleted = false")
     Page<BoardJpaEntity> findAllByMemberIdAndIsDeletedFalse(String memberId, Pageable pageable);
+
+    @Query("SELECT b FROM BoardJpaEntity b WHERE b.createdAt BETWEEN :start AND :end AND b.isDeleted = false")
+    List<BoardJpaEntity> findAllWithinDateRange(LocalDateTime start, LocalDateTime end);
 
     Page<BoardJpaEntity> findAllByCategory(BoardCategory category, Pageable pageable);
 

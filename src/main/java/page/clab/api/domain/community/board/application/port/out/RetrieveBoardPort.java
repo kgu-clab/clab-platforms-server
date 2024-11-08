@@ -5,11 +5,18 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.community.board.domain.BoardCategory;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 public interface RetrieveBoardPort {
 
     Board getById(Long boardId);
 
     Board findByIdRegardlessOfDeletion(Long boardId);
+
+    List<Board> findAllWithinDateRange(LocalDateTime from, LocalDateTime to);
+
+    List<Board> findAll();
 
     Page<Board> findAll(Pageable pageable);
 
