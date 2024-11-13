@@ -41,13 +41,13 @@ public class HotBoardsRetrievalService implements RetrieveHotBoardsUseCase {
     }
 
     private List<Board> getHotBoards(int size) {
-        List<Board> hotBoards = getHotBoardsForWeek(1, size);
-
         // 만약 게시글의 총 개수가 size보다 적다면 모든 게시글 반환
         List<Board> allBoards = retrieveBoardPort.findAll();
         if (allBoards.size() < size) {
             return sortAndLimit(allBoards.size(), allBoards);
         }
+
+        List<Board> hotBoards = getHotBoardsForWeek(1, size);
 
         int weeksAgo = 2;
         // 필요한 수량을 확보할 때까지 반복해서 이전 주로 이동하여 Hot 게시글 보충
