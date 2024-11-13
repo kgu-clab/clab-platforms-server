@@ -61,10 +61,10 @@ public class HotBoardsRetrievalService implements RetrieveHotBoardsUseCase {
     }
 
     private List<Board> getHotBoardsForWeek(int weeksAgo, int size) {
-        LocalDateTime startOfWeek = LocalDate.now().minusWeeks(weeksAgo).with(java.time.DayOfWeek.MONDAY).atStartOfDay();
-        LocalDateTime endOfWeek = LocalDate.now().minusWeeks(weeksAgo).with(java.time.DayOfWeek.SUNDAY).atTime(23, 59, 59);
+        LocalDateTime startDate = LocalDate.now().minusWeeks(weeksAgo).with(java.time.DayOfWeek.MONDAY).atStartOfDay();
+        LocalDateTime endDate = LocalDate.now().minusWeeks(weeksAgo).with(java.time.DayOfWeek.SUNDAY).atTime(23, 59, 59);
 
-        List<Board> boardsForWeek = retrieveBoardPort.findAllWithinDateRange(startOfWeek, endOfWeek);
+        List<Board> boardsForWeek = retrieveBoardPort.findAllWithinDateRange(startDate, endDate);
 
         return sortAndLimit(size, boardsForWeek);
     }

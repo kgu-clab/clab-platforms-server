@@ -14,7 +14,7 @@ public interface RetrieveBoardPort {
 
     Board findByIdRegardlessOfDeletion(Long boardId);
 
-    List<Board> findAllWithinDateRange(LocalDateTime from, LocalDateTime to);
+    List<Board> findAllWithinDateRange(LocalDateTime startDate, LocalDateTime endDate);
 
     List<Board> findAll();
 

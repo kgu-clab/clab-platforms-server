@@ -10,7 +10,6 @@ import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.community.board.domain.BoardCategory;
 import page.clab.api.global.exception.NotFoundException;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,8 +45,8 @@ public class BoardPersistenceAdapter implements
     }
 
     @Override
-    public List<Board> findAllWithinDateRange(LocalDateTime start, LocalDateTime end) {
-        return boardRepository.findAllWithinDateRange(start, end).stream()
+    public List<Board> findAllWithinDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        return boardRepository.findAllWithinDateRange(startDate, endDate).stream()
                 .map(boardMapper::toDomain)
                 .collect(Collectors.toList());
     }
