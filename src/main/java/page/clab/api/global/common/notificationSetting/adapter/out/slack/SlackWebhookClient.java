@@ -66,14 +66,14 @@ import page.clab.api.global.util.HttpReqResUtil;
  */
 @Component
 @Slf4j
-public class SlackServiceHelper {
+public class SlackWebhookClient {
 
     private final Slack slack;
     private final NotificationConfigProperties.CommonProperties commonProperties;
     private final Environment environment;
     private final AttributeStrategy attributeStrategy;
 
-    public SlackServiceHelper(NotificationConfigProperties notificationConfigProperties, Environment environment,
+    public SlackWebhookClient(NotificationConfigProperties notificationConfigProperties, Environment environment,
                               AttributeStrategy attributeStrategy) {
         this.slack = Slack.getInstance();
         this.commonProperties = notificationConfigProperties.getCommon();

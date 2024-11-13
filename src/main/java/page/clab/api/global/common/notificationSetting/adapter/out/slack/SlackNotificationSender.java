@@ -10,7 +10,7 @@ import page.clab.api.global.common.notificationSetting.domain.PlatformType;
 @RequiredArgsConstructor
 public class SlackNotificationSender implements NotificationSender {
 
-    private final SlackServiceHelper slackServiceHelper;
+    private final SlackWebhookClient slackWebhookClient;
 
     @Override
     public String getPlatformName() {
@@ -19,7 +19,7 @@ public class SlackNotificationSender implements NotificationSender {
 
     @Override
     public void sendNotification(NotificationEvent event, String webhookUrl) {
-        slackServiceHelper.sendSlackMessage(webhookUrl, event.getAlertType(), event.getRequest(),
+        slackWebhookClient.sendSlackMessage(webhookUrl, event.getAlertType(), event.getRequest(),
                 event.getAdditionalData());
     }
 }
