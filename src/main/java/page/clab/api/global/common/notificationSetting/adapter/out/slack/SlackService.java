@@ -11,9 +11,9 @@ import page.clab.api.global.common.notificationSetting.application.event.Notific
 import page.clab.api.global.common.notificationSetting.domain.ExecutivesAlertType;
 import page.clab.api.global.common.notificationSetting.domain.GeneralAlertType;
 import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
-import page.clab.api.global.common.slack.domain.SlackBoardInfo;
-import page.clab.api.global.common.slack.domain.SlackBookLoanRecordInfo;
-import page.clab.api.global.common.slack.domain.SlackMembershipFeeInfo;
+import page.clab.api.global.common.notificationSetting.domain.SlackBoardInfo;
+import page.clab.api.global.common.notificationSetting.domain.SlackBookLoanRecordInfo;
+import page.clab.api.global.common.notificationSetting.domain.SlackMembershipFeeInfo;
 import page.clab.api.global.config.SlackConfig;
 
 /**

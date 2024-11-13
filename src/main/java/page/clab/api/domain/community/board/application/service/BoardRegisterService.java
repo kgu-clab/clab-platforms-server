@@ -15,7 +15,7 @@ import page.clab.api.external.memberManagement.notification.application.port.Ext
 import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
-import page.clab.api.global.common.slack.domain.SlackBoardInfo;
+import page.clab.api.global.common.notificationSetting.domain.SlackBoardInfo;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service

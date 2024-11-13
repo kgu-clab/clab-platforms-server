@@ -18,7 +18,7 @@ import page.clab.api.external.library.book.application.port.ExternalRetrieveBook
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
 import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
-import page.clab.api.global.common.slack.domain.SlackBookLoanRecordInfo;
+import page.clab.api.global.common.notificationSetting.domain.SlackBookLoanRecordInfo;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 
 @Service

@@ -1,4 +1,4 @@
-package page.clab.api.global.common.slack.domain;
+package page.clab.api.global.common.notificationSetting.domain;
 
 import lombok.Builder;
 import lombok.Getter;
