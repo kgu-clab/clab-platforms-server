@@ -3,8 +3,8 @@ package page.clab.api.global.common.notificationSetting.application.event;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import page.clab.api.global.common.notificationSetting.application.port.in.UpdateNotificationSettingUseCase;
 import page.clab.api.global.common.notificationSetting.application.port.out.NotificationSender;
-import page.clab.api.global.common.notificationSetting.application.service.NotificationSettingService;
 import page.clab.api.global.common.notificationSetting.domain.AlertType;
 import page.clab.api.global.common.notificationSetting.domain.NotificationSetting;
 
@@ -12,13 +12,13 @@ import page.clab.api.global.common.notificationSetting.domain.NotificationSettin
 @RequiredArgsConstructor
 public class NotificationListener {
 
-    private final NotificationSettingService settingService;
+    private final UpdateNotificationSettingUseCase updateNotificationSettingUseCase;
     private final NotificationSender notificationSender;
 
     @EventListener
     public void handleNotificationEvent(NotificationEvent event) {
         AlertType alertType = event.getAlertType();
-        NotificationSetting setting = settingService.getOrCreateDefaultSetting(alertType);
+        NotificationSetting setting = updateNotificationSettingUseCase.getOrCreateDefaultSetting(alertType);
 
         if (setting.isEnabled()) {
             notificationSender.sendNotification(event);
