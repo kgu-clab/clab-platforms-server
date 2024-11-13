@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -35,7 +36,6 @@ import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.auth.util.IpWhitelistValidator;
 import page.clab.api.global.common.file.application.FileService;
-import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
 import page.clab.api.global.filter.IPinfoSpringFilter;
 import page.clab.api.global.util.ApiLogger;
 import page.clab.api.global.util.HttpReqResUtil;
@@ -53,7 +53,7 @@ public class SecurityConfig {
     private final ExternalCheckIpBlockedUseCase externalCheckIpBlockedUseCase;
     private final ExternalRegisterBlacklistIpUseCase externalRegisterBlacklistIpUseCase;
     private final ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase;
-    private final SlackService slackService;
+    private final ApplicationEventPublisher eventPublisher;
     private final IpWhitelistValidator ipWhitelistValidator;
     private final WhitelistAccountProperties whitelistAccountProperties;
     private final WhitelistPatternsProperties whitelistPatternsProperties;
@@ -91,17 +91,17 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new InvalidEndpointAccessFilter(slackService, fileURL, externalRegisterBlacklistIpUseCase,
-                                externalRetrieveBlacklistIpUseCase),
+                        new InvalidEndpointAccessFilter(fileURL, externalRegisterBlacklistIpUseCase,
+                                externalRetrieveBlacklistIpUseCase, eventPublisher),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new CustomBasicAuthenticationFilter(authenticationManager, ipWhitelistValidator, slackService,
-                                externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
+                        new CustomBasicAuthenticationFilter(authenticationManager, ipWhitelistValidator,
+                                externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase, eventPublisher),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new JwtAuthenticationFilter(slackService, jwtTokenProvider, externalManageRedisTokenUseCase,
+                        new JwtAuthenticationFilter(jwtTokenProvider, eventPublisher, externalManageRedisTokenUseCase,
                                 externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
                         UsernamePasswordAuthenticationFilter.class
                 )

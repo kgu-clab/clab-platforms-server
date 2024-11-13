@@ -3,6 +3,7 @@ package page.clab.api.external.auth.accountLockInfo.port;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.auth.accountLockInfo.application.port.out.RegisterAccountLockInfoPort;
@@ -13,7 +14,7 @@ import page.clab.api.domain.auth.login.application.exception.MemberLockedExcepti
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.external.auth.accountLockInfo.application.ExternalManageAccountLockUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
+import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 
 @Service
@@ -23,7 +24,7 @@ public class ExternalAccountLockManagementService implements ExternalManageAccou
     private final RetrieveAccountLockInfoPort retrieveAccountLockInfoPort;
     private final RegisterAccountLockInfoPort registerAccountLockInfoPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final SlackService slackService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${security.login-attempt.max-failures}")
     private int maxLoginFailures;
@@ -99,8 +100,9 @@ public class ExternalAccountLockManagementService implements ExternalManageAccou
         String memberName = memberInfo.getMemberName();
         if (memberInfo.isAdminRole()) {
             request.setAttribute("member", memberId + " " + memberName);
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.REPEATED_LOGIN_FAILURES,
-                    "로그인 실패 횟수 초과로 계정이 잠겼습니다.");
+            String additionalMessage = "로그인 실패 횟수 초과로 계정이 잠겼습니다.";
+            eventPublisher.publishEvent(
+                    new NotificationEvent(this, SecurityAlertType.REPEATED_LOGIN_FAILURES, request, additionalMessage));
         }
     }
 }

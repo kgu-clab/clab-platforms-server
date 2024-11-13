@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
@@ -17,7 +18,7 @@ import page.clab.api.external.auth.blacklistIp.application.port.ExternalRetrieve
 import page.clab.api.external.auth.redisIpAccessMonitor.application.port.ExternalCheckIpBlockedUseCase;
 import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
-import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
+import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
@@ -44,8 +45,8 @@ import page.clab.api.global.util.WhitelistPathMatcher;
 @Slf4j
 public class JwtAuthenticationFilter extends GenericFilterBean {
 
-    private final SlackService slackService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ApplicationEventPublisher eventPublisher;
     private final ExternalManageRedisTokenUseCase externalManageRedisTokenUseCase;
     private final ExternalCheckIpBlockedUseCase externalCheckIpBlockedUseCase;
     private final ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase;
@@ -112,8 +113,9 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     private void sendSecurityAlertSlackMessage(HttpServletRequest request, RedisToken redisToken) {
         if (redisToken.isAdminToken()) {
             request.setAttribute("member", redisToken.getId());
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.DUPLICATE_LOGIN,
-                    "토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
+            String additionalMessage = "토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.";
+            eventPublisher.publishEvent(
+                    new NotificationEvent(this, SecurityAlertType.DUPLICATE_LOGIN, request, additionalMessage));
         }
     }
 }

@@ -9,13 +9,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 import page.clab.api.domain.auth.blacklistIp.domain.BlacklistIp;
 import page.clab.api.external.auth.blacklistIp.application.port.ExternalRegisterBlacklistIpUseCase;
 import page.clab.api.external.auth.blacklistIp.application.port.ExternalRetrieveBlacklistIpUseCase;
-import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
+import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
@@ -42,10 +43,10 @@ import page.clab.api.global.util.SecurityPatternChecker;
 @Slf4j
 public class InvalidEndpointAccessFilter extends GenericFilterBean {
 
-    private final SlackService slackService;
     private final String fileURL;
     private final ExternalRegisterBlacklistIpUseCase externalRegisterBlacklistIpUseCase;
     private final ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -97,8 +98,9 @@ public class InvalidEndpointAccessFilter extends GenericFilterBean {
         String abnormalAccessMessage = "서버 내부 파일 및 디렉토리에 대한 접근이 감지되었습니다.";
         String blacklistAddedMessage = "Added IP: " + clientIpAddress;
 
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS, abnormalAccessMessage);
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED,
-                blacklistAddedMessage);
+        eventPublisher.publishEvent(new NotificationEvent(this, SecurityAlertType.ABNORMAL_ACCESS, request,
+                abnormalAccessMessage));
+        eventPublisher.publishEvent(new NotificationEvent(this, SecurityAlertType.BLACKLISTED_IP_ADDED, request,
+                blacklistAddedMessage));
     }
 }

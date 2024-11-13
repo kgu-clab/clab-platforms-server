@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Base64;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +18,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import page.clab.api.external.auth.blacklistIp.application.port.ExternalRetrieveBlacklistIpUseCase;
 import page.clab.api.external.auth.redisIpAccessMonitor.application.port.ExternalCheckIpBlockedUseCase;
 import page.clab.api.global.auth.util.IpWhitelistValidator;
-import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
+import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
@@ -45,22 +46,22 @@ import page.clab.api.global.util.WhitelistPathMatcher;
 public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
     private final IpWhitelistValidator ipWhitelistValidator;
-    private final SlackService slackService;
     private final ExternalCheckIpBlockedUseCase externalCheckIpBlockedUseCase;
     private final ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase;
+    private final ApplicationEventPublisher eventPublisher;
 
     public CustomBasicAuthenticationFilter(
             AuthenticationManager authenticationManager,
             IpWhitelistValidator ipWhitelistValidator,
-            SlackService slackService,
             ExternalCheckIpBlockedUseCase externalCheckIpBlockedUseCase,
-            ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase
+            ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase,
+            ApplicationEventPublisher eventPublisher
     ) {
         super(authenticationManager);
         this.externalCheckIpBlockedUseCase = externalCheckIpBlockedUseCase;
         this.externalRetrieveBlacklistIpUseCase = externalRetrieveBlacklistIpUseCase;
         this.ipWhitelistValidator = ipWhitelistValidator;
-        this.slackService = slackService;
+        this.eventPublisher = eventPublisher;
     }
 
     @NotNull
@@ -131,22 +132,26 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
     private void sendAuthenticationSuccessAlertSlackMessage(HttpServletRequest request) {
         String path = request.getRequestURI();
         if (WhitelistPathMatcher.isSwaggerIndexEndpoint(path)) {
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.API_DOCS_ACCESS,
-                    "API 문서에 대한 접근이 허가되었습니다.");
+            String additionalMessage = "API 문서에 대한 접근이 허가되었습니다.";
+            eventPublisher.publishEvent(
+                    new NotificationEvent(this, SecurityAlertType.API_DOCS_ACCESS, request, additionalMessage));
         } else if (WhitelistPathMatcher.isActuatorRequest(path)) {
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.ACTUATOR_ACCESS,
-                    "Actuator에 대한 접근이 허가되었습니다.");
+            String additionalMessage = "Actuator에 대한 접근이 허가되었습니다.";
+            eventPublisher.publishEvent(
+                    new NotificationEvent(this, SecurityAlertType.ACTUATOR_ACCESS, request, additionalMessage));
         }
     }
 
     private void sendAuthenticationFailureAlertSlackMessage(HttpServletRequest request) {
         String path = request.getRequestURI();
         if (WhitelistPathMatcher.isSwaggerIndexEndpoint(path)) {
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.API_DOCS_ACCESS,
-                    "API 문서에 대한 접근이 거부되었습니다.");
+            String additionalMessage = "API 문서에 대한 접근이 거부되었습니다.";
+            eventPublisher.publishEvent(
+                    new NotificationEvent(this, SecurityAlertType.API_DOCS_ACCESS, request, additionalMessage));
         } else if (WhitelistPathMatcher.isActuatorRequest(path)) {
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.ACTUATOR_ACCESS,
-                    "Actuator에 대한 접근이 거부되었습니다.");
+            String additionalMessage = "Actuator에 대한 접근이 거부되었습니다.";
+            eventPublisher.publishEvent(
+                    new NotificationEvent(this, SecurityAlertType.ACTUATOR_ACCESS, request, additionalMessage));
         }
     }
 }

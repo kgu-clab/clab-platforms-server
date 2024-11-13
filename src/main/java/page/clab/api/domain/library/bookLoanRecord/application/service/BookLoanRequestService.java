@@ -1,6 +1,7 @@
 package page.clab.api.domain.library.bookLoanRecord.application.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,8 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.external.library.book.application.port.ExternalRetrieveBookUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
-import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
+import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
+import page.clab.api.global.common.notificationSetting.domain.ExecutivesAlertType;
 import page.clab.api.global.common.notificationSetting.domain.SlackBookLoanRecordInfo;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 
@@ -30,7 +32,7 @@ public class BookLoanRequestService implements RequestBookLoanUseCase {
     private final ExternalRetrieveBookUseCase externalRetrieveBookUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
-    private final SlackService slackService;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 도서 대출 신청을 처리합니다.
@@ -62,7 +64,8 @@ public class BookLoanRequestService implements RequestBookLoanUseCase {
                     "[" + book.getTitle() + "] 도서 대출 신청이 완료되었습니다.");
 
             SlackBookLoanRecordInfo bookLoanRecordInfo = SlackBookLoanRecordInfo.create(book, borrowerInfo);
-            slackService.sendNewBookLoanRequestNotification(bookLoanRecordInfo);
+            eventPublisher.publishEvent(new NotificationEvent(this, ExecutivesAlertType.NEW_BOOK_LOAN_REQUEST, null,
+                    bookLoanRecordInfo));
 
             return registerBookLoanRecordPort.save(bookLoanRecord).getId();
         } catch (ObjectOptimisticLockingFailureException e) {

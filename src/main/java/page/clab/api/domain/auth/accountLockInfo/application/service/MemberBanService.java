@@ -2,6 +2,7 @@ package page.clab.api.domain.auth.accountLockInfo.application.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.auth.accountLockInfo.application.port.in.BanMemberUseCase;
@@ -11,7 +12,7 @@ import page.clab.api.domain.auth.accountLockInfo.domain.AccountLockInfo;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
+import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 
 @Service
@@ -22,7 +23,7 @@ public class MemberBanService implements BanMemberUseCase {
     private final RegisterAccountLockInfoPort registerAccountLockInfoPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalManageRedisTokenUseCase externalManageRedisTokenUseCase;
-    private final SlackService slackService;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 멤버를 영구적으로 차단합니다.
@@ -58,7 +59,8 @@ public class MemberBanService implements BanMemberUseCase {
 
     private void sendSlackBanNotification(HttpServletRequest request, String memberId) {
         String memberName = externalRetrieveMemberUseCase.getMemberBasicInfoById(memberId).getMemberName();
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_BANNED,
-                "ID: " + memberId + ", Name: " + memberName);
+        String additionalMessage = "ID: " + memberId + ", Name: " + memberName;
+        eventPublisher.publishEvent(
+                new NotificationEvent(this, SecurityAlertType.MEMBER_BANNED, request, additionalMessage));
     }
 }

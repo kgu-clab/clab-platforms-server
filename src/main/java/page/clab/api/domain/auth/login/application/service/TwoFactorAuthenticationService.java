@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.auth.accountAccessLog.domain.AccountAccessResult;
@@ -22,7 +23,8 @@ import page.clab.api.external.auth.accountLockInfo.application.ExternalManageAcc
 import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
-import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
+import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
+import page.clab.api.global.common.notificationSetting.domain.GeneralAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
 
 @Service
@@ -35,7 +37,7 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalRegisterAccountAccessLogUseCase externalRegisterAccountAccessLogUseCase;
     private final ExternalManageRedisTokenUseCase externalManageRedisTokenUseCase;
-    private final SlackService slackService;
+    private final ApplicationEventPublisher eventPublisher;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
@@ -77,7 +79,8 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
 
     private void sendAdminLoginNotification(HttpServletRequest request, MemberLoginInfoDto loginMember) {
         if (loginMember.isSuperAdminRole()) {
-            slackService.sendAdminLoginNotification(request, loginMember);
+            eventPublisher.publishEvent(
+                    new NotificationEvent(this, GeneralAlertType.ADMIN_LOGIN, request, loginMember));
         }
     }
 

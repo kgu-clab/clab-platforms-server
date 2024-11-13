@@ -5,4 +5,6 @@ public interface AlertType {
     String getTitle();
 
     String getDefaultMessage();
+
+    AlertCategory getCategory();
 }

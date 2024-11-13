@@ -3,13 +3,14 @@ package page.clab.api.domain.auth.blacklistIp.application.service;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.auth.blacklistIp.application.port.in.ResetBlacklistIpsUseCase;
 import page.clab.api.domain.auth.blacklistIp.application.port.out.RemoveBlacklistIpPort;
 import page.clab.api.domain.auth.blacklistIp.application.port.out.RetrieveBlacklistIpPort;
 import page.clab.api.domain.auth.blacklistIp.domain.BlacklistIp;
-import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
+import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 
 @Service
@@ -18,7 +19,7 @@ public class BlacklistIpResetService implements ResetBlacklistIpsUseCase {
 
     private final RetrieveBlacklistIpPort retrieveBlacklistIpPort;
     private final RemoveBlacklistIpPort removeBlacklistIpPort;
-    private final SlackService slackService;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 블랙리스트에 등록된 모든 IP 주소를 초기화합니다.
@@ -37,8 +38,11 @@ public class BlacklistIpResetService implements ResetBlacklistIpsUseCase {
                 .map(BlacklistIp::getIpAddress)
                 .toList();
         removeBlacklistIpPort.deleteAll();
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_REMOVED,
-                "Deleted IP: ALL");
+
+        String additionalMessage = "Deleted IP: ALL";
+        eventPublisher.publishEvent(
+                new NotificationEvent(this, SecurityAlertType.BLACKLISTED_IP_REMOVED, request, additionalMessage));
+
         return blacklistedIps;
     }
 }

@@ -2,6 +2,7 @@ package page.clab.api.domain.auth.blacklistIp.application.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.auth.blacklistIp.application.dto.mapper.BlacklistIpDtoMapper;
@@ -10,7 +11,7 @@ import page.clab.api.domain.auth.blacklistIp.application.port.in.RegisterBlackli
 import page.clab.api.domain.auth.blacklistIp.application.port.out.RegisterBlacklistIpPort;
 import page.clab.api.domain.auth.blacklistIp.application.port.out.RetrieveBlacklistIpPort;
 import page.clab.api.domain.auth.blacklistIp.domain.BlacklistIp;
-import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
+import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 
 @Service
@@ -19,7 +20,7 @@ public class BlacklistIpRegisterService implements RegisterBlacklistIpUseCase {
 
     private final RegisterBlacklistIpPort registerBlacklistIpPort;
     private final RetrieveBlacklistIpPort retrieveBlacklistIpPort;
-    private final SlackService slackService;
+    private final ApplicationEventPublisher eventPublisher;
     private final BlacklistIpDtoMapper mapper;
 
     /**
@@ -41,8 +42,12 @@ public class BlacklistIpRegisterService implements RegisterBlacklistIpUseCase {
                 .orElseGet(() -> {
                     BlacklistIp blacklistIp = mapper.fromDto(requestDto);
                     registerBlacklistIpPort.save(blacklistIp);
-                    slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_ADDED,
-                            "Added IP: " + ipAddress);
+
+                    String additionalMessage = "Added IP: " + ipAddress;
+                    eventPublisher.publishEvent(
+                            new NotificationEvent(this, SecurityAlertType.BLACKLISTED_IP_ADDED, request,
+                                    additionalMessage));
+
                     return ipAddress;
                 });
     }

@@ -35,6 +35,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
+import page.clab.api.global.common.notificationSetting.config.NotificationConfigProperties;
 import page.clab.api.global.common.notificationSetting.domain.AlertType;
 import page.clab.api.global.common.notificationSetting.domain.ExecutivesAlertType;
 import page.clab.api.global.common.notificationSetting.domain.GeneralAlertType;
@@ -42,7 +43,6 @@ import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 import page.clab.api.global.common.notificationSetting.domain.SlackBoardInfo;
 import page.clab.api.global.common.notificationSetting.domain.SlackBookLoanRecordInfo;
 import page.clab.api.global.common.notificationSetting.domain.SlackMembershipFeeInfo;
-import page.clab.api.global.config.SlackConfig;
 import page.clab.api.global.util.HttpReqResUtil;
 
 /**
@@ -69,17 +69,14 @@ import page.clab.api.global.util.HttpReqResUtil;
 public class SlackServiceHelper {
 
     private final Slack slack;
-    private final String webUrl;
-    private final String apiUrl;
-    private final String color;
+    private final NotificationConfigProperties.CommonProperties commonProperties;
     private final Environment environment;
     private final AttributeStrategy attributeStrategy;
 
-    public SlackServiceHelper(SlackConfig slackConfig, Environment environment, AttributeStrategy attributeStrategy) {
-        this.slack = slackConfig.slack();
-        this.webUrl = slackConfig.getWebUrl();
-        this.apiUrl = slackConfig.getApiUrl();
-        this.color = slackConfig.getColor();
+    public SlackServiceHelper(NotificationConfigProperties notificationConfigProperties, Environment environment,
+                              AttributeStrategy attributeStrategy) {
+        this.slack = Slack.getInstance();
+        this.commonProperties = notificationConfigProperties.getCommon();
         this.environment = environment;
         this.attributeStrategy = attributeStrategy;
     }
@@ -104,7 +101,7 @@ public class SlackServiceHelper {
                     .blocks(List.of(blocks.getFirst()))
                     .attachments(Collections.singletonList(
                             Attachment.builder()
-                                    .color(color)
+                                    .color(commonProperties.getColor())
                                     .blocks(blocks.subList(1, blocks.size()))
                                     .build()
                     )).build();
@@ -328,10 +325,10 @@ public class SlackServiceHelper {
                 ))),
                 actions(actions -> actions.elements(asElements(
                         button(b -> b.text(plainText(pt -> pt.emoji(true).text("Web")))
-                                .url(webUrl)
+                                .url(commonProperties.getWebUrl())
                                 .value("click_web")),
                         button(b -> b.text(plainText(pt -> pt.emoji(true).text("Swagger")))
-                                .url(apiUrl)
+                                .url(commonProperties.getWebUrl())
                                 .value("click_swagger"))
                 )))
         );

@@ -2,6 +2,7 @@ package page.clab.api.domain.auth.accountLockInfo.application.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.auth.accountLockInfo.application.port.in.UnbanMemberUseCase;
@@ -10,7 +11,7 @@ import page.clab.api.domain.auth.accountLockInfo.application.port.out.RetrieveAc
 import page.clab.api.domain.auth.accountLockInfo.domain.AccountLockInfo;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
+import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 
 @Service
@@ -20,7 +21,7 @@ public class MemberUnbanService implements UnbanMemberUseCase {
     private final RetrieveAccountLockInfoPort retrieveAccountLockInfoPort;
     private final RegisterAccountLockInfoPort registerAccountLockInfoPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final SlackService slackService;
+    private final ApplicationEventPublisher eventPublisher;
 
     /**
      * 차단된 멤버를 해제합니다.
@@ -55,7 +56,8 @@ public class MemberUnbanService implements UnbanMemberUseCase {
 
     private void sendSlackUnbanNotification(HttpServletRequest request, String memberId) {
         String memberName = externalRetrieveMemberUseCase.getMemberBasicInfoById(memberId).getMemberName();
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.MEMBER_UNBANNED,
-                "ID: " + memberId + ", Name: " + memberName);
+        String additionalMessage = "ID: " + memberId + ", Name: " + memberName;
+        eventPublisher.publishEvent(
+                new NotificationEvent(this, SecurityAlertType.MEMBER_UNBANNED, request, additionalMessage));
     }
 }

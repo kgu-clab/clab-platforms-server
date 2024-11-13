@@ -4,5 +4,7 @@ import page.clab.api.global.common.notificationSetting.application.event.Notific
 
 public interface NotificationSender {
 
-    void sendNotification(NotificationEvent event);
+    String getPlatformName();
+
+    void sendNotification(NotificationEvent event, String webhookUrl);
 }
