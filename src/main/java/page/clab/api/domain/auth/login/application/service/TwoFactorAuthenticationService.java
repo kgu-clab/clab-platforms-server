@@ -1,6 +1,7 @@
 package page.clab.api.domain.auth.login.application.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -21,10 +22,8 @@ import page.clab.api.external.auth.accountLockInfo.application.ExternalManageAcc
 import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
-import page.clab.api.global.common.slack.application.SlackService;
+import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
 import page.clab.api.global.util.HttpReqResUtil;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +40,9 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
 
     @Transactional
     @Override
-    public LoginResult authenticate(HttpServletRequest request, TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto) throws LoginFailedException, MemberLockedException {
+    public LoginResult authenticate(HttpServletRequest request,
+                                    TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto)
+            throws LoginFailedException, MemberLockedException {
         String memberId = twoFactorAuthenticationRequestDto.getMemberId();
         MemberLoginInfoDto loginMember = externalRetrieveMemberUseCase.getMemberLoginInfoById(memberId);
         String totp = twoFactorAuthenticationRequestDto.getTotp();
@@ -55,9 +56,11 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
         return LoginResult.create(header, true);
     }
 
-    private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request) throws MemberLockedException, LoginFailedException {
+    private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request)
+            throws MemberLockedException, LoginFailedException {
         if (!manageAuthenticatorUseCase.isAuthenticatorValid(memberId, totp)) {
-            externalRegisterAccountAccessLogUseCase.registerAccountAccessLog(request, memberId, AccountAccessResult.FAILURE);
+            externalRegisterAccountAccessLogUseCase.registerAccountAccessLog(request, memberId,
+                    AccountAccessResult.FAILURE);
             externalManageAccountLockUseCase.handleLoginFailure(request, memberId);
             throw new LoginFailedException("잘못된 인증번호입니다.");
         }
@@ -67,7 +70,8 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
     private TokenInfo generateAndSaveToken(MemberLoginInfoDto memberInfo) {
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(memberInfo.getMemberId(), memberInfo.getRole());
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        externalManageRedisTokenUseCase.saveToken(memberInfo.getMemberId(), memberInfo.getRole(), tokenInfo, clientIpAddress);
+        externalManageRedisTokenUseCase.saveToken(memberInfo.getMemberId(), memberInfo.getRole(), tokenInfo,
+                clientIpAddress);
         return tokenInfo;
     }
 
@@ -78,7 +82,8 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
     }
 
     @Override
-    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFailedException, MemberLockedException {
+    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto)
+            throws LoginFailedException, MemberLockedException {
         throw new UnsupportedOperationException("Method not implemented");
     }
 

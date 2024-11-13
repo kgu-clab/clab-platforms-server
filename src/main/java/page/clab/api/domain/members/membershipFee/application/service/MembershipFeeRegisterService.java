@@ -11,7 +11,7 @@ import page.clab.api.domain.members.membershipFee.application.port.out.RegisterM
 import page.clab.api.domain.members.membershipFee.domain.MembershipFee;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
-import page.clab.api.global.common.slack.application.SlackService;
+import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
 import page.clab.api.global.common.slack.domain.SlackMembershipFeeInfo;
 
 @Service

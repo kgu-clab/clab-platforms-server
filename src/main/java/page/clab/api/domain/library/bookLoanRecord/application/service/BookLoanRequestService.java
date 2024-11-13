@@ -17,7 +17,7 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.external.library.book.application.port.ExternalRetrieveBookUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
-import page.clab.api.global.common.slack.application.SlackService;
+import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
 import page.clab.api.global.common.slack.domain.SlackBookLoanRecordInfo;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 
@@ -36,15 +36,13 @@ public class BookLoanRequestService implements RequestBookLoanUseCase {
      * 도서 대출 신청을 처리합니다.
      *
      * <p>현재 로그인한 멤버의 대출 상태와 한도를 검증한 후,
-     * 도서의 대출 신청이 이미 존재하는지 확인합니다.
-     * 대출 신청이 성공적으로 완료되면 멤버와 Slack에 알림을 전송하고,
-     * 대출 기록을 저장한 후 그 ID를 반환합니다.</p>
+     * 도서의 대출 신청이 이미 존재하는지 확인합니다. 대출 신청이 성공적으로 완료되면 멤버와 Slack에 알림을 전송하고, 대출 기록을 저장한 후 그 ID를 반환합니다.</p>
      *
      * @param requestDto 도서 대출 신청 요청 정보 DTO
      * @return 저장된 대출 기록의 ID
      * @throws CustomOptimisticLockingFailureException 동시에 다른 사용자가 대출을 신청하여 충돌이 발생한 경우 예외 발생
-     * @throws MaxBorrowLimitExceededException 대출 한도를 초과한 경우 예외 발생
-     * @throws BookAlreadyAppliedForLoanException 이미 신청된 도서일 경우 예외 발생
+     * @throws MaxBorrowLimitExceededException         대출 한도를 초과한 경우 예외 발생
+     * @throws BookAlreadyAppliedForLoanException      이미 신청된 도서일 경우 예외 발생
      */
     @Transactional
     @Override
@@ -60,7 +58,8 @@ public class BookLoanRequestService implements RequestBookLoanUseCase {
 
             BookLoanRecord bookLoanRecord = BookLoanRecord.create(book.getId(), borrowerInfo);
 
-            externalSendNotificationUseCase.sendNotificationToMember(borrowerInfo.getMemberId(), "[" + book.getTitle() + "] 도서 대출 신청이 완료되었습니다.");
+            externalSendNotificationUseCase.sendNotificationToMember(borrowerInfo.getMemberId(),
+                    "[" + book.getTitle() + "] 도서 대출 신청이 완료되었습니다.");
 
             SlackBookLoanRecordInfo bookLoanRecordInfo = SlackBookLoanRecordInfo.create(book, borrowerInfo);
             slackService.sendNewBookLoanRequestNotification(bookLoanRecordInfo);

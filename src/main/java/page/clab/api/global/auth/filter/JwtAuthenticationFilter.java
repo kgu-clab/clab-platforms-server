@@ -6,6 +6,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -16,13 +17,11 @@ import page.clab.api.external.auth.blacklistIp.application.port.ExternalRetrieve
 import page.clab.api.external.auth.redisIpAccessMonitor.application.port.ExternalCheckIpBlockedUseCase;
 import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
-import page.clab.api.global.common.slack.application.SlackService;
-import page.clab.api.global.common.slack.domain.SecurityAlertType;
+import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
+import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
 import page.clab.api.global.util.WhitelistPathMatcher;
-
-import java.io.IOException;
 
 /**
  * {@code JwtAuthenticationFilter}는 JWT 토큰을 검증하고, IP 주소 기반 접근 제한을 수행하는 필터입니다.
@@ -52,7 +51,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     private final ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         String path = httpServletRequest.getRequestURI();
@@ -71,7 +71,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     }
 
     private boolean verifyIpAddressAccess(HttpServletResponse response, String clientIpAddress) throws IOException {
-        if (externalRetrieveBlacklistIpUseCase.existsByIpAddress(clientIpAddress) || externalCheckIpBlockedUseCase.isIpBlocked(clientIpAddress)) {
+        if (externalRetrieveBlacklistIpUseCase.existsByIpAddress(clientIpAddress)
+                || externalCheckIpBlockedUseCase.isIpBlocked(clientIpAddress)) {
             log.info("[{}] : 서비스 이용이 제한된 IP입니다.", clientIpAddress);
             ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
             return false;
@@ -79,12 +80,15 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         return true;
     }
 
-    private boolean authenticateToken(HttpServletRequest request, HttpServletResponse response, String clientIpAddress) throws IOException {
+    private boolean authenticateToken(HttpServletRequest request, HttpServletResponse response, String clientIpAddress)
+            throws IOException {
         String token = jwtTokenProvider.resolveToken(request);
 
         // 토큰이 존재하고 유효한 경우
         if (token != null && jwtTokenProvider.validateToken(token)) {
-            RedisToken redisToken = jwtTokenProvider.isRefreshToken(token) ? externalManageRedisTokenUseCase.findByRefreshToken(token) : externalManageRedisTokenUseCase.findByAccessToken(token);
+            RedisToken redisToken =
+                    jwtTokenProvider.isRefreshToken(token) ? externalManageRedisTokenUseCase.findByRefreshToken(token)
+                            : externalManageRedisTokenUseCase.findByAccessToken(token);
             if (redisToken == null) {
                 log.warn("존재하지 않는 토큰입니다.");
                 ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
@@ -108,7 +112,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     private void sendSecurityAlertSlackMessage(HttpServletRequest request, RedisToken redisToken) {
         if (redisToken.isAdminToken()) {
             request.setAttribute("member", redisToken.getId());
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.DUPLICATE_LOGIN, "토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
+            slackService.sendSecurityAlertNotification(request, SecurityAlertType.DUPLICATE_LOGIN,
+                    "토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.");
         }
     }
 }

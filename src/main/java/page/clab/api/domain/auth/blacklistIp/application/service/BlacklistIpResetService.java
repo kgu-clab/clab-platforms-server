@@ -1,6 +1,7 @@
 package page.clab.api.domain.auth.blacklistIp.application.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,10 +9,8 @@ import page.clab.api.domain.auth.blacklistIp.application.port.in.ResetBlacklistI
 import page.clab.api.domain.auth.blacklistIp.application.port.out.RemoveBlacklistIpPort;
 import page.clab.api.domain.auth.blacklistIp.application.port.out.RetrieveBlacklistIpPort;
 import page.clab.api.domain.auth.blacklistIp.domain.BlacklistIp;
-import page.clab.api.global.common.slack.application.SlackService;
-import page.clab.api.global.common.slack.domain.SecurityAlertType;
-
-import java.util.List;
+import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
+import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +37,8 @@ public class BlacklistIpResetService implements ResetBlacklistIpsUseCase {
                 .map(BlacklistIp::getIpAddress)
                 .toList();
         removeBlacklistIpPort.deleteAll();
-        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_REMOVED, "Deleted IP: ALL");
+        slackService.sendSecurityAlertNotification(request, SecurityAlertType.BLACKLISTED_IP_REMOVED,
+                "Deleted IP: ALL");
         return blacklistedIps;
     }
 }

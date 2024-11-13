@@ -7,6 +7,10 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.NoSuchElementException;
+import java.util.concurrent.CompletionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.query.sqm.UnknownPathException;
@@ -75,7 +79,7 @@ import page.clab.api.global.common.file.exception.FilePermissionException;
 import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.common.file.exception.InvalidFileAttributeException;
 import page.clab.api.global.common.file.exception.InvalidPathVariableException;
-import page.clab.api.global.common.slack.application.SlackService;
+import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.DecryptionException;
 import page.clab.api.global.exception.EncryptionException;
@@ -86,11 +90,6 @@ import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SortingArgumentException;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.NoSuchElementException;
-import java.util.concurrent.CompletionException;
 
 @RestControllerAdvice(basePackages = "page.clab.api")
 @RequiredArgsConstructor

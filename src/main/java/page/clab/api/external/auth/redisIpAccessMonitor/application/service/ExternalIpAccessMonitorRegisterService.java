@@ -10,8 +10,8 @@ import page.clab.api.domain.auth.redisIpAccessMonitor.application.port.out.Regis
 import page.clab.api.domain.auth.redisIpAccessMonitor.application.port.out.RetrieveIpAccessMonitorPort;
 import page.clab.api.domain.auth.redisIpAccessMonitor.domain.RedisIpAccessMonitor;
 import page.clab.api.external.auth.redisIpAccessMonitor.application.port.ExternalRegisterIpAccessMonitorUseCase;
-import page.clab.api.global.common.slack.application.SlackService;
-import page.clab.api.global.common.slack.domain.SecurityAlertType;
+import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
+import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +29,8 @@ public class ExternalIpAccessMonitorRegisterService implements ExternalRegisterI
     public void registerIpAccessMonitor(HttpServletRequest request, String ipAddress) {
         RedisIpAccessMonitor redisIpAccessMonitor = getOrCreateRedisIpAccessMonitor(ipAddress);
         if (redisIpAccessMonitor.isBlocked()) {
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS_IP_BLOCKED, "Blocked IP: " + ipAddress);
+            slackService.sendSecurityAlertNotification(request, SecurityAlertType.ABNORMAL_ACCESS_IP_BLOCKED,
+                    "Blocked IP: " + ipAddress);
         }
         registerIpAccessMonitorPort.save(redisIpAccessMonitor);
     }

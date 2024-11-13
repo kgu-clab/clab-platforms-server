@@ -10,7 +10,7 @@ import page.clab.api.domain.hiring.application.application.port.out.RegisterAppl
 import page.clab.api.domain.hiring.application.domain.Application;
 import page.clab.api.external.hiring.application.application.port.ExternalRetrieveRecruitmentUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
-import page.clab.api.global.common.slack.application.SlackService;
+import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class ApplicationApplyService implements ApplyForApplicationUseCase {
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
     private final SlackService slackService;
     private final ApplicationDtoMapper mapper;
-    
+
     @Transactional
     @Override
     public String applyForClub(ApplicationRequestDto requestDto) {

@@ -11,8 +11,8 @@ import page.clab.api.domain.memberManagement.member.application.port.out.Retriev
 import page.clab.api.domain.memberManagement.member.application.port.out.UpdateMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.memberManagement.member.domain.Role;
-import page.clab.api.global.common.slack.application.SlackService;
-import page.clab.api.global.common.slack.domain.SecurityAlertType;
+import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
+import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +24,8 @@ public class MemberRoleManagementService implements ManageMemberRoleUseCase {
 
     @Transactional
     @Override
-    public String changeMemberRole(HttpServletRequest httpServletRequest, String memberId, ChangeMemberRoleRequest request) {
+    public String changeMemberRole(HttpServletRequest httpServletRequest, String memberId,
+                                   ChangeMemberRoleRequest request) {
         Member member = retrieveMemberPort.getById(memberId);
 
         Role oldRole = member.getRole();

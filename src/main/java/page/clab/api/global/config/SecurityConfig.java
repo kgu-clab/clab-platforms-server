@@ -2,6 +2,7 @@ package page.clab.api.global.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -34,13 +35,11 @@ import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.auth.util.IpWhitelistValidator;
 import page.clab.api.global.common.file.application.FileService;
-import page.clab.api.global.common.slack.application.SlackService;
+import page.clab.api.global.common.notificationSetting.adapter.out.slack.SlackService;
 import page.clab.api.global.filter.IPinfoSpringFilter;
 import page.clab.api.global.util.ApiLogger;
 import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
-
-import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -92,15 +91,18 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new InvalidEndpointAccessFilter(slackService, fileURL, externalRegisterBlacklistIpUseCase, externalRetrieveBlacklistIpUseCase),
+                        new InvalidEndpointAccessFilter(slackService, fileURL, externalRegisterBlacklistIpUseCase,
+                                externalRetrieveBlacklistIpUseCase),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new CustomBasicAuthenticationFilter(authenticationManager, ipWhitelistValidator, slackService, externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
+                        new CustomBasicAuthenticationFilter(authenticationManager, ipWhitelistValidator, slackService,
+                                externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new JwtAuthenticationFilter(slackService, jwtTokenProvider, externalManageRedisTokenUseCase, externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
+                        new JwtAuthenticationFilter(slackService, jwtTokenProvider, externalManageRedisTokenUseCase,
+                                externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
                         UsernamePasswordAuthenticationFilter.class
                 )
 //                .addFilterBefore(
@@ -120,11 +122,13 @@ public class SecurityConfig {
                 .requestMatchers(SecurityConstants.PERMIT_ALL).permitAll()
                 .requestMatchers(HttpMethod.GET, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
                 .requestMatchers(HttpMethod.POST, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
-                .requestMatchers(whitelistPatternsProperties.getWhitelistPatterns()).hasRole(whitelistAccountProperties.getRole())
+                .requestMatchers(whitelistPatternsProperties.getWhitelistPatterns())
+                .hasRole(whitelistAccountProperties.getRole())
                 .anyRequest().authenticated();
     }
 
-    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception) throws IOException {
+    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception)
+            throws IOException {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String message;
         int statusCode;
