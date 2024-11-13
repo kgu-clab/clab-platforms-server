@@ -23,9 +23,19 @@ java {
     }
 }
 
+ext {
+    springCloudVersion = '2023.0.3'
+}
+
 repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 dependencies {
@@ -34,6 +44,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation' // 유효성 검사
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 템플릿 엔진
     implementation 'org.springframework.boot:spring-boot-starter-webflux' // WebFlux
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign' // OpenFeign
 
     // Security
     implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
@@ -113,7 +124,7 @@ tasks.named('test') {
 def querydslDir = layout.buildDirectory.dir("generated/querydsl").get().asFile
 
 sourceSets {
-    main.java.srcDirs += [ querydslDir ]
+    main.java.srcDirs += [querydslDir]
 }
 
 tasks.withType(JavaCompile).configureEach {
