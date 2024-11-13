@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -46,7 +47,7 @@ import page.clab.api.global.common.notificationSetting.domain.SlackMembershipFee
 import page.clab.api.global.util.HttpReqResUtil;
 
 /**
- * {@code SlackServiceHelper}는 다양한 알림 유형에 따라 Slack 메시지를 구성하고 전송하는 클래스입니다.
+ * {@code SlackWebhookClient}는 다양한 알림 유형에 따라 Slack 메시지를 구성하고 전송하는 클래스입니다.
  *
  * <p>주요 기능:</p>
  * <ul>
@@ -73,7 +74,8 @@ public class SlackWebhookClient {
     private final Environment environment;
     private final AttributeStrategy attributeStrategy;
 
-    public SlackWebhookClient(NotificationConfigProperties notificationConfigProperties, Environment environment,
+    public SlackWebhookClient(NotificationConfigProperties notificationConfigProperties,
+                              Environment environment,
                               AttributeStrategy attributeStrategy) {
         this.slack = Slack.getInstance();
         this.commonProperties = notificationConfigProperties.getCommon();
@@ -96,18 +98,21 @@ public class SlackWebhookClient {
     public CompletableFuture<Boolean> sendSlackMessage(String webhookUrl, AlertType alertType,
                                                        HttpServletRequest request, Object additionalData) {
         List<LayoutBlock> blocks = createBlocks(alertType, request, additionalData);
+
         return CompletableFuture.supplyAsync(() -> {
             Payload payload = Payload.builder()
-                    .blocks(List.of(blocks.getFirst()))
+                    .blocks(Collections.singletonList(blocks.getFirst()))
                     .attachments(Collections.singletonList(
                             Attachment.builder()
                                     .color(commonProperties.getColor())
                                     .blocks(blocks.subList(1, blocks.size()))
                                     .build()
-                    )).build();
+                    ))
+                    .build();
+
             try {
                 WebhookResponse response = slack.send(webhookUrl, payload);
-                if (response.getCode() == 200) {
+                if (response.getCode() == HttpStatus.OK.value()) {
                     return true;
                 } else {
                     log.error("Slack notification failed: {}", response.getMessage());
@@ -134,106 +139,115 @@ public class SlackWebhookClient {
         if (alertType instanceof SecurityAlertType) {
             return createSecurityAlertBlocks(request, alertType, additionalData.toString());
         } else if (alertType instanceof GeneralAlertType) {
-            switch ((GeneralAlertType) alertType) {
-                case ADMIN_LOGIN:
-                    if (additionalData instanceof MemberLoginInfoDto) {
-                        return createAdminLoginBlocks(request, (MemberLoginInfoDto) additionalData);
-                    }
-                    break;
-                case SERVER_START:
-                    return createServerStartBlocks();
-                case SERVER_ERROR:
-                    if (additionalData instanceof Exception) {
-                        return createErrorBlocks(request, (Exception) additionalData);
-                    }
-                    break;
-                default:
-                    log.error("Unknown alert type: {}", alertType);
-                    return List.of();
-            }
+            return createGeneralAlertBlocks((GeneralAlertType) alertType, request, additionalData);
         } else if (alertType instanceof ExecutivesAlertType) {
-            switch ((ExecutivesAlertType) alertType) {
-                case NEW_APPLICATION:
-                    if (additionalData instanceof ApplicationRequestDto) {
-                        return createApplicationBlocks((ApplicationRequestDto) additionalData);
-                    }
-                    break;
-                case NEW_BOARD:
-                    if (additionalData instanceof SlackBoardInfo) {
-                        return createBoardBlocks((SlackBoardInfo) additionalData);
-                    }
-                    break;
-                case NEW_MEMBERSHIP_FEE:
-                    if (additionalData instanceof SlackMembershipFeeInfo) {
-                        return createMembershipFeeBlocks((SlackMembershipFeeInfo) additionalData);
-                    }
-                    break;
-                case NEW_BOOK_LOAN_REQUEST:
-                    if (additionalData instanceof SlackBookLoanRecordInfo) {
-                        return createBookLoanRecordBlocks((SlackBookLoanRecordInfo) additionalData);
-                    }
-                    break;
-                default:
-                    log.error("Unknown alert type: {}", alertType);
-                    return List.of();
-            }
+            return createExecutivesAlertBlocks((ExecutivesAlertType) alertType, additionalData);
+        } else {
+            log.error("Unknown alert type: {}", alertType);
+            return Collections.emptyList();
         }
-        return List.of();
+    }
+
+    // 일반 알림 유형에 따른 블록 생성
+    private List<LayoutBlock> createGeneralAlertBlocks(GeneralAlertType alertType, HttpServletRequest request,
+                                                       Object additionalData) {
+        switch (alertType) {
+            case ADMIN_LOGIN:
+                if (additionalData instanceof MemberLoginInfoDto) {
+                    return createAdminLoginBlocks(request, (MemberLoginInfoDto) additionalData);
+                }
+                break;
+            case SERVER_START:
+                return createServerStartBlocks();
+            case SERVER_ERROR:
+                if (additionalData instanceof Exception) {
+                    return createErrorBlocks(request, (Exception) additionalData);
+                }
+                break;
+            default:
+                log.error("Unknown general alert type: {}", alertType);
+        }
+        return Collections.emptyList();
+    }
+
+    // 운영진 알림 유형에 따른 블록 생성
+    private List<LayoutBlock> createExecutivesAlertBlocks(ExecutivesAlertType alertType, Object additionalData) {
+        switch (alertType) {
+            case NEW_APPLICATION:
+                if (additionalData instanceof ApplicationRequestDto) {
+                    return createApplicationBlocks((ApplicationRequestDto) additionalData);
+                }
+                break;
+            case NEW_BOARD:
+                if (additionalData instanceof SlackBoardInfo) {
+                    return createBoardBlocks((SlackBoardInfo) additionalData);
+                }
+                break;
+            case NEW_MEMBERSHIP_FEE:
+                if (additionalData instanceof SlackMembershipFeeInfo) {
+                    return createMembershipFeeBlocks((SlackMembershipFeeInfo) additionalData);
+                }
+                break;
+            case NEW_BOOK_LOAN_REQUEST:
+                if (additionalData instanceof SlackBookLoanRecordInfo) {
+                    return createBookLoanRecordBlocks((SlackBookLoanRecordInfo) additionalData);
+                }
+                break;
+            default:
+                log.error("Unknown executives alert type: {}", alertType);
+        }
+        return Collections.emptyList();
     }
 
     private List<LayoutBlock> createErrorBlocks(HttpServletRequest request, Exception e) {
         String httpMethod = request.getMethod();
-        String requestUrl = request.getRequestURI();
-        String queryString = request.getQueryString();
-        String fullUrl = queryString == null ? requestUrl : requestUrl + "?" + queryString;
+        String fullUrl = getFullUrl(request);
         String username = getUsername(request);
-
-        String errorMessage = e.getMessage() == null ? "No error message provided" : e.getMessage();
+        String errorMessage = Optional.ofNullable(e.getMessage()).orElse("No error message provided");
         String detailedMessage = extractMessageAfterException(errorMessage);
+
         log.error("Server Error: {}", detailedMessage);
+
         return Arrays.asList(
-                section(section -> section.text(markdownText(":firecracker: *Server Error*"))),
-                section(section -> section.fields(Arrays.asList(
+                section(s -> s.text(markdownText(":firecracker: *Server Error*"))),
+                section(s -> s.fields(Arrays.asList(
                         markdownText("*User:*\n" + username),
                         markdownText("*Endpoint:*\n[" + httpMethod + "] " + fullUrl)
                 ))),
-                section(section -> section.text(markdownText("*Error Message:*\n" + detailedMessage))),
-                section(section -> section.text(markdownText("*Stack Trace:*\n```" + getStackTraceSummary(e) + "```")))
+                section(s -> s.text(markdownText("*Error Message:*\n" + detailedMessage))),
+                section(s -> s.text(markdownText("*Stack Trace:*\n```" + getStackTraceSummary(e) + "```")))
         );
     }
 
     private List<LayoutBlock> createSecurityAlertBlocks(HttpServletRequest request, AlertType alertType,
                                                         String additionalMessage) {
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        String requestUrl = request.getRequestURI();
-        String queryString = request.getQueryString();
-        String fullUrl = queryString == null ? requestUrl : requestUrl + "?" + queryString;
+        String clientIp = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        String fullUrl = getFullUrl(request);
         String username = getUsername(request);
         String location = getLocation(request);
 
         return Arrays.asList(
-                section(section -> section.text(markdownText(String.format(":imp: *%s*", alertType.getTitle())))),
-                section(section -> section.fields(Arrays.asList(
+                section(s -> s.text(markdownText(":imp: *" + alertType.getTitle() + "*"))),
+                section(s -> s.fields(Arrays.asList(
                         markdownText("*User:*\n" + username),
-                        markdownText("*IP Address:*\n" + clientIpAddress),
+                        markdownText("*IP Address:*\n" + clientIp),
                         markdownText("*Location:*\n" + location),
                         markdownText("*Endpoint:*\n" + fullUrl)
                 ))),
-                section(section -> section.text(
+                section(s -> s.text(
                         markdownText("*Details:*\n" + alertType.getDefaultMessage() + "\n" + additionalMessage)))
         );
     }
 
     private List<LayoutBlock> createAdminLoginBlocks(HttpServletRequest request, MemberLoginInfoDto loginMember) {
-        String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
+        String clientIp = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String location = getLocation(request);
 
         return Arrays.asList(
-                section(section -> section.text(
-                        markdownText(String.format(":mechanic: *%s Login*", loginMember.getRole().getDescription())))),
-                section(section -> section.fields(Arrays.asList(
+                section(s -> s.text(markdownText(":mechanic: *" + loginMember.getRole().getDescription() + " Login*"))),
+                section(s -> s.fields(Arrays.asList(
                         markdownText("*User:*\n" + loginMember.getMemberId() + " " + loginMember.getMemberName()),
-                        markdownText("*IP Address:*\n" + clientIpAddress),
+                        markdownText("*IP Address:*\n" + clientIp),
                         markdownText("*Location:*\n" + location)
                 )))
         );
@@ -242,8 +256,8 @@ public class SlackWebhookClient {
     private List<LayoutBlock> createApplicationBlocks(ApplicationRequestDto requestDto) {
         List<LayoutBlock> blocks = new ArrayList<>();
 
-        blocks.add(section(section -> section.text(markdownText(":sparkles: *동아리 지원*"))));
-        blocks.add(section(section -> section.fields(Arrays.asList(
+        blocks.add(section(s -> s.text(markdownText(":sparkles: *동아리 지원*"))));
+        blocks.add(section(s -> s.fields(Arrays.asList(
                 markdownText("*구분:*\n" + requestDto.getApplicationType().getDescription()),
                 markdownText("*학번:*\n" + requestDto.getStudentId()),
                 markdownText("*이름:*\n" + requestDto.getName()),
@@ -252,51 +266,51 @@ public class SlackWebhookClient {
         ))));
 
         if (requestDto.getGithubUrl() != null && !requestDto.getGithubUrl().isEmpty()) {
-            blocks.add(actions(actions -> actions.elements(asElements(
+            blocks.add(actions(a -> a.elements(asElements(
                     button(b -> b.text(plainText(pt -> pt.emoji(true).text("Github")))
                             .url(requestDto.getGithubUrl())
                             .actionId("click_github"))
             ))));
         }
+
         return blocks;
     }
 
     private List<LayoutBlock> createBoardBlocks(SlackBoardInfo board) {
-        List<LayoutBlock> blocks = new ArrayList<>();
-
-        blocks.add(section(section -> section.text(markdownText(":writing_hand: *새 게시글*"))));
-        blocks.add(section(section -> section.fields(Arrays.asList(
-                markdownText("*제목:*\n" + board.getTitle()),
-                markdownText("*분류:*\n" + board.getCategory()),
-                markdownText("*작성자:*\n" + board.getUsername())
-        ))));
-        return blocks;
-    }
-
-    private List<LayoutBlock> createMembershipFeeBlocks(SlackMembershipFeeInfo additionalData) {
-        String username = additionalData.getMemberId() + " " + additionalData.getMemberName();
-
         return Arrays.asList(
-                section(section -> section.text(markdownText(":dollar: *회비 신청*"))),
-                section(section -> section.fields(Arrays.asList(
-                        markdownText("*신청자:*\n" + username),
-                        markdownText("*분류:*\n" + additionalData.getCategory()),
-                        markdownText("*금액:*\n" + additionalData.getAmount() + "원")
-                ))),
-                section(section -> section.text(markdownText("*Content:*\n" + additionalData.getContent())))
+                section(s -> s.text(markdownText(":writing_hand: *새 게시글*"))),
+                section(s -> s.fields(Arrays.asList(
+                        markdownText("*제목:*\n" + board.getTitle()),
+                        markdownText("*분류:*\n" + board.getCategory()),
+                        markdownText("*작성자:*\n" + board.getUsername())
+                )))
         );
     }
 
-    private List<LayoutBlock> createBookLoanRecordBlocks(SlackBookLoanRecordInfo additionalData) {
-        String username = additionalData.getMemberId() + " " + additionalData.getMemberName();
+    private List<LayoutBlock> createMembershipFeeBlocks(SlackMembershipFeeInfo data) {
+        String username = data.getMemberId() + " " + data.getMemberName();
 
         return Arrays.asList(
-                section(section -> section.text(markdownText(":books: *도서 대여 신청*"))),
-                section(section -> section.fields(Arrays.asList(
-                        markdownText("*도서명:*\n" + additionalData.getBookTitle()),
-                        markdownText("*분류:*\n" + additionalData.getCategory()),
+                section(s -> s.text(markdownText(":dollar: *회비 신청*"))),
+                section(s -> s.fields(Arrays.asList(
                         markdownText("*신청자:*\n" + username),
-                        markdownText("*상태:*\n" + (additionalData.isAvailable() ? "대여 가능" : "대여 중"))
+                        markdownText("*분류:*\n" + data.getCategory()),
+                        markdownText("*금액:*\n" + data.getAmount() + "원")
+                ))),
+                section(s -> s.text(markdownText("*Content:*\n" + data.getContent())))
+        );
+    }
+
+    private List<LayoutBlock> createBookLoanRecordBlocks(SlackBookLoanRecordInfo data) {
+        String username = data.getMemberId() + " " + data.getMemberName();
+
+        return Arrays.asList(
+                section(s -> s.text(markdownText(":books: *도서 대여 신청*"))),
+                section(s -> s.fields(Arrays.asList(
+                        markdownText("*도서명:*\n" + data.getBookTitle()),
+                        markdownText("*분류:*\n" + data.getCategory()),
+                        markdownText("*신청자:*\n" + username),
+                        markdownText("*상태:*\n" + (data.isAvailable() ? "대여 가능" : "대여 중"))
                 )))
         );
     }
@@ -306,38 +320,43 @@ public class SlackWebhookClient {
         String jdkVersion = System.getProperty("java.version");
 
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-        int availableProcessors = osBean.getAvailableProcessors();
+        int processors = osBean.getAvailableProcessors();
         double systemLoadAverage = osBean.getSystemLoadAverage();
-        double cpuUsage = ((systemLoadAverage / availableProcessors) * 100);
+        double cpuUsage = (systemLoadAverage / processors) * 100;
 
         MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-        MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
-        String memoryInfo = formatMemoryUsage(heapMemoryUsage);
+        String memoryInfo = formatMemoryUsage(memoryMXBean.getHeapMemoryUsage());
 
         return Arrays.asList(
-                section(section -> section.text(markdownText("*:battery: Server Started*"))),
-                section(section -> section.fields(Arrays.asList(
+                section(s -> s.text(markdownText(":battery: *Server Started*"))),
+                section(s -> s.fields(Arrays.asList(
                         markdownText("*Environment:* \n" + environment.getProperty("spring.profiles.active")),
                         markdownText("*OS:* \n" + osInfo),
                         markdownText("*JDK Version:* \n" + jdkVersion),
                         markdownText("*CPU Usage:* \n" + String.format("%.2f%%", cpuUsage)),
                         markdownText("*Memory Usage:* \n" + memoryInfo)
                 ))),
-                actions(actions -> actions.elements(asElements(
+                actions(a -> a.elements(asElements(
                         button(b -> b.text(plainText(pt -> pt.emoji(true).text("Web")))
                                 .url(commonProperties.getWebUrl())
                                 .value("click_web")),
                         button(b -> b.text(plainText(pt -> pt.emoji(true).text("Swagger")))
-                                .url(commonProperties.getWebUrl())
+                                .url(commonProperties.getApiUrl())
                                 .value("click_swagger"))
                 )))
         );
     }
 
+    private String getFullUrl(HttpServletRequest request) {
+        String requestUrl = request.getRequestURI();
+        String queryString = request.getQueryString();
+        return queryString == null ? requestUrl : requestUrl + "?" + queryString;
+    }
+
     private String extractMessageAfterException(String message) {
         String exceptionIndicator = "Exception:";
-        int exceptionIndex = message.indexOf(exceptionIndicator);
-        return exceptionIndex == -1 ? message : message.substring(exceptionIndex + exceptionIndicator.length()).trim();
+        int index = message.indexOf(exceptionIndicator);
+        return index == -1 ? message : message.substring(index + exceptionIndicator.length()).trim();
     }
 
     private String getStackTraceSummary(Exception e) {
@@ -347,17 +366,17 @@ public class SlackWebhookClient {
                 .collect(Collectors.joining("\n"));
     }
 
-    private String formatMemoryUsage(MemoryUsage memoryUsage) {
-        long usedMemory = memoryUsage.getUsed() / (1024 * 1024);
-        long maxMemory = memoryUsage.getMax() / (1024 * 1024);
-        return String.format("%dMB / %dMB (%.2f%%)", usedMemory, maxMemory, ((double) usedMemory / maxMemory) * 100);
+    private String formatMemoryUsage(MemoryUsage usage) {
+        long used = usage.getUsed() / (1024 * 1024);
+        long max = usage.getMax() / (1024 * 1024);
+        return String.format("%dMB / %dMB (%.2f%%)", used, max, ((double) used / max) * 100);
     }
 
     private @NotNull String getUsername(HttpServletRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return Optional.ofNullable(request.getAttribute("member"))
                 .map(Object::toString)
-                .orElseGet(() -> Optional.ofNullable(authentication)
+                .orElseGet(() -> Optional.ofNullable(auth)
                         .map(Authentication::getName)
                         .orElse("anonymous"));
     }
