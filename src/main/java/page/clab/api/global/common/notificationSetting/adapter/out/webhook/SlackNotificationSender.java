@@ -1,4 +1,4 @@
-package page.clab.api.global.common.notificationSetting.adapter.out.discord;
+package page.clab.api.global.common.notificationSetting.adapter.out.webhook;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -8,18 +8,18 @@ import page.clab.api.global.common.notificationSetting.domain.PlatformType;
 
 @Component
 @RequiredArgsConstructor
-public class DiscordNotificationSender implements NotificationSender {
+public class SlackNotificationSender implements NotificationSender {
 
-    private final DiscordWebhookClient discordWebhookClient;
+    private final SlackWebhookClient slackWebhookClient;
 
     @Override
     public String getPlatformName() {
-        return PlatformType.DISCORD.getName();
+        return PlatformType.SLACK.getName();
     }
 
     @Override
     public void sendNotification(NotificationEvent event, String webhookUrl) {
-        discordWebhookClient.sendMessage(webhookUrl, event.getAlertType(), event.getRequest(),
+        slackWebhookClient.sendMessage(webhookUrl, event.getAlertType(), event.getRequest(),
                 event.getAdditionalData());
     }
 }

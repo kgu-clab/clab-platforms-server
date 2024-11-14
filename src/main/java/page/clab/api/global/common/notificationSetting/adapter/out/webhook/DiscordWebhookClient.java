@@ -1,14 +1,8 @@
-package page.clab.api.global.common.notificationSetting.adapter.out.discord;
+package page.clab.api.global.common.notificationSetting.adapter.out.webhook;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.ipinfo.api.model.IPResponse;
-import io.ipinfo.spring.strategies.attribute.AttributeStrategy;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
-import java.lang.management.OperatingSystemMXBean;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -18,23 +12,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
+import page.clab.api.global.common.notificationSetting.adapter.out.webhook.common.AbstractWebhookClient;
 import page.clab.api.global.common.notificationSetting.application.dto.notification.BoardNotificationInfo;
 import page.clab.api.global.common.notificationSetting.application.dto.notification.BookLoanRecordNotificationInfo;
 import page.clab.api.global.common.notificationSetting.application.dto.notification.MembershipFeeNotificationInfo;
-import page.clab.api.global.common.notificationSetting.application.port.out.WebhookClient;
+import page.clab.api.global.common.notificationSetting.application.service.WebhookCommonService;
 import page.clab.api.global.common.notificationSetting.config.NotificationConfigProperties;
 import page.clab.api.global.common.notificationSetting.domain.AlertType;
 import page.clab.api.global.common.notificationSetting.domain.ExecutivesAlertType;
@@ -63,22 +53,25 @@ import page.clab.api.global.util.HttpReqResUtil;
  */
 @Component
 @Slf4j
-public class DiscordWebhookClient implements WebhookClient {
+public class DiscordWebhookClient extends AbstractWebhookClient {
 
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
     private final NotificationConfigProperties.CommonProperties commonProperties;
     private final Environment environment;
-    private final AttributeStrategy attributeStrategy;
+    private final WebhookCommonService webhookCommonService;
 
-    public DiscordWebhookClient(NotificationConfigProperties notificationConfigProperties,
-                                Environment environment,
-                                AttributeStrategy attributeStrategy) {
+    public DiscordWebhookClient(
+            NotificationConfigProperties notificationConfigProperties,
+            ObjectMapper objectMapper,
+            Environment environment,
+            WebhookCommonService webhookCommonService
+    ) {
         this.httpClient = HttpClient.newHttpClient();
-        this.objectMapper = new ObjectMapper();
+        this.objectMapper = objectMapper;
         this.commonProperties = notificationConfigProperties.getCommon();
         this.environment = environment;
-        this.attributeStrategy = attributeStrategy;
+        this.webhookCommonService = webhookCommonService;
     }
 
     /**
@@ -215,12 +208,12 @@ public class DiscordWebhookClient implements WebhookClient {
 
     private List<Map<String, Object>> createErrorEmbeds(HttpServletRequest request, Exception e) {
         String httpMethod = request.getMethod();
-        String fullUrl = getFullUrl(request);
-        String username = getUsername(request);
-        String errorMessage = Optional.ofNullable(e.getMessage()).orElse("No error message provided");
-        String detailedMessage = extractMessageAfterException(errorMessage);
+        String fullUrl = webhookCommonService.getFullUrl(request);
+        String username = webhookCommonService.getUsername(request);
+        String errorMessage = webhookCommonService.extractMessageAfterException(e);
+        String stackTrace = webhookCommonService.getStackTraceSummary(e);
 
-        log.error("Server Error: {}", detailedMessage);
+        log.error("Server Error: {}", errorMessage);
 
         Map<String, Object> embed = new HashMap<>();
         embed.put("title", ":firecracker: Server Error");
@@ -228,8 +221,8 @@ public class DiscordWebhookClient implements WebhookClient {
         embed.put("fields", Arrays.asList(
                 createField("User", username, true),
                 createField("Endpoint", "[" + httpMethod + "] " + fullUrl, true),
-                createField("Error Message", detailedMessage, false),
-                createField("Stack Trace", "```" + getStackTraceSummary(e) + "```", false)
+                createField("Error Message", errorMessage, false),
+                createField("Stack Trace", "```" + stackTrace + "```", false)
         ));
 
         return Collections.singletonList(embed);
@@ -238,9 +231,9 @@ public class DiscordWebhookClient implements WebhookClient {
     private List<Map<String, Object>> createSecurityAlertEmbeds(HttpServletRequest request, AlertType alertType,
                                                                 String additionalMessage) {
         String clientIp = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        String fullUrl = getFullUrl(request);
-        String username = getUsername(request);
-        String location = getLocation(request);
+        String fullUrl = webhookCommonService.getFullUrl(request);
+        String username = webhookCommonService.getUsername(request);
+        String location = webhookCommonService.getLocation(request);
 
         Map<String, Object> embed = new HashMap<>();
         embed.put("title", ":imp: " + alertType.getTitle());
@@ -259,7 +252,7 @@ public class DiscordWebhookClient implements WebhookClient {
     private List<Map<String, Object>> createAdminLoginEmbeds(HttpServletRequest request,
                                                              MemberLoginInfoDto loginMember) {
         String clientIp = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        String location = getLocation(request);
+        String location = webhookCommonService.getLocation(request);
 
         Map<String, Object> embed = new HashMap<>();
         embed.put("title", ":mechanic: " + loginMember.getRole().getDescription() + " Login");
@@ -338,16 +331,10 @@ public class DiscordWebhookClient implements WebhookClient {
     }
 
     private List<Map<String, Object>> createServerStartEmbeds() {
-        String osInfo = System.getProperty("os.name") + " " + System.getProperty("os.version");
-        String jdkVersion = System.getProperty("java.version");
-
-        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-        int processors = osBean.getAvailableProcessors();
-        double systemLoadAverage = osBean.getSystemLoadAverage();
-        double cpuUsage = (systemLoadAverage / processors) * 100;
-
-        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-        String memoryInfo = formatMemoryUsage(memoryMXBean.getHeapMemoryUsage());
+        String osInfo = webhookCommonService.getOperatingSystemInfo();
+        String jdkVersion = webhookCommonService.getJavaRuntimeVersion();
+        double cpuUsage = webhookCommonService.getCpuUsage();
+        String memoryUsage = webhookCommonService.getMemoryUsage();
 
         Map<String, Object> embed = new HashMap<>();
         embed.put("title", ":battery: Server Started");
@@ -357,7 +344,7 @@ public class DiscordWebhookClient implements WebhookClient {
                 createField("OS", osInfo, true),
                 createField("JDK Version", jdkVersion, true),
                 createField("CPU Usage", String.format("%.2f%%", cpuUsage), true),
-                createField("Memory Usage", memoryInfo, true)
+                createField("Memory Usage", memoryUsage, true)
         ));
 
         embed.put("description",
@@ -372,44 +359,5 @@ public class DiscordWebhookClient implements WebhookClient {
         field.put("value", value);
         field.put("inline", inline);
         return field;
-    }
-
-    private String getFullUrl(HttpServletRequest request) {
-        String requestUrl = request.getRequestURI();
-        String queryString = request.getQueryString();
-        return queryString == null ? requestUrl : requestUrl + "?" + queryString;
-    }
-
-    private String extractMessageAfterException(String message) {
-        String exceptionIndicator = "Exception:";
-        int index = message.indexOf(exceptionIndicator);
-        return index == -1 ? message : message.substring(index + exceptionIndicator.length()).trim();
-    }
-
-    private String getStackTraceSummary(Exception e) {
-        return Arrays.stream(e.getStackTrace())
-                .limit(10)
-                .map(StackTraceElement::toString)
-                .collect(Collectors.joining("\n"));
-    }
-
-    private String formatMemoryUsage(MemoryUsage usage) {
-        long used = usage.getUsed() / (1024 * 1024);
-        long max = usage.getMax() / (1024 * 1024);
-        return String.format("%dMB / %dMB (%.2f%%)", used, max, ((double) used / max) * 100);
-    }
-
-    private @NotNull String getUsername(HttpServletRequest request) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return Optional.ofNullable(request.getAttribute("member"))
-                .map(Object::toString)
-                .orElseGet(() -> Optional.ofNullable(auth)
-                        .map(Authentication::getName)
-                        .orElse("anonymous"));
-    }
-
-    private @NotNull String getLocation(HttpServletRequest request) {
-        IPResponse ipResponse = attributeStrategy.getAttribute(request);
-        return ipResponse == null ? "Unknown" : ipResponse.getCountryName() + ", " + ipResponse.getCity();
     }
 }

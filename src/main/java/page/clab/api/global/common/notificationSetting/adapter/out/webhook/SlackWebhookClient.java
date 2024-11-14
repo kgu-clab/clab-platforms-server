@@ -1,4 +1,4 @@
-package page.clab.api.global.common.notificationSetting.adapter.out.slack;
+package page.clab.api.global.common.notificationSetting.adapter.out.webhook;
 
 import static com.slack.api.model.block.Blocks.actions;
 import static com.slack.api.model.block.Blocks.section;
@@ -12,34 +12,24 @@ import com.slack.api.model.Attachment;
 import com.slack.api.model.block.LayoutBlock;
 import com.slack.api.webhook.Payload;
 import com.slack.api.webhook.WebhookResponse;
-import io.ipinfo.api.model.IPResponse;
-import io.ipinfo.spring.strategies.attribute.AttributeStrategy;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
-import java.lang.management.OperatingSystemMXBean;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
+import page.clab.api.global.common.notificationSetting.adapter.out.webhook.common.AbstractWebhookClient;
 import page.clab.api.global.common.notificationSetting.application.dto.notification.BoardNotificationInfo;
 import page.clab.api.global.common.notificationSetting.application.dto.notification.BookLoanRecordNotificationInfo;
 import page.clab.api.global.common.notificationSetting.application.dto.notification.MembershipFeeNotificationInfo;
-import page.clab.api.global.common.notificationSetting.application.port.out.WebhookClient;
+import page.clab.api.global.common.notificationSetting.application.service.WebhookCommonService;
 import page.clab.api.global.common.notificationSetting.config.NotificationConfigProperties;
 import page.clab.api.global.common.notificationSetting.domain.AlertType;
 import page.clab.api.global.common.notificationSetting.domain.ExecutivesAlertType;
@@ -68,20 +58,22 @@ import page.clab.api.global.util.HttpReqResUtil;
  */
 @Component
 @Slf4j
-public class SlackWebhookClient implements WebhookClient {
+public class SlackWebhookClient extends AbstractWebhookClient {
 
     private final Slack slack;
     private final NotificationConfigProperties.CommonProperties commonProperties;
     private final Environment environment;
-    private final AttributeStrategy attributeStrategy;
+    private final WebhookCommonService webhookCommonService;
 
-    public SlackWebhookClient(NotificationConfigProperties notificationConfigProperties,
-                              Environment environment,
-                              AttributeStrategy attributeStrategy) {
+    public SlackWebhookClient(
+            NotificationConfigProperties notificationConfigProperties,
+            Environment environment,
+            WebhookCommonService webhookCommonService
+    ) {
         this.slack = Slack.getInstance();
         this.commonProperties = notificationConfigProperties.getCommon();
         this.environment = environment;
-        this.attributeStrategy = attributeStrategy;
+        this.webhookCommonService = webhookCommonService;
     }
 
     /**
@@ -205,12 +197,12 @@ public class SlackWebhookClient implements WebhookClient {
 
     private List<LayoutBlock> createErrorBlocks(HttpServletRequest request, Exception e) {
         String httpMethod = request.getMethod();
-        String fullUrl = getFullUrl(request);
-        String username = getUsername(request);
-        String errorMessage = Optional.ofNullable(e.getMessage()).orElse("No error message provided");
-        String detailedMessage = extractMessageAfterException(errorMessage);
+        String fullUrl = webhookCommonService.getFullUrl(request);
+        String username = webhookCommonService.getUsername(request);
+        String errorMessage = webhookCommonService.extractMessageAfterException(e);
+        String stackTrace = webhookCommonService.getStackTraceSummary(e);
 
-        log.error("Server Error: {}", detailedMessage);
+        log.error("Server Error: {}", errorMessage);
 
         return Arrays.asList(
                 section(s -> s.text(markdownText(":firecracker: *Server Error*"))),
@@ -218,17 +210,17 @@ public class SlackWebhookClient implements WebhookClient {
                         markdownText("*User:*\n" + username),
                         markdownText("*Endpoint:*\n[" + httpMethod + "] " + fullUrl)
                 ))),
-                section(s -> s.text(markdownText("*Error Message:*\n" + detailedMessage))),
-                section(s -> s.text(markdownText("*Stack Trace:*\n```" + getStackTraceSummary(e) + "```")))
+                section(s -> s.text(markdownText("*Error Message:*\n" + errorMessage))),
+                section(s -> s.text(markdownText("*Stack Trace:*\n```" + stackTrace + "```")))
         );
     }
 
     private List<LayoutBlock> createSecurityAlertBlocks(HttpServletRequest request, AlertType alertType,
                                                         String additionalMessage) {
         String clientIp = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        String fullUrl = getFullUrl(request);
-        String username = getUsername(request);
-        String location = getLocation(request);
+        String fullUrl = webhookCommonService.getFullUrl(request);
+        String username = webhookCommonService.getUsername(request);
+        String location = webhookCommonService.getLocation(request);
 
         return Arrays.asList(
                 section(s -> s.text(markdownText(":imp: *" + alertType.getTitle() + "*"))),
@@ -245,7 +237,7 @@ public class SlackWebhookClient implements WebhookClient {
 
     private List<LayoutBlock> createAdminLoginBlocks(HttpServletRequest request, MemberLoginInfoDto loginMember) {
         String clientIp = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
-        String location = getLocation(request);
+        String location = webhookCommonService.getLocation(request);
 
         return Arrays.asList(
                 section(s -> s.text(markdownText(":mechanic: *" + loginMember.getRole().getDescription() + " Login*"))),
@@ -320,16 +312,10 @@ public class SlackWebhookClient implements WebhookClient {
     }
 
     private List<LayoutBlock> createServerStartBlocks() {
-        String osInfo = System.getProperty("os.name") + " " + System.getProperty("os.version");
-        String jdkVersion = System.getProperty("java.version");
-
-        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-        int processors = osBean.getAvailableProcessors();
-        double systemLoadAverage = osBean.getSystemLoadAverage();
-        double cpuUsage = (systemLoadAverage / processors) * 100;
-
-        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-        String memoryInfo = formatMemoryUsage(memoryMXBean.getHeapMemoryUsage());
+        String osInfo = webhookCommonService.getOperatingSystemInfo();
+        String jdkVersion = webhookCommonService.getJavaRuntimeVersion();
+        double cpuUsage = webhookCommonService.getCpuUsage();
+        String memoryUsage = webhookCommonService.getMemoryUsage();
 
         return Arrays.asList(
                 section(s -> s.text(markdownText(":battery: *Server Started*"))),
@@ -338,7 +324,7 @@ public class SlackWebhookClient implements WebhookClient {
                         markdownText("*OS:* \n" + osInfo),
                         markdownText("*JDK Version:* \n" + jdkVersion),
                         markdownText("*CPU Usage:* \n" + String.format("%.2f%%", cpuUsage)),
-                        markdownText("*Memory Usage:* \n" + memoryInfo)
+                        markdownText("*Memory Usage:* \n" + memoryUsage)
                 ))),
                 actions(a -> a.elements(asElements(
                         button(b -> b.text(plainText(pt -> pt.emoji(true).text("Web")))
@@ -349,44 +335,5 @@ public class SlackWebhookClient implements WebhookClient {
                                 .value("click_swagger"))
                 )))
         );
-    }
-
-    private String getFullUrl(HttpServletRequest request) {
-        String requestUrl = request.getRequestURI();
-        String queryString = request.getQueryString();
-        return queryString == null ? requestUrl : requestUrl + "?" + queryString;
-    }
-
-    private String extractMessageAfterException(String message) {
-        String exceptionIndicator = "Exception:";
-        int index = message.indexOf(exceptionIndicator);
-        return index == -1 ? message : message.substring(index + exceptionIndicator.length()).trim();
-    }
-
-    private String getStackTraceSummary(Exception e) {
-        return Arrays.stream(e.getStackTrace())
-                .limit(10)
-                .map(StackTraceElement::toString)
-                .collect(Collectors.joining("\n"));
-    }
-
-    private String formatMemoryUsage(MemoryUsage usage) {
-        long used = usage.getUsed() / (1024 * 1024);
-        long max = usage.getMax() / (1024 * 1024);
-        return String.format("%dMB / %dMB (%.2f%%)", used, max, ((double) used / max) * 100);
-    }
-
-    private @NotNull String getUsername(HttpServletRequest request) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return Optional.ofNullable(request.getAttribute("member"))
-                .map(Object::toString)
-                .orElseGet(() -> Optional.ofNullable(auth)
-                        .map(Authentication::getName)
-                        .orElse("anonymous"));
-    }
-
-    private @NotNull String getLocation(HttpServletRequest request) {
-        IPResponse ipResponse = attributeStrategy.getAttribute(request);
-        return ipResponse == null ? "Unknown" : ipResponse.getCountryName() + ", " + ipResponse.getCity();
     }
 }
