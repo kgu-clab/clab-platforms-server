@@ -52,9 +52,9 @@ public class HotBoardsRetrievalService implements RetrieveHotBoardsUseCase {
         int weeksAgo = 2;
         // 필요한 수량을 확보할 때까지 반복해서 이전 주로 이동하여 Hot 게시글 보충
         while (hotBoards.size() < size) {
-            Board additionalBoard = getMostRecentHotBoardForWeek(weeksAgo++, size);
-            if (additionalBoard != null) {
-                hotBoards.add(additionalBoard);
+            List<Board> additionalBoards = getLatestHotBoardForWeek(weeksAgo++, size - hotBoards.size());
+            if (additionalBoards != null && !additionalBoards.isEmpty()) {
+                hotBoards.addAll(additionalBoards);
             }
         }
         return hotBoards;
@@ -82,13 +82,13 @@ public class HotBoardsRetrievalService implements RetrieveHotBoardsUseCase {
                 .collect(Collectors.toList());
     }
 
-    private Board getMostRecentHotBoardForWeek(int weeksAgo, int size) {
-        // 특정 주의 핫 게시글을 가져오고, 그 중 가장 최근에 작성된 게시글 선택
+    private List<Board> getLatestHotBoardForWeek(int weeksAgo, int size) {
+
         List<Board> topHotBoardsForWeek = getHotBoardsForWeek(weeksAgo, size);
 
         return topHotBoardsForWeek.stream()
-                .max(Comparator.comparing(Board::getCreatedAt))
-                .orElse(null);
+                .sorted(Comparator.comparing(Board::getCreatedAt).reversed())
+                .toList();
     }
 
     private int getTotalReactionCount(Board board) {
