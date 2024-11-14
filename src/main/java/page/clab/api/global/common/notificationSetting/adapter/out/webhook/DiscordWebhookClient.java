@@ -348,7 +348,7 @@ public class DiscordWebhookClient extends AbstractWebhookClient {
         ));
 
         embed.put("description",
-                "[Web](" + commonProperties.getWebUrl() + ") | [Swagger](" + commonProperties.getApiUrl() + ")");
+                "[Web](" + commonProperties.getWebUrl() + ") | [API Docs](" + commonProperties.getApiUrl() + ")");
 
         return Collections.singletonList(embed);
     }

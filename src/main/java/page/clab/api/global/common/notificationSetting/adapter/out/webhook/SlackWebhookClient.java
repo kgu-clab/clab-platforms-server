@@ -330,9 +330,9 @@ public class SlackWebhookClient extends AbstractWebhookClient {
                         button(b -> b.text(plainText(pt -> pt.emoji(true).text("Web")))
                                 .url(commonProperties.getWebUrl())
                                 .value("click_web")),
-                        button(b -> b.text(plainText(pt -> pt.emoji(true).text("Swagger")))
+                        button(b -> b.text(plainText(pt -> pt.emoji(true).text("API Docs")))
                                 .url(commonProperties.getApiUrl())
-                                .value("click_swagger"))
+                                .value("click_apiDocs"))
                 )))
         );
     }
