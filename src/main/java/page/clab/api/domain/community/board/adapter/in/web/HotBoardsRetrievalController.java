@@ -2,6 +2,7 @@ package page.clab.api.domain.community.board.adapter.in.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ public class HotBoardsRetrievalController {
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/hot")
     public ApiResponse<List<BoardListResponseDto>> retrieveHotBoards(
+            @Min(message = "min.board.size", value = 0)
             @RequestParam(defaultValue = "5") int size
     ) {
         List<BoardListResponseDto> boards = retrieveHotBoardsUseCase.retrieveHotBoards(size);
