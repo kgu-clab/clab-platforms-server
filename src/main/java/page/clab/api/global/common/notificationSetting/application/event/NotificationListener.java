@@ -2,18 +2,22 @@ package page.clab.api.global.common.notificationSetting.application.event;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import page.clab.api.global.common.notificationSetting.application.port.in.UpdateNotificationSettingUseCase;
 import page.clab.api.global.common.notificationSetting.application.port.out.NotificationSender;
 import page.clab.api.global.common.notificationSetting.config.NotificationConfigProperties;
+import page.clab.api.global.common.notificationSetting.config.NotificationConfigProperties.PlatformConfig;
 import page.clab.api.global.common.notificationSetting.config.NotificationConfigProperties.PlatformMapping;
 import page.clab.api.global.common.notificationSetting.domain.AlertType;
 import page.clab.api.global.common.notificationSetting.domain.NotificationSetting;
 
 @Component
+@Slf4j
 public class NotificationListener {
 
     private final UpdateNotificationSettingUseCase updateNotificationSettingUseCase;
@@ -33,44 +37,59 @@ public class NotificationListener {
     @EventListener
     public void handleNotificationEvent(NotificationEvent event) {
         AlertType alertType = event.getAlertType();
+
         NotificationSetting setting = updateNotificationSettingUseCase.getOrCreateDefaultSetting(alertType);
-
-        if (setting.isEnabled()) {
-            List<NotificationConfigProperties.PlatformMapping> mappings = getMappingsForAlertType(alertType);
-
-            if (mappings != null) {
-                for (NotificationConfigProperties.PlatformMapping mapping : mappings) {
-                    NotificationSender sender = notificationSenders.get(mapping.getPlatform());
-                    if (sender != null) {
-                        String webhookUrl = getWebhookUrl(mapping);
-                        if (webhookUrl != null) {
-                            sender.sendNotification(event, webhookUrl);
-                        }
-                    }
-                }
-            }
+        if (!setting.isEnabled()) {
+            return;
         }
+
+        List<PlatformMapping> mappings = getMappingsForAlertType(alertType);
+        if (mappings.isEmpty()) {
+            return;
+        }
+
+        mappings.forEach(mapping -> getWebhookUrl(mapping)
+                .ifPresent(webhookUrl -> sendNotification(mapping.getPlatform(), event, webhookUrl)));
     }
 
-    private List<NotificationConfigProperties.PlatformMapping> getMappingsForAlertType(AlertType alertType) {
+    private List<PlatformMapping> getMappingsForAlertType(AlertType alertType) {
         String categoryName = alertType.getCategory().name();
-        List<PlatformMapping> mappings =
-                notificationConfigProperties.getCategoryMappings().get(categoryName);
+        Map<String, List<PlatformMapping>> categoryMappings = notificationConfigProperties.getCategoryMappings();
 
-        if (mappings == null || mappings.isEmpty()) {
-            mappings = notificationConfigProperties.getDefaultMappings();
-        }
-        return mappings;
+        return Optional.ofNullable(categoryMappings.get(categoryName))
+                .filter(list -> !list.isEmpty())
+                .orElseGet(notificationConfigProperties::getDefaultMappings);
     }
 
-    private String getWebhookUrl(NotificationConfigProperties.PlatformMapping mapping) {
+    private Optional<String> getWebhookUrl(PlatformMapping mapping) {
         String platform = mapping.getPlatform();
         String webhookKey = mapping.getWebhook();
-        NotificationConfigProperties.PlatformConfig platformConfig = notificationConfigProperties.getPlatforms()
-                .get(platform);
-        if (platformConfig != null) {
-            return platformConfig.getWebhooks().get(webhookKey);
+        Map<String, PlatformConfig> platforms = notificationConfigProperties.getPlatforms();
+
+        return Optional.ofNullable(platforms.get(platform))
+                .map(platformConfig -> platformConfig.getWebhooks().get(webhookKey))
+                .map(url -> {
+                    log.debug("Found webhook URL for platform '{}', key '{}': {}", platform, webhookKey, url);
+                    return url;
+                })
+                .or(() -> {
+                    log.warn("No webhook URL found for platform '{}', key '{}'", platform, webhookKey);
+                    return Optional.empty();
+                });
+    }
+
+    private void sendNotification(String platform, NotificationEvent event, String webhookUrl) {
+        NotificationSender sender = notificationSenders.get(platform);
+        if (sender == null) {
+            log.warn("No NotificationSender found for platform: {}", platform);
+            return;
         }
-        return null;
+
+        try {
+            sender.sendNotification(event, webhookUrl);
+            log.debug("Notification sent via platform: {}", platform);
+        } catch (Exception e) {
+            log.error("Failed to send notification via platform: {}", platform, e);
+        }
     }
 }
