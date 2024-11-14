@@ -1,4 +1,4 @@
-package page.clab.api.global.common.notificationSetting.domain;
+package page.clab.api.global.common.notificationSetting.application.dto.notification;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 
 @Getter
 @Builder
-public class SlackBookLoanRecordInfo {
+public class BookLoanRecordNotificationInfo {
 
     private String memberId;
     private String memberName;
@@ -15,8 +15,8 @@ public class SlackBookLoanRecordInfo {
     private String category;
     private boolean isAvailable;
 
-    public static SlackBookLoanRecordInfo create(Book book, MemberBorrowerInfoDto borrowerInfo) {
-        return SlackBookLoanRecordInfo.builder()
+    public static BookLoanRecordNotificationInfo create(Book book, MemberBorrowerInfoDto borrowerInfo) {
+        return BookLoanRecordNotificationInfo.builder()
                 .memberId(borrowerInfo.getMemberId())
                 .memberName(borrowerInfo.getMemberName())
                 .bookTitle(book.getTitle())

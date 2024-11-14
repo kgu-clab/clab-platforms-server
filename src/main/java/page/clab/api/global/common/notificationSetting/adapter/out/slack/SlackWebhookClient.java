@@ -36,15 +36,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
+import page.clab.api.global.common.notificationSetting.application.dto.notification.BoardNotificationInfo;
+import page.clab.api.global.common.notificationSetting.application.dto.notification.BookLoanRecordNotificationInfo;
+import page.clab.api.global.common.notificationSetting.application.dto.notification.MembershipFeeNotificationInfo;
 import page.clab.api.global.common.notificationSetting.application.port.out.WebhookClient;
 import page.clab.api.global.common.notificationSetting.config.NotificationConfigProperties;
 import page.clab.api.global.common.notificationSetting.domain.AlertType;
 import page.clab.api.global.common.notificationSetting.domain.ExecutivesAlertType;
 import page.clab.api.global.common.notificationSetting.domain.GeneralAlertType;
 import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
-import page.clab.api.global.common.notificationSetting.domain.SlackBoardInfo;
-import page.clab.api.global.common.notificationSetting.domain.SlackBookLoanRecordInfo;
-import page.clab.api.global.common.notificationSetting.domain.SlackMembershipFeeInfo;
 import page.clab.api.global.util.HttpReqResUtil;
 
 /**
@@ -185,18 +185,18 @@ public class SlackWebhookClient implements WebhookClient {
                 }
                 break;
             case NEW_BOARD:
-                if (additionalData instanceof SlackBoardInfo) {
-                    return createBoardBlocks((SlackBoardInfo) additionalData);
+                if (additionalData instanceof BoardNotificationInfo) {
+                    return createBoardBlocks((BoardNotificationInfo) additionalData);
                 }
                 break;
             case NEW_MEMBERSHIP_FEE:
-                if (additionalData instanceof SlackMembershipFeeInfo) {
-                    return createMembershipFeeBlocks((SlackMembershipFeeInfo) additionalData);
+                if (additionalData instanceof MembershipFeeNotificationInfo) {
+                    return createMembershipFeeBlocks((MembershipFeeNotificationInfo) additionalData);
                 }
                 break;
             case NEW_BOOK_LOAN_REQUEST:
-                if (additionalData instanceof SlackBookLoanRecordInfo) {
-                    return createBookLoanRecordBlocks((SlackBookLoanRecordInfo) additionalData);
+                if (additionalData instanceof BookLoanRecordNotificationInfo) {
+                    return createBookLoanRecordBlocks((BookLoanRecordNotificationInfo) additionalData);
                 }
                 break;
             default:
@@ -282,7 +282,7 @@ public class SlackWebhookClient implements WebhookClient {
         return blocks;
     }
 
-    private List<LayoutBlock> createBoardBlocks(SlackBoardInfo board) {
+    private List<LayoutBlock> createBoardBlocks(BoardNotificationInfo board) {
         return Arrays.asList(
                 section(s -> s.text(markdownText(":writing_hand: *새 게시글*"))),
                 section(s -> s.fields(Arrays.asList(
@@ -293,7 +293,7 @@ public class SlackWebhookClient implements WebhookClient {
         );
     }
 
-    private List<LayoutBlock> createMembershipFeeBlocks(SlackMembershipFeeInfo data) {
+    private List<LayoutBlock> createMembershipFeeBlocks(MembershipFeeNotificationInfo data) {
         String username = data.getMemberId() + " " + data.getMemberName();
 
         return Arrays.asList(
@@ -307,7 +307,7 @@ public class SlackWebhookClient implements WebhookClient {
         );
     }
 
-    private List<LayoutBlock> createBookLoanRecordBlocks(SlackBookLoanRecordInfo data) {
+    private List<LayoutBlock> createBookLoanRecordBlocks(BookLoanRecordNotificationInfo data) {
         String username = data.getMemberId() + " " + data.getMemberName();
 
         return Arrays.asList(

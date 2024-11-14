@@ -1,4 +1,4 @@
-package page.clab.api.global.common.notificationSetting.domain;
+package page.clab.api.global.common.notificationSetting.application.dto.notification;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import page.clab.api.domain.members.membershipFee.domain.MembershipFee;
 
 @Getter
 @Builder
-public class SlackMembershipFeeInfo {
+public class MembershipFeeNotificationInfo {
 
     private String memberId;
     private String memberName;
@@ -15,8 +15,8 @@ public class SlackMembershipFeeInfo {
     private Long amount;
     private String content;
 
-    public static SlackMembershipFeeInfo create(MembershipFee membershipFee, MemberBasicInfoDto memberInfo) {
-        return SlackMembershipFeeInfo.builder()
+    public static MembershipFeeNotificationInfo create(MembershipFee membershipFee, MemberBasicInfoDto memberInfo) {
+        return MembershipFeeNotificationInfo.builder()
                 .memberId(memberInfo.getMemberId())
                 .memberName(memberInfo.getMemberName())
                 .category(membershipFee.getCategory())

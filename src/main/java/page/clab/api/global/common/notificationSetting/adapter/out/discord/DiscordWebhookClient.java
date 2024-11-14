@@ -31,15 +31,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
+import page.clab.api.global.common.notificationSetting.application.dto.notification.BoardNotificationInfo;
+import page.clab.api.global.common.notificationSetting.application.dto.notification.BookLoanRecordNotificationInfo;
+import page.clab.api.global.common.notificationSetting.application.dto.notification.MembershipFeeNotificationInfo;
 import page.clab.api.global.common.notificationSetting.application.port.out.WebhookClient;
 import page.clab.api.global.common.notificationSetting.config.NotificationConfigProperties;
 import page.clab.api.global.common.notificationSetting.domain.AlertType;
 import page.clab.api.global.common.notificationSetting.domain.ExecutivesAlertType;
 import page.clab.api.global.common.notificationSetting.domain.GeneralAlertType;
 import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
-import page.clab.api.global.common.notificationSetting.domain.SlackBoardInfo;
-import page.clab.api.global.common.notificationSetting.domain.SlackBookLoanRecordInfo;
-import page.clab.api.global.common.notificationSetting.domain.SlackMembershipFeeInfo;
 import page.clab.api.global.util.HttpReqResUtil;
 
 /**
@@ -195,18 +195,18 @@ public class DiscordWebhookClient implements WebhookClient {
                 }
                 break;
             case NEW_BOARD:
-                if (additionalData instanceof SlackBoardInfo) {
-                    return createBoardEmbeds((SlackBoardInfo) additionalData);
+                if (additionalData instanceof BoardNotificationInfo) {
+                    return createBoardEmbeds((BoardNotificationInfo) additionalData);
                 }
                 break;
             case NEW_MEMBERSHIP_FEE:
-                if (additionalData instanceof SlackMembershipFeeInfo) {
-                    return createMembershipFeeEmbeds((SlackMembershipFeeInfo) additionalData);
+                if (additionalData instanceof MembershipFeeNotificationInfo) {
+                    return createMembershipFeeEmbeds((MembershipFeeNotificationInfo) additionalData);
                 }
                 break;
             case NEW_BOOK_LOAN_REQUEST:
-                if (additionalData instanceof SlackBookLoanRecordInfo) {
-                    return createBookLoanRecordEmbeds((SlackBookLoanRecordInfo) additionalData);
+                if (additionalData instanceof BookLoanRecordNotificationInfo) {
+                    return createBookLoanRecordEmbeds((BookLoanRecordNotificationInfo) additionalData);
                 }
                 break;
             default:
@@ -294,7 +294,7 @@ public class DiscordWebhookClient implements WebhookClient {
         return Collections.singletonList(embed);
     }
 
-    private List<Map<String, Object>> createBoardEmbeds(SlackBoardInfo board) {
+    private List<Map<String, Object>> createBoardEmbeds(BoardNotificationInfo board) {
         Map<String, Object> embed = new HashMap<>();
         embed.put("title", ":writing_hand: 새 게시글");
         embed.put("color", 0x008080);
@@ -307,7 +307,7 @@ public class DiscordWebhookClient implements WebhookClient {
         return Collections.singletonList(embed);
     }
 
-    private List<Map<String, Object>> createMembershipFeeEmbeds(SlackMembershipFeeInfo data) {
+    private List<Map<String, Object>> createMembershipFeeEmbeds(MembershipFeeNotificationInfo data) {
         String username = data.getMemberId() + " " + data.getMemberName();
 
         Map<String, Object> embed = new HashMap<>();
@@ -323,7 +323,7 @@ public class DiscordWebhookClient implements WebhookClient {
         return Collections.singletonList(embed);
     }
 
-    private List<Map<String, Object>> createBookLoanRecordEmbeds(SlackBookLoanRecordInfo data) {
+    private List<Map<String, Object>> createBookLoanRecordEmbeds(BookLoanRecordNotificationInfo data) {
         String username = data.getMemberId() + " " + data.getMemberName();
 
         Map<String, Object> embed = new HashMap<>();

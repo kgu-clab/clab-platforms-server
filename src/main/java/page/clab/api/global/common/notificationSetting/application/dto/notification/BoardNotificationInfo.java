@@ -1,4 +1,4 @@
-package page.clab.api.global.common.notificationSetting.domain;
+package page.clab.api.global.common.notificationSetting.application.dto.notification;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,17 +7,18 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 
 @Getter
 @Builder
-public class SlackBoardInfo {
+public class BoardNotificationInfo {
 
     private String title;
     private String category;
     private String username;
 
-    public static SlackBoardInfo create(Board board, MemberDetailedInfoDto memberInfo) {
-        return SlackBoardInfo.builder()
+    public static BoardNotificationInfo create(Board board, MemberDetailedInfoDto memberInfo) {
+        return BoardNotificationInfo.builder()
                 .title(board.getTitle())
                 .category(board.getCategory().getDescription())
-                .username(board.isWantAnonymous() ? board.getNickname() : memberInfo.getMemberId() + " " + memberInfo.getMemberName())
+                .username(board.isWantAnonymous() ? board.getNickname()
+                        : memberInfo.getMemberId() + " " + memberInfo.getMemberName())
                 .build();
     }
 }

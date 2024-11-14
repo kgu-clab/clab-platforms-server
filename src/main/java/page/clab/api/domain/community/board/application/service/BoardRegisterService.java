@@ -15,9 +15,9 @@ import page.clab.api.external.memberManagement.member.application.port.ExternalR
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
 import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
+import page.clab.api.global.common.notificationSetting.application.dto.notification.BoardNotificationInfo;
 import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.ExecutivesAlertType;
-import page.clab.api.global.common.notificationSetting.domain.SlackBoardInfo;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
@@ -53,7 +53,7 @@ public class BoardRegisterService implements RegisterBoardUseCase {
                     "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.");
         }
 
-        SlackBoardInfo boardInfo = SlackBoardInfo.create(board, currentMemberInfo);
+        BoardNotificationInfo boardInfo = BoardNotificationInfo.create(board, currentMemberInfo);
         eventPublisher.publishEvent(new NotificationEvent(this, ExecutivesAlertType.NEW_BOARD, null,
                 boardInfo));
 

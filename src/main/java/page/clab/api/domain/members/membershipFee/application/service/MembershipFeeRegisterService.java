@@ -12,9 +12,9 @@ import page.clab.api.domain.members.membershipFee.application.port.out.RegisterM
 import page.clab.api.domain.members.membershipFee.domain.MembershipFee;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
+import page.clab.api.global.common.notificationSetting.application.dto.notification.MembershipFeeNotificationInfo;
 import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.ExecutivesAlertType;
-import page.clab.api.global.common.notificationSetting.domain.SlackMembershipFeeInfo;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +32,8 @@ public class MembershipFeeRegisterService implements RegisterMembershipFeeUseCas
         MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
         MembershipFee membershipFee = mapper.fromDto(requestDto, memberInfo.getMemberId());
         externalSendNotificationUseCase.sendNotificationToAdmins("새로운 회비 내역이 등록되었습니다.");
-        SlackMembershipFeeInfo membershipFeeInfo = SlackMembershipFeeInfo.create(membershipFee, memberInfo);
+        MembershipFeeNotificationInfo membershipFeeInfo = MembershipFeeNotificationInfo.create(membershipFee,
+                memberInfo);
         eventPublisher.publishEvent(new NotificationEvent(this, ExecutivesAlertType.NEW_MEMBERSHIP_FEE, null,
                 membershipFeeInfo));
         return registerMembershipFeePort.save(membershipFee).getId();

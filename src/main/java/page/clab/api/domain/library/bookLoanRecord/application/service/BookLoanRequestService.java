@@ -18,9 +18,9 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.external.library.book.application.port.ExternalRetrieveBookUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
+import page.clab.api.global.common.notificationSetting.application.dto.notification.BookLoanRecordNotificationInfo;
 import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.ExecutivesAlertType;
-import page.clab.api.global.common.notificationSetting.domain.SlackBookLoanRecordInfo;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 
 @Service
@@ -63,7 +63,8 @@ public class BookLoanRequestService implements RequestBookLoanUseCase {
             externalSendNotificationUseCase.sendNotificationToMember(borrowerInfo.getMemberId(),
                     "[" + book.getTitle() + "] 도서 대출 신청이 완료되었습니다.");
 
-            SlackBookLoanRecordInfo bookLoanRecordInfo = SlackBookLoanRecordInfo.create(book, borrowerInfo);
+            BookLoanRecordNotificationInfo bookLoanRecordInfo = BookLoanRecordNotificationInfo.create(book,
+                    borrowerInfo);
             eventPublisher.publishEvent(new NotificationEvent(this, ExecutivesAlertType.NEW_BOOK_LOAN_REQUEST, null,
                     bookLoanRecordInfo));
 
