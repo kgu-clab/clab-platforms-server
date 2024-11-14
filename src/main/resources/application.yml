@@ -195,6 +195,7 @@ resource:
 ipinfo:
   access-token: ${IPINFO_ACCESS_TOKEN} # Register at https://ipinfo.io/
 
+# Messaging configuration
 notification:
   common:
     web-url: "${WEB_URL}"    # Your web URL
@@ -209,7 +210,7 @@ notification:
     discord:
       webhooks:
         # Replace the placeholders with your actual Discord webhook URLs
-        release: "${DISCORD_RELEASE_WEBHOOK_URL}"          # Discord webhook URL for release notifications
+        release: "${DISCORD_RELEASE_WEBHOOK_URL}"              # Discord webhook URL for release notifications
         notifications: "${DISCORD_NOTIFICATIONS_WEBHOOK_URL}"  # Discord webhook URL for general notifications
         executives: "${DISCORD_EXECUTIVES_WEBHOOK_URL}"        # Discord webhook URL for executive team notifications
   # The category-mappings section defines how notifications are routed based on their category.
