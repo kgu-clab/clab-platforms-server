@@ -154,7 +154,6 @@ public class SlackWebhookClient implements WebhookClient {
         }
     }
 
-    // 일반 알림 유형에 따른 블록 생성
     private List<LayoutBlock> createGeneralAlertBlocks(GeneralAlertType alertType, HttpServletRequest request,
                                                        Object additionalData) {
         switch (alertType) {
@@ -176,7 +175,6 @@ public class SlackWebhookClient implements WebhookClient {
         return Collections.emptyList();
     }
 
-    // 운영진 알림 유형에 따른 블록 생성
     private List<LayoutBlock> createExecutivesAlertBlocks(ExecutivesAlertType alertType, Object additionalData) {
         switch (alertType) {
             case NEW_APPLICATION:

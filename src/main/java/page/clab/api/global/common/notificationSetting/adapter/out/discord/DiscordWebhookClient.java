@@ -163,7 +163,6 @@ public class DiscordWebhookClient implements WebhookClient {
         }
     }
 
-    // 일반 알림 유형에 따른 임베드 생성
     private List<Map<String, Object>> createGeneralAlertEmbeds(GeneralAlertType alertType, HttpServletRequest request,
                                                                Object additionalData) {
         switch (alertType) {
@@ -185,7 +184,6 @@ public class DiscordWebhookClient implements WebhookClient {
         return Collections.emptyList();
     }
 
-    // 운영진 알림 유형에 따른 임베드 생성
     private List<Map<String, Object>> createExecutivesAlertEmbeds(ExecutivesAlertType alertType,
                                                                   Object additionalData) {
         switch (alertType) {
@@ -362,14 +360,11 @@ public class DiscordWebhookClient implements WebhookClient {
                 createField("Memory Usage", memoryInfo, true)
         ));
 
-        // 버튼 대신 링크를 설명에 추가
         embed.put("description",
                 "[Web](" + commonProperties.getWebUrl() + ") | [Swagger](" + commonProperties.getApiUrl() + ")");
 
         return Collections.singletonList(embed);
     }
-
-    // 유틸리티 메서드들
 
     private Map<String, Object> createField(String name, String value, boolean inline) {
         Map<String, Object> field = new HashMap<>();
