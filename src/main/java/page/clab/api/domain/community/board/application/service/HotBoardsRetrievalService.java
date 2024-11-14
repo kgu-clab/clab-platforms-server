@@ -14,6 +14,7 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.external.community.comment.application.port.ExternalRetrieveCommentUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -61,8 +62,8 @@ public class HotBoardsRetrievalService implements RetrieveHotBoardsUseCase {
     }
 
     private List<Board> getHotBoardsForWeek(int weeksAgo, int size) {
-        LocalDateTime startDate = LocalDate.now().minusWeeks(weeksAgo).with(java.time.DayOfWeek.MONDAY).atStartOfDay();
-        LocalDateTime endDate = LocalDate.now().minusWeeks(weeksAgo).with(java.time.DayOfWeek.SUNDAY).atTime(23, 59, 59);
+        LocalDateTime startDate = LocalDate.now().minusWeeks(weeksAgo).with(DayOfWeek.MONDAY).atStartOfDay();
+        LocalDateTime endDate = LocalDate.now().minusWeeks(weeksAgo).with(DayOfWeek.SUNDAY).atTime(23, 59, 59);
 
         List<Board> boardsForWeek = retrieveBoardPort.findAllWithinDateRange(startDate, endDate);
 
