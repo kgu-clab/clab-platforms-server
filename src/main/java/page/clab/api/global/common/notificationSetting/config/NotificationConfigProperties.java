@@ -24,6 +24,10 @@ public class NotificationConfigProperties {
         private String webUrl;
         private String apiUrl;
         private String color;
+
+        public int getColorAsInt() {
+            return Integer.parseInt(color.replaceFirst("^#", ""), 16);
+        }
     }
 
     @Getter

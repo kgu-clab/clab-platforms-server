@@ -226,7 +226,7 @@ public class DiscordWebhookClient implements WebhookClient {
 
         Map<String, Object> embed = new HashMap<>();
         embed.put("title", ":firecracker: Server Error");
-        embed.put("color", 0xFF0000);
+        embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
                 createField("User", username, true),
                 createField("Endpoint", "[" + httpMethod + "] " + fullUrl, true),
@@ -246,7 +246,7 @@ public class DiscordWebhookClient implements WebhookClient {
 
         Map<String, Object> embed = new HashMap<>();
         embed.put("title", ":imp: " + alertType.getTitle());
-        embed.put("color", 0xFFA500);
+        embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
                 createField("User", username, true),
                 createField("IP Address", clientIp, true),
@@ -265,7 +265,7 @@ public class DiscordWebhookClient implements WebhookClient {
 
         Map<String, Object> embed = new HashMap<>();
         embed.put("title", ":mechanic: " + loginMember.getRole().getDescription() + " Login");
-        embed.put("color", 0x00FF00);
+        embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
                 createField("User", loginMember.getMemberId() + " " + loginMember.getMemberName(), true),
                 createField("IP Address", clientIp, true),
@@ -278,7 +278,7 @@ public class DiscordWebhookClient implements WebhookClient {
     private List<Map<String, Object>> createApplicationEmbeds(ApplicationRequestDto requestDto) {
         Map<String, Object> embed = new HashMap<>();
         embed.put("title", ":sparkles: 동아리 지원");
-        embed.put("color", 0x00BFFF);
+        embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
                 createField("구분", requestDto.getApplicationType().getDescription(), true),
                 createField("학번", requestDto.getStudentId(), true),
@@ -297,7 +297,7 @@ public class DiscordWebhookClient implements WebhookClient {
     private List<Map<String, Object>> createBoardEmbeds(BoardNotificationInfo board) {
         Map<String, Object> embed = new HashMap<>();
         embed.put("title", ":writing_hand: 새 게시글");
-        embed.put("color", 0x008080);
+        embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
                 createField("제목", board.getTitle(), true),
                 createField("분류", board.getCategory(), true),
@@ -312,7 +312,7 @@ public class DiscordWebhookClient implements WebhookClient {
 
         Map<String, Object> embed = new HashMap<>();
         embed.put("title", ":dollar: 회비 신청");
-        embed.put("color", 0xFFFF00);
+        embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
                 createField("신청자", username, true),
                 createField("분류", data.getCategory(), true),
@@ -328,7 +328,7 @@ public class DiscordWebhookClient implements WebhookClient {
 
         Map<String, Object> embed = new HashMap<>();
         embed.put("title", ":books: 도서 대여 신청");
-        embed.put("color", 0x800080);
+        embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
                 createField("도서명", data.getBookTitle(), true),
                 createField("분류", data.getCategory(), true),
@@ -353,7 +353,7 @@ public class DiscordWebhookClient implements WebhookClient {
 
         Map<String, Object> embed = new HashMap<>();
         embed.put("title", ":battery: Server Started");
-        embed.put("color", 0x00FF7F);
+        embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
                 createField("Environment", environment.getProperty("spring.profiles.active"), true),
                 createField("OS", osInfo, true),
