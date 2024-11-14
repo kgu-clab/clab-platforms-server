@@ -23,7 +23,7 @@ public class HotBoardsRetrievalController {
 
     private final RetrieveHotBoardsUseCase retrieveHotBoardsUseCase;
 
-    @Operation(summary = "[G] 커뮤니티 핫 게시글 목록 조회", description = "ROLE_GUEST 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[G] 커뮤니티 인기 게시글 목록 조회", description = "ROLE_GUEST 이상의 권한이 필요함<br>" +
             "반응(이모지), 댓글 수를 합친 결과가 높은 순으로 size만큼 조회 가능")
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/hot")

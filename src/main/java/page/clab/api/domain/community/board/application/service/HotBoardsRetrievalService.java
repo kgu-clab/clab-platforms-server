@@ -51,7 +51,7 @@ public class HotBoardsRetrievalService implements RetrieveHotBoardsUseCase {
         List<Board> hotBoards = getHotBoardsForWeek(1, size);
 
         int weeksAgo = 2;
-        // 필요한 수량을 확보할 때까지 반복해서 이전 주로 이동하여 Hot 게시글 보충
+        // 필요한 수량을 확보할 때까지 반복해서 이전 주로 이동하여 인기 게시글 보충
         while (hotBoards.size() < size) {
             List<Board> additionalBoards = getLatestHotBoardForWeek(weeksAgo++, size - hotBoards.size());
             if (additionalBoards != null && !additionalBoards.isEmpty()) {
