@@ -45,7 +45,7 @@ public class HotBoardsRetrievalService implements RetrieveHotBoardsUseCase {
         // 만약 게시글의 총 개수가 size보다 적다면 모든 게시글 반환
         List<Board> allBoards = retrieveBoardPort.findAll();
         if (allBoards.size() < size) {
-            return sortAndLimit(allBoards.size(), allBoards);
+            return sortBoardsByReactionAndDateWithLimit(allBoards.size(), allBoards);
         }
 
         List<Board> hotBoards = getHotBoardsForWeek(1, size);
@@ -67,10 +67,10 @@ public class HotBoardsRetrievalService implements RetrieveHotBoardsUseCase {
 
         List<Board> boardsForWeek = retrieveBoardPort.findAllWithinDateRange(startDate, endDate);
 
-        return sortAndLimit(size, boardsForWeek);
+        return sortBoardsByReactionAndDateWithLimit(size, boardsForWeek);
     }
 
-    private List<Board> sortAndLimit(int size, List<Board> boardsForWeek) {
+    private List<Board> sortBoardsByReactionAndDateWithLimit(int size, List<Board> boardsForWeek) {
         if (boardsForWeek == null) {
             return null;
         }
