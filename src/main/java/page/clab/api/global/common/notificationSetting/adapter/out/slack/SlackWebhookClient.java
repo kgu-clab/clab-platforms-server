@@ -36,6 +36,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
+import page.clab.api.global.common.notificationSetting.application.port.out.WebhookClient;
 import page.clab.api.global.common.notificationSetting.config.NotificationConfigProperties;
 import page.clab.api.global.common.notificationSetting.domain.AlertType;
 import page.clab.api.global.common.notificationSetting.domain.ExecutivesAlertType;
@@ -51,7 +52,7 @@ import page.clab.api.global.util.HttpReqResUtil;
  *
  * <p>주요 기능:</p>
  * <ul>
- *     <li>{@link #sendSlackMessage(String, AlertType, HttpServletRequest, Object)}: Slack에 알림 메시지를 비동기적으로 전송</li>
+ *     <li>{@link #sendMessage(String, AlertType, HttpServletRequest, Object)}: Slack에 알림 메시지를 비동기적으로 전송</li>
  *     <li>{@link #createBlocks(AlertType, HttpServletRequest, Object)}: 알림 유형에 따라 Slack 메시지 블록 생성</li>
  *     <li>다양한 알림 유형에 맞는 메시지 형식을 생성하는 전용 메서드</li>
  * </ul>
@@ -67,7 +68,7 @@ import page.clab.api.global.util.HttpReqResUtil;
  */
 @Component
 @Slf4j
-public class SlackWebhookClient {
+public class SlackWebhookClient implements WebhookClient {
 
     private final Slack slack;
     private final NotificationConfigProperties.CommonProperties commonProperties;
@@ -95,8 +96,8 @@ public class SlackWebhookClient {
      * @param additionalData 추가 데이터
      * @return 메시지 전송 성공 여부를 나타내는 CompletableFuture<Boolean>
      */
-    public CompletableFuture<Boolean> sendSlackMessage(String webhookUrl, AlertType alertType,
-                                                       HttpServletRequest request, Object additionalData) {
+    public CompletableFuture<Boolean> sendMessage(String webhookUrl, AlertType alertType,
+                                                  HttpServletRequest request, Object additionalData) {
         List<LayoutBlock> blocks = createBlocks(alertType, request, additionalData);
 
         return CompletableFuture.supplyAsync(() -> {
@@ -136,15 +137,20 @@ public class SlackWebhookClient {
      * @return 생성된 LayoutBlock 목록
      */
     public List<LayoutBlock> createBlocks(AlertType alertType, HttpServletRequest request, Object additionalData) {
-        if (alertType instanceof SecurityAlertType) {
-            return createSecurityAlertBlocks(request, alertType, additionalData.toString());
-        } else if (alertType instanceof GeneralAlertType) {
-            return createGeneralAlertBlocks((GeneralAlertType) alertType, request, additionalData);
-        } else if (alertType instanceof ExecutivesAlertType) {
-            return createExecutivesAlertBlocks((ExecutivesAlertType) alertType, additionalData);
-        } else {
-            log.error("Unknown alert type: {}", alertType);
-            return Collections.emptyList();
+        switch (alertType) {
+            case SecurityAlertType securityAlertType -> {
+                return createSecurityAlertBlocks(request, alertType, additionalData.toString());
+            }
+            case GeneralAlertType generalAlertType -> {
+                return createGeneralAlertBlocks(generalAlertType, request, additionalData);
+            }
+            case ExecutivesAlertType executivesAlertType -> {
+                return createExecutivesAlertBlocks(executivesAlertType, additionalData);
+            }
+            case null, default -> {
+                log.error("Unknown alert type: {}", alertType);
+                return Collections.emptyList();
+            }
         }
     }
 
