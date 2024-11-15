@@ -1,4 +1,4 @@
-package page.clab.api.global.common.notificationSetting.adapter.out.webhook.common;
+package page.clab.api.global.common.notificationSetting.adapter.out.webhook;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.concurrent.CompletableFuture;

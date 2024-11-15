@@ -25,7 +25,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationRequestDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
-import page.clab.api.global.common.notificationSetting.adapter.out.webhook.common.AbstractWebhookClient;
 import page.clab.api.global.common.notificationSetting.application.dto.notification.BoardNotificationInfo;
 import page.clab.api.global.common.notificationSetting.application.dto.notification.BookLoanRecordNotificationInfo;
 import page.clab.api.global.common.notificationSetting.application.dto.notification.MembershipFeeNotificationInfo;
