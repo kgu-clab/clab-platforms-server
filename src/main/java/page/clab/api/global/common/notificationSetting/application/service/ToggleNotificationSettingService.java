@@ -3,7 +3,7 @@ package page.clab.api.global.common.notificationSetting.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.global.common.notificationSetting.application.port.in.UpdateNotificationSettingUseCase;
+import page.clab.api.global.common.notificationSetting.application.port.in.ToggleNotificationSettingUseCase;
 import page.clab.api.global.common.notificationSetting.application.port.out.RetrieveNotificationSettingPort;
 import page.clab.api.global.common.notificationSetting.application.port.out.UpdateNotificationSettingPort;
 import page.clab.api.global.common.notificationSetting.domain.AlertType;
@@ -18,13 +18,13 @@ import page.clab.api.global.common.notificationSetting.domain.NotificationSettin
  * <p>
  * 주요 기능:
  * <ul>
- *     <li>{@link #updateNotificationSetting(String, boolean)} - 주어진 알림 유형에 대해 알림 설정을 업데이트합니다.</li>
+ *     <li>{@link #toggleNotificationSetting(String, boolean)} - 주어진 알림 유형에 대해 알림 설정을 업데이트합니다.</li>
  *     <li>{@link #getOrCreateDefaultSetting(AlertType)} - 주어진 알림 유형에 대한 기본 알림 설정을 조회하거나, 존재하지 않으면 생성합니다.</li>
  * </ul>
  */
 @Service
 @RequiredArgsConstructor
-public class UpdateNotificationSettingService implements UpdateNotificationSettingUseCase {
+public class ToggleNotificationSettingService implements ToggleNotificationSettingUseCase {
 
     private final AlertTypeResolver alertTypeResolver;
     private final RetrieveNotificationSettingPort retrieveNotificationSettingPort;
@@ -32,7 +32,7 @@ public class UpdateNotificationSettingService implements UpdateNotificationSetti
 
     @Transactional
     @Override
-    public void updateNotificationSetting(String alertTypeName, boolean enabled) {
+    public void toggleNotificationSetting(String alertTypeName, boolean enabled) {
         AlertType alertType = alertTypeResolver.resolve(alertTypeName);
         NotificationSetting setting = getOrCreateDefaultSetting(alertType);
         setting.updateEnabled(enabled);

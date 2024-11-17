@@ -10,24 +10,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.common.notificationSetting.application.dto.request.NotificationSettingUpdateRequestDto;
-import page.clab.api.global.common.notificationSetting.application.port.in.UpdateNotificationSettingUseCase;
+import page.clab.api.global.common.notificationSetting.application.dto.request.NotificationSettingToggleRequestDto;
+import page.clab.api.global.common.notificationSetting.application.port.in.ToggleNotificationSettingUseCase;
 
 @RestController
 @RequestMapping("/api/v1/notification-settings")
 @RequiredArgsConstructor
 @Tag(name = "Notification Setting", description = "웹훅 알림 설정")
-public class NotificationSettingUpdateController {
+public class NotificationSettingToggleController {
 
-    private final UpdateNotificationSettingUseCase updateNotificationSettingUseCase;
+    private final ToggleNotificationSettingUseCase toggleNotificationSettingUseCase;
 
     @Operation(summary = "[S] 웹훅 알림 설정 변경", description = "ROLE_SUPER 이상의 권한이 필요함")
     @PreAuthorize("hasRole('SUPER')")
     @PutMapping("")
-    public ApiResponse<Void> updateNotificationSetting(
-            @Valid @RequestBody NotificationSettingUpdateRequestDto requestDto
+    public ApiResponse<Void> toggleNotificationSetting(
+            @Valid @RequestBody NotificationSettingToggleRequestDto requestDto
     ) {
-        updateNotificationSettingUseCase.updateNotificationSetting(requestDto.getAlertType(), requestDto.isEnabled());
+        toggleNotificationSettingUseCase.toggleNotificationSetting(requestDto.getAlertType(), requestDto.isEnabled());
         return ApiResponse.success();
     }
 }

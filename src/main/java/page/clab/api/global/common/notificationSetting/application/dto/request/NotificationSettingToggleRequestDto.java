@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class NotificationSettingUpdateRequestDto {
+public class NotificationSettingToggleRequestDto {
 
     @NotNull(message = "{notNull.notificationSetting.alertType}")
     @Schema(description = "알림 타입", example = "서버 시작")
