@@ -3,7 +3,7 @@ package page.clab.api.global.common.notificationSetting.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.global.common.notificationSetting.application.port.in.ToggleNotificationSettingUseCase;
+import page.clab.api.global.common.notificationSetting.application.port.in.ManageNotificationSettingUseCase;
 import page.clab.api.global.common.notificationSetting.application.port.out.RetrieveNotificationSettingPort;
 import page.clab.api.global.common.notificationSetting.application.port.out.UpdateNotificationSettingPort;
 import page.clab.api.global.common.notificationSetting.domain.AlertType;
@@ -24,7 +24,7 @@ import page.clab.api.global.common.notificationSetting.domain.NotificationSettin
  */
 @Service
 @RequiredArgsConstructor
-public class ToggleNotificationSettingService implements ToggleNotificationSettingUseCase {
+public class ManageNotificationSettingService implements ManageNotificationSettingUseCase {
 
     private final AlertTypeResolver alertTypeResolver;
     private final RetrieveNotificationSettingPort retrieveNotificationSettingPort;

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import page.clab.api.global.common.notificationSetting.application.port.in.ToggleNotificationSettingUseCase;
+import page.clab.api.global.common.notificationSetting.application.port.in.ManageNotificationSettingUseCase;
 import page.clab.api.global.common.notificationSetting.application.port.out.NotificationSender;
 import page.clab.api.global.common.notificationSetting.config.NotificationConfigProperties;
 import page.clab.api.global.common.notificationSetting.config.NotificationConfigProperties.PlatformConfig;
@@ -20,15 +20,15 @@ import page.clab.api.global.common.notificationSetting.domain.NotificationSettin
 @Slf4j
 public class NotificationListener {
 
-    private final ToggleNotificationSettingUseCase toggleNotificationSettingUseCase;
+    private final ManageNotificationSettingUseCase manageNotificationSettingUseCase;
     private final Map<String, NotificationSender> notificationSenders;
     private final NotificationConfigProperties notificationConfigProperties;
 
     public NotificationListener(
-            ToggleNotificationSettingUseCase toggleNotificationSettingUseCase,
+            ManageNotificationSettingUseCase manageNotificationSettingUseCase,
             List<NotificationSender> notificationSenderList,
             NotificationConfigProperties notificationConfigProperties) {
-        this.toggleNotificationSettingUseCase = toggleNotificationSettingUseCase;
+        this.manageNotificationSettingUseCase = manageNotificationSettingUseCase;
         this.notificationConfigProperties = notificationConfigProperties;
         this.notificationSenders = notificationSenderList.stream()
                 .collect(Collectors.toMap(NotificationSender::getPlatformName, Function.identity()));
@@ -38,7 +38,7 @@ public class NotificationListener {
     public void handleNotificationEvent(NotificationEvent event) {
         AlertType alertType = event.getAlertType();
 
-        NotificationSetting setting = toggleNotificationSettingUseCase.getOrCreateDefaultSetting(alertType);
+        NotificationSetting setting = manageNotificationSettingUseCase.getOrCreateDefaultSetting(alertType);
         if (!setting.isEnabled()) {
             return;
         }
