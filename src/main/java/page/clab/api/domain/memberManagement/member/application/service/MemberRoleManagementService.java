@@ -37,11 +37,11 @@ public class MemberRoleManagementService implements ManageMemberRoleUseCase {
 
         updateMemberPort.update(member);
 
-        String additionalMessage = String.format("[%s] %s: %s -> %s", member.getId(), member.getName(), oldRole,
+        String memberRoleChangedMessage = String.format("[%s] %s: %s -> %s", member.getId(), member.getName(), oldRole,
                 newRole);
         eventPublisher.publishEvent(
                 new NotificationEvent(this, SecurityAlertType.MEMBER_ROLE_CHANGED, httpServletRequest,
-                        additionalMessage));
+                        memberRoleChangedMessage));
 
         return memberId;
     }

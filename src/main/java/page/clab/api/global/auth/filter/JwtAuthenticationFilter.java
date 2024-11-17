@@ -113,9 +113,9 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     private void sendSecurityAlertSlackMessage(HttpServletRequest request, RedisToken redisToken) {
         if (redisToken.isAdminToken()) {
             request.setAttribute("member", redisToken.getId());
-            String additionalMessage = "토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.";
+            String duplicateLoginMessage = "토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.";
             eventPublisher.publishEvent(
-                    new NotificationEvent(this, SecurityAlertType.DUPLICATE_LOGIN, request, additionalMessage));
+                    new NotificationEvent(this, SecurityAlertType.DUPLICATE_LOGIN, request, duplicateLoginMessage));
         }
     }
 }

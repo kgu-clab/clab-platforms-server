@@ -21,9 +21,10 @@ public class AbnormalAccessIpRemoveService implements RemoveAbnormalAccessIpUseC
     @Transactional
     public String removeAbnormalAccessIp(HttpServletRequest request, String ipAddress) {
         removeIpAccessMonitorPort.deleteById(ipAddress);
-        String additionalMessage = "Deleted IP: " + ipAddress;
+        String abnormalAccessIpDeletedMessage = "Deleted IP: " + ipAddress;
         eventPublisher.publishEvent(
-                new NotificationEvent(this, SecurityAlertType.ABNORMAL_ACCESS_IP_DELETED, request, additionalMessage));
+                new NotificationEvent(this, SecurityAlertType.ABNORMAL_ACCESS_IP_DELETED, request,
+                        abnormalAccessIpDeletedMessage));
         return ipAddress;
     }
 }

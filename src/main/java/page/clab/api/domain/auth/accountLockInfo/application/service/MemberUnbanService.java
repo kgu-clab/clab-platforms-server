@@ -56,8 +56,8 @@ public class MemberUnbanService implements UnbanMemberUseCase {
 
     private void sendSlackUnbanNotification(HttpServletRequest request, String memberId) {
         String memberName = externalRetrieveMemberUseCase.getMemberBasicInfoById(memberId).getMemberName();
-        String additionalMessage = "ID: " + memberId + ", Name: " + memberName;
+        String memberUnbannedMessage = "ID: " + memberId + ", Name: " + memberName;
         eventPublisher.publishEvent(
-                new NotificationEvent(this, SecurityAlertType.MEMBER_UNBANNED, request, additionalMessage));
+                new NotificationEvent(this, SecurityAlertType.MEMBER_UNBANNED, request, memberUnbannedMessage));
     }
 }

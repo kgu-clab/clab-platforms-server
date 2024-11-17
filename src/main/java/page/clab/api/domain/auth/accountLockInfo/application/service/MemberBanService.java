@@ -59,8 +59,8 @@ public class MemberBanService implements BanMemberUseCase {
 
     private void sendSlackBanNotification(HttpServletRequest request, String memberId) {
         String memberName = externalRetrieveMemberUseCase.getMemberBasicInfoById(memberId).getMemberName();
-        String additionalMessage = "ID: " + memberId + ", Name: " + memberName;
+        String memberBannedMessage = "ID: " + memberId + ", Name: " + memberName;
         eventPublisher.publishEvent(
-                new NotificationEvent(this, SecurityAlertType.MEMBER_BANNED, request, additionalMessage));
+                new NotificationEvent(this, SecurityAlertType.MEMBER_BANNED, request, memberBannedMessage));
     }
 }

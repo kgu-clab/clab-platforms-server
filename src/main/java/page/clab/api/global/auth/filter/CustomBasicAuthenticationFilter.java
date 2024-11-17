@@ -132,26 +132,26 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
     private void sendAuthenticationSuccessAlertSlackMessage(HttpServletRequest request) {
         String path = request.getRequestURI();
         if (WhitelistPathMatcher.isSwaggerIndexEndpoint(path)) {
-            String additionalMessage = "API 문서에 대한 접근이 허가되었습니다.";
+            String apiDocsAccessMessage = "API 문서에 대한 접근이 허가되었습니다.";
             eventPublisher.publishEvent(
-                    new NotificationEvent(this, SecurityAlertType.API_DOCS_ACCESS, request, additionalMessage));
+                    new NotificationEvent(this, SecurityAlertType.API_DOCS_ACCESS, request, apiDocsAccessMessage));
         } else if (WhitelistPathMatcher.isActuatorRequest(path)) {
-            String additionalMessage = "Actuator에 대한 접근이 허가되었습니다.";
+            String actuatorAccessMessage = "Actuator에 대한 접근이 허가되었습니다.";
             eventPublisher.publishEvent(
-                    new NotificationEvent(this, SecurityAlertType.ACTUATOR_ACCESS, request, additionalMessage));
+                    new NotificationEvent(this, SecurityAlertType.ACTUATOR_ACCESS, request, actuatorAccessMessage));
         }
     }
 
     private void sendAuthenticationFailureAlertSlackMessage(HttpServletRequest request) {
         String path = request.getRequestURI();
         if (WhitelistPathMatcher.isSwaggerIndexEndpoint(path)) {
-            String additionalMessage = "API 문서에 대한 접근이 거부되었습니다.";
+            String apiDocsAccessMessage = "API 문서에 대한 접근이 거부되었습니다.";
             eventPublisher.publishEvent(
-                    new NotificationEvent(this, SecurityAlertType.API_DOCS_ACCESS, request, additionalMessage));
+                    new NotificationEvent(this, SecurityAlertType.API_DOCS_ACCESS, request, apiDocsAccessMessage));
         } else if (WhitelistPathMatcher.isActuatorRequest(path)) {
-            String additionalMessage = "Actuator에 대한 접근이 거부되었습니다.";
+            String actuatorAccessMessage = "Actuator에 대한 접근이 거부되었습니다.";
             eventPublisher.publishEvent(
-                    new NotificationEvent(this, SecurityAlertType.ACTUATOR_ACCESS, request, additionalMessage));
+                    new NotificationEvent(this, SecurityAlertType.ACTUATOR_ACCESS, request, actuatorAccessMessage));
         }
     }
 }

@@ -27,9 +27,10 @@ public class AbnormalAccessIpsClearService implements ClearAbnormalAccessIpsUseC
         List<RedisIpAccessMonitor> ipAccessMonitors = retrieveIpAccessMonitorPort.findAll();
         clearIpAccessMonitorPort.deleteAll();
 
-        String additionalMessage = "Deleted IP: ALL";
+        String abnormalAccessIpClearedMessage = "Deleted IP: ALL";
         eventPublisher.publishEvent(
-                new NotificationEvent(this, SecurityAlertType.ABNORMAL_ACCESS_IP_DELETED, request, additionalMessage));
+                new NotificationEvent(this, SecurityAlertType.ABNORMAL_ACCESS_IP_DELETED, request,
+                        abnormalAccessIpClearedMessage));
 
         return ipAccessMonitors;
     }

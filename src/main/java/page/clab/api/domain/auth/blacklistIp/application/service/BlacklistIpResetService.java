@@ -39,9 +39,10 @@ public class BlacklistIpResetService implements ResetBlacklistIpsUseCase {
                 .toList();
         removeBlacklistIpPort.deleteAll();
 
-        String additionalMessage = "Deleted IP: ALL";
+        String blacklistRemovedMessage = "Deleted IP: ALL";
         eventPublisher.publishEvent(
-                new NotificationEvent(this, SecurityAlertType.BLACKLISTED_IP_REMOVED, request, additionalMessage));
+                new NotificationEvent(this, SecurityAlertType.BLACKLISTED_IP_REMOVED, request,
+                        blacklistRemovedMessage));
 
         return blacklistedIps;
     }

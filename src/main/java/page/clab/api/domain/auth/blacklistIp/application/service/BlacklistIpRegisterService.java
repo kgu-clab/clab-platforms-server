@@ -43,10 +43,10 @@ public class BlacklistIpRegisterService implements RegisterBlacklistIpUseCase {
                     BlacklistIp blacklistIp = mapper.fromDto(requestDto);
                     registerBlacklistIpPort.save(blacklistIp);
 
-                    String additionalMessage = "Added IP: " + ipAddress;
+                    String blacklistAddedMessage = "Added IP: " + ipAddress;
                     eventPublisher.publishEvent(
                             new NotificationEvent(this, SecurityAlertType.BLACKLISTED_IP_ADDED, request,
-                                    additionalMessage));
+                                    blacklistAddedMessage));
 
                     return ipAddress;
                 });

@@ -30,10 +30,10 @@ public class ExternalIpAccessMonitorRegisterService implements ExternalRegisterI
     public void registerIpAccessMonitor(HttpServletRequest request, String ipAddress) {
         RedisIpAccessMonitor redisIpAccessMonitor = getOrCreateRedisIpAccessMonitor(ipAddress);
         if (redisIpAccessMonitor.isBlocked()) {
-            String additionalMessage = "Blocked IP: " + ipAddress;
+            String abnormalAccessIpBlockedMessage = "Blocked IP: " + ipAddress;
             eventPublisher.publishEvent(
                     new NotificationEvent(this, SecurityAlertType.ABNORMAL_ACCESS_IP_BLOCKED, request,
-                            additionalMessage));
+                            abnormalAccessIpBlockedMessage));
         }
         registerIpAccessMonitorPort.save(redisIpAccessMonitor);
     }

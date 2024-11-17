@@ -100,9 +100,10 @@ public class ExternalAccountLockManagementService implements ExternalManageAccou
         String memberName = memberInfo.getMemberName();
         if (memberInfo.isAdminRole()) {
             request.setAttribute("member", memberId + " " + memberName);
-            String additionalMessage = "로그인 실패 횟수 초과로 계정이 잠겼습니다.";
+            String repeatedLoginFailuresMessage = "로그인 실패 횟수 초과로 계정이 잠겼습니다.";
             eventPublisher.publishEvent(
-                    new NotificationEvent(this, SecurityAlertType.REPEATED_LOGIN_FAILURES, request, additionalMessage));
+                    new NotificationEvent(this, SecurityAlertType.REPEATED_LOGIN_FAILURES, request,
+                            repeatedLoginFailuresMessage));
         }
     }
 }

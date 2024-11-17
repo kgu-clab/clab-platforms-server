@@ -36,9 +36,10 @@ public class BlacklistIpRemoveService implements RemoveBlacklistIpUseCase {
         BlacklistIp blacklistIp = retrieveBlacklistIpPort.getByIpAddress(ipAddress);
         removeBlacklistIpPort.delete(blacklistIp);
 
-        String additionalMessage = "Deleted IP: " + ipAddress;
+        String blacklistRemovedMessage = "Deleted IP: " + ipAddress;
         eventPublisher.publishEvent(
-                new NotificationEvent(this, SecurityAlertType.BLACKLISTED_IP_REMOVED, request, additionalMessage));
+                new NotificationEvent(this, SecurityAlertType.BLACKLISTED_IP_REMOVED, request,
+                        blacklistRemovedMessage));
 
         return blacklistIp.getIpAddress();
     }
