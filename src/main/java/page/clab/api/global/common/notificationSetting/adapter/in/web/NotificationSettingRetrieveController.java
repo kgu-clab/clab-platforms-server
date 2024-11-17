@@ -15,12 +15,12 @@ import page.clab.api.global.common.notificationSetting.application.port.in.Retri
 @RestController
 @RequestMapping("/api/v1/notification-settings")
 @RequiredArgsConstructor
-@Tag(name = "Notification Setting", description = "알림 설정")
+@Tag(name = "Notification Setting", description = "웹훅 알림 설정")
 public class NotificationSettingRetrieveController {
 
     private final RetrieveNotificationSettingUseCase retrieveNotificationSettingUseCase;
 
-    @Operation(summary = "[S] 슬랙 알림 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Operation(summary = "[S] 웹훅 알림 조회", description = "ROLE_SUPER 이상의 권한이 필요함")
     @PreAuthorize("hasRole('SUPER')")
     @GetMapping("")
     public ApiResponse<List<NotificationSettingResponseDto>> getNotificationSettings() {

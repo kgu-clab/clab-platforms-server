@@ -16,12 +16,12 @@ import page.clab.api.global.common.notificationSetting.application.port.in.Updat
 @RestController
 @RequestMapping("/api/v1/notification-settings")
 @RequiredArgsConstructor
-@Tag(name = "Notification Setting", description = "알림 설정")
+@Tag(name = "Notification Setting", description = "웹훅 알림 설정")
 public class NotificationSettingUpdateController {
 
     private final UpdateNotificationSettingUseCase updateNotificationSettingUseCase;
 
-    @Operation(summary = "[S] 슬랙 알림 설정 변경", description = "ROLE_SUPER 이상의 권한이 필요함")
+    @Operation(summary = "[S] 웹훅 알림 설정 변경", description = "ROLE_SUPER 이상의 권한이 필요함")
     @PreAuthorize("hasRole('SUPER')")
     @PutMapping("")
     public ApiResponse<Void> updateNotificationSetting(
