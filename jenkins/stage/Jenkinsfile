@@ -34,59 +34,9 @@ pipeline {
                 }
                 withCredentials([file(credentialsId: 'members_stage_config_yml', variable: 'CONFIG_FILE')]) {
                     script {
-                        def config = readYaml(file: env.CONFIG_FILE)
-
-                        env.JENKINS_DOMAIN = config.'jenkins-domain'
-                        env.SLACK_WEBHOOK_URL = config.slack.'webhook-url'
-                        env.SLACK_COLOR_SUCCESS = config.slack.'color-success'
-                        env.SLACK_COLOR_FAILURE = config.slack.'color-failure'
-
-                        env.PG_USER = config.postgresql.user
-                        env.PG_PASSWORD = config.postgresql.password
-                        env.BACKUP_DIR = config.postgresql.'backup-dir'
-
-                        env.DOCKER_HUB_REPO = config.dockerhub.repo
-                        env.DOCKER_HUB_USER = config.dockerhub.user
-                        env.DOCKER_HUB_PASSWORD = config.dockerhub.password
-
-                        env.EXTERNAL_SERVER_CONFIG_PATH = config.'external-server'.'config-path'
-                        env.EXTERNAL_SERVER_CLOUD_PATH = config.'external-server'.'cloud-path'
-                        env.EXTERNAL_SERVER_LOGS_PATH = config.'external-server'.'logs-path'
-
-                        env.INTERNAL_SERVER_CONFIG_PATH = config.'internal-server'.'config-path'
-                        env.INTERNAL_SERVER_CLOUD_PATH = config.'internal-server'.'cloud-path'
-                        env.INTERNAL_SERVER_LOGS_PATH = config.'internal-server'.'logs-path'
-
-                        env.BLUE_CONTAINER = config.containers.blue
-                        env.GREEN_CONTAINER = config.containers.green
-                        env.BLUE_URL = config.containers.'blue-url'
-                        env.GREEN_URL = config.containers.'green-url'
-                        env.IMAGE_NAME = config.containers.'image-name'
-
-                        env.APPLICATION_NETWORK = config.networks.application
-                        env.MONITORING_NETWORK = config.networks.monitoring
-
-                        env.PROFILE = config.spring.profile
-                        env.PORT_A = config.spring.'port-a'.toString()
-                        env.PORT_B = config.spring.'port-b'.toString()
-
-                        env.WHITELIST_ADMIN_USERNAME = config.admin.username
-                        env.WHITELIST_ADMIN_PASSWORD = config.admin.password
-
-                        env.DOCKERFILE_PATH = "${env.WORKSPACE}${config.docker.'dockerfile-path'}"
-                        env.NGINX_CONTAINER_NAME = config.docker.'nginx-container-name'
-                        env.POSTGRESQL_CONTAINER_NAME = config.docker.'postgresql-container-name'
+                        loadEnvironmentVariables(env.CONFIG_FILE)
                     }
                 }
-            }
-        }
-
-        stage('Check Java Version') {
-            steps {
-                script {
-                    FAILED_STAGE = env.STAGE_NAME
-                }
-                sh 'java -version'
             }
         }
 
@@ -182,7 +132,14 @@ def sendSlackBuildNotification(String message, String color) {
     def jobUrl = "${env.JENKINS_DOMAIN}/job/${env.JOB_NAME}"
     def consoleOutputUrl = "${jobUrl}/${env.BUILD_NUMBER}/console"
 
-    def payload = [
+    def payload = createSlackPayload(message, color, jobUrl, consoleOutputUrl)
+    def payloadJson = groovy.json.JsonOutput.toJson(payload)
+
+    sendHttpPostRequest(env.SLACK_WEBHOOK_URL, payloadJson)
+}
+
+def createSlackPayload(String message, String color, String jobUrl, String consoleOutputUrl) {
+    return [
         blocks: [
             [
                 type: "section",
@@ -228,17 +185,67 @@ def sendSlackBuildNotification(String message, String color) {
                             ]
                         ]
                     ]
-                ].findAll { it != null }
+                ]
             ]
         ]
     ]
+}
 
-    withEnv(["SLACK_WEBHOOK_URL=${env.SLACK_WEBHOOK_URL}"]) {
-        def payloadJson = groovy.json.JsonOutput.toJson(payload)
-        sh """
-            curl -X POST -H 'Content-type: application/json' --data '${payloadJson}' ${SLACK_WEBHOOK_URL}
-        """
-    }
+def sendHttpPostRequest(String url, String payload) {
+    def CONTENT_TYPE_JSON = 'application/json'
+    def HTTP_POST = 'POST'
+
+    sh """
+        curl -X ${HTTP_POST} \\
+            -H 'Content-type: ${CONTENT_TYPE_JSON}' \\
+            --data '${payload}' \\
+            ${url}
+    """
+}
+
+def loadEnvironmentVariables(String configFile) {
+    def config = readYaml(file: configFile)
+
+    env.JENKINS_DOMAIN = config.'jenkins-domain'
+    env.SLACK_WEBHOOK_URL = config.slack.'webhook-url'
+    env.SLACK_COLOR_SUCCESS = config.slack.'color-success'
+    env.SLACK_COLOR_FAILURE = config.slack.'color-failure'
+
+    env.PG_USER = config.postgresql.user
+    env.PG_PASSWORD = config.postgresql.password
+    env.BACKUP_DIR = config.postgresql.'backup-dir'
+
+    env.DOCKER_HUB_REPO = config.dockerhub.repo
+    env.DOCKER_HUB_USER = config.dockerhub.user
+    env.DOCKER_HUB_PASSWORD = config.dockerhub.password
+
+    env.EXTERNAL_SERVER_CONFIG_PATH = config.'external-server'.'config-path'
+    env.EXTERNAL_SERVER_CLOUD_PATH = config.'external-server'.'cloud-path'
+    env.EXTERNAL_SERVER_LOGS_PATH = config.'external-server'.'logs-path'
+
+    env.INTERNAL_SERVER_CONFIG_PATH = config.'internal-server'.'config-path'
+    env.INTERNAL_SERVER_CLOUD_PATH = config.'internal-server'.'cloud-path'
+    env.INTERNAL_SERVER_LOGS_PATH = config.'internal-server'.'logs-path'
+
+    env.BLUE_CONTAINER = config.containers.blue
+    env.GREEN_CONTAINER = config.containers.green
+    env.BLUE_URL = config.containers.'blue-url'
+    env.GREEN_URL = config.containers.'green-url'
+    env.IMAGE_NAME = config.containers.'image-name'
+
+    env.APPLICATION_NETWORK = config.networks.application
+    env.MONITORING_NETWORK = config.networks.monitoring
+
+    env.PROFILE = config.spring.profile
+    env.PORT_A = config.spring.'port-a'.toString()
+    env.PORT_B = config.spring.'port-b'.toString()
+
+    env.WHITELIST_ADMIN_USERNAME = config.admin.username
+    env.WHITELIST_ADMIN_PASSWORD = config.admin.password
+
+    env.DOCKERFILE_PATH = "${env.WORKSPACE}${config.docker.'dockerfile-path'}"
+    env.NGINX_CONTAINER_NAME = config.docker.'nginx-container-name'
+    env.POSTGRESQL_CONTAINER_NAME = config.docker.'postgresql-container-name'
 }
 
 def getChangeLog() {
