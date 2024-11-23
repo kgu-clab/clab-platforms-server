@@ -313,9 +313,10 @@ def determineContainers() {
 
 def buildAndPushDockerImage() {
     sh """
-        docker build -f ${env.DOCKERFILE_PATH} -t ${env.IMAGE_NAME}:${env.DEPLOY_CONTAINER} .
+        DOCKER_BUILDKIT=1 docker build -f ${env.DOCKERFILE_PATH} -t ${env.IMAGE_NAME}:${env.DEPLOY_CONTAINER} .
         docker tag ${env.IMAGE_NAME}:${env.DEPLOY_CONTAINER} ${env.DOCKER_HUB_REPO}:${env.DEPLOY_CONTAINER}
         docker push ${env.DOCKER_HUB_REPO}:${env.DEPLOY_CONTAINER}
+        docker logout
     """
 }
 
