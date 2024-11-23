@@ -2,23 +2,26 @@
 FROM gradle:8.11.1-jdk21 AS build
 WORKDIR /app
 
-# 의존성 캐싱을 위한 Gradle 파일 복사
+# Gradle 파일 복사 및 의존성 설치
 COPY build.gradle settings.gradle /app/
+RUN gradle build -x test --parallel --stacktrace || true
 
-# 의존성 설치 (자주 변경되지 않는 단계를 먼저 수행하여 캐싱 효과를 높임)
-RUN gradle dependencies --parallel --stacktrace
-
-# 소스 코드 복사 및 애플리케이션 빌드
+# 소스 코드 복사 및 빌드
 COPY . /app
-RUN gradle build -x test --parallel --stacktrace
+RUN gradle bootJar --no-daemon --stacktrace
+
+# JAR 파일에서 레이어 추출
+RUN java -Djarmode=layertools -jar build/libs/*.jar extract
 
 # 2. 런타임 단계
 FROM eclipse-temurin:21-jre AS runtime
 WORKDIR /app
 
-# 빌드 단계에서 생성된 JAR 파일 복사
-COPY --from=build /app/build/libs/clab.jar clab.jar
+# 레이어별로 복사
+COPY --from=build /app/dependencies/ ./
+COPY --from=build /app/spring-boot-loader/ ./
+COPY --from=build /app/snapshot-dependencies/ ./
+COPY --from=build /app/application/ ./
 
-# 런타임 설정
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=stage", "clab.jar"]
+# 애플리케이션 실행
+ENTRYPOINT ["java", "-Dspring.profiles.active=stage", "org.springframework.boot.loader.JarLauncher"]
