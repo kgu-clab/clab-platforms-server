@@ -7,7 +7,7 @@ COPY build.gradle settings.gradle /app/
 RUN gradle build -x test --parallel --stacktrace || true
 
 # 소스 코드 복사 및 빌드
-COPY . /app
+COPY src /app/src
 RUN gradle bootJar --no-daemon --stacktrace
 
 # JAR 파일에서 레이어 추출

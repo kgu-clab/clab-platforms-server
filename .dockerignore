@@ -1,0 +1,31 @@
+# Git 관련 파일 무시
+.git
+.gitignore
+
+# 로컬 IDE 파일 무시
+.idea/
+*.iml
+*.log
+
+# 빌드 디렉토리 무시
+build/
+out/
+target/
+
+# Docker 관련 파일 무시 (필요에 따라)
+Dockerfile
+docker-compose.yml
+
+# 기타 불필요한 파일/디렉토리 추가
+*.md
+*.tmp
+*.bak
+
+# 특정 디렉토리 무시
+cloud/
+config/
+images/
+infra/
+jenkins/
+monitoring/
+nginx/
