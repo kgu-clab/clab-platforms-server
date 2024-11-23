@@ -1,16 +1,16 @@
-# 1. 빌드 단계
+# 1. Build Stage
 FROM gradle:8.11.1-jdk21 AS build
 WORKDIR /app
 
-# Gradle 파일 복사 및 의존성 설치
+# Copy Gradle files and install dependencies
 COPY build.gradle settings.gradle /app/
 RUN gradle dependencies --stacktrace
 
-# 소스 코드 복사 및 빌드
+# Copy source code and build
 COPY src /app/src
 RUN gradle bootJar --no-daemon --stacktrace
 
-# JAR 파일에서 레이어 추출
+# Extract layers from JAR file
 RUN java -Djarmode=layertools -jar build/libs/*.jar extract \
     && ls -l /app \
     && ls -l /app/dependencies \
@@ -18,15 +18,15 @@ RUN java -Djarmode=layertools -jar build/libs/*.jar extract \
     && ls -l /app/snapshot-dependencies \
     && ls -l /app/application
 
-# 2. 런타임 단계
+# 2. Runtime Stage
 FROM eclipse-temurin:21-jre AS runtime
 WORKDIR /app
 
-# 레이어별로 복사
+# Copy each layer
 COPY --from=build /app/dependencies/ ./
 COPY --from=build /app/spring-boot-loader/ ./
 COPY --from=build /app/snapshot-dependencies/ ./
 COPY --from=build /app/application/ ./
 
-# 애플리케이션 실행
+# Run the application
 ENTRYPOINT ["java", "-Dspring.profiles.active=stage", "org.springframework.boot.loader.launch.JarLauncher"]
