@@ -126,15 +126,6 @@ pipeline {
             }
         }
 
-        stage('Build Application') {
-            steps {
-                script {
-                    FAILED_STAGE = env.STAGE_NAME
-                    buildApplication()
-                }
-            }
-        }
-
         stage('Build and Push Docker Image') {
             steps {
                 script {
@@ -320,30 +311,12 @@ def determineContainers() {
     }
 }
 
-def buildApplication() {
-    withEnv([
-        "PROFILE=${env.PROFILE}"
-    ]) {
-        sh """
-            echo "Building application with profile ${PROFILE}..."
-            ./gradlew clean build -Penv=${PROFILE} --stacktrace --info
-        """
-    }
-}
-
 def buildAndPushDockerImage() {
-    withEnv([
-        "DOCKER_HUB_REPO=${env.DOCKER_HUB_REPO}",
-        "DEPLOY_CONTAINER=${env.DEPLOY_CONTAINER}",
-        "DOCKERFILE_PATH=${env.DOCKERFILE_PATH}",
-        "IMAGE_NAME=${env.IMAGE_NAME}"
-    ]) {
-        sh """
-            docker build -f ${DOCKERFILE_PATH} -t ${IMAGE_NAME}:${DEPLOY_CONTAINER} .
-            docker tag ${IMAGE_NAME}:${DEPLOY_CONTAINER} ${DOCKER_HUB_REPO}:${DEPLOY_CONTAINER}
-            docker push ${DOCKER_HUB_REPO}:${DEPLOY_CONTAINER}
-        """
-    }
+    sh """
+        docker build -f ${env.DOCKERFILE_PATH} -t ${env.IMAGE_NAME}:${env.DEPLOY_CONTAINER} .
+        docker tag ${env.IMAGE_NAME}:${env.DEPLOY_CONTAINER} ${env.DOCKER_HUB_REPO}:${env.DEPLOY_CONTAINER}
+        docker push ${env.DOCKER_HUB_REPO}:${env.DEPLOY_CONTAINER}
+    """
 }
 
 def deployNewInstance() {
