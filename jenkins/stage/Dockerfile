@@ -6,11 +6,11 @@ WORKDIR /app
 COPY build.gradle settings.gradle /app/
 
 # 의존성 설치 (자주 변경되지 않는 단계)
-RUN gradle dependencies --no-daemon --stacktrace
+RUN gradle dependencies --stacktrace
 
 # 소스 코드 복사 및 애플리케이션 빌드
 COPY . /app
-RUN gradle build --no-daemon --stacktrace
+RUN gradle build --stacktrace
 
 # 2. 런타임 단계
 FROM eclipse-temurin:21-jre AS runtime
