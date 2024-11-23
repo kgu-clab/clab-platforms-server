@@ -5,12 +5,12 @@ WORKDIR /app
 # 의존성 캐싱을 위한 Gradle 파일 복사
 COPY build.gradle settings.gradle /app/
 
-# 의존성 설치 (자주 변경되지 않는 단계)
-RUN gradle dependencies --stacktrace
+# 의존성 설치 (자주 변경되지 않는 단계를 먼저 수행하여 캐싱 효과를 높임)
+RUN gradle dependencies --parallel --stacktrace
 
 # 소스 코드 복사 및 애플리케이션 빌드
 COPY . /app
-RUN gradle build -x test --stacktrace
+RUN gradle build -x test --parallel --stacktrace
 
 # 2. 런타임 단계
 FROM eclipse-temurin:21-jre AS runtime
