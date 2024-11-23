@@ -40,38 +40,42 @@ pipeline {
             }
         }
 
-        stage('Get Git Change Log') {
-            steps {
-                script {
-                    FAILED_STAGE = env.STAGE_NAME
-                    env.GIT_CHANGELOG = getChangeLog()
+        stage('Parallel Processing') {
+            parallel {
+                stage('Get Git Change Log') {
+                    steps {
+                        script {
+                            FAILED_STAGE = env.STAGE_NAME
+                            env.GIT_CHANGELOG = getChangeLog()
+                        }
+                    }
                 }
-            }
-        }
 
-        stage('PostgreSQL Backup') {
-            steps {
-                script {
-                    FAILED_STAGE = env.STAGE_NAME
-                    backupPostgres()
+                stage('PostgreSQL Backup') {
+                    steps {
+                        script {
+                            FAILED_STAGE = env.STAGE_NAME
+                            backupPostgres()
+                        }
+                    }
                 }
-            }
-        }
 
-        stage('Docker Hub Login') {
-            steps {
-                script {
-                    FAILED_STAGE = env.STAGE_NAME
-                    dockerLogin()
+                stage('Docker Hub Login') {
+                    steps {
+                        script {
+                            FAILED_STAGE = env.STAGE_NAME
+                            dockerLogin()
+                        }
+                    }
                 }
-            }
-        }
 
-        stage('Determine Containers') {
-            steps {
-                script {
-                    FAILED_STAGE = env.STAGE_NAME
-                    determineContainers()
+                stage('Determine Containers') {
+                    steps {
+                        script {
+                            FAILED_STAGE = env.STAGE_NAME
+                            determineContainers()
+                        }
+                    }
                 }
             }
         }
