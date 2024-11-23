@@ -379,9 +379,9 @@ def switchTrafficAndCleanup() {
         echo "Switching traffic to ${env.DEPLOY_CONTAINER} on port ${env.NEW_PORT}."
         docker exec ${env.NGINX_CONTAINER_NAME} bash -c '
             export BACKEND_URL=${env.NEW_TARGET}
-            envsubst "\\\$BACKEND_URL" < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
+            envsubst "\\\$BACKEND_URL" < /etc/nginx/conf.d/members.conf.template > /etc/nginx/conf.d/members.conf
         '
-        docker exec ${env.NGINX_CONTAINER_NAME} sed -i 's/${env.OLD_PORT}/${env.NEW_PORT}/' /etc/nginx/conf.d/default.conf
+        docker exec ${env.NGINX_CONTAINER_NAME} sed -i 's/${env.OLD_PORT}/${env.NEW_PORT}/' /etc/nginx/conf.d/members.conf
         docker exec ${env.NGINX_CONTAINER_NAME} nginx -t
         docker exec ${env.NGINX_CONTAINER_NAME} nginx -s reload
 
