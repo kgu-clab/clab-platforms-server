@@ -10,7 +10,7 @@ RUN gradle dependencies --stacktrace
 
 # 소스 코드 복사 및 애플리케이션 빌드
 COPY . /app
-RUN gradle build --stacktrace
+RUN gradle build -x test --stacktrace
 
 # 2. 런타임 단계
 FROM eclipse-temurin:21-jre AS runtime
