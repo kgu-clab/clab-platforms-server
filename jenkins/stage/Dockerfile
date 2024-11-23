@@ -13,7 +13,7 @@ COPY . /app
 RUN gradle build --no-daemon --stacktrace
 
 # 2. 런타임 단계
-FROM openjdk:21-jre-slim AS runtime
+FROM eclipse-temurin:21-jre AS runtime
 WORKDIR /app
 
 # 빌드 단계에서 생성된 JAR 파일 복사
