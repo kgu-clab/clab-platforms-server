@@ -4,14 +4,19 @@ WORKDIR /app
 
 # Gradle 파일 복사 및 의존성 설치
 COPY build.gradle settings.gradle /app/
-RUN gradle build -x test --parallel --stacktrace || true
+RUN gradle dependencies --stacktrace
 
 # 소스 코드 복사 및 빌드
 COPY src /app/src
 RUN gradle bootJar --no-daemon --stacktrace
 
 # JAR 파일에서 레이어 추출
-RUN java -Djarmode=layertools -jar build/libs/*.jar extract
+RUN java -Djarmode=layertools -jar build/libs/*.jar extract \
+    && ls -l /app \
+    && ls -l /app/dependencies \
+    && ls -l /app/spring-boot-loader \
+    && ls -l /app/snapshot-dependencies \
+    && ls -l /app/application
 
 # 2. 런타임 단계
 FROM eclipse-temurin:21-jre AS runtime
