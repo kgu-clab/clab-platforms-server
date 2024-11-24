@@ -40,7 +40,7 @@ pipeline {
             }
         }
 
-        stage('Parallel Processing') {
+        stage('Concurrent Pre-Build Steps') {
             parallel {
                 stage('Get Git Change Log') {
                     steps {
@@ -107,29 +107,33 @@ pipeline {
             }
         }
 
-        stage('Transfer Backup to Staging') {
-            steps {
-                script {
-                    FAILED_STAGE = env.STAGE_NAME
-                    transferBackupToStaging(BACKUP_FILE)
+        stage('Backup Transfer and Deployment') {
+            parallel {
+                stage('Transfer Backup to Staging') {
+                    steps {
+                        script {
+                            FAILED_STAGE = env.STAGE_NAME
+                            transferBackupToStaging(BACKUP_FILE)
+                        }
+                    }
                 }
-            }
-        }
 
-        stage('Restore Backup on Staging') {
-            steps {
-                script {
-                    FAILED_STAGE = env.STAGE_NAME
-                    restoreBackupOnStaging(BACKUP_FILE)
+                stage('Restore Backup on Staging') {
+                    steps {
+                        script {
+                            FAILED_STAGE = env.STAGE_NAME
+                            restoreBackupOnStaging(BACKUP_FILE)
+                        }
+                    }
                 }
-            }
-        }
 
-        stage('Switch Traffic and Cleanup') {
-            steps {
-                script {
-                    FAILED_STAGE = env.STAGE_NAME
-                    switchTrafficAndCleanup()
+                stage('Switch Traffic and Cleanup') {
+                    steps {
+                        script {
+                            FAILED_STAGE = env.STAGE_NAME
+                            switchTrafficAndCleanup()
+                        }
+                    }
                 }
             }
         }

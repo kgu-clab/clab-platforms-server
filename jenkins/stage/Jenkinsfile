@@ -40,7 +40,7 @@ pipeline {
             }
         }
 
-        stage('Parallel Processing') {
+        stage('Concurrent Pre-Build Steps') {
             parallel {
                 stage('Get Git Change Log') {
                     steps {
