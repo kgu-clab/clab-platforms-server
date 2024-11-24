@@ -8,7 +8,7 @@ RUN gradle dependencies --stacktrace
 
 # Copy source code and build
 COPY src /app/src
-RUN gradle bootJar --no-daemon --stacktrace
+RUN gradle bootJar --no-daemon --build-cache --stacktrace
 
 # Extract layers from JAR file
 RUN java -Djarmode=layertools -jar build/libs/*.jar extract \
