@@ -29,4 +29,4 @@ COPY --from=build /app/snapshot-dependencies/ ./
 COPY --from=build /app/application/ ./
 
 # Run the application
-ENTRYPOINT ["java", "-Dspring.profiles.active=stage", "org.springframework.boot.loader.launch.JarLauncher"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "org.springframework.boot.loader.launch.JarLauncher"]
