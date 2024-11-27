@@ -1,0 +1,31 @@
+# Ignore Git-related files
+.git
+.gitignore
+
+# Ignore local IDE files
+.idea/
+*.iml
+*.log
+
+# Ignore build directories
+build/
+out/
+target/
+
+# Ignore Docker-related files
+Dockerfile
+docker-compose.yml
+
+# Ignore other unnecessary files/directories
+*.md
+*.tmp
+*.bak
+
+# Ignore specific directories
+cloud/
+config/
+images/
+infra/
+jenkins/
+monitoring/
+nginx/

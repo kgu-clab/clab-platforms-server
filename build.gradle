@@ -15,6 +15,10 @@ bootJar {
     archivesBaseName = "clab"
     archiveFileName = "clab.jar"
     archiveVersion = "1.0.0"
+
+    layered {
+        enabled = true
+    }
 }
 
 java {
