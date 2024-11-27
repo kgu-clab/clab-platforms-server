@@ -3,6 +3,7 @@ package page.clab.api.external.auth.accountLockInfo.port;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.auth.accountLockInfo.application.port.out.RegisterAccountLockInfoPort;
@@ -13,8 +14,8 @@ import page.clab.api.domain.auth.login.application.exception.MemberLockedExcepti
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.external.auth.accountLockInfo.application.ExternalManageAccountLockUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.common.slack.application.SlackService;
-import page.clab.api.global.common.slack.domain.SecurityAlertType;
+import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
+import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class ExternalAccountLockManagementService implements ExternalManageAccou
     private final RetrieveAccountLockInfoPort retrieveAccountLockInfoPort;
     private final RegisterAccountLockInfoPort registerAccountLockInfoPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final SlackService slackService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${security.login-attempt.max-failures}")
     private int maxLoginFailures;
@@ -39,7 +40,7 @@ public class ExternalAccountLockManagementService implements ExternalManageAccou
      *
      * @param memberId 잠금 해제하려는 멤버의 ID
      * @throws MemberLockedException 계정이 현재 잠겨 있을 경우 예외 발생
-     * @throws LoginFailedException 멤버가 존재하지 않을 경우 예외 발생
+     * @throws LoginFailedException  멤버가 존재하지 않을 경우 예외 발생
      */
     @Transactional
     @Override
@@ -55,17 +56,17 @@ public class ExternalAccountLockManagementService implements ExternalManageAccou
      * 로그인 실패를 처리하고 계정 잠금을 관리합니다.
      *
      * <p>로그인 실패 시 멤버의 존재 여부와 계정 잠금 상태를 확인합니다.
-     * 로그인 실패 횟수를 증가시키며, 설정된 최대 실패 횟수에 도달하면 계정을 잠그고
-     * Slack에 보안 알림을 전송합니다.</p>
+     * 로그인 실패 횟수를 증가시키며, 설정된 최대 실패 횟수에 도달하면 계정을 잠그고 Slack에 보안 알림을 전송합니다.</p>
      *
-     * @param request 현재 HTTP 요청 객체
+     * @param request  현재 HTTP 요청 객체
      * @param memberId 로그인 실패를 기록할 멤버의 ID
      * @throws MemberLockedException 계정이 현재 잠겨 있을 경우 예외 발생
-     * @throws LoginFailedException 멤버가 존재하지 않을 경우 예외 발생
+     * @throws LoginFailedException  멤버가 존재하지 않을 경우 예외 발생
      */
     @Transactional
     @Override
-    public void handleLoginFailure(HttpServletRequest request, String memberId) throws MemberLockedException, LoginFailedException {
+    public void handleLoginFailure(HttpServletRequest request, String memberId)
+            throws MemberLockedException, LoginFailedException {
         ensureMemberExists(memberId);
         AccountLockInfo accountLockInfo = ensureAccountLockInfo(memberId);
         validateAccountLockStatus(accountLockInfo);
@@ -99,7 +100,10 @@ public class ExternalAccountLockManagementService implements ExternalManageAccou
         String memberName = memberInfo.getMemberName();
         if (memberInfo.isAdminRole()) {
             request.setAttribute("member", memberId + " " + memberName);
-            slackService.sendSecurityAlertNotification(request, SecurityAlertType.REPEATED_LOGIN_FAILURES, "로그인 실패 횟수 초과로 계정이 잠겼습니다.");
+            String repeatedLoginFailuresMessage = "로그인 실패 횟수 초과로 계정이 잠겼습니다.";
+            eventPublisher.publishEvent(
+                    new NotificationEvent(this, SecurityAlertType.REPEATED_LOGIN_FAILURES, request,
+                            repeatedLoginFailuresMessage));
         }
     }
 }

@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.3.5'
+    id 'org.springframework.boot' version '3.4.0'
     id 'io.spring.dependency-management' version '1.1.6'
 }
 
@@ -15,6 +15,10 @@ bootJar {
     archivesBaseName = "clab"
     archiveFileName = "clab.jar"
     archiveVersion = "1.0.0"
+
+    layered {
+        enabled = true
+    }
 }
 
 java {
@@ -66,8 +70,8 @@ dependencies {
     compileOnly 'org.projectlombok:lombok' // 롬복
     annotationProcessor 'org.projectlombok:lombok' // 롬복
     implementation 'com.google.code.gson:gson:2.11.0' // JSON 라이브러리
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0' // Swagger
-    implementation 'commons-io:commons-io:2.17.0' // Apache Commons IO
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0' // Swagger
+    implementation 'commons-io:commons-io:2.18.0' // Apache Commons IO
     implementation 'com.google.guava:guava:33.3.1-jre' // Google Core Libraries For Java
     implementation 'org.springframework.boot:spring-boot-starter-mail' // Spring Mail
     implementation 'com.google.zxing:core:3.4.1' // QR 코드
@@ -75,8 +79,8 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.17.0' // Apache Commons Lang
 
     // MapStruct
-    implementation 'org.mapstruct:mapstruct:1.6.2'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.2'
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
     // IPInfo
@@ -84,9 +88,9 @@ dependencies {
     implementation 'io.ipinfo:ipinfo-api:3.0.0' // IPInfo API
 
     // Slack
-    implementation 'com.slack.api:slack-api-model:1.44.1'
-    implementation 'com.slack.api:slack-api-client:1.44.1'
-    implementation 'com.slack.api:slack-app-backend:1.44.1'
+    implementation 'com.slack.api:slack-api-model:1.44.2'
+    implementation 'com.slack.api:slack-api-client:1.44.2'
+    implementation 'com.slack.api:slack-app-backend:1.44.2'
 
     // XSS Filter
     implementation 'com.navercorp.lucy:lucy-xss-servlet:2.0.1' // Lucy XSS Servlet Filter
@@ -94,7 +98,7 @@ dependencies {
     implementation 'org.apache.commons:commons-text:1.11.0' // Apache Commons Text
 
     // Image
-    implementation 'commons-io:commons-io:2.17.0'
+    implementation 'commons-io:commons-io:2.18.0'
     implementation 'com.drewnoakes:metadata-extractor:2.19.0'
     implementation 'org.imgscalr:imgscalr-lib:4.2'
 
@@ -113,7 +117,7 @@ tasks.named('test') {
 def querydslDir = layout.buildDirectory.dir("generated/querydsl").get().asFile
 
 sourceSets {
-    main.java.srcDirs += [ querydslDir ]
+    main.java.srcDirs += [querydslDir]
 }
 
 tasks.withType(JavaCompile).configureEach {
