@@ -6,5 +6,5 @@ import page.clab.api.domain.community.board.domain.HotBoardStrategyType;
 import java.util.List;
 
 public interface RetrieveHotBoardsUseCase {
-    List<BoardListResponseDto> retrieveHotBoards(int size, HotBoardStrategyType type);
+    List<BoardListResponseDto> retrieveHotBoards(HotBoardStrategyType type);
 }

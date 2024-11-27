@@ -16,8 +16,8 @@ public class HotBoardsRetrievalService implements RetrieveHotBoardsUseCase {
     private final Map<String, HotBoardsStrategy> strategies;
 
     @Override
-    public List<BoardListResponseDto> retrieveHotBoards(int size, HotBoardStrategyType type) {
+    public List<BoardListResponseDto> retrieveHotBoards(HotBoardStrategyType type) {
         HotBoardsStrategy hotBoardsStrategy = strategies.get(type.getKey());
-        return hotBoardsStrategy.retrieveHotBoards(size);
+        return hotBoardsStrategy.retrieveHotBoards();
     }
 }

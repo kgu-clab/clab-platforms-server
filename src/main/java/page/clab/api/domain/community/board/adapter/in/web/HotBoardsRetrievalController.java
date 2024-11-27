@@ -2,7 +2,6 @@ package page.clab.api.domain.community.board.adapter.in.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,16 +24,13 @@ public class HotBoardsRetrievalController {
     private final RetrieveHotBoardsUseCase retrieveHotBoardsUseCase;
 
     @Operation(summary = "[G] 커뮤니티 인기 게시글 목록 조회", description = "ROLE_GUEST 이상의 권한이 필요함<br>" +
-            "반응(이모지), 댓글 수를 합친 결과가 높은 순으로 size만큼 조회 가능<br>" +
             "인기 게시글 선정 타입 설정 가능")
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/hot")
     public ApiResponse<List<BoardListResponseDto>> retrieveHotBoards(
-            @Min(message = "min.board.size", value = 0)
-            @RequestParam(name = "size", defaultValue = "5") int size,
             @RequestParam(name = "type") HotBoardStrategyType type
     ) {
-        List<BoardListResponseDto> boards = retrieveHotBoardsUseCase.retrieveHotBoards(size, type);
+        List<BoardListResponseDto> boards = retrieveHotBoardsUseCase.retrieveHotBoards(type);
         return ApiResponse.success(boards);
     }
 }
