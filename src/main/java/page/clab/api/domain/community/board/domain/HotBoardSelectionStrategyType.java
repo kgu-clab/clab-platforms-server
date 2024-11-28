@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum HotBoardStrategyType {
+public enum HotBoardSelectionStrategyType {
 
     DEFAULT("default", "댓글, 반응순 정렬");
 
