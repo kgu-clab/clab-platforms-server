@@ -6,11 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.community.board.application.dto.response.BoardListResponseDto;
 import page.clab.api.domain.community.board.application.port.in.RetrieveHotBoardsUseCase;
-import page.clab.api.domain.community.board.domain.HotBoardStrategyType;
 import page.clab.api.global.common.dto.ApiResponse;
 
 import java.util.List;
@@ -23,14 +21,11 @@ public class HotBoardsRetrievalController {
 
     private final RetrieveHotBoardsUseCase retrieveHotBoardsUseCase;
 
-    @Operation(summary = "[G] 커뮤니티 인기 게시글 목록 조회", description = "ROLE_GUEST 이상의 권한이 필요함<br>" +
-            "인기 게시글 선정 타입 설정 가능")
+    @Operation(summary = "[G] 커뮤니티 인기 게시글 목록 조회", description = "ROLE_GUEST 이상의 권한이 필요함<br>")
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/hot")
-    public ApiResponse<List<BoardListResponseDto>> retrieveHotBoards(
-            @RequestParam(name = "type") HotBoardStrategyType type
-    ) {
-        List<BoardListResponseDto> boards = retrieveHotBoardsUseCase.retrieveHotBoards(type);
+    public ApiResponse<List<BoardListResponseDto>> retrieveHotBoards() {
+        List<BoardListResponseDto> boards = retrieveHotBoardsUseCase.retrieveHotBoards();
         return ApiResponse.success(boards);
     }
 }
