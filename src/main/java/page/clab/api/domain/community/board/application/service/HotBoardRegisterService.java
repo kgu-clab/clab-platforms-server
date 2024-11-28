@@ -21,8 +21,7 @@ public class HotBoardRegisterService {
     private final RemoveHotBoardPort removeHotBoardPort;
 
     @Transactional
-    //@Scheduled(cron = "0 0 0 * * MON") // 매주 월요일 00:00 실행
-    @Scheduled(cron = "0 18 20 * * *")
+    @Scheduled(cron = "0 0 0 * * MON") // 매주 월요일 00:00 실행
     public void registerHotBoards() {
         HotBoardSelectionStrategy strategy = strategies.get(HotBoardSelectionStrategyType.DEFAULT.getKey());
 
