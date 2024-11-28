@@ -83,10 +83,10 @@ public class DefaultHotBoardService implements HotBoardsStrategy {
     }
 
     private List<Board> getHotBoardsForWeek(int weeksAgo, int size) {
-        LocalDateTime startDate = LocalDate.now().minusWeeks(weeksAgo).with(DayOfWeek.MONDAY).atStartOfDay();
-        LocalDateTime endDate = LocalDate.now().minusWeeks(weeksAgo).with(DayOfWeek.SUNDAY).atTime(23, 59, 59);
+        LocalDateTime startOfWeek = LocalDate.now().minusWeeks(weeksAgo).with(DayOfWeek.MONDAY).atStartOfDay();
+        LocalDateTime endOfWeek = LocalDate.now().minusWeeks(weeksAgo).with(DayOfWeek.SUNDAY).atTime(23, 59, 59);
 
-        List<Board> boardsForWeek = retrieveBoardPort.findAllWithinDateRange(startDate, endDate);
+        List<Board> boardsForWeek = retrieveBoardPort.findAllWithinDateRange(startOfWeek, endOfWeek);
 
         return sortBoardsByReactionAndDateWithLimit(size, boardsForWeek);
     }
