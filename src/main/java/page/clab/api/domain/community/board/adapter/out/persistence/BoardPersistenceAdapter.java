@@ -10,6 +10,10 @@ import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.community.board.domain.BoardCategory;
 import page.clab.api.global.exception.NotFoundException;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Component
 @RequiredArgsConstructor
 public class BoardPersistenceAdapter implements
@@ -38,6 +42,20 @@ public class BoardPersistenceAdapter implements
         return boardRepository.findByIdRegardlessOfDeletion(boardId)
                 .map(boardMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[Board] id: " + boardId + "에 해당하는 게시글이 존재하지 않습니다."));
+    }
+
+    @Override
+    public List<Board> findAllWithinDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        return boardRepository.findAllWithinDateRange(startDate, endDate).stream()
+                .map(boardMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Board> findAll() {
+        return boardRepository.findAll().stream()
+                .map(boardMapper::toDomain)
+                .collect(Collectors.toList());
     }
 
     @Override
