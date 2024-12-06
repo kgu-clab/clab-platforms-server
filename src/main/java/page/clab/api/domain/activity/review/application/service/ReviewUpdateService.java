@@ -24,7 +24,7 @@ public class ReviewUpdateService implements UpdateReviewUseCase {
     @Override
     public Long updateReview(Long reviewId, ReviewUpdateRequestDto requestDto) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMember = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
-        Review review = retrieveReviewPort.getById(reviewId);
+        Review review = retrieveReviewPort.findByIdOrThrow(reviewId);
         review.validateAccessPermission(currentMember);
         review.update(requestDto);
         return registerReviewPort.save(review).getId();

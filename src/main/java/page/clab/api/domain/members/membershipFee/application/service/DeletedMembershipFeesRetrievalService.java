@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.domain.members.membershipFee.application.dto.mapper.MembershipFeeDtoMapper;
 import page.clab.api.domain.members.membershipFee.application.dto.response.MembershipFeeResponseDto;
 import page.clab.api.domain.members.membershipFee.application.port.in.RetrieveDeletedMembershipFeesUseCase;
 import page.clab.api.domain.members.membershipFee.application.port.out.RetrieveMembershipFeePort;
@@ -20,7 +19,6 @@ public class DeletedMembershipFeesRetrievalService implements RetrieveDeletedMem
 
     private final RetrieveMembershipFeePort retrieveMembershipFeePort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final MembershipFeeDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -28,6 +26,6 @@ public class DeletedMembershipFeesRetrievalService implements RetrieveDeletedMem
         MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         Page<MembershipFee> membershipFees = retrieveMembershipFeePort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(membershipFees.map(membershipFee ->
-                mapper.toDto(membershipFee, memberInfo.getMemberName(), memberInfo.isAdminRole())));
+                MembershipFeeResponseDto.toDto(membershipFee, memberInfo.getMemberName(), memberInfo.isAdminRole())));
     }
 }

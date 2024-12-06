@@ -3,7 +3,6 @@ package page.clab.api.external.memberManagement.member.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.memberManagement.member.application.dto.mapper.MemberDtoMapper;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBorrowerInfoDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
@@ -29,7 +28,6 @@ public class ExternalMemberRetrievalService implements ExternalRetrieveMemberUse
 
     private final RetrieveMemberPort retrieveMemberPort;
     private final CheckMemberExistencePort checkMemberExistencePort;
-    private final MemberDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -53,21 +51,21 @@ public class ExternalMemberRetrievalService implements ExternalRetrieveMemberUse
 
     @Transactional(readOnly = true)
     @Override
-    public Member getById(String memberId) {
-        return retrieveMemberPort.getById(memberId);
+    public Member findByIdOrThrow(String memberId) {
+        return retrieveMemberPort.findByIdOrThrow(memberId);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Member findByEmail(String address) {
-        return retrieveMemberPort.getByEmail(address);
+        return retrieveMemberPort.findByEmailOrThrow(address);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Member getCurrentMember() {
         String memberId = AuthUtil.getAuthenticationInfoMemberId();
-        return retrieveMemberPort.getById(memberId);
+        return retrieveMemberPort.findByIdOrThrow(memberId);
     }
 
     @Transactional(readOnly = true)
@@ -81,7 +79,7 @@ public class ExternalMemberRetrievalService implements ExternalRetrieveMemberUse
     public List<MemberEmailInfoDto> getMembers() {
         List<Member> members = retrieveMemberPort.findAll();
         return members.stream()
-                .map(mapper::toEmailInfoDto)
+                .map(MemberEmailInfoDto::create)
                 .collect(Collectors.toList());
     }
 
@@ -117,67 +115,68 @@ public class ExternalMemberRetrievalService implements ExternalRetrieveMemberUse
     @Transactional(readOnly = true)
     @Override
     public MemberBasicInfoDto getMemberBasicInfoById(String memberId) {
-        Member member = retrieveMemberPort.getById(memberId);
-        return mapper.toBasicInfoDto(member);
+        Member member = retrieveMemberPort.findByIdOrThrow(memberId);
+        return MemberBasicInfoDto.create(member);
     }
 
     @Transactional(readOnly = true)
     @Override
     public MemberBasicInfoDto getCurrentMemberBasicInfo() {
         String currentMemberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = retrieveMemberPort.getById(currentMemberId);
-        return mapper.toBasicInfoDto(member);
+        Member member = retrieveMemberPort.findByIdOrThrow(currentMemberId);
+        return MemberBasicInfoDto.create(member);
     }
 
     @Transactional(readOnly = true)
     @Override
     public MemberDetailedInfoDto getMemberDetailedInfoById(String memberId) {
-        Member member = retrieveMemberPort.getById(memberId);
-        return mapper.toDetailedInfoDto(member);
+        Member member = retrieveMemberPort.findByIdOrThrow(memberId);
+        return MemberDetailedInfoDto.create(member);
     }
 
     @Transactional(readOnly = true)
     @Override
     public MemberDetailedInfoDto getCurrentMemberDetailedInfo() {
         String currentMemberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = retrieveMemberPort.getById(currentMemberId);
-        return mapper.toDetailedInfoDto(member);
+        Member member = retrieveMemberPort.findByIdOrThrow(currentMemberId);
+        return MemberDetailedInfoDto.create(member);
     }
 
     @Transactional(readOnly = true)
     @Override
     public MemberBorrowerInfoDto getCurrentMemberBorrowerInfo() {
         String currentMemberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = retrieveMemberPort.getById(currentMemberId);
-        return mapper.toBorrowerInfoDto(member);
+        Member member = retrieveMemberPort.findByIdOrThrow(currentMemberId);
+        return MemberBorrowerInfoDto.create(member);
     }
 
     @Transactional(readOnly = true)
     @Override
     public MemberLoginInfoDto getMemberLoginInfoById(String memberId) {
-        Member member = retrieveMemberPort.getById(memberId);
-        return mapper.toLoginInfoDto(member);
+        Member member = retrieveMemberPort.findByIdOrThrow(memberId);
+        return MemberLoginInfoDto.create(member);
     }
 
     @Transactional(readOnly = true)
     @Override
     public MemberLoginInfoDto getGuestMemberLoginInfo() {
-        Member guestMember = retrieveMemberPort.getFirstByRole(Role.GUEST);
-        return mapper.toLoginInfoDto(guestMember);
+        Member guestMember = retrieveMemberPort.findFirstByRoleOrThrow(Role.GUEST);
+        return MemberLoginInfoDto.create(guestMember);
     }
 
     @Transactional(readOnly = true)
     @Override
     public MemberPositionInfoDto getCurrentMemberPositionInfo() {
         String currentMemberId = AuthUtil.getAuthenticationInfoMemberId();
-        Member member = retrieveMemberPort.getById(currentMemberId);
-        return mapper.toPositionInfoDto(member);
+        Member member = retrieveMemberPort.findByIdOrThrow(currentMemberId);
+        return MemberPositionInfoDto.create(member);
     }
 
     @Transactional(readOnly = true)
     @Override
     public MemberReviewInfoDto getMemberReviewInfoById(String memberId) {
-        Member member = retrieveMemberPort.getById(memberId);
-        return mapper.toReviewInfoDto(member);
+        Member member = retrieveMemberPort.findByIdOrThrow(memberId);
+        return MemberReviewInfoDto.create(member);
     }
+
 }

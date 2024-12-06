@@ -6,7 +6,7 @@ import page.clab.api.domain.memberManagement.position.domain.Position;
 @Mapper(componentModel = "spring")
 public interface PositionMapper {
 
-    PositionJpaEntity toEntity(Position position);
+    PositionJpaEntity toJpaEntity(Position position);
 
-    Position toDomain(PositionJpaEntity jpaEntity);
+    Position toDomainEntity(PositionJpaEntity jpaEntity);
 }

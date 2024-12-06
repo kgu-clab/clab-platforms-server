@@ -21,7 +21,7 @@ public class MemberRemoveService implements RemoveMemberUseCase {
     @Transactional
     @Override
     public String removeMember(String memberId) {
-        Member member = retrieveMemberPort.getById(memberId);
+        Member member = retrieveMemberPort.findByIdOrThrow(memberId);
         member.delete();
         registerMemberPort.save(member);
         eventPublisher.publishEvent(new MemberDeletedEvent(this, member.getId()));

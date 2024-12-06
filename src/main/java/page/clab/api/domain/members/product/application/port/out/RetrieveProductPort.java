@@ -6,7 +6,7 @@ import page.clab.api.domain.members.product.domain.Product;
 
 public interface RetrieveProductPort {
 
-    Product getById(Long productId);
+    Product findByIdOrThrow(Long productId);
 
     Page<Product> findAllByIsDeletedTrue(Pageable pageable);
 

@@ -8,21 +8,6 @@ import page.clab.api.global.util.IpAddressUtil;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * {@code IpWhitelistValidator}는 요청된 IP 주소가 화이트리스트에 포함되는지 확인하는 유틸리티 클래스입니다.
- *
- * <p>화이트리스트 검증 기능은 애플리케이션 설정에 따라 활성화되며, 외부에서 설정된 IP 목록을 통해
- * IP 접근을 제한할 수 있습니다.</p>
- *
- * <p>주요 기능:</p>
- * <ul>
- *     <li>{@link #isIpWhitelisted(String)}: 특정 IP 주소가 화이트리스트에 포함되는지 확인</li>
- * </ul>
- *
- * <p>화이트리스트 기능이 활성화되지 않은 경우 기본적으로 모든 IP 접근이 허용됩니다.</p>
- *
- * @see WhitelistFileLoader
- */
 @Component
 @RequiredArgsConstructor
 public class IpWhitelistValidator {

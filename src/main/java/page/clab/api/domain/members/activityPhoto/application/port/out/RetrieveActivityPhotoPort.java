@@ -6,7 +6,7 @@ import page.clab.api.domain.members.activityPhoto.domain.ActivityPhoto;
 
 public interface RetrieveActivityPhotoPort {
 
-    ActivityPhoto getById(Long activityPhotoId);
+    ActivityPhoto findByIdOrThrow(Long activityPhotoId);
 
     Page<ActivityPhoto> findByConditions(Boolean isPublic, Pageable pageable);
 }

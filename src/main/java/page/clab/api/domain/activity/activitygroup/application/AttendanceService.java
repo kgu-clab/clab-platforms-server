@@ -16,7 +16,6 @@ import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activity.activitygroup.domain.Attendance;
 import page.clab.api.domain.activity.activitygroup.domain.RedisQRKey;
-import page.clab.api.domain.activity.activitygroup.dto.mapper.ActivityGroupDtoMapper;
 import page.clab.api.domain.activity.activitygroup.dto.request.AbsentRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.AttendanceRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.AbsentResponseDto;
@@ -49,7 +48,6 @@ public class AttendanceService {
     private final GoogleAuthenticator googleAuthenticator;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final FileService fileService;
-    private final ActivityGroupDtoMapper mapper;
 
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -99,7 +97,7 @@ public class AttendanceService {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = validateGroupAndMemberForAttendance(activityGroupId, currentMember);
         Page<Attendance> attendances = getAttendanceByMemberId(activityGroup, currentMember.getId(), pageable);
-        return new PagedResponseDto<>(attendances.map(mapper::toDto));
+        return new PagedResponseDto<>(attendances.map(AttendanceResponseDto::toDto));
     }
 
     @Transactional(readOnly = true)
@@ -107,15 +105,15 @@ public class AttendanceService {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = getActivityGroupWithValidPermissions(activityGroupId, currentMember);
         Page<Attendance> attendances = getAttendanceByActivityGroup(activityGroup, pageable);
-        return new PagedResponseDto<>(attendances.map(mapper::toDto));
+        return new PagedResponseDto<>(attendances.map(AttendanceResponseDto::toDto));
     }
 
     @Transactional
     public Long writeAbsentExcuse(AbsentRequestDto requestDto) throws IllegalAccessException, DuplicateAbsentExcuseException {
-        Member absentee = externalRetrieveMemberUseCase.getById(requestDto.getAbsenteeId());
+        Member absentee = externalRetrieveMemberUseCase.findByIdOrThrow(requestDto.getAbsenteeId());
         ActivityGroup activityGroup = getValidActivityGroup(requestDto.getActivityGroupId());
         validateAbsentExcuseConditions(absentee, activityGroup, requestDto.getAbsentDate());
-        Absent absent = mapper.fromDto(requestDto, absentee, activityGroup);
+        Absent absent = AbsentRequestDto.toEntity(requestDto, absentee, activityGroup);
         return absentRepository.save(absent).getId();
     }
 
@@ -125,8 +123,8 @@ public class AttendanceService {
         ActivityGroup activityGroup = getActivityGroupWithPermissionCheck(activityGroupId, currentMember);
         Page<Absent> absents = absentRepository.findAllByActivityGroup(activityGroup, pageable);
         return new PagedResponseDto<>(absents.map(absent -> {
-            Member member = externalRetrieveMemberUseCase.getById(absent.getMemberId());
-            return mapper.toDto(absent, member);
+            Member member = externalRetrieveMemberUseCase.findByIdOrThrow(absent.getMemberId());
+            return AbsentResponseDto.toDto(absent, member);
         }));
     }
 
@@ -154,7 +152,7 @@ public class AttendanceService {
 
     @NotNull
     private ActivityGroup validateAttendanceQRCodeGeneration(Long activityGroupId, Member member) throws PermissionDeniedException, IllegalAccessException {
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
 
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
             throw new PermissionDeniedException("해당 그룹의 LEADER만 출석체크 QR을 생성할 수 있습니다.");
@@ -166,7 +164,7 @@ public class AttendanceService {
     }
 
     private ActivityGroup validateMemberForAttendance(Member member, Long activityGroupId) throws IllegalAccessException, DuplicateAttendanceException {
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.MEMBER, activityGroupId)) {
             throw new IllegalAccessException("해당 그룹의 멤버가 아닙니다. 출석체크 인증을 진행할 수 없습니다.");
         }
@@ -185,7 +183,7 @@ public class AttendanceService {
 
     @NotNull
     private ActivityGroup validateGroupAndMemberForAttendance(Long activityGroupId, Member member) throws IllegalAccessException {
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.MEMBER, activityGroupId)) {
             throw new IllegalAccessException("해당 그룹의 멤버가 아닙니다. 출석체크 인증을 진행할 수 없습니다.");
         }
@@ -196,7 +194,7 @@ public class AttendanceService {
     }
 
     private ActivityGroup getActivityGroupWithValidPermissions(Long activityGroupId, Member member) throws PermissionDeniedException {
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
         if (!member.isAdminRole() || !activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
             throw new PermissionDeniedException("그룹의 출석기록을 조회할 권한이 없습니다.");
         }
@@ -204,7 +202,7 @@ public class AttendanceService {
     }
 
     private ActivityGroup getValidActivityGroup(Long activityGroupId) throws IllegalAccessException {
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
         if (!activityGroup.isProgressing()) {
             throw new IllegalAccessException("활동이 진행 중인 그룹이 아닙니다. 불참 사유서를 등록할 수 없습니다.");
         }
@@ -227,7 +225,7 @@ public class AttendanceService {
     }
 
     private ActivityGroup getActivityGroupWithPermissionCheck(Long activityGroupId, Member member) throws PermissionDeniedException {
-        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
+        ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupByIdOrThrow(activityGroupId);
         if (!member.isAdminRole() && !activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER, activityGroupId)) {
             throw new PermissionDeniedException("해당 그룹의 불참사유서를 열람할 권한이 부족합니다.");
         }

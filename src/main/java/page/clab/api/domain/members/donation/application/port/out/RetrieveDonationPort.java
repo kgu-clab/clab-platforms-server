@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 public interface RetrieveDonationPort {
 
-    Donation getById(Long donationId);
+    Donation findByIdOrThrow(Long donationId);
 
     Page<Donation> findAllByIsDeletedTrue(Pageable pageable);
 

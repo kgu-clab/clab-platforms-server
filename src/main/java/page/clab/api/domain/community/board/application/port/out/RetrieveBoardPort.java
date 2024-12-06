@@ -7,7 +7,7 @@ import page.clab.api.domain.community.board.domain.BoardCategory;
 
 public interface RetrieveBoardPort {
 
-    Board getById(Long boardId);
+    Board findByIdOrThrow(Long boardId);
 
     Board findByIdRegardlessOfDeletion(Long boardId);
 

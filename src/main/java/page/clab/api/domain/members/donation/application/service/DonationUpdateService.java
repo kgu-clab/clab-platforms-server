@@ -24,7 +24,7 @@ public class DonationUpdateService implements UpdateDonationUseCase {
     @Override
     public Long updateDonation(Long donationId, DonationUpdateRequestDto donationUpdateRequestDto) throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
-        Donation donation = retrieveDonationPort.getById(donationId);
+        Donation donation = retrieveDonationPort.findByIdOrThrow(donationId);
         donation.validateAccessPermission(currentMemberInfo.isSuperAdminRole());
         donation.update(donationUpdateRequestDto);
         return registerDonationPort.save(donation).getId();

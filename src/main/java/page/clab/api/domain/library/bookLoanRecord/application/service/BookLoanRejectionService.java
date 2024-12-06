@@ -18,7 +18,7 @@ public class BookLoanRejectionService implements RejectBookLoanUseCase {
     @Transactional
     @Override
     public Long rejectBookLoan(Long bookLoanRecordId) {
-        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.getById(bookLoanRecordId);
+        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByIdOrThrow(bookLoanRecordId);
         bookLoanRecord.reject();
         return registerBookLoanRecordPort.save(bookLoanRecord).getId();
     }

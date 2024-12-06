@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface RetrievePositionPort {
 
-    Position getById(Long id);
+    Position findByIdOrThrow(Long id);
 
     List<Position> findAllByMemberIdAndYearOrderByPositionTypeAsc(String memberId, String year);
 

@@ -3,7 +3,6 @@ package page.clab.api.domain.memberManagement.member.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.memberManagement.member.application.dto.mapper.MemberDtoMapper;
 import page.clab.api.domain.memberManagement.member.application.dto.response.MyProfileResponseDto;
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberUseCase;
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMyProfileUseCase;
@@ -14,12 +13,11 @@ import page.clab.api.domain.memberManagement.member.domain.Member;
 public class MyProfileRetrievalService implements RetrieveMyProfileUseCase {
 
     private final RetrieveMemberUseCase retrieveMemberUseCase;
-    private final MemberDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
     public MyProfileResponseDto retrieveMyProfile() {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
-        return mapper.toMyProfileDto(currentMember);
+        return MyProfileResponseDto.toDto(currentMember);
     }
 }

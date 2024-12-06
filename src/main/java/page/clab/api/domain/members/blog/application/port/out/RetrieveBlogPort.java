@@ -6,7 +6,7 @@ import page.clab.api.domain.members.blog.domain.Blog;
 
 public interface RetrieveBlogPort {
 
-    Blog getById(Long blogId);
+    Blog findByIdOrThrow(Long blogId);
 
     Page<Blog> findByConditions(String title, String memberName, Pageable pageable);
 

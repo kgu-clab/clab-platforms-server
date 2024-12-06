@@ -2,6 +2,7 @@ package page.clab.api.domain.memberManagement.workExperience.application.dto.res
 
 import lombok.Builder;
 import lombok.Getter;
+import page.clab.api.domain.memberManagement.workExperience.domain.WorkExperience;
 
 import java.time.LocalDate;
 
@@ -14,4 +15,14 @@ public class WorkExperienceResponseDto {
     private String position;
     private LocalDate startDate;
     private LocalDate endDate;
+
+    public static WorkExperienceResponseDto toDto(WorkExperience workExperience) {
+        return WorkExperienceResponseDto.builder()
+                .id(workExperience.getId())
+                .companyName(workExperience.getCompanyName())
+                .position(workExperience.getPosition())
+                .startDate(workExperience.getStartDate())
+                .endDate(workExperience.getEndDate())
+                .build();
+    }
 }

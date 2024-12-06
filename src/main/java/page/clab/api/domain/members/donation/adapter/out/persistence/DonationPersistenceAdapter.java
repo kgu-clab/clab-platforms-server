@@ -22,7 +22,7 @@ public class DonationPersistenceAdapter implements
 
     @Override
     public Donation save(Donation donation) {
-        DonationJpaEntity entity = donationMapper.toEntity(donation);
+        DonationJpaEntity entity = donationMapper.toJpaEntity(donation);
         DonationJpaEntity savedEntity = repository.save(entity);
         return donationMapper.toDomain(savedEntity);
     }
@@ -40,7 +40,7 @@ public class DonationPersistenceAdapter implements
     }
 
     @Override
-    public Donation getById(Long donationId) {
+    public Donation findByIdOrThrow(Long donationId) {
         return repository.findById(donationId)
                 .map(donationMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[Donation] id: " + donationId + "에 해당하는 후원이 존재하지 않습니다."));

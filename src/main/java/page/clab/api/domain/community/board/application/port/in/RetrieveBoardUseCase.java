@@ -9,5 +9,5 @@ public interface RetrieveBoardUseCase {
 
     PagedResponseDto<BoardListResponseDto> retrieveBoards(Pageable pageable);
 
-    Board getById(Long boardId);
+    Board findByIdOrThrow(Long boardId);
 }

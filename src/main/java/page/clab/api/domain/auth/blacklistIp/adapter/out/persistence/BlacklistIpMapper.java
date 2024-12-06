@@ -6,7 +6,7 @@ import page.clab.api.domain.auth.blacklistIp.domain.BlacklistIp;
 @Mapper(componentModel = "spring")
 public interface BlacklistIpMapper {
 
-    BlacklistIpJpaEntity toEntity(BlacklistIp blacklistIp);
+    BlacklistIpJpaEntity toJpaEntity(BlacklistIp blacklistIp);
 
     BlacklistIp toDomain(BlacklistIpJpaEntity entity);
 }

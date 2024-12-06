@@ -6,7 +6,7 @@ import page.clab.api.domain.auth.login.domain.Authenticator;
 @Mapper(componentModel = "spring")
 public interface AuthenticatorMapper {
 
-    AuthenticatorJpaEntity toEntity(Authenticator authenticator);
+    AuthenticatorJpaEntity toJpaEntity(Authenticator authenticator);
 
-    Authenticator toDomain(AuthenticatorJpaEntity jpaEntity);
+    Authenticator toDomainEntity(AuthenticatorJpaEntity jpaEntity);
 }

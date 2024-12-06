@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
-import page.clab.api.domain.members.donation.application.dto.mapper.DonationDtoMapper;
 import page.clab.api.domain.members.donation.application.dto.response.DonationResponseDto;
 import page.clab.api.domain.members.donation.application.port.in.RetrieveMyDonationsUseCase;
 import page.clab.api.domain.members.donation.application.port.out.RetrieveDonationPort;
@@ -20,7 +19,6 @@ public class MyDonationsRetrievalService implements RetrieveMyDonationsUseCase {
 
     private final RetrieveDonationPort retrieveDonationPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final DonationDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -29,7 +27,7 @@ public class MyDonationsRetrievalService implements RetrieveMyDonationsUseCase {
         Page<Donation> donations = retrieveDonationPort.findByMemberId(currentMemberId, pageable);
         return new PagedResponseDto<>(donations.map(donation -> {
             MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(donation.getMemberId());
-            return mapper.toDto(donation, memberInfo.getMemberName());
+            return DonationResponseDto.toDto(donation, memberInfo.getMemberName());
         }));
     }
 }

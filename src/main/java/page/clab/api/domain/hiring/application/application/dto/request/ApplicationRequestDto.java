@@ -4,7 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import page.clab.api.domain.hiring.application.domain.Application;
 import page.clab.api.domain.hiring.application.domain.ApplicationType;
+import page.clab.api.global.common.domain.Contact;
 
 import java.time.LocalDate;
 
@@ -62,4 +64,24 @@ public class ApplicationRequestDto {
     @NotNull(message = "{notNull.application.applicationType}")
     @Schema(description = "구분", example = "NORMAL", required = true)
     private ApplicationType applicationType;
+
+    public static Application toEntity(ApplicationRequestDto requestDto) {
+        return Application.builder()
+                .studentId(requestDto.getStudentId())
+                .recruitmentId(requestDto.getRecruitmentId())
+                .name(requestDto.getName())
+                .contact(Contact.of(requestDto.getContact()).getValue())
+                .email(requestDto.getEmail())
+                .department(requestDto.getDepartment())
+                .grade(requestDto.getGrade())
+                .birth(requestDto.getBirth())
+                .address(requestDto.getAddress())
+                .interests(requestDto.getInterests())
+                .otherActivities(requestDto.getOtherActivities())
+                .githubUrl(requestDto.getGithubUrl())
+                .applicationType(requestDto.getApplicationType())
+                .isPass(false)
+                .isDeleted(false)
+                .build();
+    }
 }

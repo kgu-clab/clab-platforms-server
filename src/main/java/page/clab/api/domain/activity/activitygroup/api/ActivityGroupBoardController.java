@@ -80,7 +80,7 @@ public class ActivityGroupBoardController {
     public ApiResponse<ActivityGroupBoardResponseDto> getActivityGroupBoardById(
             @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId
     ) throws PermissionDeniedException {
-        ActivityGroupBoardResponseDto board = activityGroupBoardService.getActivityGroupBoard(activityGroupBoardId);
+        ActivityGroupBoardResponseDto board = activityGroupBoardService.getActivityGroupBoardById(activityGroupBoardId);
         return ApiResponse.success(board);
     }
 

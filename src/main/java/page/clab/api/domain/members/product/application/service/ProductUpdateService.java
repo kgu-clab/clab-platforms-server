@@ -19,7 +19,7 @@ public class ProductUpdateService implements UpdateProductUseCase {
     @Transactional
     @Override
     public Long updateProduct(Long productId, ProductUpdateRequestDto requestDto) {
-        Product product = retrieveProductPort.getById(productId);
+        Product product = retrieveProductPort.findByIdOrThrow(productId);
         product.update(requestDto);
         return updateProductPort.update(product).getId();
     }

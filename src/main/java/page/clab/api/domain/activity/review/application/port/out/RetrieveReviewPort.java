@@ -7,7 +7,7 @@ import page.clab.api.domain.activity.review.domain.Review;
 
 public interface RetrieveReviewPort {
 
-    Review getById(Long reviewId);
+    Review findByIdOrThrow(Long reviewId);
 
     Page<Review> findAllByIsDeletedTrue(Pageable pageable);
 

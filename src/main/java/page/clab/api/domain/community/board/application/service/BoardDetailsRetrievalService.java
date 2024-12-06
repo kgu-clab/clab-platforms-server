@@ -4,7 +4,6 @@ import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.community.board.application.dto.mapper.BoardDtoMapper;
 import page.clab.api.domain.community.board.application.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardEmojiCountResponseDto;
 import page.clab.api.domain.community.board.application.port.in.RetrieveBoardDetailsUseCase;
@@ -24,17 +23,16 @@ public class BoardDetailsRetrievalService implements RetrieveBoardDetailsUseCase
     private final RetrieveBoardPort retrieveBoardPort;
     private final RetrieveBoardEmojiPort retrieveBoardEmojiPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final BoardDtoMapper mapper;
 
     @Transactional
     @Override
     public BoardDetailsResponseDto retrieveBoardDetails(Long boardId) {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
-        Board board = retrieveBoardPort.getById(boardId);
+        Board board = retrieveBoardPort.findByIdOrThrow(boardId);
         MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(board.getMemberId());
         boolean isOwner = board.isOwner(currentMemberInfo.getMemberId());
         List<BoardEmojiCountResponseDto> emojiInfos = getBoardEmojiCountResponseDtoList(boardId, currentMemberInfo.getMemberId());
-        return mapper.toDto(board, memberInfo, isOwner, emojiInfos);
+        return BoardDetailsResponseDto.toDto(board, memberInfo, isOwner, emojiInfos);
     }
 
     @Transactional(readOnly = true)

@@ -6,7 +6,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.community.comment.application.dto.mapper.CommentDtoMapper;
 import page.clab.api.domain.community.comment.application.dto.response.DeletedCommentResponseDto;
 import page.clab.api.domain.community.comment.application.port.in.RetrieveDeletedCommentsUseCase;
 import page.clab.api.domain.community.comment.application.port.out.RetrieveCommentPort;
@@ -23,7 +22,6 @@ public class DeletedCommentsRetrievalService implements RetrieveDeletedCommentsU
 
     private final RetrieveCommentPort retrieveCommentPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final CommentDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -33,7 +31,7 @@ public class DeletedCommentsRetrievalService implements RetrieveDeletedCommentsU
         List<DeletedCommentResponseDto> deletedCommentDtos = comments.stream()
                 .map(comment -> {
                     MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(comment.getWriterId());
-                    return mapper.toDto(comment, memberInfo, comment.isOwner(currentMemberId));
+                    return DeletedCommentResponseDto.toDto(comment, memberInfo, comment.isOwner(currentMemberId));
                 })
                 .toList();
         return new PagedResponseDto<>(new PageImpl<>(deletedCommentDtos, pageable, comments.getTotalElements()));

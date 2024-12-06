@@ -3,7 +3,6 @@ package page.clab.api.domain.hiring.recruitment.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.hiring.recruitment.application.dto.mapper.RecruitmentDtoMapper;
 import page.clab.api.domain.hiring.recruitment.application.dto.response.RecruitmentEndDateResponseDto;
 import page.clab.api.domain.hiring.recruitment.application.dto.response.RecruitmentResponseDto;
 import page.clab.api.domain.hiring.recruitment.application.port.in.RetrieveRecentRecruitmentsUseCase;
@@ -18,13 +17,12 @@ import java.util.List;
 public class RecentRecruitmentsRetrievalService implements RetrieveRecentRecruitmentsUseCase {
 
     private final RetrieveRecruitmentPort retrieveRecruitmentPort;
-    private final RecruitmentDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
     public List<RecruitmentResponseDto> retrieveRecentRecruitments() {
         return retrieveRecruitmentPort.findTop5ByOrderByCreatedAtDesc().stream()
-                .map(mapper::toDto)
+                .map(RecruitmentResponseDto::toDto)
                 .toList();
     }
 
@@ -36,7 +34,7 @@ public class RecentRecruitmentsRetrievalService implements RetrieveRecentRecruit
         LocalDateTime endOfDay = now.with(LocalTime.MAX);
 
         return retrieveRecruitmentPort.findByEndDateBetween(weekAgo, endOfDay).stream()
-                .map(mapper::toEndDateDto)
+                .map(RecruitmentEndDateResponseDto::toDto)
                 .toList();
     }
 }

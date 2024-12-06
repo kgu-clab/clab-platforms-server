@@ -9,4 +9,11 @@ public class ScheduleCollectResponseDto {
 
     private Long totalScheduleCount;
     private Long totalEventCount;
+
+    public static ScheduleCollectResponseDto toDto(Long totalScheduleCount, Long totalEventCount) {
+        return ScheduleCollectResponseDto.builder()
+                .totalScheduleCount(totalScheduleCount)
+                .totalEventCount(totalEventCount)
+                .build();
+    }
 }

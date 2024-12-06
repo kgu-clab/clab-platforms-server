@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.community.accuse.application.dto.mapper.AccuseDtoMapper;
 import page.clab.api.domain.community.accuse.application.dto.response.AccuseResponseDto;
 import page.clab.api.domain.community.accuse.application.port.in.RetrieveAccusationUseCase;
 import page.clab.api.domain.community.accuse.application.port.out.RetrieveAccusePort;
@@ -28,7 +27,6 @@ public class AccusationRetrievalService implements RetrieveAccusationUseCase {
     private final RetrieveAccusePort retrieveAccusePort;
     private final RetrieveAccuseTargetPort retrieveAccuseByTargetPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final AccuseDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -48,7 +46,7 @@ public class AccusationRetrievalService implements RetrieveAccusationUseCase {
                     List<MemberBasicInfoDto> members = accuses.stream()
                             .map(accuse -> externalRetrieveMemberUseCase.getMemberBasicInfoById(accuse.getMemberId()))
                             .toList();
-                    return mapper.toDto(accuses.getFirst(), members);
+                    return AccuseResponseDto.toDto(accuses.getFirst(), members);
                 })
                 .filter(Objects::nonNull)
                 .toList();

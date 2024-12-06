@@ -8,7 +8,7 @@ import page.clab.api.domain.community.jobPosting.domain.JobPosting;
 
 public interface RetrieveJobPostingPort {
 
-    JobPosting getById(Long jobPostingId);
+    JobPosting findByIdOrThrow(Long jobPostingId);
 
     Page<JobPosting> findByConditions(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable);
 }

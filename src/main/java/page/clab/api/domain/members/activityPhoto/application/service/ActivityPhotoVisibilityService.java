@@ -18,7 +18,7 @@ public class ActivityPhotoVisibilityService implements ToggleActivityPhotoVisibi
     @Transactional
     @Override
     public Long toggleActivityPhotoVisibility(Long activityPhotoId) {
-        ActivityPhoto activityPhoto = retrieveActivityPhotoPort.getById(activityPhotoId);
+        ActivityPhoto activityPhoto = retrieveActivityPhotoPort.findByIdOrThrow(activityPhotoId);
         activityPhoto.togglePublicStatus();
         return registerActivityPhotoPort.save(activityPhoto).getId();
     }

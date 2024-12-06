@@ -6,7 +6,7 @@ import page.clab.api.domain.hiring.recruitment.domain.Recruitment;
 @Mapper(componentModel = "spring")
 public interface RecruitmentMapper {
 
-    RecruitmentJpaEntity toEntity(Recruitment recruitment);
+    RecruitmentJpaEntity toJpaEntity(Recruitment recruitment);
 
-    Recruitment toDomain(RecruitmentJpaEntity entity);
+    Recruitment toDomainEntity(RecruitmentJpaEntity entity);
 }
