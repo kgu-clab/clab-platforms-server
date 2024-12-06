@@ -25,6 +25,10 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.Iterator;
 
+/**
+ * {@code ImageUtil}은 이미지 파일의 처리와 관련된 유틸리티 메서드를 제공합니다.
+ * 이미지의 방향을 조정하거나, 압축을 수행하는 등의 기능을 포함합니다.
+ */
 @Slf4j
 public class ImageUtil {
 

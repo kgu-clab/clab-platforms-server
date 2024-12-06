@@ -29,16 +29,27 @@ public class BookReturnService implements ReturnBookUseCase {
     private final ExternalUpdateMemberUseCase externalUpdateMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
 
+    /**
+     * 도서 반납을 처리합니다.
+     *
+     * <p>현재 로그인한 멤버가 대출한 도서를 반납 처리하고,
+     * 대출 기록을 "RETURNED"로 표시합니다.
+     * 반납 이후 회원의 대출 정지 날짜를 업데이트하고,
+     * 반납 완료 알림을 사용자에게 전송합니다.</p>
+     *
+     * @param requestDto 도서 반납 요청 정보 DTO
+     * @return 반납된 대출 기록의 ID
+     */
     @Transactional
     @Override
     public Long returnBook(BookLoanRecordRequestDto requestDto) {
         MemberBorrowerInfoDto borrowerInfo = externalRetrieveMemberUseCase.getCurrentMemberBorrowerInfo();
         String currentMemberId = borrowerInfo.getMemberId();
-        Book book = externalRetrieveBookUseCase.findByIdOrThrow(requestDto.getBookId());
+        Book book = externalRetrieveBookUseCase.getById(requestDto.getBookId());
         book.returnBook(currentMemberId);
         externalRegisterBookUseCase.save(book);
 
-        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByBookIdAndReturnedAtIsNullAndStatusOrThrow(book.getId(), BookLoanStatus.APPROVED);
+        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.getByBookIdAndReturnedAtIsNullAndStatus(book.getId(), BookLoanStatus.APPROVED);
         bookLoanRecord.markAsReturned(borrowerInfo);
 
         externalUpdateMemberUseCase.updateLoanSuspensionDate(borrowerInfo.getMemberId(), borrowerInfo.getLoanSuspensionDate());

@@ -6,6 +6,11 @@ import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.EnumSet;
 
+/**
+ * {@code TempFileUtil} 클래스는 보안 설정이 적용된 임시 파일을 생성하는 유틸리티 클래스입니다.
+ * <p>
+ * 임시 파일은 POSIX 파일 시스템(예: UNIX, 리눅스 계열)에서 파일 소유자만 접근할 수 있도록 권한을 설정하여 보안을 강화합니다.
+ */
 public class TempFileUtil {
 
     /**

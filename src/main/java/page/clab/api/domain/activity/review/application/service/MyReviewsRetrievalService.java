@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.activity.review.application.dto.mapper.ReviewDtoMapper;
 import page.clab.api.domain.activity.review.application.dto.response.ReviewResponseDto;
 import page.clab.api.domain.activity.review.application.port.in.RetrieveMyReviewsUseCase;
 import page.clab.api.domain.activity.review.application.port.out.RetrieveReviewPort;
@@ -19,6 +20,7 @@ public class MyReviewsRetrievalService implements RetrieveMyReviewsUseCase {
 
     private final RetrieveReviewPort retrieveReviewPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final ReviewDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -27,7 +29,7 @@ public class MyReviewsRetrievalService implements RetrieveMyReviewsUseCase {
         Page<Review> reviews = retrieveReviewPort.findAllByMemberId(currentMemberId, pageable);
         return new PagedResponseDto<>(reviews.map(review -> {
             MemberReviewInfoDto reviewer = externalRetrieveMemberUseCase.getMemberReviewInfoById(review.getMemberId());
-            return ReviewResponseDto.toDto(review, reviewer, review.isOwner(currentMemberId));
+            return mapper.toDto(review, reviewer, review.isOwner(currentMemberId));
         }));
     }
 }

@@ -2,6 +2,7 @@ package page.clab.api.domain.memberManagement.member.application.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.memberManagement.member.application.dto.request.ChangeMemberRoleRequest;
@@ -11,8 +12,8 @@ import page.clab.api.domain.memberManagement.member.application.port.out.Retriev
 import page.clab.api.domain.memberManagement.member.application.port.out.UpdateMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.memberManagement.member.domain.Role;
-import page.clab.api.global.common.slack.application.SlackService;
-import page.clab.api.global.common.slack.domain.SecurityAlertType;
+import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
+import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +21,13 @@ public class MemberRoleManagementService implements ManageMemberRoleUseCase {
 
     private final RetrieveMemberPort retrieveMemberPort;
     private final UpdateMemberPort updateMemberPort;
-    private final SlackService slackService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     @Override
-    public String changeMemberRole(HttpServletRequest httpServletRequest, String memberId, ChangeMemberRoleRequest request) {
-        Member member = retrieveMemberPort.findByIdOrThrow(memberId);
+    public String changeMemberRole(HttpServletRequest httpServletRequest, String memberId,
+                                   ChangeMemberRoleRequest request) {
+        Member member = retrieveMemberPort.getById(memberId);
 
         Role oldRole = member.getRole();
         Role newRole = request.getRole();
@@ -34,9 +36,13 @@ public class MemberRoleManagementService implements ManageMemberRoleUseCase {
         member.changeRole(newRole);
 
         updateMemberPort.update(member);
-        slackService.sendSecurityAlertNotification(httpServletRequest, SecurityAlertType.MEMBER_ROLE_CHANGED,
-                String.format("[%s] %s: %s -> %s",
-                        member.getId(), member.getName(), oldRole, newRole));
+
+        String memberRoleChangedMessage = String.format("[%s] %s: %s -> %s", member.getId(), member.getName(), oldRole,
+                newRole);
+        eventPublisher.publishEvent(
+                new NotificationEvent(this, SecurityAlertType.MEMBER_ROLE_CHANGED, httpServletRequest,
+                        memberRoleChangedMessage));
+
         return memberId;
     }
 
