@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.board.application.port.out.RegisterHotBoardPort;
 import page.clab.api.domain.community.board.application.port.out.RemoveHotBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
-import page.clab.api.domain.community.board.domain.HotBoardSelectionStrategyType;
+import page.clab.api.domain.community.board.domain.HotBoardSelectionStrategies;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +23,7 @@ public class HotBoardRegisterService {
     @Transactional
     @Scheduled(cron = "0 0 0 * * MON") // 매주 월요일 00:00 실행
     public void registerHotBoards() {
-        HotBoardSelectionStrategy strategy = strategies.get(HotBoardSelectionStrategyType.DEFAULT.getKey());
+        HotBoardSelectionStrategy strategy = strategies.get(HotBoardSelectionStrategies.DEFAULT);
 
         removeHotBoardPort.clearHotBoard(); // 저장된 지난 인기 게시글 초기화
 

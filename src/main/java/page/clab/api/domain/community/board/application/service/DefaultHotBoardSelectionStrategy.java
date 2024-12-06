@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardEmojiPort;
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
+import page.clab.api.domain.community.board.domain.HotBoardSelectionStrategies;
 import page.clab.api.external.community.comment.application.port.ExternalRetrieveCommentUseCase;
 
 import java.time.DayOfWeek;
@@ -15,7 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service("default")
+@Service(HotBoardSelectionStrategies.DEFAULT)
 @RequiredArgsConstructor
 public class DefaultHotBoardSelectionStrategy implements HotBoardSelectionStrategy {
 
