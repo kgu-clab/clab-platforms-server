@@ -23,6 +23,17 @@ public class BoardEmojiToggleService implements ToggleBoardEmojiUseCase {
     private final RegisterBoardEmojiPort registerBoardEmojiPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
 
+    /**
+     * 게시글의 이모지 상태를 토글합니다.
+     *
+     * <p>이모지가 유효한지 검증한 후, 해당 이모지가 이미 존재하면 삭제 상태를 토글합니다.
+     * 이모지가 없으면 새로 생성하여 저장합니다.</p>
+     *
+     * @param boardId 이모지를 추가하거나 토글할 게시글의 ID
+     * @param emoji 추가할 이모지
+     * @return 게시글의 카테고리 키
+     * @throws InvalidEmojiException 지원하지 않는 이모지를 사용할 경우 예외 발생
+     */
     @Transactional
     @Override
     public String toggleEmojiStatus(Long boardId, String emoji) {
@@ -31,7 +42,7 @@ public class BoardEmojiToggleService implements ToggleBoardEmojiUseCase {
         }
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         String memberId = currentMemberInfo.getMemberId();
-        Board board = retrieveBoardPort.findByIdOrThrow(boardId);
+        Board board = retrieveBoardPort.getById(boardId);
         BoardEmoji boardEmoji = retrieveBoardEmojiPort.findByBoardIdAndMemberIdAndEmoji(boardId, memberId, emoji)
                 .map(existingEmoji -> {
                     existingEmoji.toggleIsDeletedStatus();

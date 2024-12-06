@@ -7,9 +7,14 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.NoSuchElementException;
+import java.util.concurrent.CompletionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.query.sqm.UnknownPathException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -75,7 +80,8 @@ import page.clab.api.global.common.file.exception.FilePermissionException;
 import page.clab.api.global.common.file.exception.FileUploadFailException;
 import page.clab.api.global.common.file.exception.InvalidFileAttributeException;
 import page.clab.api.global.common.file.exception.InvalidPathVariableException;
-import page.clab.api.global.common.slack.application.SlackService;
+import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
+import page.clab.api.global.common.notificationSetting.domain.GeneralAlertType;
 import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 import page.clab.api.global.exception.DecryptionException;
 import page.clab.api.global.exception.EncryptionException;
@@ -87,17 +93,12 @@ import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SortingArgumentException;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.NoSuchElementException;
-import java.util.concurrent.CompletionException;
-
 @RestControllerAdvice(basePackages = "page.clab.api")
 @RequiredArgsConstructor
 @Slf4j
 public class GlobalExceptionHandler {
 
-    private final SlackService slackService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @ExceptionHandler({
             InvalidInformationException.class,
@@ -231,7 +232,8 @@ public class GlobalExceptionHandler {
             Exception.class
     })
     public ApiResponse<Void> serverException(HttpServletRequest request, HttpServletResponse response, Exception e) {
-        slackService.sendServerErrorNotification(request, e);
+        eventPublisher.publishEvent(
+                new NotificationEvent(this, GeneralAlertType.SERVER_ERROR, request, e));
         log.warn(e.getMessage());
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         return ApiResponse.failure();

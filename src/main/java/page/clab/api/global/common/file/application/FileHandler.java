@@ -21,6 +21,19 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * {@code FileHandler}는 파일 처리 기능을 담당하는 클래스입니다.
+ *
+ * <p>이 클래스는 파일의 저장, 삭제, 이미지 압축 등을 수행하며, 파일 관련 속성 및 경로를 구성합니다.</p>
+ *
+ * 주요 기능:
+ * <ul>
+ *     <li>{@link #saveQRCodeImage(byte[], String, String, String, String)} - QR 코드 이미지를 파일로 저장합니다.</li>
+ *     <li>{@link #saveFile(MultipartFile, String, String)} - Multipart 파일을 저장하고 필요 시 이미지 압축을 수행합니다.</li>
+ *     <li>{@link #compressImageIfPossible(String, String)} - 이미지 압축이 가능한 경우 압축을 시도합니다.</li>
+ *     <li>{@link #deleteFile(String)} - 저장된 파일을 삭제합니다.</li>
+ * </ul>
+ */
 @Component
 @Configuration
 @Slf4j
