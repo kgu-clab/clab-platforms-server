@@ -16,6 +16,20 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * {@code FileUtil}은 파일 및 디렉토리와 관련된 유틸리티 기능을 제공합니다.
+ * 파일 경로 검증, 파일 권한 설정, 고유 파일명 생성, 디렉토리 생성 등의 기능을 수행합니다.
+ *
+ * <p>주요 기능:
+ * <ul>
+ *     <li>{@link #validateFilePath(String, String)} - 파일 경로가 기본 디렉토리 내에 있는지 확인합니다.</li>
+ *     <li>{@link #validateFileExists(Path)} - 파일 존재 여부를 검증합니다.</li>
+ *     <li>{@link #makeFileName(String)} - 고유한 파일명을 생성합니다.</li>
+ *     <li>{@link #ensureParentDirectoryExists(File, String)} - 디렉토리가 존재하지 않으면 생성합니다.</li>
+ *     <li>{@link #validateFileAttributes(String, Set)} - 파일명과 확장자를 검증합니다.</li>
+ *     <li>{@link #setFilePermissions(File, String, String)} - 파일의 읽기 전용 권한을 설정합니다.</li>
+ * </ul>
+ */
 public class FileUtil {
 
     /**

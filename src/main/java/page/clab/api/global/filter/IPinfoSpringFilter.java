@@ -18,6 +18,13 @@ import page.clab.api.global.config.IPInfoConfig;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * {@code IPinfoSpringFilter}는 IP 정보 조회 및 관리 기능을 제공하는 필터로,
+ * 클라이언트의 IP 주소를 기반으로 IP 정보 조회 API를 통해 세부 정보를 가져와 요청에 저장합니다.
+ *
+ * <p>이 필터는 요청이 IP 정보가 필요한 경우에만 IP 정보를 조회하며,
+ * 요청 객체에 IP 정보를 속성으로 저장하여 이후 처리 로직에서 사용할 수 있도록 합니다.</p>
+ */
 @Slf4j
 public class IPinfoSpringFilter implements Filter {
 

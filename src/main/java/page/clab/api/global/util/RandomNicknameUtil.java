@@ -3,6 +3,10 @@ package page.clab.api.global.util;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * {@code RandomNicknameUtil} 클래스는 임의의 닉네임을 생성하는 유틸리티 클래스입니다.
+ * 다양한 형용사, 색상, 명사 리스트에서 무작위로 선택하여 조합된 닉네임을 반환합니다.
+ */
 public class RandomNicknameUtil {
 
     private static final int ADJECTIVE_SIZE = 15;
