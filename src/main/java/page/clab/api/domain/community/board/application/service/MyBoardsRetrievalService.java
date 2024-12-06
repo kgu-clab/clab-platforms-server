@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.community.board.application.dto.mapper.BoardDtoMapper;
 import page.clab.api.domain.community.board.application.dto.response.BoardMyResponseDto;
 import page.clab.api.domain.community.board.application.port.in.RetrieveMyBoardsUseCase;
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPort;
@@ -20,13 +19,12 @@ public class MyBoardsRetrievalService implements RetrieveMyBoardsUseCase {
 
     private final RetrieveBoardPort retrieveBoardPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final BoardDtoMapper mapper;
 
     @Transactional
     @Override
     public PagedResponseDto<BoardMyResponseDto> retrieveMyBoards(Pageable pageable) {
         MemberBasicInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
         Page<Board> boards = retrieveBoardPort.findAllByMemberId(currentMemberInfo.getMemberId(), pageable);
-        return new PagedResponseDto<>(boards.map(board -> mapper.toDto(board, currentMemberInfo)));
+        return new PagedResponseDto<>(boards.map(board -> BoardMyResponseDto.toDto(board, currentMemberInfo)));
     }
 }

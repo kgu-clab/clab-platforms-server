@@ -1,32 +1,12 @@
-# 1. Build Stage
-FROM gradle:8.11.1-jdk21 AS build
-WORKDIR /app
+# Use the official OpenJDK 21 image from the Docker Hub
+FROM openjdk:21-jdk
 
-# Copy Gradle files and install dependencies
-COPY build.gradle settings.gradle /app/
-RUN gradle dependencies --stacktrace
+# Expose port 8080 to the outside world
+EXPOSE 8080
 
-# Copy source code and build
-COPY src /app/src
-RUN gradle bootJar --no-daemon --build-cache --stacktrace
+# Copy the JAR file into the container
+COPY build/libs/clab.jar /clab.jar
 
-# Extract layers from JAR file
-RUN java -Djarmode=layertools -jar build/libs/*.jar extract \
-    && ls -l /app \
-    && ls -l /app/dependencies \
-    && ls -l /app/spring-boot-loader \
-    && ls -l /app/snapshot-dependencies \
-    && ls -l /app/application
-
-# 2. Runtime Stage
-FROM eclipse-temurin:21-jre AS runtime
-WORKDIR /app
-
-# Copy each layer
-COPY --from=build /app/dependencies/ ./
-COPY --from=build /app/spring-boot-loader/ ./
-COPY --from=build /app/snapshot-dependencies/ ./
-COPY --from=build /app/application/ ./
-
-# Run the application
-ENTRYPOINT ["java", "-Dspring.profiles.active=stage", "org.springframework.boot.loader.launch.JarLauncher"]
+# Set the default active profile to 'stage'. Modify the 'spring.profiles.active' property to match your environment.
+# For example, use '-Dspring.profiles.active=production' for production environment.
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=stage", "/clab.jar"]

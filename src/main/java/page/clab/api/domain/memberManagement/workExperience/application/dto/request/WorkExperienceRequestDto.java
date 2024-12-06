@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import page.clab.api.domain.memberManagement.workExperience.domain.WorkExperience;
 
 import java.time.LocalDate;
 
@@ -26,4 +27,15 @@ public class WorkExperienceRequestDto {
     @NotNull(message = "{notNull.workExperience.endDate}")
     @Schema(description = "종료일", example = "2023-12-31", required = true)
     private LocalDate endDate;
+
+    public static WorkExperience toEntity(WorkExperienceRequestDto requestDto, String memberId) {
+        return WorkExperience.builder()
+                .companyName(requestDto.getCompanyName())
+                .position(requestDto.getPosition())
+                .startDate(requestDto.getStartDate())
+                .endDate(requestDto.getEndDate())
+                .memberId(memberId)
+                .isDeleted(false)
+                .build();
+    }
 }

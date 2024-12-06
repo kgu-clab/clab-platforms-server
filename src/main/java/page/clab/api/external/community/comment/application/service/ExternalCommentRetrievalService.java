@@ -17,8 +17,8 @@ public class ExternalCommentRetrievalService implements ExternalRetrieveCommentU
 
     @Transactional(readOnly = true)
     @Override
-    public Comment getById(Long targetId) {
-        return retrieveCommentUseCase.getById(targetId);
+    public Comment findByIdOrThrow(Long targetId) {
+        return retrieveCommentUseCase.findByIdOrThrow(targetId);
     }
 
     @Transactional(readOnly = true)

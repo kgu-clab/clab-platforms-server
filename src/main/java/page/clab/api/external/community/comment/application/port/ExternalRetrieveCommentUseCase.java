@@ -4,7 +4,7 @@ import page.clab.api.domain.community.comment.domain.Comment;
 
 public interface ExternalRetrieveCommentUseCase {
 
-    Comment getById(Long targetId);
+    Comment findByIdOrThrow(Long targetId);
 
     Long countByBoardId(Long id);
 }

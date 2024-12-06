@@ -6,7 +6,7 @@ import page.clab.api.domain.memberManagement.notification.domain.Notification;
 @Mapper(componentModel = "spring")
 public interface NotificationMapper {
 
-    NotificationJpaEntity toEntity(Notification notification);
+    NotificationJpaEntity toJpaEntity(Notification notification);
 
-    Notification toDomain(NotificationJpaEntity jpaEntity);
+    Notification toDomainEntity(NotificationJpaEntity jpaEntity);
 }

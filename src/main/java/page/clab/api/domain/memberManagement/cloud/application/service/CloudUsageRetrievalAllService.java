@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.memberManagement.cloud.application.dto.mapper.CloudDtoMapper;
 import page.clab.api.domain.memberManagement.cloud.application.dto.response.CloudUsageInfo;
 import page.clab.api.domain.memberManagement.cloud.application.port.in.RetrieveAllCloudUsageUseCase;
 import page.clab.api.domain.memberManagement.member.application.port.out.RetrieveMemberPort;
@@ -21,7 +20,6 @@ import java.io.File;
 public class CloudUsageRetrievalAllService implements RetrieveAllCloudUsageUseCase {
 
     private final RetrieveMemberPort retrieveMemberPort;
-    private final CloudDtoMapper mapper;
 
     @Value("${resource.file.path}")
     private String filePath;
@@ -36,7 +34,7 @@ public class CloudUsageRetrievalAllService implements RetrieveAllCloudUsageUseCa
     private CloudUsageInfo getCloudUsageForMember(Member member) {
         File directory = getMemberDirectory(member.getId());
         long usage = FileSystemUtil.calculateDirectorySize(directory);
-        return mapper.of(member.getId(), usage);
+        return CloudUsageInfo.create(member.getId(), usage);
     }
 
     private File getMemberDirectory(String memberId) {

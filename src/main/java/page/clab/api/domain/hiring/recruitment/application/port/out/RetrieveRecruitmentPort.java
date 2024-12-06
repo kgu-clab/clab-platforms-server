@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface RetrieveRecruitmentPort {
 
-    Recruitment getById(Long recruitmentId);
+    Recruitment findByIdOrThrow(Long recruitmentId);
 
     List<Recruitment> findAll();
 

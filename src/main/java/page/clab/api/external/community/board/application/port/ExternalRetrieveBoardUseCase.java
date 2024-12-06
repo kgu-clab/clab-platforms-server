@@ -5,7 +5,7 @@ import page.clab.api.domain.community.board.domain.Board;
 
 public interface ExternalRetrieveBoardUseCase {
 
-    Board getById(Long targetId);
+    Board findByIdOrThrow(Long targetId);
 
     BoardCommentInfoDto getBoardCommentInfoById(Long boardId);
 }

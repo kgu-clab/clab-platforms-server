@@ -8,9 +8,6 @@ import page.clab.api.global.exception.InvalidColumnException;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * {@code PaginationUtils} 클래스는 정렬 및 페이지네이션 기능을 통해 리스트에 대한 데이터를 처리하는 유틸리티 클래스입니다.
- */
 @Component
 public class PaginationUtils {
 

@@ -21,22 +21,12 @@ public class BookLoanApprovalService implements ApproveBookLoanUseCase {
     private final ExternalRetrieveBookUseCase externalRetrieveBookUseCase;
     private final ExternalRegisterBookUseCase externalRegisterBookUseCase;
 
-    /**
-     * 도서 대출을 승인합니다.
-     *
-     * <p>대출 기록을 조회하고, 도서와 대출자의 상태를 검증합니다.
-     * 도서가 이미 대출 중인지 확인하고, 대출자의 대출 한도를 검증합니다.
-     * 승인된 대출 기록과 도서 정보를 저장한 후 대출 기록 ID를 반환합니다.</p>
-     *
-     * @param bookLoanRecordId 대출 기록의 ID
-     * @return 승인된 대출 기록의 ID
-     */
     @Transactional
     @Override
     public Long approveBookLoan(Long bookLoanRecordId) {
-        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.getById(bookLoanRecordId);
+        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.findByIdOrThrow(bookLoanRecordId);
         String borrowerId = bookLoanRecord.getBorrowerId();
-        Book book = externalRetrieveBookUseCase.getById(bookLoanRecord.getBookId());
+        Book book = externalRetrieveBookUseCase.findByIdOrThrow(bookLoanRecord.getBookId());
 
         book.validateBookIsNotBorrowed();
         validateBorrowLimit(borrowerId);

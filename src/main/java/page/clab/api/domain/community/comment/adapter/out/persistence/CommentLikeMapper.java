@@ -6,7 +6,7 @@ import page.clab.api.domain.community.comment.domain.CommentLike;
 @Mapper(componentModel = "spring")
 public interface CommentLikeMapper {
 
-    CommentLikeJpaEntity toEntity(CommentLike commentLike);
+    CommentLikeJpaEntity toJpaEntity(CommentLike commentLike);
 
     CommentLike toDomain(CommentLikeJpaEntity entity);
 }

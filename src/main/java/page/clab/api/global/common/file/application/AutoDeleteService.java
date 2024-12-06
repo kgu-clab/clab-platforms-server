@@ -13,22 +13,6 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * {@code AutoDeleteService}는 지정된 경로의 파일을 자동으로 삭제하는 서비스입니다.
- *
- * <p>이 서비스는 매일 자정에 스케줄된 작업을 수행하며, 파일의 유효 기간이 만료되었거나
- * 데이터베이스에서 해당 파일의 정보가 존재하지 않는 경우 해당 파일을 삭제합니다.
- * 파일 삭제 작업은 다양한 카테고리에 대해 수행되며, 이를 통해 불필요한 파일을 자동으로 정리합니다.</p>
- *
- * 주요 기능:
- * <ul>
- *     <li>{@link #autoDeleteExpiredFiles()} - 스케줄에 따라 만료된 파일 또는 데이터베이스 정보가 없는 파일을 자동으로 삭제합니다.</li>
- *     <li>{@link #deleteUselessFilesInDirectory(File, LocalDateTime)} - 특정 디렉토리 내 파일을 순회하며 유효성 검사를 수행하고 필요 시 삭제합니다.</li>
- *     <li>{@link #checkAndDeleteFileIfExpired(File, LocalDateTime)} - 파일의 만료 여부를 확인하고 만료된 경우 삭제합니다.</li>
- *     <li>{@link #checkAndDeleteFileIfInformationDoesNotExistInDB(File)} - 데이터베이스에 파일 정보가 없는 경우 파일을 삭제합니다.</li>
- *     <li>{@link #deleteFile(File)} - 파일을 삭제하고 로그에 기록합니다.</li>
- * </ul>
- */
 @Service
 @RequiredArgsConstructor
 @Slf4j

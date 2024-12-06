@@ -6,7 +6,7 @@ import page.clab.api.domain.members.activityPhoto.domain.ActivityPhoto;
 @Mapper(componentModel = "spring")
 public interface ActivityPhotoMapper {
 
-    ActivityPhotoJpaEntity toEntity(ActivityPhoto activityPhoto);
+    ActivityPhotoJpaEntity toJpaEntity(ActivityPhoto activityPhoto);
 
     ActivityPhoto toDomain(ActivityPhotoJpaEntity entity);
 }

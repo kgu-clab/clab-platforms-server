@@ -6,7 +6,7 @@ import page.clab.api.domain.community.news.domain.News;
 
 public interface RetrieveNewsPort {
 
-    News getById(Long id);
+    News findByIdOrThrow(Long id);
 
     Page<News> findByConditions(String title, String category, Pageable pageable);
 }

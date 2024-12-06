@@ -2,12 +2,10 @@ package page.clab.api.global.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -36,10 +34,13 @@ import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.auth.util.IpWhitelistValidator;
 import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.common.slack.application.SlackService;
 import page.clab.api.global.filter.IPinfoSpringFilter;
 import page.clab.api.global.util.ApiLogger;
 import page.clab.api.global.util.HttpReqResUtil;
 import page.clab.api.global.util.ResponseUtil;
+
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -53,7 +54,7 @@ public class SecurityConfig {
     private final ExternalCheckIpBlockedUseCase externalCheckIpBlockedUseCase;
     private final ExternalRegisterBlacklistIpUseCase externalRegisterBlacklistIpUseCase;
     private final ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase;
-    private final ApplicationEventPublisher eventPublisher;
+    private final SlackService slackService;
     private final IpWhitelistValidator ipWhitelistValidator;
     private final WhitelistAccountProperties whitelistAccountProperties;
     private final WhitelistPatternsProperties whitelistPatternsProperties;
@@ -91,18 +92,15 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new InvalidEndpointAccessFilter(fileURL, externalRegisterBlacklistIpUseCase,
-                                externalRetrieveBlacklistIpUseCase, eventPublisher),
+                        new InvalidEndpointAccessFilter(slackService, fileURL, externalRegisterBlacklistIpUseCase, externalRetrieveBlacklistIpUseCase),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new CustomBasicAuthenticationFilter(authenticationManager, ipWhitelistValidator,
-                                externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase, eventPublisher),
+                        new CustomBasicAuthenticationFilter(authenticationManager, ipWhitelistValidator, slackService, externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new JwtAuthenticationFilter(jwtTokenProvider, eventPublisher, externalManageRedisTokenUseCase,
-                                externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
+                        new JwtAuthenticationFilter(slackService, jwtTokenProvider, externalManageRedisTokenUseCase, externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
                         UsernamePasswordAuthenticationFilter.class
                 )
 //                .addFilterBefore(
@@ -122,13 +120,11 @@ public class SecurityConfig {
                 .requestMatchers(SecurityConstants.PERMIT_ALL).permitAll()
                 .requestMatchers(HttpMethod.GET, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
                 .requestMatchers(HttpMethod.POST, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
-                .requestMatchers(whitelistPatternsProperties.getWhitelistPatterns())
-                .hasRole(whitelistAccountProperties.getRole())
+                .requestMatchers(whitelistPatternsProperties.getWhitelistPatterns()).hasRole(whitelistAccountProperties.getRole())
                 .anyRequest().authenticated();
     }
 
-    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception)
-            throws IOException {
+    private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception) throws IOException {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String message;
         int statusCode;

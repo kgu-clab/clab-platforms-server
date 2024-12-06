@@ -6,7 +6,7 @@ import page.clab.api.domain.community.jobPosting.domain.JobPosting;
 @Mapper(componentModel = "spring")
 public interface JobPostingMapper {
 
-    JobPostingJpaEntity toEntity(JobPosting domain);
+    JobPostingJpaEntity toJpaEntity(JobPosting domain);
 
     JobPosting toDomain(JobPostingJpaEntity entity);
 }

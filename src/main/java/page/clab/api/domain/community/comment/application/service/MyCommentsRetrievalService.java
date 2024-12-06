@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.board.application.dto.shared.BoardCommentInfoDto;
-import page.clab.api.domain.community.comment.application.dto.mapper.CommentDtoMapper;
 import page.clab.api.domain.community.comment.application.dto.response.CommentMyResponseDto;
 import page.clab.api.domain.community.comment.application.port.in.RetrieveMyCommentsUseCase;
 import page.clab.api.domain.community.comment.application.port.out.RetrieveCommentPort;
@@ -27,7 +26,6 @@ public class MyCommentsRetrievalService implements RetrieveMyCommentsUseCase {
     private final RetrieveCommentPort retrieveCommentPort;
     private final ExternalRetrieveBoardUseCase externalRetrieveBoardUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final CommentDtoMapper mapper;
 
     @Transactional(readOnly = true)
     @Override
@@ -44,6 +42,6 @@ public class MyCommentsRetrievalService implements RetrieveMyCommentsUseCase {
     private CommentMyResponseDto toCommentMyResponseDto(Comment comment) {
         MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(comment.getWriterId());
         BoardCommentInfoDto boardInfo = externalRetrieveBoardUseCase.getBoardCommentInfoById(comment.getBoardId());
-        return mapper.toDto(comment, memberInfo, boardInfo, false);
+        return CommentMyResponseDto.toDto(comment, memberInfo, boardInfo, false);
     }
 }

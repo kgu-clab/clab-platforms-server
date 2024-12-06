@@ -18,26 +18,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * {@code IpAuthenticationFilter}는 IP 주소를 기반으로 클라이언트의 접근 권한을 검증하는 필터입니다.
- *
- * <p>클라이언트의 IP 주소를 사용하여 국가 정보를 조회하고, 허용된 국가 목록에 포함되지 않은 경우
- * 접근을 차단합니다. 주로 국가별 접근 제한이 필요한 상황에서 사용됩니다.</p>
- *
- * <p>이 필터는 IP 정보를 조회하기 위해 외부 IP 조회 서비스(IPinfo)를 사용하며,
- * 국가 정보를 확인하여 허용된 국가 목록과 비교합니다. 허용되지 않은 국가에서 접근 시
- * 로그 경고 메시지를 기록하고 요청 체인을 종료합니다.</p>
- *
- * <p>필터는 다음과 같은 주요 기능을 수행합니다:</p>
- * <ul>
- *     <li>클라이언트의 IP 주소를 기반으로 국가 정보를 조회</li>
- *     <li>허용된 국가 목록에 포함되지 않은 경우 접근 차단</li>
- * </ul>
- *
- * <p>필터 초기화와 종료 시 로그 메시지를 기록하여 필터의 활성 상태를 확인할 수 있습니다.</p>
- *
- * @see Filter
- */
 @Component
 @Slf4j
 public class IpAuthenticationFilter implements Filter {

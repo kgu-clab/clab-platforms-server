@@ -6,7 +6,7 @@ import page.clab.api.domain.library.book.domain.Book;
 
 public interface RetrieveBookPort {
 
-    Book getById(Long bookId);
+    Book findByIdOrThrow(Long bookId);
 
     Page<Book> findByConditions(String title, String category, String publisher, String borrowerId, String borrowerName, Pageable pageable);
 

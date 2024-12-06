@@ -2,6 +2,7 @@ package page.clab.api.domain.members.activityPhoto.application.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
+import page.clab.api.domain.members.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 
 import java.time.LocalDate;
@@ -18,4 +19,15 @@ public class ActivityPhotoResponseDto {
     private LocalDate date;
     private Boolean isPublic;
     private LocalDateTime createdAt;
+
+    public static ActivityPhotoResponseDto toDto(ActivityPhoto activityPhoto) {
+        return ActivityPhotoResponseDto.builder()
+                .id(activityPhoto.getId())
+                .title(activityPhoto.getTitle())
+                .files(UploadedFileResponseDto.toDto(activityPhoto.getUploadedFiles()))
+                .date(activityPhoto.getDate())
+                .isPublic(activityPhoto.getIsPublic())
+                .createdAt(activityPhoto.getCreatedAt())
+                .build();
+    }
 }

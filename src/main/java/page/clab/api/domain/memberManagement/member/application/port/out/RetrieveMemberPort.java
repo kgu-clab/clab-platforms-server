@@ -12,7 +12,7 @@ public interface RetrieveMemberPort {
 
     Optional<Member> findById(String memberId);
 
-    Member getById(String memberId);
+    Member findByIdOrThrow(String memberId);
 
     List<Member> findAll();
 
@@ -20,11 +20,11 @@ public interface RetrieveMemberPort {
 
     Page<Member> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
-    Member getByEmail(String email);
+    Member findByEmailOrThrow(String email);
 
     Page<Member> findBirthdaysThisMonth(int month, Pageable pageable);
 
     Page<Member> findByConditions(String id, String name, Pageable pageable);
 
-    Member getFirstByRole(Role role);
+    Member findFirstByRoleOrThrow(Role role);
 }

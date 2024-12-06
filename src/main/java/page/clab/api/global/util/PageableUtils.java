@@ -11,10 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-/**
- * {@code PageableUtils} 클래스는 정렬 및 페이지네이션 정보를 기반으로 {@link Pageable} 객체를 생성하는 유틸리티 클래스입니다.
- * 이 클래스는 주어진 정렬 기준이 유효한지 검증하고, 유효하지 않은 경우 예외를 던집니다.
- */
 @Component
 public class PageableUtils {
 

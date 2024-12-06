@@ -2,9 +2,6 @@ package page.clab.api.global.util;
 
 import org.springframework.security.web.util.matcher.IpAddressMatcher;
 
-/**
- * {@code IpAddressUtil} 클래스는 IP 주소의 범위를 확인하는 유틸리티 메서드를 제공합니다.
- */
 public class IpAddressUtil {
 
     /**

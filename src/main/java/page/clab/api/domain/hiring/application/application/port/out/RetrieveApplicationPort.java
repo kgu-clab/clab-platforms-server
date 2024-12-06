@@ -12,11 +12,11 @@ public interface RetrieveApplicationPort {
 
     Optional<Application> findById(ApplicationId applicationId);
 
-    Application getById(ApplicationId applicationId);
+    Application findByIdOrThrow(ApplicationId applicationId);
 
     Page<Application> findByConditions(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable);
 
     List<Application> findByRecruitmentIdAndIsPass(Long recruitmentId, boolean isPass);
 
-    Application getByRecruitmentIdAndStudentId(Long recruitmentId, String studentId);
+    Application findByRecruitmentIdAndStudentIdOrThrow(Long recruitmentId, String studentId);
 }

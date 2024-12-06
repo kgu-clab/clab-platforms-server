@@ -21,13 +21,13 @@ public class BoardPersistenceAdapter implements
 
     @Override
     public Board save(Board board) {
-        BoardJpaEntity entity = boardMapper.toEntity(board);
+        BoardJpaEntity entity = boardMapper.toJpaEntity(board);
         BoardJpaEntity savedEntity = boardRepository.save(entity);
         return boardMapper.toDomain(savedEntity);
     }
 
     @Override
-    public Board getById(Long boardId) {
+    public Board findByIdOrThrow(Long boardId) {
         return boardRepository.findById(boardId)
                 .map(boardMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[Board] id: " + boardId + "에 해당하는 게시글이 존재하지 않습니다."));

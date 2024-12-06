@@ -22,26 +22,26 @@ public class AuthenticatorPersistenceAdapter implements
 
     @Override
     public Authenticator save(Authenticator authenticator) {
-        AuthenticatorJpaEntity jpaEntity = authenticatorMapper.toEntity(authenticator);
+        AuthenticatorJpaEntity jpaEntity = authenticatorMapper.toJpaEntity(authenticator);
         AuthenticatorJpaEntity savedEntity = authenticatorRepository.save(jpaEntity);
-        return authenticatorMapper.toDomain(savedEntity);
+        return authenticatorMapper.toDomainEntity(savedEntity);
     }
 
     @Override
     public Optional<Authenticator> findById(String memberId) {
-        return authenticatorRepository.findById(memberId).map(authenticatorMapper::toDomain);
+        return authenticatorRepository.findById(memberId).map(authenticatorMapper::toDomainEntity);
     }
 
     @Override
-    public Authenticator getById(String memberId) {
+    public Authenticator findByIdOrThrow(String memberId) {
         return authenticatorRepository.findById(memberId)
-                .map(authenticatorMapper::toDomain)
+                .map(authenticatorMapper::toDomainEntity)
                 .orElseThrow(() -> new NotFoundException("[Authenticator] memberId: " + memberId + "에 해당하는 Authenticator가 존재하지 않습니다."));
     }
 
     @Override
     public void delete(Authenticator authenticator) {
-        AuthenticatorJpaEntity jpaEntity = authenticatorMapper.toEntity(authenticator);
+        AuthenticatorJpaEntity jpaEntity = authenticatorMapper.toJpaEntity(authenticator);
         authenticatorRepository.delete(jpaEntity);
     }
 

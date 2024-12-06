@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.members.schedule.application.dto.mapper.ScheduleDtoMapper;
 import page.clab.api.domain.members.schedule.application.dto.response.ScheduleResponseDto;
 import page.clab.api.domain.members.schedule.application.port.in.RetrieveActivitySchedulesUseCase;
 import page.clab.api.domain.members.schedule.application.port.out.RetrieveSchedulePort;
@@ -21,13 +20,12 @@ public class ActivitySchedulesRetrievalService implements RetrieveActivitySchedu
 
     private final RetrieveSchedulePort retrieveSchedulePort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final ScheduleDtoMapper mapper;
 
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<ScheduleResponseDto> retrieveActivitySchedules(LocalDate startDate, LocalDate endDate, Pageable pageable) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         Page<Schedule> schedules = retrieveSchedulePort.findActivitySchedulesByDateRangeAndMemberId(startDate, endDate, currentMemberId, pageable);
-        return new PagedResponseDto<>(schedules.map(mapper::toDto));
+        return new PagedResponseDto<>(schedules.map(ScheduleResponseDto::toDto));
     }
 }

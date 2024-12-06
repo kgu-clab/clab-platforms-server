@@ -195,49 +195,13 @@ resource:
 ipinfo:
   access-token: ${IPINFO_ACCESS_TOKEN} # Register at https://ipinfo.io/
 
-# Messaging configuration
-notification:
-  common:
-    web-url: "${WEB_URL}"    # Your web URL
-    api-url: "${API_URL}"    # Your API documentation URL
-    color: "#FF968A"         # Message color used in notifications
-  platforms:
-    slack:
-      webhooks:
-        # Replace the placeholders with your actual Slack webhook URLs
-        core-team: "${SLACK_CORE_TEAM_WEBHOOK_URL}"    # Slack webhook URL for core team notifications
-        executives: "${SLACK_EXECUTIVES_WEBHOOK_URL}"  # Slack webhook URL for executive team notifications
-    discord:
-      webhooks:
-        # Replace the placeholders with your actual Discord webhook URLs
-        release: "${DISCORD_RELEASE_WEBHOOK_URL}"              # Discord webhook URL for release notifications
-        notifications: "${DISCORD_NOTIFICATIONS_WEBHOOK_URL}"  # Discord webhook URL for general notifications
-        executives: "${DISCORD_EXECUTIVES_WEBHOOK_URL}"        # Discord webhook URL for executive team notifications
-  # The category-mappings section defines how notifications are routed based on their category.
-  # The category names should match those specified in "page.clab.api.global.common.notificationSetting.domain.AlertCategory".
-  # By specifying multiple platforms and webhooks under each category, you can configure messages to be sent to multiple platforms and multiple webhooks simultaneously.
-  category-mappings:
-    GENERAL:
-      - platform: slack
-        webhook: core-team
-      - platform: discord
-        webhook: notifications
-    SECURITY:
-      - platform: slack
-        webhook: core-team
-      - platform: discord
-        webhook: notifications
-    EXECUTIVES:
-      - platform: slack
-        webhook: executives
-      - platform: discord
-        webhook: executives
-  # If a notification category is not explicitly mapped in category-mappings, it will use the default-mappings to determine where to send messages.
-  default-mappings:
-    - platform: slack
-      webhook: core-team
-    - platform: discord
-      webhook: notifications
+# Slack webhook configuration
+slack:
+  core-team-webhook-url: ${SLACK_WEBHOOK_URL} # Create a Slack channel and get a webhook URL
+  executives-webhook-url: ${SLACK_WEBHOOK_URL} # Create a Slack channel and get a webhook URL
+  web-url: ${WEB_URL} # Your web URL
+  api-url: ${API_URL} # Your API docs URL
+  color: "#FF968A" # Slack message color
 
 # Configure Swagger UI and generate OpenAPI documentation
 springdoc:

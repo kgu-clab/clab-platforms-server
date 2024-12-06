@@ -50,6 +50,10 @@ public class Board {
         return this.category.equals(BoardCategory.NOTICE);
     }
 
+    public boolean isGraduated() {
+        return this.category.equals(BoardCategory.GRADUATED);
+    }
+
     public boolean shouldNotifyForNewBoard(MemberDetailedInfoDto memberInfo) {
         return memberInfo.isAdminRole() && this.category.equals(BoardCategory.NOTICE); // Assuming 2 is Admin role level
     }
@@ -67,6 +71,9 @@ public class Board {
     public void validateAccessPermissionForCreation(MemberDetailedInfoDto currentMemberInfo) throws PermissionDeniedException {
         if (this.isNotice() && !currentMemberInfo.isAdminRole()) {
             throw new PermissionDeniedException("공지사항은 관리자만 작성할 수 있습니다.");
+        }
+        if (this.isGraduated() && !currentMemberInfo.isGraduated()) {
+            throw new PermissionDeniedException("졸업생 게시판은 졸업생만 작성할 수 있습니다.");
         }
     }
 }

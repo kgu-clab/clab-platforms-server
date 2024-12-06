@@ -21,28 +21,28 @@ public class ReviewPersistenceAdapter implements
 
     @Override
     public Review save(Review review) {
-        ReviewJpaEntity entity = mapper.toEntity(review);
+        ReviewJpaEntity entity = mapper.toJpaEntity(review);
         ReviewJpaEntity savedEntity = repository.save(entity);
-        return mapper.toDomain(savedEntity);
+        return mapper.toDomainEntity(savedEntity);
     }
 
     @Override
-    public Review getById(Long reviewId) {
+    public Review findByIdOrThrow(Long reviewId) {
         return repository.findById(reviewId)
-                .map(mapper::toDomain)
+                .map(mapper::toDomainEntity)
                 .orElseThrow(() -> new NotFoundException("[Review] id: " + reviewId + "에 해당하는 리뷰가 존재하지 않습니다."));
     }
 
     @Override
     public Page<Review> findAllByIsDeletedTrue(Pageable pageable) {
         return repository.findAllByIsDeletedTrue(pageable)
-                .map(mapper::toDomain);
+                .map(mapper::toDomainEntity);
     }
 
     @Override
     public Page<Review> findAllByMemberId(String memberId, Pageable pageable) {
         return repository.findAllByMemberId(memberId, pageable)
-                .map(mapper::toDomain);
+                .map(mapper::toDomainEntity);
     }
 
     @Override
@@ -53,6 +53,6 @@ public class ReviewPersistenceAdapter implements
     @Override
     public Page<Review> findByConditions(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable) {
         return repository.findByConditions(memberId, memberName, activityId, isPublic, pageable)
-                .map(mapper::toDomain);
+                .map(mapper::toDomainEntity);
     }
 }

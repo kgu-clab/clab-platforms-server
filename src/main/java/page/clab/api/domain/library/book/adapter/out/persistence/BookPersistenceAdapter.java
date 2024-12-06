@@ -22,7 +22,7 @@ public class BookPersistenceAdapter implements
 
     @Override
     public Book save(Book book) {
-        BookJpaEntity entity = bookMapper.toEntity(book);
+        BookJpaEntity entity = bookMapper.toJpaEntity(book);
         BookJpaEntity savedEntity = bookRepository.save(entity);
         return bookMapper.toDomain(savedEntity);
     }
@@ -33,7 +33,7 @@ public class BookPersistenceAdapter implements
     }
 
     @Override
-    public Book getById(Long bookId) {
+    public Book findByIdOrThrow(Long bookId) {
         return bookRepository.findById(bookId)
                 .map(bookMapper::toDomain)
                 .orElseThrow(() -> new NotFoundException("[Book] id: " + bookId + "에 해당하는 책이 존재하지 않습니다."));

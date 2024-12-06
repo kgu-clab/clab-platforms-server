@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface RetrieveAwardPort {
 
-    Award getById(Long awardId);
+    Award findByIdOrThrow(Long awardId);
 
     Page<Award> findByConditions(String memberId, Long year, Pageable pageable);
 

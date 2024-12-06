@@ -6,7 +6,7 @@ import page.clab.api.domain.members.schedule.domain.Schedule;
 @Mapper(componentModel = "spring")
 public interface ScheduleMapper {
 
-    ScheduleJpaEntity toEntity(Schedule schedule);
+    ScheduleJpaEntity toJpaEntity(Schedule schedule);
 
-    Schedule toDomain(ScheduleJpaEntity entity);
+    Schedule toDomainEntity(ScheduleJpaEntity entity);
 }
