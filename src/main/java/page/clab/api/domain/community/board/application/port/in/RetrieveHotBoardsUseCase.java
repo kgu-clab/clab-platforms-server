@@ -5,5 +5,5 @@ import page.clab.api.domain.community.board.application.dto.response.BoardListRe
 import java.util.List;
 
 public interface RetrieveHotBoardsUseCase {
-    List<BoardListResponseDto> retrieveHotBoards();
+    List<BoardListResponseDto> retrieveHotBoards(String strategyName);
 }
