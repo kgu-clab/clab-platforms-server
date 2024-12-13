@@ -10,11 +10,13 @@ import page.clab.api.domain.community.board.application.port.in.RetrieveHotBoard
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.community.board.application.port.out.RetrieveHotBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
+import page.clab.api.domain.community.board.domain.HotBoardSelectionStrategies;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.external.community.comment.application.port.ExternalRetrieveCommentUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -24,12 +26,18 @@ public class HotBoardRetrievalService implements RetrieveHotBoardsUseCase {
     private final RetrieveBoardPort retrieveBoardPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalRetrieveCommentUseCase externalRetrieveCommentUseCase;
+    private final HotBoardRegisterService hotBoardRegisterService;
+    private final Map<String, HotBoardSelectionStrategy> strategyMap;
     private final BoardDtoMapper mapper;
 
     @Transactional
     @Override
-    public List<BoardListResponseDto> retrieveHotBoards() {
-        List<String> hotBoardIds = retrieveHotBoardPort.findAll();
+    public List<BoardListResponseDto> retrieveHotBoards(String strategyName) {
+        String validatedStrategyName = validateStrategyName(strategyName);
+        List<String> hotBoardIds = retrieveHotBoardPort.findByHotBoardStrategy(validatedStrategyName);
+        if (hotBoardIds.isEmpty()) {
+            hotBoardIds = hotBoardRegisterService.registerHotBoards(validatedStrategyName);
+        }
 
         return hotBoardIds.stream()
                 .map(hotBoardId -> retrieveBoardPort.getById(Long.parseLong(hotBoardId)))
@@ -46,5 +54,12 @@ public class HotBoardRetrievalService implements RetrieveHotBoardsUseCase {
         Long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
 
         return mapper.toListDto(board, memberInfo, commentCount);
+    }
+
+    private String validateStrategyName(String strategyName) {
+        if (strategyName == null || !strategyMap.containsKey(strategyName)) {
+            strategyName = HotBoardSelectionStrategies.DEFAULT;
+        }
+        return strategyName;
     }
 }
