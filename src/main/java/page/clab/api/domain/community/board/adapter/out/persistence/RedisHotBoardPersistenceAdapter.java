@@ -8,6 +8,8 @@ import page.clab.api.domain.community.board.application.port.out.RemoveHotBoardP
 import page.clab.api.domain.community.board.application.port.out.RetrieveHotBoardPort;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -16,23 +18,41 @@ public class RedisHotBoardPersistenceAdapter implements
         RetrieveHotBoardPort,
         RemoveHotBoardPort {
 
-    private static final String HOT_BOARDS_KEY = "hotBoards";
+    private static final String HOT_BOARDS_PREFIX = "hotBoards";
 
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public void save(String boardId) {
-        redisTemplate.opsForList().rightPush(HOT_BOARDS_KEY, boardId);
+    public void save(String boardId, String strategyName) {
+        String key = getRedisKey(strategyName);
+        redisTemplate.opsForList().rightPush(key, boardId);
     }
 
     @Override
-    public List<String> findAll() {
-        List<String> hotBoards = redisTemplate.opsForList().range(HOT_BOARDS_KEY, 0, -1);
+    public List<String> findByHotBoardStrategy(String strategyName) {
+        String key = getRedisKey(strategyName);
+        List<String> hotBoards = redisTemplate.opsForList().range(key, 0, -1);
         return (hotBoards != null) ? hotBoards : List.of();
     }
 
     @Override
     public void clearHotBoard() {
-        redisTemplate.delete(HOT_BOARDS_KEY);
+        String pattern = HOT_BOARDS_PREFIX + ":*";
+        Set<String> keys = redisTemplate.keys(pattern);
+        if (keys == null) {
+            return;
+        }
+        keys.stream()
+                .filter(Objects::nonNull)
+                .forEach(key -> {
+                    Long size = redisTemplate.opsForList().size(key);
+                    if (size != null && size > 0) {
+                        redisTemplate.delete(key);
+                    }
+                });
+    }
+
+    private String getRedisKey(String strategyName) {
+        return String.format("%s:%s", HOT_BOARDS_PREFIX, strategyName);
     }
 }
