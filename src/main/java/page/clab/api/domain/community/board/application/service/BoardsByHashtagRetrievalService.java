@@ -19,6 +19,7 @@ import page.clab.api.external.community.comment.application.port.ExternalRetriev
 import page.clab.api.external.hashtag.application.port.ExternalRetrieveHashtagUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.util.PaginationUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -44,13 +45,16 @@ public class BoardsByHashtagRetrievalService implements RetrieveBoardsByHashtagU
                 .map(externalRetrieveBoardUseCase::getById)
                 .toList();
 
-        Page<Board> boardPage = new PageImpl<>(boards, pageable, boardIds.size());
+        List<BoardOverviewResponseDto> boardOverviewResponseDtos =
+                boards.stream().map(board -> {
+                    long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
+                    List<BoardHashtagResponseDto> boardHashtagInfos = externalRetrieveBoardHashtagUseCase.getBoardHashtagInfoByBoardId(board.getId());
+                    return mapper.toCategoryDto(board, getMemberDetailedInfoByBoard(board), commentCount, boardHashtagInfos);
+                }).toList();
 
-        return new PagedResponseDto<>(boardPage.map(board -> {
-            long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
-            List<BoardHashtagResponseDto> boardHashtagInfos = externalRetrieveBoardHashtagUseCase.getBoardHashtagInfoByBoardId(board.getId());
-            return mapper.toCategoryDto(board, getMemberDetailedInfoByBoard(board), commentCount, boardHashtagInfos);
-        }));
+        List<BoardOverviewResponseDto> paginatedBoardOverviewDtos = PaginationUtils.applySortingAndSlicing(boardOverviewResponseDtos, pageable);
+
+        return new PagedResponseDto<>(paginatedBoardOverviewDtos, boardIds.size(), pageable);
     }
 
     private MemberDetailedInfoDto getMemberDetailedInfoByBoard(Board board) {
