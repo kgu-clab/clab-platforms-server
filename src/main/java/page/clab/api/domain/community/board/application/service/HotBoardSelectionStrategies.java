@@ -1,4 +1,4 @@
-package page.clab.api.domain.community.board.domain;
+package page.clab.api.domain.community.board.application.service;
 
 public class HotBoardSelectionStrategies {
 

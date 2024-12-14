@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.board.application.port.out.RegisterHotBoardPort;
 import page.clab.api.domain.community.board.application.port.out.RemoveHotBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
-import page.clab.api.domain.community.board.domain.HotBoardSelectionStrategies;
 
 import java.util.List;
 import java.util.Map;

@@ -10,7 +10,6 @@ import page.clab.api.domain.community.board.application.port.in.RetrieveHotBoard
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.community.board.application.port.out.RetrieveHotBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
-import page.clab.api.domain.community.board.domain.HotBoardSelectionStrategies;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.external.community.comment.application.port.ExternalRetrieveCommentUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;

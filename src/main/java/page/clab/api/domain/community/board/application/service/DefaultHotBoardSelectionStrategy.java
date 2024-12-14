@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardEmojiPort;
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
-import page.clab.api.domain.community.board.domain.HotBoardSelectionStrategies;
 import page.clab.api.external.community.comment.application.port.ExternalRetrieveCommentUseCase;
 
 import java.time.DayOfWeek;
