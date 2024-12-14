@@ -16,5 +16,6 @@ public class Hashtag {
 
     Long id;
     String name;
+    Boolean isDeleted;
 }
 

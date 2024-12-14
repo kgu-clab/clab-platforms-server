@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,13 +25,17 @@ import page.clab.api.global.common.domain.BaseEntity;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @SQLDelete(sql = "UPDATE hashtag SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
+@Table(name = "hashtag")
 public class HashtagJpaEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
+
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted;
 }
 

@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ import page.clab.api.global.common.domain.BaseEntity;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @SQLDelete(sql = "UPDATE board_hashtag SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
+@Table(name = "board_hashtag")
 public class BoardHashtagJpaEntity extends BaseEntity {
 
     @Id
