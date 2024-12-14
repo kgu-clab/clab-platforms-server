@@ -18,6 +18,6 @@ public class BoardListResponseDto {
     private String content;
     private Long commentCount;
     private String imageUrl;
-    private List<String> hashtagList;
+    private List<BoardHashtagResponseDto> boardHashtagInfos;
     private LocalDateTime createdAt;
 }

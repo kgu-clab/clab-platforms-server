@@ -6,6 +6,7 @@ import page.clab.api.domain.community.board.application.dto.request.BoardRequest
 import page.clab.api.domain.community.board.application.dto.response.BoardCategoryResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardEmojiCountResponseDto;
+import page.clab.api.domain.community.board.application.dto.response.BoardHashtagResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardListResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardMyResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.WriterInfo;
@@ -39,7 +40,7 @@ public class BoardDtoMapper {
                 .build();
     }
 
-    public BoardDetailsResponseDto toDto(Board board, MemberDetailedInfoDto memberInfo, boolean isOwner, List<BoardEmojiCountResponseDto> emojiInfos) {
+    public BoardDetailsResponseDto toDto(Board board, MemberDetailedInfoDto memberInfo, boolean isOwner, List<BoardEmojiCountResponseDto> emojiInfos, List<BoardHashtagResponseDto> boardHashtagInfos) {
         WriterInfo writerInfo = createDetail(board, memberInfo);
         return BoardDetailsResponseDto.builder()
                 .id(board.getId())
@@ -54,17 +55,19 @@ public class BoardDtoMapper {
                 .imageUrl(board.getImageUrl())
                 .isOwner(isOwner)
                 .emojiInfos(emojiInfos)
+                .boardHashtagInfos(boardHashtagInfos)
                 .createdAt(board.getCreatedAt())
                 .build();
     }
 
-    public BoardMyResponseDto toDto(Board board, MemberBasicInfoDto memberInfo) {
+    public BoardMyResponseDto toDto(Board board, MemberBasicInfoDto memberInfo, List<BoardHashtagResponseDto> boardHashtagInfos) {
         return BoardMyResponseDto.builder()
                 .id(board.getId())
                 .category(board.getCategory().getKey())
                 .writerName(board.isWantAnonymous() ? board.getNickname() : memberInfo.getMemberName())
                 .title(board.getTitle())
                 .imageUrl(board.getImageUrl())
+                .boardHashtagInfos(boardHashtagInfos)
                 .createdAt(board.getCreatedAt())
                 .build();
     }
@@ -78,7 +81,7 @@ public class BoardDtoMapper {
                 .build();
     }
 
-    public BoardCategoryResponseDto toCategoryDto(Board board, MemberDetailedInfoDto memberInfo, Long commentCount) {
+    public BoardCategoryResponseDto toCategoryDto(Board board, MemberDetailedInfoDto memberInfo, Long commentCount, List<BoardHashtagResponseDto> boardHashtagInfos) {
         WriterInfo writerInfo = create(board, memberInfo);
         return BoardCategoryResponseDto.builder()
                 .id(board.getId())
@@ -88,11 +91,12 @@ public class BoardDtoMapper {
                 .title(board.getTitle())
                 .commentCount(commentCount)
                 .imageUrl(board.getImageUrl())
+                .boardHashtagInfos(boardHashtagInfos)
                 .createdAt(board.getCreatedAt())
                 .build();
     }
 
-    public BoardListResponseDto toListDto(Board board, MemberDetailedInfoDto memberInfo, Long commentCount) {
+    public BoardListResponseDto toListDto(Board board, MemberDetailedInfoDto memberInfo, Long commentCount, List<BoardHashtagResponseDto> boardHashtagInfos) {
         WriterInfo writerInfo = create(board, memberInfo);
         return BoardListResponseDto.builder()
                 .id(board.getId())
@@ -103,6 +107,7 @@ public class BoardDtoMapper {
                 .content(board.getContent())
                 .commentCount(commentCount)
                 .imageUrl(board.getImageUrl())
+                .boardHashtagInfos(boardHashtagInfos)
                 .createdAt(board.getCreatedAt())
                 .build();
     }

@@ -19,5 +19,5 @@ public class BoardCategoryResponseDto {
     private Long commentCount;
     private String imageUrl;
     private LocalDateTime createdAt;
-    private List<String> hashtagList;
+    private List<BoardHashtagResponseDto> boardHashtagInfos;
 }

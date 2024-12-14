@@ -15,6 +15,6 @@ public class BoardMyResponseDto {
     private String writerName;
     private String title;
     private String imageUrl;
-    private List<String> hashtagList;
+    private List<BoardHashtagResponseDto> boardHashtagInfos;
     private LocalDateTime createdAt;
 }
