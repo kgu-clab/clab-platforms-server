@@ -3,6 +3,7 @@ package page.clab.api.external.community.board.application.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.community.board.application.dto.mapper.BoardHashtagDtoMapper;
 import page.clab.api.domain.community.board.application.dto.response.BoardHashtagResponseDto;
@@ -45,5 +46,10 @@ public class ExternalBoardHashtagRetrieveService implements ExternalRetrieveBoar
     @Override
     public List<BoardHashtag> getAllIncludingDeletedByBoardId(Long boardId) {
         return retrieveBoardHashtagPort.getAllIncludingDeletedByBoardId(boardId);
+    }
+
+    @Override
+    public List<Long> getBoardIdsByHashTagId(List<Long> hashtagIds, Pageable pageable) {
+        return retrieveBoardHashtagPort.getBoardIdsByHashTagId(hashtagIds, pageable);
     }
 }

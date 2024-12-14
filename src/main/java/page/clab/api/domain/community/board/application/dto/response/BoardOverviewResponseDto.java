@@ -1,6 +1,5 @@
 package page.clab.api.domain.community.board.application.dto.response;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class BoardCategoryResponseDto {
+public class BoardOverviewResponseDto {
 
     private Long id;
     private String category;

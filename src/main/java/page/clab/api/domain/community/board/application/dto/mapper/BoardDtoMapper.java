@@ -3,7 +3,7 @@ package page.clab.api.domain.community.board.application.dto.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.board.application.dto.request.BoardRequestDto;
-import page.clab.api.domain.community.board.application.dto.response.BoardCategoryResponseDto;
+import page.clab.api.domain.community.board.application.dto.response.BoardOverviewResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardEmojiCountResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardHashtagResponseDto;
@@ -81,9 +81,9 @@ public class BoardDtoMapper {
                 .build();
     }
 
-    public BoardCategoryResponseDto toCategoryDto(Board board, MemberDetailedInfoDto memberInfo, Long commentCount, List<BoardHashtagResponseDto> boardHashtagInfos) {
+    public BoardOverviewResponseDto toCategoryDto(Board board, MemberDetailedInfoDto memberInfo, Long commentCount, List<BoardHashtagResponseDto> boardHashtagInfos) {
         WriterInfo writerInfo = create(board, memberInfo);
-        return BoardCategoryResponseDto.builder()
+        return BoardOverviewResponseDto.builder()
                 .id(board.getId())
                 .category(board.getCategory().getKey())
                 .writerId(writerInfo.getId())
