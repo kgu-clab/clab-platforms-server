@@ -2,12 +2,14 @@ package page.clab.api.domain.community.board.application.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.board.application.dto.mapper.BoardDtoMapper;
 import page.clab.api.domain.community.board.application.dto.mapper.BoardHashtagDtoMapper;
 import page.clab.api.domain.community.board.application.dto.request.BoardRequestDto;
+import page.clab.api.domain.community.board.application.exception.InvalidBoardCategoryHashtagException;
 import page.clab.api.domain.community.board.application.port.in.RegisterBoardUseCase;
 import page.clab.api.domain.community.board.application.port.out.RegisterBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
@@ -65,6 +67,9 @@ public class BoardRegisterService implements RegisterBoardUseCase {
 
         Board savedBoard = registerBoardPort.save(board);
 
+        if (!savedBoard.isDevelopmentQna() && requestDto.getHashtagIdList() != null) {
+            throw new InvalidBoardCategoryHashtagException("개발질문 게시판에만 해시태그를 등록할 수 있습니다.");
+        }
         if (savedBoard.isDevelopmentQna() && requestDto.getHashtagIdList() != null) {
             externalRegisterBoardHashtagUseCase.registerBoardHashtag(boardHashtagDtoMapper.toDto(savedBoard.getId(), requestDto.getHashtagIdList()));
         }
