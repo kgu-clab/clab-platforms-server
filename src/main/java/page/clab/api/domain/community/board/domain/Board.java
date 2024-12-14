@@ -50,6 +50,10 @@ public class Board {
         return this.category.equals(BoardCategory.NOTICE);
     }
 
+    public boolean isDevelopmentQna() {
+        return this.category.equals(BoardCategory.DEVELOPMENT_QNA);
+    }
+
     public boolean shouldNotifyForNewBoard(MemberDetailedInfoDto memberInfo) {
         return memberInfo.isAdminRole() && this.category.equals(BoardCategory.NOTICE); // Assuming 2 is Admin role level
     }

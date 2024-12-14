@@ -1,5 +1,7 @@
 package page.clab.api.domain.community.board.application.dto.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,4 +19,5 @@ public class BoardCategoryResponseDto {
     private Long commentCount;
     private String imageUrl;
     private LocalDateTime createdAt;
+    private List<String> hashtagList;
 }

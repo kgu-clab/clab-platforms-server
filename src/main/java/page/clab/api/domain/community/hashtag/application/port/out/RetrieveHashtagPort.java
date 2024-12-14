@@ -8,4 +8,7 @@ public interface RetrieveHashtagPort {
 
     Hashtag findByName(String name);
 
+    Hashtag getById(Long id);
+
+    Boolean existsById(Long id);
 }

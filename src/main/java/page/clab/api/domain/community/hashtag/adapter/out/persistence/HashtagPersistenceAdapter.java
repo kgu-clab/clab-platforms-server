@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.hashtag.application.port.out.RegisterHashtagPort;
 import page.clab.api.domain.community.hashtag.application.port.out.RetrieveHashtagPort;
 import page.clab.api.domain.community.hashtag.domain.Hashtag;
+import page.clab.api.global.exception.NotFoundException;
 
 @Component
 @RequiredArgsConstructor
@@ -31,5 +32,18 @@ public class HashtagPersistenceAdapter implements
     public Hashtag findByName(String name) {
         HashtagJpaEntity entity = hashtagRepository.findByName(name);
         return hashtagMapper.toDomain(entity);
+    }
+
+    @Override
+    public Hashtag getById(Long id) {
+        return hashtagRepository.findById(id)
+                .map(hashtagMapper::toDomain)
+                .orElseThrow(() -> new NotFoundException("[Hashtag] id: " + id + "에 해당하는 해시태그가 존재하지 않습니다."));
+
+    }
+
+    @Override
+    public Boolean existsById(Long id) {
+        return hashtagRepository.existsById(id);
     }
 }

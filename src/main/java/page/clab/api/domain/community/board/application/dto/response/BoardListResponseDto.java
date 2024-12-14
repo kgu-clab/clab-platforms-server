@@ -1,5 +1,6 @@
 package page.clab.api.domain.community.board.application.dto.response;
 
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,5 +18,6 @@ public class BoardListResponseDto {
     private String content;
     private Long commentCount;
     private String imageUrl;
+    private List<String> hashtagList;
     private LocalDateTime createdAt;
 }
