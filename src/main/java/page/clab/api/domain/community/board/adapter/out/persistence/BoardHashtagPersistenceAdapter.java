@@ -28,4 +28,11 @@ public class BoardHashtagPersistenceAdapter implements
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<BoardHashtag> getAllIncludingDeletedByBoardId(Long boardId) {
+        return boardHashtagRepository.findAllIncludingDeletedByBoardId(boardId).stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toList());
+    }
 }

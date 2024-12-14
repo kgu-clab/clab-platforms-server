@@ -35,7 +35,7 @@ public class BoardsByCategoryRetrievalService implements RetrieveBoardsByCategor
         Page<Board> boards = retrieveBoardPort.findAllByCategory(category, pageable);
         return new PagedResponseDto<>(boards.map(board -> {
             long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
-            List<BoardHashtagResponseDto> boardHashtagInfos = externalRetrieveBoardHashtagUseCase.getAllByBoardId(board.getId());
+            List<BoardHashtagResponseDto> boardHashtagInfos = externalRetrieveBoardHashtagUseCase.getBoardHashtagInfoByBoardId(board.getId());
             return mapper.toCategoryDto(board, getMemberDetailedInfoByBoard(board), commentCount, boardHashtagInfos);
         }));
     }

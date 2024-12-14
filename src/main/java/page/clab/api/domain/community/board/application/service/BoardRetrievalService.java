@@ -49,7 +49,7 @@ public class BoardRetrievalService implements RetrieveBoardUseCase {
     @NotNull
     private BoardListResponseDto mapToBoardListResponseDto(Board board, MemberDetailedInfoDto memberInfo) {
         Long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
-        List<BoardHashtagResponseDto> boardHashtagInfos = externalRetrieveBoardHashtagUseCase.getAllByBoardId(board.getId());
+        List<BoardHashtagResponseDto> boardHashtagInfos = externalRetrieveBoardHashtagUseCase.getBoardHashtagInfoByBoardId(board.getId());
         return mapper.toListDto(board, memberInfo, commentCount, boardHashtagInfos);
     }
 }

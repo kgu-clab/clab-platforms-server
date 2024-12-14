@@ -1,5 +1,6 @@
 package page.clab.api.domain.community.board.domain;
 
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -41,7 +41,7 @@ public class BoardDetailsRetrievalService implements RetrieveBoardDetailsUseCase
         MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(board.getMemberId());
         boolean isOwner = board.isOwner(currentMemberInfo.getMemberId());
         List<BoardEmojiCountResponseDto> emojiInfos = getBoardEmojiCountResponseDtoList(boardId, currentMemberInfo.getMemberId());
-        List<BoardHashtagResponseDto> boardHashtagInfos = externalBoardHashtagRetrieveService.getAllByBoardId(boardId);
+        List<BoardHashtagResponseDto> boardHashtagInfos = externalBoardHashtagRetrieveService.getBoardHashtagInfoByBoardId(boardId);
         return boardDtoMapper.toDto(board, memberInfo, isOwner, emojiInfos, boardHashtagInfos);
     }
 

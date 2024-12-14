@@ -33,7 +33,7 @@ public class MyBoardsRetrievalService implements RetrieveMyBoardsUseCase {
         MemberBasicInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
         Page<Board> boards = retrieveBoardPort.findAllByMemberId(currentMemberInfo.getMemberId(), pageable);
         return new PagedResponseDto<>(boards.map(board -> {
-            List<BoardHashtagResponseDto> boardHashtagInfos = externalRetrieveBoardHashtagUseCase.getAllByBoardId(board.getId());
+            List<BoardHashtagResponseDto> boardHashtagInfos = externalRetrieveBoardHashtagUseCase.getBoardHashtagInfoByBoardId(board.getId());
             return mapper.toDto(board, currentMemberInfo, boardHashtagInfos);
         }));
     }

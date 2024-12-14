@@ -1,5 +1,6 @@
 package page.clab.api.domain.community.board.domain;
 
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,4 +19,8 @@ public class BoardHashtag {
     Long boardId;
     Long hashtagId;
     Boolean isDeleted;
+
+    public void toggleIsDeletedStatus() {
+        this.isDeleted = !this.isDeleted;
+    }
 }

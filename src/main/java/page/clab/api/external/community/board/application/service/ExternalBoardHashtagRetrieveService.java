@@ -19,13 +19,31 @@ public class ExternalBoardHashtagRetrieveService implements ExternalRetrieveBoar
     private final ExternalRetrieveHashtagUseCase externalRetrieveHashtagUseCase;
     private final BoardHashtagDtoMapper boardHashtagDtoMapper;
 
-    public List<BoardHashtagResponseDto> getAllByBoardId(Long boardId) {
-        List<BoardHashtag> boardHashtagList = retrieveBoardHashtagPort.getAllByBoardId(boardId);
+    @Override
+    public List<BoardHashtagResponseDto> getBoardHashtagInfoByBoardId(Long boardId) {
+        List<BoardHashtag> boardHashtagList = getAllByBoardId(boardId);
         return boardHashtagList.stream()
                 .map(entity -> {
                     String name = externalRetrieveHashtagUseCase.getById(entity.getHashtagId()).getName();
                     return boardHashtagDtoMapper.toDto(entity, name);
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BoardHashtag> getAllByBoardId(Long boardId) {
+        return retrieveBoardHashtagPort.getAllByBoardId(boardId);
+    }
+
+    @Override
+    public List<Long> extractAllHashtagId(List<BoardHashtag> boardHashtagList) {
+        return boardHashtagList.stream()
+                .map(BoardHashtag::getHashtagId)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BoardHashtag> getAllIncludingDeletedByBoardId(Long boardId) {
+        return retrieveBoardHashtagPort.getAllIncludingDeletedByBoardId(boardId);
     }
 }

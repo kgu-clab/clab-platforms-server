@@ -5,4 +5,6 @@ import page.clab.api.domain.community.board.domain.BoardHashtag;
 
 public interface RetrieveBoardHashtagPort {
     List<BoardHashtag> getAllByBoardId(Long boardId);
+
+    List<BoardHashtag> getAllIncludingDeletedByBoardId(Long boardId);
 }
