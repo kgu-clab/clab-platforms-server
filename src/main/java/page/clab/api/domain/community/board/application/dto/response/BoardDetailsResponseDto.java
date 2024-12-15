@@ -26,5 +26,6 @@ public class BoardDetailsResponseDto {
     @JsonProperty("isOwner")
     private Boolean isOwner;
     private List<BoardEmojiCountResponseDto> emojiInfos;
+    private List<BoardHashtagResponseDto> boardHashtagInfos;
     private LocalDateTime createdAt;
 }

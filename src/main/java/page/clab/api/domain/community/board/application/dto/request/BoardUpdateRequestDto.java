@@ -2,6 +2,7 @@ package page.clab.api.domain.community.board.application.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.community.board.domain.BoardCategory;
@@ -25,4 +26,7 @@ public class BoardUpdateRequestDto {
     @NotNull(message = "{notNull.board.wantAnonymous}")
     @Schema(description = "익명 사용 여부", example = "false")
     private boolean wantAnonymous;
+
+    @Schema(description = "해시태그 id 리스트", example = "[1, 2]")
+    private List<Long> hashtagIdList;
 }

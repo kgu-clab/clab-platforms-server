@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import page.clab.api.domain.community.board.application.dto.response.BoardCategoryResponseDto;
+import page.clab.api.domain.community.board.application.dto.response.BoardOverviewResponseDto;
 import page.clab.api.domain.community.board.application.port.in.RetrieveBoardsByCategoryUseCase;
 import page.clab.api.domain.community.board.domain.BoardCategory;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -33,15 +33,15 @@ public class BoardsByCategoryRetrievalController {
             "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/category")
-    public ApiResponse<PagedResponseDto<BoardCategoryResponseDto>> retrieveBoardsByCategory(
+    public ApiResponse<PagedResponseDto<BoardOverviewResponseDto>> retrieveBoardsByCategory(
             @RequestParam(name = "category") BoardCategory category,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
             @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
             @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, BoardCategoryResponseDto.class);
-        PagedResponseDto<BoardCategoryResponseDto> boards = retrieveBoardsByCategoryUseCase.retrieveBoardsByCategory(category, pageable);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, BoardOverviewResponseDto.class);
+        PagedResponseDto<BoardOverviewResponseDto> boards = retrieveBoardsByCategoryUseCase.retrieveBoardsByCategory(category, pageable);
         return ApiResponse.success(boards);
     }
 }

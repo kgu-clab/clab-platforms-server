@@ -51,6 +51,7 @@ import page.clab.api.domain.activity.review.application.exception.AlreadyReviewe
 import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
 import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.community.accuse.application.exception.AccuseTargetTypeIncorrectException;
+import page.clab.api.domain.community.board.application.exception.InvalidBoardCategoryHashtagException;
 import page.clab.api.domain.hiring.application.application.exception.NotApprovedApplicationException;
 import page.clab.api.domain.hiring.application.application.exception.RecruitmentEndDateExceededException;
 import page.clab.api.domain.hiring.application.application.exception.RecruitmentNotActiveException;
@@ -125,7 +126,8 @@ public class GlobalExceptionHandler {
             SortingArgumentException.class,
             UnknownPathException.class,
             AssignmentBoardHasNoDueDateTimeException.class,
-            FeedbackBoardHasNoContentException.class
+            FeedbackBoardHasNoContentException.class,
+            InvalidBoardCategoryHashtagException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);

@@ -1,5 +1,6 @@
 package page.clab.api.domain.community.board.application.port.in;
 
+import org.apache.coyote.BadRequestException;
 import page.clab.api.domain.community.board.application.dto.request.BoardRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;
 
