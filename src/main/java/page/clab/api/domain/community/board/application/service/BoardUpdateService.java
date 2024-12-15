@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.board.application.dto.mapper.BoardHashtagDtoMapper;
 import page.clab.api.domain.community.board.application.dto.request.BoardUpdateRequestDto;
 import page.clab.api.domain.community.board.application.event.BoardUpdatedEvent;
+import page.clab.api.domain.community.board.application.exception.InvalidBoardCategoryHashtagException;
 import page.clab.api.domain.community.board.application.port.in.UpdateBoardUseCase;
 import page.clab.api.domain.community.board.application.port.out.RegisterBoardHashtagPort;
 import page.clab.api.domain.community.board.application.port.out.RegisterBoardPort;
@@ -43,14 +44,18 @@ public class BoardUpdateService implements UpdateBoardUseCase {
         Board board = retrieveBoardPort.getById(boardId);
         board.validateAccessPermission(currentMemberInfo);
         board.update(requestDto);
-        updateBoardHashtag(boardId, requestDto.getHashtagIdList(), externalRetrieveBoardHashtagUseCase.getAllIncludingDeletedByBoardId(boardId));
+        updateBoardHashtag(board, requestDto.getHashtagIdList(), externalRetrieveBoardHashtagUseCase.getAllIncludingDeletedByBoardId(boardId));
         eventPublisher.publishEvent(new BoardUpdatedEvent(this, board.getId()));
         registerBoardPort.save(board);
         return board.getCategory().getKey();
     }
 
     @Transactional
-    public void updateBoardHashtag(Long boardId, List<Long> newHashtagIds, List<BoardHashtag> currentBoardHashtags) {
+    public void updateBoardHashtag(Board board, List<Long> newHashtagIds, List<BoardHashtag> currentBoardHashtags) {
+        if (!board.isDevelopmentQna()) {
+            throw new InvalidBoardCategoryHashtagException("개발질문 게시판에만 해시태그를 적용할 수 있습니다.");
+        }
+
         List<Long> currentHashtagIds = externalRetrieveBoardHashtagUseCase.extractAllHashtagId(currentBoardHashtags);
         List<Long> hashtagsToRemove = currentHashtagIds.stream()
                 .filter(id -> !newHashtagIds.contains(id))
@@ -79,7 +84,7 @@ public class BoardUpdateService implements UpdateBoardUseCase {
                     });
         });
 
-        hashtagsToAdd.forEach(idToAdd -> addHashtag(boardId, idToAdd, currentBoardHashtags));
+        hashtagsToAdd.forEach(idToAdd -> addHashtag(board.getId(), idToAdd, currentBoardHashtags));
     }
 
     private void addHashtag(Long boardId, Long hashtagId, List<BoardHashtag> currentBoardHashtags) {

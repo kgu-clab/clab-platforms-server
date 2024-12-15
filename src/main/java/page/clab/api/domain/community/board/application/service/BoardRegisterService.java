@@ -67,7 +67,7 @@ public class BoardRegisterService implements RegisterBoardUseCase {
 
         Board savedBoard = registerBoardPort.save(board);
 
-        if (!savedBoard.isDevelopmentQna() && requestDto.getHashtagIdList() != null) {
+        if (!savedBoard.isDevelopmentQna() && (requestDto.getHashtagIdList() != null && !requestDto.getHashtagIdList().isEmpty())) {
             throw new InvalidBoardCategoryHashtagException("개발질문 게시판에만 해시태그를 등록할 수 있습니다.");
         }
         if (savedBoard.isDevelopmentQna() && requestDto.getHashtagIdList() != null) {
