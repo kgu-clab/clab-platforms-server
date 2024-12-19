@@ -136,7 +136,7 @@ def sendBuildNotification(String message, String color) {
     def consoleOutputUrl = "${jobUrl}/${env.BUILD_NUMBER}/console"
     def changelog = env.GIT_CHANGELOG
 
-    def jsonSlurper = new JsonSlurper()
+    def jsonSlurper = new groovy.json.JsonSlurper()
     def notificationPlatforms = jsonSlurper.parseText(env.NOTIFICATION_PLATFORMS_JSON)
 
     notificationPlatforms.each { notification ->
@@ -157,7 +157,7 @@ def sendBuildNotification(String message, String color) {
             }
 
             if (payload) {
-                def payloadJson = JsonOutput.toJson(payload)
+                def payloadJson = groovy.json.JsonOutput.toJson(payload)
                 sendHttpPostRequest(notification.'webhook-url', payloadJson)
             }
         }
@@ -252,7 +252,7 @@ def loadEnvironmentVariables(String configFile) {
     env.JENKINS_DOMAIN = config.'jenkins-domain'
     env.NOTIFICATION_COLOR_SUCCESS = config.notifications.common.'color-success'
     env.NOTIFICATION_COLOR_FAILURE = config.notifications.common.'color-failure'
-    env.NOTIFICATION_PLATFORMS_JSON = JsonOutput.toJson(config.notifications.platforms)
+    env.NOTIFICATION_PLATFORMS_JSON = groovy.json.JsonOutput.toJson(config.notifications.platforms)
 
     env.PG_USER = config.postgresql.user
     env.PG_PASSWORD = config.postgresql.password
