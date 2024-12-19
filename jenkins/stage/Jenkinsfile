@@ -136,8 +136,7 @@ def sendBuildNotification(String message, String color) {
     def consoleOutputUrl = "${jobUrl}/${env.BUILD_NUMBER}/console"
     def changelog = env.GIT_CHANGELOG
 
-    def jsonSlurper = new groovy.json.JsonSlurper()
-    def notificationPlatforms = jsonSlurper.parseText(env.NOTIFICATION_PLATFORMS_JSON)
+    def notificationPlatforms = readJSON text: env.NOTIFICATION_PLATFORMS_JSON.trim()
 
     notificationPlatforms.each { notification ->
         if (notification.enabled.toBoolean()) {
