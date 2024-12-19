@@ -159,7 +159,7 @@ def sendBuildNotification(String message, String color) {
     def changelog = env.GIT_CHANGELOG
 
     env.NOTIFICATION_PLATFORMS.each { notification ->
-        if (notification.enabled) {
+        if (notification.enabled.toBoolean()) {
             def platform = notification.platform ? notification.platform.trim().toLowerCase() : ""
             echo "Processing notification for platform: '${platform}'"
 
