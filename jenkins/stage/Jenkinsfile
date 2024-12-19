@@ -143,7 +143,7 @@ def sendBuildNotification(String message, String color) {
             def platform = notification.platform ? notification.platform.trim().toLowerCase() : ""
             echo "Processing notification for platform: '${platform}'"
 
-            def payload = []
+            def payload = null
             switch (platform) {
                 case 'slack':
                     payload = createSlackPayload(message, color, jobUrl, consoleOutputUrl, changelog)
@@ -155,7 +155,7 @@ def sendBuildNotification(String message, String color) {
                     echo "Unsupported or undefined notification platform: '${platform}'"
             }
 
-            if (payload) {
+            if (payload != null) {
                 def payloadJson = groovy.json.JsonOutput.toJson(payload)
                 sendHttpPostRequest(notification.'webhook-url', payloadJson)
             }
