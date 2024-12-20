@@ -6,7 +6,7 @@ import page.clab.api.domain.community.comment.application.dto.response.CommentLi
 @Component
 public class CommentLikeDtoMapper {
 
-    public CommentLikeToggleResponseDto toDto(Long boardId, Long commentLikes, Boolean isDeleted) {
+    public CommentLikeToggleResponseDto of(Long boardId, Long commentLikes, Boolean isDeleted) {
         return CommentLikeToggleResponseDto.builder()
                 .boardId(boardId)
                 .likes(commentLikes)

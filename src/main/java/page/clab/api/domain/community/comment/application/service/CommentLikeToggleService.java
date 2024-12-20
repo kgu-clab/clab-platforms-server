@@ -48,14 +48,14 @@ public class CommentLikeToggleService implements ToggleCommentLikeUseCase {
                     removeCommentLikePort.delete(commentLike);
                     comment.decrementLikes();
                     externalRegisterCommentUseCase.save(comment);
-                    return mapper.toDto(boardId, comment.getLikes(), true);
+                    return mapper.of(boardId, comment.getLikes(), true);
                 })
                 .orElseGet(() -> {
                     CommentLike newLike = CommentLike.create(currentMemberId, comment.getId());
                     registerCommentLikePort.save(newLike);
                     comment.incrementLikes();
                     externalRegisterCommentUseCase.save(comment);
-                    return mapper.toDto(boardId, comment.getLikes(), false);
+                    return mapper.of(boardId, comment.getLikes(), false);
                 });
     }
 }
