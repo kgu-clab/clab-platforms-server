@@ -22,7 +22,7 @@ import page.clab.api.external.auth.accountAccessLog.application.port.ExternalReg
 import page.clab.api.external.auth.accountLockInfo.application.ExternalManageAccountLockUseCase;
 import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.auth.jwt.JwtTokenService;
+import page.clab.api.global.auth.application.JwtTokenService;
 import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.GeneralAlertType;
 import page.clab.api.global.util.HttpReqResUtil;

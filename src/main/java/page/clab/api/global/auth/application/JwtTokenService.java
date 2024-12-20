@@ -1,4 +1,4 @@
-package page.clab.api.global.auth.jwt;
+package page.clab.api.global.auth.application;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;

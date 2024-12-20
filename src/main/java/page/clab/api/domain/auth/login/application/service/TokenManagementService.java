@@ -18,9 +18,9 @@ import page.clab.api.domain.auth.login.application.port.in.ManageLoginUseCase;
 import page.clab.api.domain.auth.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.domain.auth.login.domain.RedisToken;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
+import page.clab.api.global.auth.application.JwtTokenService;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
-import page.clab.api.global.auth.jwt.JwtTokenService;
 import page.clab.api.global.util.HttpReqResUtil;
 
 @Service

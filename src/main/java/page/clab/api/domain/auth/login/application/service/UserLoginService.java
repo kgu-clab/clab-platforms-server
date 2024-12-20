@@ -27,7 +27,7 @@ import page.clab.api.external.auth.accountLockInfo.application.ExternalManageAcc
 import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalUpdateMemberUseCase;
-import page.clab.api.global.auth.jwt.JwtTokenService;
+import page.clab.api.global.auth.application.JwtTokenService;
 import page.clab.api.global.util.HttpReqResUtil;
 
 @Service

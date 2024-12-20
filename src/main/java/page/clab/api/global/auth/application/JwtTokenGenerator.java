@@ -1,4 +1,4 @@
-package page.clab.api.global.auth.jwt;
+package page.clab.api.global.auth.application;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

@@ -17,7 +17,7 @@ import page.clab.api.domain.auth.login.domain.RedisToken;
 import page.clab.api.external.auth.blacklistIp.application.port.ExternalRetrieveBlacklistIpUseCase;
 import page.clab.api.external.auth.redisIpAccessMonitor.application.port.ExternalCheckIpBlockedUseCase;
 import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
-import page.clab.api.global.auth.jwt.JwtTokenService;
+import page.clab.api.global.auth.application.JwtTokenService;
 import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
 import page.clab.api.global.util.HttpReqResUtil;

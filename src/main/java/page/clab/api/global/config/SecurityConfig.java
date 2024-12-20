@@ -27,11 +27,11 @@ import page.clab.api.external.auth.blacklistIp.application.port.ExternalRetrieve
 import page.clab.api.external.auth.redisIpAccessMonitor.application.port.ExternalCheckIpBlockedUseCase;
 import page.clab.api.external.auth.redisIpAccessMonitor.application.port.ExternalRegisterIpAccessMonitorUseCase;
 import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
+import page.clab.api.global.auth.application.JwtTokenService;
 import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
 import page.clab.api.global.auth.filter.InvalidEndpointAccessFilter;
 import page.clab.api.global.auth.filter.IpAuthenticationFilter;
 import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
-import page.clab.api.global.auth.jwt.JwtTokenService;
 import page.clab.api.global.auth.util.IpWhitelistValidator;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.filter.IPinfoSpringFilter;
