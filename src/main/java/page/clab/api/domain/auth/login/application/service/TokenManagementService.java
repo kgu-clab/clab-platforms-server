@@ -1,6 +1,7 @@
 package page.clab.api.domain.auth.login.application.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
@@ -19,10 +20,8 @@ import page.clab.api.domain.auth.login.domain.RedisToken;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
-import page.clab.api.global.auth.jwt.JwtTokenProvider;
+import page.clab.api.global.auth.jwt.JwtTokenService;
 import page.clab.api.global.util.HttpReqResUtil;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,20 +30,21 @@ public class TokenManagementService implements ManageLoginUseCase {
 
     private final ManageRedisTokenUseCase manageRedisTokenUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenService jwtTokenService;
 
     @Transactional
     @Override
     public TokenHeader reissueToken(HttpServletRequest request) {
-        String refreshToken = jwtTokenProvider.resolveToken(request);
-        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+        String refreshToken = jwtTokenService.resolveToken(request);
+        Authentication authentication = jwtTokenService.getAuthentication(refreshToken);
         RedisToken redisToken = manageRedisTokenUseCase.findByRefreshToken(refreshToken);
 
         validateMemberExistence(authentication);
         validateToken(redisToken);
 
-        TokenInfo newTokenInfo = jwtTokenProvider.generateToken(redisToken.getMemberId(), redisToken.getRole());
-        manageRedisTokenUseCase.saveToken(redisToken.getMemberId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
+        TokenInfo newTokenInfo = jwtTokenService.generateToken(redisToken.getMemberId(), redisToken.getRole());
+        manageRedisTokenUseCase.saveToken(redisToken.getMemberId(), redisToken.getRole(), newTokenInfo,
+            redisToken.getIp());
         return TokenHeader.create(newTokenInfo);
     }
 
@@ -74,12 +74,14 @@ public class TokenManagementService implements ManageLoginUseCase {
     }
 
     @Override
-    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFailedException, MemberLockedException {
+    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto)
+        throws LoginFailedException, MemberLockedException {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public LoginResult authenticate(HttpServletRequest request, TwoFactorAuthenticationRequestDto requestDto) throws LoginFailedException, MemberLockedException {
+    public LoginResult authenticate(HttpServletRequest request, TwoFactorAuthenticationRequestDto requestDto)
+        throws LoginFailedException, MemberLockedException {
         throw new UnsupportedOperationException("Method not implemented");
     }
 

@@ -33,7 +33,7 @@ import page.clab.api.global.auth.filter.CustomBasicAuthenticationFilter;
 import page.clab.api.global.auth.filter.InvalidEndpointAccessFilter;
 import page.clab.api.global.auth.filter.IpAuthenticationFilter;
 import page.clab.api.global.auth.filter.JwtAuthenticationFilter;
-import page.clab.api.global.auth.jwt.JwtTokenProvider;
+import page.clab.api.global.auth.jwt.JwtTokenService;
 import page.clab.api.global.auth.util.IpWhitelistValidator;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.filter.IPinfoSpringFilter;
@@ -60,7 +60,7 @@ public class SecurityConfig {
     private final IPInfoConfig ipInfoConfig;
     private final AuthenticationConfig authenticationConfig;
     private final CorsConfigurationSource corsConfigurationSource;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenService jwtTokenService;
     private final FileService fileService;
     private final ApiLogger apiLogger;
 
@@ -71,64 +71,64 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         AuthenticationManager authenticationManager = authenticationConfig.authenticationManager();
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(sessionManagement ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .cors(cors ->
-                        cors.configurationSource(corsConfigurationSource)
-                )
-                .authorizeHttpRequests(
-                        getAuthorizeHttpRequestsCustomizer()
-                )
-                .authenticationProvider(authenticationConfig.authenticationProvider())
-                .addFilterBefore(
-                        new IPinfoSpringFilter(ipInfoConfig),
-                        UsernamePasswordAuthenticationFilter.class
-                )
-                .addFilterBefore(
-                        new IpAuthenticationFilter(ipInfoConfig),
-                        UsernamePasswordAuthenticationFilter.class
-                )
-                .addFilterBefore(
-                        new InvalidEndpointAccessFilter(fileURL, externalRegisterBlacklistIpUseCase,
-                                externalRetrieveBlacklistIpUseCase, eventPublisher),
-                        UsernamePasswordAuthenticationFilter.class
-                )
-                .addFilterBefore(
-                        new CustomBasicAuthenticationFilter(authenticationManager, ipWhitelistValidator,
-                                externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase, eventPublisher),
-                        UsernamePasswordAuthenticationFilter.class
-                )
-                .addFilterBefore(
-                        new JwtAuthenticationFilter(jwtTokenProvider, eventPublisher, externalManageRedisTokenUseCase,
-                                externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
-                        UsernamePasswordAuthenticationFilter.class
-                )
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(sessionManagement ->
+                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .cors(cors ->
+                cors.configurationSource(corsConfigurationSource)
+            )
+            .authorizeHttpRequests(
+                getAuthorizeHttpRequestsCustomizer()
+            )
+            .authenticationProvider(authenticationConfig.authenticationProvider())
+            .addFilterBefore(
+                new IPinfoSpringFilter(ipInfoConfig),
+                UsernamePasswordAuthenticationFilter.class
+            )
+            .addFilterBefore(
+                new IpAuthenticationFilter(ipInfoConfig),
+                UsernamePasswordAuthenticationFilter.class
+            )
+            .addFilterBefore(
+                new InvalidEndpointAccessFilter(fileURL, externalRegisterBlacklistIpUseCase,
+                    externalRetrieveBlacklistIpUseCase, eventPublisher),
+                UsernamePasswordAuthenticationFilter.class
+            )
+            .addFilterBefore(
+                new CustomBasicAuthenticationFilter(authenticationManager, ipWhitelistValidator,
+                    externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase, eventPublisher),
+                UsernamePasswordAuthenticationFilter.class
+            )
+            .addFilterBefore(
+                new JwtAuthenticationFilter(jwtTokenService, eventPublisher, externalManageRedisTokenUseCase,
+                    externalCheckIpBlockedUseCase, externalRetrieveBlacklistIpUseCase),
+                UsernamePasswordAuthenticationFilter.class
+            )
 //                .addFilterBefore(
 //                        new FileAccessControlFilter(fileService, fileURL),
 //                        UsernamePasswordAuthenticationFilter.class
 //                )
-                .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
-                        httpSecurityExceptionHandlingConfigurer
-                                .authenticationEntryPoint(this::handleException)
-                                .accessDeniedHandler(this::handleException)
-                );
+            .exceptionHandling(httpSecurityExceptionHandlingConfigurer ->
+                httpSecurityExceptionHandlingConfigurer
+                    .authenticationEntryPoint(this::handleException)
+                    .accessDeniedHandler(this::handleException)
+            );
         return http.build();
     }
 
     private @NotNull Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> getAuthorizeHttpRequestsCustomizer() {
-        return (authorize) -> authorize
-                .requestMatchers(SecurityConstants.PERMIT_ALL).permitAll()
-                .requestMatchers(HttpMethod.GET, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
-                .requestMatchers(HttpMethod.POST, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
-                .requestMatchers(whitelistPatternsProperties.getWhitelistPatterns())
-                .hasRole(whitelistAccountProperties.getRole())
-                .anyRequest().authenticated();
+        return authorize -> authorize
+            .requestMatchers(SecurityConstants.PERMIT_ALL).permitAll()
+            .requestMatchers(HttpMethod.GET, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
+            .requestMatchers(HttpMethod.POST, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
+            .requestMatchers(whitelistPatternsProperties.getWhitelistPatterns())
+            .hasRole(whitelistAccountProperties.getRole())
+            .anyRequest().authenticated();
     }
 
     private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception)
-            throws IOException {
+        throws IOException {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String message;
         int statusCode;

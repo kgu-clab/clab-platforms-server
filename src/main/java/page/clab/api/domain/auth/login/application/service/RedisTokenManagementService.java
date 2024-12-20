@@ -1,5 +1,8 @@
 package page.clab.api.domain.auth.login.application.service;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.auth.login.application.dto.response.TokenInfo;
@@ -10,12 +13,7 @@ import page.clab.api.domain.auth.login.application.port.out.RetrieveRedisTokenPo
 import page.clab.api.domain.auth.login.domain.RedisToken;
 import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.global.auth.exception.TokenNotFoundException;
-import page.clab.api.global.auth.jwt.JwtTokenProvider;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import page.clab.api.global.auth.jwt.JwtTokenService;
 
 @Service
 @RequiredArgsConstructor
@@ -24,26 +22,26 @@ public class RedisTokenManagementService implements ManageRedisTokenUseCase {
     private final RegisterRedisTokenPort registerRedisTokenPort;
     private final RetrieveRedisTokenPort retrieveRedisTokenPort;
     private final RemoveRedisTokenPort removeRedisTokenPort;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenService jwtTokenService;
 
     public RedisToken findByAccessToken(String accessToken) {
         return retrieveRedisTokenPort.findByAccessToken(accessToken)
-                .orElseThrow(() -> new TokenNotFoundException("존재하지 않는 토큰입니다."));
+            .orElseThrow(() -> new TokenNotFoundException("존재하지 않는 토큰입니다."));
     }
 
     public RedisToken findByRefreshToken(String refreshToken) {
         return retrieveRedisTokenPort.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new TokenNotFoundException("존재하지 않는 토큰입니다."));
+            .orElseThrow(() -> new TokenNotFoundException("존재하지 않는 토큰입니다."));
     }
 
     public List<String> getCurrentLoggedInUsers() {
         Iterable<RedisToken> iterableTokens = retrieveRedisTokenPort.findAll();
         return StreamSupport.stream(iterableTokens.spliterator(), false)
-                .filter(Objects::nonNull)
-                .filter(redisToken -> jwtTokenProvider.validateTokenSilently(redisToken.getAccessToken()))
-                .map(RedisToken::getMemberId)
-                .distinct()
-                .collect(Collectors.toList());
+            .filter(Objects::nonNull)
+            .filter(redisToken -> jwtTokenService.validateTokenSilently(redisToken.getAccessToken()))
+            .map(RedisToken::getMemberId)
+            .distinct()
+            .toList();
     }
 
     public void saveToken(String memberId, Role role, TokenInfo tokenInfo, String ip) {
@@ -53,6 +51,6 @@ public class RedisTokenManagementService implements ManageRedisTokenUseCase {
 
     public void deleteByAccessToken(String accessToken) {
         retrieveRedisTokenPort.findByAccessToken(accessToken)
-                .ifPresent(removeRedisTokenPort::delete);
+            .ifPresent(removeRedisTokenPort::delete);
     }
 }

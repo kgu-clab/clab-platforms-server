@@ -22,7 +22,7 @@ import page.clab.api.external.auth.accountAccessLog.application.port.ExternalReg
 import page.clab.api.external.auth.accountLockInfo.application.ExternalManageAccountLockUseCase;
 import page.clab.api.external.auth.redisToken.application.port.ExternalManageRedisTokenUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.auth.jwt.JwtTokenProvider;
+import page.clab.api.global.auth.jwt.JwtTokenService;
 import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.GeneralAlertType;
 import page.clab.api.global.util.HttpReqResUtil;
@@ -38,13 +38,13 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
     private final ExternalRegisterAccountAccessLogUseCase externalRegisterAccountAccessLogUseCase;
     private final ExternalManageRedisTokenUseCase externalManageRedisTokenUseCase;
     private final ApplicationEventPublisher eventPublisher;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenService jwtTokenService;
 
     @Transactional
     @Override
     public LoginResult authenticate(HttpServletRequest request,
-                                    TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto)
-            throws LoginFailedException, MemberLockedException {
+        TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto)
+        throws LoginFailedException, MemberLockedException {
         String memberId = twoFactorAuthenticationRequestDto.getMemberId();
         MemberLoginInfoDto loginMember = externalRetrieveMemberUseCase.getMemberLoginInfoById(memberId);
         String totp = twoFactorAuthenticationRequestDto.getTotp();
@@ -59,10 +59,10 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
     }
 
     private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request)
-            throws MemberLockedException, LoginFailedException {
+        throws MemberLockedException, LoginFailedException {
         if (!manageAuthenticatorUseCase.isAuthenticatorValid(memberId, totp)) {
             externalRegisterAccountAccessLogUseCase.registerAccountAccessLog(request, memberId,
-                    AccountAccessResult.FAILURE);
+                AccountAccessResult.FAILURE);
             externalManageAccountLockUseCase.handleLoginFailure(request, memberId);
             throw new LoginFailedException("잘못된 인증번호입니다.");
         }
@@ -70,23 +70,23 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
     }
 
     private TokenInfo generateAndSaveToken(MemberLoginInfoDto memberInfo) {
-        TokenInfo tokenInfo = jwtTokenProvider.generateToken(memberInfo.getMemberId(), memberInfo.getRole());
+        TokenInfo tokenInfo = jwtTokenService.generateToken(memberInfo.getMemberId(), memberInfo.getRole());
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         externalManageRedisTokenUseCase.saveToken(memberInfo.getMemberId(), memberInfo.getRole(), tokenInfo,
-                clientIpAddress);
+            clientIpAddress);
         return tokenInfo;
     }
 
     private void sendAdminLoginNotification(HttpServletRequest request, MemberLoginInfoDto loginMember) {
         if (loginMember.isSuperAdminRole()) {
             eventPublisher.publishEvent(
-                    new NotificationEvent(this, GeneralAlertType.ADMIN_LOGIN, request, loginMember));
+                new NotificationEvent(this, GeneralAlertType.ADMIN_LOGIN, request, loginMember));
         }
     }
 
     @Override
     public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto)
-            throws LoginFailedException, MemberLockedException {
+        throws LoginFailedException, MemberLockedException {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
