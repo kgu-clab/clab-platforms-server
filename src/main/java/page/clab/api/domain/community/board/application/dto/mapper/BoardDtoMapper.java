@@ -6,6 +6,7 @@ import page.clab.api.domain.community.board.application.dto.request.BoardRequest
 import page.clab.api.domain.community.board.application.dto.response.BoardCategoryResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardEmojiCountResponseDto;
+import page.clab.api.domain.community.board.application.dto.response.BoardEmojiToggleResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardListResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardMyResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.WriterInfo;
