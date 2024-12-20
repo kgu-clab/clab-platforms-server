@@ -3,6 +3,8 @@ package page.clab.api.domain.community.board.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import page.clab.api.domain.community.board.application.dto.mapper.BoardEmojiDtoMapper;
+import page.clab.api.domain.community.board.application.dto.response.BoardEmojiToggleResponseDto;
 import page.clab.api.domain.community.board.application.port.in.ToggleBoardEmojiUseCase;
 import page.clab.api.domain.community.board.application.port.out.RegisterBoardEmojiPort;
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardEmojiPort;
@@ -22,6 +24,7 @@ public class BoardEmojiToggleService implements ToggleBoardEmojiUseCase {
     private final RetrieveBoardEmojiPort retrieveBoardEmojiPort;
     private final RegisterBoardEmojiPort registerBoardEmojiPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final BoardEmojiDtoMapper mapper;
 
     /**
      * 게시글의 이모지 상태를 토글합니다.
@@ -36,7 +39,7 @@ public class BoardEmojiToggleService implements ToggleBoardEmojiUseCase {
      */
     @Transactional
     @Override
-    public String toggleEmojiStatus(Long boardId, String emoji) {
+    public BoardEmojiToggleResponseDto toggleEmojiStatus(Long boardId, String emoji) {
         if (!EmojiUtils.isEmoji(emoji)) {
             throw new InvalidEmojiException("지원하지 않는 이모지입니다.");
         }
@@ -50,6 +53,6 @@ public class BoardEmojiToggleService implements ToggleBoardEmojiUseCase {
                 })
                 .orElseGet(() -> BoardEmoji.create(memberId, boardId, emoji));
         registerBoardEmojiPort.save(boardEmoji);
-        return board.getCategory().getKey();
+        return mapper.toDto(boardEmoji);
     }
 }
