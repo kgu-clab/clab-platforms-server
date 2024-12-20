@@ -5,12 +5,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -55,9 +53,9 @@ public class SecurityConfig {
     private final ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase;
     private final ApplicationEventPublisher eventPublisher;
     private final IpWhitelistValidator ipWhitelistValidator;
-    private final WhitelistAccountProperties whitelistAccountProperties;
-    private final WhitelistPatternsProperties whitelistPatternsProperties;
     private final IPInfoConfig ipInfoConfig;
+    private final Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>
+        .AuthorizationManagerRequestMatcherRegistry> authorizeHttpRequestsCustomizer;
     private final AuthenticationConfig authenticationConfig;
     private final CorsConfigurationSource corsConfigurationSource;
     private final JwtTokenService jwtTokenService;
@@ -79,7 +77,7 @@ public class SecurityConfig {
                 cors.configurationSource(corsConfigurationSource)
             )
             .authorizeHttpRequests(
-                getAuthorizeHttpRequestsCustomizer()
+                authorizeHttpRequestsCustomizer
             )
             .authenticationProvider(authenticationConfig.authenticationProvider())
             .addFilterBefore(
@@ -115,16 +113,6 @@ public class SecurityConfig {
                     .accessDeniedHandler(this::handleException)
             );
         return http.build();
-    }
-
-    private @NotNull Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> getAuthorizeHttpRequestsCustomizer() {
-        return authorize -> authorize
-            .requestMatchers(SecurityConstants.PERMIT_ALL).permitAll()
-            .requestMatchers(HttpMethod.GET, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_GET).permitAll()
-            .requestMatchers(HttpMethod.POST, SecurityConstants.PERMIT_ALL_API_ENDPOINTS_POST).permitAll()
-            .requestMatchers(whitelistPatternsProperties.getWhitelistPatterns())
-            .hasRole(whitelistAccountProperties.getRole())
-            .anyRequest().authenticated();
     }
 
     private void handleException(HttpServletRequest request, HttpServletResponse response, Exception exception)
