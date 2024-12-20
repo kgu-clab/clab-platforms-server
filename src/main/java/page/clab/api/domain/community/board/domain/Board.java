@@ -1,5 +1,6 @@
 package page.clab.api.domain.community.board.domain;
 
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,6 +49,10 @@ public class Board {
 
     public boolean isNotice() {
         return this.category.equals(BoardCategory.NOTICE);
+    }
+
+    public boolean isDevelopmentQna() {
+        return this.category.equals(BoardCategory.DEVELOPMENT_QNA);
     }
 
     public boolean shouldNotifyForNewBoard(MemberDetailedInfoDto memberInfo) {
