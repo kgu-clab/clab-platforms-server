@@ -1,4 +1,4 @@
-package page.clab.api.global.auth.util;
+package page.clab.api.global.auth.application;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -6,29 +6,28 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
+import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.global.config.RefreshTokenCookieProperties;
 
-/**
- * 리프레시 토큰 쿠키를 생성, 설정, 삭제 및 가져오는 매니저 클래스.
- */
 @Component
 public class RefreshTokenCookieManager {
 
+    private final JwtTokenService jwtTokenService;
     private final String cookieName;
     private final String cookiePath;
     private final boolean httpOnly;
     private final boolean secure;
-    private final int maxAge;
     private final String sameSite;
 
     public RefreshTokenCookieManager(
+        JwtTokenService jwtTokenService,
         RefreshTokenCookieProperties refreshTokenCookieProperties
     ) {
+        this.jwtTokenService = jwtTokenService;
         this.cookieName = refreshTokenCookieProperties.getName();
         this.cookiePath = refreshTokenCookieProperties.getPath();
         this.httpOnly = refreshTokenCookieProperties.isHttpOnly();
         this.secure = refreshTokenCookieProperties.isSecure();
-        this.maxAge = refreshTokenCookieProperties.getMaxAge();
         this.sameSite = refreshTokenCookieProperties.getSameSite();
     }
 
@@ -39,11 +38,14 @@ public class RefreshTokenCookieManager {
      * @param refreshToken 생성된 리프레시 토큰 문자열
      */
     public void addRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
+        Role role = jwtTokenService.getRole(refreshToken);
+        long refreshTokenDuration = jwtTokenService.getRefreshTokenDuration(role);
+
         Cookie cookie = new Cookie(cookieName, refreshToken);
         cookie.setHttpOnly(httpOnly);
         cookie.setSecure(secure);
         cookie.setPath(cookiePath);
-        cookie.setMaxAge(maxAge);
+        cookie.setMaxAge((int) (refreshTokenDuration / 1000)); // 밀리초를 초로 변환
         cookie.setAttribute("SameSite", sameSite);
         response.addCookie(cookie);
     }

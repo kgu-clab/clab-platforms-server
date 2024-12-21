@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.auth.login.application.dto.response.TokenHeader;
 import page.clab.api.domain.auth.login.application.port.in.ManageLoginUseCase;
-import page.clab.api.global.auth.util.RefreshTokenCookieManager;
+import page.clab.api.global.auth.application.RefreshTokenCookieManager;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController

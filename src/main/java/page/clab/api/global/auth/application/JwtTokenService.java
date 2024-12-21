@@ -11,6 +11,10 @@ public interface JwtTokenService {
 
     Authentication getAuthentication(String token);
 
+    Role getRole(String token);
+
+    long getRefreshTokenDuration(Role role);
+
     String resolveToken(HttpServletRequest request);
 
     boolean validateToken(String token);

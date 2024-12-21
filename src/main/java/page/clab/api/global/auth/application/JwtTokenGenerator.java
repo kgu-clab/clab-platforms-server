@@ -4,7 +4,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
-import java.util.Map;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.auth.login.application.dto.response.TokenInfo;
 import page.clab.api.domain.memberManagement.member.domain.Role;
@@ -15,14 +14,15 @@ public class JwtTokenGenerator {
 
     private final Key key;
     private final long accessTokenDuration;
-    private final Map<String, Long> refreshTokenDurationMap;
+    private final RefreshTokenDurationProvider refreshTokenDurationProvider;
 
     public JwtTokenGenerator(
-        JwtTokenProperties jwtTokenProperties
+        JwtTokenProperties jwtTokenProperties,
+        RefreshTokenDurationProvider refreshTokenDurationProvider
     ) {
         this.key = Keys.hmacShaKeyFor(jwtTokenProperties.getSecretKey().getBytes());
         this.accessTokenDuration = jwtTokenProperties.getAccessTokenDuration();
-        this.refreshTokenDurationMap = jwtTokenProperties.getRefreshTokenDuration();
+        this.refreshTokenDurationProvider = refreshTokenDurationProvider;
     }
 
     /**
@@ -37,7 +37,7 @@ public class JwtTokenGenerator {
 
         String accessToken = createJwtToken(id, role, now, accessTokenDuration);
 
-        long refreshTokenDuration = getRefreshTokenDuration(role);
+        long refreshTokenDuration = refreshTokenDurationProvider.getRefreshTokenDuration(role);
         String refreshToken = createJwtToken(id, role, now, refreshTokenDuration);
 
         return TokenInfo.create(accessToken, refreshToken);
@@ -61,23 +61,5 @@ public class JwtTokenGenerator {
             .expiration(expiration)
             .signWith(key)
             .compact();
-    }
-
-    /**
-     * 역할에 따라 리프레시 토큰 유효 기간을 반환합니다.
-     *
-     * @param role 사용자 역할
-     * @return 리프레시 토큰 유효 기간 (밀리초)
-     */
-    private long getRefreshTokenDuration(Role role) {
-        if (role == null) {
-            role = Role.GUEST;
-        }
-        Long duration = refreshTokenDurationMap.get(role.name());
-        if (duration == null) {
-            // 권한에 해당하는 설정이 없으면 기본값을 GUEST로 설정
-            duration = refreshTokenDurationMap.getOrDefault(Role.GUEST.name(), 0L);
-        }
-        return duration;
     }
 }

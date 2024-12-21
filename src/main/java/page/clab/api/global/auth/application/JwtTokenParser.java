@@ -49,6 +49,14 @@ public class JwtTokenParser {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
+    public Role getRole(String token) {
+        Claims claims = parseClaims(token);
+        if (claims.get("role") == null) {
+            throw new TokenValidateException("권한 정보가 없는 토큰입니다.");
+        }
+        return Role.valueOf(claims.get("role").toString());
+    }
+
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
@@ -57,7 +65,7 @@ public class JwtTokenParser {
         return null;
     }
 
-    protected Claims parseClaims(String token) {
+    private Claims parseClaims(String token) {
         try {
             return Jwts.parser()
                 .verifyWith((SecretKey) key)

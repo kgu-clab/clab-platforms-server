@@ -15,6 +15,5 @@ public class RefreshTokenCookieProperties {
     private String path;
     private boolean httpOnly;
     private boolean secure;
-    private int maxAge;
     private String sameSite;
 }

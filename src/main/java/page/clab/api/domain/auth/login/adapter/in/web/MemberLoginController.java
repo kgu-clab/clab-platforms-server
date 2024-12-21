@@ -16,7 +16,7 @@ import page.clab.api.domain.auth.login.application.dto.response.LoginResult;
 import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
 import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.auth.login.application.port.in.ManageLoginUseCase;
-import page.clab.api.global.auth.util.RefreshTokenCookieManager;
+import page.clab.api.global.auth.application.RefreshTokenCookieManager;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
