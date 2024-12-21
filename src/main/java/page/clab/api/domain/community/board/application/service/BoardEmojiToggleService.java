@@ -53,6 +53,6 @@ public class BoardEmojiToggleService implements ToggleBoardEmojiUseCase {
                 })
                 .orElseGet(() -> BoardEmoji.create(memberId, boardId, emoji));
         registerBoardEmojiPort.save(boardEmoji);
-        return mapper.toDto(boardEmoji);
+        return mapper.toDto(boardEmoji, board.getCategory().getKey());
     }
 }

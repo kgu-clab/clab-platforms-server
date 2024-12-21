@@ -8,6 +8,7 @@ import lombok.Getter;
 public class BoardEmojiToggleResponseDto {
 
     private Long boardId;
+    private String category;
     private String emoji;
     private Boolean isDeleted;
 }
