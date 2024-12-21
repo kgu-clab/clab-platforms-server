@@ -7,9 +7,10 @@ import page.clab.api.domain.community.board.domain.BoardEmoji;
 @Component
 public class BoardEmojiDtoMapper {
 
-    public BoardEmojiToggleResponseDto toDto(BoardEmoji boardEmoji) {
+    public BoardEmojiToggleResponseDto toDto(BoardEmoji boardEmoji, String category) {
         return BoardEmojiToggleResponseDto.builder()
                 .boardId(boardEmoji.getBoardId())
+                .category(category)
                 .emoji(boardEmoji.getEmoji())
                 .isDeleted(boardEmoji.getIsDeleted())
                 .build();
