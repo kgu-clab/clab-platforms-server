@@ -19,6 +19,7 @@ import page.clab.api.domain.auth.login.application.dto.response.LoginResult;
 import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
 import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.auth.login.application.port.in.ManageLoginUseCase;
+import page.clab.api.global.auth.util.RefreshTokenCookieManager;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
@@ -27,34 +28,37 @@ import page.clab.api.global.common.dto.ApiResponse;
 public class TwoFactorAuthenticationController {
 
     private final ManageLoginUseCase manageLoginUseCase;
-
     private final String authHeader;
+    private final RefreshTokenCookieManager refreshTokenCookieManager;
 
     public TwoFactorAuthenticationController(
-            @Qualifier("twoFactorAuthenticationService") ManageLoginUseCase manageLoginUseCase,
-            @Value("${security.auth.header}") String authHeader
+        @Qualifier("twoFactorAuthenticationService") ManageLoginUseCase manageLoginUseCase,
+        @Value("${security.auth.header}") String authHeader,
+        RefreshTokenCookieManager refreshTokenCookieManager
     ) {
         this.manageLoginUseCase = manageLoginUseCase;
         this.authHeader = authHeader;
+        this.refreshTokenCookieManager = refreshTokenCookieManager;
     }
 
     @Operation(summary = "TOTP 인증", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("")
     public ApiResponse<Boolean> authenticate(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            @Valid @RequestBody TwoFactorAuthenticationRequestDto requestDto
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @Valid @RequestBody TwoFactorAuthenticationRequestDto requestDto
     ) throws MemberLockedException, LoginFailedException {
         LoginResult result = manageLoginUseCase.authenticate(request, requestDto);
         response.setHeader(authHeader, result.getHeader());
-        return ApiResponse.success(result.getBody());
+        refreshTokenCookieManager.addRefreshTokenCookie(response, result.getRefreshToken());
+        return ApiResponse.success(result.isBody());
     }
 
     @Operation(summary = "[S] TOTP 초기화", description = "ROLE_SUPER 권한이 필요함")
     @DeleteMapping("/{memberId}")
     @PreAuthorize("hasRole('SUPER')")
     public ApiResponse<String> resetAuthenticator(
-            @PathVariable(name = "memberId") String memberId
+        @PathVariable(name = "memberId") String memberId
     ) {
         String id = manageLoginUseCase.resetAuthenticator(memberId);
         return ApiResponse.success(id);

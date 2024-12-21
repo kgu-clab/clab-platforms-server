@@ -100,8 +100,8 @@ public class UserLoginService implements ManageLoginUseCase {
             return LoginResult.create(header, true);
         }
         TokenInfo tokenInfo = generateAndSaveToken(loginMember);
-        header = TokenHeader.create(tokenInfo).toJson();
-        return LoginResult.create(header, false);
+        header = TokenHeader.create(tokenInfo.getAccessToken()).toJson();
+        return LoginResult.create(header, tokenInfo.getRefreshToken(), false);
     }
 
     private TokenInfo generateAndSaveToken(MemberLoginInfoDto memberInfo) {

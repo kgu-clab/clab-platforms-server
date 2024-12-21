@@ -55,7 +55,7 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
         TokenInfo tokenInfo = generateAndSaveToken(loginMember);
         sendAdminLoginNotification(request, loginMember);
         String header = TokenHeader.create(tokenInfo).toJson();
-        return LoginResult.create(header, true);
+        return LoginResult.create(header, tokenInfo.getRefreshToken(), true);
     }
 
     private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request)

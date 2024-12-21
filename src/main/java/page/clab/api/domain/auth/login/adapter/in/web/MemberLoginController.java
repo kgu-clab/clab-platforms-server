@@ -16,6 +16,7 @@ import page.clab.api.domain.auth.login.application.dto.response.LoginResult;
 import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
 import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.auth.login.application.port.in.ManageLoginUseCase;
+import page.clab.api.global.auth.util.RefreshTokenCookieManager;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
@@ -24,37 +25,41 @@ import page.clab.api.global.common.dto.ApiResponse;
 public class MemberLoginController {
 
     private final ManageLoginUseCase manageLoginUseCase;
-
     private final String authHeader;
+    private final RefreshTokenCookieManager refreshTokenCookieManager;
 
     public MemberLoginController(
-            @Qualifier("userLoginService") ManageLoginUseCase manageLoginUseCase,
-            @Value("${security.auth.header}") String authHeader
+        @Qualifier("userLoginService") ManageLoginUseCase manageLoginUseCase,
+        @Value("${security.auth.header}") String authHeader,
+        RefreshTokenCookieManager refreshTokenCookieManager
     ) {
         this.manageLoginUseCase = manageLoginUseCase;
         this.authHeader = authHeader;
+        this.refreshTokenCookieManager = refreshTokenCookieManager;
     }
 
     @Operation(summary = "멤버 로그인", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("")
     public ApiResponse<Boolean> login(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            @Valid @RequestBody LoginRequestDto requestDto
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @Valid @RequestBody LoginRequestDto requestDto
     ) throws MemberLockedException, LoginFailedException {
         LoginResult result = manageLoginUseCase.login(request, requestDto);
         response.setHeader(authHeader, result.getHeader());
-        return ApiResponse.success(result.getBody());
+        refreshTokenCookieManager.addRefreshTokenCookie(response, result.getRefreshToken());
+        return ApiResponse.success(result.isBody());
     }
 
     @Operation(summary = "Guest 로그인", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("/guest")
     public ApiResponse<Boolean> guestLogin(
-            HttpServletRequest request,
-            HttpServletResponse response
+        HttpServletRequest request,
+        HttpServletResponse response
     ) {
         LoginResult result = manageLoginUseCase.guestLogin(request);
         response.setHeader(authHeader, result.getHeader());
-        return ApiResponse.success(result.getBody());
+        refreshTokenCookieManager.addRefreshTokenCookie(response, result.getRefreshToken());
+        return ApiResponse.success(result.isBody());
     }
 }

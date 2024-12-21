@@ -14,24 +14,31 @@ public class TokenHeader {
 
     private TokenHeader() {
         this.accessToken = null;
-        this.refreshToken = null;
     }
 
-    private TokenHeader(String accessToken, String refreshToken) {
+    private TokenHeader(String accessToken) {
         this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
+    }
+
+    private TokenHeader(TokenInfo tokenInfo) {
+        this.accessToken = tokenInfo.getAccessToken();
+        this.refreshToken = tokenInfo.getRefreshToken();
     }
 
     public static TokenHeader create() {
         return new TokenHeader();
     }
 
+    public static TokenHeader create(String accessToken) {
+        return new TokenHeader(accessToken);
+    }
+
     public static TokenHeader create(TokenInfo tokenInfo) {
-        return new TokenHeader(tokenInfo.getAccessToken(), tokenInfo.getRefreshToken());
+        return new TokenHeader(tokenInfo);
     }
 
     public String toJson() {
-        Gson gson = new GsonBuilder().serializeNulls().create();
+        Gson gson = new GsonBuilder().create();
         return gson.toJson(this);
     }
 }

@@ -63,7 +63,7 @@ public class SecurityConfig {
     private final ApiLogger apiLogger;
 
     @Value("${resource.file.url}")
-    String fileURL;
+    private String fileURL;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
