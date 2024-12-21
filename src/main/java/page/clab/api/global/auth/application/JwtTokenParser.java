@@ -9,7 +9,6 @@ import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import javax.crypto.SecretKey;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.global.auth.exception.TokenValidateException;
+import page.clab.api.global.config.JwtTokenProperties;
 
 @Component
 public class JwtTokenParser {
@@ -27,9 +27,9 @@ public class JwtTokenParser {
     private final Key key;
 
     public JwtTokenParser(
-        @Value("${security.jwt.secret-key}") String secretKey
+        JwtTokenProperties jwtTokenProperties
     ) {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        this.key = Keys.hmacShaKeyFor(jwtTokenProperties.getSecretKey().getBytes());
     }
 
     public Authentication getAuthentication(String token) {

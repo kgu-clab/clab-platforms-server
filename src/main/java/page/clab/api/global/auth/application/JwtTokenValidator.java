@@ -8,8 +8,8 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import page.clab.api.global.config.JwtTokenProperties;
 
 @Component
 @Slf4j
@@ -18,9 +18,9 @@ public class JwtTokenValidator {
     private final Key key;
 
     public JwtTokenValidator(
-        @Value("${security.jwt.secret-key}") String secretKey
+        JwtTokenProperties jwtTokenProperties
     ) {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        this.key = Keys.hmacShaKeyFor(jwtTokenProperties.getSecretKey().getBytes());
     }
 
     public boolean validateToken(String token) {
