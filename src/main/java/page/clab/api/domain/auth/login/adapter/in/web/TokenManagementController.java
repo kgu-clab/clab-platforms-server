@@ -18,7 +18,7 @@ import page.clab.api.global.auth.application.RefreshTokenCookieManager;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
-@RequestMapping("/api/v1/login")
+@RequestMapping("/api/v1/auth/token")
 @Tag(name = "Authentication - Token Management", description = "토큰 관리")
 public class TokenManagementController {
 
@@ -37,7 +37,7 @@ public class TokenManagementController {
     }
 
     @Operation(summary = "[G] 토큰 재발급", description = "ROLE_GUEST 이상의 권한이 필요함")
-    @PostMapping("/reissue")
+    @PostMapping("/refresh")
     @PreAuthorize("hasRole('GUEST')")
     public ApiResponse<Void> reissueToken(
         HttpServletRequest request,

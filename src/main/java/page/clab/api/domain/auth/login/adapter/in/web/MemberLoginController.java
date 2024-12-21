@@ -20,7 +20,7 @@ import page.clab.api.global.auth.application.RefreshTokenCookieManager;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
-@RequestMapping("/api/v1/login")
+@RequestMapping("/api/v1/auth/login")
 @Tag(name = "Authentication - Login", description = "로그인")
 public class MemberLoginController {
 

@@ -23,7 +23,7 @@ import page.clab.api.global.auth.application.RefreshTokenCookieManager;
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
-@RequestMapping("/api/v1/login/authenticator")
+@RequestMapping("/api/v1/auth/2fa")
 @Tag(name = "Authentication - Two Factor Authentication", description = "2단계 인증")
 public class TwoFactorAuthenticationController {
 
