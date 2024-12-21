@@ -87,9 +87,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
         // 토큰이 존재하고 유효한 경우
         if (token != null && jwtTokenService.validateToken(token)) {
-            RedisToken redisToken =
-                jwtTokenService.isRefreshToken(token) ? externalManageRedisTokenUseCase.findByRefreshToken(token)
-                    : externalManageRedisTokenUseCase.findByAccessToken(token);
+            RedisToken redisToken = externalManageRedisTokenUseCase.findByAccessToken(token);
             if (redisToken == null) {
                 log.warn("존재하지 않는 토큰입니다.");
                 ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);

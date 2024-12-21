@@ -20,9 +20,9 @@ public class TokenHeader {
         this.accessToken = accessToken;
     }
 
-    private TokenHeader(TokenInfo tokenInfo) {
-        this.accessToken = tokenInfo.getAccessToken();
-        this.refreshToken = tokenInfo.getRefreshToken();
+    private TokenHeader(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 
     public static TokenHeader create() {
@@ -33,8 +33,8 @@ public class TokenHeader {
         return new TokenHeader(accessToken);
     }
 
-    public static TokenHeader create(TokenInfo tokenInfo) {
-        return new TokenHeader(tokenInfo);
+    public static TokenHeader create(String accessToken, String refreshToken) {
+        return new TokenHeader(accessToken, refreshToken);
     }
 
     public String toJson() {

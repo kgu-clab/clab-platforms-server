@@ -16,6 +16,4 @@ public interface JwtTokenService {
     boolean validateToken(String token);
 
     boolean validateTokenSilently(String token);
-
-    boolean isRefreshToken(String token);
 }

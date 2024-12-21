@@ -2,6 +2,7 @@ package page.clab.api.domain.auth.login.application.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,8 @@ import page.clab.api.external.memberManagement.member.application.port.ExternalR
 import page.clab.api.global.auth.application.JwtTokenService;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
+import page.clab.api.global.auth.exception.TokenNotFoundException;
+import page.clab.api.global.auth.util.RefreshTokenCookieManager;
 import page.clab.api.global.util.HttpReqResUtil;
 
 @Service
@@ -30,12 +33,13 @@ public class TokenManagementService implements ManageLoginUseCase {
 
     private final ManageRedisTokenUseCase manageRedisTokenUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final RefreshTokenCookieManager refreshTokenCookieManager;
     private final JwtTokenService jwtTokenService;
 
     @Transactional
     @Override
     public TokenHeader reissueToken(HttpServletRequest request) {
-        String refreshToken = jwtTokenService.resolveToken(request);
+        String refreshToken = getRefreshToken(request);
         Authentication authentication = jwtTokenService.getAuthentication(refreshToken);
         RedisToken redisToken = manageRedisTokenUseCase.findByRefreshToken(refreshToken);
 
@@ -45,7 +49,7 @@ public class TokenManagementService implements ManageLoginUseCase {
         TokenInfo newTokenInfo = jwtTokenService.generateToken(redisToken.getMemberId(), redisToken.getRole());
         manageRedisTokenUseCase.saveToken(redisToken.getMemberId(), redisToken.getRole(), newTokenInfo,
             redisToken.getIp());
-        return TokenHeader.create(newTokenInfo);
+        return TokenHeader.create(newTokenInfo.getAccessToken(), newTokenInfo.getRefreshToken());
     }
 
     @Override
@@ -63,6 +67,15 @@ public class TokenManagementService implements ManageLoginUseCase {
         if (!externalRetrieveMemberUseCase.existsById(id)) {
             throw new TokenForgeryException("존재하지 않는 회원에 대한 토큰입니다.");
         }
+    }
+
+    private String getRefreshToken(HttpServletRequest request) {
+        Optional<String> refreshTokenOpt = refreshTokenCookieManager.getRefreshTokenFromCookie(request);
+        if (refreshTokenOpt.isEmpty()) {
+            throw new TokenNotFoundException("리프레시 토큰이 존재하지 않습니다.");
+        }
+
+        return refreshTokenOpt.get();
     }
 
     private void validateToken(RedisToken redisToken) {

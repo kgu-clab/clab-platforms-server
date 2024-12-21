@@ -39,9 +39,4 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     public boolean validateTokenSilently(String token) {
         return tokenValidator.validateTokenSilently(token);
     }
-
-    @Override
-    public boolean isRefreshToken(String token) {
-        return tokenValidator.isRefreshToken(token);
-    }
 }
