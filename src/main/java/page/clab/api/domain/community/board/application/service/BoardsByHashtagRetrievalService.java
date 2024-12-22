@@ -39,7 +39,7 @@ public class BoardsByHashtagRetrievalService implements RetrieveBoardsByHashtagU
             hashtagIds.add(externalRetrieveHashtagUseCase.getByName(hashtag).getId());
         }
 
-        List<Long> boardIds = externalRetrieveBoardHashtagUseCase.getBoardIdsByHashTagId(hashtagIds, pageable);
+        List<Long> boardIds = externalRetrieveBoardHashtagUseCase.getBoardIdsByHashTagId(hashtagIds);
 
         List<Board> boards = boardIds.stream()
                 .map(externalRetrieveBoardUseCase::getById)

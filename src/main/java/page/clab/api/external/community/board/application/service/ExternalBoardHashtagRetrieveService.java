@@ -49,7 +49,7 @@ public class ExternalBoardHashtagRetrieveService implements ExternalRetrieveBoar
     }
 
     @Override
-    public List<Long> getBoardIdsByHashTagId(List<Long> hashtagIds, Pageable pageable) {
-        return retrieveBoardHashtagPort.getBoardIdsByHashTagId(hashtagIds, pageable);
+    public List<Long> getBoardIdsByHashTagId(List<Long> hashtagIds) {
+        return retrieveBoardHashtagPort.getBoardIdsByHashTagId(hashtagIds);
     }
 }

@@ -15,5 +15,5 @@ public interface ExternalRetrieveBoardHashtagUseCase {
 
     List<BoardHashtag> getAllIncludingDeletedByBoardId(Long boardId);
 
-    List<Long> getBoardIdsByHashTagId(List<Long> hashtagIds, Pageable pageable);
+    List<Long> getBoardIdsByHashTagId(List<Long> hashtagIds);
 }

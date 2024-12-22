@@ -38,7 +38,7 @@ public class BoardHashtagPersistenceAdapter implements
                 .collect(Collectors.toList());
     }
 
-    public List<Long> getBoardIdsByHashTagId(List<Long> hashtagIds, Pageable pageable) {
-        return repository.getBoardIdsByHashTagId(hashtagIds, pageable);
+    public List<Long> getBoardIdsByHashTagId(List<Long> hashtagIds) {
+        return repository.getBoardIdsByHashTagId(hashtagIds, (long)hashtagIds.size());
     }
 }
