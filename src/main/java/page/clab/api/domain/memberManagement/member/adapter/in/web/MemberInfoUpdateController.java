@@ -23,12 +23,12 @@ public class MemberInfoUpdateController {
     private final UpdateMemberUseCase updateMemberUseCase;
 
     @Operation(summary = "[U] 멤버 정보 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "본인 외의 정보는 ROLE_SUPER만 가능")
+        "본인 외의 정보는 ROLE_SUPER만 가능")
     @PreAuthorize("hasRole('USER')")
     @PatchMapping("/{memberId}")
     public ApiResponse<String> updateMemberInfo(
-            @PathVariable(name = "memberId") String memberId,
-            @RequestBody MemberUpdateRequestDto requestDto
+        @PathVariable(name = "memberId") String memberId,
+        @RequestBody MemberUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         String id = updateMemberUseCase.updateMember(memberId, requestDto);
         return ApiResponse.success(id);

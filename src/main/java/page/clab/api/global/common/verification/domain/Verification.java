@@ -31,9 +31,9 @@ public class Verification {
 
     public static Verification create(String memberId, String verificationCode) {
         return Verification.builder()
-                .id(memberId)
-                .verificationCode(verificationCode)
-                .build();
+            .id(memberId)
+            .verificationCode(verificationCode)
+            .build();
     }
 
     public boolean isOwner(String memberId) {

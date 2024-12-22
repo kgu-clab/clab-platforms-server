@@ -1,10 +1,9 @@
 package page.clab.api.domain.memberManagement.member.application.dto.shared;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanSuspensionException;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Builder

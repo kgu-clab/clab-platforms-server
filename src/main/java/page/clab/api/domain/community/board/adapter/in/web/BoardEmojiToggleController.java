@@ -23,8 +23,8 @@ public class BoardEmojiToggleController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/{boardId}/react/{emoji}")
     public ApiResponse<String> toggleEmojiStatus(
-            @PathVariable(name = "boardId") Long boardId,
-            @PathVariable(name = "emoji") String emoji
+        @PathVariable(name = "boardId") Long boardId,
+        @PathVariable(name = "emoji") String emoji
     ) {
         String id = toggleBoardEmojiUseCase.toggleEmojiStatus(boardId, emoji);
         return ApiResponse.success(id);

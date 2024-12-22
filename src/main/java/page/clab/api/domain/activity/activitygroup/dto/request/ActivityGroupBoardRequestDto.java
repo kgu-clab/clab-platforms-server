@@ -2,12 +2,11 @@ package page.clab.api.domain.activity.activitygroup.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoardCategory;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter

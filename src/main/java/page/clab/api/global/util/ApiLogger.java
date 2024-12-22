@@ -8,8 +8,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 /**
- * {@code ApiLogger}는 API 요청 및 응답 로깅을 담당하는 유틸리티 클래스입니다.
- * 클라이언트 IP 주소, 사용자 정보, 요청 URL, HTTP 메서드, 상태 코드 등의 정보를 포함하여 로그를 출력합니다.
+ * {@code ApiLogger}는 API 요청 및 응답 로깅을 담당하는 유틸리티 클래스입니다. 클라이언트 IP 주소, 사용자 정보, 요청 URL, HTTP 메서드, 상태 코드 등의 정보를 포함하여 로그를
+ * 출력합니다.
  *
  * <p>주요 기능:
  * <ul>
@@ -21,9 +21,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class ApiLogger {
 
-    public void logRequest(HttpServletRequest request, HttpServletResponse response, String clientIpAddress, String message) {
+    public void logRequest(HttpServletRequest request, HttpServletResponse response, String clientIpAddress,
+        String message) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String id = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
+        String id =
+            (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
 
         String requestUrl = request.getRequestURI();
         String queryString = request.getQueryString();
@@ -37,7 +39,8 @@ public class ApiLogger {
 
     public void logRequestDuration(HttpServletRequest request, HttpServletResponse response, Exception ex) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String id = (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
+        String id =
+            (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
 
         String requestUrl = request.getRequestURI();
@@ -54,7 +57,8 @@ public class ApiLogger {
         if (ex == null) {
             log.info("[{}:{}] {} {} {} {}ms", clientIpAddress, id, fullUrl, httpMethod, statusCode, duration);
         } else {
-            log.error("[{}:{}] {} {} {} {}ms, Exception: {}", clientIpAddress, id, fullUrl, httpMethod, statusCode, duration, ex.getMessage());
+            log.error("[{}:{}] {} {} {} {}ms, Exception: {}", clientIpAddress, id, fullUrl, httpMethod, statusCode,
+                duration, ex.getMessage());
         }
     }
 }

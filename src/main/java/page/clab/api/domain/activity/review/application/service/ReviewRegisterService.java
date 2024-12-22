@@ -1,5 +1,6 @@
 package page.clab.api.domain.activity.review.application.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +20,6 @@ import page.clab.api.domain.activity.review.domain.Review;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -54,9 +53,12 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
     }
 
     private void notifyGroupLeaderOfNewReview(ActivityGroup activityGroup, String memberName) {
-        List<GroupMember> groupLeaders = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
+        List<GroupMember> groupLeaders = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(
+            activityGroup.getId(), ActivityGroupRole.LEADER);
         if (!CollectionUtils.isEmpty(groupLeaders)) {
-            groupLeaders.forEach(leader -> externalSendNotificationUseCase.sendNotificationToMember(leader.getMemberId(), "[" + activityGroup.getName() + "] " + memberName + "님이 리뷰를 등록하였습니다."));
+            groupLeaders.forEach(
+                leader -> externalSendNotificationUseCase.sendNotificationToMember(leader.getMemberId(),
+                    "[" + activityGroup.getName() + "] " + memberName + "님이 리뷰를 등록하였습니다."));
         }
     }
 

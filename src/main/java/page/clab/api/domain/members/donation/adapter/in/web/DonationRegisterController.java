@@ -25,7 +25,7 @@ public class DonationRegisterController {
     @PreAuthorize("hasRole('SUPER')")
     @PostMapping("")
     public ApiResponse<Long> registerDonation(
-            @Valid @RequestBody DonationRequestDto requestDto
+        @Valid @RequestBody DonationRequestDto requestDto
     ) {
         Long id = registerDonationUseCase.registerDonation(requestDto);
         return ApiResponse.success(id);

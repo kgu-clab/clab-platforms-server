@@ -2,12 +2,11 @@ package page.clab.api.domain.members.schedule.application.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.members.schedule.domain.SchedulePriority;
 import page.clab.api.domain.members.schedule.domain.ScheduleType;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

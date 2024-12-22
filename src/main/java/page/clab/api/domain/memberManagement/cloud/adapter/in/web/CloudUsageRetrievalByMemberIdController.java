@@ -22,11 +22,11 @@ public class CloudUsageRetrievalByMemberIdController {
     private final RetrieveCloudUsageByMemberIdUseCase retrieveCloudUsageByMemberIdUseCase;
 
     @Operation(summary = "[G] 멤버의 클라우드 사용량 조회", description = "ROLE_GUEST 이상의 권한이 필요함<br>" +
-            "본인 외의 정보는 ROLE_SUPER만 가능")
+        "본인 외의 정보는 ROLE_SUPER만 가능")
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/{memberId}")
     public ApiResponse<CloudUsageInfo> retrieveCloudUsageByMemberId(
-            @PathVariable(name = "memberId") String memberId
+        @PathVariable(name = "memberId") String memberId
     ) throws PermissionDeniedException {
         CloudUsageInfo usage = retrieveCloudUsageByMemberIdUseCase.retrieveCloudUsage(memberId);
         return ApiResponse.success(usage);

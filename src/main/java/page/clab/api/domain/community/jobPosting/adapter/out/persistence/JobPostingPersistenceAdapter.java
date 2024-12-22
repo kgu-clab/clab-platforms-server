@@ -13,7 +13,7 @@ import page.clab.api.global.exception.NotFoundException;
 @Component
 @RequiredArgsConstructor
 public class JobPostingPersistenceAdapter implements
-        RetrieveJobPostingPort {
+    RetrieveJobPostingPort {
 
     private final JobPostingRepository repository;
     private final JobPostingMapper jobPostingMapper;
@@ -21,12 +21,14 @@ public class JobPostingPersistenceAdapter implements
     @Override
     public JobPosting getById(Long jobPostingId) {
         return repository.findById(jobPostingId)
-                .map(jobPostingMapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[JobPosting] id: " + jobPostingId + "에 해당하는 채용 공고가 존재하지 않습니다."));
+            .map(jobPostingMapper::toDomain)
+            .orElseThrow(() -> new NotFoundException("[JobPosting] id: " + jobPostingId + "에 해당하는 채용 공고가 존재하지 않습니다."));
     }
 
     @Override
-    public Page<JobPosting> findByConditions(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable) {
-        return repository.findByConditions(title, companyName, careerLevel, employmentType, pageable).map(jobPostingMapper::toDomain);
+    public Page<JobPosting> findByConditions(String title, String companyName, CareerLevel careerLevel,
+        EmploymentType employmentType, Pageable pageable) {
+        return repository.findByConditions(title, companyName, careerLevel, employmentType, pageable)
+            .map(jobPostingMapper::toDomain);
     }
 }

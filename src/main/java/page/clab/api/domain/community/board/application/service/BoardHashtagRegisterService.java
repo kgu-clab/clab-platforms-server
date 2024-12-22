@@ -11,7 +11,6 @@ import page.clab.api.domain.community.board.domain.BoardHashtag;
 import page.clab.api.domain.community.hashtag.domain.Hashtag;
 import page.clab.api.external.hashtag.application.port.ExternalRegisterHashtagUseCase;
 import page.clab.api.external.hashtag.application.port.ExternalRetrieveHashtagUseCase;
-import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor

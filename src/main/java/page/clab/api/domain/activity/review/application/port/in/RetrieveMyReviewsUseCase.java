@@ -5,5 +5,6 @@ import page.clab.api.domain.activity.review.application.dto.response.ReviewRespo
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveMyReviewsUseCase {
+
     PagedResponseDto<ReviewResponseDto> retrieveMyReviews(Pageable pageable);
 }

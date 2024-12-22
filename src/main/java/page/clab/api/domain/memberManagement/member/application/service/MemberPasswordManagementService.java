@@ -61,8 +61,8 @@ public class MemberPasswordManagementService implements ManageMemberPasswordUseC
     @Override
     public String generateOrRetrievePassword(String password) {
         return StringUtils.isEmpty(password)
-                ? verificationService.generateVerificationCode()
-                : password;
+            ? verificationService.generateVerificationCode()
+            : password;
     }
 
     private Member validateResetPasswordRequest(MemberResetPasswordRequestDto requestDto) {

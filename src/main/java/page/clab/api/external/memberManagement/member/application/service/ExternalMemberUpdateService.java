@@ -1,5 +1,6 @@
 package page.clab.api.external.memberManagement.member.application.service;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,8 +8,6 @@ import page.clab.api.domain.memberManagement.member.application.port.out.Registe
 import page.clab.api.domain.memberManagement.member.application.port.out.RetrieveMemberPort;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.member.application.port.ExternalUpdateMemberUseCase;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor

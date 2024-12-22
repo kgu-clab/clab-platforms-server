@@ -1,6 +1,8 @@
 package page.clab.api.domain.auth.login.application.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,9 +30,6 @@ import page.clab.api.external.memberManagement.member.application.port.ExternalU
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.util.HttpReqResUtil;
 
-import java.util.List;
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Qualifier("userLoginService")
@@ -49,7 +48,8 @@ public class UserLoginService implements ManageLoginUseCase {
 
     @Transactional
     @Override
-    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFailedException, MemberLockedException {
+    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto)
+        throws LoginFailedException, MemberLockedException {
         authenticateAndCheckStatus(request, requestDto);
         registerAccountAccessLog(request, requestDto.getId(), true);
         MemberLoginInfoDto loginMember = externalRetrieveMemberUseCase.getMemberLoginInfoById(requestDto.getId());
@@ -61,15 +61,17 @@ public class UserLoginService implements ManageLoginUseCase {
     @Override
     public LoginResult guestLogin(HttpServletRequest request) {
         MemberLoginInfoDto guestMember = externalRetrieveMemberUseCase.getGuestMemberLoginInfo();
-        registerAccountAccessLogUseCase.registerAccountAccessLog(request, guestMember.getMemberId(), AccountAccessResult.SUCCESS);
+        registerAccountAccessLogUseCase.registerAccountAccessLog(request, guestMember.getMemberId(),
+            AccountAccessResult.SUCCESS);
         externalUpdateMemberUseCase.updateLastLoginTime(guestMember.getMemberId());
         return generateLoginResult(guestMember);
     }
 
-    private void authenticateAndCheckStatus(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) throws LoginFailedException, MemberLockedException {
+    private void authenticateAndCheckStatus(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto)
+        throws LoginFailedException, MemberLockedException {
         try {
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(loginRequestDto.getId(), loginRequestDto.getPassword());
+                new UsernamePasswordAuthenticationToken(loginRequestDto.getId(), loginRequestDto.getPassword());
             loginAuthenticationManager.authenticate(authenticationToken);
             externalManageAccountLockUseCase.handleAccountLockInfo(loginRequestDto.getId());
         } catch (BadCredentialsException e) {

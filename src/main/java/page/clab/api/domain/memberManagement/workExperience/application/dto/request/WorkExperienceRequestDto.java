@@ -2,10 +2,9 @@ package page.clab.api.domain.memberManagement.workExperience.application.dto.req
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter

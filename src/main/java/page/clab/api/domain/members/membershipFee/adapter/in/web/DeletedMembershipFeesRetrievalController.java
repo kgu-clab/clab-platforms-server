@@ -27,12 +27,12 @@ public class DeletedMembershipFeesRetrievalController {
     @PreAuthorize("hasRole('SUPER')")
     @GetMapping("/deleted")
     public ApiResponse<PagedResponseDto<MembershipFeeResponseDto>> retrieveDeletedMembershipFees(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<MembershipFeeResponseDto> membershipFees =
-                retrieveDeletedMembershipFeesUseCase.retrieveDeletedMembershipFees(pageable);
+            retrieveDeletedMembershipFeesUseCase.retrieveDeletedMembershipFees(pageable);
         return ApiResponse.success(membershipFees);
     }
 }

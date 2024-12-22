@@ -11,17 +11,17 @@ public class HashtagDtoMapper {
 
     public Hashtag of(String name) {
         return Hashtag.builder()
-                .name(name)
-                .boardUsage(0L)
-                .isDeleted(false)
-                .build();
+            .name(name)
+            .boardUsage(0L)
+            .isDeleted(false)
+            .build();
     }
 
     public HashtagResponseDto toDto(Hashtag hashtag) {
         return HashtagResponseDto.builder()
-                .id(hashtag.getId())
-                .name(hashtag.getName())
-                .boardUsageCount(hashtag.getBoardUsage())
-                .build();
+            .id(hashtag.getId())
+            .name(hashtag.getName())
+            .boardUsageCount(hashtag.getBoardUsage())
+            .build();
     }
 }

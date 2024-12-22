@@ -1,9 +1,8 @@
 package page.clab.api.domain.auth.redisIpAccessMonitor.application.port.out;
 
-import page.clab.api.domain.auth.redisIpAccessMonitor.domain.RedisIpAccessMonitor;
-
 import java.util.List;
 import java.util.Optional;
+import page.clab.api.domain.auth.redisIpAccessMonitor.domain.RedisIpAccessMonitor;
 
 public interface RetrieveIpAccessMonitorPort {
 

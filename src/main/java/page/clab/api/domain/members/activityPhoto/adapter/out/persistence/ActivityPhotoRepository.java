@@ -5,5 +5,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ActivityPhotoRepository extends JpaRepository<ActivityPhotoJpaEntity, Long>, ActivityPhotoRepositoryCustom, QuerydslPredicateExecutor<ActivityPhotoJpaEntity> {
+public interface ActivityPhotoRepository extends JpaRepository<ActivityPhotoJpaEntity, Long>,
+    ActivityPhotoRepositoryCustom, QuerydslPredicateExecutor<ActivityPhotoJpaEntity> {
+
 }

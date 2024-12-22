@@ -6,16 +6,6 @@ import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
-import org.imgscalr.Scalr;
-import org.springframework.security.core.parameters.P;
-import org.springframework.web.multipart.MultipartFile;
-import page.clab.api.global.exception.ImageCompressionException;
-
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.io.File;
@@ -24,10 +14,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.Iterator;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
+import org.imgscalr.Scalr;
+import org.springframework.web.multipart.MultipartFile;
+import page.clab.api.global.exception.ImageCompressionException;
 
 /**
- * {@code ImageUtil}은 이미지 파일의 처리와 관련된 유틸리티 메서드를 제공합니다.
- * 이미지의 방향을 조정하거나, 압축을 수행하는 등의 기능을 포함합니다.
+ * {@code ImageUtil}은 이미지 파일의 처리와 관련된 유틸리티 메서드를 제공합니다. 이미지의 방향을 조정하거나, 압축을 수행하는 등의 기능을 포함합니다.
  */
 @Slf4j
 public class ImageUtil {
@@ -114,15 +111,12 @@ public class ImageUtil {
 
     /**
      * 지정된 품질 수준으로 이미지 파일을 압축합니다.
-     *
-     * 이 메서드는 지정된 파일 경로에서 이미지를 읽어와, 주어진 품질 설정을 사용하여 압축한 후,
-     * 압축된 이미지를 원본 파일에 덮어씁니다. 압축은 이미지 포맷에 따라 다르게 적용되며, 이미지의
-     * 형식(JPEG, PNG 등)은 파일 확장자에 의해 결정됩니다.
+     * <p>
+     * 이 메서드는 지정된 파일 경로에서 이미지를 읽어와, 주어진 품질 설정을 사용하여 압축한 후, 압축된 이미지를 원본 파일에 덮어씁니다. 압축은 이미지 포맷에 따라 다르게 적용되며, 이미지의 형식(JPEG,
+     * PNG 등)은 파일 확장자에 의해 결정됩니다.
      *
      * @param filePath 압축할 이미지 파일의 경로.
-     * @param quality  압축 품질 수준으로, 0.0(높은 압축률, 낮은 품질)에서 1.0(낮은 압축률, 높은 품질) 사이의 값을 가집니다.
-     *                 이 값의 정확한 효과는 이미지 포맷에 따라 달라집니다.
-     *
+     * @param quality  압축 품질 수준으로, 0.0(높은 압축률, 낮은 품질)에서 1.0(낮은 압축률, 높은 품질) 사이의 값을 가집니다. 이 값의 정확한 효과는 이미지 포맷에 따라 달라집니다.
      * @throws ImageCompressionException 이미지 압축이 실패한 경우 예외가 발생합니다.
      */
     public static void compressImage(String baseDirectory, String filePath, float quality) {

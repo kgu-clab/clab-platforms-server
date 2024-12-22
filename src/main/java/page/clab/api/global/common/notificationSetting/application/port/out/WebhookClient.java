@@ -19,5 +19,5 @@ public interface WebhookClient {
      * @return 메시지 전송 성공 여부를 나타내는 CompletableFuture<Boolean>
      */
     CompletableFuture<Boolean> sendMessage(String webhookUrl, AlertType alertType, HttpServletRequest request,
-                                           Object additionalData);
+        Object additionalData);
 }

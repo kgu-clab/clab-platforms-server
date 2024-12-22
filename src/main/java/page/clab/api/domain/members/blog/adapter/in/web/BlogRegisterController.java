@@ -25,7 +25,7 @@ public class BlogRegisterController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
     public ApiResponse<Long> registerBlog(
-            @Valid @RequestBody BlogRequestDto requestDto
+        @Valid @RequestBody BlogRequestDto requestDto
     ) {
         Long id = registerBlogUseCase.registerBlog(requestDto);
         return ApiResponse.success(id);

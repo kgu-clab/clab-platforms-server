@@ -1,6 +1,7 @@
 package page.clab.api.domain.memberManagement.award.application.event;
 
 import jakarta.annotation.PostConstruct;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,8 +10,6 @@ import page.clab.api.domain.memberManagement.award.application.port.out.Retrieve
 import page.clab.api.domain.memberManagement.award.domain.Award;
 import page.clab.api.domain.memberManagement.member.application.event.MemberEventProcessor;
 import page.clab.api.domain.memberManagement.member.application.event.MemberEventProcessorRegistry;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

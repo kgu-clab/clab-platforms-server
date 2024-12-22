@@ -1,6 +1,5 @@
 package page.clab.api.external.hashtag.application.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.community.hashtag.application.port.in.RetrieveHashtagUseCase;

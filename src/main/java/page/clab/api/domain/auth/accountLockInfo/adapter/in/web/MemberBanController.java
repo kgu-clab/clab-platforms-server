@@ -24,8 +24,8 @@ public class MemberBanController {
     @PreAuthorize("hasRole('SUPER')")
     @PostMapping("/ban/{memberId}")
     public ApiResponse<Long> banMember(
-            HttpServletRequest request,
-            @PathVariable(name = "memberId") String memberId
+        HttpServletRequest request,
+        @PathVariable(name = "memberId") String memberId
     ) {
         Long id = banMemberUseCase.banMember(request, memberId);
         return ApiResponse.success(id);

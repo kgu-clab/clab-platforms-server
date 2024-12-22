@@ -1,5 +1,7 @@
 package page.clab.api.domain.community.accuse.application.service;
 
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,9 +20,6 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
-import java.util.List;
-import java.util.Objects;
-
 @Service
 @RequiredArgsConstructor
 public class AccusationRetrievalService implements RetrieveAccusationUseCase {
@@ -32,25 +31,28 @@ public class AccusationRetrievalService implements RetrieveAccusationUseCase {
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<AccuseResponseDto> retrieveAccusations(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable) {
-        Page<AccuseTarget> accuseTargets = retrieveAccuseByTargetPort.findByConditions(type, status, countOrder, pageable);
+    public PagedResponseDto<AccuseResponseDto> retrieveAccusations(TargetType type, AccuseStatus status,
+        boolean countOrder, Pageable pageable) {
+        Page<AccuseTarget> accuseTargets = retrieveAccuseByTargetPort.findByConditions(type, status, countOrder,
+            pageable);
         List<AccuseResponseDto> responseDtos = convertTargetsToResponseDtos(accuseTargets);
         return new PagedResponseDto<>(responseDtos, pageable, responseDtos.size());
     }
 
     private List<AccuseResponseDto> convertTargetsToResponseDtos(Page<AccuseTarget> accuseTargets) {
         return accuseTargets.stream()
-                .map(accuseTarget -> {
-                    List<Accuse> accuses = retrieveAccusePort.findByTargetOrderByCreatedAtDesc(accuseTarget.getTargetType(), accuseTarget.getTargetReferenceId());
-                    if (accuses.isEmpty()) {
-                        return null;
-                    }
-                    List<MemberBasicInfoDto> members = accuses.stream()
-                            .map(accuse -> externalRetrieveMemberUseCase.getMemberBasicInfoById(accuse.getMemberId()))
-                            .toList();
-                    return mapper.toDto(accuses.getFirst(), members);
-                })
-                .filter(Objects::nonNull)
-                .toList();
+            .map(accuseTarget -> {
+                List<Accuse> accuses = retrieveAccusePort.findByTargetOrderByCreatedAtDesc(accuseTarget.getTargetType(),
+                    accuseTarget.getTargetReferenceId());
+                if (accuses.isEmpty()) {
+                    return null;
+                }
+                List<MemberBasicInfoDto> members = accuses.stream()
+                    .map(accuse -> externalRetrieveMemberUseCase.getMemberBasicInfoById(accuse.getMemberId()))
+                    .toList();
+                return mapper.toDto(accuses.getFirst(), members);
+            })
+            .filter(Objects::nonNull)
+            .toList();
     }
 }

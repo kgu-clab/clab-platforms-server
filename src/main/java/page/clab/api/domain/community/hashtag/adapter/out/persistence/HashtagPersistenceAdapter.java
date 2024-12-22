@@ -11,8 +11,8 @@ import page.clab.api.global.exception.NotFoundException;
 @Component
 @RequiredArgsConstructor
 public class HashtagPersistenceAdapter implements
-        RegisterHashtagPort,
-        RetrieveHashtagPort {
+    RegisterHashtagPort,
+    RetrieveHashtagPort {
 
     private final HashtagRepository hashtagRepository;
     private final HashtagMapper hashtagMapper;
@@ -41,8 +41,8 @@ public class HashtagPersistenceAdapter implements
     @Override
     public Hashtag getById(Long id) {
         return hashtagRepository.findById(id)
-                .map(hashtagMapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[Hashtag] id: " + id + "에 해당하는 해시태그가 존재하지 않습니다."));
+            .map(hashtagMapper::toDomain)
+            .orElseThrow(() -> new NotFoundException("[Hashtag] id: " + id + "에 해당하는 해시태그가 존재하지 않습니다."));
 
     }
 
@@ -54,7 +54,7 @@ public class HashtagPersistenceAdapter implements
     @Override
     public List<Hashtag> findAllByOrderById() {
         return hashtagRepository.findAllByOrderById()
-                .stream().map(hashtagMapper::toDomain)
-                .toList();
+            .stream().map(hashtagMapper::toDomain)
+            .toList();
     }
 }

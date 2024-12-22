@@ -13,25 +13,25 @@ public class BoardHashtagDtoMapper {
 
     public BoardHashtag fromDto(Long boardId, Long hashtagId) {
         return BoardHashtag.builder()
-                .boardId(boardId)
-                .hashtagId(hashtagId)
-                .isDeleted(false)
-                .build();
+            .boardId(boardId)
+            .hashtagId(hashtagId)
+            .isDeleted(false)
+            .build();
     }
 
     public BoardHashtagRequestDto toDto(Long boardId, List<Long> hashtagIdList) {
         return BoardHashtagRequestDto.builder()
-                .boardId(boardId)
-                .hashtagIds(hashtagIdList)
-                .build();
+            .boardId(boardId)
+            .hashtagIds(hashtagIdList)
+            .build();
     }
 
     public BoardHashtagResponseDto toDto(BoardHashtag boardHashtag, String name) {
         return BoardHashtagResponseDto.builder()
-                .id(boardHashtag.getId())
-                .boardId(boardHashtag.getBoardId())
-                .name(name)
-                .hashtagId(boardHashtag.getHashtagId())
-                .build();
+            .id(boardHashtag.getId())
+            .boardId(boardHashtag.getBoardId())
+            .name(name)
+            .hashtagId(boardHashtag.getHashtagId())
+            .build();
     }
 }

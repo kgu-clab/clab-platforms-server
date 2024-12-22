@@ -23,7 +23,7 @@ public class ActivityPhotoRemoveController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{activityPhotoId}")
     public ApiResponse<Long> removeActivityPhoto(
-            @PathVariable(name = "activityPhotoId") Long activityPhotoId
+        @PathVariable(name = "activityPhotoId") Long activityPhotoId
     ) {
         Long id = removeActivityPhotoUseCase.removeActivityPhoto(activityPhotoId);
         return ApiResponse.success(id);

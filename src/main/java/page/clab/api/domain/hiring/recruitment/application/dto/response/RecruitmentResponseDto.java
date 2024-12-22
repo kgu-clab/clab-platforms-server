@@ -1,10 +1,9 @@
 package page.clab.api.domain.hiring.recruitment.application.dto.response;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.hiring.application.domain.ApplicationType;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Builder

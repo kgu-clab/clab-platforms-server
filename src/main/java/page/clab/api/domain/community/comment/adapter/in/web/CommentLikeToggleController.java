@@ -23,7 +23,7 @@ public class CommentLikeToggleController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/likes/{commentId}")
     public ApiResponse<Long> toggleLikeStatus(
-            @PathVariable(name = "commentId") Long commentId
+        @PathVariable(name = "commentId") Long commentId
     ) {
         Long id = toggleCommentLikeUseCase.toggleLikeStatus(commentId);
         return ApiResponse.success(id);

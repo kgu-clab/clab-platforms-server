@@ -27,8 +27,8 @@ public class DeletedBoardsRetrievalController {
     @PreAuthorize("hasRole('SUPER')")
     @GetMapping("/deleted")
     public ApiResponse<PagedResponseDto<BoardListResponseDto>> retrieveDeletedBoards(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BoardListResponseDto> boards = retrieveDeletedBoardsUseCase.retrieveDeletedBoards(pageable);

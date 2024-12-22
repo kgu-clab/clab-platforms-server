@@ -24,12 +24,12 @@ public class WorkExperienceUpdateController {
     private final UpdateWorkExperienceUseCase updateWorkExperienceUseCase;
 
     @Operation(summary = "[U] 경력사항 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "본인 외의 정보는 ROLE_SUPER만 가능")
+        "본인 외의 정보는 ROLE_SUPER만 가능")
     @PreAuthorize("hasRole('USER')")
     @PatchMapping("/{workExperienceId}")
     public ApiResponse<Long> updateWorkExperience(
-            @PathVariable(name = "workExperienceId") Long workExperienceId,
-            @Valid @RequestBody WorkExperienceUpdateRequestDto requestDto
+        @PathVariable(name = "workExperienceId") Long workExperienceId,
+        @Valid @RequestBody WorkExperienceUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = updateWorkExperienceUseCase.updateWorkExperience(workExperienceId, requestDto);
         return ApiResponse.success(id);

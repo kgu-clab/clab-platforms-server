@@ -15,8 +15,8 @@ public class TokenInfo {
 
     public static TokenInfo create(String accessToken, String refreshToken) {
         return TokenInfo.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .build();
     }
 }

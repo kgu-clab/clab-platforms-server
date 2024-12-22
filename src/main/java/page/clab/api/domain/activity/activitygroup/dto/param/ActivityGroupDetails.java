@@ -1,12 +1,11 @@
 package page.clab.api.domain.activity.activitygroup.dto.param;
 
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
-
-import java.util.List;
 
 @Getter
 @Builder

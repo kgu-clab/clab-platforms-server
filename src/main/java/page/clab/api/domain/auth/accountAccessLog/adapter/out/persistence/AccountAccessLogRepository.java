@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AccountAccessLogRepository extends JpaRepository<AccountAccessLogJpaEntity, Long> {
+
     Page<AccountAccessLogJpaEntity> findAllByMemberId(String memberId, Pageable pageable);
 }

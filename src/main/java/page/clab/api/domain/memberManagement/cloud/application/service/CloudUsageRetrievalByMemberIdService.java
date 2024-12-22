@@ -1,5 +1,6 @@
 package page.clab.api.domain.memberManagement.cloud.application.service;
 
+import java.io.File;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,8 +13,6 @@ import page.clab.api.domain.memberManagement.member.application.port.out.Retriev
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.FileSystemUtil;
-
-import java.io.File;
 
 @Service
 @RequiredArgsConstructor

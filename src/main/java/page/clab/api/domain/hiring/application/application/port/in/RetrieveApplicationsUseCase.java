@@ -5,5 +5,7 @@ import page.clab.api.domain.hiring.application.application.dto.response.Applicat
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveApplicationsUseCase {
-    PagedResponseDto<ApplicationResponseDto> retrieveApplications(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable);
+
+    PagedResponseDto<ApplicationResponseDto> retrieveApplications(Long recruitmentId, String studentId, Boolean isPass,
+        Pageable pageable);
 }

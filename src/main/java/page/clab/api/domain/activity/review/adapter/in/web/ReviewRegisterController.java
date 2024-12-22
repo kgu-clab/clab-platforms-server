@@ -25,7 +25,7 @@ public class ReviewRegisterController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("")
     public ApiResponse<Long> registerReview(
-            @Valid @RequestBody ReviewRequestDto requestDto
+        @Valid @RequestBody ReviewRequestDto requestDto
     ) {
         Long id = registerReviewUseCase.registerReview(requestDto);
         return ApiResponse.success(id);

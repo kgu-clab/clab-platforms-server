@@ -5,5 +5,7 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface NewsRepository extends JpaRepository<NewsJpaEntity, Long>, NewsRepositoryCustom, QuerydslPredicateExecutor<NewsJpaEntity> {
+public interface NewsRepository extends JpaRepository<NewsJpaEntity, Long>, NewsRepositoryCustom,
+    QuerydslPredicateExecutor<NewsJpaEntity> {
+
 }

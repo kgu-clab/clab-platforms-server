@@ -13,9 +13,9 @@ import page.clab.api.global.exception.NotFoundException;
 @Component
 @RequiredArgsConstructor
 public class ProductPersistenceAdapter implements
-        RegisterProductPort,
-        UpdateProductPort,
-        RetrieveProductPort {
+    RegisterProductPort,
+    UpdateProductPort,
+    RetrieveProductPort {
 
     private final ProductRepository repository;
     private final ProductMapper mapper;
@@ -37,19 +37,19 @@ public class ProductPersistenceAdapter implements
     @Override
     public Product getById(Long productId) {
         return repository.findById(productId)
-                .map(mapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[Product] id: " + productId + "에 해당하는 상품이 존재하지 않습니다."));
+            .map(mapper::toDomain)
+            .orElseThrow(() -> new NotFoundException("[Product] id: " + productId + "에 해당하는 상품이 존재하지 않습니다."));
     }
 
     @Override
     public Page<Product> findAllByIsDeletedTrue(Pageable pageable) {
         return repository.findAllByIsDeletedTrue(pageable)
-                .map(mapper::toDomain);
+            .map(mapper::toDomain);
     }
 
     @Override
     public Page<Product> findByConditions(String productName, Pageable pageable) {
         return repository.findByConditions(productName, pageable)
-                .map(mapper::toDomain);
+            .map(mapper::toDomain);
     }
 }

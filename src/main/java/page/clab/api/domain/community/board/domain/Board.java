@@ -1,6 +1,8 @@
 package page.clab.api.domain.community.board.domain;
 
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,10 +14,6 @@ import page.clab.api.domain.community.board.application.exception.InvalidBoardCa
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.PermissionDeniedException;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Getter
 @Setter
@@ -70,7 +68,8 @@ public class Board {
         }
     }
 
-    public void validateAccessPermissionForCreation(MemberDetailedInfoDto currentMemberInfo) throws PermissionDeniedException {
+    public void validateAccessPermissionForCreation(MemberDetailedInfoDto currentMemberInfo)
+        throws PermissionDeniedException {
         if (this.isNotice() && !currentMemberInfo.isAdminRole()) {
             throw new PermissionDeniedException("공지사항은 관리자만 작성할 수 있습니다.");
         }

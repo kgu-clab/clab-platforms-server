@@ -11,30 +11,30 @@ public class RecruitmentDtoMapper {
 
     public Recruitment fromDto(RecruitmentRequestDto requestDto) {
         return Recruitment.builder()
-                .startDate(requestDto.getStartDate())
-                .endDate(requestDto.getEndDate())
-                .applicationType(requestDto.getApplicationType())
-                .target(requestDto.getTarget())
-                .isDeleted(false)
-                .build();
+            .startDate(requestDto.getStartDate())
+            .endDate(requestDto.getEndDate())
+            .applicationType(requestDto.getApplicationType())
+            .target(requestDto.getTarget())
+            .isDeleted(false)
+            .build();
     }
 
     public RecruitmentResponseDto toDto(Recruitment recruitment) {
         return RecruitmentResponseDto.builder()
-                .id(recruitment.getId())
-                .startDate(recruitment.getStartDate())
-                .endDate(recruitment.getEndDate())
-                .applicationType(recruitment.getApplicationType())
-                .target(recruitment.getTarget())
-                .status(recruitment.getStatus().getDescription())
-                .updatedAt(recruitment.getUpdatedAt())
-                .build();
+            .id(recruitment.getId())
+            .startDate(recruitment.getStartDate())
+            .endDate(recruitment.getEndDate())
+            .applicationType(recruitment.getApplicationType())
+            .target(recruitment.getTarget())
+            .status(recruitment.getStatus().getDescription())
+            .updatedAt(recruitment.getUpdatedAt())
+            .build();
     }
 
     public RecruitmentEndDateResponseDto toEndDateDto(Recruitment recruitment) {
         return RecruitmentEndDateResponseDto.builder()
-                .id(recruitment.getId())
-                .applicationType(recruitment.getApplicationType())
-                .build();
+            .id(recruitment.getId())
+            .applicationType(recruitment.getApplicationType())
+            .build();
     }
 }

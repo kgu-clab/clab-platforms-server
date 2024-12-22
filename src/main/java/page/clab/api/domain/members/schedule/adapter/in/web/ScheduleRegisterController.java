@@ -26,7 +26,7 @@ public class ScheduleRegisterController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("")
     public ApiResponse<Long> registerSchedule(
-            @Valid @RequestBody ScheduleRequestDto requestDto
+        @Valid @RequestBody ScheduleRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = registerScheduleUseCase.registerSchedule(requestDto);
         return ApiResponse.success(id);

@@ -9,11 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.board.application.dto.mapper.BoardDtoMapper;
 import page.clab.api.domain.community.board.application.dto.response.BoardHashtagResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardMyResponseDto;
+import page.clab.api.domain.community.board.application.port.in.RetrieveBoardHashtagUseCase;
 import page.clab.api.domain.community.board.application.port.in.RetrieveMyBoardsUseCase;
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
-import page.clab.api.domain.community.board.application.port.in.RetrieveBoardHashtagUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
@@ -32,7 +32,8 @@ public class MyBoardsRetrievalService implements RetrieveMyBoardsUseCase {
         MemberBasicInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
         Page<Board> boards = retrieveBoardPort.findAllByMemberId(currentMemberInfo.getMemberId(), pageable);
         return new PagedResponseDto<>(boards.map(board -> {
-            List<BoardHashtagResponseDto> boardHashtagInfos = retrieveBoardHashtagUseCase.getBoardHashtagInfoByBoardId(board.getId());
+            List<BoardHashtagResponseDto> boardHashtagInfos = retrieveBoardHashtagUseCase.getBoardHashtagInfoByBoardId(
+                board.getId());
             return mapper.toDto(board, currentMemberInfo, boardHashtagInfos);
         }));
     }

@@ -1,5 +1,6 @@
 package page.clab.api.external.library.bookLoanRecord.application.service;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,8 +8,6 @@ import page.clab.api.domain.library.bookLoanRecord.application.port.out.Retrieve
 import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanRecord;
 import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanStatus;
 import page.clab.api.external.library.bookLoanRecord.application.port.ExternalRetrieveBookLoanRecordUseCase;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +19,7 @@ public class ExternalBookLoanRecordRetrievalService implements ExternalRetrieveB
     @Override
     public LocalDateTime getDueDateForBook(Long bookId) {
         return retrieveBookLoanRecordPort.findByBookIdAndReturnedAtIsNullAndStatus(bookId, BookLoanStatus.APPROVED)
-                .map(BookLoanRecord::getDueDate)
-                .orElse(null);
+            .map(BookLoanRecord::getDueDate)
+            .orElse(null);
     }
 }

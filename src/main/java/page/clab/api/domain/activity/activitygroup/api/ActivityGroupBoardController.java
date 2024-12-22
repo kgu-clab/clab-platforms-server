@@ -3,6 +3,7 @@ package page.clab.api.domain.activity.activitygroup.api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,8 +31,6 @@ import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/activity-group/boards")
 @RequiredArgsConstructor
@@ -42,35 +41,38 @@ public class ActivityGroupBoardController {
     private final PageableUtils pageableUtils;
 
     @Operation(summary = "[U] 활동 그룹 게시판 생성", description = "ROLE_USER 이상의 권한이 필요함<br><br>" +
-            "활동 그룹 게시판 카테고리별 requestDto에 들어가야 할 필수내용입니다.<br><br>" +
-            "공지사항, 주차별활동 : 카테고리 <br>" +
-            "과제 : 부모 게시판(주차별활동), 카테고리, 마감일자<br>" +
-            "제출 : 부모 게시판(과제), 카테고리<br>" +
-            "피드백 : 부모 게시판(제출), 카테고리"
+        "활동 그룹 게시판 카테고리별 requestDto에 들어가야 할 필수내용입니다.<br><br>" +
+        "공지사항, 주차별활동 : 카테고리 <br>" +
+        "과제 : 부모 게시판(주차별활동), 카테고리, 마감일자<br>" +
+        "제출 : 부모 게시판(과제), 카테고리<br>" +
+        "피드백 : 부모 게시판(제출), 카테고리"
     )
     @PreAuthorize("hasRole('USER')")
     @PostMapping("")
     public ApiResponse<ActivityGroupBoardReferenceDto> createActivityGroupBoard(
-            @RequestParam(name = "parentId", required = false) Long parentId,
-            @RequestParam(name = "activityGroupId") Long activityGroupId,
-            @Valid @RequestBody ActivityGroupBoardRequestDto requestDto
+        @RequestParam(name = "parentId", required = false) Long parentId,
+        @RequestParam(name = "activityGroupId") Long activityGroupId,
+        @Valid @RequestBody ActivityGroupBoardRequestDto requestDto
     ) throws PermissionDeniedException {
-        ActivityGroupBoardReferenceDto referenceDto = activityGroupBoardService.createActivityGroupBoard(parentId, activityGroupId, requestDto);
+        ActivityGroupBoardReferenceDto referenceDto = activityGroupBoardService.createActivityGroupBoard(parentId,
+            activityGroupId, requestDto);
         return ApiResponse.success(referenceDto);
     }
 
     @Operation(summary = "[U] 활동 그룹 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
+        "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/list")
     public ApiResponse<PagedResponseDto<ActivityGroupBoardResponseDto>> getActivityGroupBoardList(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
-            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size,
+        @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+        @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupBoardResponseDto.class);
-        PagedResponseDto<ActivityGroupBoardResponseDto> boards = activityGroupBoardService.getAllActivityGroupBoard(pageable);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
+            ActivityGroupBoardResponseDto.class);
+        PagedResponseDto<ActivityGroupBoardResponseDto> boards = activityGroupBoardService.getAllActivityGroupBoard(
+            pageable);
         return ApiResponse.success(boards);
     }
 
@@ -78,26 +80,28 @@ public class ActivityGroupBoardController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("")
     public ApiResponse<ActivityGroupBoardResponseDto> getActivityGroupBoardById(
-            @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId
+        @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId
     ) throws PermissionDeniedException {
         ActivityGroupBoardResponseDto board = activityGroupBoardService.getActivityGroupBoard(activityGroupBoardId);
         return ApiResponse.success(board);
     }
 
     @Operation(summary = "[U] 활동 그룹 ID에 대한 카테고리별 게시판 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
+        "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/by-category")
     public ApiResponse<PagedResponseDto<ActivityGroupBoardResponseDto>> getActivityGroupBoardByCategory(
-            @RequestParam(name = "activityGroupId") Long activityGroupId,
-            @RequestParam(name = "category") ActivityGroupBoardCategory category,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
-            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
+        @RequestParam(name = "activityGroupId") Long activityGroupId,
+        @RequestParam(name = "category") ActivityGroupBoardCategory category,
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size,
+        @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+        @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException, PermissionDeniedException {
-        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ActivityGroupBoardResponseDto.class);
-        PagedResponseDto<ActivityGroupBoardResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByCategory(activityGroupId, category, pageable);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
+            ActivityGroupBoardResponseDto.class);
+        PagedResponseDto<ActivityGroupBoardResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByCategory(
+            activityGroupId, category, pageable);
         return ApiResponse.success(boards);
     }
 
@@ -105,12 +109,13 @@ public class ActivityGroupBoardController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/by-parent")
     public ApiResponse<PagedResponseDto<ActivityGroupBoardChildResponseDto>> getActivityGroupBoardByParent(
-            @RequestParam(name = "parentId") Long parentId,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
+        @RequestParam(name = "parentId") Long parentId,
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size
     ) throws PermissionDeniedException {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ActivityGroupBoardChildResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByParent(parentId, pageable);
+        PagedResponseDto<ActivityGroupBoardChildResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByParent(
+            parentId, pageable);
         return ApiResponse.success(boards);
     }
 
@@ -118,9 +123,10 @@ public class ActivityGroupBoardController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/my-assignment")
     public ApiResponse<List<AssignmentSubmissionWithFeedbackResponseDto>> getMyAssignmentBoardWithFeedback(
-            @RequestParam(name = "parentId") Long parentId
+        @RequestParam(name = "parentId") Long parentId
     ) {
-        List<AssignmentSubmissionWithFeedbackResponseDto> boards = activityGroupBoardService.getMyAssignmentsWithFeedbacks(parentId);
+        List<AssignmentSubmissionWithFeedbackResponseDto> boards = activityGroupBoardService.getMyAssignmentsWithFeedbacks(
+            parentId);
         return ApiResponse.success(boards);
     }
 
@@ -128,10 +134,11 @@ public class ActivityGroupBoardController {
     @PreAuthorize("hasRole('USER')")
     @PatchMapping("")
     public ApiResponse<ActivityGroupBoardReferenceDto> updateActivityGroupBoard(
-            @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId,
-            @Valid @RequestBody ActivityGroupBoardUpdateRequestDto requestDto
+        @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId,
+        @Valid @RequestBody ActivityGroupBoardUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
-        ActivityGroupBoardReferenceDto referenceDto = activityGroupBoardService.updateActivityGroupBoard(activityGroupBoardId, requestDto);
+        ActivityGroupBoardReferenceDto referenceDto = activityGroupBoardService.updateActivityGroupBoard(
+            activityGroupBoardId, requestDto);
         return ApiResponse.success(referenceDto);
     }
 
@@ -139,9 +146,10 @@ public class ActivityGroupBoardController {
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("")
     public ApiResponse<ActivityGroupBoardReferenceDto> deleteActivityGroupBoard(
-            @RequestParam Long activityGroupBoardId
+        @RequestParam Long activityGroupBoardId
     ) throws PermissionDeniedException {
-        ActivityGroupBoardReferenceDto referenceDto = activityGroupBoardService.deleteActivityGroupBoard(activityGroupBoardId);
+        ActivityGroupBoardReferenceDto referenceDto = activityGroupBoardService.deleteActivityGroupBoard(
+            activityGroupBoardId);
         return ApiResponse.success(referenceDto);
     }
 
@@ -149,11 +157,12 @@ public class ActivityGroupBoardController {
     @PreAuthorize("hasRole('SUPER')")
     @GetMapping("/deleted")
     public ApiResponse<PagedResponseDto<ActivityGroupBoardResponseDto>> getDeletedActivityGroupBoards(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ActivityGroupBoardResponseDto> activityBoards = activityGroupBoardService.getDeletedActivityGroupBoards(pageable);
+        PagedResponseDto<ActivityGroupBoardResponseDto> activityBoards = activityGroupBoardService.getDeletedActivityGroupBoards(
+            pageable);
         return ApiResponse.success(activityBoards);
     }
 }

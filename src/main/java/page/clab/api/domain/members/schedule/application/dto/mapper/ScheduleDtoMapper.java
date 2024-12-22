@@ -12,34 +12,34 @@ public class ScheduleDtoMapper {
 
     public Schedule fromDto(ScheduleRequestDto requestDto, String memberId, ActivityGroup activityGroup) {
         return Schedule.builder()
-                .scheduleType(requestDto.getScheduleType())
-                .title(requestDto.getTitle())
-                .detail(requestDto.getDetail())
-                .startDateTime(requestDto.getStartDateTime())
-                .endDateTime(requestDto.getEndDateTime())
-                .priority(requestDto.getPriority())
-                .scheduleWriter(memberId)
-                .activityGroup(activityGroup)
-                .isDeleted(false)
-                .build();
+            .scheduleType(requestDto.getScheduleType())
+            .title(requestDto.getTitle())
+            .detail(requestDto.getDetail())
+            .startDateTime(requestDto.getStartDateTime())
+            .endDateTime(requestDto.getEndDateTime())
+            .priority(requestDto.getPriority())
+            .scheduleWriter(memberId)
+            .activityGroup(activityGroup)
+            .isDeleted(false)
+            .build();
     }
 
     public ScheduleResponseDto toDto(Schedule schedule) {
         return ScheduleResponseDto.builder()
-                .id(schedule.getId())
-                .title(schedule.getTitle())
-                .detail(schedule.getDetail())
-                .activityName(schedule.isAllSchedule() ? null : schedule.getActivityGroup().getName())
-                .startDateTime(schedule.getStartDateTime())
-                .endDateTime(schedule.getEndDateTime())
-                .priority(schedule.getPriority())
-                .build();
+            .id(schedule.getId())
+            .title(schedule.getTitle())
+            .detail(schedule.getDetail())
+            .activityName(schedule.isAllSchedule() ? null : schedule.getActivityGroup().getName())
+            .startDateTime(schedule.getStartDateTime())
+            .endDateTime(schedule.getEndDateTime())
+            .priority(schedule.getPriority())
+            .build();
     }
 
     public ScheduleCollectResponseDto of(Long totalScheduleCount, Long totalEventCount) {
         return ScheduleCollectResponseDto.builder()
-                .totalScheduleCount(totalScheduleCount)
-                .totalEventCount(totalEventCount)
-                .build();
+            .totalScheduleCount(totalScheduleCount)
+            .totalEventCount(totalEventCount)
+            .build();
     }
 }

@@ -33,7 +33,7 @@ public class DeletedBoardsRetrievalService implements RetrieveDeletedBoardsUseCa
     public PagedResponseDto<BoardListResponseDto> retrieveDeletedBoards(Pageable pageable) {
         Page<Board> boards = retrieveBoardPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(boards.map(board ->
-                mapToBoardListResponseDto(board, getMemberDetailedInfoByBoard(board))));
+            mapToBoardListResponseDto(board, getMemberDetailedInfoByBoard(board))));
     }
 
     private MemberDetailedInfoDto getMemberDetailedInfoByBoard(Board board) {
@@ -43,7 +43,8 @@ public class DeletedBoardsRetrievalService implements RetrieveDeletedBoardsUseCa
     @NotNull
     private BoardListResponseDto mapToBoardListResponseDto(Board board, MemberDetailedInfoDto memberInfo) {
         Long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
-        List<BoardHashtagResponseDto> boardHashtagInfos = boardHashtagRetrieveService.getBoardHashtagInfoByBoardId(board.getId());
+        List<BoardHashtagResponseDto> boardHashtagInfos = boardHashtagRetrieveService.getBoardHashtagInfoByBoardId(
+            board.getId());
         return mapper.toListDto(board, memberInfo, commentCount, boardHashtagInfos);
     }
 }

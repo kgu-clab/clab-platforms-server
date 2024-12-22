@@ -23,7 +23,7 @@ public class BookLoanApprovalController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/approve/{bookLoanRecordId}")
     public ApiResponse<Long> approveBookLoan(
-            @PathVariable(name = "bookLoanRecordId") Long bookLoanRecordId
+        @PathVariable(name = "bookLoanRecordId") Long bookLoanRecordId
     ) {
         Long id = approveBookLoanUseCase.approveBookLoan(bookLoanRecordId);
         return ApiResponse.success(id);

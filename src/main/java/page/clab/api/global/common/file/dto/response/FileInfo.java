@@ -1,9 +1,8 @@
 package page.clab.api.global.common.file.dto.response;
 
+import java.util.Date;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.Date;
 
 @Getter
 @Builder

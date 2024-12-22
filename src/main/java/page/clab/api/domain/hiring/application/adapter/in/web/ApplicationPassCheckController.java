@@ -22,8 +22,8 @@ public class ApplicationPassCheckController {
     @Operation(summary = "합격 여부 조회", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/{recruitmentId}/{studentId}")
     public ApiResponse<ApplicationPassResponseDto> checkApplicationPass(
-            @PathVariable(name = "recruitmentId") Long recruitmentId,
-            @PathVariable(name = "studentId") String studentId
+        @PathVariable(name = "recruitmentId") Long recruitmentId,
+        @PathVariable(name = "studentId") String studentId
     ) {
         ApplicationPassResponseDto pass = checkApplicationPassStatusUseCase.checkPassStatus(recruitmentId, studentId);
         return ApiResponse.success(pass);

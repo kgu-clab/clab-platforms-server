@@ -27,7 +27,8 @@ public class DeletedDonationsRetrievalService implements RetrieveDeletedDonation
     public PagedResponseDto<DonationResponseDto> retrieveDeletedDonations(Pageable pageable) {
         Page<Donation> donations = retrieveDonationPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(donations.map(donation -> {
-            MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(donation.getMemberId());
+            MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(
+                donation.getMemberId());
             return mapper.toDto(donation, memberInfo.getMemberName());
         }));
     }

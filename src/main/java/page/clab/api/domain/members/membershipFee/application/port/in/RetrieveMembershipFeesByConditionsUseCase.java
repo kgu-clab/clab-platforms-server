@@ -6,5 +6,7 @@ import page.clab.api.domain.members.membershipFee.domain.MembershipFeeStatus;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveMembershipFeesByConditionsUseCase {
-    PagedResponseDto<MembershipFeeResponseDto> retrieveMembershipFees(String memberId, String memberName, String category, MembershipFeeStatus status, Pageable pageable);
+
+    PagedResponseDto<MembershipFeeResponseDto> retrieveMembershipFees(String memberId, String memberName,
+        String category, MembershipFeeStatus status, Pageable pageable);
 }

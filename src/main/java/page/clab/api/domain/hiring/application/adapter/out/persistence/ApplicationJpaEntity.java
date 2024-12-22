@@ -12,6 +12,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,8 +24,6 @@ import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.hiring.application.domain.ApplicationType;
 import page.clab.api.global.common.domain.BaseEntity;
-
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "application")

@@ -24,7 +24,7 @@ public class ScheduleRemoveController {
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{scheduleId}")
     public ApiResponse<Long> removeSchedule(
-            @PathVariable(name = "scheduleId") Long scheduleId
+        @PathVariable(name = "scheduleId") Long scheduleId
     ) throws PermissionDeniedException {
         Long id = removeScheduleUseCase.removeSchedule(scheduleId);
         return ApiResponse.success(id);

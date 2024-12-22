@@ -10,24 +10,24 @@ public class JobPostingDtoMapper {
 
     public JobPostingResponseDto toDto(JobPosting jobPosting) {
         return JobPostingResponseDto.builder()
-                .id(jobPosting.getId())
-                .title(jobPosting.getTitle())
-                .recruitmentPeriod(jobPosting.getRecruitmentPeriod())
-                .jobPostingUrl(jobPosting.getJobPostingUrl())
-                .createdAt(jobPosting.getCreatedAt())
-                .build();
+            .id(jobPosting.getId())
+            .title(jobPosting.getTitle())
+            .recruitmentPeriod(jobPosting.getRecruitmentPeriod())
+            .jobPostingUrl(jobPosting.getJobPostingUrl())
+            .createdAt(jobPosting.getCreatedAt())
+            .build();
     }
 
     public JobPostingDetailsResponseDto toDetailsDto(JobPosting jobPosting) {
         return JobPostingDetailsResponseDto.builder()
-                .id(jobPosting.getId())
-                .title(jobPosting.getTitle())
-                .careerLevel(jobPosting.getCareerLevel())
-                .employmentType(jobPosting.getEmploymentType())
-                .companyName(jobPosting.getCompanyName())
-                .recruitmentPeriod(jobPosting.getRecruitmentPeriod())
-                .jobPostingUrl(jobPosting.getJobPostingUrl())
-                .createdAt(jobPosting.getCreatedAt())
-                .build();
+            .id(jobPosting.getId())
+            .title(jobPosting.getTitle())
+            .careerLevel(jobPosting.getCareerLevel())
+            .employmentType(jobPosting.getEmploymentType())
+            .companyName(jobPosting.getCompanyName())
+            .recruitmentPeriod(jobPosting.getRecruitmentPeriod())
+            .jobPostingUrl(jobPosting.getJobPostingUrl())
+            .createdAt(jobPosting.getCreatedAt())
+            .build();
     }
 }

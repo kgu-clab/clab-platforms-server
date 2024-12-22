@@ -6,5 +6,6 @@ import page.clab.api.domain.community.board.application.dto.response.BoardOvervi
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveBoardsByHashtagUseCase {
+
     PagedResponseDto<BoardOverviewResponseDto> retrieveBoardsByHashtag(List<String> hashtags, Pageable pageable);
 }

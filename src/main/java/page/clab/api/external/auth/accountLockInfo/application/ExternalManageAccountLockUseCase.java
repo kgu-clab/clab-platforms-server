@@ -8,5 +8,6 @@ public interface ExternalManageAccountLockUseCase {
 
     void handleAccountLockInfo(String memberId) throws LoginFailedException, MemberLockedException;
 
-    void handleLoginFailure(HttpServletRequest request, String memberId) throws LoginFailedException, MemberLockedException;
+    void handleLoginFailure(HttpServletRequest request, String memberId)
+        throws LoginFailedException, MemberLockedException;
 }

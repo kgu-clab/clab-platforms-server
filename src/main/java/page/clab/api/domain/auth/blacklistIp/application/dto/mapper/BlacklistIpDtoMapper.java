@@ -10,17 +10,17 @@ public class BlacklistIpDtoMapper {
 
     public BlacklistIp fromDto(BlacklistIpRequestDto requestDto) {
         return BlacklistIp.builder()
-                .ipAddress(requestDto.getIpAddress())
-                .reason(requestDto.getReason())
-                .build();
+            .ipAddress(requestDto.getIpAddress())
+            .reason(requestDto.getReason())
+            .build();
     }
 
     public BlacklistIpResponseDto toDto(BlacklistIp blacklistIp) {
         return BlacklistIpResponseDto.builder()
-                .id(blacklistIp.getId())
-                .ipAddress(blacklistIp.getIpAddress())
-                .reason(blacklistIp.getReason())
-                .createdAt(blacklistIp.getCreatedAt())
-                .build();
+            .id(blacklistIp.getId())
+            .ipAddress(blacklistIp.getIpAddress())
+            .reason(blacklistIp.getReason())
+            .createdAt(blacklistIp.getCreatedAt())
+            .build();
     }
 }

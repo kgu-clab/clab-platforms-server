@@ -1,5 +1,7 @@
 package page.clab.api.domain.activity.activitygroup.dao;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,11 +14,9 @@ import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMemberId;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
 
-import java.util.List;
-import java.util.Optional;
-
 @Repository
-public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupMemberId>, GroupMemberRepositoryCustom, QuerydslPredicateExecutor<GroupMember> {
+public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupMemberId>, GroupMemberRepositoryCustom,
+    QuerydslPredicateExecutor<GroupMember> {
 
     List<GroupMember> findAllByMemberId(String memberId);
 
@@ -28,18 +28,21 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupM
 
     List<GroupMember> findAllByActivityGroupIdOrderByMemberIdAsc(Long activityGroupId);
 
-    Page<GroupMember> findAllByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status, org.springframework.data.domain.Pageable pageable);
+    Page<GroupMember> findAllByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status,
+        org.springframework.data.domain.Pageable pageable);
 
     List<GroupMember> findAllByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status);
 
-    boolean existsByActivityGroupAndMemberIdAndStatus(ActivityGroup activityGroup, String memberId, GroupMemberStatus status);
+    boolean existsByActivityGroupAndMemberIdAndStatus(ActivityGroup activityGroup, String memberId,
+        GroupMemberStatus status);
 
-    boolean existsByActivityGroupIdAndMemberIdAndStatus(Long activityGroupId, String memberId, GroupMemberStatus status);
+    boolean existsByActivityGroupIdAndMemberIdAndStatus(Long activityGroupId, String memberId,
+        GroupMemberStatus status);
 
     // activityGroupIds 리스트에 해당하는 각 ActivityGroup에서, 가장 createdAt이 오래된 GroupMember를 조회합니다.
     @Query(value = "SELECT DISTINCT ON (gm.activity_group_id) * " +
-            "FROM group_member gm " +
-            "WHERE gm.activity_group_id IN :activityGroupIds " +
-            "ORDER BY gm.activity_group_id, gm.created_at ASC", nativeQuery = true)
+        "FROM group_member gm " +
+        "WHERE gm.activity_group_id IN :activityGroupIds " +
+        "ORDER BY gm.activity_group_id, gm.created_at ASC", nativeQuery = true)
     List<GroupMember> findFirstByActivityGroupIdIn(@Param("activityGroupIds") List<Long> activityGroupIds);
 }

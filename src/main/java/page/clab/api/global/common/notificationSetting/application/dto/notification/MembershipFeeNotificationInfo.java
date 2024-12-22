@@ -17,11 +17,11 @@ public class MembershipFeeNotificationInfo {
 
     public static MembershipFeeNotificationInfo create(MembershipFee membershipFee, MemberBasicInfoDto memberInfo) {
         return MembershipFeeNotificationInfo.builder()
-                .memberId(memberInfo.getMemberId())
-                .memberName(memberInfo.getMemberName())
-                .category(membershipFee.getCategory())
-                .content(membershipFee.getContent())
-                .amount(membershipFee.getAmount())
-                .build();
+            .memberId(memberInfo.getMemberId())
+            .memberName(memberInfo.getMemberName())
+            .category(membershipFee.getCategory())
+            .content(membershipFee.getContent())
+            .amount(membershipFee.getAmount())
+            .build();
     }
 }

@@ -4,5 +4,6 @@ import page.clab.api.domain.community.comment.application.dto.request.CommentUpd
 import page.clab.api.global.exception.PermissionDeniedException;
 
 public interface UpdateCommentUseCase {
+
     Long updateComment(Long commentId, CommentUpdateRequestDto requestDto) throws PermissionDeniedException;
 }

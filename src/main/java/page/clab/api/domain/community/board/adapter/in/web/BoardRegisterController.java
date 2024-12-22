@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,7 +26,7 @@ public class BoardRegisterController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("")
     public ApiResponse<String> registerBoard(
-            @Valid @RequestBody BoardRequestDto requestDto
+        @Valid @RequestBody BoardRequestDto requestDto
     ) throws PermissionDeniedException {
         String id = registerBoardUseCase.registerBoard(requestDto);
         return ApiResponse.success(id);

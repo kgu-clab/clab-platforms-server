@@ -11,29 +11,29 @@ public class MembershipFeeDtoMapper {
 
     public MembershipFee fromDto(MembershipFeeRequestDto requestDto, String memberId) {
         return MembershipFee.builder()
-                .memberId(memberId)
-                .category(requestDto.getCategory())
-                .account(requestDto.getAccount())
-                .amount(requestDto.getAmount())
-                .content(requestDto.getContent())
-                .imageUrl(requestDto.getImageUrl())
-                .status(MembershipFeeStatus.PENDING)
-                .isDeleted(false)
-                .build();
+            .memberId(memberId)
+            .category(requestDto.getCategory())
+            .account(requestDto.getAccount())
+            .amount(requestDto.getAmount())
+            .content(requestDto.getContent())
+            .imageUrl(requestDto.getImageUrl())
+            .status(MembershipFeeStatus.PENDING)
+            .isDeleted(false)
+            .build();
     }
 
     public MembershipFeeResponseDto toDto(MembershipFee membershipFee, String memberName, boolean isAdminRole) {
         return MembershipFeeResponseDto.builder()
-                .id(membershipFee.getId())
-                .memberId(membershipFee.getMemberId())
-                .memberName(memberName)
-                .category(membershipFee.getCategory())
-                .account(isAdminRole ? membershipFee.getAccount() : null)
-                .amount(membershipFee.getAmount())
-                .content(membershipFee.getContent())
-                .imageUrl(membershipFee.getImageUrl())
-                .status(membershipFee.getStatus())
-                .createdAt(membershipFee.getCreatedAt())
-                .build();
+            .id(membershipFee.getId())
+            .memberId(membershipFee.getMemberId())
+            .memberName(memberName)
+            .category(membershipFee.getCategory())
+            .account(isAdminRole ? membershipFee.getAccount() : null)
+            .amount(membershipFee.getAmount())
+            .content(membershipFee.getContent())
+            .imageUrl(membershipFee.getImageUrl())
+            .status(membershipFee.getStatus())
+            .createdAt(membershipFee.getCreatedAt())
+            .build();
     }
 }

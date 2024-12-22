@@ -18,6 +18,6 @@ public class ApplicationStartupListener {
     @EventListener(ContextRefreshedEvent.class)
     public void onApplicationEvent(ContextRefreshedEvent event) {
         eventPublisher.publishEvent(
-                new NotificationEvent(this, GeneralAlertType.SERVER_START, null, null));
+            new NotificationEvent(this, GeneralAlertType.SERVER_START, null, null));
     }
 }

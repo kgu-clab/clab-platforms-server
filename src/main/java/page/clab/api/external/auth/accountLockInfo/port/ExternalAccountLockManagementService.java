@@ -66,7 +66,7 @@ public class ExternalAccountLockManagementService implements ExternalManageAccou
     @Transactional
     @Override
     public void handleLoginFailure(HttpServletRequest request, String memberId)
-            throws MemberLockedException, LoginFailedException {
+        throws MemberLockedException, LoginFailedException {
         ensureMemberExists(memberId);
         AccountLockInfo accountLockInfo = ensureAccountLockInfo(memberId);
         validateAccountLockStatus(accountLockInfo);
@@ -80,7 +80,7 @@ public class ExternalAccountLockManagementService implements ExternalManageAccou
 
     private AccountLockInfo ensureAccountLockInfo(String memberId) {
         return retrieveAccountLockInfoPort.findByMemberId(memberId)
-                .orElseGet(() -> registerAccountLockInfoPort.save(AccountLockInfo.create(memberId)));
+            .orElseGet(() -> registerAccountLockInfoPort.save(AccountLockInfo.create(memberId)));
     }
 
     private void ensureMemberExists(String memberId) throws LoginFailedException {
@@ -102,8 +102,8 @@ public class ExternalAccountLockManagementService implements ExternalManageAccou
             request.setAttribute("member", memberId + " " + memberName);
             String repeatedLoginFailuresMessage = "로그인 실패 횟수 초과로 계정이 잠겼습니다.";
             eventPublisher.publishEvent(
-                    new NotificationEvent(this, SecurityAlertType.REPEATED_LOGIN_FAILURES, request,
-                            repeatedLoginFailuresMessage));
+                new NotificationEvent(this, SecurityAlertType.REPEATED_LOGIN_FAILURES, request,
+                    repeatedLoginFailuresMessage));
         }
     }
 }

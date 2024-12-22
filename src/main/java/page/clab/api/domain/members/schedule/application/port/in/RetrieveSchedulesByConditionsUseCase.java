@@ -6,5 +6,7 @@ import page.clab.api.domain.members.schedule.domain.SchedulePriority;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveSchedulesByConditionsUseCase {
-    PagedResponseDto<ScheduleResponseDto> retrieveSchedules(Integer year, Integer month, SchedulePriority priority, Pageable pageable);
+
+    PagedResponseDto<ScheduleResponseDto> retrieveSchedules(Integer year, Integer month, SchedulePriority priority,
+        Pageable pageable);
 }

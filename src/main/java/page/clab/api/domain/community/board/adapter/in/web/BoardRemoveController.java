@@ -24,7 +24,7 @@ public class BoardRemoveController {
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{boardId}")
     public ApiResponse<String> removeBoard(
-            @PathVariable(name = "boardId") Long boardId
+        @PathVariable(name = "boardId") Long boardId
     ) throws PermissionDeniedException {
         String id = removeBoardUseCase.removeBoard(boardId);
         return ApiResponse.success(id);

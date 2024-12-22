@@ -1,12 +1,11 @@
 package page.clab.api.domain.community.comment.application.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter

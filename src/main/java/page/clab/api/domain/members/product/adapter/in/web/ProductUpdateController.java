@@ -26,8 +26,8 @@ public class ProductUpdateController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{productId}")
     public ApiResponse<Long> updateProduct(
-            @PathVariable(name = "productId") Long productId,
-            @Valid @RequestBody ProductUpdateRequestDto requestDto
+        @PathVariable(name = "productId") Long productId,
+        @Valid @RequestBody ProductUpdateRequestDto requestDto
     ) {
         Long id = updateProductUseCase.updateProduct(productId, requestDto);
         return ApiResponse.success(id);

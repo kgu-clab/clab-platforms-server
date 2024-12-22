@@ -26,8 +26,8 @@ public class BlacklistIpRegisterController {
     @PreAuthorize("hasRole('SUPER')")
     @PostMapping("")
     public ApiResponse<String> registerBlacklistIp(
-            HttpServletRequest request,
-            @Valid @RequestBody BlacklistIpRequestDto requestDto
+        HttpServletRequest request,
+        @Valid @RequestBody BlacklistIpRequestDto requestDto
     ) {
         String addedIp = registerBlacklistIpUseCase.registerBlacklistIp(request, requestDto);
         return ApiResponse.success(addedIp);

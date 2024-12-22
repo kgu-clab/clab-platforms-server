@@ -6,5 +6,6 @@ import page.clab.api.domain.community.board.domain.BoardCategory;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveBoardsByCategoryUseCase {
+
     PagedResponseDto<BoardOverviewResponseDto> retrieveBoardsByCategory(BoardCategory category, Pageable pageable);
 }

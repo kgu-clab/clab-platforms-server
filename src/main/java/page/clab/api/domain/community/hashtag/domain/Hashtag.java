@@ -1,6 +1,5 @@
 package page.clab.api.domain.community.hashtag.domain;
 
-import jakarta.persistence.Column;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

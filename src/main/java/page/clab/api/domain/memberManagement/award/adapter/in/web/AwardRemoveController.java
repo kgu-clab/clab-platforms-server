@@ -21,11 +21,11 @@ public class AwardRemoveController {
     private final RemoveAwardUseCase removeAwardUseCase;
 
     @Operation(summary = "[U] 수상 이력 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "본인 외의 정보는 ROLE_SUPER만 가능")
+        "본인 외의 정보는 ROLE_SUPER만 가능")
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{awardId}")
     public ApiResponse<Long> removeAward(
-            @PathVariable(name = "awardId") Long awardId
+        @PathVariable(name = "awardId") Long awardId
     ) throws PermissionDeniedException {
         Long id = removeAwardUseCase.removeAward(awardId);
         return ApiResponse.success(id);

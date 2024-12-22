@@ -21,12 +21,12 @@ public class AbnormalAccessIpRemoveController {
     private final RemoveAbnormalAccessIpUseCase removeAbnormalAccessIpUseCase;
 
     @Operation(summary = "[S] 비정상 접근 IP 기록 삭제", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
-            "지속적인 비정상 접근으로 인해 차단된 IP를 삭제")
+        "지속적인 비정상 접근으로 인해 차단된 IP를 삭제")
     @PreAuthorize("hasRole('SUPER')")
     @DeleteMapping("/abnormal-access")
     public ApiResponse<String> removeAbnormalAccessBlacklistIp(
-            HttpServletRequest request,
-            @RequestParam(name = "ipAddress") String ipAddress
+        HttpServletRequest request,
+        @RequestParam(name = "ipAddress") String ipAddress
     ) {
         String deletedIp = removeAbnormalAccessIpUseCase.removeAbnormalAccessIp(request, ipAddress);
         return ApiResponse.success(deletedIp);

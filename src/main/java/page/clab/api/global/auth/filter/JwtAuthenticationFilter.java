@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         String path = httpServletRequest.getRequestURI();
@@ -73,7 +73,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private boolean verifyIpAddressAccess(HttpServletResponse response, String clientIpAddress) throws IOException {
         if (externalRetrieveBlacklistIpUseCase.existsByIpAddress(clientIpAddress)
-                || externalCheckIpBlockedUseCase.isIpBlocked(clientIpAddress)) {
+            || externalCheckIpBlockedUseCase.isIpBlocked(clientIpAddress)) {
             log.info("[{}] : 서비스 이용이 제한된 IP입니다.", clientIpAddress);
             ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
             return false;
@@ -82,14 +82,14 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     }
 
     private boolean authenticateToken(HttpServletRequest request, HttpServletResponse response, String clientIpAddress)
-            throws IOException {
+        throws IOException {
         String token = jwtTokenProvider.resolveToken(request);
 
         // 토큰이 존재하고 유효한 경우
         if (token != null && jwtTokenProvider.validateToken(token)) {
             RedisToken redisToken =
-                    jwtTokenProvider.isRefreshToken(token) ? externalManageRedisTokenUseCase.findByRefreshToken(token)
-                            : externalManageRedisTokenUseCase.findByAccessToken(token);
+                jwtTokenProvider.isRefreshToken(token) ? externalManageRedisTokenUseCase.findByRefreshToken(token)
+                    : externalManageRedisTokenUseCase.findByAccessToken(token);
             if (redisToken == null) {
                 log.warn("존재하지 않는 토큰입니다.");
                 ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
@@ -115,7 +115,7 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             request.setAttribute("member", redisToken.getId());
             String duplicateLoginMessage = "토큰 발급 IP와 다른 IP에서 접속하여 토큰을 삭제하였습니다.";
             eventPublisher.publishEvent(
-                    new NotificationEvent(this, SecurityAlertType.DUPLICATE_LOGIN, request, duplicateLoginMessage));
+                new NotificationEvent(this, SecurityAlertType.DUPLICATE_LOGIN, request, duplicateLoginMessage));
         }
     }
 }

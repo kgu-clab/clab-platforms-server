@@ -45,7 +45,7 @@ public class MemberUnbanService implements UnbanMemberUseCase {
 
     private AccountLockInfo ensureAccountLockInfo(String memberId) {
         return retrieveAccountLockInfoPort.findByMemberId(memberId)
-                .orElseGet(() -> createAccountLockInfo(memberId));
+            .orElseGet(() -> createAccountLockInfo(memberId));
     }
 
     private AccountLockInfo createAccountLockInfo(String memberId) {
@@ -58,6 +58,6 @@ public class MemberUnbanService implements UnbanMemberUseCase {
         String memberName = externalRetrieveMemberUseCase.getMemberBasicInfoById(memberId).getMemberName();
         String memberUnbannedMessage = "ID: " + memberId + ", Name: " + memberName;
         eventPublisher.publishEvent(
-                new NotificationEvent(this, SecurityAlertType.MEMBER_UNBANNED, request, memberUnbannedMessage));
+            new NotificationEvent(this, SecurityAlertType.MEMBER_UNBANNED, request, memberUnbannedMessage));
     }
 }

@@ -8,6 +8,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,9 +23,6 @@ import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupUpda
 import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotProgressingException;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidGithubUrlException;
 import page.clab.api.global.common.domain.BaseEntity;
-
-import java.time.LocalDate;
-import java.util.Optional;
 
 @Entity(name = "activity_group")
 @Getter

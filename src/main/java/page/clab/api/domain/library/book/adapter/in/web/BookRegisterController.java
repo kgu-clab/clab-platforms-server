@@ -25,7 +25,7 @@ public class BookRegisterController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
     public ApiResponse<Long> registerBook(
-            @Valid @RequestBody BookRequestDto requestDto
+        @Valid @RequestBody BookRequestDto requestDto
     ) {
         Long id = registerBookUseCase.registerBook(requestDto);
         return ApiResponse.success(id);

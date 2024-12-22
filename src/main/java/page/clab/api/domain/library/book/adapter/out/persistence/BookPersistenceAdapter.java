@@ -13,9 +13,9 @@ import page.clab.api.global.exception.NotFoundException;
 @Component
 @RequiredArgsConstructor
 public class BookPersistenceAdapter implements
-        RegisterBookPort,
-        RemoveBookPort,
-        RetrieveBookPort {
+    RegisterBookPort,
+    RemoveBookPort,
+    RetrieveBookPort {
 
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
@@ -35,14 +35,15 @@ public class BookPersistenceAdapter implements
     @Override
     public Book getById(Long bookId) {
         return bookRepository.findById(bookId)
-                .map(bookMapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[Book] id: " + bookId + "에 해당하는 책이 존재하지 않습니다."));
+            .map(bookMapper::toDomain)
+            .orElseThrow(() -> new NotFoundException("[Book] id: " + bookId + "에 해당하는 책이 존재하지 않습니다."));
     }
 
     @Override
-    public Page<Book> findByConditions(String title, String category, String publisher, String borrowerId, String borrowerName, Pageable pageable) {
+    public Page<Book> findByConditions(String title, String category, String publisher, String borrowerId,
+        String borrowerName, Pageable pageable) {
         return bookRepository.findByConditions(title, category, publisher, borrowerId, borrowerName, pageable)
-                .map(bookMapper::toDomain);
+            .map(bookMapper::toDomain);
     }
 
     @Override

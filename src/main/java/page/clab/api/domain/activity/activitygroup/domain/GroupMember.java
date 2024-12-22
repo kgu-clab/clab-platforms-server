@@ -42,13 +42,14 @@ public class GroupMember extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private GroupMemberStatus status;
 
-    public static GroupMember create(String memberId, ActivityGroup activityGroup, ActivityGroupRole role, GroupMemberStatus status) {
+    public static GroupMember create(String memberId, ActivityGroup activityGroup, ActivityGroupRole role,
+        GroupMemberStatus status) {
         return GroupMember.builder()
-                .memberId(memberId)
-                .activityGroup(activityGroup)
-                .role(role)
-                .status(status)
-                .build();
+            .memberId(memberId)
+            .activityGroup(activityGroup)
+            .role(role)
+            .status(status)
+            .build();
     }
 
     public boolean isLeader() {

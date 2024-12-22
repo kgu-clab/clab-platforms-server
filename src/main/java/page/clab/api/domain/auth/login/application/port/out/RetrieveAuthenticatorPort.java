@@ -1,8 +1,7 @@
 package page.clab.api.domain.auth.login.application.port.out;
 
-import page.clab.api.domain.auth.login.domain.Authenticator;
-
 import java.util.Optional;
+import page.clab.api.domain.auth.login.domain.Authenticator;
 
 public interface RetrieveAuthenticatorPort {
 

@@ -61,12 +61,12 @@ public class BookLoanRequestService implements RequestBookLoanUseCase {
             BookLoanRecord bookLoanRecord = BookLoanRecord.create(book.getId(), borrowerInfo);
 
             externalSendNotificationUseCase.sendNotificationToMember(borrowerInfo.getMemberId(),
-                    "[" + book.getTitle() + "] 도서 대출 신청이 완료되었습니다.");
+                "[" + book.getTitle() + "] 도서 대출 신청이 완료되었습니다.");
 
             BookLoanRecordNotificationInfo bookLoanRecordInfo = BookLoanRecordNotificationInfo.create(book,
-                    borrowerInfo);
+                borrowerInfo);
             eventPublisher.publishEvent(new NotificationEvent(this, ExecutivesAlertType.NEW_BOOK_LOAN_REQUEST, null,
-                    bookLoanRecordInfo));
+                bookLoanRecordInfo));
 
             return registerBookLoanRecordPort.save(bookLoanRecord).getId();
         } catch (ObjectOptimisticLockingFailureException e) {
@@ -84,8 +84,8 @@ public class BookLoanRequestService implements RequestBookLoanUseCase {
 
     private void checkIfLoanAlreadyApplied(Long bookId, String borrowerId) {
         retrieveBookLoanRecordPort.findByBookIdAndBorrowerIdAndStatus(bookId, borrowerId, BookLoanStatus.PENDING)
-                .ifPresent(bookLoanRecord -> {
-                    throw new BookAlreadyAppliedForLoanException("이미 대출 신청한 도서입니다.");
-                });
+            .ifPresent(bookLoanRecord -> {
+                throw new BookAlreadyAppliedForLoanException("이미 대출 신청한 도서입니다.");
+            });
     }
 }
