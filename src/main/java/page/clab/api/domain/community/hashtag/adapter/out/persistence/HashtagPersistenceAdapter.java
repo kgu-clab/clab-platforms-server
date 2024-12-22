@@ -1,5 +1,6 @@
 package page.clab.api.domain.community.hashtag.adapter.out.persistence;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.hashtag.application.port.out.RegisterHashtagPort;
@@ -45,5 +46,12 @@ public class HashtagPersistenceAdapter implements
     @Override
     public Boolean existsById(Long id) {
         return hashtagRepository.existsById(id);
+    }
+
+    @Override
+    public List<Hashtag> findAll() {
+        return hashtagRepository.findAll()
+                .stream().map(hashtagMapper::toDomain)
+                .toList();
     }
 }

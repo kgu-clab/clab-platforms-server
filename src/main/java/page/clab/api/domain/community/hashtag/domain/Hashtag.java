@@ -16,8 +16,8 @@ import lombok.Setter;
 public class Hashtag {
 
     Long id;
-    @Column(unique = true)
     String name;
     Boolean isDeleted;
+    Long boardUsageCount;
 }
 
