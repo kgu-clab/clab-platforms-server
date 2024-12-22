@@ -1,5 +1,6 @@
 package page.clab.api.domain.community.hashtag.domain;
 
+import jakarta.persistence.Column;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +16,7 @@ import lombok.Setter;
 public class Hashtag {
 
     Long id;
+    @Column(unique = true)
     String name;
     Boolean isDeleted;
 }

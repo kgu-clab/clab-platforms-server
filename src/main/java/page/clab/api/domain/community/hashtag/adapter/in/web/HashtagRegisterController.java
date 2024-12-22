@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.community.hashtag.application.dto.request.HashtagRequestDto;
+import page.clab.api.domain.community.hashtag.application.dto.response.HashtagResponseDto;
 import page.clab.api.domain.community.hashtag.application.port.in.RegisterHashtagUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -22,13 +23,13 @@ public class HashtagRegisterController {
 
     private final RegisterHashtagUseCase registerHashtagUseCase;
 
-    @Operation(summary = "[U] 해시태그 생성", description = "ROLE_USER 이상의 권한이 필요함")
-    @PreAuthorize("hasRole('USER')")
+    @Operation(summary = "[A] 해시태그 생성", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
-    public ApiResponse<List<Long>> registerHashtag(
+    public ApiResponse<List<HashtagResponseDto>> registerHashtag(
             @Valid @RequestBody HashtagRequestDto requestDto
     ) {
-        List<Long> hashTagIds = registerHashtagUseCase.registerHashtag(requestDto);
-        return ApiResponse.success(hashTagIds);
+        List<HashtagResponseDto> hashTags = registerHashtagUseCase.registerHashtag(requestDto);
+        return ApiResponse.success(hashTags);
     }
 }
