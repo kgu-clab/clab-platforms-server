@@ -15,30 +15,30 @@ import page.clab.api.domain.community.board.domain.BoardHashtag;
 public class BoardHashtagPersistenceAdapter implements
         RegisterBoardHashtagPort, RetrieveBoardHashtagPort {
 
-    private final BoardHashtagRepository boardHashtagRepository;
+    private final BoardHashtagRepository repository;
     private final BoardHashtagMapper mapper;
     @Override
     public BoardHashtag save(BoardHashtag boardHashtag) {
         BoardHashtagJpaEntity entity = mapper.toEntity(boardHashtag);
-        BoardHashtagJpaEntity savedEntity = boardHashtagRepository.save(entity);
+        BoardHashtagJpaEntity savedEntity = repository.save(entity);
         return mapper.toDomain(savedEntity);
     }
 
     @Override
     public List<BoardHashtag> getAllByBoardId(Long boardId) {
-        return boardHashtagRepository.findAllByBoardId(boardId).stream()
+        return repository.findAllByBoardId(boardId).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<BoardHashtag> getAllIncludingDeletedByBoardId(Long boardId) {
-        return boardHashtagRepository.findAllIncludingDeletedByBoardId(boardId).stream()
+        return repository.findAllIncludingDeletedByBoardId(boardId).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }
 
     public List<Long> getBoardIdsByHashTagId(List<Long> hashtagIds, Pageable pageable) {
-        return boardHashtagRepository.getBoardIdsByHashTagId(hashtagIds, pageable);
+        return repository.getBoardIdsByHashTagId(hashtagIds, pageable);
     }
 }
