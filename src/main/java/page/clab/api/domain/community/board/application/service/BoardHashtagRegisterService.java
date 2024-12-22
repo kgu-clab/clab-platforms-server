@@ -9,6 +9,7 @@ import page.clab.api.domain.community.board.application.port.in.RegisterBoardHas
 import page.clab.api.domain.community.board.application.port.out.RegisterBoardHashtagPort;
 import page.clab.api.domain.community.board.domain.BoardHashtag;
 import page.clab.api.domain.community.hashtag.domain.Hashtag;
+import page.clab.api.external.hashtag.application.port.ExternalRegisterHashtagUseCase;
 import page.clab.api.external.hashtag.application.port.ExternalRetrieveHashtagUseCase;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -18,6 +19,7 @@ public class BoardHashtagRegisterService implements RegisterBoardHashtagUseCase 
 
     private final RegisterBoardHashtagPort registerBoardHashtagPort;
     private final ExternalRetrieveHashtagUseCase externalRetrieveHashtagUseCase;
+    private final ExternalRegisterHashtagUseCase externalRegisterHashtagUseCase;
     private final BoardHashtagDtoMapper mapper;
 
     @Transactional
@@ -28,6 +30,8 @@ public class BoardHashtagRegisterService implements RegisterBoardHashtagUseCase 
             Hashtag hashtag = externalRetrieveHashtagUseCase.getById(hashtagId);
             BoardHashtag boardHashtag = mapper.fromDto(boardId, hashtagId);
             registerBoardHashtagPort.save(boardHashtag);
+            hashtag.incrementBoardUsage();
+            externalRegisterHashtagUseCase.save(hashtag);
         }
         return boardId;
     }

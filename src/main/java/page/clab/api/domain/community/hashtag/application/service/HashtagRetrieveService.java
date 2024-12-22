@@ -29,7 +29,7 @@ public class HashtagRetrieveService implements RetrieveHashtagUseCase {
 
     @Override
     public List<HashtagResponseDto> registerHashtagWithUsedBoardCount() {
-        List<Hashtag> hashtags = retrieveHashtagPort.findAll();
+        List<Hashtag> hashtags = retrieveHashtagPort.findAllByOrderById();
         return hashtags.stream()
                 .map(mapper::toDto)
                 .toList();

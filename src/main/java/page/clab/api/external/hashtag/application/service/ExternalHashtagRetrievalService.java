@@ -21,11 +21,6 @@ public class ExternalHashtagRetrievalService implements ExternalRetrieveHashtagU
     }
 
     @Override
-    public Boolean existById(Long id) {
-        return retrieveHashtagPort.existsById(id);
-    }
-
-    @Override
     public Hashtag getByName(String name) {
         return retrieveHashtagUseCase.getByName(name);
     }

@@ -12,7 +12,7 @@ public class HashtagDtoMapper {
     public Hashtag of(String name) {
         return Hashtag.builder()
                 .name(name)
-                .boardUsageCount(0L)
+                .boardUsage(0L)
                 .isDeleted(false)
                 .build();
     }
@@ -21,7 +21,7 @@ public class HashtagDtoMapper {
         return HashtagResponseDto.builder()
                 .id(hashtag.getId())
                 .name(hashtag.getName())
-                .boardUsageCount(hashtag.getBoardUsageCount())
+                .boardUsageCount(hashtag.getBoardUsage())
                 .build();
     }
 }

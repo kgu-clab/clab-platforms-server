@@ -19,9 +19,12 @@ import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPo
 import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.community.board.domain.BoardCategory;
 import page.clab.api.domain.community.board.domain.BoardHashtag;
+import page.clab.api.domain.community.hashtag.domain.Hashtag;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.community.board.application.port.in.RegisterBoardHashtagUseCase;
 import page.clab.api.domain.community.board.application.port.in.RetrieveBoardHashtagUseCase;
+import page.clab.api.external.hashtag.application.port.ExternalRegisterHashtagUseCase;
+import page.clab.api.external.hashtag.application.port.ExternalRetrieveHashtagUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -33,6 +36,8 @@ public class BoardUpdateService implements UpdateBoardUseCase {
     private final RegisterBoardPort registerBoardPort;
     private final RegisterBoardHashtagPort registerBoardHashtagPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final ExternalRetrieveHashtagUseCase externalRetrieveHashtagUseCase;
+    private final ExternalRegisterHashtagUseCase externalRegisterHashtagUseCase;
     private final RetrieveBoardHashtagUseCase retrieveBoardHashtagUseCase;
     private final RegisterBoardHashtagUseCase registerBoardHashtagUseCase;
     private final ApplicationEventPublisher eventPublisher;
@@ -45,7 +50,7 @@ public class BoardUpdateService implements UpdateBoardUseCase {
         Board board = retrieveBoardPort.getById(boardId);
         board.validateAccessPermission(currentMemberInfo);
 
-        board.update(requestDto); // 카테고리 변경된 상태.
+        board.update(requestDto);
 
         List<Long> hastagIdList = requestDto.getHashtagIdList();
         handleBoardHashtagUpdate(boardId, board, hastagIdList);
@@ -124,6 +129,9 @@ public class BoardUpdateService implements UpdateBoardUseCase {
                             boardHashtag.toggleIsDeletedStatus();
                         }
                         registerBoardHashtagPort.save(boardHashtag);
+                        Hashtag hashtag = externalRetrieveHashtagUseCase.getById(boardHashtag.getHashtagId());
+                        hashtag.decreaseBoardUsage();
+                        externalRegisterHashtagUseCase.save(hashtag);
                     });
         });
     }
@@ -138,8 +146,11 @@ public class BoardUpdateService implements UpdateBoardUseCase {
                 .findFirst()
                 .ifPresentOrElse(
                         boardHashtag -> {
+                            Hashtag hashtag = externalRetrieveHashtagUseCase.getById(boardHashtag.getHashtagId());
                             boardHashtag.toggleIsDeletedStatus();
                             registerBoardHashtagPort.save(boardHashtag);
+                            hashtag.incrementBoardUsage();
+                            externalRegisterHashtagUseCase.save(hashtag);
                         },
                         () -> {
                             registerBoardHashtagUseCase.registerBoardHashtag(

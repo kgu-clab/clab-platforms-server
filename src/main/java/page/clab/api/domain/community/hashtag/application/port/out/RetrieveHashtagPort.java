@@ -13,5 +13,5 @@ public interface RetrieveHashtagPort {
 
     Boolean existsById(Long id);
 
-    List<Hashtag> findAll();
+    List<Hashtag> findAllByOrderById();
 }

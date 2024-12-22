@@ -35,8 +35,8 @@ public class HashtagJpaEntity extends BaseEntity {
     @Column(name = "name", unique = true, nullable = false)
     private String name;
 
-    @Column(name = "board_usage_count", nullable = false)
-    private Long boardUsageCount;
+    @Column(name = "board_usage", nullable = false)
+    private Long boardUsage;
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted;

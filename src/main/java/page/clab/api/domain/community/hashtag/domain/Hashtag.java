@@ -18,6 +18,14 @@ public class Hashtag {
     Long id;
     String name;
     Boolean isDeleted;
-    Long boardUsageCount;
+    Long boardUsage;
+
+    public void incrementBoardUsage() {
+        boardUsage++;
+    }
+
+    public void decreaseBoardUsage() {
+        boardUsage = Math.max(0, boardUsage - 1);
+    }
 }
 

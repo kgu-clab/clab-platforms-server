@@ -49,8 +49,8 @@ public class HashtagPersistenceAdapter implements
     }
 
     @Override
-    public List<Hashtag> findAll() {
-        return hashtagRepository.findAll()
+    public List<Hashtag> findAllByOrderById() {
+        return hashtagRepository.findAllByOrderById()
                 .stream().map(hashtagMapper::toDomain)
                 .toList();
     }

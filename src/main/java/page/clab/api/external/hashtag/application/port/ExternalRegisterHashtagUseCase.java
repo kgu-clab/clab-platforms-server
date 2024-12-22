@@ -2,9 +2,7 @@ package page.clab.api.external.hashtag.application.port;
 
 import page.clab.api.domain.community.hashtag.domain.Hashtag;
 
-public interface ExternalRetrieveHashtagUseCase {
+public interface ExternalRegisterHashtagUseCase {
 
-    Hashtag getById(Long id);
-
-    Hashtag getByName(String name);
+    Hashtag save(Hashtag hashtag);
 }
