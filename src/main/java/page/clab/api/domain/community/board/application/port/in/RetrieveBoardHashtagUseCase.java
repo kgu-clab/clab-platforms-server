@@ -1,12 +1,10 @@
-package page.clab.api.external.community.board.application.port;
+package page.clab.api.domain.community.board.application.port.in;
 
 import java.util.List;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.community.board.application.dto.response.BoardHashtagResponseDto;
 import page.clab.api.domain.community.board.domain.BoardHashtag;
 
-public interface ExternalRetrieveBoardHashtagUseCase {
+public interface RetrieveBoardHashtagUseCase {
     List<BoardHashtagResponseDto> getBoardHashtagInfoByBoardId(Long boardId);
 
     List<BoardHashtag> getAllByBoardId(Long boardId);

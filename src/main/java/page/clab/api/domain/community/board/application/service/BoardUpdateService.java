@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +18,8 @@ import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPo
 import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.community.board.domain.BoardHashtag;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.external.community.board.application.port.ExternalRegisterBoardHashtagUseCase;
-import page.clab.api.external.community.board.application.port.ExternalRetrieveBoardHashtagUseCase;
+import page.clab.api.domain.community.board.application.port.in.RegisterBoardHashtagUseCase;
+import page.clab.api.domain.community.board.application.port.in.RetrieveBoardHashtagUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -32,8 +31,8 @@ public class BoardUpdateService implements UpdateBoardUseCase {
     private final RegisterBoardPort registerBoardPort;
     private final RegisterBoardHashtagPort registerBoardHashtagPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final ExternalRetrieveBoardHashtagUseCase externalRetrieveBoardHashtagUseCase;
-    private final ExternalRegisterBoardHashtagUseCase externalRegisterBoardHashtagUseCase;
+    private final RetrieveBoardHashtagUseCase retrieveBoardHashtagUseCase;
+    private final RegisterBoardHashtagUseCase registerBoardHashtagUseCase;
     private final ApplicationEventPublisher eventPublisher;
     private final BoardHashtagDtoMapper boardHashtagDtoMapper;
 
@@ -44,7 +43,7 @@ public class BoardUpdateService implements UpdateBoardUseCase {
         Board board = retrieveBoardPort.getById(boardId);
         board.validateAccessPermission(currentMemberInfo);
         board.update(requestDto);
-        updateBoardHashtag(board, requestDto.getHashtagIdList(), externalRetrieveBoardHashtagUseCase.getAllIncludingDeletedByBoardId(boardId));
+        updateBoardHashtag(board, requestDto.getHashtagIdList(), retrieveBoardHashtagUseCase.getAllIncludingDeletedByBoardId(boardId));
         eventPublisher.publishEvent(new BoardUpdatedEvent(this, board.getId()));
         registerBoardPort.save(board);
         return board.getCategory().getKey();
@@ -56,7 +55,7 @@ public class BoardUpdateService implements UpdateBoardUseCase {
             throw new InvalidBoardCategoryHashtagException("개발질문 게시판에만 해시태그를 적용할 수 있습니다.");
         }
 
-        List<Long> currentHashtagIds = externalRetrieveBoardHashtagUseCase.extractAllHashtagId(currentBoardHashtags);
+        List<Long> currentHashtagIds = retrieveBoardHashtagUseCase.extractAllHashtagId(currentBoardHashtags);
         List<Long> hashtagsToRemove = currentHashtagIds.stream()
                 .filter(id -> !newHashtagIds.contains(id))
                 .toList();
@@ -97,7 +96,7 @@ public class BoardUpdateService implements UpdateBoardUseCase {
                         registerBoardHashtagPort.save(boardHashtag);
                     },
                     () -> {
-                        externalRegisterBoardHashtagUseCase.registerBoardHashtag(
+                        registerBoardHashtagUseCase.registerBoardHashtag(
                                 boardHashtagDtoMapper.toDto(boardId, new ArrayList<>(Arrays.asList(hashtagId)))
                         );
                     }

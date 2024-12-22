@@ -1,7 +1,7 @@
-package page.clab.api.external.community.board.application.port;
+package page.clab.api.domain.community.board.application.port.in;
 
 import page.clab.api.domain.community.board.application.dto.request.BoardHashtagRequestDto;
 
-public interface ExternalRegisterBoardHashtagUseCase {
+public interface RegisterBoardHashtagUseCase {
     Long registerBoardHashtag(BoardHashtagRequestDto requestDto);
 }

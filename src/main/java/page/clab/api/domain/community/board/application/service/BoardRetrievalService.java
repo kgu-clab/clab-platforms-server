@@ -14,7 +14,7 @@ import page.clab.api.domain.community.board.application.port.in.RetrieveBoardUse
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.external.community.board.application.port.ExternalRetrieveBoardHashtagUseCase;
+import page.clab.api.domain.community.board.application.port.in.RetrieveBoardHashtagUseCase;
 import page.clab.api.external.community.comment.application.port.ExternalRetrieveCommentUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -26,7 +26,7 @@ public class BoardRetrievalService implements RetrieveBoardUseCase {
     private final RetrieveBoardPort retrieveBoardPort;
     private final ExternalRetrieveCommentUseCase externalRetrieveCommentUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final ExternalRetrieveBoardHashtagUseCase externalRetrieveBoardHashtagUseCase;
+    private final RetrieveBoardHashtagUseCase retrieveBoardHashtagUseCase;
     private final BoardDtoMapper mapper;
 
     @Transactional
@@ -49,7 +49,7 @@ public class BoardRetrievalService implements RetrieveBoardUseCase {
     @NotNull
     private BoardListResponseDto mapToBoardListResponseDto(Board board, MemberDetailedInfoDto memberInfo) {
         Long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
-        List<BoardHashtagResponseDto> boardHashtagInfos = externalRetrieveBoardHashtagUseCase.getBoardHashtagInfoByBoardId(board.getId());
+        List<BoardHashtagResponseDto> boardHashtagInfos = retrieveBoardHashtagUseCase.getBoardHashtagInfoByBoardId(board.getId());
         return mapper.toListDto(board, memberInfo, commentCount, boardHashtagInfos);
     }
 }

@@ -4,9 +4,7 @@ import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.community.board.adapter.out.persistence.BoardHashtagJpaEntity;
 import page.clab.api.domain.community.board.application.dto.mapper.BoardDtoMapper;
-import page.clab.api.domain.community.board.application.dto.mapper.BoardHashtagDtoMapper;
 import page.clab.api.domain.community.board.application.dto.response.BoardDetailsResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardEmojiCountResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardHashtagResponseDto;
@@ -14,10 +12,7 @@ import page.clab.api.domain.community.board.application.port.in.RetrieveBoardDet
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardEmojiPort;
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
-import page.clab.api.domain.community.board.domain.BoardHashtag;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.external.community.board.application.service.ExternalBoardHashtagRetrieveService;
-import page.clab.api.external.hashtag.application.port.ExternalRetrieveHashtagUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 
 import java.util.List;
@@ -30,7 +25,7 @@ public class BoardDetailsRetrievalService implements RetrieveBoardDetailsUseCase
     private final RetrieveBoardPort retrieveBoardPort;
     private final RetrieveBoardEmojiPort retrieveBoardEmojiPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final ExternalBoardHashtagRetrieveService externalBoardHashtagRetrieveService;
+    private final BoardHashtagRetrieveService boardHashtagRetrieveService;
     private final BoardDtoMapper boardDtoMapper;
 
     @Transactional
@@ -41,7 +36,7 @@ public class BoardDetailsRetrievalService implements RetrieveBoardDetailsUseCase
         MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(board.getMemberId());
         boolean isOwner = board.isOwner(currentMemberInfo.getMemberId());
         List<BoardEmojiCountResponseDto> emojiInfos = getBoardEmojiCountResponseDtoList(boardId, currentMemberInfo.getMemberId());
-        List<BoardHashtagResponseDto> boardHashtagInfos = externalBoardHashtagRetrieveService.getBoardHashtagInfoByBoardId(boardId);
+        List<BoardHashtagResponseDto> boardHashtagInfos = boardHashtagRetrieveService.getBoardHashtagInfoByBoardId(boardId);
         return boardDtoMapper.toDto(board, memberInfo, isOwner, emojiInfos, boardHashtagInfos);
     }
 

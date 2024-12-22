@@ -2,7 +2,6 @@ package page.clab.api.domain.community.board.application.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +13,7 @@ import page.clab.api.domain.community.board.application.port.in.RegisterBoardUse
 import page.clab.api.domain.community.board.application.port.out.RegisterBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.external.community.board.application.port.ExternalRegisterBoardHashtagUseCase;
+import page.clab.api.domain.community.board.application.port.in.RegisterBoardHashtagUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
 import page.clab.api.global.common.file.application.UploadedFileService;
@@ -31,7 +30,7 @@ public class BoardRegisterService implements RegisterBoardUseCase {
     private final RegisterBoardPort registerBoardPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalSendNotificationUseCase externalSendNotificationUseCase;
-    private final ExternalRegisterBoardHashtagUseCase externalRegisterBoardHashtagUseCase;
+    private final RegisterBoardHashtagUseCase registerBoardHashtagUseCase;
     private final UploadedFileService uploadedFileService;
     private final ApplicationEventPublisher eventPublisher;
     private final BoardDtoMapper boardDtoMapper;
@@ -71,7 +70,7 @@ public class BoardRegisterService implements RegisterBoardUseCase {
             throw new InvalidBoardCategoryHashtagException("개발질문 게시판에만 해시태그를 등록할 수 있습니다.");
         }
         if (savedBoard.isDevelopmentQna() && requestDto.getHashtagIdList() != null) {
-            externalRegisterBoardHashtagUseCase.registerBoardHashtag(boardHashtagDtoMapper.toDto(savedBoard.getId(), requestDto.getHashtagIdList()));
+            registerBoardHashtagUseCase.registerBoardHashtag(boardHashtagDtoMapper.toDto(savedBoard.getId(), requestDto.getHashtagIdList()));
         }
         return savedBoard.getCategory().getKey();
     }

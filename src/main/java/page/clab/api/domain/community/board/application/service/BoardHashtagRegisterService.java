@@ -1,11 +1,11 @@
-package page.clab.api.external.community.board.application.service;
+package page.clab.api.domain.community.board.application.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.community.board.application.dto.mapper.BoardHashtagDtoMapper;
 import page.clab.api.domain.community.board.application.dto.request.BoardHashtagRequestDto;
-import page.clab.api.external.community.board.application.port.ExternalRegisterBoardHashtagUseCase;
+import page.clab.api.domain.community.board.application.port.in.RegisterBoardHashtagUseCase;
 import page.clab.api.domain.community.board.application.port.out.RegisterBoardHashtagPort;
 import page.clab.api.domain.community.board.domain.BoardHashtag;
 import page.clab.api.external.hashtag.application.port.ExternalRetrieveHashtagUseCase;
@@ -13,7 +13,7 @@ import page.clab.api.global.exception.NotFoundException;
 
 @Service
 @RequiredArgsConstructor
-public class ExternalBoardHashtagRegisterService implements ExternalRegisterBoardHashtagUseCase {
+public class BoardHashtagRegisterService implements RegisterBoardHashtagUseCase {
 
     private final RegisterBoardHashtagPort registerBoardHashtagPort;
     private final ExternalRetrieveHashtagUseCase externalRetrieveHashtagUseCase;

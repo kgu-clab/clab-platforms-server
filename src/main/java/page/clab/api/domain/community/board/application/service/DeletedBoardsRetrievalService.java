@@ -14,7 +14,6 @@ import page.clab.api.domain.community.board.application.port.in.RetrieveDeletedB
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.external.community.board.application.service.ExternalBoardHashtagRetrieveService;
 import page.clab.api.external.community.comment.application.port.ExternalRetrieveCommentUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
@@ -26,7 +25,7 @@ public class DeletedBoardsRetrievalService implements RetrieveDeletedBoardsUseCa
     private final RetrieveBoardPort retrieveBoardPort;
     private final ExternalRetrieveCommentUseCase externalRetrieveCommentUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final ExternalBoardHashtagRetrieveService externalBoardHashtagRetrieveService;
+    private final BoardHashtagRetrieveService boardHashtagRetrieveService;
     private final BoardDtoMapper mapper;
 
     @Transactional(readOnly = true)
@@ -44,7 +43,7 @@ public class DeletedBoardsRetrievalService implements RetrieveDeletedBoardsUseCa
     @NotNull
     private BoardListResponseDto mapToBoardListResponseDto(Board board, MemberDetailedInfoDto memberInfo) {
         Long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
-        List<BoardHashtagResponseDto> boardHashtagInfos = externalBoardHashtagRetrieveService.getBoardHashtagInfoByBoardId(board.getId());
+        List<BoardHashtagResponseDto> boardHashtagInfos = boardHashtagRetrieveService.getBoardHashtagInfoByBoardId(board.getId());
         return mapper.toListDto(board, memberInfo, commentCount, boardHashtagInfos);
     }
 }
