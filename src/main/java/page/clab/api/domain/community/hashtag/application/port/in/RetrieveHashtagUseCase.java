@@ -10,5 +10,5 @@ public interface RetrieveHashtagUseCase {
 
     Hashtag getByName(String name);
 
-    List<HashtagResponseDto> registerHashtagWithUsedBoardCount();
+    List<HashtagResponseDto> retrieveHashtagWithUsedBoardCount();
 }

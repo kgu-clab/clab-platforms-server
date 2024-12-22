@@ -30,8 +30,11 @@ public class HashtagPersistenceAdapter implements
     }
 
     @Override
-    public Hashtag findByName(String name) {
+    public Hashtag getByName(String name) {
         HashtagJpaEntity entity = hashtagRepository.findByName(name);
+        if (entity == null) {
+            throw new NotFoundException("[Hashtag] name: " + name + "에 해당하는 해시태그가 존재하지 않습니다.");
+        }
         return hashtagMapper.toDomain(entity);
     }
 

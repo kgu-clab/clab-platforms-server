@@ -24,11 +24,11 @@ public class HashtagRetrieveService implements RetrieveHashtagUseCase {
 
     @Override
     public Hashtag getByName(String name) {
-        return retrieveHashtagPort.findByName(name);
+        return retrieveHashtagPort.getByName(name);
     }
 
     @Override
-    public List<HashtagResponseDto> registerHashtagWithUsedBoardCount() {
+    public List<HashtagResponseDto> retrieveHashtagWithUsedBoardCount() {
         List<Hashtag> hashtags = retrieveHashtagPort.findAllByOrderById();
         return hashtags.stream()
                 .map(mapper::toDto)
