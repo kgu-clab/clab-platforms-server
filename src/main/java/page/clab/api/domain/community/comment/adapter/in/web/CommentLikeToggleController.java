@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import page.clab.api.domain.community.comment.application.dto.response.CommentLikeToggleResponseDto;
 import page.clab.api.domain.community.comment.application.port.in.ToggleCommentLikeUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -22,10 +23,10 @@ public class CommentLikeToggleController {
     @Operation(summary = "[U] 댓글 좋아요 누르기/취소하기", description = "ROLE_USER 이상의 권한이 필요함")
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/likes/{commentId}")
-    public ApiResponse<Long> toggleLikeStatus(
-        @PathVariable(name = "commentId") Long commentId
+    public ApiResponse<CommentLikeToggleResponseDto> toggleLikeStatus(
+            @PathVariable(name = "commentId") Long commentId
     ) {
-        Long id = toggleCommentLikeUseCase.toggleLikeStatus(commentId);
-        return ApiResponse.success(id);
+        CommentLikeToggleResponseDto responseDto = toggleCommentLikeUseCase.toggleLikeStatus(commentId);
+        return ApiResponse.success(responseDto);
     }
 }
