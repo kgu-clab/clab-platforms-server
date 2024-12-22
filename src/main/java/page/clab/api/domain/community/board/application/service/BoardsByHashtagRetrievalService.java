@@ -32,27 +32,36 @@ public class BoardsByHashtagRetrievalService implements RetrieveBoardsByHashtagU
 
     @Override
     public PagedResponseDto<BoardOverviewResponseDto> retrieveBoardsByHashtag(List<String> hashtags, Pageable pageable) {
-        List<Long> hashtagIds = new ArrayList<>();
-        for (String hashtag : hashtags) {
-            hashtagIds.add(externalRetrieveHashtagUseCase.getByName(hashtag).getId());
-        }
-
+        List<Long> hashtagIds = getHashtagIdsByNames(hashtags);
         List<Long> boardIds = retrieveBoardHashtagUseCase.getBoardIdsByHashTagId(hashtagIds);
 
-        List<Board> boards = boardIds.stream()
-                .map(externalRetrieveBoardUseCase::getById)
-                .toList();
-
-        List<BoardOverviewResponseDto> boardOverviewResponseDtos =
-                boards.stream().map(board -> {
-                    long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
-                    List<BoardHashtagResponseDto> boardHashtagInfos = retrieveBoardHashtagUseCase.getBoardHashtagInfoByBoardId(board.getId());
-                    return mapper.toCategoryDto(board, getMemberDetailedInfoByBoard(board), commentCount, boardHashtagInfos);
-                }).toList();
-
-        List<BoardOverviewResponseDto> paginatedBoardOverviewDtos = PaginationUtils.applySortingAndSlicing(boardOverviewResponseDtos, pageable);
+        List<Board> boards = getBoardsByIds(boardIds);
+        List<BoardOverviewResponseDto> boardOverviewResponseDtos = toBoardOverviewResponseDtos(boards);
+        List<BoardOverviewResponseDto> paginatedBoardOverviewDtos =
+                PaginationUtils.applySortingAndSlicing(boardOverviewResponseDtos, pageable);
 
         return new PagedResponseDto<>(paginatedBoardOverviewDtos, boardIds.size(), pageable);
+    }
+
+    private List<Long> getHashtagIdsByNames(List<String> hashtags) {
+        return hashtags.stream()
+                .map(hashtag -> externalRetrieveHashtagUseCase.getByName(hashtag).getId())
+                .toList();
+    }
+
+    private List<Board> getBoardsByIds(List<Long> boardIds) {
+        return boardIds.stream()
+                .map(externalRetrieveBoardUseCase::getById)
+                .toList();
+    }
+
+    private List<BoardOverviewResponseDto> toBoardOverviewResponseDtos(List<Board> boards) {
+        return boards.stream().map(board -> {
+            long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
+            List<BoardHashtagResponseDto> boardHashtagInfos =
+                    retrieveBoardHashtagUseCase.getBoardHashtagInfoByBoardId(board.getId());
+            return mapper.toCategoryDto(board, getMemberDetailedInfoByBoard(board), commentCount, boardHashtagInfos);
+        }).toList();
     }
 
     private MemberDetailedInfoDto getMemberDetailedInfoByBoard(Board board) {

@@ -81,4 +81,10 @@ public class Board {
             throw new InvalidBoardCategoryHashtagException("개발질문 게시판에만 해시태그를 등록할 수 있습니다.");
         }
     }
+
+    public void validateBoardHashtagUpdate() {
+        if (!isDevelopmentQna()) {
+            throw new InvalidBoardCategoryHashtagException("개발질문 게시판에만 해시태그를 적용할 수 있습니다.");
+        }
+    }
 }

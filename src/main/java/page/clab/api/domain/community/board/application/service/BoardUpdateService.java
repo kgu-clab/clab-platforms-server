@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import page.clab.api.domain.community.board.application.port.out.RegisterBoardHa
 import page.clab.api.domain.community.board.application.port.out.RegisterBoardPort;
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
+import page.clab.api.domain.community.board.domain.BoardCategory;
 import page.clab.api.domain.community.board.domain.BoardHashtag;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.community.board.application.port.in.RegisterBoardHashtagUseCase;
@@ -25,6 +27,7 @@ import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BoardUpdateService implements UpdateBoardUseCase {
 
     private final RetrieveBoardPort retrieveBoardPort;
@@ -42,31 +45,72 @@ public class BoardUpdateService implements UpdateBoardUseCase {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         Board board = retrieveBoardPort.getById(boardId);
         board.validateAccessPermission(currentMemberInfo);
-        board.update(requestDto);
-        updateBoardHashtag(board, requestDto.getHashtagIdList(), retrieveBoardHashtagUseCase.getAllIncludingDeletedByBoardId(boardId));
+
+        board.update(requestDto); // 카테고리 변경된 상태.
+
+        List<Long> hastagIdList = requestDto.getHashtagIdList();
+        handleBoardHashtagUpdate(boardId, board, hastagIdList);
+
         eventPublisher.publishEvent(new BoardUpdatedEvent(this, board.getId()));
         registerBoardPort.save(board);
         return board.getCategory().getKey();
     }
 
+    private void handleBoardHashtagUpdate(Long boardId, Board board, List<Long> hashtagIdList) {
+        if (hashtagIdList != null && !hashtagIdList.isEmpty()) {
+            board.validateBoardHashtagUpdate();
+            updateBoardHashtag(board, hashtagIdList, retrieveBoardHashtagUseCase.getAllIncludingDeletedByBoardId(boardId));
+        } else {
+            deleteAllHashtagsForBoard(boardId);
+        }
+    }
+
+    private void deleteAllHashtagsForBoard(Long boardId) {
+        List<BoardHashtag> currentBoardHashtags = retrieveBoardHashtagUseCase.getAllIncludingDeletedByBoardId(boardId);
+        currentBoardHashtags.forEach(boardHashtag -> {
+            if (!boardHashtag.getIsDeleted()) {
+                boardHashtag.toggleIsDeletedStatus();
+                registerBoardHashtagPort.save(boardHashtag);
+            }
+        });
+    }
+
     @Transactional
     public void updateBoardHashtag(Board board, List<Long> newHashtagIds, List<BoardHashtag> currentBoardHashtags) {
-        if (!board.isDevelopmentQna()) {
-            throw new InvalidBoardCategoryHashtagException("개발질문 게시판에만 해시태그를 적용할 수 있습니다.");
-        }
+        validateBoardCategoryForHashtag(board);
 
-        List<Long> currentHashtagIds = retrieveBoardHashtagUseCase.extractAllHashtagId(currentBoardHashtags);
-        List<Long> hashtagsToRemove = currentHashtagIds.stream()
+        List<Long> currentHashtagIds = getCurrentHashtagIds(currentBoardHashtags);
+        List<Long> hashtagsToRemove = findHashtagsToRemove(currentHashtagIds, newHashtagIds);
+        List<Long> hashtagsToAdd = findHashtagsToAdd(newHashtagIds, currentHashtagIds, currentBoardHashtags);
+        log.info("Current Hashtag IDs: {}", currentHashtagIds);
+        log.info("Hashtags to Remove: {}", hashtagsToRemove);
+        log.info("Hashtags to Add: {}", hashtagsToAdd);
+
+
+        removeHashtags(hashtagsToRemove, currentBoardHashtags);
+        addHashtags(board.getId(), hashtagsToAdd, currentBoardHashtags);
+    }
+
+    private void validateBoardCategoryForHashtag(Board board) {
+        board.validateBoardHashtagUpdate();
+    }
+
+    private List<Long> getCurrentHashtagIds(List<BoardHashtag> currentBoardHashtags) {
+        return retrieveBoardHashtagUseCase.extractAllHashtagId(currentBoardHashtags);
+    }
+
+    private List<Long> findHashtagsToRemove(List<Long> currentHashtagIds, List<Long> newHashtagIds) {
+        return currentHashtagIds.stream()
                 .filter(id -> !newHashtagIds.contains(id))
                 .toList();
+    }
 
-        List<Long> hashtagsToAdd = newHashtagIds.stream()
+    private List<Long> findHashtagsToAdd(List<Long> newHashtagIds, List<Long> currentHashtagIds, List<BoardHashtag> currentBoardHashtags) {
+        return newHashtagIds.stream()
                 .filter(id -> {
-                    // 조건 1: currentHashtagIds에 없는 경우
                     if (!currentHashtagIds.contains(id)) {
                         return true;
                     }
-                    // 조건 2: currentBoardHashtags에서 isDeleted=true이고 newHashtagIds에 포함된 경우
                     return currentBoardHashtags.stream()
                             .anyMatch(boardHashtag ->
                                     boardHashtag.getHashtagId().equals(id) &&
@@ -74,32 +118,39 @@ public class BoardUpdateService implements UpdateBoardUseCase {
                             );
                 })
                 .toList();
+    }
+
+    private void removeHashtags(List<Long> hashtagsToRemove, List<BoardHashtag> currentBoardHashtags) {
         hashtagsToRemove.forEach(idToRemove -> {
             currentBoardHashtags.stream()
                     .filter(boardHashtag -> boardHashtag.getHashtagId().equals(idToRemove))
                     .forEach(boardHashtag -> {
-                        boardHashtag.toggleIsDeletedStatus();
+                        if (!boardHashtag.getIsDeleted()) {
+                            boardHashtag.toggleIsDeletedStatus();
+                        }
                         registerBoardHashtagPort.save(boardHashtag);
                     });
         });
-
-        hashtagsToAdd.forEach(idToAdd -> addHashtag(board.getId(), idToAdd, currentBoardHashtags));
     }
 
-    private void addHashtag(Long boardId, Long hashtagId, List<BoardHashtag> currentBoardHashtags) {
+    private void addHashtags(Long boardId, List<Long> hashtagsToAdd, List<BoardHashtag> currentBoardHashtags) {
+        hashtagsToAdd.forEach(idToAdd -> addOrUpdateHashtag(boardId, idToAdd, currentBoardHashtags));
+    }
+
+    private void addOrUpdateHashtag(Long boardId, Long hashtagId, List<BoardHashtag> currentBoardHashtags) {
         currentBoardHashtags.stream()
-            .filter(boardHashtag -> boardHashtag.getHashtagId().equals(hashtagId) && boardHashtag.getIsDeleted())
-            .findFirst()
-            .ifPresentOrElse(
-                    boardHashtag -> {
-                        boardHashtag.toggleIsDeletedStatus();
-                        registerBoardHashtagPort.save(boardHashtag);
-                    },
-                    () -> {
-                        registerBoardHashtagUseCase.registerBoardHashtag(
-                                boardHashtagDtoMapper.toDto(boardId, new ArrayList<>(Arrays.asList(hashtagId)))
-                        );
-                    }
-            );
+                .filter(boardHashtag -> boardHashtag.getHashtagId().equals(hashtagId) && boardHashtag.getIsDeleted())
+                .findFirst()
+                .ifPresentOrElse(
+                        boardHashtag -> {
+                            boardHashtag.toggleIsDeletedStatus();
+                            registerBoardHashtagPort.save(boardHashtag);
+                        },
+                        () -> {
+                            registerBoardHashtagUseCase.registerBoardHashtag(
+                                    boardHashtagDtoMapper.toDto(boardId, List.of(hashtagId))
+                            );
+                        }
+                );
     }
 }
