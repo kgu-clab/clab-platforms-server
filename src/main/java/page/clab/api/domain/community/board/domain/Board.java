@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.community.board.application.dto.request.BoardUpdateRequestDto;
+import page.clab.api.domain.community.board.application.exception.InvalidBoardCategoryHashtagException;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -72,6 +73,12 @@ public class Board {
     public void validateAccessPermissionForCreation(MemberDetailedInfoDto currentMemberInfo) throws PermissionDeniedException {
         if (this.isNotice() && !currentMemberInfo.isAdminRole()) {
             throw new PermissionDeniedException("공지사항은 관리자만 작성할 수 있습니다.");
+        }
+    }
+
+    public void validateBoardHashtagRegistration(List<Long> hashtagIdList) {
+        if (!isDevelopmentQna() && (hashtagIdList != null && !hashtagIdList.isEmpty())) {
+            throw new InvalidBoardCategoryHashtagException("개발질문 게시판에만 해시태그를 등록할 수 있습니다.");
         }
     }
 }

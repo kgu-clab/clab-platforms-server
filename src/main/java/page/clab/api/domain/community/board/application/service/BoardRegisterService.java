@@ -55,20 +55,18 @@ public class BoardRegisterService implements RegisterBoardUseCase {
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         Board board = boardDtoMapper.fromDto(requestDto, currentMemberInfo.getMemberId(), uploadedFiles);
         board.validateAccessPermissionForCreation(currentMemberInfo);
+        board.validateBoardHashtagRegistration(requestDto.getHashtagIdList());
+
         if (board.shouldNotifyForNewBoard(currentMemberInfo)) {
             externalSendNotificationUseCase.sendNotificationToMember(currentMemberInfo.getMemberId(),
                     "[" + board.getTitle() + "] 새로운 공지사항이 등록되었습니다.");
         }
-
         BoardNotificationInfo boardInfo = BoardNotificationInfo.create(board, currentMemberInfo);
         eventPublisher.publishEvent(new NotificationEvent(this, ExecutivesAlertType.NEW_BOARD, null,
                 boardInfo));
 
         Board savedBoard = registerBoardPort.save(board);
 
-        if (!savedBoard.isDevelopmentQna() && (requestDto.getHashtagIdList() != null && !requestDto.getHashtagIdList().isEmpty())) {
-            throw new InvalidBoardCategoryHashtagException("개발질문 게시판에만 해시태그를 등록할 수 있습니다.");
-        }
         if (savedBoard.isDevelopmentQna() && requestDto.getHashtagIdList() != null) {
             registerBoardHashtagUseCase.registerBoardHashtag(boardHashtagDtoMapper.toDto(savedBoard.getId(), requestDto.getHashtagIdList()));
         }
