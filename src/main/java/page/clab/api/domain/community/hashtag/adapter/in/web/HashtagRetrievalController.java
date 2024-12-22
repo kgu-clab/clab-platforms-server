@@ -20,8 +20,8 @@ public class HashtagRetrievalController {
 
     private final RetrieveHashtagUseCase retrieveHashtagUseCase;
 
-    @Operation(summary = "[U] Board에서 사용한 횟수를 포함한 해시태그 조회", description = "ROLE_USER 이상의 권한이 필요함")
-    @PreAuthorize("hasRole('USER')")
+    @Operation(summary = "[G] 게시글에서 사용된 횟수를 포함한 해시태그 조회", description = "ROLE_GUEST 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('GUEST')")
     @GetMapping("")
     public ApiResponse<List<HashtagResponseDto>> retrieveHashtag() {
         List<HashtagResponseDto> hashTags = retrieveHashtagUseCase.retrieveHashtagWithUsedBoardCount();
