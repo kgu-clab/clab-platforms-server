@@ -8,6 +8,7 @@ import page.clab.api.domain.community.board.application.dto.request.BoardHashtag
 import page.clab.api.domain.community.board.application.port.in.RegisterBoardHashtagUseCase;
 import page.clab.api.domain.community.board.application.port.out.RegisterBoardHashtagPort;
 import page.clab.api.domain.community.board.domain.BoardHashtag;
+import page.clab.api.domain.community.hashtag.domain.Hashtag;
 import page.clab.api.external.hashtag.application.port.ExternalRetrieveHashtagUseCase;
 import page.clab.api.global.exception.NotFoundException;
 
@@ -24,9 +25,7 @@ public class BoardHashtagRegisterService implements RegisterBoardHashtagUseCase 
     public Long registerBoardHashtag(BoardHashtagRequestDto requestDto) {
         Long boardId = requestDto.getBoardId();
         for (Long hashtagId : requestDto.getHashtagIdList()) {
-            if (!externalRetrieveHashtagUseCase.existById(hashtagId)) {
-                throw new NotFoundException("[Hashtag] id: " + hashtagId + "에 해당하는 해시태그가 존재하지 않습니다.");
-            };
+            Hashtag hashtag = externalRetrieveHashtagUseCase.getById(hashtagId);
             BoardHashtag boardHashtag = mapper.fromDto(boardId, hashtagId);
             registerBoardHashtagPort.save(boardHashtag);
         }
