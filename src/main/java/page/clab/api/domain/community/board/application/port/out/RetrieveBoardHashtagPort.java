@@ -6,9 +6,10 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.community.board.domain.BoardHashtag;
 
 public interface RetrieveBoardHashtagPort {
-    List<BoardHashtag> getAllByBoardId(Long boardId);
 
-    List<BoardHashtag> getAllIncludingDeletedByBoardId(Long boardId);
+    List<BoardHashtag> findAllByBoardId(Long boardId);
 
-    List<Long> getBoardIdsByHashTagId(List<Long> hashtagIds);
+    List<BoardHashtag> findAllIncludingDeletedByBoardId(Long boardId);
+
+    List<Long> findBoardIdsByHashTagId(List<Long> hashtagIds);
 }

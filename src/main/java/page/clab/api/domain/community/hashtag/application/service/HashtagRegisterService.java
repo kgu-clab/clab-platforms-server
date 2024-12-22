@@ -26,7 +26,7 @@ public class HashtagRegisterService implements RegisterHashtagUseCase {
             if (retrieveHashtagUseCase.existsByName(name)) {
                 savedHashtagId.add(retrieveHashtagUseCase.getByName(name).getId());
             } else {
-                Hashtag hashtag = mapper.fromDto(name);
+                Hashtag hashtag = mapper.of(name);
                 Long id = registerHashtagPort.save(hashtag).getId();
                 savedHashtagId.add(id);
             }

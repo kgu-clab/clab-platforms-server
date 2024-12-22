@@ -32,7 +32,7 @@ public class BoardHashtagRetrieveService implements RetrieveBoardHashtagUseCase 
 
     @Override
     public List<BoardHashtag> getAllByBoardId(Long boardId) {
-        return retrieveBoardHashtagPort.getAllByBoardId(boardId);
+        return retrieveBoardHashtagPort.findAllByBoardId(boardId);
     }
 
     @Override
@@ -44,11 +44,11 @@ public class BoardHashtagRetrieveService implements RetrieveBoardHashtagUseCase 
 
     @Override
     public List<BoardHashtag> getAllIncludingDeletedByBoardId(Long boardId) {
-        return retrieveBoardHashtagPort.getAllIncludingDeletedByBoardId(boardId);
+        return retrieveBoardHashtagPort.findAllIncludingDeletedByBoardId(boardId);
     }
 
     @Override
     public List<Long> getBoardIdsByHashTagId(List<Long> hashtagIds) {
-        return retrieveBoardHashtagPort.getBoardIdsByHashTagId(hashtagIds);
+        return retrieveBoardHashtagPort.findBoardIdsByHashTagId(hashtagIds);
     }
 }

@@ -5,6 +5,7 @@ import page.clab.api.domain.community.board.application.dto.response.BoardHashta
 import page.clab.api.domain.community.board.domain.BoardHashtag;
 
 public interface RetrieveBoardHashtagUseCase {
+
     List<BoardHashtagResponseDto> getBoardHashtagInfoByBoardId(Long boardId);
 
     List<BoardHashtag> getAllByBoardId(Long boardId);

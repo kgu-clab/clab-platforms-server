@@ -11,7 +11,7 @@ import page.clab.api.domain.community.board.domain.BoardHashtag;
 @RequiredArgsConstructor
 public class BoardHashtagDtoMapper {
 
-    public BoardHashtag fromDto(Long boardId, Long hashtagId){
+    public BoardHashtag fromDto(Long boardId, Long hashtagId) {
         return BoardHashtag.builder()
                 .boardId(boardId)
                 .hashtagId(hashtagId)
@@ -22,7 +22,7 @@ public class BoardHashtagDtoMapper {
     public BoardHashtagRequestDto toDto(Long boardId, List<Long> hashtagIdList) {
         return BoardHashtagRequestDto.builder()
                 .boardId(boardId)
-                .hashtagIdList(hashtagIdList)
+                .hashtagIds(hashtagIdList)
                 .build();
     }
 

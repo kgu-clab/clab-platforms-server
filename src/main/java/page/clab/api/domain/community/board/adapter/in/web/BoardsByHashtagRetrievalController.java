@@ -32,7 +32,7 @@ public class BoardsByHashtagRetrievalController {
             "현재는 카테고리가 개발질문인 게시글만 해시태그가 적용되어 있어서 해당 API의 응답으로 개발질문 게시판만 반환됨")
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/hashtag")
-    public ApiResponse<PagedResponseDto<BoardOverviewResponseDto>> retrieveBoardsByCategory(
+    public ApiResponse<PagedResponseDto<BoardOverviewResponseDto>> retrieveBoardsByHashtag(
             @RequestParam(name = "hashtags") List<String> hashtags,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,

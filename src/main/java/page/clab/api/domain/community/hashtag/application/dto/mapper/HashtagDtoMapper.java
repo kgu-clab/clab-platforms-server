@@ -8,7 +8,7 @@ import page.clab.api.domain.community.hashtag.domain.Hashtag;
 @RequiredArgsConstructor
 public class HashtagDtoMapper {
 
-    public Hashtag fromDto(String name) {
+    public Hashtag of(String name) {
         return Hashtag.builder()
                 .name(name)
                 .isDeleted(false)

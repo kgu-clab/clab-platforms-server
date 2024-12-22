@@ -25,20 +25,20 @@ public class BoardHashtagPersistenceAdapter implements
     }
 
     @Override
-    public List<BoardHashtag> getAllByBoardId(Long boardId) {
+    public List<BoardHashtag> findAllByBoardId(Long boardId) {
         return repository.findAllByBoardId(boardId).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<BoardHashtag> getAllIncludingDeletedByBoardId(Long boardId) {
+    public List<BoardHashtag> findAllIncludingDeletedByBoardId(Long boardId) {
         return repository.findAllIncludingDeletedByBoardId(boardId).stream()
                 .map(mapper::toDomain)
                 .collect(Collectors.toList());
     }
 
-    public List<Long> getBoardIdsByHashTagId(List<Long> hashtagIds) {
+    public List<Long> findBoardIdsByHashTagId(List<Long> hashtagIds) {
         return repository.getBoardIdsByHashTagId(hashtagIds, (long)hashtagIds.size());
     }
 }
