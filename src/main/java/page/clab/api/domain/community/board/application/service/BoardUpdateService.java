@@ -27,7 +27,6 @@ import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class BoardUpdateService implements UpdateBoardUseCase {
 
     private final RetrieveBoardPort retrieveBoardPort;
@@ -82,10 +81,6 @@ public class BoardUpdateService implements UpdateBoardUseCase {
         List<Long> currentHashtagIds = getCurrentHashtagIds(currentBoardHashtags);
         List<Long> hashtagsToRemove = findHashtagsToRemove(currentHashtagIds, newHashtagIds);
         List<Long> hashtagsToAdd = findHashtagsToAdd(newHashtagIds, currentHashtagIds, currentBoardHashtags);
-        log.info("Current Hashtag IDs: {}", currentHashtagIds);
-        log.info("Hashtags to Remove: {}", hashtagsToRemove);
-        log.info("Hashtags to Add: {}", hashtagsToAdd);
-
 
         removeHashtags(hashtagsToRemove, currentBoardHashtags);
         addHashtags(board.getId(), hashtagsToAdd, currentBoardHashtags);
