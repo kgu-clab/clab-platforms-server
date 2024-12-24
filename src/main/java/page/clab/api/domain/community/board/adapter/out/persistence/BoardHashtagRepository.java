@@ -17,7 +17,7 @@ public interface BoardHashtagRepository extends JpaRepository<BoardHashtagJpaEnt
         nativeQuery = true)
     List<BoardHashtagJpaEntity> findAllIncludingDeletedByBoardId(Long boardId);
 
-    @Query("SELECT DISTINCT b.boardId " +
+    @Query("SELECT b.boardId " +
         "FROM BoardHashtagJpaEntity b " +
         "WHERE b.hashtagId IN :hashtagIds " +
         "AND b.isDeleted = false " +
