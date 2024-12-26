@@ -1,5 +1,8 @@
 package page.clab.api.domain.community.board.adapter.out.persistence;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,10 +12,6 @@ import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPo
 import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.community.board.domain.BoardCategory;
 import page.clab.api.global.exception.NotFoundException;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor

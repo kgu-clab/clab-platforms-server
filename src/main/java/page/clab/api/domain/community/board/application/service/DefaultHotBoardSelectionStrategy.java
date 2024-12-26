@@ -1,5 +1,11 @@
 package page.clab.api.domain.community.board.application.service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,13 +13,6 @@ import page.clab.api.domain.community.board.application.port.out.RetrieveBoardEm
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.external.community.comment.application.port.ExternalRetrieveCommentUseCase;
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service(HotBoardSelectionStrategies.DEFAULT)
 @RequiredArgsConstructor

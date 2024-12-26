@@ -1,5 +1,7 @@
 package page.clab.api.domain.community.board.application.service;
 
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -7,9 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.board.application.port.out.RegisterHotBoardPort;
 import page.clab.api.domain.community.board.application.port.out.RemoveHotBoardPort;
 import page.clab.api.domain.community.board.domain.Board;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor

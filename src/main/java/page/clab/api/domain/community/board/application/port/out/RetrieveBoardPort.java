@@ -1,12 +1,11 @@
 package page.clab.api.domain.community.board.application.port.out;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.community.board.domain.BoardCategory;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 public interface RetrieveBoardPort {
 

@@ -2,6 +2,7 @@ package page.clab.api.domain.community.board.adapter.in.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.community.board.application.dto.response.BoardListResponseDto;
 import page.clab.api.domain.community.board.application.port.in.RetrieveHotBoardsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/boards")
