@@ -1,10 +1,9 @@
 package page.clab.api.domain.auth.login.application.port.in;
 
+import java.util.List;
 import page.clab.api.domain.auth.login.application.dto.response.TokenInfo;
 import page.clab.api.domain.auth.login.domain.RedisToken;
 import page.clab.api.domain.memberManagement.member.domain.Role;
-
-import java.util.List;
 
 public interface ManageRedisTokenUseCase {
 

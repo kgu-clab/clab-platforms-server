@@ -1,5 +1,7 @@
 package page.clab.api.domain.community.comment.application.service;
 
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,9 +19,6 @@ import page.clab.api.external.community.board.application.port.ExternalRetrieveB
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
-import java.util.List;
-import java.util.Objects;
-
 @Service
 @RequiredArgsConstructor
 public class MyCommentsRetrievalService implements RetrieveMyCommentsUseCase {
@@ -35,14 +34,15 @@ public class MyCommentsRetrievalService implements RetrieveMyCommentsUseCase {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         Page<Comment> comments = retrieveCommentPort.findAllByWriterId(currentMemberId, pageable);
         List<CommentMyResponseDto> dtos = comments.stream()
-                .map(this::toCommentMyResponseDto)
-                .filter(Objects::nonNull)
-                .toList();
+            .map(this::toCommentMyResponseDto)
+            .filter(Objects::nonNull)
+            .toList();
         return new PagedResponseDto<>(new PageImpl<>(dtos, pageable, comments.getTotalElements()));
     }
 
     private CommentMyResponseDto toCommentMyResponseDto(Comment comment) {
-        MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(comment.getWriterId());
+        MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(
+            comment.getWriterId());
         BoardCommentInfoDto boardInfo = externalRetrieveBoardUseCase.getBoardCommentInfoById(comment.getBoardId());
         return mapper.toDto(comment, memberInfo, boardInfo, false);
     }

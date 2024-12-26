@@ -10,5 +10,6 @@ public interface RetrieveJobPostingPort {
 
     JobPosting getById(Long jobPostingId);
 
-    Page<JobPosting> findByConditions(String title, String companyName, CareerLevel careerLevel, EmploymentType employmentType, Pageable pageable);
+    Page<JobPosting> findByConditions(String title, String companyName, CareerLevel careerLevel,
+        EmploymentType employmentType, Pageable pageable);
 }

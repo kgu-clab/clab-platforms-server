@@ -5,5 +5,6 @@ import page.clab.api.domain.memberManagement.member.application.dto.response.Mem
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveMembersByConditionsUseCase {
+
     PagedResponseDto<MemberResponseDto> retrieveMembers(String id, String name, Pageable pageable);
 }

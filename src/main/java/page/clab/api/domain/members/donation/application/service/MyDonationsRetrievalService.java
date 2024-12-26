@@ -28,7 +28,8 @@ public class MyDonationsRetrievalService implements RetrieveMyDonationsUseCase {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         Page<Donation> donations = retrieveDonationPort.findByMemberId(currentMemberId, pageable);
         return new PagedResponseDto<>(donations.map(donation -> {
-            MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(donation.getMemberId());
+            MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(
+                donation.getMemberId());
             return mapper.toDto(donation, memberInfo.getMemberName());
         }));
     }

@@ -51,11 +51,11 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
     private final ApplicationEventPublisher eventPublisher;
 
     public CustomBasicAuthenticationFilter(
-            AuthenticationManager authenticationManager,
-            IpWhitelistValidator ipWhitelistValidator,
-            ExternalCheckIpBlockedUseCase externalCheckIpBlockedUseCase,
-            ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase,
-            ApplicationEventPublisher eventPublisher
+        AuthenticationManager authenticationManager,
+        IpWhitelistValidator ipWhitelistValidator,
+        ExternalCheckIpBlockedUseCase externalCheckIpBlockedUseCase,
+        ExternalRetrieveBlacklistIpUseCase externalRetrieveBlacklistIpUseCase,
+        ApplicationEventPublisher eventPublisher
     ) {
         super(authenticationManager);
         this.externalCheckIpBlockedUseCase = externalCheckIpBlockedUseCase;
@@ -73,7 +73,7 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
         String path = request.getRequestURI();
         if (!WhitelistPathMatcher.isWhitelistRequest(path)) {
             chain.doFilter(request, response);
@@ -89,7 +89,7 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
     }
 
     private boolean authenticateUserCredentials(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+        throws IOException {
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader == null || !authorizationHeader.startsWith("Basic ")) {
             response.setHeader("WWW-Authenticate", "Basic realm=\"Please enter your username and password\"");
@@ -119,8 +119,8 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
     private boolean verifyIpAddressAccess(HttpServletResponse response) throws IOException {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         if (!ipWhitelistValidator.isIpWhitelisted(clientIpAddress) ||
-                externalRetrieveBlacklistIpUseCase.existsByIpAddress(clientIpAddress) ||
-                externalCheckIpBlockedUseCase.isIpBlocked(clientIpAddress)
+            externalRetrieveBlacklistIpUseCase.existsByIpAddress(clientIpAddress) ||
+            externalCheckIpBlockedUseCase.isIpBlocked(clientIpAddress)
         ) {
             log.info("[{}] : 정책에 의해 차단된 IP입니다.", clientIpAddress);
             ResponseUtil.sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED);
@@ -134,11 +134,11 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
         if (WhitelistPathMatcher.isSwaggerIndexEndpoint(path)) {
             String apiDocsAccessMessage = "API 문서에 대한 접근이 허가되었습니다.";
             eventPublisher.publishEvent(
-                    new NotificationEvent(this, SecurityAlertType.API_DOCS_ACCESS, request, apiDocsAccessMessage));
+                new NotificationEvent(this, SecurityAlertType.API_DOCS_ACCESS, request, apiDocsAccessMessage));
         } else if (WhitelistPathMatcher.isActuatorRequest(path)) {
             String actuatorAccessMessage = "Actuator에 대한 접근이 허가되었습니다.";
             eventPublisher.publishEvent(
-                    new NotificationEvent(this, SecurityAlertType.ACTUATOR_ACCESS, request, actuatorAccessMessage));
+                new NotificationEvent(this, SecurityAlertType.ACTUATOR_ACCESS, request, actuatorAccessMessage));
         }
     }
 
@@ -147,11 +147,11 @@ public class CustomBasicAuthenticationFilter extends BasicAuthenticationFilter {
         if (WhitelistPathMatcher.isSwaggerIndexEndpoint(path)) {
             String apiDocsAccessMessage = "API 문서에 대한 접근이 거부되었습니다.";
             eventPublisher.publishEvent(
-                    new NotificationEvent(this, SecurityAlertType.API_DOCS_ACCESS, request, apiDocsAccessMessage));
+                new NotificationEvent(this, SecurityAlertType.API_DOCS_ACCESS, request, apiDocsAccessMessage));
         } else if (WhitelistPathMatcher.isActuatorRequest(path)) {
             String actuatorAccessMessage = "Actuator에 대한 접근이 거부되었습니다.";
             eventPublisher.publishEvent(
-                    new NotificationEvent(this, SecurityAlertType.ACTUATOR_ACCESS, request, actuatorAccessMessage));
+                new NotificationEvent(this, SecurityAlertType.ACTUATOR_ACCESS, request, actuatorAccessMessage));
         }
     }
 }

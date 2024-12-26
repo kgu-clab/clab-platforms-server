@@ -6,5 +6,7 @@ import page.clab.api.domain.community.accuse.domain.AccuseStatus;
 import page.clab.api.domain.community.accuse.domain.TargetType;
 
 public interface AccuseTargetRepositoryCustom {
-    Page<AccuseTargetJpaEntity> findByConditions(TargetType type, AccuseStatus status, boolean countOrder, Pageable pageable);
+
+    Page<AccuseTargetJpaEntity> findByConditions(TargetType type, AccuseStatus status, boolean countOrder,
+        Pageable pageable);
 }

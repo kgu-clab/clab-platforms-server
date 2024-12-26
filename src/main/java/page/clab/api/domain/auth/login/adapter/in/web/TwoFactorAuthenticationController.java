@@ -31,8 +31,8 @@ public class TwoFactorAuthenticationController {
     private final String authHeader;
 
     public TwoFactorAuthenticationController(
-            @Qualifier("twoFactorAuthenticationService") ManageLoginUseCase manageLoginUseCase,
-            @Value("${security.auth.header}") String authHeader
+        @Qualifier("twoFactorAuthenticationService") ManageLoginUseCase manageLoginUseCase,
+        @Value("${security.auth.header}") String authHeader
     ) {
         this.manageLoginUseCase = manageLoginUseCase;
         this.authHeader = authHeader;
@@ -41,9 +41,9 @@ public class TwoFactorAuthenticationController {
     @Operation(summary = "TOTP 인증", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("")
     public ApiResponse<Boolean> authenticate(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            @Valid @RequestBody TwoFactorAuthenticationRequestDto requestDto
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @Valid @RequestBody TwoFactorAuthenticationRequestDto requestDto
     ) throws MemberLockedException, LoginFailedException {
         LoginResult result = manageLoginUseCase.authenticate(request, requestDto);
         response.setHeader(authHeader, result.getHeader());
@@ -54,7 +54,7 @@ public class TwoFactorAuthenticationController {
     @DeleteMapping("/{memberId}")
     @PreAuthorize("hasRole('SUPER')")
     public ApiResponse<String> resetAuthenticator(
-            @PathVariable(name = "memberId") String memberId
+        @PathVariable(name = "memberId") String memberId
     ) {
         String id = manageLoginUseCase.resetAuthenticator(memberId);
         return ApiResponse.success(id);

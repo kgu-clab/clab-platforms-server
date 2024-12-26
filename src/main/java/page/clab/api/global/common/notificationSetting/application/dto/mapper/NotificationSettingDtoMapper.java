@@ -9,8 +9,8 @@ public class NotificationSettingDtoMapper {
 
     public NotificationSettingResponseDto toDto(NotificationSetting setting) {
         return NotificationSettingResponseDto.builder()
-                .alertType(setting.getAlertType().getTitle())
-                .enabled(setting.isEnabled())
-                .build();
+            .alertType(setting.getAlertType().getTitle())
+            .enabled(setting.isEnabled())
+            .build();
     }
 }

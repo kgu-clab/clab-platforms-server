@@ -43,8 +43,8 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
     @Transactional
     @Override
     public LoginResult authenticate(HttpServletRequest request,
-                                    TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto)
-            throws LoginFailedException, MemberLockedException {
+        TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto)
+        throws LoginFailedException, MemberLockedException {
         String memberId = twoFactorAuthenticationRequestDto.getMemberId();
         MemberLoginInfoDto loginMember = externalRetrieveMemberUseCase.getMemberLoginInfoById(memberId);
         String totp = twoFactorAuthenticationRequestDto.getTotp();
@@ -59,10 +59,10 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
     }
 
     private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request)
-            throws MemberLockedException, LoginFailedException {
+        throws MemberLockedException, LoginFailedException {
         if (!manageAuthenticatorUseCase.isAuthenticatorValid(memberId, totp)) {
             externalRegisterAccountAccessLogUseCase.registerAccountAccessLog(request, memberId,
-                    AccountAccessResult.FAILURE);
+                AccountAccessResult.FAILURE);
             externalManageAccountLockUseCase.handleLoginFailure(request, memberId);
             throw new LoginFailedException("잘못된 인증번호입니다.");
         }
@@ -73,20 +73,20 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
         TokenInfo tokenInfo = jwtTokenProvider.generateToken(memberInfo.getMemberId(), memberInfo.getRole());
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         externalManageRedisTokenUseCase.saveToken(memberInfo.getMemberId(), memberInfo.getRole(), tokenInfo,
-                clientIpAddress);
+            clientIpAddress);
         return tokenInfo;
     }
 
     private void sendAdminLoginNotification(HttpServletRequest request, MemberLoginInfoDto loginMember) {
         if (loginMember.isSuperAdminRole()) {
             eventPublisher.publishEvent(
-                    new NotificationEvent(this, GeneralAlertType.ADMIN_LOGIN, request, loginMember));
+                new NotificationEvent(this, GeneralAlertType.ADMIN_LOGIN, request, loginMember));
         }
     }
 
     @Override
     public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto)
-            throws LoginFailedException, MemberLockedException {
+        throws LoginFailedException, MemberLockedException {
         throw new UnsupportedOperationException("Method not implemented");
     }
 

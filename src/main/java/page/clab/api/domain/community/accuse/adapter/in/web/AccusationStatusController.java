@@ -26,9 +26,9 @@ public class AccusationStatusController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{targetType}/{targetId}")
     public ApiResponse<Long> changeAccusationStatus(
-            @PathVariable(name = "targetType") TargetType type,
-            @PathVariable(name = "targetId") Long targetId,
-            @RequestParam(name = "accuseStatus") AccuseStatus status
+        @PathVariable(name = "targetType") TargetType type,
+        @PathVariable(name = "targetId") Long targetId,
+        @RequestParam(name = "accuseStatus") AccuseStatus status
     ) {
         Long id = changeAccusationStatusUsecase.changeAccusationStatus(type, targetId, status);
         return ApiResponse.success(id);

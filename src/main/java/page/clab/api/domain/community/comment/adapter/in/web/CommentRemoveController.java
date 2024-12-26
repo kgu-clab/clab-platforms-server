@@ -24,7 +24,7 @@ public class CommentRemoveController {
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{commentId}")
     public ApiResponse<Long> removeComment(
-            @PathVariable(name = "commentId") Long commentId
+        @PathVariable(name = "commentId") Long commentId
     ) throws PermissionDeniedException {
         Long id = removeCommentUseCase.removeComment(commentId);
         return ApiResponse.success(id);

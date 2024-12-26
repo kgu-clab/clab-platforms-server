@@ -1,6 +1,7 @@
 package page.clab.api.domain.memberManagement.notification.application.event;
 
 import jakarta.annotation.PostConstruct;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,8 +10,6 @@ import page.clab.api.domain.memberManagement.member.application.event.MemberEven
 import page.clab.api.domain.memberManagement.notification.application.port.out.RegisterNotificationPort;
 import page.clab.api.domain.memberManagement.notification.application.port.out.RetrieveNotificationPort;
 import page.clab.api.domain.memberManagement.notification.domain.Notification;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

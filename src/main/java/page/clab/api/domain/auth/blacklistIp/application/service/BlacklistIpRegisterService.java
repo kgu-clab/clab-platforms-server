@@ -38,17 +38,17 @@ public class BlacklistIpRegisterService implements RegisterBlacklistIpUseCase {
     public String registerBlacklistIp(HttpServletRequest request, BlacklistIpRequestDto requestDto) {
         String ipAddress = requestDto.getIpAddress();
         return retrieveBlacklistIpPort.findByIpAddress(ipAddress)
-                .map(BlacklistIp::getIpAddress)
-                .orElseGet(() -> {
-                    BlacklistIp blacklistIp = mapper.fromDto(requestDto);
-                    registerBlacklistIpPort.save(blacklistIp);
+            .map(BlacklistIp::getIpAddress)
+            .orElseGet(() -> {
+                BlacklistIp blacklistIp = mapper.fromDto(requestDto);
+                registerBlacklistIpPort.save(blacklistIp);
 
-                    String blacklistAddedMessage = "Added IP: " + ipAddress;
-                    eventPublisher.publishEvent(
-                            new NotificationEvent(this, SecurityAlertType.BLACKLISTED_IP_ADDED, request,
-                                    blacklistAddedMessage));
+                String blacklistAddedMessage = "Added IP: " + ipAddress;
+                eventPublisher.publishEvent(
+                    new NotificationEvent(this, SecurityAlertType.BLACKLISTED_IP_ADDED, request,
+                        blacklistAddedMessage));
 
-                    return ipAddress;
-                });
+                return ipAddress;
+            });
     }
 }

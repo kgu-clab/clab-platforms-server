@@ -2,6 +2,7 @@ package page.clab.api.domain.hiring.application.adapter.in.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.hiring.application.application.port.in.RegisterMembersByRecruitmentUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/applications")
@@ -25,7 +24,7 @@ public class ApplicationMemberRegisterController {
     @PreAuthorize("hasRole('SUPER')")
     @PostMapping("/{recruitmentId}")
     public ApiResponse<List<String>> registerMembersByRecruitment(
-            @PathVariable(name = "recruitmentId") Long recruitmentId
+        @PathVariable(name = "recruitmentId") Long recruitmentId
     ) {
         List<String> ids = registerMembersByRecruitmentUseCase.registerMembersByRecruitment(recruitmentId);
         return ApiResponse.success(ids);
@@ -35,8 +34,8 @@ public class ApplicationMemberRegisterController {
     @PreAuthorize("hasRole('SUPER')")
     @PostMapping("/{recruitmentId}/{studentId}")
     public ApiResponse<String> registerMembersByRecruitment(
-            @PathVariable(name = "recruitmentId") Long recruitmentId,
-            @PathVariable(name = "studentId") String studentId
+        @PathVariable(name = "recruitmentId") Long recruitmentId,
+        @PathVariable(name = "studentId") String studentId
     ) {
         String id = registerMembersByRecruitmentUseCase.registerMembersByRecruitment(recruitmentId, studentId);
         return ApiResponse.success(id);

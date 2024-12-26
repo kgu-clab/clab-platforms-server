@@ -2,6 +2,7 @@ package page.clab.api.domain.members.schedule.adapter.in.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,8 +19,6 @@ import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/schedules")
 @RequiredArgsConstructor
@@ -30,23 +29,23 @@ public class SchedulesByConditionsRetrievalController {
     private final PageableUtils pageableUtils;
 
     @Operation(summary = "[G] 일정 조회(연도, 월, 중요도 기준)", description = "ROLE_GUEST 이상의 권한이 필요함<br>" +
-            "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
-            "연도, 월, 중요도 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
-            "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
+        "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
+        "연도, 월, 중요도 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
+        "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/conditions")
     public ApiResponse<PagedResponseDto<ScheduleResponseDto>> retrieveSchedulesByConditions(
-            @RequestParam(name = "year", required = false) Integer year,
-            @RequestParam(name = "month", required = false) Integer month,
-            @RequestParam(name = "priority", required = false) SchedulePriority priority,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "startDateTime") List<String> sortBy,
-            @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
+        @RequestParam(name = "year", required = false) Integer year,
+        @RequestParam(name = "month", required = false) Integer month,
+        @RequestParam(name = "priority", required = false) SchedulePriority priority,
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size,
+        @RequestParam(name = "sortBy", defaultValue = "startDateTime") List<String> sortBy,
+        @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ScheduleResponseDto.class);
         PagedResponseDto<ScheduleResponseDto> schedules =
-                retrieveSchedulesByConditionsUseCase.retrieveSchedules(year, month, priority, pageable);
+            retrieveSchedulesByConditionsUseCase.retrieveSchedules(year, month, priority, pageable);
         return ApiResponse.success(schedules);
     }
 }

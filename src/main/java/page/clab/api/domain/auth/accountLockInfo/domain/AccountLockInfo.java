@@ -1,13 +1,12 @@
 package page.clab.api.domain.auth.accountLockInfo.domain;
 
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,11 +23,11 @@ public class AccountLockInfo {
 
     public static AccountLockInfo create(String memberId) {
         return AccountLockInfo.builder()
-                .memberId(memberId)
-                .loginFailCount(0L)
-                .isLock(false)
-                .lockUntil(null)
-                .build();
+            .memberId(memberId)
+            .loginFailCount(0L)
+            .isLock(false)
+            .lockUntil(null)
+            .build();
     }
 
     public void banPermanently() {

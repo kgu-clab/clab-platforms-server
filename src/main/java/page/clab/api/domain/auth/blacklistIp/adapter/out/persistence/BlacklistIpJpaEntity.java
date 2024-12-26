@@ -34,8 +34,8 @@ public class BlacklistIpJpaEntity extends BaseEntity {
 
     public static BlacklistIpJpaEntity create(String ipAddress, String reason) {
         return BlacklistIpJpaEntity.builder()
-                .ipAddress(ipAddress)
-                .reason(reason)
-                .build();
+            .ipAddress(ipAddress)
+            .reason(reason)
+            .build();
     }
 }

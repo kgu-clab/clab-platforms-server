@@ -42,8 +42,8 @@ public class AccuseJpaEntity extends BaseEntity {
 
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name = "target_type", nullable = false),
-            @JoinColumn(name = "target_reference_id", nullable = false)
+        @JoinColumn(name = "target_type", nullable = false),
+        @JoinColumn(name = "target_reference_id", nullable = false)
     })
     private AccuseTargetJpaEntity target;
 

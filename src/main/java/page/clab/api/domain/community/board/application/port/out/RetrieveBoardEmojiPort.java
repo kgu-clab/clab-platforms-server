@@ -1,10 +1,9 @@
 package page.clab.api.domain.community.board.application.port.out;
 
 import jakarta.persistence.Tuple;
-import page.clab.api.domain.community.board.domain.BoardEmoji;
-
 import java.util.List;
 import java.util.Optional;
+import page.clab.api.domain.community.board.domain.BoardEmoji;
 
 public interface RetrieveBoardEmojiPort {
 

@@ -1,5 +1,7 @@
 package page.clab.api.domain.memberManagement.member.adapter.out.persistence;
 
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,16 +14,13 @@ import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.global.exception.NotFoundException;
 
-import java.util.List;
-import java.util.Optional;
-
 @Component
 @RequiredArgsConstructor
 public class MemberPersistenceAdapter implements
-        CheckMemberExistencePort,
-        RegisterMemberPort,
-        UpdateMemberPort,
-        RetrieveMemberPort {
+    CheckMemberExistencePort,
+    RegisterMemberPort,
+    UpdateMemberPort,
+    RetrieveMemberPort {
 
     private final MemberRepository memberRepository;
     private final MemberMapper memberMapper;
@@ -64,7 +63,7 @@ public class MemberPersistenceAdapter implements
     @Override
     public Member getFirstByRole(Role role) {
         MemberJpaEntity jpaEntity = memberRepository.findFirstByRole(role)
-                .orElseThrow(() -> new NotFoundException("[Member] role: " + role + "에 해당하는 회원이 존재하지 않습니다."));
+            .orElseThrow(() -> new NotFoundException("[Member] role: " + role + "에 해당하는 회원이 존재하지 않습니다."));
         return memberMapper.toDomain(jpaEntity);
     }
 
@@ -76,7 +75,7 @@ public class MemberPersistenceAdapter implements
     @Override
     public Member getById(String memberId) {
         MemberJpaEntity jpaEntity = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException("[Member] id: " + memberId + "에 해당하는 회원이 존재하지 않습니다."));
+            .orElseThrow(() -> new NotFoundException("[Member] id: " + memberId + "에 해당하는 회원이 존재하지 않습니다."));
         return memberMapper.toDomain(jpaEntity);
     }
 
@@ -84,12 +83,14 @@ public class MemberPersistenceAdapter implements
     public List<Member> findAll() {
         List<MemberJpaEntity> jpaEntities = memberRepository.findAll();
         return jpaEntities.stream()
-                .map(memberMapper::toDomain)
-                .toList();
+            .map(memberMapper::toDomain)
+            .toList();
     }
 
-    public Page<Member> findMemberRoleInfoByConditions(String memberId, String memberName, Role role, Pageable pageable) {
-        Page<MemberJpaEntity> jpaEntities = memberRepository.findMemberRoleInfoByConditions(memberId, memberName, role, pageable);
+    public Page<Member> findMemberRoleInfoByConditions(String memberId, String memberName, Role role,
+        Pageable pageable) {
+        Page<MemberJpaEntity> jpaEntities = memberRepository.findMemberRoleInfoByConditions(memberId, memberName, role,
+            pageable);
         return jpaEntities.map(memberMapper::toDomain);
     }
 
@@ -102,7 +103,7 @@ public class MemberPersistenceAdapter implements
     @Override
     public Member getByEmail(String email) {
         MemberJpaEntity jpaEntity = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("[Member] email: " + email + "을 사용하는 회원이 존재하지 않습니다."));
+            .orElseThrow(() -> new NotFoundException("[Member] email: " + email + "을 사용하는 회원이 존재하지 않습니다."));
         return memberMapper.toDomain(jpaEntity);
     }
 

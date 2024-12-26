@@ -17,8 +17,8 @@ public class Authenticator {
 
     public static Authenticator create(String memberId, String secretKey) {
         return Authenticator.builder()
-                .memberId(memberId)
-                .secretKey(secretKey)
-                .build();
+            .memberId(memberId)
+            .secretKey(secretKey)
+            .build();
     }
 }

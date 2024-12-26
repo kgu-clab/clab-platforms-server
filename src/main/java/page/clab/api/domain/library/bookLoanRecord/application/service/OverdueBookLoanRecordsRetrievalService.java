@@ -19,7 +19,8 @@ public class OverdueBookLoanRecordsRetrievalService implements RetrieveOverdueBo
     @Transactional(readOnly = true)
     @Override
     public PagedResponseDto<BookLoanRecordOverdueResponseDto> retrieveOverdueBookLoanRecords(Pageable pageable) {
-        Page<BookLoanRecordOverdueResponseDto> overdueBookLoanRecords = retrieveBookLoanRecordPort.findOverdueBookLoanRecords(pageable);
+        Page<BookLoanRecordOverdueResponseDto> overdueBookLoanRecords = retrieveBookLoanRecordPort.findOverdueBookLoanRecords(
+            pageable);
         return new PagedResponseDto<>(overdueBookLoanRecords);
     }
 }

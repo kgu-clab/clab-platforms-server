@@ -1,5 +1,8 @@
 package page.clab.api.domain.library.book.domain;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +12,6 @@ import lombok.Setter;
 import page.clab.api.domain.library.book.application.dto.request.BookUpdateRequestDto;
 import page.clab.api.domain.library.book.application.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.library.book.application.exception.InvalidBorrowerException;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 @Getter
 @Setter

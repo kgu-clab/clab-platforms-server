@@ -4,5 +4,6 @@ import page.clab.api.domain.community.board.application.dto.request.BoardUpdateR
 import page.clab.api.global.exception.PermissionDeniedException;
 
 public interface UpdateBoardUseCase {
+
     String updateBoard(Long boardId, BoardUpdateRequestDto requestDto) throws PermissionDeniedException;
 }

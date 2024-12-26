@@ -28,8 +28,8 @@ public class MemberLoginController {
     private final String authHeader;
 
     public MemberLoginController(
-            @Qualifier("userLoginService") ManageLoginUseCase manageLoginUseCase,
-            @Value("${security.auth.header}") String authHeader
+        @Qualifier("userLoginService") ManageLoginUseCase manageLoginUseCase,
+        @Value("${security.auth.header}") String authHeader
     ) {
         this.manageLoginUseCase = manageLoginUseCase;
         this.authHeader = authHeader;
@@ -38,9 +38,9 @@ public class MemberLoginController {
     @Operation(summary = "멤버 로그인", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("")
     public ApiResponse<Boolean> login(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            @Valid @RequestBody LoginRequestDto requestDto
+        HttpServletRequest request,
+        HttpServletResponse response,
+        @Valid @RequestBody LoginRequestDto requestDto
     ) throws MemberLockedException, LoginFailedException {
         LoginResult result = manageLoginUseCase.login(request, requestDto);
         response.setHeader(authHeader, result.getHeader());
@@ -50,8 +50,8 @@ public class MemberLoginController {
     @Operation(summary = "Guest 로그인", description = "ROLE_ANONYMOUS 권한이 필요함")
     @PostMapping("/guest")
     public ApiResponse<Boolean> guestLogin(
-            HttpServletRequest request,
-            HttpServletResponse response
+        HttpServletRequest request,
+        HttpServletResponse response
     ) {
         LoginResult result = manageLoginUseCase.guestLogin(request);
         response.setHeader(authHeader, result.getHeader());

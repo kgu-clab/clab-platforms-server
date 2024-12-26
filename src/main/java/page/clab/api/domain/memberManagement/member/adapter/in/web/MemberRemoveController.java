@@ -23,7 +23,7 @@ public class MemberRemoveController {
     @PreAuthorize("hasRole('SUPER')")
     @DeleteMapping("/{memberId}")
     public ApiResponse<String> removeMember(
-            @PathVariable(name = "memberId") String memberId
+        @PathVariable(name = "memberId") String memberId
     ) {
         String id = removeMemberUseCase.removeMember(memberId);
         return ApiResponse.success(id);

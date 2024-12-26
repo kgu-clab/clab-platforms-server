@@ -1,11 +1,10 @@
 package page.clab.api.domain.library.bookLoanRecord.application.dto.response;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanStatus;
-
-import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor

@@ -1,9 +1,8 @@
 package page.clab.api.domain.hiring.recruitment.application.port.out;
 
-import page.clab.api.domain.hiring.recruitment.domain.Recruitment;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import page.clab.api.domain.hiring.recruitment.domain.Recruitment;
 
 public interface RetrieveRecruitmentPort {
 

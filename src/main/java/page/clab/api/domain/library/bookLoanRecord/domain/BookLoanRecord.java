@@ -1,5 +1,7 @@
 package page.clab.api.domain.library.bookLoanRecord.domain;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,9 +13,6 @@ import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanNot
 import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanSuspensionException;
 import page.clab.api.domain.library.bookLoanRecord.application.exception.OverdueException;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBorrowerInfoDto;
-
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Getter
 @Setter
@@ -34,12 +33,12 @@ public class BookLoanRecord {
 
     public static BookLoanRecord create(Long bookId, MemberBorrowerInfoDto borrowerInfo) {
         return BookLoanRecord.builder()
-                .bookId(bookId)
-                .borrowerId(borrowerInfo.getMemberId())
-                .loanExtensionCount(0L)
-                .status(BookLoanStatus.PENDING)
-                .isDeleted(false)
-                .build();
+            .bookId(bookId)
+            .borrowerId(borrowerInfo.getMemberId())
+            .loanExtensionCount(0L)
+            .status(BookLoanStatus.PENDING)
+            .isDeleted(false)
+            .build();
     }
 
     public void markAsReturned(MemberBorrowerInfoDto borrowerInfo) {

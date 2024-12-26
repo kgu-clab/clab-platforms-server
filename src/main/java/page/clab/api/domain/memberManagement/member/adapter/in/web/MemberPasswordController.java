@@ -26,7 +26,7 @@ public class MemberPasswordController {
     @PreAuthorize("hasRole('SUPER')")
     @PostMapping("/password/{memberId}/resend")
     public ApiResponse<String> resendMemberPassword(
-            @PathVariable(name = "memberId") String memberId
+        @PathVariable(name = "memberId") String memberId
     ) {
         String id = manageMemberPasswordUseCase.resendMemberPassword(memberId);
         return ApiResponse.success(id);
@@ -35,7 +35,7 @@ public class MemberPasswordController {
     @Operation(summary = "멤버 비밀번호 재발급 요청", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/password/reset-requests")
     public ApiResponse<String> requestResetMemberPassword(
-            @RequestBody MemberResetPasswordRequestDto requestDto
+        @RequestBody MemberResetPasswordRequestDto requestDto
     ) {
         String id = manageMemberPasswordUseCase.requestMemberPasswordReset(requestDto);
         return ApiResponse.success(id);
@@ -44,7 +44,7 @@ public class MemberPasswordController {
     @Operation(summary = "멤버 비밀번호 재발급 인증", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("/password/reset-verifications")
     public ApiResponse<String> verifyResetMemberPassword(
-            @RequestBody VerificationRequestDto requestDto
+        @RequestBody VerificationRequestDto requestDto
     ) {
         String id = manageMemberPasswordUseCase.verifyMemberPasswordReset(requestDto);
         return ApiResponse.success(id);

@@ -1,8 +1,7 @@
 package page.clab.api.domain.community.comment.application.port.out;
 
-import page.clab.api.domain.community.comment.domain.Comment;
-
 import java.util.List;
+import page.clab.api.domain.community.comment.domain.Comment;
 
 public interface RegisterCommentPort {
 

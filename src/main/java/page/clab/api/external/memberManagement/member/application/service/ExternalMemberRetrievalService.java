@@ -1,5 +1,8 @@
 package page.clab.api.external.memberManagement.member.application.service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +21,6 @@ import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.auth.util.AuthUtil;
 import page.clab.api.global.exception.NotFoundException;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -81,37 +80,37 @@ public class ExternalMemberRetrievalService implements ExternalRetrieveMemberUse
     public List<MemberEmailInfoDto> getMembers() {
         List<Member> members = retrieveMemberPort.findAll();
         return members.stream()
-                .map(mapper::toEmailInfoDto)
-                .collect(Collectors.toList());
+            .map(mapper::toEmailInfoDto)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<String> getMemberIds() {
         return retrieveMemberPort.findAll()
-                .stream()
-                .map(Member::getId)
-                .collect(Collectors.toList());
+            .stream()
+            .map(Member::getId)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<String> getAdminIds() {
         return retrieveMemberPort.findAll()
-                .stream()
-                .filter(Member::isAdminRole)
-                .map(Member::getId)
-                .collect(Collectors.toList());
+            .stream()
+            .filter(Member::isAdminRole)
+            .map(Member::getId)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<String> getSuperAdminIds() {
         return retrieveMemberPort.findAll()
-                .stream()
-                .filter(Member::isSuperAdminRole)
-                .map(Member::getId)
-                .collect(Collectors.toList());
+            .stream()
+            .filter(Member::isSuperAdminRole)
+            .map(Member::getId)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

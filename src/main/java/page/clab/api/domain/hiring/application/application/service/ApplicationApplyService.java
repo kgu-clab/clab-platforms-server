@@ -31,10 +31,10 @@ public class ApplicationApplyService implements ApplyForApplicationUseCase {
         Application application = mapper.fromDto(requestDto);
         String applicationType = application.getApplicationTypeForNotificationPrefix();
         externalSendNotificationUseCase.sendNotificationToAdmins(applicationType + requestDto.getStudentId() + " " +
-                requestDto.getName() + "님이 지원하였습니다.");
+            requestDto.getName() + "님이 지원하였습니다.");
 
         eventPublisher.publishEvent(new NotificationEvent(this, ExecutivesAlertType.NEW_APPLICATION, null,
-                requestDto));
+            requestDto));
 
         return registerApplicationPort.save(application).getStudentId();
     }

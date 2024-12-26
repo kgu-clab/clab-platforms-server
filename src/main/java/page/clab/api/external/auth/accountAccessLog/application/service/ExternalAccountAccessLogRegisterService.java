@@ -20,10 +20,12 @@ public class ExternalAccountAccessLogRegisterService implements ExternalRegister
 
     @Transactional
     @Override
-    public void registerAccountAccessLog(HttpServletRequest request, String memberId, AccountAccessResult accountAccessResult) {
+    public void registerAccountAccessLog(HttpServletRequest request, String memberId,
+        AccountAccessResult accountAccessResult) {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         IPResponse ipResponse = HttpReqResUtil.isBogonRequest(clientIpAddress) ? null : IPInfoUtil.getIpInfo(request);
-        AccountAccessLog accountAccessLog = AccountAccessLog.create(memberId, request, clientIpAddress, ipResponse, accountAccessResult);
+        AccountAccessLog accountAccessLog = AccountAccessLog.create(memberId, request, clientIpAddress, ipResponse,
+            accountAccessResult);
         registerAccountAccessLogPort.save(accountAccessLog);
     }
 }

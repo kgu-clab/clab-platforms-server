@@ -23,7 +23,7 @@ public class ApplicationApplyController {
     @Operation(summary = "동아리 지원", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @PostMapping("")
     public ApiResponse<String> applyForClub(
-            @Valid @RequestBody ApplicationRequestDto requestDto
+        @Valid @RequestBody ApplicationRequestDto requestDto
     ) {
         String id = applyForApplicationUseCase.applyForClub(requestDto);
         return ApiResponse.success(id);

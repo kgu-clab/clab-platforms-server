@@ -1,5 +1,6 @@
 package page.clab.api.domain.members.schedule.application.service;
 
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,8 +14,6 @@ import page.clab.api.domain.members.schedule.domain.Schedule;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
-import java.time.LocalDate;
-
 @Service
 @RequiredArgsConstructor
 public class ActivitySchedulesRetrievalService implements RetrieveActivitySchedulesUseCase {
@@ -25,9 +24,11 @@ public class ActivitySchedulesRetrievalService implements RetrieveActivitySchedu
 
     @Override
     @Transactional(readOnly = true)
-    public PagedResponseDto<ScheduleResponseDto> retrieveActivitySchedules(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    public PagedResponseDto<ScheduleResponseDto> retrieveActivitySchedules(LocalDate startDate, LocalDate endDate,
+        Pageable pageable) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
-        Page<Schedule> schedules = retrieveSchedulePort.findActivitySchedulesByDateRangeAndMemberId(startDate, endDate, currentMemberId, pageable);
+        Page<Schedule> schedules = retrieveSchedulePort.findActivitySchedulesByDateRangeAndMemberId(startDate, endDate,
+            currentMemberId, pageable);
         return new PagedResponseDto<>(schedules.map(mapper::toDto));
     }
 }

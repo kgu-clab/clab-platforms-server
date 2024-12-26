@@ -23,7 +23,7 @@ public class ActivityPhotoVisibilityController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{activityPhotoId}")
     public ApiResponse<Long> toggleActivityPhotoVisibility(
-            @PathVariable(name = "activityPhotoId") Long activityPhotoId
+        @PathVariable(name = "activityPhotoId") Long activityPhotoId
     ) {
         Long id = toggleActivityPhotoVisibilityUseCase.toggleActivityPhotoVisibility(activityPhotoId);
         return ApiResponse.success(id);

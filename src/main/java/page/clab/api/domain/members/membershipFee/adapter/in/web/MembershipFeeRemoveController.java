@@ -24,7 +24,7 @@ public class MembershipFeeRemoveController {
     @PreAuthorize("hasRole('SUPER')")
     @DeleteMapping("/{membershipFeeId}")
     public ApiResponse<Long> removeMembershipFee(
-            @PathVariable(name = "membershipFeeId") Long membershipFeeId
+        @PathVariable(name = "membershipFeeId") Long membershipFeeId
     ) throws PermissionDeniedException {
         Long id = removeMembershipFeeUseCase.removeMembershipFee(membershipFeeId);
         return ApiResponse.success(id);

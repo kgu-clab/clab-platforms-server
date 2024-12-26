@@ -26,8 +26,8 @@ public class RecruitmentUpdateController {
     @PreAuthorize("hasRole('SUPER')")
     @PatchMapping("/{recruitmentId}")
     public ApiResponse<Long> updateRecruitment(
-            @PathVariable(name = "recruitmentId") Long recruitmentId,
-            @Valid @RequestBody RecruitmentUpdateRequestDto requestDto
+        @PathVariable(name = "recruitmentId") Long recruitmentId,
+        @Valid @RequestBody RecruitmentUpdateRequestDto requestDto
     ) {
         Long id = updateRecruitmentUseCase.updateRecruitment(recruitmentId, requestDto);
         return ApiResponse.success(id);

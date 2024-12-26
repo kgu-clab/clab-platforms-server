@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class BoardPersistenceAdapter implements
-        RegisterBoardPort,
-        RetrieveBoardPort {
+    RegisterBoardPort,
+    RetrieveBoardPort {
 
     private final BoardRepository boardRepository;
     private final BoardMapper boardMapper;
@@ -33,15 +33,15 @@ public class BoardPersistenceAdapter implements
     @Override
     public Board getById(Long boardId) {
         return boardRepository.findById(boardId)
-                .map(boardMapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[Board] id: " + boardId + "에 해당하는 게시글이 존재하지 않습니다."));
+            .map(boardMapper::toDomain)
+            .orElseThrow(() -> new NotFoundException("[Board] id: " + boardId + "에 해당하는 게시글이 존재하지 않습니다."));
     }
 
     @Override
     public Board findByIdRegardlessOfDeletion(Long boardId) {
         return boardRepository.findByIdRegardlessOfDeletion(boardId)
-                .map(boardMapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[Board] id: " + boardId + "에 해당하는 게시글이 존재하지 않습니다."));
+            .map(boardMapper::toDomain)
+            .orElseThrow(() -> new NotFoundException("[Board] id: " + boardId + "에 해당하는 게시글이 존재하지 않습니다."));
     }
 
     @Override
@@ -61,24 +61,24 @@ public class BoardPersistenceAdapter implements
     @Override
     public Page<Board> findAllByCategory(BoardCategory category, Pageable pageable) {
         return boardRepository.findAllByCategory(category, pageable)
-                .map(boardMapper::toDomain);
+            .map(boardMapper::toDomain);
     }
 
     @Override
     public Page<Board> findAllByIsDeletedTrue(Pageable pageable) {
         return boardRepository.findAllByIsDeletedTrue(pageable)
-                .map(boardMapper::toDomain);
+            .map(boardMapper::toDomain);
     }
 
     @Override
     public Page<Board> findAllByMemberId(String memberId, Pageable pageable) {
         return boardRepository.findAllByMemberIdAndIsDeletedFalse(memberId, pageable)
-                .map(boardMapper::toDomain);
+            .map(boardMapper::toDomain);
     }
 
     @Override
     public Page<Board> findAll(Pageable pageable) {
         return boardRepository.findAll(pageable)
-                .map(boardMapper::toDomain);
+            .map(boardMapper::toDomain);
     }
 }

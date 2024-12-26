@@ -50,7 +50,7 @@ public class InvalidEndpointAccessFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+        throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String path = httpRequest.getRequestURI();
         boolean isUploadedFileAccess = path.startsWith(fileURL);
@@ -76,7 +76,7 @@ public class InvalidEndpointAccessFilter extends GenericFilterBean {
     private void logSuspiciousAccess(HttpServletRequest request, String clientIpAddress) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String id =
-                (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
+            (authentication == null || authentication.getName() == null) ? "anonymous" : authentication.getName();
         String requestUrl = request.getRequestURI();
         String httpMethod = request.getMethod();
         int statusCode = HttpServletResponse.SC_FORBIDDEN;
@@ -88,7 +88,7 @@ public class InvalidEndpointAccessFilter extends GenericFilterBean {
     private void sendSecurityAlertIfNotBlacklisted(HttpServletRequest request, String clientIpAddress) {
         if (!externalRetrieveBlacklistIpUseCase.existsByIpAddress(clientIpAddress)) {
             externalRegisterBlacklistIpUseCase.save(
-                    BlacklistIp.create(clientIpAddress, "서버 내부 파일 및 디렉토리에 대한 접근 시도")
+                BlacklistIp.create(clientIpAddress, "서버 내부 파일 및 디렉토리에 대한 접근 시도")
             );
             sendSecurityAlerts(request, clientIpAddress);
         }
@@ -99,8 +99,8 @@ public class InvalidEndpointAccessFilter extends GenericFilterBean {
         String blacklistAddedMessage = "Added IP: " + clientIpAddress;
 
         eventPublisher.publishEvent(new NotificationEvent(this, SecurityAlertType.ABNORMAL_ACCESS, request,
-                abnormalAccessMessage));
+            abnormalAccessMessage));
         eventPublisher.publishEvent(new NotificationEvent(this, SecurityAlertType.BLACKLISTED_IP_ADDED, request,
-                blacklistAddedMessage));
+            blacklistAddedMessage));
     }
 }

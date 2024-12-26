@@ -10,20 +10,20 @@ public class ProductDtoMapper {
 
     public Product fromDto(ProductRequestDto requestDto) {
         return Product.builder()
-                .name(requestDto.getName())
-                .description(requestDto.getDescription())
-                .url(requestDto.getUrl())
-                .isDeleted(false)
-                .build();
+            .name(requestDto.getName())
+            .description(requestDto.getDescription())
+            .url(requestDto.getUrl())
+            .isDeleted(false)
+            .build();
     }
 
     public ProductResponseDto toDto(Product product) {
         return ProductResponseDto.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .description(product.getDescription())
-                .url(product.getUrl())
-                .createdAt(product.getCreatedAt())
-                .build();
+            .id(product.getId())
+            .name(product.getName())
+            .description(product.getDescription())
+            .url(product.getUrl())
+            .createdAt(product.getCreatedAt())
+            .build();
     }
 }

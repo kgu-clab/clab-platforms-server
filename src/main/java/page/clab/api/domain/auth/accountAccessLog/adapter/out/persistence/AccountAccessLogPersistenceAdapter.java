@@ -8,7 +8,7 @@ import page.clab.api.domain.auth.accountAccessLog.domain.AccountAccessLog;
 @Component
 @RequiredArgsConstructor
 public class AccountAccessLogPersistenceAdapter implements
-        RegisterAccountAccessLogPort {
+    RegisterAccountAccessLogPort {
 
     private final AccountAccessLogRepository accountAccessLogRepository;
     private final AccountAccessLogMapper accountAccessLogMapper;

@@ -1,6 +1,7 @@
 package page.clab.api.domain.community.comment.application.event;
 
 import jakarta.annotation.PostConstruct;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.board.application.event.BoardEventProcessor;
@@ -8,8 +9,6 @@ import page.clab.api.domain.community.board.application.event.BoardEventProcesso
 import page.clab.api.domain.community.comment.application.port.out.RegisterCommentPort;
 import page.clab.api.domain.community.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.community.comment.domain.Comment;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

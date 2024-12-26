@@ -25,7 +25,7 @@ public class AccusationReportController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("")
     public ApiResponse<Long> reportIncident(
-            @Valid @RequestBody AccuseRequestDto requestDto
+        @Valid @RequestBody AccuseRequestDto requestDto
     ) {
         Long id = reportAccusationUsecase.reportAccusation(requestDto);
         return ApiResponse.success(id);

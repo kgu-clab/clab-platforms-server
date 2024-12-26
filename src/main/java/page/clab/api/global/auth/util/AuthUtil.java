@@ -39,6 +39,7 @@ public class AuthUtil {
     }
 
     public static Boolean isUserUnAuthenticated(Authentication authentication) {
-        return (authentication == null || authentication.getAuthorities() == null || authentication.getAuthorities().isEmpty());
+        return (authentication == null || authentication.getAuthorities() == null || authentication.getAuthorities()
+            .isEmpty());
     }
 }

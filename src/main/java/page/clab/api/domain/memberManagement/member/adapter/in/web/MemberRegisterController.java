@@ -24,7 +24,7 @@ public class MemberRegisterController {
     @PreAuthorize("hasRole('SUPER')")
     @PostMapping("")
     public ApiResponse<String> registerMember(
-            @RequestBody MemberRequestDto requestDto
+        @RequestBody MemberRequestDto requestDto
     ) {
         String id = registerMemberUseCase.registerMember(requestDto);
         return ApiResponse.success(id);

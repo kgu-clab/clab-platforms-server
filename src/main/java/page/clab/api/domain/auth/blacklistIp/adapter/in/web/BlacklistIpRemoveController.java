@@ -24,8 +24,8 @@ public class BlacklistIpRemoveController {
     @PreAuthorize("hasRole('SUPER')")
     @DeleteMapping("")
     public ApiResponse<String> removeBlacklistIp(
-            HttpServletRequest request,
-            @RequestParam(name = "ipAddress") String ipAddress
+        HttpServletRequest request,
+        @RequestParam(name = "ipAddress") String ipAddress
     ) {
         String deletedIp = removeBlacklistIpUseCase.removeBlacklistIp(request, ipAddress);
         return ApiResponse.success(deletedIp);

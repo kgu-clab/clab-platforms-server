@@ -24,7 +24,7 @@ public class BoardDetailsRetrievalController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/{boardId}")
     public ApiResponse<BoardDetailsResponseDto> retrieveBoardDetails(
-            @PathVariable(name = "boardId") Long boardId
+        @PathVariable(name = "boardId") Long boardId
     ) {
         BoardDetailsResponseDto board = retrieveBoardDetailsUseCase.retrieveBoardDetails(boardId);
         return ApiResponse.success(board);

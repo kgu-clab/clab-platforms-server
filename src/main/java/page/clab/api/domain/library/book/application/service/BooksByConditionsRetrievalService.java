@@ -1,5 +1,6 @@
 package page.clab.api.domain.library.book.application.service;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
@@ -15,8 +16,6 @@ import page.clab.api.external.library.bookLoanRecord.application.port.ExternalRe
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
-import java.time.LocalDateTime;
-
 @Service
 @RequiredArgsConstructor
 public class BooksByConditionsRetrievalService implements RetrieveBooksByConditionsUseCase {
@@ -28,8 +27,10 @@ public class BooksByConditionsRetrievalService implements RetrieveBooksByConditi
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<BookResponseDto> retrieveBooks(String title, String category, String publisher, String borrowerId, String borrowerName, Pageable pageable) {
-        Page<Book> books = retrieveBookPort.findByConditions(title, category, publisher, borrowerId, borrowerName, pageable);
+    public PagedResponseDto<BookResponseDto> retrieveBooks(String title, String category, String publisher,
+        String borrowerId, String borrowerName, Pageable pageable) {
+        Page<Book> books = retrieveBookPort.findByConditions(title, category, publisher, borrowerId, borrowerName,
+            pageable);
         return new PagedResponseDto<>(books.map(this::mapToBookResponseDto));
     }
 

@@ -2,6 +2,7 @@ package page.clab.api.domain.memberManagement.member.adapter.in.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,8 +18,6 @@ import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
@@ -29,19 +28,20 @@ public class MemberBirthdayRetrievalThisMonthController {
     private final PageableUtils pageableUtils;
 
     @Operation(summary = "[G] 이달의 생일자 조회", description = "ROLE_GUEST 이상의 권한이 필요함<br>" +
-            "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
+        "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/birthday")
     public ApiResponse<PagedResponseDto<MemberBirthdayResponseDto>> retrieveBirthdaysThisMonth(
-            @RequestParam(name = "month") int month,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "birth") List<String> sortBy,
-            @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
+        @RequestParam(name = "month") int month,
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size,
+        @RequestParam(name = "sortBy", defaultValue = "birth") List<String> sortBy,
+        @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws SortingArgumentException, InvalidColumnException {
-        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, MemberBirthdayResponseDto.class);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
+            MemberBirthdayResponseDto.class);
         PagedResponseDto<MemberBirthdayResponseDto> birthdayMembers =
-                retrieveMemberBirthdaysThisMonthUseCase.retrieveBirthdaysThisMonth(month, pageable);
+            retrieveMemberBirthdaysThisMonthUseCase.retrieveBirthdaysThisMonth(month, pageable);
         return ApiResponse.success(birthdayMembers);
     }
 }

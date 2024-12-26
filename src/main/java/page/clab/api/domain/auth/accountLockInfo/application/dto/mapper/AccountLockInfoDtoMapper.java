@@ -9,8 +9,8 @@ public class AccountLockInfoDtoMapper {
 
     public AccountLockInfoResponseDto toDto(AccountLockInfo accountLockInfo, String memberName) {
         return AccountLockInfoResponseDto.builder()
-                .id(accountLockInfo.getMemberId())
-                .name(memberName)
-                .build();
+            .id(accountLockInfo.getMemberId())
+            .name(memberName)
+            .build();
     }
 }

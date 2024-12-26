@@ -8,7 +8,8 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.review.domain.Review;
 
-public interface ReviewRepository extends JpaRepository<ReviewJpaEntity, Long>, ReviewRepositoryCustom, QuerydslPredicateExecutor<Review> {
+public interface ReviewRepository extends JpaRepository<ReviewJpaEntity, Long>, ReviewRepositoryCustom,
+    QuerydslPredicateExecutor<Review> {
 
     boolean existsByMemberIdAndActivityGroup(String memberId, ActivityGroup activityGroup);
 

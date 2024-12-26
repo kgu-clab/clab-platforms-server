@@ -1,13 +1,12 @@
 package page.clab.api.domain.memberManagement.position.domain;
 
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -24,11 +23,11 @@ public class Position {
 
     public static Position create(String memberId) {
         return Position.builder()
-                .memberId(memberId)
-                .positionType(PositionType.MEMBER)
-                .year(String.valueOf(LocalDate.now().getYear()))
-                .isDeleted(false)
-                .build();
+            .memberId(memberId)
+            .positionType(PositionType.MEMBER)
+            .year(String.valueOf(LocalDate.now().getYear()))
+            .isDeleted(false)
+            .build();
     }
 
     public void delete() {

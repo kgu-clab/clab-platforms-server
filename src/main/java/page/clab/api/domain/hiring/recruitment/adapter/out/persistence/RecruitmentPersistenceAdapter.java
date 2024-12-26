@@ -1,5 +1,7 @@
 package page.clab.api.domain.hiring.recruitment.adapter.out.persistence;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.hiring.recruitment.application.port.out.RegisterRecruitmentPort;
@@ -8,15 +10,12 @@ import page.clab.api.domain.hiring.recruitment.application.port.out.UpdateRecrui
 import page.clab.api.domain.hiring.recruitment.domain.Recruitment;
 import page.clab.api.global.exception.NotFoundException;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
 public class RecruitmentPersistenceAdapter implements
-        RegisterRecruitmentPort,
-        UpdateRecruitmentPort,
-        RetrieveRecruitmentPort {
+    RegisterRecruitmentPort,
+    UpdateRecruitmentPort,
+    RetrieveRecruitmentPort {
 
     private final RecruitmentRepository repository;
     private final RecruitmentMapper mapper;
@@ -38,28 +37,29 @@ public class RecruitmentPersistenceAdapter implements
     @Override
     public Recruitment getById(Long recruitmentId) {
         return repository.findById(recruitmentId)
-                .map(mapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[Recruitment] id: " + recruitmentId + "에 해당하는 모집 공고가 존재하지 않습니다."));
+            .map(mapper::toDomain)
+            .orElseThrow(
+                () -> new NotFoundException("[Recruitment] id: " + recruitmentId + "에 해당하는 모집 공고가 존재하지 않습니다."));
     }
 
     @Override
     public List<Recruitment> findAll() {
         return repository.findAll().stream()
-                .map(mapper::toDomain)
-                .toList();
+            .map(mapper::toDomain)
+            .toList();
     }
 
     @Override
     public List<Recruitment> findTop5ByOrderByCreatedAtDesc() {
         return repository.findTop5ByOrderByCreatedAtDesc().stream()
-                .map(mapper::toDomain)
-                .toList();
+            .map(mapper::toDomain)
+            .toList();
     }
 
     @Override
     public List<Recruitment> findByEndDateBetween(LocalDateTime weekAgo, LocalDateTime now) {
         return repository.findByEndDateBetween(weekAgo, now).stream()
-                .map(mapper::toDomain)
-                .toList();
+            .map(mapper::toDomain)
+            .toList();
     }
 }

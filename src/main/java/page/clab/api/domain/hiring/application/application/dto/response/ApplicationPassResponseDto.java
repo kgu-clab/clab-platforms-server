@@ -15,7 +15,7 @@ public class ApplicationPassResponseDto {
 
     public static ApplicationPassResponseDto defaultResponse() {
         return ApplicationPassResponseDto.builder()
-                .isPass(false)
-                .build();
+            .isPass(false)
+            .build();
     }
 }

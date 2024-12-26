@@ -8,8 +8,8 @@ public class CloudDtoMapper {
 
     public CloudUsageInfo of(String memberId, Long usage) {
         return CloudUsageInfo.builder()
-                .memberId(memberId)
-                .usage(usage)
-                .build();
+            .memberId(memberId)
+            .usage(usage)
+            .build();
     }
 }

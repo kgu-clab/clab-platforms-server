@@ -1,6 +1,9 @@
 package page.clab.api.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -16,10 +19,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 import page.clab.api.global.handler.ApiLoggingInterceptor;
 import page.clab.api.global.util.HtmlCharacterEscapes;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.time.Duration;
 
 @Configuration
 @RequiredArgsConstructor
@@ -39,24 +38,25 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         log.info("Resource UploadedFile Mapped : {} -> {}", fileURL, filePath);
         CacheControl cacheControl = CacheControl.maxAge(Duration.ofDays(1))
-                .mustRevalidate()
-                .cachePrivate();
+            .mustRevalidate()
+            .cachePrivate();
 
         registry
-                .addResourceHandler(fileURL + "/**")
-                .addResourceLocations("file://" + filePath + "/")
-                .setCacheControl(cacheControl)
-                .resourceChain(true)
-                .addResolver(new PathResourceResolver() {
-                    @Override
-                    protected Resource getResource(@NotNull String resourcePath, @NotNull Resource location) throws IOException {
-                        Resource resource = location.createRelative(resourcePath);
-                        if (resource.exists() && resource.isReadable()) {
-                            return resource;
-                        }
-                        throw new FileNotFoundException("Resource not found: " + resourcePath);
+            .addResourceHandler(fileURL + "/**")
+            .addResourceLocations("file://" + filePath + "/")
+            .setCacheControl(cacheControl)
+            .resourceChain(true)
+            .addResolver(new PathResourceResolver() {
+                @Override
+                protected Resource getResource(@NotNull String resourcePath, @NotNull Resource location)
+                    throws IOException {
+                    Resource resource = location.createRelative(resourcePath);
+                    if (resource.exists() && resource.isReadable()) {
+                        return resource;
                     }
-                });
+                    throw new FileNotFoundException("Resource not found: " + resourcePath);
+                }
+            });
     }
 
     @Bean

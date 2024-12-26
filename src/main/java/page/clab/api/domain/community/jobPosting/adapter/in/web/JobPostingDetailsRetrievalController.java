@@ -24,9 +24,10 @@ public class JobPostingDetailsRetrievalController {
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/{jobPostingId}")
     public ApiResponse<JobPostingDetailsResponseDto> retrieveJobPostingDetails(
-            @PathVariable(name = "jobPostingId") Long jobPostingId
+        @PathVariable(name = "jobPostingId") Long jobPostingId
     ) {
-        JobPostingDetailsResponseDto jobPosting = retrieveJobPostingDetailsUseCase.retrieveJobPostingDetails(jobPostingId);
+        JobPostingDetailsResponseDto jobPosting = retrieveJobPostingDetailsUseCase.retrieveJobPostingDetails(
+            jobPostingId);
         return ApiResponse.success(jobPosting);
     }
 }

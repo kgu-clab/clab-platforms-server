@@ -1,5 +1,7 @@
 package page.clab.api.domain.memberManagement.workExperience.domain;
 
+import java.time.LocalDate;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,9 +12,6 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.domain.memberManagement.workExperience.application.dto.request.WorkExperienceUpdateRequestDto;
 import page.clab.api.global.exception.InvalidDateRangeException;
 import page.clab.api.global.exception.PermissionDeniedException;
-
-import java.time.LocalDate;
-import java.util.Optional;
 
 @Getter
 @Setter

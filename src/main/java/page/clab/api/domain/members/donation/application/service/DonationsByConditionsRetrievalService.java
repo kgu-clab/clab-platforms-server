@@ -1,5 +1,6 @@
 package page.clab.api.domain.members.donation.application.service;
 
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,8 +15,6 @@ import page.clab.api.domain.members.donation.domain.Donation;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
-import java.time.LocalDate;
-
 @Service
 @RequiredArgsConstructor
 public class DonationsByConditionsRetrievalService implements RetrieveDonationsByConditionsUseCase {
@@ -26,10 +25,12 @@ public class DonationsByConditionsRetrievalService implements RetrieveDonationsB
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<DonationResponseDto> retrieveDonations(String memberId, String name, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    public PagedResponseDto<DonationResponseDto> retrieveDonations(String memberId, String name, LocalDate startDate,
+        LocalDate endDate, Pageable pageable) {
         Page<Donation> donations = retrieveDonationPort.findByConditions(memberId, name, startDate, endDate, pageable);
         return new PagedResponseDto<>(donations.map(donation -> {
-            MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(donation.getMemberId());
+            MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(
+                donation.getMemberId());
             return mapper.toDto(donation, memberInfo.getMemberName());
         }));
     }

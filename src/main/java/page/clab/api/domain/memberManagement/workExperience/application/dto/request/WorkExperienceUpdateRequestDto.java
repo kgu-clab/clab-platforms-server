@@ -1,10 +1,9 @@
 package page.clab.api.domain.memberManagement.workExperience.application.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter

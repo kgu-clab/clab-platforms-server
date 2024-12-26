@@ -13,8 +13,8 @@ import page.clab.api.global.exception.NotFoundException;
 @Component
 @RequiredArgsConstructor
 public class ReviewPersistenceAdapter implements
-        RegisterReviewPort,
-        RetrieveReviewPort {
+    RegisterReviewPort,
+    RetrieveReviewPort {
 
     private final ReviewRepository repository;
     private final ReviewMapper mapper;
@@ -29,20 +29,20 @@ public class ReviewPersistenceAdapter implements
     @Override
     public Review getById(Long reviewId) {
         return repository.findById(reviewId)
-                .map(mapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[Review] id: " + reviewId + "에 해당하는 리뷰가 존재하지 않습니다."));
+            .map(mapper::toDomain)
+            .orElseThrow(() -> new NotFoundException("[Review] id: " + reviewId + "에 해당하는 리뷰가 존재하지 않습니다."));
     }
 
     @Override
     public Page<Review> findAllByIsDeletedTrue(Pageable pageable) {
         return repository.findAllByIsDeletedTrue(pageable)
-                .map(mapper::toDomain);
+            .map(mapper::toDomain);
     }
 
     @Override
     public Page<Review> findAllByMemberId(String memberId, Pageable pageable) {
         return repository.findAllByMemberId(memberId, pageable)
-                .map(mapper::toDomain);
+            .map(mapper::toDomain);
     }
 
     @Override
@@ -51,8 +51,9 @@ public class ReviewPersistenceAdapter implements
     }
 
     @Override
-    public Page<Review> findByConditions(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable) {
+    public Page<Review> findByConditions(String memberId, String memberName, Long activityId, Boolean isPublic,
+        Pageable pageable) {
         return repository.findByConditions(memberId, memberName, activityId, isPublic, pageable)
-                .map(mapper::toDomain);
+            .map(mapper::toDomain);
     }
 }

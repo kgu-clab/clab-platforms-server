@@ -24,7 +24,7 @@ public class DonationRemoveController {
     @PreAuthorize("hasRole('SUPER')")
     @DeleteMapping("/{donationId}")
     public ApiResponse<Long> removeDonation(
-            @PathVariable(name = "donationId") Long donationId
+        @PathVariable(name = "donationId") Long donationId
     ) throws PermissionDeniedException {
         Long id = removeDonationUseCase.removeDonation(donationId);
         return ApiResponse.success(id);

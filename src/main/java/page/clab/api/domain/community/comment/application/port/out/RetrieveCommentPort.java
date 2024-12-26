@@ -1,11 +1,10 @@
 package page.clab.api.domain.community.comment.application.port.out;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.community.comment.domain.Comment;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface RetrieveCommentPort {
 

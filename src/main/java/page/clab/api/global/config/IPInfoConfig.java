@@ -26,11 +26,11 @@ public class IPInfoConfig {
     @Bean
     public IPinfoSpring ipinfoSpring() {
         return new IPinfoSpring.Builder()
-                .setIPinfo(ipInfo())
-                .interceptorStrategy(interceptorStrategy())
-                .ipStrategy(ipStrategy())
-                .attributeStrategy(attributeStrategy())
-                .build();
+            .setIPinfo(ipInfo())
+            .interceptorStrategy(interceptorStrategy())
+            .ipStrategy(ipStrategy())
+            .attributeStrategy(attributeStrategy())
+            .build();
     }
 
     @Bean

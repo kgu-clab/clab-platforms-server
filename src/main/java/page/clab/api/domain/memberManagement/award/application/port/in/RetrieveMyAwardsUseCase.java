@@ -5,5 +5,6 @@ import page.clab.api.domain.memberManagement.award.application.dto.response.Awar
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveMyAwardsUseCase {
+
     PagedResponseDto<AwardResponseDto> retrieveMyAwards(Pageable pageable);
 }

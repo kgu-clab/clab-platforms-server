@@ -1,5 +1,13 @@
 package page.clab.api.global.common.file.application;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -12,20 +20,11 @@ import page.clab.api.global.util.FileUtil;
 import page.clab.api.global.util.ImageUtil;
 import page.clab.api.global.util.LogSanitizerUtil;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-
 /**
  * {@code FileHandler}는 파일 처리 기능을 담당하는 클래스입니다.
  *
  * <p>이 클래스는 파일의 저장, 삭제, 이미지 압축 등을 수행하며, 파일 관련 속성 및 경로를 구성합니다.</p>
- *
+ * <p>
  * 주요 기능:
  * <ul>
  *     <li>{@link #saveQRCodeImage(byte[], String, String, String, String)} - QR 코드 이미지를 파일로 저장합니다.</li>
@@ -49,8 +48,8 @@ public class FileHandler {
     private float imageQuality;
 
     public FileHandler(
-            @Value("${resource.file.disallow-extension}") String[] disallowExtensions,
-            @Value("${resource.file.compressible-image-extension}") String[] compressibleImageExtensions
+        @Value("${resource.file.disallow-extension}") String[] disallowExtensions,
+        @Value("${resource.file.compressible-image-extension}") String[] compressibleImageExtensions
     ) {
         this.disallowExtensions.addAll(Arrays.asList(disallowExtensions));
         this.compressibleImageExtensions.addAll(Arrays.asList(compressibleImageExtensions));
@@ -60,7 +59,8 @@ public class FileHandler {
         filePath = filePath.replace("/", File.separator).replace("\\", File.separator);
     }
 
-    public void saveQRCodeImage(byte[] image, String category, String saveFilename, String extension, String baseDirectory) throws IOException {
+    public void saveQRCodeImage(byte[] image, String category, String saveFilename, String extension,
+        String baseDirectory) throws IOException {
         init();
         String savePath = filePath + File.separator + category + File.separator + saveFilename;
         ByteArrayInputStream inputStream = new ByteArrayInputStream(image);

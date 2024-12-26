@@ -5,5 +5,7 @@ import page.clab.api.domain.activity.review.application.dto.response.ReviewRespo
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveReviewsByConditionsUseCase {
-    PagedResponseDto<ReviewResponseDto> retrieveReviews(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable);
+
+    PagedResponseDto<ReviewResponseDto> retrieveReviews(String memberId, String memberName, Long activityId,
+        Boolean isPublic, Pageable pageable);
 }

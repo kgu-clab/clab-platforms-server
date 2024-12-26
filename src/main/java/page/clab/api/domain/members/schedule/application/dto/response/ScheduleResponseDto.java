@@ -1,10 +1,9 @@
 package page.clab.api.domain.members.schedule.application.dto.response;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.members.schedule.domain.SchedulePriority;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Builder

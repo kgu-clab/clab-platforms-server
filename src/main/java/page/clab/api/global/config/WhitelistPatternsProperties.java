@@ -1,12 +1,11 @@
 package page.clab.api.global.config;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.Arrays;
-import java.util.stream.Stream;
 
 @Setter
 @Getter
@@ -19,7 +18,7 @@ public class WhitelistPatternsProperties {
 
     public String[] getWhitelistPatterns() {
         return Stream.of(apiDocs, actuator)
-                .flatMap(Arrays::stream)
-                .toArray(String[]::new);
+            .flatMap(Arrays::stream)
+            .toArray(String[]::new);
     }
 }

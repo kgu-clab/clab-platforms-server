@@ -1,5 +1,6 @@
 package page.clab.api.domain.community.comment.adapter.out.persistence;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.comment.application.port.out.RegisterCommentLikePort;
@@ -7,14 +8,12 @@ import page.clab.api.domain.community.comment.application.port.out.RemoveComment
 import page.clab.api.domain.community.comment.application.port.out.RetrieveCommentLikePort;
 import page.clab.api.domain.community.comment.domain.CommentLike;
 
-import java.util.Optional;
-
 @Component
 @RequiredArgsConstructor
 public class CommentLikePersistenceAdapter implements
-        RegisterCommentLikePort,
-        RemoveCommentLikePort,
-        RetrieveCommentLikePort {
+    RegisterCommentLikePort,
+    RemoveCommentLikePort,
+    RetrieveCommentLikePort {
 
     private final CommentLikeRepository commentLikeRepository;
     private final CommentLikeMapper commentLikeMapper;
@@ -34,6 +33,6 @@ public class CommentLikePersistenceAdapter implements
     @Override
     public Optional<CommentLike> findByCommentIdAndMemberId(Long commentId, String memberId) {
         return commentLikeRepository.findByCommentIdAndMemberId(commentId, memberId)
-                .map(commentLikeMapper::toDomain);
+            .map(commentLikeMapper::toDomain);
     }
 }

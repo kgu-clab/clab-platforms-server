@@ -32,8 +32,8 @@ public class ExternalIpAccessMonitorRegisterService implements ExternalRegisterI
         if (redisIpAccessMonitor.isBlocked()) {
             String abnormalAccessIpBlockedMessage = "Blocked IP: " + ipAddress;
             eventPublisher.publishEvent(
-                    new NotificationEvent(this, SecurityAlertType.ABNORMAL_ACCESS_IP_BLOCKED, request,
-                            abnormalAccessIpBlockedMessage));
+                new NotificationEvent(this, SecurityAlertType.ABNORMAL_ACCESS_IP_BLOCKED, request,
+                    abnormalAccessIpBlockedMessage));
         }
         registerIpAccessMonitorPort.save(redisIpAccessMonitor);
     }
@@ -41,11 +41,11 @@ public class ExternalIpAccessMonitorRegisterService implements ExternalRegisterI
     @NotNull
     private RedisIpAccessMonitor getOrCreateRedisIpAccessMonitor(String ipAddress) {
         return retrieveIpAccessMonitorPort.findById(ipAddress)
-                .map(attempt -> {
-                    attempt.increaseAttempts();
-                    attempt.updateLastAttempt();
-                    return attempt;
-                })
-                .orElseGet(() -> RedisIpAccessMonitor.create(ipAddress, maxAttempts));
+            .map(attempt -> {
+                attempt.increaseAttempts();
+                attempt.updateLastAttempt();
+                return attempt;
+            })
+            .orElseGet(() -> RedisIpAccessMonitor.create(ipAddress, maxAttempts));
     }
 }

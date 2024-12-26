@@ -2,11 +2,10 @@ package page.clab.api.domain.hiring.application.application.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.hiring.application.domain.ApplicationType;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter

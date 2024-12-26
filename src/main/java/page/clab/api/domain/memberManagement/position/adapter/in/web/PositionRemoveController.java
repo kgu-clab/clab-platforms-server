@@ -23,7 +23,7 @@ public class PositionRemoveController {
     @PreAuthorize("hasRole('SUPER')")
     @DeleteMapping("/{positionId}")
     public ApiResponse<Long> removePosition(
-            @PathVariable("positionId") Long positionId
+        @PathVariable("positionId") Long positionId
     ) {
         Long id = removePositionUseCase.removePosition(positionId);
         return ApiResponse.success(id);

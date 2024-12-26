@@ -20,6 +20,6 @@ public class SlackNotificationSender implements NotificationSender {
     @Override
     public void sendNotification(NotificationEvent event, String webhookUrl) {
         slackWebhookClient.sendMessage(webhookUrl, event.getAlertType(), event.getRequest(),
-                event.getAdditionalData());
+            event.getAdditionalData());
     }
 }

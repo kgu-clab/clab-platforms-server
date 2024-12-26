@@ -1,13 +1,12 @@
 package page.clab.api.domain.memberManagement.notification.domain;
 
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,10 +23,10 @@ public class Notification {
 
     public static Notification create(String memberId, String content) {
         return Notification.builder()
-                .memberId(memberId)
-                .content(content)
-                .isDeleted(false)
-                .build();
+            .memberId(memberId)
+            .content(content)
+            .isDeleted(false)
+            .build();
     }
 
     public void delete() {

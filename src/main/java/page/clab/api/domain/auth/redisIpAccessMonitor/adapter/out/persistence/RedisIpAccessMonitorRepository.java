@@ -6,4 +6,5 @@ import page.clab.api.domain.auth.redisIpAccessMonitor.domain.RedisIpAccessMonito
 
 @Repository
 public interface RedisIpAccessMonitorRepository extends CrudRepository<RedisIpAccessMonitor, String> {
+
 }

@@ -22,7 +22,8 @@ public class MembershipFeeUpdateService implements UpdateMembershipFeeUseCase {
 
     @Transactional
     @Override
-    public Long updateMembershipFee(Long membershipFeeId, MembershipFeeUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public Long updateMembershipFee(Long membershipFeeId, MembershipFeeUpdateRequestDto requestDto)
+        throws PermissionDeniedException {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         MembershipFee membershipFee = retrieveMembershipFeePort.getById(membershipFeeId);
         membershipFee.validateAccessPermission(currentMemberInfo);
