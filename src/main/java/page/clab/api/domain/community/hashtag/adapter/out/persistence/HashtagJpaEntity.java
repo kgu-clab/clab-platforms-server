@@ -2,6 +2,8 @@ package page.clab.api.domain.community.hashtag.adapter.out.persistence;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import page.clab.api.domain.community.hashtag.domain.HashtagCategory;
 import page.clab.api.global.common.domain.BaseEntity;
 
 @Entity
@@ -33,6 +36,10 @@ public class HashtagJpaEntity extends BaseEntity {
 
     @Column(name = "name", unique = true, nullable = false)
     private String name;
+
+    @Column(name = "hashtag_category", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private HashtagCategory hashtagCategory;
 
     @Column(name = "board_usage", nullable = false)
     private Long boardUsage;
