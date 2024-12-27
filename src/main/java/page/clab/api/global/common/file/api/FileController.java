@@ -55,6 +55,18 @@ public class FileController {
         return ApiResponse.success(responseDto);
     }
 
+    @Operation(summary = "[A] 운영진 사진 업로드", description = "ROLE_ADMIN 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/executives", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponse<UploadedFileResponseDto> executiveUpload(
+        @RequestParam(name = "multipartFile") MultipartFile multipartFile,
+        @RequestParam(name = "storagePeriod") long storagePeriod
+    ) throws IOException, PermissionDeniedException {
+        String path = fileService.buildPath("executives");
+        UploadedFileResponseDto responseDto = fileService.saveFile(multipartFile, path, storagePeriod);
+        return ApiResponse.success(responseDto);
+    }
+
     @Operation(summary = "[A] 함께하는 활동 사진 업로드", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/activity-photos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
