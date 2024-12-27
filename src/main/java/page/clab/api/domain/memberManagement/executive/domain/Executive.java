@@ -20,4 +20,5 @@ public class Executive {
     private String field;
     private String position;
     private String imageUrl;
+    private Boolean isDeleted;
 }

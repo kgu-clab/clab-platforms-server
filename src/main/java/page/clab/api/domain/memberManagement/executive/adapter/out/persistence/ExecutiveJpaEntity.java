@@ -1,4 +1,4 @@
-package page.clab.api.domain.memberManagement.executive.adapter.out;
+package page.clab.api.domain.memberManagement.executive.adapter.out.persistence;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,17 +28,17 @@ import page.clab.api.global.common.domain.BaseEntity;
 public class ExecutiveJpaEntity extends BaseEntity {
 
     @Id
-    @Column(nullable = false, updatable = false, unique = true)
-    @Size(min = 9, max = 9, message = "{size.member.id}")
+    @Column(nullable = false, unique = true)
+    @Size(min = 9, max = 9, message = "{size.executive.id}")
     private String id;
 
     @Column(nullable = false)
-    @Size(min = 1, max = 10, message = "{size.member.name}")
+    @Size(min = 1, max = 10, message = "{size.executive.name}")
     private String name;
 
     @Column(nullable = false)
-    @Email(message = "{email.member.email}")
-    @Size(min = 1, message = "{size.member.email}")
+    @Email(message = "{email.executive.email}")
+    @Size(min = 1, message = "{size.executive.email}")
     private String email;
 
     @Column(nullable = false)
@@ -48,4 +48,7 @@ public class ExecutiveJpaEntity extends BaseEntity {
     private String position;
 
     private String imageUrl;
+
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted;
 }
