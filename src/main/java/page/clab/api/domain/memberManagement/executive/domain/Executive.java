@@ -18,7 +18,7 @@ public class Executive {
     private String name;
     private String email;
     private String field;
-    private String position;
+    private ExecutivePosition position;
     private String imageUrl;
     private Boolean isDeleted;
 }
