@@ -1,11 +1,13 @@
 package page.clab.api.domain.memberManagement.executive.domain;
 
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import page.clab.api.domain.memberManagement.executive.application.dto.request.ExecutiveUpdateRequestDto;
 
 @Getter
 @Setter
@@ -21,4 +23,17 @@ public class Executive {
     private ExecutivePosition position;
     private String imageUrl;
     private Boolean isDeleted;
+
+    public void update(ExecutiveUpdateRequestDto requestDto) {
+        Optional.ofNullable(requestDto.getId()).ifPresent(this::setId);
+        Optional.ofNullable(requestDto.getName()).ifPresent(this::setName);
+        Optional.ofNullable(requestDto.getEmail()).ifPresent(this::setEmail);
+        Optional.ofNullable(requestDto.getField()).ifPresent(this::setField);
+        Optional.ofNullable(requestDto.getPosition()).ifPresent(this::setPosition);
+        Optional.ofNullable(requestDto.getImageUrl()).ifPresent(this::setImageUrl);
+    }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
 }
