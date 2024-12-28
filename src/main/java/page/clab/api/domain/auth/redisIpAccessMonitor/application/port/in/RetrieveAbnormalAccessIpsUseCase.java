@@ -5,5 +5,6 @@ import page.clab.api.domain.auth.redisIpAccessMonitor.domain.RedisIpAccessMonito
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveAbnormalAccessIpsUseCase {
+
     PagedResponseDto<RedisIpAccessMonitor> retrieveAbnormalAccessIps(Pageable pageable);
 }

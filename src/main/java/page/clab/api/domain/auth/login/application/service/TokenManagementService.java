@@ -1,6 +1,7 @@
 package page.clab.api.domain.auth.login.application.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
@@ -22,8 +23,6 @@ import page.clab.api.global.auth.exception.TokenMisuseException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.util.HttpReqResUtil;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Qualifier("tokenManagementService")
@@ -44,7 +43,8 @@ public class TokenManagementService implements ManageLoginUseCase {
         validateToken(redisToken);
 
         TokenInfo newTokenInfo = jwtTokenProvider.generateToken(redisToken.getMemberId(), redisToken.getRole());
-        manageRedisTokenUseCase.saveToken(redisToken.getMemberId(), redisToken.getRole(), newTokenInfo, redisToken.getIp());
+        manageRedisTokenUseCase.saveToken(redisToken.getMemberId(), redisToken.getRole(), newTokenInfo,
+            redisToken.getIp());
         return TokenHeader.create(newTokenInfo);
     }
 
@@ -74,12 +74,14 @@ public class TokenManagementService implements ManageLoginUseCase {
     }
 
     @Override
-    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) throws LoginFailedException, MemberLockedException {
+    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto)
+        throws LoginFailedException, MemberLockedException {
         throw new UnsupportedOperationException("Method not implemented");
     }
 
     @Override
-    public LoginResult authenticate(HttpServletRequest request, TwoFactorAuthenticationRequestDto requestDto) throws LoginFailedException, MemberLockedException {
+    public LoginResult authenticate(HttpServletRequest request, TwoFactorAuthenticationRequestDto requestDto)
+        throws LoginFailedException, MemberLockedException {
         throw new UnsupportedOperationException("Method not implemented");
     }
 

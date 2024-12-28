@@ -21,8 +21,10 @@ public class ApplicationRetrievalService implements RetrieveApplicationsUseCase 
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<ApplicationResponseDto> retrieveApplications(Long recruitmentId, String studentId, Boolean isPass, Pageable pageable) {
-        Page<Application> applications = retrieveApplicationPort.findByConditions(recruitmentId, studentId, isPass, pageable);
+    public PagedResponseDto<ApplicationResponseDto> retrieveApplications(Long recruitmentId, String studentId,
+        Boolean isPass, Pageable pageable) {
+        Page<Application> applications = retrieveApplicationPort.findByConditions(recruitmentId, studentId, isPass,
+            pageable);
         return new PagedResponseDto<>(applications.map(mapper::toDto));
     }
 }

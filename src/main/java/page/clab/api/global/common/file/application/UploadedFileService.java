@@ -1,5 +1,7 @@
 package page.clab.api.global.common.file.application;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -7,15 +9,12 @@ import page.clab.api.global.common.file.dao.UploadFileRepository;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.NotFoundException;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * {@code UploadedFileService}는 업로드된 파일을 저장, 조회, 및 유효성 검사를 수행하는 서비스입니다.
  *
  * <p>이 서비스는 파일의 URL을 기반으로 파일을 조회하거나, 특정 카테고리에 속하는 최신 파일을 조회하며,
  * 여러 URL 목록을 받아 해당하는 파일들을 검색하는 등의 기능을 제공합니다.</p>
- *
+ * <p>
  * 주요 기능:
  * <ul>
  *     <li>{@link #saveUploadedFile(UploadedFile)} - 파일 정보를 데이터베이스에 저장합니다.</li>
@@ -40,7 +39,7 @@ public class UploadedFileService {
 
     public UploadedFile getUploadedFileByUrl(String url) {
         return uploadFileRepository.findByUrl(url)
-                .orElseThrow(() -> new NotFoundException("파일을 찾을 수 없습니다."));
+            .orElseThrow(() -> new NotFoundException("파일을 찾을 수 없습니다."));
     }
 
     public UploadedFile getUniqueUploadedFileByCategory(String category) {

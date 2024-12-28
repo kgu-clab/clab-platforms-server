@@ -25,7 +25,7 @@ public class NotificationSettingToggleController {
     @PreAuthorize("hasRole('SUPER')")
     @PutMapping("")
     public ApiResponse<Void> toggleNotificationSetting(
-            @Valid @RequestBody NotificationSettingToggleRequestDto requestDto
+        @Valid @RequestBody NotificationSettingToggleRequestDto requestDto
     ) {
         manageNotificationSettingUseCase.toggleNotificationSetting(requestDto.getAlertType(), requestDto.isEnabled());
         return ApiResponse.success();

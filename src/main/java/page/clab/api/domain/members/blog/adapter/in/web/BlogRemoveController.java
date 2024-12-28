@@ -24,7 +24,7 @@ public class BlogRemoveController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{blogId}")
     public ApiResponse<Long> removeBlog(
-            @PathVariable(name = "blogId") Long blogId
+        @PathVariable(name = "blogId") Long blogId
     ) throws PermissionDeniedException {
         Long id = removeBlogUseCase.removeBlog(blogId);
         return ApiResponse.success(id);

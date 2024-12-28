@@ -1,10 +1,9 @@
 package page.clab.api.domain.activity.activitygroup.dao;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
-
-import java.util.List;
 
 public interface GroupMemberRepositoryCustom {
 

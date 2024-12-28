@@ -1,10 +1,9 @@
 package page.clab.api.global.common.email.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.io.File;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @Getter
 @AllArgsConstructor

@@ -8,7 +8,8 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProductRepository extends JpaRepository<ProductJpaEntity, Long>, ProductRepositoryCustom, QuerydslPredicateExecutor<ProductJpaEntity> {
+public interface ProductRepository extends JpaRepository<ProductJpaEntity, Long>, ProductRepositoryCustom,
+    QuerydslPredicateExecutor<ProductJpaEntity> {
 
     @Query(value = "SELECT p.* FROM product p WHERE p.is_deleted = true", nativeQuery = true)
     Page<ProductJpaEntity> findAllByIsDeletedTrue(Pageable pageable);

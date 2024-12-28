@@ -23,7 +23,7 @@ public class ProductRemoveController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("")
     public ApiResponse<Long> removeProduct(
-            @RequestParam Long productId
+        @RequestParam Long productId
     ) {
         Long id = removeProductUseCase.removeProduct(productId);
         return ApiResponse.success(id);

@@ -1,13 +1,13 @@
 package page.clab.api.domain.community.board.application.dto.response;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Builder
-public class BoardCategoryResponseDto {
+public class BoardOverviewResponseDto {
 
     private Long id;
     private String category;
@@ -17,4 +17,5 @@ public class BoardCategoryResponseDto {
     private Long commentCount;
     private String imageUrl;
     private LocalDateTime createdAt;
+    private List<BoardHashtagResponseDto> boardHashtagInfos;
 }

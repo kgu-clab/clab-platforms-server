@@ -1,5 +1,7 @@
 package page.clab.api.domain.hiring.application.application.service;
 
+import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -18,9 +20,6 @@ import page.clab.api.domain.memberManagement.position.domain.PositionType;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.position.application.port.ExternalRetrievePositionUseCase;
 
-import java.time.LocalDate;
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -38,8 +37,8 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
     public List<String> registerMembersByRecruitment(Long recruitmentId) {
         List<Application> applications = retrieveApplicationPort.findByRecruitmentIdAndIsPass(recruitmentId, true);
         return applications.stream()
-                .map(this::createMemberFromApplication)
-                .toList();
+            .map(this::createMemberFromApplication)
+            .toList();
     }
 
     // 해당 모집에서 합격한 특정 지원자의 계정을 생성합니다.
@@ -52,7 +51,7 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
     }
 
     private void validateApplicationIsPass(Application application) {
-        if(!application.getIsPass()) {
+        if (!application.getIsPass()) {
             throw new NotApprovedApplicationException("승인되지 않은 지원서입니다.");
         }
     }
@@ -65,15 +64,15 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
 
     private Member createMemberByApplication(Application application) {
         return externalRetrieveMemberUseCase.findById(application.getStudentId())
-                .orElseGet(() -> {
-                    ApplicationMemberCreationDto dto = mapper.toCreationDto(application);
-                    eventPublisher.publishEvent(new ApplicationMemberCreatedEvent(this, dto));
-                    return externalRetrieveMemberUseCase.getById(application.getStudentId());
-                });
+            .orElseGet(() -> {
+                ApplicationMemberCreationDto dto = mapper.toCreationDto(application);
+                eventPublisher.publishEvent(new ApplicationMemberCreatedEvent(this, dto));
+                return externalRetrieveMemberUseCase.getById(application.getStudentId());
+            });
     }
 
     public void createPositionByMember(Member member) {
-        if(isMemberPositionRegistered(member)) {
+        if (isMemberPositionRegistered(member)) {
             log.warn("이미 직책이 있는 회원입니다: {}", member.getId());
             return;
         }
@@ -82,7 +81,8 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
 
     private boolean isMemberPositionRegistered(Member member) {
         return externalRetrievePositionUseCase
-                .findByMemberIdAndYearAndPositionType(member.getId(), String.valueOf(LocalDate.now().getYear()), PositionType.MEMBER)
-                .isPresent();
+            .findByMemberIdAndYearAndPositionType(member.getId(), String.valueOf(LocalDate.now().getYear()),
+                PositionType.MEMBER)
+            .isPresent();
     }
 }

@@ -4,5 +4,6 @@ import page.clab.api.domain.community.board.application.dto.request.BoardRequest
 import page.clab.api.global.exception.PermissionDeniedException;
 
 public interface RegisterBoardUseCase {
+
     String registerBoard(BoardRequestDto requestDto) throws PermissionDeniedException;
 }

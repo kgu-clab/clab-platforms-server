@@ -26,7 +26,7 @@ public class BoardRegisterController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("")
     public ApiResponse<String> registerBoard(
-            @Valid @RequestBody BoardRequestDto requestDto
+        @Valid @RequestBody BoardRequestDto requestDto
     ) throws PermissionDeniedException {
         String id = registerBoardUseCase.registerBoard(requestDto);
         return ApiResponse.success(id);

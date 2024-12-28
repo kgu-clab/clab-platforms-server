@@ -11,5 +11,6 @@ public interface RetrieveMembershipFeePort {
 
     Page<MembershipFee> findAllByIsDeletedTrue(Pageable pageable);
 
-    Page<MembershipFee> findByConditions(String memberId, String memberName, String category, MembershipFeeStatus status, Pageable pageable);
+    Page<MembershipFee> findByConditions(String memberId, String memberName, String category,
+        MembershipFeeStatus status, Pageable pageable);
 }

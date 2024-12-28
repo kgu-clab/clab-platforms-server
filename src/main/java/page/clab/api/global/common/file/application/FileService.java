@@ -1,9 +1,15 @@
 package page.clab.api.global.common.file.application;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -15,9 +21,9 @@ import page.clab.api.domain.activity.activitygroup.application.ActivityGroupBoar
 import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activity.activitygroup.dao.GroupMemberRepository;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
+import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
 import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
 import page.clab.api.domain.activity.activitygroup.exception.MemberNotPartOfActivityException;
-import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.memberManagement.member.domain.Role;
@@ -35,19 +41,12 @@ import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.FileSystemUtil;
 import page.clab.api.global.util.FileUtil;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
-
 /**
  * {@code FileService}는 파일 저장, 삭제, 경로 검증 및 파일 접근 권한 관리와 같은 파일 관리 기능을 제공하는 클래스입니다.
  *
  * <p>이 서비스는 다양한 카테고리에 대해 파일 업로드 및 QR 코드 이미지 저장, 파일 삭제, 멤버의 클라우드 사용량 검증 등의 기능을 수행합니다.
  * 또한 파일 접근 권한을 역할(Role) 및 경로에 따라 관리하여 안전한 파일 접근을 보장합니다.</p>
- *
+ * <p>
  * 주요 기능:
  * <ul>
  *     <li>{@link #saveQRCodeImage(byte[], String, long, String)} - QR 코드 이미지를 파일로 저장합니다.</li>
@@ -83,26 +82,33 @@ public class FileService {
     private String maxFileSize;
 
     private static final Map<Role, Set<String>> roleCategoryMap = Map.of(
-            Role.GUEST, Set.of("boards", "profiles", "activity-photos", "membership-fees"),
-            Role.USER, Set.of("boards", "profiles", "activity-photos", "membership-fees" , "notices", "weekly-activities", "members", "assignments", "submits"),
-            Role.ADMIN, Set.of("boards", "profiles", "activity-photos", "membership-fees", "notices", "weekly-activities", "members", "assignments", "submits", "executives"),
-            Role.SUPER, Set.of("boards", "profiles", "activity-photos", "membership-fees", "notices", "weekly-activities", "members", "assignments", "submits", "executives")
+        Role.GUEST, Set.of("boards", "profiles", "activity-photos", "membership-fees"),
+        Role.USER,
+        Set.of("boards", "profiles", "activity-photos", "membership-fees", "notices", "weekly-activities", "members",
+            "assignments", "submits"),
+        Role.ADMIN,
+        Set.of("boards", "profiles", "activity-photos", "membership-fees", "notices", "weekly-activities", "members",
+            "assignments", "submits", "executives"),
+        Role.SUPER,
+        Set.of("boards", "profiles", "activity-photos", "membership-fees", "notices", "weekly-activities", "members",
+            "assignments", "submits", "executives")
     );
 
     private final Map<String, BiFunction<String, Authentication, Boolean>> categoryAccessMap = Map.of(
-            "boards", (url, auth) -> true,
-            "profiles", (url, auth) -> true,
-            "executives", (url, auth) -> true,
-            "activity-photos", (url, auth) -> true,
-            "membership-fees", (url, auth) -> true,
-            "notices", this::isNonSubmitCategoryAccessible,
-            "weekly-activities", this::isNonSubmitCategoryAccessible,
-            "assignments", this::isNonSubmitCategoryAccessible,
-            "members", this::isMemberAccessible,
-            "submits", this::isSubmitAccessible
+        "boards", (url, auth) -> true,
+        "profiles", (url, auth) -> true,
+        "executives", (url, auth) -> true,
+        "activity-photos", (url, auth) -> true,
+        "membership-fees", (url, auth) -> true,
+        "notices", this::isNonSubmitCategoryAccessible,
+        "weekly-activities", this::isNonSubmitCategoryAccessible,
+        "assignments", this::isNonSubmitCategoryAccessible,
+        "members", this::isMemberAccessible,
+        "submits", this::isSubmitAccessible
     );
 
-    public String saveQRCodeImage(byte[] QRCodeImage, String path, long storagePeriod, String nowDateTime) throws IOException {
+    public String saveQRCodeImage(byte[] QRCodeImage, String path, long storagePeriod, String nowDateTime)
+        throws IOException {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         String extension = "png";
         String originalFileName = path.replace(File.separator, "-") + nowDateTime;
@@ -111,12 +117,14 @@ public class FileService {
         String url = fileURL + "/" + path.replace(File.separator, "/") + "/" + saveFilename;
 
         fileHandler.saveQRCodeImage(QRCodeImage, path, saveFilename, extension, filePath);
-        UploadedFile uploadedFile = UploadedFile.create(currentMemberId, originalFileName, saveFilename, savePath, url, (long) QRCodeImage.length, "image/png", storagePeriod, path);
+        UploadedFile uploadedFile = UploadedFile.create(currentMemberId, originalFileName, saveFilename, savePath, url,
+            (long) QRCodeImage.length, "image/png", storagePeriod, path);
         uploadedFileService.saveUploadedFile(uploadedFile);
         return url;
     }
 
-    public List<UploadedFileResponseDto> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod) throws IOException, PermissionDeniedException {
+    public List<UploadedFileResponseDto> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod)
+        throws IOException, PermissionDeniedException {
         List<UploadedFileResponseDto> uploadedFileResponseDtos = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
             UploadedFileResponseDto responseDto = saveFile(multipartFile, path, storagePeriod);
@@ -125,7 +133,8 @@ public class FileService {
         return uploadedFileResponseDtos;
     }
 
-    public UploadedFileResponseDto saveFile(MultipartFile multipartFile, String path, long storagePeriod) throws IOException, PermissionDeniedException {
+    public UploadedFileResponseDto saveFile(MultipartFile multipartFile, String path, long storagePeriod)
+        throws IOException, PermissionDeniedException {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
 
         validatePathVariable(path);
@@ -136,7 +145,8 @@ public class FileService {
         String fileName = new File(savedFilePath).getName();
         String url = fileURL + "/" + path.replace(File.separator, "/") + "/" + fileName;
 
-        UploadedFile uploadedFile = UploadedFile.create(currentMemberId, multipartFile.getOriginalFilename(), fileName, savedFilePath, url, multipartFile.getSize(), multipartFile.getContentType(), storagePeriod, path);
+        UploadedFile uploadedFile = UploadedFile.create(currentMemberId, multipartFile.getOriginalFilename(), fileName,
+            savedFilePath, url, multipartFile.getSize(), multipartFile.getContentType(), storagePeriod, path);
         uploadedFileService.saveUploadedFile(uploadedFile);
         return mapper.toDto(uploadedFile);
     }
@@ -195,7 +205,8 @@ public class FileService {
         validateIsMemberGroupLeader(activityGroupId, memberId, "활동의 공지 관련 파일은 리더만 등록할 수 있습니다.");
     }
 
-    private void validateWeeklyActivityPath(String[] pathParts) throws InvalidPathVariableException, PermissionDeniedException {
+    private void validateWeeklyActivityPath(String[] pathParts)
+        throws InvalidPathVariableException, PermissionDeniedException {
         Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
         String memberId = externalRetrieveMemberUseCase.getCurrentMemberId();
 
@@ -204,7 +215,8 @@ public class FileService {
         validateIsMemberGroupLeader(activityGroupId, memberId, "활동의 주차별 활동 관련 파일은 리더만 등록할 수 있습니다.");
     }
 
-    private void validateAssignmentPath(String[] pathParts) throws InvalidPathVariableException, PermissionDeniedException {
+    private void validateAssignmentPath(String[] pathParts)
+        throws InvalidPathVariableException, PermissionDeniedException {
         Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
         String memberId = externalRetrieveMemberUseCase.getCurrentMemberId();
 
@@ -220,7 +232,8 @@ public class FileService {
 
         validateActivityGroupExist(activityGroupId);
         validateIsMemberPartOfActivity(memberId, activityGroupId);
-        ActivityGroupBoard activityGroupBoard = activityGroupBoardService.getActivityGroupBoardById(activityGroupBoardId);
+        ActivityGroupBoard activityGroupBoard = activityGroupBoardService.getActivityGroupBoardById(
+            activityGroupBoardId);
         validateIsParentBoardAssignment(activityGroupBoard);
     }
 
@@ -236,7 +249,8 @@ public class FileService {
         }
     }
 
-    private void validateIsMemberGroupLeader(Long activityGroupId, String memberId, String exceptionMessage) throws PermissionDeniedException {
+    private void validateIsMemberGroupLeader(Long activityGroupId, String memberId, String exceptionMessage)
+        throws PermissionDeniedException {
         if (!activityGroupAdminService.isMemberGroupLeaderRole(activityGroupId, memberId)) {
             throw new PermissionDeniedException(exceptionMessage);
         }
@@ -280,8 +294,9 @@ public class FileService {
 
     public boolean isUserAccessibleAtFile(Authentication authentication, String url) {
         String category = getCategoryByUrl(url);
-        if (category == null || category.isEmpty())
+        if (category == null || category.isEmpty()) {
             return false;
+        }
         return isUserAccessibleByCategory(category, url, authentication);
     }
 
@@ -311,7 +326,8 @@ public class FileService {
         Long activityGroupId = Long.parseLong(parts[4]);
 
         return member.isSuperAdminRole() ||
-                groupMemberRepository.existsByActivityGroupIdAndMemberIdAndStatus(activityGroupId, memberId, GroupMemberStatus.ACCEPTED);
+            groupMemberRepository.existsByActivityGroupIdAndMemberIdAndStatus(activityGroupId, memberId,
+                GroupMemberStatus.ACCEPTED);
     }
 
     private boolean isMemberAccessible(String url, Authentication authentication) {
@@ -329,7 +345,7 @@ public class FileService {
         Long activityGroupId = Long.parseLong(parts[4]);
 
         return memberId.equals(uploaderId) || member.isSuperAdminRole() ||
-                activityGroupAdminService.isMemberGroupLeaderRole(activityGroupId, authentication.getName());
+            activityGroupAdminService.isMemberGroupLeaderRole(activityGroupId, authentication.getName());
     }
 
     private String getCategoryByUrl(String url) {

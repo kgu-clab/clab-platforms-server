@@ -11,6 +11,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,9 +25,6 @@ import org.hibernate.validator.constraints.URL;
 import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.domain.memberManagement.member.domain.StudentStatus;
 import page.clab.api.global.common.domain.BaseEntity;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "member")

@@ -27,8 +27,8 @@ public class BoardUpdateController {
     @PreAuthorize("hasRole('USER')")
     @PatchMapping("/{boardId}")
     public ApiResponse<String> updateBoard(
-            @PathVariable(name = "boardId") Long boardId,
-            @Valid @RequestBody BoardUpdateRequestDto requestDto
+        @PathVariable(name = "boardId") Long boardId,
+        @Valid @RequestBody BoardUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         String id = updateBoardUseCase.updateBoard(boardId, requestDto);
         return ApiResponse.success(id);

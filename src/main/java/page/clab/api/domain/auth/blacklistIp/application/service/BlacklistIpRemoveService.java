@@ -38,8 +38,8 @@ public class BlacklistIpRemoveService implements RemoveBlacklistIpUseCase {
 
         String blacklistRemovedMessage = "Deleted IP: " + ipAddress;
         eventPublisher.publishEvent(
-                new NotificationEvent(this, SecurityAlertType.BLACKLISTED_IP_REMOVED, request,
-                        blacklistRemovedMessage));
+            new NotificationEvent(this, SecurityAlertType.BLACKLISTED_IP_REMOVED, request,
+                blacklistRemovedMessage));
 
         return blacklistIp.getIpAddress();
     }

@@ -1,5 +1,6 @@
 package page.clab.api.domain.community.comment.application.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,8 +16,6 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class DeletedCommentsRetrievalService implements RetrieveDeletedCommentsUseCase {
@@ -31,11 +30,12 @@ public class DeletedCommentsRetrievalService implements RetrieveDeletedCommentsU
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         Page<Comment> comments = retrieveCommentPort.findAllByIsDeletedTrueAndBoardId(boardId, pageable);
         List<DeletedCommentResponseDto> deletedCommentDtos = comments.stream()
-                .map(comment -> {
-                    MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(comment.getWriterId());
-                    return mapper.toDto(comment, memberInfo, comment.isOwner(currentMemberId));
-                })
-                .toList();
+            .map(comment -> {
+                MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberDetailedInfoById(
+                    comment.getWriterId());
+                return mapper.toDto(comment, memberInfo, comment.isOwner(currentMemberId));
+            })
+            .toList();
         return new PagedResponseDto<>(new PageImpl<>(deletedCommentDtos, pageable, comments.getTotalElements()));
     }
 }

@@ -22,24 +22,24 @@ public class ApplicationApprovalController {
     private final RejectApplicationUseCase rejectApplicationUseCase;
 
     @Operation(summary = "[S] 지원 합격 처리", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
-            "지원자의 상태를 합격으로 변경")
+        "지원자의 상태를 합격으로 변경")
     @PreAuthorize("hasRole('SUPER')")
     @PatchMapping("/approve/{recruitmentId}/{studentId}")
     public ApiResponse<Long> approveApplication(
-            @PathVariable(name = "recruitmentId") Long recruitmentId,
-            @PathVariable(name = "studentId") String studentId
+        @PathVariable(name = "recruitmentId") Long recruitmentId,
+        @PathVariable(name = "studentId") String studentId
     ) {
         Long recruitmentID = approveApplicationUseCase.approveApplication(recruitmentId, studentId);
         return ApiResponse.success(recruitmentID);
     }
 
     @Operation(summary = "[S] 지원 불합격 처리", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
-            "지원자의 상태를 불합격으로 변경")
+        "지원자의 상태를 불합격으로 변경")
     @PreAuthorize("hasRole('SUPER')")
     @PatchMapping("/reject/{recruitmentId}/{studentId}")
     public ApiResponse<Long> rejectApplication(
-            @PathVariable(name = "recruitmentId") Long recruitmentId,
-            @PathVariable(name = "studentId") String studentId
+        @PathVariable(name = "recruitmentId") Long recruitmentId,
+        @PathVariable(name = "studentId") String studentId
     ) {
         Long recruitmentID = rejectApplicationUseCase.rejectApplication(recruitmentId, studentId);
         return ApiResponse.success(recruitmentID);

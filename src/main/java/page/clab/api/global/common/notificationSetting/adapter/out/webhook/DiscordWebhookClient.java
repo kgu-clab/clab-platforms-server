@@ -61,10 +61,10 @@ public class DiscordWebhookClient extends AbstractWebhookClient {
     private final WebhookCommonService webhookCommonService;
 
     public DiscordWebhookClient(
-            NotificationConfigProperties notificationConfigProperties,
-            ObjectMapper objectMapper,
-            Environment environment,
-            WebhookCommonService webhookCommonService
+        NotificationConfigProperties notificationConfigProperties,
+        ObjectMapper objectMapper,
+        Environment environment,
+        WebhookCommonService webhookCommonService
     ) {
         this.httpClient = HttpClient.newHttpClient();
         this.objectMapper = objectMapper;
@@ -83,7 +83,7 @@ public class DiscordWebhookClient extends AbstractWebhookClient {
      * @return 메시지 전송 성공 여부를 나타내는 CompletableFuture<Boolean>
      */
     public CompletableFuture<Boolean> sendMessage(String webhookUrl, AlertType alertType,
-                                                  HttpServletRequest request, Object additionalData) {
+        HttpServletRequest request, Object additionalData) {
         Map<String, Object> payload = createPayload(alertType, request, additionalData);
 
         return CompletableFuture.supplyAsync(() -> {
@@ -91,10 +91,10 @@ public class DiscordWebhookClient extends AbstractWebhookClient {
                 String jsonPayload = objectMapper.writeValueAsString(payload);
 
                 HttpRequest httpRequest = HttpRequest.newBuilder()
-                        .uri(URI.create(webhookUrl))
-                        .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                        .build();
+                    .uri(URI.create(webhookUrl))
+                    .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                    .build();
 
                 HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
@@ -137,7 +137,7 @@ public class DiscordWebhookClient extends AbstractWebhookClient {
      * @return 생성된 임베드 목록
      */
     public List<Map<String, Object>> createEmbeds(AlertType alertType, HttpServletRequest request,
-                                                  Object additionalData) {
+        Object additionalData) {
         switch (alertType) {
             case SecurityAlertType securityAlertType -> {
                 return createSecurityAlertEmbeds(request, alertType, additionalData.toString());
@@ -156,7 +156,7 @@ public class DiscordWebhookClient extends AbstractWebhookClient {
     }
 
     private List<Map<String, Object>> createGeneralAlertEmbeds(GeneralAlertType alertType, HttpServletRequest request,
-                                                               Object additionalData) {
+        Object additionalData) {
         switch (alertType) {
             case ADMIN_LOGIN:
                 if (additionalData instanceof MemberLoginInfoDto) {
@@ -177,7 +177,7 @@ public class DiscordWebhookClient extends AbstractWebhookClient {
     }
 
     private List<Map<String, Object>> createExecutivesAlertEmbeds(ExecutivesAlertType alertType,
-                                                                  Object additionalData) {
+        Object additionalData) {
         switch (alertType) {
             case NEW_APPLICATION:
                 if (additionalData instanceof ApplicationRequestDto) {
@@ -218,17 +218,17 @@ public class DiscordWebhookClient extends AbstractWebhookClient {
         embed.put("title", ":firecracker: Server Error");
         embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
-                createField("User", username, true),
-                createField("Endpoint", "[" + httpMethod + "] " + fullUrl, true),
-                createField("Error Message", errorMessage, false),
-                createField("Stack Trace", "```" + stackTrace + "```", false)
+            createField("User", username, true),
+            createField("Endpoint", "[" + httpMethod + "] " + fullUrl, true),
+            createField("Error Message", errorMessage, false),
+            createField("Stack Trace", "```" + stackTrace + "```", false)
         ));
 
         return Collections.singletonList(embed);
     }
 
     private List<Map<String, Object>> createSecurityAlertEmbeds(HttpServletRequest request, AlertType alertType,
-                                                                String additionalMessage) {
+        String additionalMessage) {
         String clientIp = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String fullUrl = webhookCommonService.getFullUrl(request);
         String username = webhookCommonService.getUsername(request);
@@ -238,18 +238,18 @@ public class DiscordWebhookClient extends AbstractWebhookClient {
         embed.put("title", ":imp: " + alertType.getTitle());
         embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
-                createField("User", username, true),
-                createField("IP Address", clientIp, true),
-                createField("Location", location, true),
-                createField("Endpoint", fullUrl, true),
-                createField("Details", alertType.getDefaultMessage() + "\n" + additionalMessage, false)
+            createField("User", username, true),
+            createField("IP Address", clientIp, true),
+            createField("Location", location, true),
+            createField("Endpoint", fullUrl, true),
+            createField("Details", alertType.getDefaultMessage() + "\n" + additionalMessage, false)
         ));
 
         return Collections.singletonList(embed);
     }
 
     private List<Map<String, Object>> createAdminLoginEmbeds(HttpServletRequest request,
-                                                             MemberLoginInfoDto loginMember) {
+        MemberLoginInfoDto loginMember) {
         String clientIp = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String location = webhookCommonService.getLocation(request);
 
@@ -257,9 +257,9 @@ public class DiscordWebhookClient extends AbstractWebhookClient {
         embed.put("title", ":mechanic: " + loginMember.getRole().getDescription() + " Login");
         embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
-                createField("User", loginMember.getMemberId() + " " + loginMember.getMemberName(), true),
-                createField("IP Address", clientIp, true),
-                createField("Location", location, true)
+            createField("User", loginMember.getMemberId() + " " + loginMember.getMemberName(), true),
+            createField("IP Address", clientIp, true),
+            createField("Location", location, true)
         ));
 
         return Collections.singletonList(embed);
@@ -270,11 +270,11 @@ public class DiscordWebhookClient extends AbstractWebhookClient {
         embed.put("title", ":sparkles: 동아리 지원");
         embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
-                createField("구분", requestDto.getApplicationType().getDescription(), true),
-                createField("학번", requestDto.getStudentId(), true),
-                createField("이름", requestDto.getName(), true),
-                createField("학년", requestDto.getGrade() + "학년", true),
-                createField("관심 분야", requestDto.getInterests(), false)
+            createField("구분", requestDto.getApplicationType().getDescription(), true),
+            createField("학번", requestDto.getStudentId(), true),
+            createField("이름", requestDto.getName(), true),
+            createField("학년", requestDto.getGrade() + "학년", true),
+            createField("관심 분야", requestDto.getInterests(), false)
         ));
 
         if (requestDto.getGithubUrl() != null && !requestDto.getGithubUrl().isEmpty()) {
@@ -289,9 +289,9 @@ public class DiscordWebhookClient extends AbstractWebhookClient {
         embed.put("title", ":writing_hand: 새 게시글");
         embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
-                createField("제목", board.getTitle(), true),
-                createField("분류", board.getCategory(), true),
-                createField("작성자", board.getUsername(), true)
+            createField("제목", board.getTitle(), true),
+            createField("분류", board.getCategory(), true),
+            createField("작성자", board.getUsername(), true)
         ));
 
         return Collections.singletonList(embed);
@@ -304,10 +304,10 @@ public class DiscordWebhookClient extends AbstractWebhookClient {
         embed.put("title", ":dollar: 회비 신청");
         embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
-                createField("신청자", username, true),
-                createField("분류", data.getCategory(), true),
-                createField("금액", data.getAmount() + "원", true),
-                createField("Content", data.getContent(), false)
+            createField("신청자", username, true),
+            createField("분류", data.getCategory(), true),
+            createField("금액", data.getAmount() + "원", true),
+            createField("Content", data.getContent(), false)
         ));
 
         return Collections.singletonList(embed);
@@ -320,10 +320,10 @@ public class DiscordWebhookClient extends AbstractWebhookClient {
         embed.put("title", ":books: 도서 대여 신청");
         embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
-                createField("도서명", data.getBookTitle(), true),
-                createField("분류", data.getCategory(), true),
-                createField("신청자", username, true),
-                createField("상태", data.isAvailable() ? "대여 가능" : "대여 중", true)
+            createField("도서명", data.getBookTitle(), true),
+            createField("분류", data.getCategory(), true),
+            createField("신청자", username, true),
+            createField("상태", data.isAvailable() ? "대여 가능" : "대여 중", true)
         ));
 
         return Collections.singletonList(embed);
@@ -339,15 +339,15 @@ public class DiscordWebhookClient extends AbstractWebhookClient {
         embed.put("title", ":battery: Server Started");
         embed.put("color", commonProperties.getColorAsInt());
         embed.put("fields", Arrays.asList(
-                createField("Environment", environment.getProperty("spring.profiles.active"), true),
-                createField("OS", osInfo, true),
-                createField("JDK Version", jdkVersion, true),
-                createField("CPU Usage", String.format("%.2f%%", cpuUsage), true),
-                createField("Memory Usage", memoryUsage, true)
+            createField("Environment", environment.getProperty("spring.profiles.active"), true),
+            createField("OS", osInfo, true),
+            createField("JDK Version", jdkVersion, true),
+            createField("CPU Usage", String.format("%.2f%%", cpuUsage), true),
+            createField("Memory Usage", memoryUsage, true)
         ));
 
         embed.put("description",
-                "[Web](" + commonProperties.getWebUrl() + ") | [API Docs](" + commonProperties.getApiUrl() + ")");
+            "[Web](" + commonProperties.getWebUrl() + ") | [API Docs](" + commonProperties.getApiUrl() + ")");
 
         return Collections.singletonList(embed);
     }

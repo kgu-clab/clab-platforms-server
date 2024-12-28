@@ -26,8 +26,8 @@ public class BookUpdateController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("")
     public ApiResponse<Long> updateBookInfo(
-            @RequestParam(name = "bookId") Long bookId,
-            @Valid @RequestBody BookUpdateRequestDto requestDto
+        @RequestParam(name = "bookId") Long bookId,
+        @Valid @RequestBody BookUpdateRequestDto requestDto
     ) {
         Long id = updateBookUseCase.updateBookInfo(bookId, requestDto);
         return ApiResponse.success(id);

@@ -1,5 +1,7 @@
 package page.clab.api.domain.hiring.recruitment.application.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -7,9 +9,6 @@ import page.clab.api.domain.hiring.recruitment.application.port.out.RetrieveRecr
 import page.clab.api.domain.hiring.recruitment.application.port.out.UpdateRecruitmentPort;
 import page.clab.api.domain.hiring.recruitment.domain.Recruitment;
 import page.clab.api.domain.hiring.recruitment.domain.RecruitmentStatus;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

@@ -85,18 +85,19 @@ public class AccusationReportService implements ReportAccusationUseCase {
 
     private AccuseTarget getOrCreateAccuseTarget(AccuseRequestDto requestDto, TargetType type, Long targetId) {
         return retrieveAccuseTargetPort.findById(AccuseTargetId.create(type, targetId))
-                .orElseGet(() -> mapper.fromDto(requestDto));
+            .orElseGet(() -> mapper.fromDto(requestDto));
     }
 
     private Accuse findOrCreateAccusation(AccuseRequestDto requestDto, String memberId, AccuseTarget target) {
-        return retrieveAccusePort.findByMemberIdAndTarget(memberId, target.getTargetType(), target.getTargetReferenceId())
-                .map(existingAccuse -> {
-                    existingAccuse.updateReason(requestDto.getReason());
-                    return existingAccuse;
-                })
-                .orElseGet(() -> {
-                    target.increaseAccuseCount();
-                    return mapper.fromDto(requestDto, memberId, target);
-                });
+        return retrieveAccusePort.findByMemberIdAndTarget(memberId, target.getTargetType(),
+                target.getTargetReferenceId())
+            .map(existingAccuse -> {
+                existingAccuse.updateReason(requestDto.getReason());
+                return existingAccuse;
+            })
+            .orElseGet(() -> {
+                target.increaseAccuseCount();
+                return mapper.fromDto(requestDto, memberId, target);
+            });
     }
 }

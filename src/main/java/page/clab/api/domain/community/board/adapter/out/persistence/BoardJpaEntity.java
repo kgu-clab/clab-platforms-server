@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,8 +24,6 @@ import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.community.board.domain.BoardCategory;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.domain.UploadedFile;
-
-import java.util.List;
 
 @Entity
 @Table(name = "board")

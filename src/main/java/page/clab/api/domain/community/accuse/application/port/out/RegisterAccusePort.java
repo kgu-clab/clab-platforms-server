@@ -1,8 +1,7 @@
 package page.clab.api.domain.community.accuse.application.port.out;
 
-import page.clab.api.domain.community.accuse.domain.Accuse;
-
 import java.util.List;
+import page.clab.api.domain.community.accuse.domain.Accuse;
 
 public interface RegisterAccusePort {
 

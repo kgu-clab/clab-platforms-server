@@ -1,12 +1,11 @@
 package page.clab.api.domain.community.accuse.application.port.out;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.community.accuse.domain.Accuse;
 import page.clab.api.domain.community.accuse.domain.TargetType;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface RetrieveAccusePort {
 

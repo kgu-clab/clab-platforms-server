@@ -27,11 +27,12 @@ public class DeletedProductsRetrievalController {
     @PreAuthorize("hasRole('SUPER')")
     @GetMapping("/deleted")
     public ApiResponse<PagedResponseDto<ProductResponseDto>> retrieveDeletedProducts(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<ProductResponseDto> products = retrieveDeletedProductsUseCase.retrieveDeletedProducts(pageable);
+        PagedResponseDto<ProductResponseDto> products = retrieveDeletedProductsUseCase.retrieveDeletedProducts(
+            pageable);
         return ApiResponse.success(products);
     }
 }

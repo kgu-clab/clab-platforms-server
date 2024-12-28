@@ -53,18 +53,19 @@ public class UploadedFile extends BaseEntity {
 
     private Long storagePeriod;
 
-    public static UploadedFile create(String uploader, String originalFileName, String saveFileName, String savedPath, String url, Long fileSize, String contentType, Long storagePeriod, String category) {
+    public static UploadedFile create(String uploader, String originalFileName, String saveFileName, String savedPath,
+        String url, Long fileSize, String contentType, Long storagePeriod, String category) {
         return UploadedFile.builder()
-                .uploader(uploader)
-                .originalFileName(originalFileName)
-                .saveFileName(saveFileName)
-                .savedPath(savedPath)
-                .url(url)
-                .fileSize(fileSize)
-                .contentType(contentType)
-                .storagePeriod(storagePeriod)
-                .category(category)
-                .build();
+            .uploader(uploader)
+            .originalFileName(originalFileName)
+            .saveFileName(saveFileName)
+            .savedPath(savedPath)
+            .url(url)
+            .fileSize(fileSize)
+            .contentType(contentType)
+            .storagePeriod(storagePeriod)
+            .category(category)
+            .build();
     }
 
     public boolean isOwner(String memberId) {

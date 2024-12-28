@@ -1,12 +1,11 @@
 package page.clab.api.domain.hiring.application.application.port.out;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.hiring.application.adapter.out.persistence.ApplicationId;
 import page.clab.api.domain.hiring.application.domain.Application;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface RetrieveApplicationPort {
 

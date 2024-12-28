@@ -19,8 +19,10 @@ public class BookLoanRecordsByConditionsRetrievalService implements RetrieveBook
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<BookLoanRecordResponseDto> retrieveBookLoanRecords(Long bookId, String borrowerId, BookLoanStatus status, Pageable pageable) {
-        Page<BookLoanRecordResponseDto> bookLoanRecords = retrieveBookLoanRecordPort.findByConditions(bookId, borrowerId, status, pageable);
+    public PagedResponseDto<BookLoanRecordResponseDto> retrieveBookLoanRecords(Long bookId, String borrowerId,
+        BookLoanStatus status, Pageable pageable) {
+        Page<BookLoanRecordResponseDto> bookLoanRecords = retrieveBookLoanRecordPort.findByConditions(bookId,
+            borrowerId, status, pageable);
         return new PagedResponseDto<>(bookLoanRecords);
     }
 }

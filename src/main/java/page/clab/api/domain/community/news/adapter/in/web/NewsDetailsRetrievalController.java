@@ -24,7 +24,7 @@ public class NewsDetailsRetrievalController {
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/{newsId}")
     public ApiResponse<NewsDetailsResponseDto> retrieveNewsDetails(
-            @PathVariable(name = "newsId") Long newsId
+        @PathVariable(name = "newsId") Long newsId
     ) {
         NewsDetailsResponseDto news = retrieveNewsDetailsUseCase.retrieveNewsDetails(newsId);
         return ApiResponse.success(news);

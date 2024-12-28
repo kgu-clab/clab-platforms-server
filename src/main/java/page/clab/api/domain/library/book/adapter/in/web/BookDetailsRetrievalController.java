@@ -24,7 +24,7 @@ public class BookDetailsRetrievalController {
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/{bookId}")
     public ApiResponse<BookDetailsResponseDto> retrieveBookDetails(
-            @PathVariable(name = "bookId") Long bookId
+        @PathVariable(name = "bookId") Long bookId
     ) {
         BookDetailsResponseDto book = retrieveBookDetailsUseCase.retrieveBookDetails(bookId);
         return ApiResponse.success(book);

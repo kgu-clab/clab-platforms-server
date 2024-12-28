@@ -25,7 +25,7 @@ public class ActivityPhotoRegisterController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
     public ApiResponse<Long> registerActivityPhoto(
-            @Valid @RequestBody ActivityPhotoRequestDto requestDto
+        @Valid @RequestBody ActivityPhotoRequestDto requestDto
     ) {
         Long id = registerActivityPhotoUseCase.registerActivityPhoto(requestDto);
         return ApiResponse.success(id);

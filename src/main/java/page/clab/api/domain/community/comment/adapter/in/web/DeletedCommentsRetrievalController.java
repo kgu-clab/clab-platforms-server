@@ -28,12 +28,13 @@ public class DeletedCommentsRetrievalController {
     @PreAuthorize("hasRole('SUPER')")
     @GetMapping("/deleted/{boardId}")
     public ApiResponse<PagedResponseDto<DeletedCommentResponseDto>> retrieveDeletedComments(
-            @PathVariable(name = "boardId") Long boardId,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
+        @PathVariable(name = "boardId") Long boardId,
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<DeletedCommentResponseDto> comments = retrieveDeletedCommentsUseCase.retrieveDeletedComments(boardId, pageable);
+        PagedResponseDto<DeletedCommentResponseDto> comments = retrieveDeletedCommentsUseCase.retrieveDeletedComments(
+            boardId, pageable);
         return ApiResponse.success(comments);
     }
 }

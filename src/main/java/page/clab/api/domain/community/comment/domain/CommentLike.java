@@ -20,8 +20,8 @@ public class CommentLike {
 
     public static CommentLike create(String memberId, Long commentId) {
         return CommentLike.builder()
-                .memberId(memberId)
-                .commentId(commentId)
-                .build();
+            .memberId(memberId)
+            .commentId(commentId)
+            .build();
     }
 }

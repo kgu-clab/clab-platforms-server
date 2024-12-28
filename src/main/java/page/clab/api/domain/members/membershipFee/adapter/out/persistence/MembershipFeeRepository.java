@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
 public interface MembershipFeeRepository extends JpaRepository<MembershipFeeJpaEntity, Long>,
-        MembershipFeeRepositoryCustom, QuerydslPredicateExecutor<MembershipFeeJpaEntity> {
+    MembershipFeeRepositoryCustom, QuerydslPredicateExecutor<MembershipFeeJpaEntity> {
 
     @Query(value = "SELECT m.* FROM membership_fee m WHERE m.is_deleted = true", nativeQuery = true)
     Page<MembershipFeeJpaEntity> findAllByIsDeletedTrue(Pageable pageable);

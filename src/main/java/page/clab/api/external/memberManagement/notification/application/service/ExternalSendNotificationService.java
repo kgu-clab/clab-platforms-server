@@ -1,5 +1,7 @@
 package page.clab.api.external.memberManagement.notification.application.service;
 
+import java.util.List;
+import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,9 +9,6 @@ import page.clab.api.domain.memberManagement.notification.application.port.out.R
 import page.clab.api.domain.memberManagement.notification.domain.Notification;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
-
-import java.util.List;
-import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +21,8 @@ public class ExternalSendNotificationService implements ExternalSendNotification
     @Override
     public void sendNotificationToAllMembers(String content) {
         List<Notification> notifications = externalRetrieveMemberUseCase.getMemberIds().stream()
-                .map(memberId -> Notification.create(memberId, content))
-                .toList();
+            .map(memberId -> Notification.create(memberId, content))
+            .toList();
         registerNotificationPort.saveAll(notifications);
     }
 
@@ -39,8 +38,8 @@ public class ExternalSendNotificationService implements ExternalSendNotification
     @Override
     public void sendNotificationToMembers(List<String> memberIds, String content) {
         List<Notification> notifications = memberIds.stream()
-                .map(memberId -> Notification.create(memberId, content))
-                .toList();
+            .map(memberId -> Notification.create(memberId, content))
+            .toList();
         registerNotificationPort.saveAll(notifications);
     }
 
@@ -58,8 +57,8 @@ public class ExternalSendNotificationService implements ExternalSendNotification
 
     private void sendNotificationToSpecificRole(Supplier<List<String>> memberSupplier, String content) {
         List<Notification> notifications = memberSupplier.get().stream()
-                .map(memberId -> Notification.create(memberId, content))
-                .toList();
+            .map(memberId -> Notification.create(memberId, content))
+            .toList();
         registerNotificationPort.saveAll(notifications);
     }
 }

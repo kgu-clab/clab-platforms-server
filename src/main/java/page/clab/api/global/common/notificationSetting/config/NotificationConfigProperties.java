@@ -21,6 +21,7 @@ public class NotificationConfigProperties {
     @Getter
     @Setter
     public static class CommonProperties {
+
         private String webUrl;
         private String apiUrl;
         private String color;
@@ -33,12 +34,14 @@ public class NotificationConfigProperties {
     @Getter
     @Setter
     public static class PlatformConfig {
+
         private Map<String, String> webhooks;
     }
 
     @Getter
     @Setter
     public static class PlatformMapping {
+
         private String platform;
         private String webhook;
     }

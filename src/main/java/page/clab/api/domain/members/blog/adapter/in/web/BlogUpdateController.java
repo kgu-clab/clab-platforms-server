@@ -27,8 +27,8 @@ public class BlogUpdateController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{blogId}")
     public ApiResponse<Long> updateBlog(
-            @PathVariable(name = "blogId") Long blogId,
-            @Valid @RequestBody BlogUpdateRequestDto requestDto
+        @PathVariable(name = "blogId") Long blogId,
+        @Valid @RequestBody BlogUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = updateBlogUseCase.updateBlog(blogId, requestDto);
         return ApiResponse.success(id);

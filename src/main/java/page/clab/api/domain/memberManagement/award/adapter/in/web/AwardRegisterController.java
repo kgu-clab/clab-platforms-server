@@ -25,7 +25,7 @@ public class AwardRegisterController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("")
     public ApiResponse<Long> registerAward(
-            @Valid @RequestBody AwardRequestDto requestDto
+        @Valid @RequestBody AwardRequestDto requestDto
     ) {
         Long id = registerAwardUseCase.registerAward(requestDto);
         return ApiResponse.success(id);

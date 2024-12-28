@@ -27,11 +27,12 @@ public class CloudUsageRetrievalAllController {
     @PreAuthorize("hasRole('SUPER')")
     @GetMapping("")
     public ApiResponse<PagedResponseDto<CloudUsageInfo>> retrieveAllCloudUsages(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<CloudUsageInfo> cloudUsageInfos = retrieveAllCloudUsageUseCase.retrieveAllCloudUsages(pageable);
+        PagedResponseDto<CloudUsageInfo> cloudUsageInfos = retrieveAllCloudUsageUseCase.retrieveAllCloudUsages(
+            pageable);
         return ApiResponse.success(cloudUsageInfos);
     }
 }

@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,9 +21,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.domain.UploadedFile;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "activity_photo")

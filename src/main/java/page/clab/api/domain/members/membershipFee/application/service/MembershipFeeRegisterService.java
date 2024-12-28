@@ -33,9 +33,9 @@ public class MembershipFeeRegisterService implements RegisterMembershipFeeUseCas
         MembershipFee membershipFee = mapper.fromDto(requestDto, memberInfo.getMemberId());
         externalSendNotificationUseCase.sendNotificationToAdmins("새로운 회비 내역이 등록되었습니다.");
         MembershipFeeNotificationInfo membershipFeeInfo = MembershipFeeNotificationInfo.create(membershipFee,
-                memberInfo);
+            memberInfo);
         eventPublisher.publishEvent(new NotificationEvent(this, ExecutivesAlertType.NEW_MEMBERSHIP_FEE, null,
-                membershipFeeInfo));
+            membershipFeeInfo));
         return registerMembershipFeePort.save(membershipFee).getId();
     }
 }

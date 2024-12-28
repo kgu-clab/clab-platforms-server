@@ -27,12 +27,12 @@ public class DeletedWorkExperiencesRetrievalController {
     @PreAuthorize("hasRole('SUPER')")
     @GetMapping("/deleted")
     public ApiResponse<PagedResponseDto<WorkExperienceResponseDto>> retrieveDeletedWorkExperiences(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<WorkExperienceResponseDto> workExperiences =
-                retrieveDeletedWorkExperiencesUseCase.retrieveDeletedWorkExperiences(pageable);
+            retrieveDeletedWorkExperiencesUseCase.retrieveDeletedWorkExperiences(pageable);
         return ApiResponse.success(workExperiences);
     }
 }

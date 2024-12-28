@@ -25,7 +25,7 @@ public class MembershipFeeRegisterController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("")
     public ApiResponse<Long> registerMembershipFee(
-            @Valid @RequestBody MembershipFeeRequestDto requestDto
+        @Valid @RequestBody MembershipFeeRequestDto requestDto
     ) {
         Long id = registerMembershipFeeUseCase.registerMembershipFee(requestDto);
         return ApiResponse.success(id);

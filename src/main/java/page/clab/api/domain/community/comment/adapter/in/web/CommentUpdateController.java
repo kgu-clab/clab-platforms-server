@@ -27,8 +27,8 @@ public class CommentUpdateController {
     @PreAuthorize("hasRole('USER')")
     @PatchMapping("/{commentId}")
     public ApiResponse<Long> updateComment(
-            @PathVariable(name = "commentId") Long commentId,
-            @Valid @RequestBody CommentUpdateRequestDto requestDto
+        @PathVariable(name = "commentId") Long commentId,
+        @Valid @RequestBody CommentUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = updateCommentUseCase.updateComment(commentId, requestDto);
         return ApiResponse.success(id);

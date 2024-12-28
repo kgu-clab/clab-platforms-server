@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,8 +20,6 @@ import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.validator.constraints.URL;
 import page.clab.api.global.common.domain.BaseEntity;
 
-import java.time.LocalDate;
-
 @Entity
 @Getter
 @Setter
@@ -29,7 +28,7 @@ import java.time.LocalDate;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @SQLDelete(sql = "UPDATE news SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
-@Table(name = "news", indexes = { @Index(name = "idx_article_url", columnList = "articleUrl") })
+@Table(name = "news", indexes = {@Index(name = "idx_article_url", columnList = "articleUrl")})
 public class NewsJpaEntity extends BaseEntity {
 
     @Id

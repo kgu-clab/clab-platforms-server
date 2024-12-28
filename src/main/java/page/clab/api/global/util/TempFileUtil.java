@@ -27,7 +27,7 @@ public class TempFileUtil {
         // 임시 파일에 대한 접근이 제한되어 다른 로컬 사용자가 파일에 접근하거나 파일 내용을 노출할 위험을 줄일 수 있음
         if (tempFilePath.getFileSystem().supportedFileAttributeViews().contains("posix")) {
             EnumSet<PosixFilePermission> permissions = EnumSet.of(
-                    PosixFilePermission.OWNER_READ
+                PosixFilePermission.OWNER_READ
             );
             Files.setPosixFilePermissions(tempFilePath, permissions);
         }

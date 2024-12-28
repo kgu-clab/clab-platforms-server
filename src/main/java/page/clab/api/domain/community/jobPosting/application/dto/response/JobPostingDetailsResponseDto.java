@@ -1,11 +1,10 @@
 package page.clab.api.domain.community.jobPosting.application.dto.response;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.community.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.community.jobPosting.domain.EmploymentType;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Builder

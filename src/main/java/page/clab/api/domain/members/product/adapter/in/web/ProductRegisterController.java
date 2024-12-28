@@ -25,7 +25,7 @@ public class ProductRegisterController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
     public ApiResponse<Long> registerProduct(
-            @Valid @RequestBody ProductRequestDto requestDto
+        @Valid @RequestBody ProductRequestDto requestDto
     ) {
         Long id = registerProductUseCase.registerProduct(requestDto);
         return ApiResponse.success(id);

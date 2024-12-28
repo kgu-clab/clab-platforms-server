@@ -11,9 +11,9 @@ public class RoleHierarchyConfig {
     @Bean
     public RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.fromHierarchy("""
-                ROLE_SUPER > ROLE_ADMIN
-                ROLE_ADMIN > ROLE_USER
-                ROLE_USER > ROLE_GUEST
-                """);
+            ROLE_SUPER > ROLE_ADMIN
+            ROLE_ADMIN > ROLE_USER
+            ROLE_USER > ROLE_GUEST
+            """);
     }
 }

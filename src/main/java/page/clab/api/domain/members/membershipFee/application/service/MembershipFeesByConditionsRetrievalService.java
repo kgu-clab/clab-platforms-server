@@ -25,14 +25,18 @@ public class MembershipFeesByConditionsRetrievalService implements RetrieveMembe
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResponseDto<MembershipFeeResponseDto> retrieveMembershipFees(String memberId, String memberName, String category, MembershipFeeStatus status, Pageable pageable) {
-        Page<MembershipFee> membershipFees = retrieveMembershipFeePort.findByConditions(memberId, memberName, category, status, pageable);
+    public PagedResponseDto<MembershipFeeResponseDto> retrieveMembershipFees(String memberId, String memberName,
+        String category, MembershipFeeStatus status, Pageable pageable) {
+        Page<MembershipFee> membershipFees = retrieveMembershipFeePort.findByConditions(memberId, memberName, category,
+            status, pageable);
         boolean currentMemberIsAdmin = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo().isAdminRole();
-        return new PagedResponseDto<>(membershipFees.map(membership -> getMembershipFeeResponseDto(membership, currentMemberIsAdmin)));
+        return new PagedResponseDto<>(
+            membershipFees.map(membership -> getMembershipFeeResponseDto(membership, currentMemberIsAdmin)));
     }
 
     private MembershipFeeResponseDto getMembershipFeeResponseDto(MembershipFee membershipFee, boolean isAdminRole) {
-        MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(membershipFee.getMemberId());
+        MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getMemberBasicInfoById(
+            membershipFee.getMemberId());
         return mapper.toDto(membershipFee, memberInfo.getMemberName(), isAdminRole);
     }
 }

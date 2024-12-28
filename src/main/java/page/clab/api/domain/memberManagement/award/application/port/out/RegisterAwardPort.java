@@ -1,8 +1,7 @@
 package page.clab.api.domain.memberManagement.award.application.port.out;
 
-import page.clab.api.domain.memberManagement.award.domain.Award;
-
 import java.util.List;
+import page.clab.api.domain.memberManagement.award.domain.Award;
 
 public interface RegisterAwardPort {
 

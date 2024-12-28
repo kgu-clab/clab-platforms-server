@@ -1,5 +1,6 @@
 package page.clab.api.domain.memberManagement.award.adapter.out.persistence;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,14 +11,12 @@ import page.clab.api.domain.memberManagement.award.application.port.out.Retrieve
 import page.clab.api.domain.memberManagement.award.domain.Award;
 import page.clab.api.global.exception.NotFoundException;
 
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
 public class AwardPersistenceAdapter implements
-        RegisterAwardPort,
-        RetrieveAwardPort,
-        RemoveAwardPort {
+    RegisterAwardPort,
+    RetrieveAwardPort,
+    RemoveAwardPort {
 
     private final AwardRepository awardRepository;
     private final AwardMapper awardMapper;
@@ -32,8 +31,8 @@ public class AwardPersistenceAdapter implements
     @Override
     public void saveAll(List<Award> awards) {
         List<AwardJpaEntity> entities = awards.stream()
-                .map(awardMapper::toEntity)
-                .toList();
+            .map(awardMapper::toEntity)
+            .toList();
         awardRepository.saveAll(entities);
     }
 
@@ -46,32 +45,32 @@ public class AwardPersistenceAdapter implements
     @Override
     public Award getById(Long awardId) {
         return awardRepository.findById(awardId)
-                .map(awardMapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[Award] id: " + awardId + "에 해당하는 수상 이력이 존재하지 않습니다."));
+            .map(awardMapper::toDomain)
+            .orElseThrow(() -> new NotFoundException("[Award] id: " + awardId + "에 해당하는 수상 이력이 존재하지 않습니다."));
     }
 
     @Override
     public Page<Award> findByConditions(String memberId, Long year, Pageable pageable) {
         return awardRepository.findByConditions(memberId, year, pageable)
-                .map(awardMapper::toDomain);
+            .map(awardMapper::toDomain);
     }
 
     @Override
     public Page<Award> findAllByIsDeletedTrue(Pageable pageable) {
         return awardRepository.findAllByIsDeletedTrue(pageable)
-                .map(awardMapper::toDomain);
+            .map(awardMapper::toDomain);
     }
 
     @Override
     public Page<Award> findByMemberId(String memberId, Pageable pageable) {
         return awardRepository.findByMemberId(memberId, pageable)
-                .map(awardMapper::toDomain);
+            .map(awardMapper::toDomain);
     }
 
     @Override
     public List<Award> findByMemberId(String memberId) {
         return awardRepository.findByMemberId(memberId).stream()
-                .map(awardMapper::toDomain)
-                .toList();
+            .map(awardMapper::toDomain)
+            .toList();
     }
 }

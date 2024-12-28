@@ -1,12 +1,11 @@
 package page.clab.api.domain.memberManagement.member.application.port.out;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.memberManagement.member.domain.Role;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface RetrieveMemberPort {
 

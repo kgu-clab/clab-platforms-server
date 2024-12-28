@@ -27,8 +27,8 @@ public class DonationUpdateController {
     @PreAuthorize("hasRole('SUPER')")
     @PatchMapping("/{donationId}")
     public ApiResponse<Long> updateDonation(
-            @PathVariable(name = "donationId") Long donationId,
-            @Valid @RequestBody DonationUpdateRequestDto requestDto
+        @PathVariable(name = "donationId") Long donationId,
+        @Valid @RequestBody DonationUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = updateDonationUseCase.updateDonation(donationId, requestDto);
         return ApiResponse.success(id);

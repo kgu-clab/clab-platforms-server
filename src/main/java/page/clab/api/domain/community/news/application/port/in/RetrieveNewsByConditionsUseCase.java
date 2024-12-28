@@ -5,5 +5,6 @@ import page.clab.api.domain.community.news.application.dto.response.NewsResponse
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveNewsByConditionsUseCase {
+
     PagedResponseDto<NewsResponseDto> retrieveNews(String title, String category, Pageable pageable);
 }

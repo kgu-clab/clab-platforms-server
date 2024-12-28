@@ -5,5 +5,6 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.library.book.domain.Book;
 
 public interface RetrieveDeletedBooksPort {
+
     Page<Book> findAllByIsDeletedTrue(Pageable pageable);
 }

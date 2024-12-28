@@ -24,7 +24,7 @@ public class ReviewRemoveController {
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{reviewId}")
     public ApiResponse<Long> removeReview(
-            @PathVariable(name = "reviewId") Long reviewId
+        @PathVariable(name = "reviewId") Long reviewId
     ) throws PermissionDeniedException {
         Long id = removeReviewUseCase.removeReview(reviewId);
         return ApiResponse.success(id);

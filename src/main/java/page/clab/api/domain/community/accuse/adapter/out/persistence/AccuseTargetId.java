@@ -1,13 +1,12 @@
 package page.clab.api.domain.community.accuse.adapter.out.persistence;
 
 import jakarta.persistence.Embeddable;
+import java.io.Serializable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import page.clab.api.domain.community.accuse.domain.TargetType;
-
-import java.io.Serializable;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)

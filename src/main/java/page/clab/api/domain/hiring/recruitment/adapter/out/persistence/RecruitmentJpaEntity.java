@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,8 +21,6 @@ import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.hiring.application.domain.ApplicationType;
 import page.clab.api.domain.hiring.recruitment.domain.RecruitmentStatus;
 import page.clab.api.global.common.domain.BaseEntity;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "recruitment")

@@ -26,7 +26,7 @@ public class MemberRoleManagementService implements ManageMemberRoleUseCase {
     @Transactional
     @Override
     public String changeMemberRole(HttpServletRequest httpServletRequest, String memberId,
-                                   ChangeMemberRoleRequest request) {
+        ChangeMemberRoleRequest request) {
         Member member = retrieveMemberPort.getById(memberId);
 
         Role oldRole = member.getRole();
@@ -38,10 +38,10 @@ public class MemberRoleManagementService implements ManageMemberRoleUseCase {
         updateMemberPort.update(member);
 
         String memberRoleChangedMessage = String.format("[%s] %s: %s -> %s", member.getId(), member.getName(), oldRole,
-                newRole);
+            newRole);
         eventPublisher.publishEvent(
-                new NotificationEvent(this, SecurityAlertType.MEMBER_ROLE_CHANGED, httpServletRequest,
-                        memberRoleChangedMessage));
+            new NotificationEvent(this, SecurityAlertType.MEMBER_ROLE_CHANGED, httpServletRequest,
+                memberRoleChangedMessage));
 
         return memberId;
     }

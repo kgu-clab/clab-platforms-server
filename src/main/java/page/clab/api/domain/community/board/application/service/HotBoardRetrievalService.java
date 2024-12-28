@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import page.clab.api.domain.community.board.application.dto.mapper.BoardDtoMapper;
+import page.clab.api.domain.community.board.application.dto.response.BoardHashtagResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardListResponseDto;
 import page.clab.api.domain.community.board.application.port.in.RetrieveHotBoardsUseCase;
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPort;
@@ -25,6 +26,7 @@ public class HotBoardRetrievalService implements RetrieveHotBoardsUseCase {
     private final RetrieveBoardPort retrieveBoardPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
     private final ExternalRetrieveCommentUseCase externalRetrieveCommentUseCase;
+    private final BoardHashtagRetrieveService boardHashtagRetrieveService;
     private final HotBoardRegisterService hotBoardRegisterService;
     private final Map<String, HotBoardSelectionStrategy> strategyMap;
     private final BoardDtoMapper mapper;
@@ -51,8 +53,8 @@ public class HotBoardRetrievalService implements RetrieveHotBoardsUseCase {
     @NotNull
     private BoardListResponseDto mapToBoardListResponseDto(Board board, MemberDetailedInfoDto memberInfo) {
         Long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
-
-        return mapper.toListDto(board, memberInfo, commentCount);
+        List<BoardHashtagResponseDto> boardHashtagInfos = boardHashtagRetrieveService.getBoardHashtagInfoByBoardId(board.getId());
+        return mapper.toListDto(board, memberInfo, commentCount, boardHashtagInfos);
     }
 
     private String validateStrategyName(String strategyName) {

@@ -1,5 +1,7 @@
 package page.clab.api.domain.community.comment.adapter.out.persistence;
 
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,14 +11,11 @@ import page.clab.api.domain.community.comment.application.port.out.RetrieveComme
 import page.clab.api.domain.community.comment.domain.Comment;
 import page.clab.api.global.exception.NotFoundException;
 
-import java.util.List;
-import java.util.Optional;
-
 @Component
 @RequiredArgsConstructor
 public class CommentPersistenceAdapter implements
-        RegisterCommentPort,
-        RetrieveCommentPort {
+    RegisterCommentPort,
+    RetrieveCommentPort {
 
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
@@ -31,40 +30,40 @@ public class CommentPersistenceAdapter implements
     @Override
     public void saveAll(List<Comment> comments) {
         List<CommentJpaEntity> entities = comments.stream()
-                .map(commentMapper::toEntity)
-                .toList();
+            .map(commentMapper::toEntity)
+            .toList();
         commentRepository.saveAll(entities);
     }
 
     @Override
     public Optional<Comment> findById(Long commentId) {
         return commentRepository.findById(commentId)
-                .map(commentMapper::toDomain);
+            .map(commentMapper::toDomain);
     }
 
     @Override
     public Comment getById(Long commentId) {
         return commentRepository.findById(commentId)
-                .map(commentMapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[Comment] id: " + commentId + "에 해당하는 댓글이 존재하지 않습니다."));
+            .map(commentMapper::toDomain)
+            .orElseThrow(() -> new NotFoundException("[Comment] id: " + commentId + "에 해당하는 댓글이 존재하지 않습니다."));
     }
 
     @Override
     public Page<Comment> findAllByIsDeletedTrueAndBoardId(Long boardId, Pageable pageable) {
         return commentRepository.findAllByIsDeletedTrueAndBoardId(boardId, pageable)
-                .map(commentMapper::toDomain);
+            .map(commentMapper::toDomain);
     }
 
     @Override
     public Page<Comment> findAllByBoardIdAndParentIsNull(Long boardId, Pageable pageable) {
         return commentRepository.findAllByBoardIdAndParentIsNull(boardId, pageable)
-                .map(commentMapper::toDomain);
+            .map(commentMapper::toDomain);
     }
 
     @Override
     public Page<Comment> findAllByWriterId(String memberId, Pageable pageable) {
         return commentRepository.findAllByWriterId(memberId, pageable)
-                .map(commentMapper::toDomain);
+            .map(commentMapper::toDomain);
     }
 
     @Override
@@ -75,8 +74,8 @@ public class CommentPersistenceAdapter implements
     @Override
     public List<Comment> findByBoardId(Long boardId) {
         return commentRepository.findByBoardId(boardId)
-                .stream()
-                .map(commentMapper::toDomain)
-                .toList();
+            .stream()
+            .map(commentMapper::toDomain)
+            .toList();
     }
 }

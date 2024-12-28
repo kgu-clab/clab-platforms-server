@@ -10,21 +10,21 @@ public class DonationDtoMapper {
 
     public Donation fromDto(DonationRequestDto requestDto, String memberId) {
         return Donation.builder()
-                .memberId(memberId)
-                .amount(requestDto.getAmount())
-                .message(requestDto.getMessage())
-                .isDeleted(false)
-                .build();
+            .memberId(memberId)
+            .amount(requestDto.getAmount())
+            .message(requestDto.getMessage())
+            .isDeleted(false)
+            .build();
     }
 
     public DonationResponseDto toDto(Donation donation, String memberName) {
         return DonationResponseDto.builder()
-                .id(donation.getId())
-                .memberId(donation.getMemberId())
-                .memberName(memberName)
-                .amount(donation.getAmount())
-                .message(donation.getMessage())
-                .createdAt(donation.getCreatedAt())
-                .build();
+            .id(donation.getId())
+            .memberId(donation.getMemberId())
+            .memberName(memberName)
+            .amount(donation.getAmount())
+            .message(donation.getMessage())
+            .createdAt(donation.getCreatedAt())
+            .build();
     }
 }

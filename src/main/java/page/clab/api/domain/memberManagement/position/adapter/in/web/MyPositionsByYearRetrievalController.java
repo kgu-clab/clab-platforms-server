@@ -24,7 +24,7 @@ public class MyPositionsByYearRetrievalController {
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/my-positions")
     public ApiResponse<PositionMyResponseDto> retrieveMyPositionsByYear(
-            @RequestParam(name = "year", required = false) String year
+        @RequestParam(name = "year", required = false) String year
     ) {
         PositionMyResponseDto positions = retrieveMyPositionsByYearUseCase.retrieveMyPositionsByYear(year);
         return ApiResponse.success(positions);

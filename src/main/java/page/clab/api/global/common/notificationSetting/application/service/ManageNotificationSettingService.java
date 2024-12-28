@@ -42,7 +42,7 @@ public class ManageNotificationSettingService implements ManageNotificationSetti
     @Transactional
     public NotificationSetting getOrCreateDefaultSetting(AlertType alertType) {
         return retrieveNotificationSettingPort.findByAlertType(alertType)
-                .orElseGet(() -> createAndSaveDefaultSetting(alertType));
+            .orElseGet(() -> createAndSaveDefaultSetting(alertType));
     }
 
     private NotificationSetting createAndSaveDefaultSetting(AlertType alertType) {

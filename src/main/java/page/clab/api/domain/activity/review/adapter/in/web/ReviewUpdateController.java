@@ -27,8 +27,8 @@ public class ReviewUpdateController {
     @PreAuthorize("hasRole('USER')")
     @PatchMapping("/{reviewId}")
     public ApiResponse<Long> updateReview(
-            @PathVariable(name = "reviewId") Long reviewId,
-            @Valid @RequestBody ReviewUpdateRequestDto requestDto
+        @PathVariable(name = "reviewId") Long reviewId,
+        @Valid @RequestBody ReviewUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = updateReviewUseCase.updateReview(reviewId, requestDto);
         return ApiResponse.success(id);

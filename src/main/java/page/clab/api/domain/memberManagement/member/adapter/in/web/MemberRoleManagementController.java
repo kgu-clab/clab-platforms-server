@@ -23,14 +23,14 @@ public class MemberRoleManagementController {
     private final ManageMemberRoleUseCase manageMemberRoleUseCase;
 
     @Operation(summary = "[S] 멤버 권한 변경", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
-            "권한 계층: SUPER > ADMIN > USER > GUEST<br>" +
-            "GUEST 권한은 변경 불가능함")
+        "권한 계층: SUPER > ADMIN > USER > GUEST<br>" +
+        "GUEST 권한은 변경 불가능함")
     @PreAuthorize("hasRole('SUPER')")
     @PatchMapping("/{memberId}/roles")
     public ApiResponse<String> changeMemberRole(
-            HttpServletRequest httpServletRequest,
-            @PathVariable(name = "memberId") String memberId,
-            @RequestBody ChangeMemberRoleRequest request
+        HttpServletRequest httpServletRequest,
+        @PathVariable(name = "memberId") String memberId,
+        @RequestBody ChangeMemberRoleRequest request
     ) {
         String id = manageMemberRoleUseCase.changeMemberRole(httpServletRequest, memberId, request);
         return ApiResponse.success(id);

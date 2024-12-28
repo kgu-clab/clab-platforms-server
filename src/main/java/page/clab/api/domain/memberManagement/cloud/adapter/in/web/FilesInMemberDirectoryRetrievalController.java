@@ -25,16 +25,17 @@ public class FilesInMemberDirectoryRetrievalController {
     private final RetrieveFilesInMemberDirectoryUseCase retrieveFilesInMemberDirectoryUseCase;
 
     @Operation(summary = "[U] 멤버 업로드 파일 리스트 조회", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "본인 정보만 조회 가능")
+        "본인 정보만 조회 가능")
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/files/{memberId}")
     public ApiResponse<PagedResponseDto<FileInfo>> retrieveFilesInMemberDirectory(
-            @PathVariable(name = "memberId") String memberId,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
+        @PathVariable(name = "memberId") String memberId,
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<FileInfo> files = retrieveFilesInMemberDirectoryUseCase.retrieveFilesInMemberDirectory(memberId, pageable);
+        PagedResponseDto<FileInfo> files = retrieveFilesInMemberDirectoryUseCase.retrieveFilesInMemberDirectory(
+            memberId, pageable);
         return ApiResponse.success(files);
     }
 }

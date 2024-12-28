@@ -31,9 +31,9 @@ public class NotificationSetting {
 
     public static NotificationSetting createDefault(AlertType alertType) {
         return NotificationSetting.builder()
-                .alertType(alertType)
-                .enabled(true)
-                .build();
+            .alertType(alertType)
+            .enabled(true)
+            .build();
     }
 
     public void updateEnabled(boolean enabled) {

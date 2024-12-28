@@ -1,5 +1,7 @@
 package page.clab.api.domain.members.schedule.application.service;
 
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +20,6 @@ import page.clab.api.domain.members.schedule.domain.Schedule;
 import page.clab.api.domain.members.schedule.domain.ScheduleType;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.exception.PermissionDeniedException;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,21 +42,25 @@ public class ScheduleRegisterService implements RegisterScheduleUseCase {
         return registerSchedulePort.save(schedule).getId();
     }
 
-    private ActivityGroup resolveActivityGroupForSchedule(ScheduleRequestDto requestDto, MemberDetailedInfoDto memberInfo) throws PermissionDeniedException {
+    private ActivityGroup resolveActivityGroupForSchedule(ScheduleRequestDto requestDto,
+        MemberDetailedInfoDto memberInfo) throws PermissionDeniedException {
         ScheduleType scheduleType = requestDto.getScheduleType();
         ActivityGroup activityGroup = null;
         if (!scheduleType.equals(ScheduleType.ALL)) {
             Long activityGroupId = Optional.ofNullable(requestDto.getActivityGroupId())
-                    .orElseThrow(() -> new NullPointerException("스터디 또는 프로젝트 일정은 그룹 id를 입력해야 합니다."));
+                .orElseThrow(() -> new NullPointerException("스터디 또는 프로젝트 일정은 그룹 id를 입력해야 합니다."));
             activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
             validateMemberIsGroupLeaderOrAdmin(memberInfo, activityGroup);
         }
         return activityGroup;
     }
 
-    private void validateMemberIsGroupLeaderOrAdmin(MemberDetailedInfoDto memberInfo, ActivityGroup activityGroup) throws PermissionDeniedException {
-        List<GroupMember> groupLeaders = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
-        if (!CollectionUtils.isEmpty(groupLeaders) && !memberInfo.isAdminRole() && groupLeaders.stream().noneMatch(leader -> leader.isOwner(memberInfo.getMemberId()))) {
+    private void validateMemberIsGroupLeaderOrAdmin(MemberDetailedInfoDto memberInfo, ActivityGroup activityGroup)
+        throws PermissionDeniedException {
+        List<GroupMember> groupLeaders = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(
+            activityGroup.getId(), ActivityGroupRole.LEADER);
+        if (!CollectionUtils.isEmpty(groupLeaders) && !memberInfo.isAdminRole() && groupLeaders.stream()
+            .noneMatch(leader -> leader.isOwner(memberInfo.getMemberId()))) {
             throw new PermissionDeniedException("해당 스터디 또는 프로젝트의 LEADER, 관리자만 그룹 일정을 추가할 수 있습니다.");
         }
     }

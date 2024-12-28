@@ -1,10 +1,9 @@
 package page.clab.api.domain.memberManagement.award.application.port.out;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.memberManagement.award.domain.Award;
-
-import java.util.List;
 
 public interface RetrieveAwardPort {
 

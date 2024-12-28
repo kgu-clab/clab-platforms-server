@@ -8,15 +8,14 @@ import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import page.clab.api.global.config.IPInfoConfig;
 import page.clab.api.global.util.HttpReqResUtil;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * {@code IpAuthenticationFilter}는 IP 주소를 기반으로 클라이언트의 접근 권한을 검증하는 필터입니다.
@@ -25,8 +24,7 @@ import java.util.Objects;
  * 접근을 차단합니다. 주로 국가별 접근 제한이 필요한 상황에서 사용됩니다.</p>
  *
  * <p>이 필터는 IP 정보를 조회하기 위해 외부 IP 조회 서비스(IPinfo)를 사용하며,
- * 국가 정보를 확인하여 허용된 국가 목록과 비교합니다. 허용되지 않은 국가에서 접근 시
- * 로그 경고 메시지를 기록하고 요청 체인을 종료합니다.</p>
+ * 국가 정보를 확인하여 허용된 국가 목록과 비교합니다. 허용되지 않은 국가에서 접근 시 로그 경고 메시지를 기록하고 요청 체인을 종료합니다.</p>
  *
  * <p>필터는 다음과 같은 주요 기능을 수행합니다:</p>
  * <ul>
@@ -57,7 +55,8 @@ public class IpAuthenticationFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+        throws IOException, ServletException {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         try {
             IPResponse ipResponse = ipInfo.lookupIP(clientIpAddress);

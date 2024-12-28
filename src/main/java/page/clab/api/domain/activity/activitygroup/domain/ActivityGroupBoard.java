@@ -12,6 +12,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Future;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,11 +33,6 @@ import page.clab.api.global.common.domain.BaseEntity;
 import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.PermissionDeniedException;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Getter
@@ -87,7 +86,8 @@ public class ActivityGroupBoard extends BaseEntity {
         Optional.ofNullable(requestDto.getTitle()).ifPresent(this::setTitle);
         Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
         Optional.ofNullable(requestDto.getDueDateTime()).ifPresent(this::setDueDateTime);
-        Optional.ofNullable(requestDto.getFileUrls()).ifPresent(urls -> this.setUploadedFiles(uploadedFileService.getUploadedFilesByUrls(urls)));
+        Optional.ofNullable(requestDto.getFileUrls())
+            .ifPresent(urls -> this.setUploadedFiles(uploadedFileService.getUploadedFilesByUrls(urls)));
     }
 
     public void addChild(ActivityGroupBoard child) {
@@ -113,7 +113,8 @@ public class ActivityGroupBoard extends BaseEntity {
     }
 
     public void validateAccessPermission(Member member, List<GroupMember> leaders) throws PermissionDeniedException {
-        if (!member.isAdminRole() && !CollectionUtils.isEmpty(leaders) && leaders.stream().noneMatch(leader -> leader.isOwner(member.getId()))) {
+        if (!member.isAdminRole() && !CollectionUtils.isEmpty(leaders) && leaders.stream()
+            .noneMatch(leader -> leader.isOwner(member.getId()))) {
             if (this.isAssignment()) {
                 throw new PermissionDeniedException("과제 게시판에 접근할 권한이 없습니다.");
             }

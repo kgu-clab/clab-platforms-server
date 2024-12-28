@@ -1,12 +1,11 @@
 package page.clab.api.global.config;
 
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
-
-import java.util.Map;
 
 @Getter
 @Setter
@@ -27,6 +26,7 @@ public class EmailTemplateProperties {
     @Getter
     @Setter
     public static class Template {
+
         private String subject;
         private String content;
     }

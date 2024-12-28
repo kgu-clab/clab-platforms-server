@@ -10,22 +10,22 @@ public class WorkExperienceDtoMapper {
 
     public WorkExperience fromDto(WorkExperienceRequestDto requestDto, String memberId) {
         return WorkExperience.builder()
-                .companyName(requestDto.getCompanyName())
-                .position(requestDto.getPosition())
-                .startDate(requestDto.getStartDate())
-                .endDate(requestDto.getEndDate())
-                .memberId(memberId)
-                .isDeleted(false)
-                .build();
+            .companyName(requestDto.getCompanyName())
+            .position(requestDto.getPosition())
+            .startDate(requestDto.getStartDate())
+            .endDate(requestDto.getEndDate())
+            .memberId(memberId)
+            .isDeleted(false)
+            .build();
     }
 
     public WorkExperienceResponseDto toDto(WorkExperience workExperience) {
         return WorkExperienceResponseDto.builder()
-                .id(workExperience.getId())
-                .companyName(workExperience.getCompanyName())
-                .position(workExperience.getPosition())
-                .startDate(workExperience.getStartDate())
-                .endDate(workExperience.getEndDate())
-                .build();
+            .id(workExperience.getId())
+            .companyName(workExperience.getCompanyName())
+            .position(workExperience.getPosition())
+            .startDate(workExperience.getStartDate())
+            .endDate(workExperience.getEndDate())
+            .build();
     }
 }

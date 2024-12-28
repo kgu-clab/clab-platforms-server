@@ -12,8 +12,8 @@ import page.clab.api.global.common.notificationSetting.domain.NotificationSettin
 @Component
 @RequiredArgsConstructor
 public class NotificationSettingPersistenceAdapter implements
-        RetrieveNotificationSettingPort,
-        UpdateNotificationSettingPort {
+    RetrieveNotificationSettingPort,
+    UpdateNotificationSettingPort {
 
     private final NotificationSettingRepository repository;
 

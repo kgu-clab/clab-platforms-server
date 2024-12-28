@@ -1,5 +1,9 @@
 package page.clab.api.global.common.file.application;
 
+import java.io.File;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,18 +12,12 @@ import org.springframework.stereotype.Service;
 import page.clab.api.global.common.file.dao.UploadFileRepository;
 import page.clab.api.global.common.file.domain.UploadedFile;
 
-import java.io.File;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * {@code AutoDeleteService}는 지정된 경로의 파일을 자동으로 삭제하는 서비스입니다.
  *
  * <p>이 서비스는 매일 자정에 스케줄된 작업을 수행하며, 파일의 유효 기간이 만료되었거나
- * 데이터베이스에서 해당 파일의 정보가 존재하지 않는 경우 해당 파일을 삭제합니다.
- * 파일 삭제 작업은 다양한 카테고리에 대해 수행되며, 이를 통해 불필요한 파일을 자동으로 정리합니다.</p>
- *
+ * 데이터베이스에서 해당 파일의 정보가 존재하지 않는 경우 해당 파일을 삭제합니다. 파일 삭제 작업은 다양한 카테고리에 대해 수행되며, 이를 통해 불필요한 파일을 자동으로 정리합니다.</p>
+ * <p>
  * 주요 기능:
  * <ul>
  *     <li>{@link #autoDeleteExpiredFiles()} - 스케줄에 따라 만료된 파일 또는 데이터베이스 정보가 없는 파일을 자동으로 삭제합니다.</li>
@@ -43,13 +41,13 @@ public class AutoDeleteService {
     public void autoDeleteExpiredFiles() {
         LocalDateTime currentDate = LocalDateTime.now();
         List<String> categoryPaths = Arrays.asList(
-                "boards", "news", "books", "profiles",
-                "activity-photos", "members", "forms", "attendance"
+            "boards", "news", "books", "profiles",
+            "activity-photos", "members", "forms", "attendance"
         );
 
         categoryPaths.stream()
-                .map(category -> filePath + File.separator + category)
-                .forEach(directoryPath -> deleteUselessFilesInDirectory(new File(directoryPath), currentDate));
+            .map(category -> filePath + File.separator + category)
+            .forEach(directoryPath -> deleteUselessFilesInDirectory(new File(directoryPath), currentDate));
     }
 
     private void deleteUselessFilesInDirectory(File directory, LocalDateTime currentDate) {

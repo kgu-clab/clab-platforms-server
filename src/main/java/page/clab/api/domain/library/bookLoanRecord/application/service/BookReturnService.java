@@ -33,9 +33,7 @@ public class BookReturnService implements ReturnBookUseCase {
      * 도서 반납을 처리합니다.
      *
      * <p>현재 로그인한 멤버가 대출한 도서를 반납 처리하고,
-     * 대출 기록을 "RETURNED"로 표시합니다.
-     * 반납 이후 회원의 대출 정지 날짜를 업데이트하고,
-     * 반납 완료 알림을 사용자에게 전송합니다.</p>
+     * 대출 기록을 "RETURNED"로 표시합니다. 반납 이후 회원의 대출 정지 날짜를 업데이트하고, 반납 완료 알림을 사용자에게 전송합니다.</p>
      *
      * @param requestDto 도서 반납 요청 정보 DTO
      * @return 반납된 대출 기록의 ID
@@ -49,12 +47,15 @@ public class BookReturnService implements ReturnBookUseCase {
         book.returnBook(currentMemberId);
         externalRegisterBookUseCase.save(book);
 
-        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.getByBookIdAndReturnedAtIsNullAndStatus(book.getId(), BookLoanStatus.APPROVED);
+        BookLoanRecord bookLoanRecord = retrieveBookLoanRecordPort.getByBookIdAndReturnedAtIsNullAndStatus(book.getId(),
+            BookLoanStatus.APPROVED);
         bookLoanRecord.markAsReturned(borrowerInfo);
 
-        externalUpdateMemberUseCase.updateLoanSuspensionDate(borrowerInfo.getMemberId(), borrowerInfo.getLoanSuspensionDate());
+        externalUpdateMemberUseCase.updateLoanSuspensionDate(borrowerInfo.getMemberId(),
+            borrowerInfo.getLoanSuspensionDate());
 
-        externalSendNotificationUseCase.sendNotificationToMember(currentMemberId, "[" + book.getTitle() + "] 도서 반납이 완료되었습니다.");
+        externalSendNotificationUseCase.sendNotificationToMember(currentMemberId,
+            "[" + book.getTitle() + "] 도서 반납이 완료되었습니다.");
         return registerBookLoanRecordPort.save(bookLoanRecord).getId();
     }
 }

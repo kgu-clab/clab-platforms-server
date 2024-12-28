@@ -1,12 +1,11 @@
 package page.clab.api.global.auth.util;
 
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import page.clab.api.global.util.IpAddressUtil;
-
-import java.util.List;
-import java.util.Objects;
 
 /**
  * {@code IpWhitelistValidator}는 요청된 IP 주소가 화이트리스트에 포함되는지 확인하는 유틸리티 클래스입니다.
@@ -34,6 +33,7 @@ public class IpWhitelistValidator {
 
     /**
      * 요청된 IP가 화이트리스트에 포함되는지 확인합니다.
+     *
      * @param ipAddress 확인하려는 IP 주소
      * @return IP가 화이트리스트에 포함되면 true, 그렇지 않으면 false
      */
@@ -49,7 +49,7 @@ public class IpWhitelistValidator {
         }
 
         return whitelistIps.stream()
-                .filter(Objects::nonNull)
-                .anyMatch(ip -> "*".equals(ip) || IpAddressUtil.isIpInRange(ipAddress, ip));
+            .filter(Objects::nonNull)
+            .anyMatch(ip -> "*".equals(ip) || IpAddressUtil.isIpInRange(ipAddress, ip));
     }
 }

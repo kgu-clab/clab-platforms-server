@@ -34,15 +34,15 @@ public class BlacklistIpResetService implements ResetBlacklistIpsUseCase {
     @Override
     public List<String> resetBlacklistIps(HttpServletRequest request) {
         List<String> blacklistedIps = retrieveBlacklistIpPort.findAll()
-                .stream()
-                .map(BlacklistIp::getIpAddress)
-                .toList();
+            .stream()
+            .map(BlacklistIp::getIpAddress)
+            .toList();
         removeBlacklistIpPort.deleteAll();
 
         String blacklistRemovedMessage = "Deleted IP: ALL";
         eventPublisher.publishEvent(
-                new NotificationEvent(this, SecurityAlertType.BLACKLISTED_IP_REMOVED, request,
-                        blacklistRemovedMessage));
+            new NotificationEvent(this, SecurityAlertType.BLACKLISTED_IP_REMOVED, request,
+                blacklistRemovedMessage));
 
         return blacklistedIps;
     }

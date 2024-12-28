@@ -6,8 +6,7 @@ import com.fasterxml.jackson.core.io.SerializedString;
 import org.apache.commons.text.StringEscapeUtils;
 
 /**
- * {@code HtmlCharacterEscapes}는 HTML 특수 문자를 JSON에서 안전하게 사용할 수 있도록
- * 이스케이프 처리를 담당하는 클래스입니다.
+ * {@code HtmlCharacterEscapes}는 HTML 특수 문자를 JSON에서 안전하게 사용할 수 있도록 이스케이프 처리를 담당하는 클래스입니다.
  *
  * <p>특히 JSON 내에서 HTML 관련 특수 문자가 안전하게 사용될 수 있도록 다음과 같은 문자들을
  * 커스텀 이스케이프 처리합니다:
@@ -51,7 +50,7 @@ public class HtmlCharacterEscapes extends CharacterEscapes {
         char charAt = (char) ch;
         if (Character.isHighSurrogate(charAt) || Character.isLowSurrogate(charAt) || charAt == ZERO_WIDTH_JOINER) {
             String sb = "\\u" +
-                    String.format("%04x", ch);
+                String.format("%04x", ch);
             return new SerializedString(sb);
         } else {
             return new SerializedString(StringEscapeUtils.escapeHtml4(Character.toString(charAt)));

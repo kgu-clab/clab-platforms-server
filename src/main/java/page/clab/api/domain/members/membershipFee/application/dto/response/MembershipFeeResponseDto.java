@@ -1,10 +1,9 @@
 package page.clab.api.domain.members.membershipFee.application.dto.response;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.members.membershipFee.domain.MembershipFeeStatus;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Builder

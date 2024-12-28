@@ -1,13 +1,12 @@
 package page.clab.api.global.config;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 @Configuration
 public class CorsConfig {
@@ -35,7 +34,7 @@ public class CorsConfig {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         corsConfiguration.setAllowedOriginPatterns(
-                List.of(corsAllowedOrigins)
+            List.of(corsAllowedOrigins)
         );
         corsConfiguration.setAllowedMethods(List.of(corsAllowedMethods));
         corsConfiguration.setAllowedHeaders(List.of(corsAllowedHeaders));

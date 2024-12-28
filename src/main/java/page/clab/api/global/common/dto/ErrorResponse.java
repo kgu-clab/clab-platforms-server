@@ -16,9 +16,9 @@ public class ErrorResponse<T> {
 
     public static <T> ErrorResponse<T> failure(Exception e) {
         String exceptionName = e.getClass().getSimpleName();
-        return ErrorResponse.<T> builder()
-                .errorMessage(exceptionName.toUpperCase())
-                .build();
+        return ErrorResponse.<T>builder()
+            .errorMessage(exceptionName.toUpperCase())
+            .build();
     }
 
     public String toJson() {
