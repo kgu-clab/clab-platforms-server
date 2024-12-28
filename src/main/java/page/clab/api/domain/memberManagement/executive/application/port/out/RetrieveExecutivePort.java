@@ -8,4 +8,6 @@ public interface RetrieveExecutivePort {
     List<Executive> findAll();
 
     Executive getById(String id);
+
+    Boolean existsById(String id);
 }

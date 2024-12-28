@@ -25,7 +25,6 @@ public class Executive {
     private Boolean isDeleted;
 
     public void update(ExecutiveUpdateRequestDto requestDto) {
-        Optional.ofNullable(requestDto.getId()).ifPresent(this::setId);
         Optional.ofNullable(requestDto.getName()).ifPresent(this::setName);
         Optional.ofNullable(requestDto.getEmail()).ifPresent(this::setEmail);
         Optional.ofNullable(requestDto.getField()).ifPresent(this::setField);

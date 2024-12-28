@@ -1,7 +1,6 @@
 package page.clab.api.domain.memberManagement.executive.application.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.memberManagement.executive.domain.ExecutivePosition;
@@ -9,9 +8,6 @@ import page.clab.api.domain.memberManagement.executive.domain.ExecutivePosition;
 @Getter
 @Setter
 public class ExecutiveUpdateRequestDto {
-
-    @Schema(description = "학번", example = "202310000")
-    private String id;
 
     @Schema(description = "이름", example = "홍길동")
     private String name;

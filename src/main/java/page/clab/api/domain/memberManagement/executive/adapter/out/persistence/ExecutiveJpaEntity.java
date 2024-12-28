@@ -31,7 +31,7 @@ import page.clab.api.global.common.domain.BaseEntity;
 public class ExecutiveJpaEntity extends BaseEntity {
 
     @Id
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, updatable = false, unique = true)
     @Size(min = 9, max = 9, message = "{size.executive.id}")
     private String id;
 

@@ -1,7 +1,6 @@
 package page.clab.api.domain.memberManagement.executive.adapter.out.persistence;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -48,5 +47,10 @@ public class ExecutivePersistenceAdapter implements
         ExecutiveJpaEntity jpaEntity = executiveRepository.findById(id)
             .orElseThrow(() -> new NotFoundException("학번이 " + id + "인 운영진이 존재하지 않습니다."));
         return executiveMapper.toDomain(jpaEntity);
+    }
+
+    @Override
+    public Boolean existsById(String id) {
+        return executiveRepository.existsById(id);
     }
 }
