@@ -2,6 +2,7 @@ package page.clab.api.domain.memberManagement.executive.adapter.in.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,7 @@ public class ExecutiveRegisterController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
     public ApiResponse<String> registerExecutive(
-            @RequestBody ExecutiveRequestDto requestDto
+        @Valid @RequestBody ExecutiveRequestDto requestDto
     ) {
         String id = registerExecutiveUseCase.registerExecutive(requestDto);
         return ApiResponse.success(id);
