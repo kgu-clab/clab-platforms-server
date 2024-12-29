@@ -33,6 +33,6 @@ public class BoardRequestDto {
     @Schema(description = "익명 사용 여부", example = "false", required = true)
     private boolean wantAnonymous;
 
-    @Schema(description = "해시태그 id 리스트", example = "[1, 2]")
-    private List<Long> hashtagIdList;
+    @Schema(description = "해시태그 이름 리스트", example = "[\"Java\", \"C++\"]")
+    private List<String> hashtagNameList;
 }

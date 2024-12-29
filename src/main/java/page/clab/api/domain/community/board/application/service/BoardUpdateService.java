@@ -47,7 +47,11 @@ public class BoardUpdateService implements UpdateBoardUseCase {
 
         board.update(requestDto);
 
-        List<Long> hastagIdList = requestDto.getHashtagIdList();
+        List<String> hashtagNameList = requestDto.getHashtagNameList();
+
+        List<Long> hastagIdList = hashtagNameList.stream()
+            .map(externalRetrieveHashtagUseCase::getIdByName)
+            .toList();
         handleBoardHashtagUpdate(boardId, board, hastagIdList);
 
         eventPublisher.publishEvent(new BoardUpdatedEvent(this, board.getId()));
@@ -70,6 +74,9 @@ public class BoardUpdateService implements UpdateBoardUseCase {
         currentBoardHashtags.forEach(boardHashtag -> {
             if (!boardHashtag.getIsDeleted()) {
                 boardHashtag.toggleIsDeletedStatus();
+                Hashtag hashtag = externalRetrieveHashtagUseCase.getById(boardHashtag.getHashtagId());
+                hashtag.decreaseBoardUsage();
+                externalRegisterHashtagUseCase.save(hashtag);
                 registerBoardHashtagPort.save(boardHashtag);
             }
         });
@@ -151,7 +158,8 @@ public class BoardUpdateService implements UpdateBoardUseCase {
                 },
                 () -> {
                     registerBoardHashtagUseCase.registerBoardHashtag(
-                        boardHashtagDtoMapper.toDto(boardId, List.of(hashtagId))
+                        boardHashtagDtoMapper.toDto(boardId,
+                            List.of(externalRetrieveHashtagUseCase.getNameById(hashtagId)))
                     );
                 }
             );

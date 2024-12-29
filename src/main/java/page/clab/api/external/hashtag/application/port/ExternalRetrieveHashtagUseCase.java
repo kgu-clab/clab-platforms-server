@@ -7,4 +7,8 @@ public interface ExternalRetrieveHashtagUseCase {
     Hashtag getById(Long id);
 
     Hashtag getByName(String name);
+
+    Long getIdByName(String name);
+
+    String getNameById(Long id);
 }

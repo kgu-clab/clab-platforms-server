@@ -75,8 +75,8 @@ public class Board {
         }
     }
 
-    public void validateBoardHashtagRegistration(List<Long> hashtagIds) {
-        if (!isDevelopmentQna() && (hashtagIds != null && !hashtagIds.isEmpty())) {
+    public void validateBoardHashtagRegistration(List<String> hashtagNameList) {
+        if (!isDevelopmentQna() && (hashtagNameList != null && !hashtagNameList.isEmpty())) {
             throw new InvalidBoardCategoryHashtagException("개발질문 게시판에만 해시태그를 등록할 수 있습니다.");
         }
     }

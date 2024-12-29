@@ -11,5 +11,5 @@ import lombok.Setter;
 public class BoardHashtagRequestDto {
 
     private Long boardId;
-    private List<Long> hashtagIds;
+    private List<String> hashtagNameList;
 }

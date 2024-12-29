@@ -23,4 +23,14 @@ public class ExternalHashtagRetrievalService implements ExternalRetrieveHashtagU
     public Hashtag getByName(String name) {
         return retrieveHashtagUseCase.getByName(name);
     }
+
+    @Override
+    public Long getIdByName(String name) {
+        return getByName(name).getId();
+    }
+
+    @Override
+    public String getNameById(Long id) {
+        return getById(id).getName();
+    }
 }

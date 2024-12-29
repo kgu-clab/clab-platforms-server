@@ -19,10 +19,10 @@ public class BoardHashtagDtoMapper {
             .build();
     }
 
-    public BoardHashtagRequestDto toDto(Long boardId, List<Long> hashtagIdList) {
+    public BoardHashtagRequestDto toDto(Long boardId, List<String> hashtagNameList) {
         return BoardHashtagRequestDto.builder()
             .boardId(boardId)
-            .hashtagIds(hashtagIdList)
+            .hashtagNameList(hashtagNameList)
             .build();
     }
 
