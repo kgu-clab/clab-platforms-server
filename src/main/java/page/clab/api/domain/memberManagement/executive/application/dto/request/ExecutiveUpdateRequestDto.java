@@ -3,7 +3,6 @@ package page.clab.api.domain.memberManagement.executive.application.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-import page.clab.api.domain.memberManagement.executive.domain.ExecutivePosition;
 
 @Getter
 @Setter
@@ -17,9 +16,6 @@ public class ExecutiveUpdateRequestDto {
 
     @Schema(description = "분야", example = "Back-End")
     private String field;
-
-    @Schema(description = "직급", example = "PRESIDENT")
-    private ExecutivePosition position;
 
     @Schema(description = "프로필 이미지", example = "https://www.clab.page/assets/dongmin-860f3a1e.jpeg")
     private String imageUrl;

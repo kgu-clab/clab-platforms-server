@@ -21,4 +21,11 @@ public class ExternalPositionRetrievalService implements ExternalRetrievePositio
         PositionType positionType) {
         return retrievePositionPort.findByMemberIdAndYearAndPositionType(memberId, year, positionType);
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<Position> findTopByMemberIdAndYearOrderByCreatedAtDesc(String memberId, String year) {
+        return retrievePositionPort.findTopByMemberIdAndYearOrderByCreatedAtDesc(memberId, year);
+    }
+
 }

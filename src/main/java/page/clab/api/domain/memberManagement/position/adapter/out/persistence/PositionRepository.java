@@ -15,4 +15,6 @@ public interface PositionRepository extends JpaRepository<PositionJpaEntity, Lon
         PositionType positionType);
 
     List<PositionJpaEntity> findAllByMemberIdAndYearOrderByPositionTypeAsc(String memberId, String year);
+
+    Optional<PositionJpaEntity> findTopByMemberIdAndYearOrderByCreatedAtDesc(String memberId, String year);
 }

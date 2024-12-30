@@ -2,8 +2,6 @@ package page.clab.api.domain.memberManagement.executive.adapter.out.persistence;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
@@ -16,7 +14,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import page.clab.api.domain.memberManagement.executive.domain.ExecutivePosition;
 import page.clab.api.global.common.domain.BaseEntity;
 
 @Entity
@@ -46,10 +43,6 @@ public class ExecutiveJpaEntity extends BaseEntity {
 
     @Column(nullable = false)
     private String field;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ExecutivePosition position;
 
     private String imageUrl;
 

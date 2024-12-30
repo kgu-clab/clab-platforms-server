@@ -21,11 +21,7 @@ public class ExecutiveRegisterController {
 
     private final RegisterExecutiveUseCase registerExecutiveUseCase;
 
-    @Operation(summary = "[A] 운영진 등록", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
-        "position은 다음과 같이 등록 가능<br>" +
-        "- PRESIDENT : 회장<br>" +
-        "- VICE_PRESIDENT : 부회장<br>" +
-        "- GENERAL : 일반 운영진<br>")
+    @Operation(summary = "[A] 운영진 등록", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
     public ApiResponse<String> registerExecutive(

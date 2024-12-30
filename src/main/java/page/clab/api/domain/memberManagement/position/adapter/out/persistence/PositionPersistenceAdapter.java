@@ -78,4 +78,10 @@ public class PositionPersistenceAdapter implements
             .map(mapper::toDomain)
             .toList();
     }
+
+    @Override
+    public Optional<Position> findTopByMemberIdAndYearOrderByCreatedAtDesc(String memberId, String year) {
+        return repository.findTopByMemberIdAndYearOrderByCreatedAtDesc(memberId, year)
+            .map(mapper::toDomain);
+    }
 }

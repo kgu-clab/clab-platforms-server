@@ -14,19 +14,18 @@ public class ExecutiveDtoMapper {
             .name(requestDto.getName())
             .email(requestDto.getEmail())
             .field(requestDto.getField())
-            .position(requestDto.getPosition())
             .imageUrl(requestDto.getImageUrl())
             .isDeleted(false)
             .build();
     }
 
-    public ExecutiveResponseDto toDto(Executive executive) {
+    public ExecutiveResponseDto toDto(Executive executive, String position) {
         return ExecutiveResponseDto.builder()
             .id(executive.getId())
             .name(executive.getName())
             .email(executive.getEmail())
             .field(executive.getField())
-            .position(executive.getPosition())
+            .position(position)
             .imageUrl(executive.getImageUrl())
             .build();
     }

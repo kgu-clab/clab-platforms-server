@@ -20,7 +20,6 @@ public class Executive {
     private String name;
     private String email;
     private String field;
-    private ExecutivePosition position;
     private String imageUrl;
     private Boolean isDeleted;
 
@@ -28,7 +27,6 @@ public class Executive {
         Optional.ofNullable(requestDto.getName()).ifPresent(this::setName);
         Optional.ofNullable(requestDto.getEmail()).ifPresent(this::setEmail);
         Optional.ofNullable(requestDto.getField()).ifPresent(this::setField);
-        Optional.ofNullable(requestDto.getPosition()).ifPresent(this::setPosition);
         Optional.ofNullable(requestDto.getImageUrl()).ifPresent(this::setImageUrl);
     }
 
