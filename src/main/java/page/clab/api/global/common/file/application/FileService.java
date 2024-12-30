@@ -82,10 +82,10 @@ public class FileService {
     private String maxFileSize;
 
     private static final Map<Role, Set<String>> roleCategoryMap = Map.of(
-        Role.GUEST, Set.of("boards", "profiles", "activity-photos", "membership-fees"),
+        Role.GUEST, Set.of("boards", "profiles", "activity-photos", "membership-fees", "executives"),
         Role.USER,
         Set.of("boards", "profiles", "activity-photos", "membership-fees", "notices", "weekly-activities", "members",
-            "assignments", "submits"),
+            "assignments", "submits", "executives"),
         Role.ADMIN,
         Set.of("boards", "profiles", "activity-photos", "membership-fees", "notices", "weekly-activities", "members",
             "assignments", "submits", "executives"),
