@@ -10,7 +10,7 @@ public class ExecutiveResponseDto {
     private String executiveId;
     private String name;
     private String email;
-    private String field;
+    private String interests;
     private String position;
     private String imageUrl;
 }

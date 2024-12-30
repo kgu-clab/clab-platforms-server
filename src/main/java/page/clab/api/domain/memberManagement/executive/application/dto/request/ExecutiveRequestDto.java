@@ -23,7 +23,7 @@ public class ExecutiveRequestDto {
 
     @NotNull(message = "{notNull.executive.field}")
     @Schema(description = "분야", example = "Back-End")
-    private String field;
+    private String interests;
 
     @Schema(description = "프로필 이미지", example = "https://www.clab.page/assets/dongmin-860f3a1e.jpeg")
     private String imageUrl;

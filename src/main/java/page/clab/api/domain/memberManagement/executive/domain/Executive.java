@@ -19,14 +19,14 @@ public class Executive {
     private String id;
     private String name;
     private String email;
-    private String field;
+    private String interests;
     private String imageUrl;
     private Boolean isDeleted;
 
     public void update(ExecutiveUpdateRequestDto requestDto) {
         Optional.ofNullable(requestDto.getName()).ifPresent(this::setName);
         Optional.ofNullable(requestDto.getEmail()).ifPresent(this::setEmail);
-        Optional.ofNullable(requestDto.getField()).ifPresent(this::setField);
+        Optional.ofNullable(requestDto.getInterests()).ifPresent(this::setInterests);
         Optional.ofNullable(requestDto.getImageUrl()).ifPresent(this::setImageUrl);
     }
 

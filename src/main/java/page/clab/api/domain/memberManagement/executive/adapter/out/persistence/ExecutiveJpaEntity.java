@@ -42,7 +42,7 @@ public class ExecutiveJpaEntity extends BaseEntity {
     private String email;
 
     @Column(nullable = false)
-    private String field;
+    private String interests;
 
     private String imageUrl;
 

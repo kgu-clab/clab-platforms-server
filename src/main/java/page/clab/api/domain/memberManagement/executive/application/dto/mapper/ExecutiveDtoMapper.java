@@ -13,7 +13,7 @@ public class ExecutiveDtoMapper {
             .id(requestDto.getExecutiveId())
             .name(requestDto.getName())
             .email(requestDto.getEmail())
-            .field(requestDto.getField())
+            .interests(requestDto.getInterests())
             .imageUrl(requestDto.getImageUrl())
             .isDeleted(false)
             .build();
@@ -24,7 +24,7 @@ public class ExecutiveDtoMapper {
             .executiveId(executive.getId())
             .name(executive.getName())
             .email(executive.getEmail())
-            .field(executive.getField())
+            .interests(executive.getInterests())
             .position(position)
             .imageUrl(executive.getImageUrl())
             .build();
