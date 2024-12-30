@@ -65,7 +65,7 @@ public class BoardRegisterService implements RegisterBoardUseCase {
 
         Board savedBoard = registerBoardPort.save(board);
 
-        if (requestDto.getHashtagNames() != null) {
+        if (requestDto.getHashtagNames() != null && !requestDto.getHashtagNames().isEmpty()) {
             registerBoardHashtagUseCase.registerBoardHashtag(
                 boardHashtagDtoMapper.toDto(savedBoard.getId(), requestDto.getHashtagNames()));
         }
