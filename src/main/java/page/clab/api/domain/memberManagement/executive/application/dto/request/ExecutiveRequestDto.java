@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class ExecutiveRequestDto {
 
-    @NotNull(message = "{notNull.executive.id}")
+    @NotNull(message = "{notNull.executive.executiveId}")
     @Schema(description = "학번", example = "202310000")
     private String executiveId;
 
@@ -21,7 +21,7 @@ public class ExecutiveRequestDto {
     @Schema(description = "이메일", example = "clab.coreteam@gamil.com")
     private String email;
 
-    @NotNull(message = "{notNull.executive.field}")
+    @NotNull(message = "{notNull.executive.interests}")
     @Schema(description = "분야", example = "Back-End")
     private String interests;
 
