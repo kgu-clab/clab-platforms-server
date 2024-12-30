@@ -32,14 +32,16 @@ public class ExecutiveRegisterService implements RegisterExecutiveUseCase {
     }
 
     private void checkAlreadyExecutive(ExecutiveRequestDto requestDto) {
-        if (retrieveExecutivePort.existsById(requestDto.getId())) {
-            throw new ExecutiveRegistrationException("해당 운영진이 이미 존재합니다.");
+        if (retrieveExecutivePort.existsById(requestDto.getExecutiveId())) {
+            throw new ExecutiveRegistrationException("[Executive] id: " + requestDto.getExecutiveId() + "에 해당하는 운영진이 "
+                + "이미 존재합니다.");
         }
     }
 
     private void checkIsMember(ExecutiveRequestDto requestDto) {
-        if (!externalRetrieveMemberUseCase.existsById(requestDto.getId())) {
-            throw new ExecutiveRegistrationException("등록하려는 운영진이 멤버가 아닙니다.");
+        if (!externalRetrieveMemberUseCase.existsById(requestDto.getExecutiveId())) {
+            throw new ExecutiveRegistrationException("[Executive] id: " + requestDto.getExecutiveId() + "에 해당하는 운영진이 "
+                + "멤버가 아닙니다.");
         }
     }
 }

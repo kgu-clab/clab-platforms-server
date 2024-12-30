@@ -3,7 +3,6 @@ package page.clab.api.domain.memberManagement.executive.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.memberManagement.executive.application.dto.mapper.ExecutiveDtoMapper;
 import page.clab.api.domain.memberManagement.executive.application.dto.request.ExecutiveUpdateRequestDto;
 import page.clab.api.domain.memberManagement.executive.application.port.in.UpdateExecutiveUseCase;
 import page.clab.api.domain.memberManagement.executive.application.port.out.RetrieveExecutivePort;
@@ -19,8 +18,8 @@ public class ExecutiveUpdateService implements UpdateExecutiveUseCase {
 
     @Transactional
     @Override
-    public String updateExecutive(String id, ExecutiveUpdateRequestDto requestDto) {
-        Executive executive = retrieveExecutivePort.getById(id);
+    public String updateExecutive(String executiveId, ExecutiveUpdateRequestDto requestDto) {
+        Executive executive = retrieveExecutivePort.getById(executiveId);
         executive.update(requestDto);
         Executive updatedExecutive = updateExecutivePort.update(executive);
         return updatedExecutive.getId();

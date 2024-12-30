@@ -43,14 +43,14 @@ public class ExecutivePersistenceAdapter implements
     }
 
     @Override
-    public Executive getById(String id) {
-        ExecutiveJpaEntity jpaEntity = executiveRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("학번이 " + id + "인 운영진이 존재하지 않습니다."));
+    public Executive getById(String executiveId) {
+        ExecutiveJpaEntity jpaEntity = executiveRepository.findById(executiveId)
+            .orElseThrow(() -> new NotFoundException("[Executive] id: " + executiveId + "에 해당하는 운영진이 존재하지 않습니다."));
         return executiveMapper.toDomain(jpaEntity);
     }
 
     @Override
-    public Boolean existsById(String id) {
-        return executiveRepository.existsById(id);
+    public Boolean existsById(String executiveId) {
+        return executiveRepository.existsById(executiveId);
     }
 }

@@ -17,8 +17,8 @@ public class ExecutiveRemoveService implements RemoveExecutiveUseCase {
 
     @Transactional
     @Override
-    public String removeExecutive(String id) {
-        Executive executive = retrieveExecutivePort.getById(id);
+    public String removeExecutive(String executiveId) {
+        Executive executive = retrieveExecutivePort.getById(executiveId);
         executive.delete();
         registerExecutivePort.save(executive);
         return executive.getId();

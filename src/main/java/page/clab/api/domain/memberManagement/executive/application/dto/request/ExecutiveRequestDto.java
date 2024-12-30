@@ -11,7 +11,7 @@ public class ExecutiveRequestDto {
 
     @NotNull(message = "{notNull.executive.id}")
     @Schema(description = "학번", example = "202310000")
-    private String id;
+    private String executiveId;
 
     @NotNull(message = "{notNull.executive.name}")
     @Schema(description = "이름", example = "홍길동")

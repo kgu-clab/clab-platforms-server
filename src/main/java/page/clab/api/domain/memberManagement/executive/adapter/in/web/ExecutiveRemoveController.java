@@ -21,12 +21,11 @@ public class ExecutiveRemoveController {
 
     @Operation(summary = "[A] 운영진 정보 삭제", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{executiveId}")
     public ApiResponse<String> removeMember(
-        @PathVariable(name = "id") String id
+        @PathVariable(name = "executiveId") String executiveId
     ) {
-        String executiveId = removeExecutiveUseCase.removeExecutive(id);
-        return ApiResponse.success(executiveId);
+        String id = removeExecutiveUseCase.removeExecutive(executiveId);
+        return ApiResponse.success(id);
     }
-
 }

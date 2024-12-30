@@ -10,7 +10,7 @@ public class ExecutiveDtoMapper {
 
     public Executive fromDto(ExecutiveRequestDto requestDto) {
         return Executive.builder()
-            .id(requestDto.getId())
+            .id(requestDto.getExecutiveId())
             .name(requestDto.getName())
             .email(requestDto.getEmail())
             .field(requestDto.getField())
@@ -21,7 +21,7 @@ public class ExecutiveDtoMapper {
 
     public ExecutiveResponseDto toDto(Executive executive, String position) {
         return ExecutiveResponseDto.builder()
-            .id(executive.getId())
+            .executiveId(executive.getId())
             .name(executive.getName())
             .email(executive.getEmail())
             .field(executive.getField())

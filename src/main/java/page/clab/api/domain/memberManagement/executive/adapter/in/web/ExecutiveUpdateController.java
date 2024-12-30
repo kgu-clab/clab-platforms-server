@@ -23,12 +23,12 @@ public class ExecutiveUpdateController {
 
     @Operation(summary = "[A] 운영진 정보 수정", description = "ROLE_ADMIN 이상의 권한이 필요함")
     @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/{id}")
+    @PatchMapping("/{executiveId}")
     public ApiResponse<String> updateExecutive(
-        @PathVariable(name = "id") String id,
+        @PathVariable(name = "executiveId") String executiveId,
         @RequestBody ExecutiveUpdateRequestDto requestDto
     ) {
-        String executiveId = updateExecutiveUseCase.updateExecutive(id, requestDto);
-        return ApiResponse.success(executiveId);
+        String id = updateExecutiveUseCase.updateExecutive(executiveId, requestDto);
+        return ApiResponse.success(id);
     }
 }

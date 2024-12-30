@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public class ExecutiveResponseDto {
 
-    private String id;
+    private String executiveId;
     private String name;
     private String email;
     private String field;
