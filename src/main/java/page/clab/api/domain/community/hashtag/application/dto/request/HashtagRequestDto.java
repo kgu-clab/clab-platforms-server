@@ -9,6 +9,7 @@ import page.clab.api.domain.community.hashtag.domain.HashtagCategory;
 @Setter
 public class HashtagRequestDto {
 
+    @NotNull
     private String name;
 
     @NotNull

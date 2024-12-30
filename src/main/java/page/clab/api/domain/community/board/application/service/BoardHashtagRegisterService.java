@@ -25,7 +25,7 @@ public class BoardHashtagRegisterService implements RegisterBoardHashtagUseCase 
     @Override
     public Long registerBoardHashtag(BoardHashtagRequestDto requestDto) {
         Long boardId = requestDto.getBoardId();
-        for (String hashtagName : requestDto.getHashtagNameList()) {
+        for (String hashtagName : requestDto.getHashtagNames()) {
             Hashtag hashtag = externalRetrieveHashtagUseCase.getByName(hashtagName);
             BoardHashtag boardHashtag = mapper.fromDto(boardId, hashtag.getId());
             registerBoardHashtagPort.save(boardHashtag);
