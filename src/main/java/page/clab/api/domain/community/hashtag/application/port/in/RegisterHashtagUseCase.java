@@ -6,5 +6,5 @@ import page.clab.api.domain.community.hashtag.application.dto.response.HashtagRe
 
 public interface RegisterHashtagUseCase {
 
-    List<HashtagResponseDto> registerHashtag(HashtagRequestDto requestDto);
+    List<HashtagResponseDto> registerHashtag(List<HashtagRequestDto> requestDto);
 }

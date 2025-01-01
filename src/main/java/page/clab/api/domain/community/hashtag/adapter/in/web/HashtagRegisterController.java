@@ -27,7 +27,7 @@ public class HashtagRegisterController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
     public ApiResponse<List<HashtagResponseDto>> registerHashtag(
-        @Valid @RequestBody HashtagRequestDto requestDto
+        @Valid @RequestBody List<HashtagRequestDto> requestDto
     ) {
         List<HashtagResponseDto> hashTags = registerHashtagUseCase.registerHashtag(requestDto);
         return ApiResponse.success(hashTags);

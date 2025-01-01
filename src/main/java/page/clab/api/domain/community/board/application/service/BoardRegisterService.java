@@ -53,7 +53,7 @@ public class BoardRegisterService implements RegisterBoardUseCase {
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         Board board = boardDtoMapper.fromDto(requestDto, currentMemberInfo.getMemberId(), uploadedFiles);
         board.validateAccessPermissionForCreation(currentMemberInfo);
-        board.validateBoardHashtagRegistration(requestDto.getHashtagIdList());
+        board.validateBoardHashtagRegistration(requestDto.getHashtagNames());
 
         if (board.shouldNotifyForNewBoard(currentMemberInfo)) {
             externalSendNotificationUseCase.sendNotificationToMember(currentMemberInfo.getMemberId(),
@@ -65,9 +65,9 @@ public class BoardRegisterService implements RegisterBoardUseCase {
 
         Board savedBoard = registerBoardPort.save(board);
 
-        if (requestDto.getHashtagIdList() != null) {
+        if (requestDto.getHashtagNames() != null && !requestDto.getHashtagNames().isEmpty()) {
             registerBoardHashtagUseCase.registerBoardHashtag(
-                boardHashtagDtoMapper.toDto(savedBoard.getId(), requestDto.getHashtagIdList()));
+                boardHashtagDtoMapper.toDto(savedBoard.getId(), requestDto.getHashtagNames()));
         }
         return savedBoard.getCategory().getKey();
     }

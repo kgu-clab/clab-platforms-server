@@ -16,6 +16,7 @@ public class Hashtag {
 
     Long id;
     String name;
+    HashtagCategory hashtagCategory;
     Boolean isDeleted;
     Long boardUsage;
 

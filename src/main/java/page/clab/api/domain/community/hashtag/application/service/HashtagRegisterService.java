@@ -11,6 +11,7 @@ import page.clab.api.domain.community.hashtag.application.port.in.RegisterHashta
 import page.clab.api.domain.community.hashtag.application.port.in.RetrieveHashtagUseCase;
 import page.clab.api.domain.community.hashtag.application.port.out.RegisterHashtagPort;
 import page.clab.api.domain.community.hashtag.domain.Hashtag;
+import page.clab.api.domain.community.hashtag.domain.HashtagCategory;
 
 @Service
 @RequiredArgsConstructor
@@ -21,16 +22,18 @@ public class HashtagRegisterService implements RegisterHashtagUseCase {
     private final HashtagDtoMapper mapper;
 
     @Override
-    public List<HashtagResponseDto> registerHashtag(HashtagRequestDto requestDto) {
-        List<HashtagResponseDto> savedHashtagId = new ArrayList<>();
-        for (String name : requestDto.getHashtagNames()) {
+    public List<HashtagResponseDto> registerHashtag(List<HashtagRequestDto> requestDtos) {
+        List<HashtagResponseDto> savedHashtag = new ArrayList<>();
+        for (HashtagRequestDto requestDto : requestDtos) {
+            String name = requestDto.getName();
+            HashtagCategory hashtagCategory = requestDto.getHashtagCategory();
             if (retrieveHashtagUseCase.existsByName(name)) {
-                savedHashtagId.add(mapper.toDto(retrieveHashtagUseCase.getByName(name)));
+                savedHashtag.add(mapper.toDto(retrieveHashtagUseCase.getByName(name)));
             } else {
-                Hashtag hashtag = mapper.of(name);
-                savedHashtagId.add(mapper.toDto(registerHashtagPort.save(hashtag)));
+                Hashtag hashtag = mapper.of(name, hashtagCategory);
+                savedHashtag.add(mapper.toDto(registerHashtagPort.save(hashtag)));
             }
         }
-        return savedHashtagId;
+        return savedHashtag;
     }
 }

@@ -1,13 +1,17 @@
 package page.clab.api.domain.community.hashtag.application.dto.request;
 
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import page.clab.api.domain.community.hashtag.domain.HashtagCategory;
 
 @Getter
 @Setter
 public class HashtagRequestDto {
 
-    List<String> hashtagNames = new ArrayList<>();
+    @NotNull
+    private String name;
+
+    @NotNull
+    private HashtagCategory hashtagCategory;
 }

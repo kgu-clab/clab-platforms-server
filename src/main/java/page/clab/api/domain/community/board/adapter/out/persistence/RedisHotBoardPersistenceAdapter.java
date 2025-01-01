@@ -1,15 +1,14 @@
 package page.clab.api.domain.community.board.adapter.out.persistence;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.board.application.port.out.RegisterHotBoardPort;
 import page.clab.api.domain.community.board.application.port.out.RemoveHotBoardPort;
 import page.clab.api.domain.community.board.application.port.out.RetrieveHotBoardPort;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor

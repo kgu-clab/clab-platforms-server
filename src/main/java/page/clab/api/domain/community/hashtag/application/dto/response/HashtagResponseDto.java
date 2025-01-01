@@ -9,5 +9,6 @@ public class HashtagResponseDto {
 
     private Long id;
     private String name;
+    private String hashtagCategory;
     private Long boardUsageCount;
 }
