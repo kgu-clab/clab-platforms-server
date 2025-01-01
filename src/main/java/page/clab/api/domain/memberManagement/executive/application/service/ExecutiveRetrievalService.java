@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import page.clab.api.domain.memberManagement.executive.application.dto.response.
 import page.clab.api.domain.memberManagement.executive.application.port.in.RetrieveExecutiveUseCase;
 import page.clab.api.domain.memberManagement.executive.application.port.out.RetrieveExecutivePort;
 import page.clab.api.domain.memberManagement.executive.domain.Executive;
+import page.clab.api.domain.memberManagement.position.domain.PositionType;
 import page.clab.api.external.memberManagement.position.application.port.ExternalRetrievePositionUseCase;
 
 @Service
@@ -22,11 +24,6 @@ public class ExecutiveRetrievalService implements RetrieveExecutiveUseCase {
     private final RetrieveExecutivePort retrieveExecutivePort;
     private final ExternalRetrievePositionUseCase externalRetrievePositionUseCase;
     private final ExecutiveDtoMapper mapper;
-    private static final Map<String, Integer> PRIORITY = Map.of(
-        "PRESIDENT", 1,
-        "VICE_PRESIDENT", 2,
-        "OPERATION", 3
-    );
 
     @Transactional(readOnly = true)
     @Override
@@ -44,9 +41,14 @@ public class ExecutiveRetrievalService implements RetrieveExecutiveUseCase {
         return executives.stream()
             .sorted(Comparator
                 .comparing((Executive executive) ->
-                    PRIORITY.getOrDefault(positionMap.get(executive.getId()), Integer.MAX_VALUE))
+                    getPriority(positionMap.get(executive.getId())))
                 .thenComparing(Executive::getId))
             .toList();
+    }
+
+    private int getPriority(String positionKey) {
+        return Optional.ofNullable(PositionType.getPriorityByKey(positionKey))
+            .orElse(Integer.MAX_VALUE);
     }
 
     private Map<String, String> getPositionMap(List<Executive> executives) {
