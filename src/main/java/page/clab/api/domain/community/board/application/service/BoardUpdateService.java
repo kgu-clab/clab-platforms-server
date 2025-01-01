@@ -47,9 +47,9 @@ public class BoardUpdateService implements UpdateBoardUseCase {
 
         board.update(requestDto);
 
-        List<String> hashtagNameList = requestDto.getHashtagNameList();
+        List<String> hashtagNames = requestDto.getHashtagNames();
 
-        List<Long> hastagIdList = hashtagNameList.stream()
+        List<Long> hastagIdList = hashtagNames.stream()
             .map(externalRetrieveHashtagUseCase::getIdByName)
             .toList();
         handleBoardHashtagUpdate(boardId, board, hastagIdList);

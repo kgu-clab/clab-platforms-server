@@ -28,5 +28,5 @@ public class BoardUpdateRequestDto {
     private boolean wantAnonymous;
 
     @Schema(description = "해시태그 이름 리스트", example = "[\"Java\", \"Devops\"]")
-    private List<String> hashtagNameList;
+    private List<String> hashtagNames;
 }
