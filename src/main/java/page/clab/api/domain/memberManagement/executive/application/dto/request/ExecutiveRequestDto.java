@@ -18,7 +18,7 @@ public class ExecutiveRequestDto {
     private String name;
 
     @NotNull(message = "{notNull.executive.email}")
-    @Schema(description = "이메일", example = "clab.coreteam@gamil.com")
+    @Schema(description = "이메일", example = "clab.coreteam@gmail.com")
     private String email;
 
     @NotNull(message = "{notNull.executive.interests}")

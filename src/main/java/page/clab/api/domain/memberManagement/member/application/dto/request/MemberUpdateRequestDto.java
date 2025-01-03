@@ -16,7 +16,7 @@ public class MemberUpdateRequestDto {
     @Schema(description = "연락처", example = "01012345678")
     private String contact;
 
-    @Schema(description = "이메일", example = "clab.coreteam@gamil.com")
+    @Schema(description = "이메일", example = "clab.coreteam@gmail.com")
     private String email;
 
     @Schema(description = "학년", example = "1")

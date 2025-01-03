@@ -11,7 +11,7 @@ public class ExecutiveUpdateRequestDto {
     @Schema(description = "이름", example = "홍길동")
     private String name;
 
-    @Schema(description = "이메일", example = "clab.coreteam@gamil.com")
+    @Schema(description = "이메일", example = "clab.coreteam@gmail.com")
     private String email;
 
     @Schema(description = "분야", example = "Back-End")
