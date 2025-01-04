@@ -7,4 +7,6 @@ import page.clab.api.domain.memberManagement.position.domain.PositionType;
 public interface ExternalRetrievePositionUseCase {
 
     Optional<Position> findByMemberIdAndYearAndPositionType(String memberId, String year, PositionType positionType);
+
+    Optional<Position> findTopByMemberIdAndYearOrderByCreatedAtDesc(String memberId, String year);
 }

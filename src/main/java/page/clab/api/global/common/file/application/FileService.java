@@ -82,21 +82,22 @@ public class FileService {
     private String maxFileSize;
 
     private static final Map<Role, Set<String>> roleCategoryMap = Map.of(
-        Role.GUEST, Set.of("boards", "profiles", "activity-photos", "membership-fees"),
+        Role.GUEST, Set.of("boards", "profiles", "activity-photos", "membership-fees", "executives"),
         Role.USER,
         Set.of("boards", "profiles", "activity-photos", "membership-fees", "notices", "weekly-activities", "members",
-            "assignments", "submits"),
+            "assignments", "submits", "executives"),
         Role.ADMIN,
         Set.of("boards", "profiles", "activity-photos", "membership-fees", "notices", "weekly-activities", "members",
-            "assignments", "submits"),
+            "assignments", "submits", "executives"),
         Role.SUPER,
         Set.of("boards", "profiles", "activity-photos", "membership-fees", "notices", "weekly-activities", "members",
-            "assignments", "submits")
+            "assignments", "submits", "executives")
     );
 
     private final Map<String, BiFunction<String, Authentication, Boolean>> categoryAccessMap = Map.of(
         "boards", (url, auth) -> true,
         "profiles", (url, auth) -> true,
+        "executives", (url, auth) -> true,
         "activity-photos", (url, auth) -> true,
         "membership-fees", (url, auth) -> true,
         "notices", this::isNonSubmitCategoryAccessible,
@@ -281,7 +282,7 @@ public class FileService {
     }
 
     private void checkAndRemoveExistingFile(String path) {
-        List<String> validPrefixes = Arrays.asList("profiles", "members/", "assignments");
+        List<String> validPrefixes = Arrays.asList("profiles", "members/", "assignments", "executives");
         boolean shouldDelete = validPrefixes.stream().anyMatch(path::startsWith);
         if (shouldDelete) {
             UploadedFile fileToDelete = uploadedFileService.getUniqueUploadedFileByCategory(path);
@@ -300,7 +301,7 @@ public class FileService {
     }
 
     public boolean isUserAccessibleByCategory(String category, String url, Authentication authentication) {
-        if (category.equals("activity-photos")) {
+        if (category.equals("activity-photos") || category.equals("executives")) {
             return true;
         }
         if (AuthUtil.isUserUnAuthenticated(authentication)) {

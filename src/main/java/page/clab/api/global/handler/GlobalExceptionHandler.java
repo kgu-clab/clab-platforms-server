@@ -63,6 +63,7 @@ import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanNot
 import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanSuspensionException;
 import page.clab.api.domain.library.bookLoanRecord.application.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.library.bookLoanRecord.application.exception.OverdueException;
+import page.clab.api.domain.memberManagement.executive.application.exception.ExecutiveRegistrationException;
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberContactException;
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberEmailException;
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberIdException;
@@ -127,7 +128,8 @@ public class GlobalExceptionHandler {
         UnknownPathException.class,
         AssignmentBoardHasNoDueDateTimeException.class,
         FeedbackBoardHasNoContentException.class,
-        InvalidBoardCategoryHashtagException.class
+        InvalidBoardCategoryHashtagException.class,
+        ExecutiveRegistrationException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);

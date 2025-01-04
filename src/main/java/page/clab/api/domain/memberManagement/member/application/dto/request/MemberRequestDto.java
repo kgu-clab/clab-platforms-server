@@ -27,7 +27,7 @@ public class MemberRequestDto {
     private String contact;
 
     @NotNull(message = "{notNull.member.email}")
-    @Schema(description = "이메일", example = "clab.coreteam@gamil.com", required = true)
+    @Schema(description = "이메일", example = "clab.coreteam@gmail.com", required = true)
     private String email;
 
     @NotNull(message = "{notNull.member.department}")
