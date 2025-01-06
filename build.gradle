@@ -70,7 +70,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok' // 롬복
     annotationProcessor 'org.projectlombok:lombok' // 롬복
     implementation 'com.google.code.gson:gson:2.11.0' // JSON 라이브러리
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0' // Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.1' // Swagger
     implementation 'commons-io:commons-io:2.18.0' // Apache Commons IO
     implementation 'com.google.guava:guava:33.3.1-jre' // Google Core Libraries For Java
     implementation 'org.springframework.boot:spring-boot-starter-mail' // Spring Mail
