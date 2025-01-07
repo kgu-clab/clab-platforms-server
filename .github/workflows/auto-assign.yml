@@ -1,0 +1,25 @@
+name: Auto Assignees and PR Reviewers
+
+on:
+  issues:
+    types: [ opened ]
+  pull_request:
+    types: [ opened, ready_for_review ]
+
+jobs:
+  auto_assign:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign Issue assignees
+        if: ${{ github.event_name == 'issues' }}
+        uses: actions-ecosystem/action-add-assignees@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          assignees: ${{ github.actor }}
+
+      - name: Assign PR reviewers
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: hkusu/review-assign-action@v1
+        with:
+          assignees: ${{ github.actor }}
+          reviewers: mingmingmon, SongJaeHoonn, limehee
