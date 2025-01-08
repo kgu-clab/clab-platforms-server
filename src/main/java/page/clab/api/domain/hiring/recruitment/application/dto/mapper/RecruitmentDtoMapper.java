@@ -25,6 +25,7 @@ public class RecruitmentDtoMapper {
     public RecruitmentResponseDto toDto(Recruitment recruitment) {
         return RecruitmentResponseDto.builder()
             .id(recruitment.getId())
+            .recruitmentTitle(recruitment.getRecruitmentTitle())
             .startDate(recruitment.getStartDate())
             .endDate(recruitment.getEndDate())
             .applicationType(recruitment.getApplicationType())
