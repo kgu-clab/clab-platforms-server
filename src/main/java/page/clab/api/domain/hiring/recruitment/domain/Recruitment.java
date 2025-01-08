@@ -27,6 +27,7 @@ public class Recruitment {
     private String recruitmentDetail;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private String recruitmentSchedule;
     private ApplicationType applicationType;
     private String description;
     private String target;
@@ -39,6 +40,7 @@ public class Recruitment {
         Optional.ofNullable(recruitmentUpdateRequestDto.getRecruitmentDetail()).ifPresent(this::setRecruitmentDetail);
         Optional.ofNullable(recruitmentUpdateRequestDto.getStartDate()).ifPresent(this::setStartDate);
         Optional.ofNullable(recruitmentUpdateRequestDto.getEndDate()).ifPresent(this::setEndDate);
+        Optional.ofNullable(recruitmentUpdateRequestDto.getRecruitmentSchedule()).ifPresent(this::setRecruitmentSchedule);
         Optional.ofNullable(recruitmentUpdateRequestDto.getApplicationType()).ifPresent(this::setApplicationType);
         Optional.ofNullable(recruitmentUpdateRequestDto.getDescription()).ifPresent(this::setDescription);
         Optional.ofNullable(recruitmentUpdateRequestDto.getTarget()).ifPresent(this::setTarget);

@@ -22,6 +22,9 @@ public class RecruitmentUpdateRequestDto {
     @Schema(description = "모집 종료일", example = "2023-11-08T00:00:00")
     private LocalDateTime endDate;
 
+    @Schema(description = "모집 일정", example = "대면 면접 | 09월 10일(화)")
+    private String recruitmentSchedule;
+
     @Schema(description = "구분", example = "CORE_TEAM")
     private ApplicationType applicationType;
 

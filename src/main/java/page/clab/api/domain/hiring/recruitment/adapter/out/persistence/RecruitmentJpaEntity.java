@@ -52,6 +52,10 @@ public class RecruitmentJpaEntity extends BaseEntity {
     private LocalDateTime endDate;
 
     @Column(nullable = false)
+    @Size(min = 1, max = 10000, message = "{size.recruitment.schedule}")
+    private String recruitmentSchedule;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ApplicationType applicationType;
 
