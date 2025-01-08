@@ -38,6 +38,14 @@ public class RecruitmentJpaEntity extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
+    @Size(min = 1, max = 100, message = "{size.recruitment.title}")
+    private String recruitmentTitle;
+
+    @Column(nullable = false)
+    @Size(min = 1, max = 10000, message = "{size.recruitment.detail}")
+    private String recruitmentDetail;
+
+    @Column(nullable = false)
     private LocalDateTime startDate;
 
     @Column(nullable = false)
@@ -46,6 +54,10 @@ public class RecruitmentJpaEntity extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ApplicationType applicationType;
+
+    @Column(nullable = false)
+    @Size(min = 1, max = 10000, message = "{size.recruitment.description}")
+    private String description;
 
     @Column(nullable = false)
     @Size(min = 1, message = "{size.recruitment.target}")

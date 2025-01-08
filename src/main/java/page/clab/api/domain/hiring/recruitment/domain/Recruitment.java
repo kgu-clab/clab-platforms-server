@@ -23,18 +23,24 @@ import page.clab.api.global.exception.InvalidDateRangeException;
 public class Recruitment {
 
     private Long id;
+    private String recruitmentTitle;
+    private String recruitmentDetail;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private ApplicationType applicationType;
+    private String description;
     private String target;
     private RecruitmentStatus status;
     private Boolean isDeleted;
     private LocalDateTime updatedAt;
 
     public void update(RecruitmentUpdateRequestDto recruitmentUpdateRequestDto) {
+        Optional.ofNullable(recruitmentUpdateRequestDto.getRecruitmentTitle()).ifPresent(this::setRecruitmentTitle);
+        Optional.ofNullable(recruitmentUpdateRequestDto.getRecruitmentDetail()).ifPresent(this::setRecruitmentDetail);
         Optional.ofNullable(recruitmentUpdateRequestDto.getStartDate()).ifPresent(this::setStartDate);
         Optional.ofNullable(recruitmentUpdateRequestDto.getEndDate()).ifPresent(this::setEndDate);
         Optional.ofNullable(recruitmentUpdateRequestDto.getApplicationType()).ifPresent(this::setApplicationType);
+        Optional.ofNullable(recruitmentUpdateRequestDto.getDescription()).ifPresent(this::setDescription);
         Optional.ofNullable(recruitmentUpdateRequestDto.getTarget()).ifPresent(this::setTarget);
     }
 
