@@ -2,6 +2,7 @@ package page.clab.api.domain.hiring.recruitment.application.dto.mapper;
 
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.hiring.recruitment.application.dto.request.RecruitmentRequestDto;
+import page.clab.api.domain.hiring.recruitment.application.dto.response.RecruitmentDetailsResponseDto;
 import page.clab.api.domain.hiring.recruitment.application.dto.response.RecruitmentEndDateResponseDto;
 import page.clab.api.domain.hiring.recruitment.application.dto.response.RecruitmentResponseDto;
 import page.clab.api.domain.hiring.recruitment.domain.Recruitment;
@@ -39,6 +40,21 @@ public class RecruitmentDtoMapper {
         return RecruitmentEndDateResponseDto.builder()
             .id(recruitment.getId())
             .applicationType(recruitment.getApplicationType())
+            .build();
+    }
+
+    public RecruitmentDetailsResponseDto toDetailsDto(Recruitment recruitment) {
+        return RecruitmentDetailsResponseDto.builder()
+            .id(recruitment.getId())
+            .recruitmentTitle(recruitment.getRecruitmentTitle())
+            .recruitmentDetail(recruitment.getRecruitmentDetail())
+            .startDate(recruitment.getStartDate())
+            .endDate(recruitment.getEndDate())
+            .applicationType(recruitment.getApplicationType())
+            .description(recruitment.getDescription())
+            .target(recruitment.getTarget())
+            .status(recruitment.getStatus().getDescription())
+            .updatedAt(recruitment.getUpdatedAt())
             .build();
     }
 }
