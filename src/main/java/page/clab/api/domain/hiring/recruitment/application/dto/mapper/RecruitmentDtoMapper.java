@@ -11,9 +11,12 @@ public class RecruitmentDtoMapper {
 
     public Recruitment fromDto(RecruitmentRequestDto requestDto) {
         return Recruitment.builder()
+            .recruitmentTitle(requestDto.getRecruitmentTitle())
+            .recruitmentDetail(requestDto.getRecruitmentDetail())
             .startDate(requestDto.getStartDate())
             .endDate(requestDto.getEndDate())
             .applicationType(requestDto.getApplicationType())
+            .description(requestDto.getDescription())
             .target(requestDto.getTarget())
             .isDeleted(false)
             .build();
