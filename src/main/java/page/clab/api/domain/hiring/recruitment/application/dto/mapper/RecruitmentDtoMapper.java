@@ -18,7 +18,7 @@ public class RecruitmentDtoMapper {
             .endDate(requestDto.getEndDate())
             .recruitmentSchedule(requestDto.getRecruitmentSchedule())
             .applicationType(requestDto.getApplicationType())
-            .description(requestDto.getDescription())
+            .recruitmentDescription(requestDto.getRecruitmentDescription())
             .target(requestDto.getTarget())
             .isDeleted(false)
             .build();
@@ -53,7 +53,7 @@ public class RecruitmentDtoMapper {
             .endDate(recruitment.getEndDate())
             .recruitmentSchedule(recruitment.getRecruitmentSchedule())
             .applicationType(recruitment.getApplicationType())
-            .description(recruitment.getDescription())
+            .recruitmentDescription(recruitment.getRecruitmentDescription())
             .target(recruitment.getTarget())
             .status(recruitment.getStatus().getDescription())
             .updatedAt(recruitment.getUpdatedAt())

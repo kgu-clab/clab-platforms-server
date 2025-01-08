@@ -29,7 +29,7 @@ public class Recruitment {
     private LocalDateTime endDate;
     private String recruitmentSchedule;
     private ApplicationType applicationType;
-    private String description;
+    private String recruitmentDescription;
     private String target;
     private RecruitmentStatus status;
     private Boolean isDeleted;
@@ -42,7 +42,7 @@ public class Recruitment {
         Optional.ofNullable(recruitmentUpdateRequestDto.getEndDate()).ifPresent(this::setEndDate);
         Optional.ofNullable(recruitmentUpdateRequestDto.getRecruitmentSchedule()).ifPresent(this::setRecruitmentSchedule);
         Optional.ofNullable(recruitmentUpdateRequestDto.getApplicationType()).ifPresent(this::setApplicationType);
-        Optional.ofNullable(recruitmentUpdateRequestDto.getDescription()).ifPresent(this::setDescription);
+        Optional.ofNullable(recruitmentUpdateRequestDto.getRecruitmentDescription()).ifPresent(this::setRecruitmentDescription);
         Optional.ofNullable(recruitmentUpdateRequestDto.getTarget()).ifPresent(this::setTarget);
     }
 

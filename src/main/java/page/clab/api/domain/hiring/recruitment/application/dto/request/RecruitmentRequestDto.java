@@ -37,7 +37,7 @@ public class RecruitmentRequestDto {
 
     @NotNull(message = "{notNull.recruitment.description}")
     @Schema(description = "설명", example = "실무에 가까운 경험을 쌓을 수 있어요.", required = true)
-    private String description;
+    private String recruitmentDescription;
 
     @NotNull(message = "{notNull.recruitment.target}")
     @Schema(description = "대상", example = "2~3학년", required = true)

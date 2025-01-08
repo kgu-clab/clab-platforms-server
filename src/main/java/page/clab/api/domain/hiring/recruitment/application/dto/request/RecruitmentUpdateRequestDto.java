@@ -29,7 +29,7 @@ public class RecruitmentUpdateRequestDto {
     private ApplicationType applicationType;
 
     @Schema(description = "설명", example = "실무에 가까운 경험을 쌓을 수 있어요.")
-    private String description;
+    private String recruitmentDescription;
 
     @Schema(description = "대상", example = "2~3학년")
     private String target;

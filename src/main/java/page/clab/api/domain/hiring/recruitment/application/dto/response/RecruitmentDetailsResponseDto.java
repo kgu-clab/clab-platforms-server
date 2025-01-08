@@ -16,7 +16,7 @@ public class RecruitmentDetailsResponseDto {
     private LocalDateTime endDate;
     private String recruitmentSchedule;
     private ApplicationType applicationType;
-    private String description;
+    private String recruitmentDescription;
     private String target;
     private String status;
     private LocalDateTime updatedAt;

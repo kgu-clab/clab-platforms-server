@@ -61,7 +61,7 @@ public class RecruitmentJpaEntity extends BaseEntity {
 
     @Column(nullable = false)
     @Size(min = 1, max = 10000, message = "{size.recruitment.description}")
-    private String description;
+    private String recruitmentDescription;
 
     @Column(nullable = false)
     @Size(min = 1, message = "{size.recruitment.target}")
