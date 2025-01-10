@@ -26,7 +26,8 @@ public class SecurityConstants {
         "/api/v1/work-experiences", "/api/v1/work-experiences/**",
         "/api/v1/products", "/api/v1/products/**",
         "/api/v1/reviews", "/api/v1/reviews/**",
-        "/api/v1/activity-photos", "/api/v1/activity-photos/**"
+        "/api/v1/activity-photos", "/api/v1/activity-photos/**",
+        "/api/v1/executive"
     };
 
     public static final String[] PERMIT_ALL_API_ENDPOINTS_POST = {
