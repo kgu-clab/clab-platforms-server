@@ -10,13 +10,13 @@ import page.clab.api.domain.hiring.application.domain.ApplicationType;
 public class RecruitmentDetailsResponseDto {
 
     private Long id;
-    private String recruitmentTitle;
-    private String recruitmentDetail;
+    private String title;
+    private String teamIntroduction;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private String recruitmentSchedule;
+    private String processTimeline;
     private ApplicationType applicationType;
-    private String recruitmentDescription;
+    private String jobDescription;
     private String target;
     private String status;
     private LocalDateTime updatedAt;

@@ -23,26 +23,26 @@ import page.clab.api.global.exception.InvalidDateRangeException;
 public class Recruitment {
 
     private Long id;
-    private String recruitmentTitle;
-    private String recruitmentDetail;
+    private String title;
+    private String teamIntroduction;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private String recruitmentSchedule;
+    private String processTimeline;
     private ApplicationType applicationType;
-    private String recruitmentDescription;
+    private String jobDescription;
     private String target;
     private RecruitmentStatus status;
     private Boolean isDeleted;
     private LocalDateTime updatedAt;
 
     public void update(RecruitmentUpdateRequestDto recruitmentUpdateRequestDto) {
-        Optional.ofNullable(recruitmentUpdateRequestDto.getRecruitmentTitle()).ifPresent(this::setRecruitmentTitle);
-        Optional.ofNullable(recruitmentUpdateRequestDto.getRecruitmentDetail()).ifPresent(this::setRecruitmentDetail);
+        Optional.ofNullable(recruitmentUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
+        Optional.ofNullable(recruitmentUpdateRequestDto.getTeamIntroduction()).ifPresent(this::setTeamIntroduction);
         Optional.ofNullable(recruitmentUpdateRequestDto.getStartDate()).ifPresent(this::setStartDate);
         Optional.ofNullable(recruitmentUpdateRequestDto.getEndDate()).ifPresent(this::setEndDate);
-        Optional.ofNullable(recruitmentUpdateRequestDto.getRecruitmentSchedule()).ifPresent(this::setRecruitmentSchedule);
+        Optional.ofNullable(recruitmentUpdateRequestDto.getProcessTimeline()).ifPresent(this::setProcessTimeline);
         Optional.ofNullable(recruitmentUpdateRequestDto.getApplicationType()).ifPresent(this::setApplicationType);
-        Optional.ofNullable(recruitmentUpdateRequestDto.getRecruitmentDescription()).ifPresent(this::setRecruitmentDescription);
+        Optional.ofNullable(recruitmentUpdateRequestDto.getJobDescription()).ifPresent(this::setJobDescription);
         Optional.ofNullable(recruitmentUpdateRequestDto.getTarget()).ifPresent(this::setTarget);
     }
 
