@@ -38,14 +38,30 @@ public class RecruitmentJpaEntity extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
+    @Size(min = 1, max = 100, message = "{size.recruitment.title}")
+    private String title;
+
+    @Column(nullable = false)
+    @Size(min = 1, max = 10000, message = "{size.recruitment.teamIntroduction}")
+    private String teamIntroduction;
+
+    @Column(nullable = false)
     private LocalDateTime startDate;
 
     @Column(nullable = false)
     private LocalDateTime endDate;
 
     @Column(nullable = false)
+    @Size(min = 1, max = 10000, message = "{size.recruitment.processTimeline}")
+    private String processTimeline;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ApplicationType applicationType;
+
+    @Column(nullable = false)
+    @Size(min = 1, max = 10000, message = "{size.recruitment.jobDescription}")
+    private String jobDescription;
 
     @Column(nullable = false)
     @Size(min = 1, message = "{size.recruitment.target}")

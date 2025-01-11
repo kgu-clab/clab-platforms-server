@@ -18,6 +18,7 @@ public class SecurityConstants {
     public static final String[] PERMIT_ALL_API_ENDPOINTS_GET = {
         "/api/v1/applications/{recruitmentId}/{studentId}",
         "/api/v1/recruitments", "/api/v1/recruitments/recent-week",
+        "/api/v1/recruitments/{recruitmentId}",
         "/api/v1/news", "/api/v1/news/**",
         "/api/v1/blogs", "/api/v1/blogs/**",
         "/api/v1/positions", "/api/v1/positions/**",

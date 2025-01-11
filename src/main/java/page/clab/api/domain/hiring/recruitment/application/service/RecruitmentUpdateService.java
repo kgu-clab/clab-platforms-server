@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.hiring.recruitment.application.dto.request.RecruitmentUpdateRequestDto;
-import page.clab.api.domain.hiring.recruitment.application.port.in.RetrieveRecruitmentUseCase;
 import page.clab.api.domain.hiring.recruitment.application.port.in.UpdateRecruitmentUseCase;
+import page.clab.api.domain.hiring.recruitment.application.port.out.RetrieveRecruitmentPort;
 import page.clab.api.domain.hiring.recruitment.application.port.out.UpdateRecruitmentPort;
 import page.clab.api.domain.hiring.recruitment.domain.Recruitment;
 
@@ -13,14 +13,14 @@ import page.clab.api.domain.hiring.recruitment.domain.Recruitment;
 @RequiredArgsConstructor
 public class RecruitmentUpdateService implements UpdateRecruitmentUseCase {
 
-    private final RetrieveRecruitmentUseCase retrieveRecruitmentUseCase;
+    private final RetrieveRecruitmentPort retrieveRecruitmentPort;
     private final UpdateRecruitmentPort updateRecruitmentPort;
     private final RecruitmentStatusUpdater recruitmentStatusUpdater;
 
     @Transactional
     @Override
     public Long updateRecruitment(Long recruitmentId, RecruitmentUpdateRequestDto requestDto) {
-        Recruitment recruitment = retrieveRecruitmentUseCase.getById(recruitmentId);
+        Recruitment recruitment = retrieveRecruitmentPort.getById(recruitmentId);
         recruitment.update(requestDto);
         recruitmentStatusUpdater.updateRecruitmentStatus(recruitment);
         recruitment.validateDateRange();

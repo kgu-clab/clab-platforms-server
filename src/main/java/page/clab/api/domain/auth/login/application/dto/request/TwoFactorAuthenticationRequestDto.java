@@ -9,11 +9,11 @@ import lombok.Setter;
 @Setter
 public class TwoFactorAuthenticationRequestDto {
 
-    @NotNull(message = "{notNull.twoFactorAuthenticationRequestDto.memberId}")
+    @NotNull(message = "{notNull.twoFactorAuthentication.memberId}")
     @Schema(description = "학번", example = "202310000", required = true)
     private String memberId;
 
-    @NotNull(message = "{notNull.twoFactorAuthenticationRequestDto.totp}")
+    @NotNull(message = "{notNull.twoFactorAuthentication.totp}")
     @Schema(description = "TOTP", example = "123456", required = true)
     private String totp;
 }

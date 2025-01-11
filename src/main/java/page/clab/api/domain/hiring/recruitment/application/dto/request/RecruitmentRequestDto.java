@@ -11,6 +11,14 @@ import page.clab.api.domain.hiring.application.domain.ApplicationType;
 @Setter
 public class RecruitmentRequestDto {
 
+    @NotNull(message = "{notNull.recruitment.title}")
+    @Schema(description = "모집 공고 제목", example = "C-Lab Core Team 3기 모집", required = true)
+    private String title;
+
+    @NotNull(message = "{notNull.recruitment.teamIntroduction}")
+    @Schema(description = "모집 공고 소개", example = "C-Lab Core Team 3기 모집", required = true)
+    private String teamIntroduction;
+
     @NotNull(message = "{notNull.recruitment.startDate}")
     @Schema(description = "모집 시작일", example = "2023-11-06T00:00:00", required = true)
     private LocalDateTime startDate;
@@ -19,9 +27,17 @@ public class RecruitmentRequestDto {
     @Schema(description = "모집 종료일", example = "2023-11-08T00:00:00", required = true)
     private LocalDateTime endDate;
 
+    @NotNull(message = "{notNull.recruitment.processTimeline}")
+    @Schema(description = "모집 일정", example = "대면 면접 | 09월 10일(화)", required = true)
+    private String processTimeline;
+
     @NotNull(message = "{notNull.recruitment.applicationType}")
     @Schema(description = "구분", example = "CORE_TEAM", required = true)
     private ApplicationType applicationType;
+
+    @NotNull(message = "{notNull.recruitment.jobDescription}")
+    @Schema(description = "설명", example = "실무에 가까운 경험을 쌓을 수 있어요.", required = true)
+    private String jobDescription;
 
     @NotNull(message = "{notNull.recruitment.target}")
     @Schema(description = "대상", example = "2~3학년", required = true)

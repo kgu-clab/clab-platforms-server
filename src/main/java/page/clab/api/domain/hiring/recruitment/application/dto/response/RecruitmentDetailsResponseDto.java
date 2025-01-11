@@ -7,13 +7,16 @@ import page.clab.api.domain.hiring.application.domain.ApplicationType;
 
 @Getter
 @Builder
-public class RecruitmentResponseDto {
+public class RecruitmentDetailsResponseDto {
 
     private Long id;
     private String title;
+    private String teamIntroduction;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private String processTimeline;
     private ApplicationType applicationType;
+    private String jobDescription;
     private String target;
     private String status;
     private LocalDateTime updatedAt;
