@@ -21,7 +21,7 @@ public class OpenRecruitmentsRetrievalController {
 
     @Operation(summary = "현재 모집 중인 모집 공고 목록", description = "ROLE_ANONYMOUS 이상의 권한이 필요함")
     @GetMapping("/open")
-    public ApiResponse<List<RecruitmentOpenResponseDto>> retrieveRecruitmentsByEndDate() {
+    public ApiResponse<List<RecruitmentOpenResponseDto>> retrieveOpenRecruitments() {
         List<RecruitmentOpenResponseDto> recruitments = retrieveOpenRecruitmentsUseCase.retrieveOpenRecruitments();
         return ApiResponse.success(recruitments);
     }
