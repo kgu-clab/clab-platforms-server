@@ -8,6 +8,7 @@ import page.clab.api.domain.hiring.recruitment.application.port.out.RegisterRecr
 import page.clab.api.domain.hiring.recruitment.application.port.out.RetrieveRecruitmentPort;
 import page.clab.api.domain.hiring.recruitment.application.port.out.UpdateRecruitmentPort;
 import page.clab.api.domain.hiring.recruitment.domain.Recruitment;
+import page.clab.api.domain.hiring.recruitment.domain.RecruitmentStatus;
 import page.clab.api.global.exception.NotFoundException;
 
 @Component
@@ -59,6 +60,13 @@ public class RecruitmentPersistenceAdapter implements
     @Override
     public List<Recruitment> findByEndDateBetween(LocalDateTime weekAgo, LocalDateTime now) {
         return repository.findByEndDateBetween(weekAgo, now).stream()
+            .map(mapper::toDomain)
+            .toList();
+    }
+
+    @Override
+    public List<Recruitment> findByStatus(RecruitmentStatus status) {
+        return repository.findByStatus(status).stream()
             .map(mapper::toDomain)
             .toList();
     }

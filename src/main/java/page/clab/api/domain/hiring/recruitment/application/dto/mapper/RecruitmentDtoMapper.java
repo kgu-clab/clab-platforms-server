@@ -2,6 +2,7 @@ package page.clab.api.domain.hiring.recruitment.application.dto.mapper;
 
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.hiring.recruitment.application.dto.request.RecruitmentRequestDto;
+import page.clab.api.domain.hiring.recruitment.application.dto.response.RecruitmentOpenResponseDto;
 import page.clab.api.domain.hiring.recruitment.application.dto.response.RecruitmentDetailsResponseDto;
 import page.clab.api.domain.hiring.recruitment.application.dto.response.RecruitmentEndDateResponseDto;
 import page.clab.api.domain.hiring.recruitment.application.dto.response.RecruitmentResponseDto;
@@ -57,6 +58,13 @@ public class RecruitmentDtoMapper {
             .target(recruitment.getTarget())
             .status(recruitment.getStatus().getDescription())
             .updatedAt(recruitment.getUpdatedAt())
+            .build();
+    }
+
+    public RecruitmentOpenResponseDto toOpenDto(Recruitment recruitment) {
+        return RecruitmentOpenResponseDto.builder()
+            .id(recruitment.getId())
+            .applicationType(recruitment.getApplicationType())
             .build();
     }
 }
