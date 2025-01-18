@@ -22,7 +22,7 @@ public class RecruitmentRemoveController {
     @Operation(summary = "[S] 모집 공고 삭제", description = "ROLE_SUPER 이상의 권한이 필요함")
     @PreAuthorize("hasRole('SUPER')")
     @DeleteMapping("/{recruitmentId}")
-    public ApiResponse<Long> removeBoard(
+    public ApiResponse<Long> removeRecruitment(
         @PathVariable(name = "recruitmentId") Long recruitmentId
     ) {
         Long id = removeRecruitmentUseCase.removeRecruitment(recruitmentId);
