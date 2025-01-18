@@ -172,6 +172,9 @@ public class FileService {
         for (Long segment : additionalSegments) {
             pathBuilder.append(File.separator).append(segment);
         }
+        if (checkExecutivesDirectory(baseDirectory)) {
+            return pathBuilder.toString();
+        }
         pathBuilder.append(File.separator).append(currentMemberId);
         return pathBuilder.toString();
     }
@@ -194,6 +197,10 @@ public class FileService {
                 validateSubmitPath(pathParts);
                 break;
         }
+    }
+
+    private boolean checkExecutivesDirectory(String baseDirectory) {
+        return baseDirectory.equals("executives");
     }
 
     private void validateNoticePath(String[] pathParts) throws InvalidPathVariableException, PermissionDeniedException {
