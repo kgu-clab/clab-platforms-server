@@ -73,8 +73,11 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
         List<MemberJpaEntity> members = queryFactory
             .selectFrom(qMember)
-            .where(birthdayInMonth(month))
-            .orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]))
+            .where(
+                birthdayInMonth(month)
+                    .and(qMember.name.ne("관리자"))
+                    .and(qMember.role.ne(Role.GUEST))
+            )            .orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
