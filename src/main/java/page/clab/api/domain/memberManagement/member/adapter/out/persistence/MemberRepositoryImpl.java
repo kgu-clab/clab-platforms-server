@@ -75,7 +75,6 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
             .selectFrom(qMember)
             .where(
                 birthdayInMonth(month)
-                    .and(qMember.name.ne("관리자"))
                     .and(qMember.role.ne(Role.GUEST))
             )
             .orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]))
