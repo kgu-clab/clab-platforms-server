@@ -77,7 +77,8 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 birthdayInMonth(month)
                     .and(qMember.name.ne("관리자"))
                     .and(qMember.role.ne(Role.GUEST))
-            )            .orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]))
+            )
+            .orderBy(orderSpecifiers.toArray(new OrderSpecifier[0]))
             .offset(pageable.getOffset())
             .limit(pageable.getPageSize())
             .fetch();
