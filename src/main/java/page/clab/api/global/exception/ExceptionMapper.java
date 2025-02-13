@@ -1,9 +1,12 @@
 package page.clab.api.global.exception;
 
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.MetadataException;
 import com.google.gson.stream.MalformedJsonException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import jakarta.mail.MessagingException;
 import jakarta.validation.ConstraintViolationException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,12 +25,15 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import page.clab.api.global.common.file.exception.InvalidFileAttributeException;
 
 public class ExceptionMapper {
 
@@ -40,6 +46,7 @@ public class ExceptionMapper {
         exceptionToErrorCodeMap.put(IllegalAccessException.class, ErrorCode.ILLEGAL_ACCESS);
         exceptionToErrorCodeMap.put(IllegalArgumentException.class, ErrorCode.ILLEGAL_ARGUMENT);
         exceptionToErrorCodeMap.put(InvalidDataAccessApiUsageException.class, ErrorCode.INVALID_DATA_ACCESS);
+        exceptionToErrorCodeMap.put(InvalidFileAttributeException.class, ErrorCode.INVALID_FILE_ATTRIBUTE);
         exceptionToErrorCodeMap.put(MalformedJsonException.class, ErrorCode.MALFORMED_JSON);
         exceptionToErrorCodeMap.put(MethodArgumentNotValidException.class, ErrorCode.METHOD_ARGUMENT_NOT_VALID);
         exceptionToErrorCodeMap.put(MethodArgumentTypeMismatchException.class, ErrorCode.TYPE_MISMATCH);
@@ -51,6 +58,7 @@ public class ExceptionMapper {
         exceptionToErrorCodeMap.put(io.jsonwebtoken.security.SecurityException.class, ErrorCode.JWT_SECURITY_ERROR);
 
         // 401 UNAUTHORIZED Errors
+        exceptionToErrorCodeMap.put(AuthenticationException.class, ErrorCode.AUTHENTICATION_NOT_FOUND);
         exceptionToErrorCodeMap.put(BadCredentialsException.class, ErrorCode.BAD_CREDENTIALS);
         exceptionToErrorCodeMap.put(ExpiredJwtException.class, ErrorCode.EXPIRED_JWT);
         exceptionToErrorCodeMap.put(MalformedJwtException.class, ErrorCode.MALFORMED_JWT);
@@ -82,6 +90,10 @@ public class ExceptionMapper {
         exceptionToErrorCodeMap.put(SecurityException.class, ErrorCode.SECURITY_ERROR);
         exceptionToErrorCodeMap.put(TransactionSystemException.class, ErrorCode.TRANSACTION_SYSTEM_ERROR);
         exceptionToErrorCodeMap.put(UnexpectedRollbackException.class, ErrorCode.UNEXPECTED_ROLLBACK);
+        exceptionToErrorCodeMap.put(MessagingException.class, ErrorCode.MESSAGING_ERROR);
+        exceptionToErrorCodeMap.put(ImageProcessingException.class, ErrorCode.IMAGE_PROCESSING_ERROR);
+        exceptionToErrorCodeMap.put(MetadataException.class, ErrorCode.METADATA_ERROR);
+        exceptionToErrorCodeMap.put(WebClientRequestException.class, ErrorCode.WEB_CLIENT_REQUEST_ERROR);
     }
 
     /**
