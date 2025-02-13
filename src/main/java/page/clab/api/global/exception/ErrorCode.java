@@ -85,6 +85,14 @@ public enum ErrorCode {
     LEADER_STATUS_CHANGE_NOT_ALLOWED(HttpStatus.CONFLICT, "리더의 상태는 변경할 수 없습니다."),
     SINGLE_LEADER_MODIFICATION_NOT_ALLOWED(HttpStatus.CONFLICT, "그룹에는 최소 한 명의 리더가 있어야 하므로, 리더의 역할을 변경할 수 없습니다."),
     ACCUSE_TARGET_TYPE_MISMATCH(HttpStatus.CONFLICT, "신고 대상의 유형이 일치하지 않습니다."),
+    BOOK_ALREADY_BORROWED(HttpStatus.CONFLICT, "이미 대출 중인 도서입니다."),
+    BOOK_BORROWER_MISMATCH(HttpStatus.CONFLICT, "대출한 도서와 회원 정보가 일치하지 않습니다."),
+    BOOK_ALREADY_RETURNED(HttpStatus.CONFLICT, "이미 반납된 도서입니다."),
+    BOOK_LOAN_STATUS_NOT_PENDING(HttpStatus.CONFLICT, "대출 신청 상태가 아닙니다."),
+    OVERDUE_BOOK_EXTENSION_NOT_ALLOWED(HttpStatus.CONFLICT, "연체 중인 도서는 연장할 수 없습니다."),
+    BOOK_BORROWING_NOT_ALLOWED_DURING_SUSPENSION(HttpStatus.CONFLICT, "대출 정지 중입니다. 대출 정지일까지는 책을 대출할 수 없습니다."),
+    BOOK_LOAN_EXTENSION_LIMIT_EXCEEDED(HttpStatus.CONFLICT, "대출 연장 횟수를 초과했습니다."),
+
 
     // 423 LOCKED Errors
     ACCOUNT_LOCKED(HttpStatus.LOCKED, "계정이 잠겼습니다."),

@@ -3,7 +3,8 @@ package page.clab.api.domain.memberManagement.member.application.dto.shared;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
-import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanSuspensionException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Getter
 @Builder
@@ -26,7 +27,7 @@ public class MemberBorrowerInfoDto {
 
     public void checkLoanSuspension() {
         if (loanSuspensionDate != null && LocalDateTime.now().isBefore(loanSuspensionDate)) {
-            throw new LoanSuspensionException("대출 정지 중입니다. 대출 정지일까지는 책을 대출할 수 없습니다.");
+            throw new BaseException(ErrorCode.BOOK_BORROWING_NOT_ALLOWED_DURING_SUSPENSION);
         }
     }
 }

@@ -8,11 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.library.bookLoanRecord.application.exception.BookAlreadyReturnedException;
-import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanNotPendingException;
-import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanSuspensionException;
-import page.clab.api.domain.library.bookLoanRecord.application.exception.OverdueException;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBorrowerInfoDto;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Getter
 @Setter
@@ -43,7 +41,7 @@ public class BookLoanRecord {
 
     public void markAsReturned(MemberBorrowerInfoDto borrowerInfo) {
         if (this.returnedAt != null) {
-            throw new BookAlreadyReturnedException("이미 반납된 도서입니다.");
+            throw new BaseException(ErrorCode.BOOK_ALREADY_RETURNED);
         }
         this.returnedAt = LocalDateTime.now();
         if (isOverdue(returnedAt)) {
@@ -64,10 +62,10 @@ public class BookLoanRecord {
         borrowerInfo.checkLoanSuspension();
 
         if (now.isAfter(this.dueDate)) {
-            throw new LoanSuspensionException("연체 중인 도서는 연장할 수 없습니다.");
+            throw new BaseException(ErrorCode.OVERDUE_BOOK_EXTENSION_NOT_ALLOWED);
         }
         if (this.loanExtensionCount >= MAX_EXTENSIONS) {
-            throw new OverdueException("대출 연장 횟수를 초과했습니다.");
+            throw new BaseException(ErrorCode.BOOK_LOAN_EXTENSION_LIMIT_EXCEEDED);
         }
 
         this.dueDate = this.dueDate.plusWeeks(2);
@@ -76,7 +74,7 @@ public class BookLoanRecord {
 
     public void approve() {
         if (this.status != BookLoanStatus.PENDING) {
-            throw new LoanNotPendingException("대출 신청 상태가 아닙니다.");
+            throw new BaseException(ErrorCode.BOOK_LOAN_STATUS_NOT_PENDING);
         }
         this.status = BookLoanStatus.APPROVED;
         this.borrowedAt = LocalDateTime.now();
@@ -85,7 +83,7 @@ public class BookLoanRecord {
 
     public void reject() {
         if (this.status != BookLoanStatus.PENDING) {
-            throw new LoanNotPendingException("대출 신청 상태가 아닙니다.");
+            throw new BaseException(ErrorCode.BOOK_LOAN_STATUS_NOT_PENDING);
         }
         this.status = BookLoanStatus.REJECTED;
     }

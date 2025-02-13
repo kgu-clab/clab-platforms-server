@@ -29,14 +29,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
-import page.clab.api.domain.library.book.application.exception.BookAlreadyBorrowedException;
-import page.clab.api.domain.library.book.application.exception.InvalidBorrowerException;
-import page.clab.api.domain.library.bookLoanRecord.application.exception.BookAlreadyAppliedForLoanException;
-import page.clab.api.domain.library.bookLoanRecord.application.exception.BookAlreadyReturnedException;
-import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanNotPendingException;
-import page.clab.api.domain.library.bookLoanRecord.application.exception.LoanSuspensionException;
-import page.clab.api.domain.library.bookLoanRecord.application.exception.MaxBorrowLimitExceededException;
-import page.clab.api.domain.library.bookLoanRecord.application.exception.OverdueException;
 import page.clab.api.domain.memberManagement.executive.application.exception.ExecutiveRegistrationException;
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberContactException;
 import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberEmailException;
@@ -128,7 +120,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
         AccessDeniedException.class,
         PermissionDeniedException.class,
-        InvalidBorrowerException.class,
+//        InvalidBorrowerException.class,
 //        MemberNotPartOfActivityException.class,
     })
     public ApiResponse<Void> deniedException(HttpServletResponse response, Exception e) {
@@ -172,13 +164,13 @@ public class GlobalExceptionHandler {
 //        DuplicateAttendanceException.class,
 //        DuplicateAbsentExcuseException.class,
 //        AlreadyReviewedException.class,
-        BookAlreadyBorrowedException.class,
-        BookAlreadyReturnedException.class,
-        BookAlreadyAppliedForLoanException.class,
-        MaxBorrowLimitExceededException.class,
-        OverdueException.class,
-        LoanSuspensionException.class,
-        LoanNotPendingException.class,
+//        BookAlreadyBorrowedException.class,
+//        BookAlreadyReturnedException.class,
+//        BookAlreadyAppliedForLoanException.class,
+//        MaxBorrowLimitExceededException.class,
+//        OverdueException.class,
+//        LoanSuspensionException.class,
+//        LoanNotPendingException.class,
     })
     public ErrorResponse<Exception> conflictException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
