@@ -2,11 +2,9 @@ package page.clab.api.global.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import page.clab.api.global.common.dto.ApiResponse;
@@ -163,8 +161,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-        MethodArgumentNotValidException.class,
-        ConstraintViolationException.class
+//        MethodArgumentNotValidException.class,
+//        ConstraintViolationException.class
     })
     public ApiResponse<Void> handleValidationException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
