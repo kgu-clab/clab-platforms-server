@@ -45,6 +45,7 @@ public class ExceptionMapper {
         exceptionToErrorCodeMap.put(IllegalAccessException.class, ErrorCode.ILLEGAL_ACCESS);
         exceptionToErrorCodeMap.put(IllegalArgumentException.class, ErrorCode.ILLEGAL_ARGUMENT);
         exceptionToErrorCodeMap.put(InvalidDataAccessApiUsageException.class, ErrorCode.INVALID_DATA_ACCESS);
+        exceptionToErrorCodeMap.put(io.jsonwebtoken.security.SecurityException.class, ErrorCode.JWT_SECURITY_ERROR);
         exceptionToErrorCodeMap.put(MalformedJsonException.class, ErrorCode.MALFORMED_JSON);
         exceptionToErrorCodeMap.put(MethodArgumentNotValidException.class, ErrorCode.METHOD_ARGUMENT_NOT_VALID);
         exceptionToErrorCodeMap.put(MethodArgumentTypeMismatchException.class, ErrorCode.TYPE_MISMATCH);
@@ -53,7 +54,6 @@ public class ExceptionMapper {
         exceptionToErrorCodeMap.put(NumberFormatException.class, ErrorCode.NUMBER_FORMAT_ERROR);
         exceptionToErrorCodeMap.put(StringIndexOutOfBoundsException.class, ErrorCode.INDEX_OUT_OF_BOUNDS);
         exceptionToErrorCodeMap.put(UnknownPathException.class, ErrorCode.UNKNOWN_PATH);
-        exceptionToErrorCodeMap.put(io.jsonwebtoken.security.SecurityException.class, ErrorCode.JWT_SECURITY_ERROR);
 
         // 401 UNAUTHORIZED Errors
         exceptionToErrorCodeMap.put(AuthenticationException.class, ErrorCode.AUTHENTICATION_NOT_FOUND);
@@ -82,15 +82,15 @@ public class ExceptionMapper {
         exceptionToErrorCodeMap.put(ArrayIndexOutOfBoundsException.class, ErrorCode.ARRAY_INDEX_OUT_OF_BOUNDS);
         exceptionToErrorCodeMap.put(CompletionException.class, ErrorCode.COMPLETION_ERROR);
         exceptionToErrorCodeMap.put(DataIntegrityViolationException.class, ErrorCode.DATA_INTEGRITY_ERROR);
-        exceptionToErrorCodeMap.put(IOException.class, ErrorCode.IO_ERROR);
+        exceptionToErrorCodeMap.put(ImageProcessingException.class, ErrorCode.IMAGE_PROCESSING_ERROR);
         exceptionToErrorCodeMap.put(IncorrectResultSizeDataAccessException.class, ErrorCode.INCORRECT_RESULT_SIZE);
-        exceptionToErrorCodeMap.put(SQLException.class, ErrorCode.SQL_ERROR);
+        exceptionToErrorCodeMap.put(IOException.class, ErrorCode.IO_ERROR);
+        exceptionToErrorCodeMap.put(MessagingException.class, ErrorCode.MESSAGING_ERROR);
+        exceptionToErrorCodeMap.put(MetadataException.class, ErrorCode.METADATA_ERROR);
         exceptionToErrorCodeMap.put(SecurityException.class, ErrorCode.SECURITY_ERROR);
+        exceptionToErrorCodeMap.put(SQLException.class, ErrorCode.SQL_ERROR);
         exceptionToErrorCodeMap.put(TransactionSystemException.class, ErrorCode.TRANSACTION_SYSTEM_ERROR);
         exceptionToErrorCodeMap.put(UnexpectedRollbackException.class, ErrorCode.UNEXPECTED_ROLLBACK);
-        exceptionToErrorCodeMap.put(MessagingException.class, ErrorCode.MESSAGING_ERROR);
-        exceptionToErrorCodeMap.put(ImageProcessingException.class, ErrorCode.IMAGE_PROCESSING_ERROR);
-        exceptionToErrorCodeMap.put(MetadataException.class, ErrorCode.METADATA_ERROR);
         exceptionToErrorCodeMap.put(WebClientRequestException.class, ErrorCode.WEB_CLIENT_REQUEST_ERROR);
     }
 
