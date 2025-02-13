@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
-import page.clab.api.global.exception.InvalidDateRangeException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @Getter
@@ -46,7 +47,7 @@ public class Schedule {
 
     public void validateBusinessRules() {
         if (startDateTime.isAfter(endDateTime)) {
-            throw new InvalidDateRangeException("시작일시가 종료일시보다 늦을 수 없습니다.");
+            throw new BaseException(ErrorCode.INVALID_DATE_TIME_RANGE);
         }
     }
 

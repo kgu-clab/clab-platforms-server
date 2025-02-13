@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.memberManagement.workExperience.application.dto.request.WorkExperienceUpdateRequestDto;
-import page.clab.api.global.exception.InvalidDateRangeException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @Getter
@@ -45,7 +46,7 @@ public class WorkExperience {
 
     public void validateBusinessRules() {
         if (startDate.isAfter(endDate)) {
-            throw new InvalidDateRangeException("시작일은 종료일보다 늦을 수 없습니다.");
+            throw new BaseException(ErrorCode.INVALID_DATE_RANGE);
         }
     }
 

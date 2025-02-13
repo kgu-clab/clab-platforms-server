@@ -39,7 +39,6 @@ import page.clab.api.global.common.file.exception.InvalidFileAttributeException;
 import page.clab.api.global.common.file.exception.InvalidPathVariableException;
 import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.GeneralAlertType;
-import page.clab.api.global.exception.InvalidDateRangeException;
 import page.clab.api.global.exception.InvalidEmojiException;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
@@ -57,7 +56,7 @@ public class GlobalExceptionHandler {
         InvalidInformationException.class,
 //        InvalidParentBoardException.class,
 //        InvalidCategoryException.class,
-        InvalidDateRangeException.class,
+//        InvalidDateRangeException.class,
 //        InvalidColumnException.class,
         InvalidEmojiException.class,
 //        InvalidRoleChangeException.class,
