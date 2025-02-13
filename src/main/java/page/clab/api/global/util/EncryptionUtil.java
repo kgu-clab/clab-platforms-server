@@ -11,8 +11,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import page.clab.api.global.config.AesConfig;
-import page.clab.api.global.exception.DecryptionException;
-import page.clab.api.global.exception.EncryptionException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 /**
  * {@code EncryptionUtil}은 AES/GCM 암호화 및 복호화 작업을 수행하는 유틸리티 클래스입니다. 암호화와 복호화에 필요한 키와 IV(초기화 벡터)를 생성하고, AES 암호화 표준을 사용하여
@@ -52,13 +52,13 @@ public class EncryptionUtil {
             byte[] combined = concat(iv, cipherText);
             return Base64.getEncoder().encodeToString(combined);
         } catch (InvalidKeyException e) {
-            throw new EncryptionException("잘못된 키 길이입니다.");
+            throw new BaseException(ErrorCode.ENCRYPTION_ERROR, "잘못된 키 길이입니다.");
         } catch (IllegalBlockSizeException e) {
-            throw new EncryptionException("암호화 블록 크기 오류입니다.");
+            throw new BaseException(ErrorCode.ENCRYPTION_ERROR, "암호화 블록 크기 오류입니다.");
         } catch (BadPaddingException e) {
-            throw new EncryptionException("잘못된 패딩입니다.");
+            throw new BaseException(ErrorCode.ENCRYPTION_ERROR, "잘못된 패딩입니다.");
         } catch (Exception e) {
-            throw new EncryptionException("암호화 처리 중 오류가 발생했습니다.");
+            throw new BaseException(ErrorCode.ENCRYPTION_ERROR, "암호화 처리 중 오류가 발생했습니다.");
         }
     }
 
@@ -74,13 +74,13 @@ public class EncryptionUtil {
             byte[] decryptedText = cipher.doFinal(cipherText);
             return new String(decryptedText, StandardCharsets.UTF_8);
         } catch (InvalidKeyException e) {
-            throw new DecryptionException("잘못된 키 길이입니다.");
+            throw new BaseException(ErrorCode.DECRYPTION_ERROR, "잘못된 키 길이입니다.");
         } catch (IllegalBlockSizeException e) {
-            throw new DecryptionException("복호화 블록 크기 오류입니다.");
+            throw new BaseException(ErrorCode.DECRYPTION_ERROR, "복호화 블록 크기 오류입니다.");
         } catch (BadPaddingException e) {
-            throw new DecryptionException("잘못된 패딩입니다.");
+            throw new BaseException(ErrorCode.DECRYPTION_ERROR, "잘못된 패딩입니다.");
         } catch (Exception e) {
-            throw new DecryptionException("복호화 처리 중 오류가 발생했습니다.");
+            throw new BaseException(ErrorCode.DECRYPTION_ERROR, "복호화 처리 중 오류가 발생했습니다.");
         }
     }
 

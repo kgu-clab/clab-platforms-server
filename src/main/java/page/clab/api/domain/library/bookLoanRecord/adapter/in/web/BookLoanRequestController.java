@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.library.bookLoanRecord.application.dto.request.BookLoanRecordRequestDto;
 import page.clab.api.domain.library.bookLoanRecord.application.port.in.RequestBookLoanUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
 
 @RestController
 @RequestMapping("/api/v1/book-loan-records")
@@ -27,7 +26,7 @@ public class BookLoanRequestController {
     @PostMapping("")
     public ApiResponse<Long> requestBookLoan(
         @Valid @RequestBody BookLoanRecordRequestDto requestDto
-    ) throws CustomOptimisticLockingFailureException {
+    ) {
         Long id = requestBookLoanUseCase.requestBookLoan(requestDto);
         return ApiResponse.success(id);
     }

@@ -84,9 +84,6 @@ import page.clab.api.global.common.file.exception.InvalidFileAttributeException;
 import page.clab.api.global.common.file.exception.InvalidPathVariableException;
 import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.GeneralAlertType;
-import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
-import page.clab.api.global.exception.DecryptionException;
-import page.clab.api.global.exception.EncryptionException;
 import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.InvalidDateRangeException;
 import page.clab.api.global.exception.InvalidEmojiException;
@@ -226,10 +223,10 @@ public class GlobalExceptionHandler {
         WebClientRequestException.class,
         TransactionSystemException.class,
         SecurityException.class,
-        CustomOptimisticLockingFailureException.class,
+//        CustomOptimisticLockingFailureException.class,
         CompletionException.class,
-        EncryptionException.class,
-        DecryptionException.class,
+//        EncryptionException.class,
+//        DecryptionException.class,
         InvalidDataAccessApiUsageException.class,
         ImageProcessingException.class,
         MetadataException.class,

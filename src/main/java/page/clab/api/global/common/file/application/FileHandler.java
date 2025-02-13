@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import page.clab.api.global.exception.ImageCompressionException;
 import page.clab.api.global.util.FileUtil;
 import page.clab.api.global.util.ImageUtil;
 import page.clab.api.global.util.LogSanitizerUtil;
@@ -102,7 +101,7 @@ public class FileHandler {
         if (compressibleImageExtensions.contains(extension.toLowerCase())) {
             try {
                 ImageUtil.compressImage(filePath, savePath, imageQuality);
-            } catch (ImageCompressionException e) {
+            } catch (Exception e) {
                 log.warn("이미지 압축 중 오류가 발생했습니다. 압축 없이 저장합니다: {}", e.getMessage());
             }
         }

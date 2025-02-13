@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.library.book.domain.Book;
 import page.clab.api.domain.library.bookLoanRecord.application.dto.request.BookLoanRecordRequestDto;
-import page.clab.api.domain.library.bookLoanRecord.application.exception.BookAlreadyAppliedForLoanException;
-import page.clab.api.domain.library.bookLoanRecord.application.exception.MaxBorrowLimitExceededException;
 import page.clab.api.domain.library.bookLoanRecord.application.port.in.RequestBookLoanUseCase;
 import page.clab.api.domain.library.bookLoanRecord.application.port.out.RegisterBookLoanRecordPort;
 import page.clab.api.domain.library.bookLoanRecord.application.port.out.RetrieveBookLoanRecordPort;
@@ -21,7 +19,8 @@ import page.clab.api.external.memberManagement.notification.application.port.Ext
 import page.clab.api.global.common.notificationSetting.application.dto.notification.BookLoanRecordNotificationInfo;
 import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.ExecutivesAlertType;
-import page.clab.api.global.exception.CustomOptimisticLockingFailureException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -42,13 +41,19 @@ public class BookLoanRequestService implements RequestBookLoanUseCase {
      *
      * @param requestDto 도서 대출 신청 요청 정보 DTO
      * @return 저장된 대출 기록의 ID
-     * @throws CustomOptimisticLockingFailureException 동시에 다른 사용자가 대출을 신청하여 충돌이 발생한 경우 예외 발생
-     * @throws MaxBorrowLimitExceededException         대출 한도를 초과한 경우 예외 발생
-     * @throws BookAlreadyAppliedForLoanException      이미 신청된 도서일 경우 예외 발생
+     *
+     * <p>예외 발생 상황:</p>
+     * <ul>
+     *   <li>{@code BaseException} with {@code ErrorCode.OPTIMISTIC_LOCKING_FAILURE} - 동시에 다른 사용자가 대출을 신청하여 충돌이 발생한 경우</li>
+     *   <li>{@code BaseException} with {@code ErrorCode.MAX_BORROW_LIMIT_EXCEEDED} - 대출 한도를 초과한 경우</li>
+     *   <li>{@code BaseException} with {@code ErrorCode.BOOK_ALREADY_APPLIED_FOR_LOAN} - 이미 신청된 도서일 경우</li>
+     * </ul>
+     * @throws BaseException 위의 상황에 따라 각각 해당하는 ErrorCode를 포함한 예외가 발생할 수 있습니다.
      */
+
     @Transactional
     @Override
-    public Long requestBookLoan(BookLoanRecordRequestDto requestDto) throws CustomOptimisticLockingFailureException {
+    public Long requestBookLoan(BookLoanRecordRequestDto requestDto) {
         try {
             MemberBorrowerInfoDto borrowerInfo = externalRetrieveMemberUseCase.getCurrentMemberBorrowerInfo();
 
@@ -70,7 +75,7 @@ public class BookLoanRequestService implements RequestBookLoanUseCase {
 
             return registerBookLoanRecordPort.save(bookLoanRecord).getId();
         } catch (ObjectOptimisticLockingFailureException e) {
-            throw new CustomOptimisticLockingFailureException("도서 대출 신청에 실패했습니다. 다시 시도해주세요.");
+            throw new BaseException(ErrorCode.OPTIMISTIC_LOCKING_FAILURE, "도서 대출 신청에 실패했습니다. 다시 시도해주세요.");
         }
     }
 
@@ -78,14 +83,14 @@ public class BookLoanRequestService implements RequestBookLoanUseCase {
         int borrowedBookCount = externalRetrieveBookUseCase.countByBorrowerId(borrowerId);
         int maxBorrowableBookCount = 3;
         if (borrowedBookCount >= maxBorrowableBookCount) {
-            throw new MaxBorrowLimitExceededException("대출 가능한 도서의 수를 초과했습니다.");
+            throw new BaseException(ErrorCode.MAX_BORROW_LIMIT_EXCEEDED, "대출 가능한 도서의 수를 초과했습니다.");
         }
     }
 
     private void checkIfLoanAlreadyApplied(Long bookId, String borrowerId) {
         retrieveBookLoanRecordPort.findByBookIdAndBorrowerIdAndStatus(bookId, borrowerId, BookLoanStatus.PENDING)
             .ifPresent(bookLoanRecord -> {
-                throw new BookAlreadyAppliedForLoanException("이미 대출 신청한 도서입니다.");
+                throw new BaseException(ErrorCode.BOOK_ALREADY_APPLIED_FOR_LOAN, "이미 대출 신청한 도서입니다.");
             });
     }
 }
