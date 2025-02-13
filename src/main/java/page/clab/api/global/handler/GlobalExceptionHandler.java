@@ -29,8 +29,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
-import page.clab.api.domain.community.accuse.application.exception.AccuseTargetTypeIncorrectException;
-import page.clab.api.domain.community.board.application.exception.InvalidBoardCategoryHashtagException;
 import page.clab.api.domain.library.book.application.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.library.book.application.exception.InvalidBorrowerException;
 import page.clab.api.domain.library.bookLoanRecord.application.exception.BookAlreadyAppliedForLoanException;
@@ -101,7 +99,7 @@ public class GlobalExceptionHandler {
         UnknownPathException.class,
 //        AssignmentBoardHasNoDueDateTimeException.class,
 //        FeedbackBoardHasNoContentException.class,
-        InvalidBoardCategoryHashtagException.class,
+//        InvalidBoardCategoryHashtagException.class,
         ExecutiveRegistrationException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
@@ -158,7 +156,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-        AccuseTargetTypeIncorrectException.class,
+//        AccuseTargetTypeIncorrectException.class,
 //        NotApprovedApplicationException.class,
         DuplicateMemberIdException.class,
         DuplicateMemberContactException.class,

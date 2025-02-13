@@ -10,9 +10,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.community.board.application.dto.request.BoardUpdateRequestDto;
-import page.clab.api.domain.community.board.application.exception.InvalidBoardCategoryHashtagException;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.file.domain.UploadedFile;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 import page.clab.api.global.exception.PermissionDeniedException;
 
 @Getter
@@ -77,13 +78,13 @@ public class Board {
 
     public void validateBoardHashtagRegistration(List<String> hashtagNames) {
         if (!isDevelopmentQna() && (hashtagNames != null && !hashtagNames.isEmpty())) {
-            throw new InvalidBoardCategoryHashtagException("개발질문 게시판에만 해시태그를 등록할 수 있습니다.");
+            throw new BaseException(ErrorCode.INVALID_BOARD_CATEGORY_HASHTAG, "개발질문 게시판에만 해시태그를 등록할 수 있습니다.");
         }
     }
 
     public void validateBoardHashtagUpdate() {
         if (!isDevelopmentQna()) {
-            throw new InvalidBoardCategoryHashtagException("개발질문 게시판에만 해시태그를 적용할 수 있습니다.");
+            throw new BaseException(ErrorCode.INVALID_BOARD_CATEGORY_HASHTAG, "개발질문 게시판에만 해시태그를 적용할 수 있습니다.");
         }
     }
 }

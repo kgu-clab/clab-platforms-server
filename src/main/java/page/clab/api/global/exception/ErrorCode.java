@@ -37,6 +37,7 @@ public enum ErrorCode {
     INVALID_GITHUB_URL(HttpStatus.BAD_REQUEST, "유효하지 않은 GitHub URL입니다."),
     INVALID_ROLE_CHANGE(HttpStatus.BAD_REQUEST, "유효하지 않은 직책 변경입니다."),
     UNSUPPORTED_OPERATION(HttpStatus.BAD_REQUEST, "지원되지 않는 작업입니다."),
+    INVALID_BOARD_CATEGORY_HASHTAG(HttpStatus.BAD_REQUEST, "해당 게시판에 해시태그를 사용할 수 없습니다."),
 
     // 401 UNAUTHORIZED Errors
     AUTHENTICATION_NOT_FOUND(HttpStatus.UNAUTHORIZED, "인증 정보를 찾을 수 없습니다."),
@@ -83,6 +84,7 @@ public enum ErrorCode {
     NOT_APPROVED_APPLICATION(HttpStatus.CONFLICT, "승인되지 않은 지원서입니다."),
     LEADER_STATUS_CHANGE_NOT_ALLOWED(HttpStatus.CONFLICT, "리더의 상태는 변경할 수 없습니다."),
     SINGLE_LEADER_MODIFICATION_NOT_ALLOWED(HttpStatus.CONFLICT, "그룹에는 최소 한 명의 리더가 있어야 하므로, 리더의 역할을 변경할 수 없습니다."),
+    ACCUSE_TARGET_TYPE_MISMATCH(HttpStatus.CONFLICT, "신고 대상의 유형이 일치하지 않습니다."),
 
     // 423 LOCKED Errors
     ACCOUNT_LOCKED(HttpStatus.LOCKED, "계정이 잠겼습니다."),
