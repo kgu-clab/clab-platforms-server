@@ -36,6 +36,7 @@ public enum ErrorCode {
     INACTIVE_ACTIVITY_GROUP_MEMBER(HttpStatus.BAD_REQUEST, "활동에 참여하지 않은 멤버의 직책을 변경할 수 없습니다."),
     INVALID_GITHUB_URL(HttpStatus.BAD_REQUEST, "유효하지 않은 GitHub URL입니다."),
     INVALID_ROLE_CHANGE(HttpStatus.BAD_REQUEST, "유효하지 않은 직책 변경입니다."),
+    UNSUPPORTED_OPERATION(HttpStatus.BAD_REQUEST, "지원되지 않는 작업입니다."),
 
     // 401 UNAUTHORIZED Errors
     AUTHENTICATION_NOT_FOUND(HttpStatus.UNAUTHORIZED, "인증 정보를 찾을 수 없습니다."),
@@ -48,6 +49,7 @@ public enum ErrorCode {
     TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
     UNSUPPORTED_JWT(HttpStatus.UNAUTHORIZED, "지원되지 않는 JWT 토큰입니다."),
     USERNAME_NOT_FOUND(HttpStatus.UNAUTHORIZED, "사용자 이름을 찾을 수 없습니다."),
+    MEMBER_LOCKED(HttpStatus.UNAUTHORIZED, "정책에 의해 계정이 일시적으로 잠겼습니다."),
 
     // 403 FORBIDDEN Errors
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근이 거부되었습니다."),

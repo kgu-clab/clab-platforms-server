@@ -17,8 +17,6 @@ import page.clab.api.domain.auth.login.application.dto.response.LoginHeader;
 import page.clab.api.domain.auth.login.application.dto.response.LoginResult;
 import page.clab.api.domain.auth.login.application.dto.response.TokenHeader;
 import page.clab.api.domain.auth.login.application.dto.response.TokenInfo;
-import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
-import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.auth.login.application.port.in.ManageAuthenticatorUseCase;
 import page.clab.api.domain.auth.login.application.port.in.ManageLoginUseCase;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
@@ -28,6 +26,8 @@ import page.clab.api.external.auth.redisToken.application.port.ExternalManageRed
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalUpdateMemberUseCase;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 import page.clab.api.global.util.HttpReqResUtil;
 
 @Service
@@ -48,8 +48,7 @@ public class UserLoginService implements ManageLoginUseCase {
 
     @Transactional
     @Override
-    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto)
-        throws LoginFailedException, MemberLockedException {
+    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) {
         authenticateAndCheckStatus(request, requestDto);
         registerAccountAccessLog(request, requestDto.getId(), true);
         MemberLoginInfoDto loginMember = externalRetrieveMemberUseCase.getMemberLoginInfoById(requestDto.getId());
@@ -67,8 +66,7 @@ public class UserLoginService implements ManageLoginUseCase {
         return generateLoginResult(guestMember);
     }
 
-    private void authenticateAndCheckStatus(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto)
-        throws LoginFailedException, MemberLockedException {
+    private void authenticateAndCheckStatus(HttpServletRequest httpServletRequest, LoginRequestDto loginRequestDto) {
         try {
             UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginRequestDto.getId(), loginRequestDto.getPassword());
@@ -77,7 +75,7 @@ public class UserLoginService implements ManageLoginUseCase {
         } catch (BadCredentialsException e) {
             registerAccountAccessLog(httpServletRequest, loginRequestDto.getId(), false);
             externalManageAccountLockUseCase.handleLoginFailure(httpServletRequest, loginRequestDto.getId());
-            throw new LoginFailedException();
+            throw new BaseException(ErrorCode.BAD_CREDENTIALS, "잘못된 아이디 또는 비밀번호입니다.");
         }
     }
 
@@ -113,21 +111,21 @@ public class UserLoginService implements ManageLoginUseCase {
 
     @Override
     public LoginResult authenticate(HttpServletRequest request, TwoFactorAuthenticationRequestDto requestDto) {
-        throw new UnsupportedOperationException("Method not implemented");
+        throw new BaseException(ErrorCode.UNSUPPORTED_OPERATION);
     }
 
     @Override
     public String resetAuthenticator(String memberId) {
-        throw new UnsupportedOperationException("Method not implemented");
+        throw new BaseException(ErrorCode.UNSUPPORTED_OPERATION);
     }
 
     @Override
     public TokenHeader reissueToken(HttpServletRequest request) {
-        throw new UnsupportedOperationException("Method not implemented");
+        throw new BaseException(ErrorCode.UNSUPPORTED_OPERATION);
     }
 
     @Override
     public List<String> retrieveCurrentLoggedInUsers() {
-        throw new UnsupportedOperationException("Method not implemented");
+        throw new BaseException(ErrorCode.UNSUPPORTED_OPERATION);
     }
 }

@@ -29,8 +29,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
-import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
-import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.community.accuse.application.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.community.board.application.exception.InvalidBoardCategoryHashtagException;
 import page.clab.api.domain.library.book.application.exception.BookAlreadyBorrowedException;
@@ -115,8 +113,8 @@ public class GlobalExceptionHandler {
         AuthenticationException.class,
         AuthenticationInfoNotFoundException.class,
         UnAuthorizeException.class,
-        LoginFailedException.class,
-        MemberLockedException.class,
+//        LoginFailedException.class,
+//        MemberLockedException.class,
         BadCredentialsException.class,
         TokenValidateException.class,
         TokenNotFoundException.class,

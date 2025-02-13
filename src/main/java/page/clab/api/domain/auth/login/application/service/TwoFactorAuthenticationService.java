@@ -13,8 +13,6 @@ import page.clab.api.domain.auth.login.application.dto.request.TwoFactorAuthenti
 import page.clab.api.domain.auth.login.application.dto.response.LoginResult;
 import page.clab.api.domain.auth.login.application.dto.response.TokenHeader;
 import page.clab.api.domain.auth.login.application.dto.response.TokenInfo;
-import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
-import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.auth.login.application.port.in.ManageAuthenticatorUseCase;
 import page.clab.api.domain.auth.login.application.port.in.ManageLoginUseCase;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberLoginInfoDto;
@@ -25,6 +23,8 @@ import page.clab.api.external.memberManagement.member.application.port.ExternalR
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.GeneralAlertType;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 import page.clab.api.global.util.HttpReqResUtil;
 
 @Service
@@ -43,8 +43,8 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
     @Transactional
     @Override
     public LoginResult authenticate(HttpServletRequest request,
-        TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto)
-        throws LoginFailedException, MemberLockedException {
+        TwoFactorAuthenticationRequestDto twoFactorAuthenticationRequestDto
+    ) {
         String memberId = twoFactorAuthenticationRequestDto.getMemberId();
         MemberLoginInfoDto loginMember = externalRetrieveMemberUseCase.getMemberLoginInfoById(memberId);
         String totp = twoFactorAuthenticationRequestDto.getTotp();
@@ -58,13 +58,12 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
         return LoginResult.create(header, true);
     }
 
-    private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request)
-        throws MemberLockedException, LoginFailedException {
+    private void verifyTwoFactorAuthentication(String memberId, String totp, HttpServletRequest request) {
         if (!manageAuthenticatorUseCase.isAuthenticatorValid(memberId, totp)) {
             externalRegisterAccountAccessLogUseCase.registerAccountAccessLog(request, memberId,
                 AccountAccessResult.FAILURE);
             externalManageAccountLockUseCase.handleLoginFailure(request, memberId);
-            throw new LoginFailedException("잘못된 인증번호입니다.");
+            throw new BaseException(ErrorCode.BAD_CREDENTIALS, "잘못된 인증번호입니다.");
         }
         externalRegisterAccountAccessLogUseCase.registerAccountAccessLog(request, memberId, AccountAccessResult.TOTP);
     }
@@ -85,9 +84,8 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
     }
 
     @Override
-    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto)
-        throws LoginFailedException, MemberLockedException {
-        throw new UnsupportedOperationException("Method not implemented");
+    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) {
+        throw new BaseException(ErrorCode.UNSUPPORTED_OPERATION);
     }
 
     @Override
@@ -97,16 +95,16 @@ public class TwoFactorAuthenticationService implements ManageLoginUseCase {
 
     @Override
     public TokenHeader reissueToken(HttpServletRequest request) {
-        throw new UnsupportedOperationException("Method not implemented");
+        throw new BaseException(ErrorCode.UNSUPPORTED_OPERATION);
     }
 
     @Override
     public List<String> retrieveCurrentLoggedInUsers() {
-        throw new UnsupportedOperationException("Method not implemented");
+        throw new BaseException(ErrorCode.UNSUPPORTED_OPERATION);
     }
 
     @Override
     public LoginResult guestLogin(HttpServletRequest request) {
-        throw new UnsupportedOperationException("Method not implemented");
+        throw new BaseException(ErrorCode.UNSUPPORTED_OPERATION);
     }
 }

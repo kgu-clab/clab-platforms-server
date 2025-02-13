@@ -12,8 +12,6 @@ import page.clab.api.domain.auth.login.application.dto.request.TwoFactorAuthenti
 import page.clab.api.domain.auth.login.application.dto.response.LoginResult;
 import page.clab.api.domain.auth.login.application.dto.response.TokenHeader;
 import page.clab.api.domain.auth.login.application.dto.response.TokenInfo;
-import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
-import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.auth.login.application.port.in.ManageLoginUseCase;
 import page.clab.api.domain.auth.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.domain.auth.login.domain.RedisToken;
@@ -21,6 +19,8 @@ import page.clab.api.external.memberManagement.member.application.port.ExternalR
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 import page.clab.api.global.util.HttpReqResUtil;
 
 @Service
@@ -55,7 +55,7 @@ public class TokenManagementService implements ManageLoginUseCase {
 
     @Override
     public LoginResult guestLogin(HttpServletRequest request) {
-        throw new UnsupportedOperationException("Method not implemented");
+        throw new BaseException(ErrorCode.UNSUPPORTED_OPERATION);
     }
 
     private void validateMemberExistence(Authentication authentication) {
@@ -74,19 +74,17 @@ public class TokenManagementService implements ManageLoginUseCase {
     }
 
     @Override
-    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto)
-        throws LoginFailedException, MemberLockedException {
-        throw new UnsupportedOperationException("Method not implemented");
+    public LoginResult login(HttpServletRequest request, LoginRequestDto requestDto) {
+        throw new BaseException(ErrorCode.UNSUPPORTED_OPERATION);
     }
 
     @Override
-    public LoginResult authenticate(HttpServletRequest request, TwoFactorAuthenticationRequestDto requestDto)
-        throws LoginFailedException, MemberLockedException {
-        throw new UnsupportedOperationException("Method not implemented");
+    public LoginResult authenticate(HttpServletRequest request, TwoFactorAuthenticationRequestDto requestDto) {
+        throw new BaseException(ErrorCode.UNSUPPORTED_OPERATION);
     }
 
     @Override
     public String resetAuthenticator(String memberId) {
-        throw new UnsupportedOperationException("Method not implemented");
+        throw new BaseException(ErrorCode.UNSUPPORTED_OPERATION);
     }
 }

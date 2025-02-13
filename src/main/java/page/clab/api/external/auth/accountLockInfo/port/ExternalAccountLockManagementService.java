@@ -9,13 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.auth.accountLockInfo.application.port.out.RegisterAccountLockInfoPort;
 import page.clab.api.domain.auth.accountLockInfo.application.port.out.RetrieveAccountLockInfoPort;
 import page.clab.api.domain.auth.accountLockInfo.domain.AccountLockInfo;
-import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
-import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.external.auth.accountLockInfo.application.ExternalManageAccountLockUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.SecurityAlertType;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -39,12 +39,12 @@ public class ExternalAccountLockManagementService implements ExternalManageAccou
      * 계정을 잠금 해제하고 업데이트된 계정 잠금 정보를 저장합니다.</p>
      *
      * @param memberId 잠금 해제하려는 멤버의 ID
-     * @throws MemberLockedException 계정이 현재 잠겨 있을 경우 예외 발생
-     * @throws LoginFailedException  멤버가 존재하지 않을 경우 예외 발생
+     * @throws BaseException {@code ErrorCode.MEMBER_LOCKED} 계정이 현재 잠겨 있을 경우 예외 발생
+     * @throws BaseException {@code ErrorCode.BAD_CREDENTIALS} 멤버가 존재하지 않을 경우 예외 발생
      */
     @Transactional
     @Override
-    public void handleAccountLockInfo(String memberId) throws MemberLockedException, LoginFailedException {
+    public void handleAccountLockInfo(String memberId) {
         ensureMemberExists(memberId);
         AccountLockInfo accountLockInfo = ensureAccountLockInfo(memberId);
         validateAccountLockStatus(accountLockInfo);
@@ -60,13 +60,12 @@ public class ExternalAccountLockManagementService implements ExternalManageAccou
      *
      * @param request  현재 HTTP 요청 객체
      * @param memberId 로그인 실패를 기록할 멤버의 ID
-     * @throws MemberLockedException 계정이 현재 잠겨 있을 경우 예외 발생
-     * @throws LoginFailedException  멤버가 존재하지 않을 경우 예외 발생
+     * @throws BaseException {@code ErrorCode.MEMBER_LOCKED} 계정이 현재 잠겨 있을 경우 예외 발생
+     * @throws BaseException {@code ErrorCode.BAD_CREDENTIALS} 멤버가 존재하지 않을 경우 예외 발생
      */
     @Transactional
     @Override
-    public void handleLoginFailure(HttpServletRequest request, String memberId)
-        throws MemberLockedException, LoginFailedException {
+    public void handleLoginFailure(HttpServletRequest request, String memberId) {
         ensureMemberExists(memberId);
         AccountLockInfo accountLockInfo = ensureAccountLockInfo(memberId);
         validateAccountLockStatus(accountLockInfo);
@@ -83,15 +82,15 @@ public class ExternalAccountLockManagementService implements ExternalManageAccou
             .orElseGet(() -> registerAccountLockInfoPort.save(AccountLockInfo.create(memberId)));
     }
 
-    private void ensureMemberExists(String memberId) throws LoginFailedException {
+    private void ensureMemberExists(String memberId) {
         if (!externalRetrieveMemberUseCase.existsById(memberId)) {
-            throw new LoginFailedException();
+            throw new BaseException(ErrorCode.BAD_CREDENTIALS, "존재하지 않는 멤버입니다.");
         }
     }
 
-    private void validateAccountLockStatus(AccountLockInfo accountLockInfo) throws MemberLockedException {
+    private void validateAccountLockStatus(AccountLockInfo accountLockInfo) {
         if (accountLockInfo.isCurrentlyLocked()) {
-            throw new MemberLockedException();
+            throw new BaseException(ErrorCode.MEMBER_LOCKED);
         }
     }
 
