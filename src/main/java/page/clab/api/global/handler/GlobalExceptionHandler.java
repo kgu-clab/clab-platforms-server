@@ -29,12 +29,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
-import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
-import page.clab.api.global.auth.exception.TokenForgeryException;
-import page.clab.api.global.auth.exception.TokenMisuseException;
-import page.clab.api.global.auth.exception.TokenNotFoundException;
-import page.clab.api.global.auth.exception.TokenValidateException;
-import page.clab.api.global.auth.exception.UnAuthorizeException;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.ErrorResponse;
 import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
@@ -96,15 +90,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
         AuthenticationException.class,
-        AuthenticationInfoNotFoundException.class,
-        UnAuthorizeException.class,
+//        AuthenticationInfoNotFoundException.class,
+//        UnAuthorizeException.class,
 //        LoginFailedException.class,
 //        MemberLockedException.class,
         BadCredentialsException.class,
-        TokenValidateException.class,
-        TokenNotFoundException.class,
-        TokenMisuseException.class,
-        TokenForgeryException.class,
+//        TokenValidateException.class,
+//        TokenNotFoundException.class,
+//        TokenMisuseException.class,
+//        TokenForgeryException.class,
         MessagingException.class,
     })
     public ApiResponse<Void> unAuthorizeException(HttpServletResponse response, Exception e) {

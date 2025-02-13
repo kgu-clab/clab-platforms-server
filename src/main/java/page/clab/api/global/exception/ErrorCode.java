@@ -43,7 +43,7 @@ public enum ErrorCode {
     EXECUTIVE_NOT_A_MEMBER(HttpStatus.BAD_REQUEST, "운영진 등록 대상은 멤버여야 합니다."),
 
     // 401 UNAUTHORIZED Errors
-    AUTHENTICATION_NOT_FOUND(HttpStatus.UNAUTHORIZED, "인증 정보를 찾을 수 없습니다."),
+    AUTHENTICATION_NOT_FOUND(HttpStatus.UNAUTHORIZED, "인증 정보가 존재하지 않습니다."),
     BAD_CREDENTIALS(HttpStatus.UNAUTHORIZED, "잘못된 인증 정보입니다."),
     EXPIRED_JWT(HttpStatus.UNAUTHORIZED, "JWT 토큰이 만료되었습니다."),
     INVALID_PRINCIPAL(HttpStatus.UNAUTHORIZED, "유효하지 않은 인증 정보입니다."),
@@ -51,6 +51,7 @@ public enum ErrorCode {
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
     TOKEN_FORGERY(HttpStatus.UNAUTHORIZED, "토큰 위조가 감지되었습니다."),
     TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+    TOKEN_MISUSED(HttpStatus.UNAUTHORIZED, "토큰이 오용되었습니다."),
     UNSUPPORTED_JWT(HttpStatus.UNAUTHORIZED, "지원되지 않는 JWT 토큰입니다."),
     USERNAME_NOT_FOUND(HttpStatus.UNAUTHORIZED, "사용자 이름을 찾을 수 없습니다."),
     MEMBER_LOCKED(HttpStatus.UNAUTHORIZED, "정책에 의해 계정이 일시적으로 잠겼습니다."),

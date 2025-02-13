@@ -3,7 +3,8 @@ package page.clab.api.global.auth.util;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 /**
  * {@code AuthUtil}은 인증 정보에 접근하기 위한 유틸리티 클래스로, 인증 정보 조회 및 사용자 인증 상태를 확인하는 메서드를 제공합니다.
@@ -18,19 +19,19 @@ import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
  *     <li>{@link #isUserUnAuthenticated(Authentication)}: 사용자가 인증되지 않았는지 확인</li>
  * </ul>
  *
- * @throws AuthenticationInfoNotFoundException 인증 정보가 없거나 유효하지 않을 경우 발생
+ * @throws BaseException {@code ErrorCode.AUTHENTICATION_NOT_FOUND} 인증 정보가 없거나 유효하지 않을 경우 발생
  */
 public class AuthUtil {
 
     public static User getAuthenticationInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getName() == null) {
-            throw new AuthenticationInfoNotFoundException();
+            throw new BaseException(ErrorCode.AUTHENTICATION_NOT_FOUND);
         }
         if (authentication.getPrincipal() instanceof User) {
             return (User) authentication.getPrincipal();
         } else {
-            throw new AuthenticationInfoNotFoundException("인증 정보가 존재하지 않습니다.");
+            throw new BaseException(ErrorCode.AUTHENTICATION_NOT_FOUND);
         }
     }
 

@@ -16,8 +16,6 @@ import page.clab.api.domain.auth.login.application.port.in.ManageLoginUseCase;
 import page.clab.api.domain.auth.login.application.port.in.ManageRedisTokenUseCase;
 import page.clab.api.domain.auth.login.domain.RedisToken;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.auth.exception.TokenForgeryException;
-import page.clab.api.global.auth.exception.TokenMisuseException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
 import page.clab.api.global.exception.BaseException;
 import page.clab.api.global.exception.ErrorCode;
@@ -61,7 +59,7 @@ public class TokenManagementService implements ManageLoginUseCase {
     private void validateMemberExistence(Authentication authentication) {
         String id = authentication.getName();
         if (!externalRetrieveMemberUseCase.existsById(id)) {
-            throw new TokenForgeryException("존재하지 않는 회원에 대한 토큰입니다.");
+            throw new BaseException(ErrorCode.TOKEN_FORGERY, "존재하지 않는 회원에 대한 토큰입니다.");
         }
     }
 
@@ -69,7 +67,9 @@ public class TokenManagementService implements ManageLoginUseCase {
         String clientIpAddress = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         if (!redisToken.isSameIp(clientIpAddress)) {
             manageRedisTokenUseCase.deleteByAccessToken(redisToken.getAccessToken());
-            throw new TokenMisuseException("[" + clientIpAddress + "] 토큰 발급 IP와 다른 IP에서 발급을 시도하여 토큰을 삭제하였습니다.");
+            throw new BaseException(
+                ErrorCode.TOKEN_MISUSED,
+                "[" + clientIpAddress + "] 토큰 발급 IP와 다른 IP에서 발급을 시도하여 토큰을 삭제하였습니다.");
         }
     }
 
