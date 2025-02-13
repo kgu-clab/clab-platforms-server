@@ -5,7 +5,8 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-import page.clab.api.global.exception.InvalidColumnException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 /**
  * {@code PaginationUtils} 클래스는 정렬 및 페이지네이션 기능을 통해 리스트에 대한 데이터를 처리하는 유틸리티 클래스입니다.
@@ -31,7 +32,7 @@ public class PaginationUtils {
                     item -> {
                         try {
                             return (Comparable) extractFieldValue(item, order.getProperty());
-                        } catch (InvalidColumnException e) {
+                        } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
                     }
@@ -79,13 +80,13 @@ public class PaginationUtils {
      * @param fieldName 추출할 필드 이름
      * @return 추출된 필드 값
      */
-    private static <T> Object extractFieldValue(T item, String fieldName) throws InvalidColumnException {
+    private static <T> Object extractFieldValue(T item, String fieldName) {
         try {
             var field = item.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);
             return field.get(item);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new InvalidColumnException("잘못된 필드 이름: " + fieldName);
+            throw new BaseException(ErrorCode.INVALID_COLUMN, "잘못된 필드 이름: " + fieldName);
         }
     }
 }

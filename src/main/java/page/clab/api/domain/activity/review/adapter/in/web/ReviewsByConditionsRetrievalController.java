@@ -14,7 +14,6 @@ import page.clab.api.domain.activity.review.application.dto.response.ReviewRespo
 import page.clab.api.domain.activity.review.application.port.in.RetrieveReviewsByConditionsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
@@ -42,7 +41,7 @@ public class ReviewsByConditionsRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException, InvalidColumnException {
+    ) throws SortingArgumentException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ReviewResponseDto.class);
         PagedResponseDto<ReviewResponseDto> reviews = retrieveReviewsByConditionsUseCase.retrieveReviews(memberId,
             memberName, activityId, isPublic, pageable);

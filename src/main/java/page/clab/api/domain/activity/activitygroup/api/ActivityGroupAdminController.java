@@ -29,7 +29,6 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupMem
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
@@ -120,7 +119,7 @@ public class ActivityGroupAdminController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "status") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
-    ) throws SortingArgumentException, PermissionDeniedException, InvalidColumnException {
+    ) throws SortingArgumentException, PermissionDeniedException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
             ActivityGroupMemberWithApplyReasonResponseDto.class);
         PagedResponseDto<ActivityGroupMemberWithApplyReasonResponseDto> groupMembers = activityGroupAdminService.getGroupMembersWithApplyReason(

@@ -14,7 +14,6 @@ import page.clab.api.domain.library.bookLoanRecord.application.dto.response.Book
 import page.clab.api.domain.library.bookLoanRecord.application.port.in.RetrieveOverdueBookLoanRecordsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
@@ -36,7 +35,7 @@ public class OverdueBookLoanRecordsRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "dueDate") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
-    ) throws SortingArgumentException, InvalidColumnException {
+    ) throws SortingArgumentException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
             BookLoanRecordOverdueResponseDto.class);
         PagedResponseDto<BookLoanRecordOverdueResponseDto> overdueRecords =

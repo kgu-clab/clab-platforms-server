@@ -6,7 +6,8 @@ import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import page.clab.api.global.exception.InvalidColumnException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 /**
  * 페이지네이션 응답을 위한 제네릭 DTO 클래스입니다. 현재 페이지, 총 아이템 수 및 페이지 관련 정보와 실제 콘텐츠를 제공합니다.
@@ -151,7 +152,7 @@ public class PagedResponseDto<T> {
                     item -> {
                         try {
                             return (Comparable) extractFieldValue(item, order.getProperty());
-                        } catch (InvalidColumnException e) {
+                        } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
                     }
@@ -175,13 +176,13 @@ public class PagedResponseDto<T> {
      * @deprecated 슬라이싱과 정렬을 담당하는 새로운 Util 클래스의 도입으로 사라질 메서드입니다.
      */
     @Deprecated
-    private Object extractFieldValue(T item, String fieldName) throws InvalidColumnException {
+    private Object extractFieldValue(T item, String fieldName) {
         try {
             var field = item.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);
             return field.get(item);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new InvalidColumnException("잘못된 필드 이름: " + fieldName);
+            throw new BaseException(ErrorCode.INVALID_COLUMN, "잘못된 필드 이름: " + fieldName);
         }
     }
 }

@@ -42,6 +42,7 @@ public enum ErrorCode {
     EXECUTIVE_ALREADY_REGISTERED(HttpStatus.CONFLICT, "이미 등록된 운영진입니다."),
     EXECUTIVE_NOT_A_MEMBER(HttpStatus.BAD_REQUEST, "운영진 등록 대상은 멤버여야 합니다."),
     ALERT_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, "알림 타입을 찾을 수 없습니다."),
+    INVALID_COLUMN(HttpStatus.BAD_REQUEST, "유효하지 않은 열이 포함되었습니다."),
 
     // 401 UNAUTHORIZED Errors
     AUTHENTICATION_NOT_FOUND(HttpStatus.UNAUTHORIZED, "인증 정보가 존재하지 않습니다."),

@@ -7,7 +7,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-import page.clab.api.global.exception.InvalidColumnException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 import page.clab.api.global.exception.SortingArgumentException;
 
 /**
@@ -24,14 +25,14 @@ public class PageableUtils {
     }
 
     public Pageable createPageable(int page, int size, List<String> sortByList, List<String> sortDirectionList,
-        Class<?> domainClass) throws SortingArgumentException, InvalidColumnException {
+        Class<?> domainClass) throws SortingArgumentException {
         if (sortByList.size() != sortDirectionList.size()) {
             throw new SortingArgumentException();
         }
 
         for (String sortBy : sortByList) {
             if (!columnValidator.isValidColumn(domainClass, sortBy)) {
-                throw new InvalidColumnException(sortBy + "라는 칼럼이 존재하지 않습니다.");
+                throw new BaseException(ErrorCode.INVALID_COLUMN, "유효하지 않은 컬럼명: " + sortBy);
             }
         }
 

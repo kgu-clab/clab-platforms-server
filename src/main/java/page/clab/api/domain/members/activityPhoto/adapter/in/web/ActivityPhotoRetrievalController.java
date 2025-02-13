@@ -13,7 +13,6 @@ import page.clab.api.domain.members.activityPhoto.application.dto.response.Activ
 import page.clab.api.domain.members.activityPhoto.application.port.in.RetrieveActivityPhotoUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
@@ -36,7 +35,7 @@ public class ActivityPhotoRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException, InvalidColumnException {
+    ) throws SortingArgumentException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
             ActivityPhotoResponseDto.class);
         PagedResponseDto<ActivityPhotoResponseDto> activityPhotos = retrieveActivityPhotoUseCase.retrieveActivityPhotos(

@@ -14,7 +14,6 @@ import page.clab.api.domain.memberManagement.member.application.dto.response.Mem
 import page.clab.api.domain.memberManagement.member.application.port.in.RetrieveMemberBirthdaysThisMonthUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
@@ -37,7 +36,7 @@ public class MemberBirthdayRetrievalThisMonthController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "birth") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
-    ) throws SortingArgumentException, InvalidColumnException {
+    ) throws SortingArgumentException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
             MemberBirthdayResponseDto.class);
         PagedResponseDto<MemberBirthdayResponseDto> birthdayMembers =

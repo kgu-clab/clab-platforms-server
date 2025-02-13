@@ -14,7 +14,6 @@ import page.clab.api.domain.library.book.application.dto.response.BookResponseDt
 import page.clab.api.domain.library.book.application.port.in.RetrieveBooksByConditionsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
@@ -43,7 +42,7 @@ public class BooksByConditionsRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException, InvalidColumnException {
+    ) throws SortingArgumentException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, BookResponseDto.class);
         PagedResponseDto<BookResponseDto> books = retrieveBooksByConditionsUseCase.retrieveBooks(title, category,
             publisher, borrowerId, borrowerName, pageable);

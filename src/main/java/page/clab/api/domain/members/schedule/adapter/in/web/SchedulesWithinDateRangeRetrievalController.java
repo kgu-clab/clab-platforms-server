@@ -15,7 +15,6 @@ import page.clab.api.domain.members.schedule.application.dto.response.ScheduleRe
 import page.clab.api.domain.members.schedule.application.port.in.RetrieveSchedulesWithinDateRangeUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
@@ -39,7 +38,7 @@ public class SchedulesWithinDateRangeRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "startDateTime") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
-    ) throws SortingArgumentException, InvalidColumnException {
+    ) throws SortingArgumentException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ScheduleResponseDto.class);
         PagedResponseDto<ScheduleResponseDto> schedules =
             retrieveSchedulesWithinDateRangeUseCase.retrieveSchedulesWithinDateRange(startDate, endDate, pageable);

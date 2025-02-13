@@ -15,7 +15,6 @@ import page.clab.api.domain.memberManagement.member.application.port.in.Retrieve
 import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
@@ -42,7 +41,7 @@ public class MemberRoleInfoRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "id") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
-    ) throws InvalidColumnException, SortingArgumentException {
+    ) throws SortingArgumentException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
             MemberRoleInfoResponseDto.class);
         PagedResponseDto<MemberRoleInfoResponseDto> memberRoles = retrieveMemberRoleInfoUseCase.retrieveMemberRoleInfo(

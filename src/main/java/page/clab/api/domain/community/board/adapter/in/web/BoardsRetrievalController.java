@@ -14,7 +14,6 @@ import page.clab.api.domain.community.board.application.dto.response.BoardListRe
 import page.clab.api.domain.community.board.application.port.in.RetrieveBoardUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
@@ -36,7 +35,7 @@ public class BoardsRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException, InvalidColumnException {
+    ) throws SortingArgumentException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, BoardListResponseDto.class);
         PagedResponseDto<BoardListResponseDto> boards = retrieveBoardUseCase.retrieveBoards(pageable);
         return ApiResponse.success(boards);

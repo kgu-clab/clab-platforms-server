@@ -22,7 +22,6 @@ import page.clab.api.domain.activity.activitygroup.dto.response.AbsentResponseDt
 import page.clab.api.domain.activity.activitygroup.dto.response.AttendanceResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
@@ -66,7 +65,7 @@ public class AttendanceController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "attendanceDateTime") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException, IllegalAccessException, InvalidColumnException {
+    ) throws SortingArgumentException, IllegalAccessException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
             AttendanceResponseDto.class);
         PagedResponseDto<AttendanceResponseDto> myAttendances = attendanceService.getMyAttendances(activityGroupId,
@@ -84,7 +83,7 @@ public class AttendanceController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "memberId") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
-    ) throws SortingArgumentException, PermissionDeniedException, InvalidColumnException {
+    ) throws SortingArgumentException, PermissionDeniedException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
             AttendanceResponseDto.class);
         PagedResponseDto<AttendanceResponseDto> attendances = attendanceService.getGroupAttendances(activityGroupId,
@@ -112,7 +111,7 @@ public class AttendanceController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "absentDate") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException, PermissionDeniedException, InvalidColumnException {
+    ) throws SortingArgumentException, PermissionDeniedException {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, AbsentResponseDto.class);
         PagedResponseDto<AbsentResponseDto> absentExcuses = attendanceService.getActivityGroupAbsentExcuses(
             activityGroupId, pageable);
