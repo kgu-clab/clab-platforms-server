@@ -30,6 +30,9 @@ public enum ErrorCode {
     SORTING_ARGUMENT_ERROR(HttpStatus.BAD_REQUEST, "정렬 기준이 잘못되었습니다."),
     TYPE_MISMATCH(HttpStatus.BAD_REQUEST, "매개변수 유형이 일치하지 않습니다."),
     UNKNOWN_PATH(HttpStatus.BAD_REQUEST, "쿼리의 경로가 잘못되었습니다."),
+    RECRUITMENT_NOT_ACTIVE(HttpStatus.BAD_REQUEST, "모집 공고가 활성 상태가 아닙니다."),
+    INVALID_RECRUITMENT_CLOSURE_WINDOW(HttpStatus.BAD_REQUEST, "모집 종료일이 현재 날짜 기준 7일을 초과했거나, 아직 모집이 종료되지 않았습니다."),
+    INVALID_DATE_RANGE(HttpStatus.BAD_REQUEST, "시작일은 종료일보다 늦을 수 없습니다."),
 
     // 401 UNAUTHORIZED Errors
     AUTHENTICATION_NOT_FOUND(HttpStatus.UNAUTHORIZED, "인증 정보를 찾을 수 없습니다."),
@@ -60,6 +63,7 @@ public enum ErrorCode {
     ILLEGAL_STATE(HttpStatus.CONFLICT, "잘못된 상태입니다."),
     USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "사용자가 이미 존재합니다."),
     MAX_BORROW_LIMIT_EXCEEDED(HttpStatus.CONFLICT, "대출 가능한 도서의 수를 초과했습니다."),
+    NOT_APPROVED_APPLICATION(HttpStatus.CONFLICT, "승인되지 않은 지원서입니다."),
 
     // 423 LOCKED Errors
     ACCOUNT_LOCKED(HttpStatus.LOCKED, "계정이 잠겼습니다."),

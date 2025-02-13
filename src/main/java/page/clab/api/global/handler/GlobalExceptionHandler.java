@@ -52,9 +52,6 @@ import page.clab.api.domain.auth.login.application.exception.LoginFailedExceptio
 import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.community.accuse.application.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.community.board.application.exception.InvalidBoardCategoryHashtagException;
-import page.clab.api.domain.hiring.application.application.exception.NotApprovedApplicationException;
-import page.clab.api.domain.hiring.application.application.exception.RecruitmentEndDateExceededException;
-import page.clab.api.domain.hiring.application.application.exception.RecruitmentNotActiveException;
 import page.clab.api.domain.library.book.application.exception.BookAlreadyBorrowedException;
 import page.clab.api.domain.library.book.application.exception.InvalidBorrowerException;
 import page.clab.api.domain.library.bookLoanRecord.application.exception.BookAlreadyAppliedForLoanException;
@@ -112,8 +109,8 @@ public class GlobalExceptionHandler {
         InvalidGithubUrlException.class,
         InactiveMemberException.class,
         DuplicateRoleException.class,
-        RecruitmentNotActiveException.class,
-        RecruitmentEndDateExceededException.class,
+//        RecruitmentNotActiveException.class,
+//        RecruitmentEndDateExceededException.class,
         StringIndexOutOfBoundsException.class,
         MissingServletRequestParameterException.class,
         MalformedJsonException.class,
@@ -183,7 +180,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
         AccuseTargetTypeIncorrectException.class,
-        NotApprovedApplicationException.class,
+//        NotApprovedApplicationException.class,
         DuplicateMemberIdException.class,
         DuplicateMemberContactException.class,
         DuplicateMemberEmailException.class,
