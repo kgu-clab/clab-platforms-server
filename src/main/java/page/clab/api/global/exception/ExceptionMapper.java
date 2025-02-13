@@ -33,7 +33,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
-import page.clab.api.global.common.file.exception.InvalidFileAttributeException;
 
 public class ExceptionMapper {
 
@@ -46,7 +45,6 @@ public class ExceptionMapper {
         exceptionToErrorCodeMap.put(IllegalAccessException.class, ErrorCode.ILLEGAL_ACCESS);
         exceptionToErrorCodeMap.put(IllegalArgumentException.class, ErrorCode.ILLEGAL_ARGUMENT);
         exceptionToErrorCodeMap.put(InvalidDataAccessApiUsageException.class, ErrorCode.INVALID_DATA_ACCESS);
-        exceptionToErrorCodeMap.put(InvalidFileAttributeException.class, ErrorCode.INVALID_FILE_ATTRIBUTE);
         exceptionToErrorCodeMap.put(MalformedJsonException.class, ErrorCode.MALFORMED_JSON);
         exceptionToErrorCodeMap.put(MethodArgumentNotValidException.class, ErrorCode.METHOD_ARGUMENT_NOT_VALID);
         exceptionToErrorCodeMap.put(MethodArgumentTypeMismatchException.class, ErrorCode.TYPE_MISMATCH);

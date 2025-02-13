@@ -77,6 +77,7 @@ public enum ErrorCode {
     ELEMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 요소를 찾을 수 없습니다."),
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 파일을 찾을 수 없습니다."),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다."),
+    INVALID_PATH_VARIABLE(HttpStatus.NOT_FOUND, "유효하지 않은 경로 변수입니다."),
 
     // 409 CONFLICT Errors
     ACTIVITY_GROUP_NOT_FINISHED(HttpStatus.CONFLICT, "활동이 종료된 활동 그룹만 리뷰를 작성할 수 있습니다."),
@@ -108,6 +109,7 @@ public enum ErrorCode {
     DUPLICATE_MEMBER_CONTACT(HttpStatus.CONFLICT, "이미 해당 연락처로 가입된 멤버가 존재합니다."),
     DUPLICATE_MEMBER_EMAIL(HttpStatus.CONFLICT, "이미 해당 이메일로 가입된 멤버가 존재합니다."),
     DUPLICATE_MEMBER_ID(HttpStatus.CONFLICT, "이미 해당 ID로 가입된 멤버가 존재합니다."),
+    INSUFFICIENT_CLOUD_STORAGE(HttpStatus.CONFLICT, "클라우드 저장 공간이 부족합니다."),
 
     // 423 LOCKED Errors
     ACCOUNT_LOCKED(HttpStatus.LOCKED, "계정이 잠겼습니다."),

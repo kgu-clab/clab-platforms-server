@@ -32,8 +32,6 @@ import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.file.dto.mapper.FileDtoMapper;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
-import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
-import page.clab.api.global.common.file.exception.InvalidPathVariableException;
 import page.clab.api.global.exception.BaseException;
 import page.clab.api.global.exception.ErrorCode;
 import page.clab.api.global.util.FileSystemUtil;
@@ -172,7 +170,7 @@ public class FileService {
         return pathBuilder.toString();
     }
 
-    public void validatePathVariable(String path) throws InvalidPathVariableException {
+    public void validatePathVariable(String path) {
         String[] pathParts = path.split(Pattern.quote(File.separator));
         String pathStart = pathParts[0];
 
@@ -196,7 +194,7 @@ public class FileService {
         return baseDirectory.equals("executives");
     }
 
-    private void validateNoticePath(String[] pathParts) throws InvalidPathVariableException {
+    private void validateNoticePath(String[] pathParts) {
         Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
         String memberId = externalRetrieveMemberUseCase.getCurrentMemberId();
 
@@ -205,8 +203,7 @@ public class FileService {
         validateIsMemberGroupLeader(activityGroupId, memberId, "활동의 공지 관련 파일은 리더만 등록할 수 있습니다.");
     }
 
-    private void validateWeeklyActivityPath(String[] pathParts)
-        throws InvalidPathVariableException {
+    private void validateWeeklyActivityPath(String[] pathParts) {
         Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
         String memberId = externalRetrieveMemberUseCase.getCurrentMemberId();
 
@@ -215,8 +212,7 @@ public class FileService {
         validateIsMemberGroupLeader(activityGroupId, memberId, "활동의 주차별 활동 관련 파일은 리더만 등록할 수 있습니다.");
     }
 
-    private void validateAssignmentPath(String[] pathParts)
-        throws InvalidPathVariableException {
+    private void validateAssignmentPath(String[] pathParts) {
         Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
         String memberId = externalRetrieveMemberUseCase.getCurrentMemberId();
 
@@ -225,7 +221,7 @@ public class FileService {
         validateIsMemberGroupLeader(activityGroupId, memberId, "활동의 과제 관련 파일은 리더만 등록할 수 있습니다.");
     }
 
-    private void validateSubmitPath(String[] pathParts) throws InvalidPathVariableException {
+    private void validateSubmitPath(String[] pathParts) {
         Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
         Long activityGroupBoardId = parseId(pathParts[2], "활동 그룹 게시판 ID가 유효하지 않습니다.");
         String memberId = pathParts[3];
@@ -261,11 +257,11 @@ public class FileService {
         }
     }
 
-    private Long parseId(String idStr, String errorMessage) throws InvalidPathVariableException {
+    private Long parseId(String idStr, String errorMessage) {
         try {
             return Long.parseLong(idStr);
         } catch (NumberFormatException e) {
-            throw new InvalidPathVariableException(errorMessage);
+            throw new BaseException(ErrorCode.INVALID_PATH_VARIABLE, errorMessage);
         }
     }
 
@@ -275,7 +271,7 @@ public class FileService {
             double usage = externalRetrieveCloudUsageByMemberIdUseCase.retrieveCloudUsage(memberId).getUsage();
 
             if (multipartFile.getSize() + usage > FileSystemUtil.convertToBytes(maxFileSize)) {
-                throw new CloudStorageNotEnoughException("클라우드 저장 공간이 부족합니다.");
+                throw new BaseException(ErrorCode.INSUFFICIENT_CLOUD_STORAGE);
             }
         }
     }

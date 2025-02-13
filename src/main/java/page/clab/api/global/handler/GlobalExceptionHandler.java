@@ -11,11 +11,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.ErrorResponse;
-import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
-import page.clab.api.global.common.file.exception.DirectoryCreationException;
-import page.clab.api.global.common.file.exception.FilePermissionException;
-import page.clab.api.global.common.file.exception.FileUploadFailException;
-import page.clab.api.global.common.file.exception.InvalidPathVariableException;
 import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.GeneralAlertType;
 
@@ -101,9 +96,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
-        InvalidPathVariableException.class
+//        InvalidPathVariableException.class
     })
-    public ApiResponse<Void> notFoundException(HttpServletResponse response, InvalidPathVariableException e) {
+    public ApiResponse<Void> notFoundException(HttpServletResponse response) {
         response.setStatus(HttpServletResponse.SC_OK);
         return ApiResponse.failure();
     }
@@ -114,7 +109,7 @@ public class GlobalExceptionHandler {
 //        DuplicateMemberIdException.class,
 //        DuplicateMemberContactException.class,
 //        DuplicateMemberEmailException.class,
-        CloudStorageNotEnoughException.class,
+//        CloudStorageNotEnoughException.class,
 //        ActivityGroupNotFinishedException.class,
 //        ActivityGroupNotProgressingException.class,
 //        AlreadySubmittedThisWeekAssignmentException.class,
@@ -140,9 +135,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
 //        IllegalStateException.class,
-        FileUploadFailException.class,
-        FilePermissionException.class,
-        DirectoryCreationException.class,
+//        FileUploadFailException.class,
+//        FilePermissionException.class,
+//        DirectoryCreationException.class,
 //        DataIntegrityViolationException.class,
 //        IncorrectResultSizeDataAccessException.class,
 //        ArrayIndexOutOfBoundsException.class,

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import page.clab.api.global.common.dto.ErrorResponse;
 
-@RestControllerAdvice(basePackages = "com.stempo")
+@RestControllerAdvice(basePackages = "page.clab.api")
 @Slf4j
 public class GlobalExceptionHandler {
 
