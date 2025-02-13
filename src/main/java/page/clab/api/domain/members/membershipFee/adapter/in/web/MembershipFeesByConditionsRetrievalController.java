@@ -15,7 +15,6 @@ import page.clab.api.domain.members.membershipFee.application.port.in.RetrieveMe
 import page.clab.api.domain.members.membershipFee.domain.MembershipFeeStatus;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -43,7 +42,7 @@ public class MembershipFeesByConditionsRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
             MembershipFeeResponseDto.class);
         PagedResponseDto<MembershipFeeResponseDto> membershipFees =

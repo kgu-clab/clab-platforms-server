@@ -39,11 +39,6 @@ import page.clab.api.global.common.file.exception.InvalidFileAttributeException;
 import page.clab.api.global.common.file.exception.InvalidPathVariableException;
 import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.GeneralAlertType;
-import page.clab.api.global.exception.InvalidEmojiException;
-import page.clab.api.global.exception.InvalidInformationException;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.exception.SortingArgumentException;
 
 @RestControllerAdvice(basePackages = "page.clab.api")
 @RequiredArgsConstructor
@@ -53,12 +48,12 @@ public class GlobalExceptionHandler {
     private final ApplicationEventPublisher eventPublisher;
 
     @ExceptionHandler({
-        InvalidInformationException.class,
+//        InvalidInformationException.class,
 //        InvalidParentBoardException.class,
 //        InvalidCategoryException.class,
 //        InvalidDateRangeException.class,
 //        InvalidColumnException.class,
-        InvalidEmojiException.class,
+//        InvalidEmojiException.class,
 //        InvalidRoleChangeException.class,
 //        InvalidRoleException.class,
         InvalidFileAttributeException.class,
@@ -74,7 +69,7 @@ public class GlobalExceptionHandler {
         MethodArgumentTypeMismatchException.class,
         IllegalAccessException.class,
         NumberFormatException.class,
-        SortingArgumentException.class,
+//        SortingArgumentException.class,
         UnknownPathException.class,
 //        AssignmentBoardHasNoDueDateTimeException.class,
 //        FeedbackBoardHasNoContentException.class,
@@ -106,7 +101,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
         AccessDeniedException.class,
-        PermissionDeniedException.class,
+//        PermissionDeniedException.class,
 //        InvalidBorrowerException.class,
 //        MemberNotPartOfActivityException.class,
     })
@@ -117,7 +112,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
         NullPointerException.class,
-        NotFoundException.class,
+//        NotFoundException.class,
         NoSuchElementException.class,
         FileNotFoundException.class,
     })

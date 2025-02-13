@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.members.blog.application.dto.request.BlogUpdateRequestDto;
 import page.clab.api.domain.members.blog.application.port.in.UpdateBlogUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/blogs")
@@ -29,7 +28,7 @@ public class BlogUpdateController {
     public ApiResponse<Long> updateBlog(
         @PathVariable(name = "blogId") Long blogId,
         @Valid @RequestBody BlogUpdateRequestDto requestDto
-    ) throws PermissionDeniedException {
+    ) {
         Long id = updateBlogUseCase.updateBlog(blogId, requestDto);
         return ApiResponse.success(id);
     }

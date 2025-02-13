@@ -15,7 +15,6 @@ import page.clab.api.domain.members.donation.application.dto.response.DonationRe
 import page.clab.api.domain.members.donation.application.port.in.RetrieveDonationsByConditionsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -42,7 +41,7 @@ public class DonationsByConditionsRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, DonationResponseDto.class);
         PagedResponseDto<DonationResponseDto> donations = retrieveDonationsByConditionsUseCase.retrieveDonations(
             memberId, name, startDate, endDate, pageable);

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.members.schedule.application.dto.request.ScheduleRequestDto;
 import page.clab.api.domain.members.schedule.application.port.in.RegisterScheduleUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/schedules")
@@ -27,7 +26,7 @@ public class ScheduleRegisterController {
     @PostMapping("")
     public ApiResponse<Long> registerSchedule(
         @Valid @RequestBody ScheduleRequestDto requestDto
-    ) throws PermissionDeniedException {
+    ) {
         Long id = registerScheduleUseCase.registerSchedule(requestDto);
         return ApiResponse.success(id);
     }

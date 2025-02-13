@@ -14,7 +14,6 @@ import page.clab.api.domain.community.accuse.application.dto.response.AccuseMyRe
 import page.clab.api.domain.community.accuse.application.port.in.RetrieveMyAccusationsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -35,7 +34,7 @@ public class MyAccusationsController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, AccuseMyResponseDto.class);
         PagedResponseDto<AccuseMyResponseDto> accuses = retrieveMyAccusationsUsecase.retrieveMyAccusations(pageable);
         return ApiResponse.success(accuses);

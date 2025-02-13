@@ -14,7 +14,6 @@ import page.clab.api.domain.hiring.application.application.dto.response.Applicat
 import page.clab.api.domain.hiring.application.application.port.in.RetrieveApplicationsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -40,7 +39,7 @@ public class ApplicationRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
             ApplicationResponseDto.class);
         PagedResponseDto<ApplicationResponseDto> applications = retrieveApplicationsUseCase.retrieveApplications(

@@ -35,8 +35,6 @@ import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.BaseException;
 import page.clab.api.global.exception.ErrorCode;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -62,11 +60,11 @@ public class ActivityGroupBoardService {
      * @param activityGroupId 활동 그룹의 ID
      * @param requestDto      게시판 생성 요청 DTO
      * @return ActivityGroupBoardReferenceDto
-     * @throws PermissionDeniedException 권한이 없는 경우 예외 발생
+     * @throws BaseException {@code ErrorCode.PERMISSION_DENIED} - 권한이 없는 경우 예외 발생
      */
     @Transactional
     public ActivityGroupBoardReferenceDto createActivityGroupBoard(Long parentId, Long activityGroupId,
-        ActivityGroupBoardRequestDto requestDto) throws PermissionDeniedException {
+        ActivityGroupBoardRequestDto requestDto) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
 
@@ -91,15 +89,14 @@ public class ActivityGroupBoardService {
         return mapper.of(board.getId(), activityGroupId, parentId);
     }
 
-    private void validateGroupMember(ActivityGroup activityGroup, Member currentMember)
-        throws PermissionDeniedException {
+    private void validateGroupMember(ActivityGroup activityGroup, Member currentMember) {
         if (!activityGroupMemberService.isGroupMember(activityGroup, currentMember.getId())) {
-            throw new PermissionDeniedException("해당 활동 그룹의 멤버가 아닙니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 활동 그룹의 멤버가 아닙니다.");
         }
     }
 
     private void validateCanCreateBoard(ActivityGroup activityGroup, ActivityGroupBoardCategory category,
-        Member currentMember) throws PermissionDeniedException {
+        Member currentMember) {
         Role role = currentMember.getRole();
         boolean isRequireAdminOrLeaderCategory = category.isNotice() ||
             category.isWeeklyActivity() ||
@@ -109,7 +106,7 @@ public class ActivityGroupBoardService {
         // NOTICE, WEEKLY_ACTIVITY, ASSIGNMENT, FEEDBACK 카테고리에서 권한이 ADMIN 이상이 아니거나, 리더가 아니면 예외처리
         if (isRequireAdminOrLeaderCategory && !(role.isHigherThanOrEqual(Role.ADMIN)
             || activityGroupAdminService.hasLeaderOrAdminRole(activityGroup, currentMember))) {
-            throw new PermissionDeniedException("해당 카테고리에서 게시글을 작성할 권한이 없습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 카테고리에서 게시글을 작성할 권한이 없습니다.");
         }
     }
 
@@ -157,13 +154,12 @@ public class ActivityGroupBoardService {
     }
 
     @Transactional(readOnly = true)
-    public ActivityGroupBoardResponseDto getActivityGroupBoard(Long activityGroupBoardId)
-        throws PermissionDeniedException {
+    public ActivityGroupBoardResponseDto getActivityGroupBoard(Long activityGroupBoardId) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardById(activityGroupBoardId);
         validateGroupMember(board.getActivityGroup(), currentMember);
         if (!hasAccessToBoard(board.getActivityGroup(), board, currentMember)) {
-            throw new PermissionDeniedException("해당 게시물을 조회할 권한이 없습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 게시물을 조회할 권한이 없습니다.");
         }
         MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(
             board.getMemberId());
@@ -172,7 +168,7 @@ public class ActivityGroupBoardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardResponseDto> getActivityGroupBoardByCategory(Long activityGroupId,
-        ActivityGroupBoardCategory category, Pageable pageable) throws PermissionDeniedException {
+        ActivityGroupBoardCategory category, Pageable pageable) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         validateGroupMember(activityGroup, currentMember);
@@ -192,7 +188,7 @@ public class ActivityGroupBoardService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<ActivityGroupBoardChildResponseDto> getActivityGroupBoardByParent(Long parentId,
-        Pageable pageable) throws PermissionDeniedException {
+        Pageable pageable) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard parentBoard = getActivityGroupBoardById(parentId);
         Long activityGroupId = parentBoard.getActivityGroup().getId();
@@ -238,7 +234,7 @@ public class ActivityGroupBoardService {
 
     @Transactional
     public ActivityGroupBoardReferenceDto updateActivityGroupBoard(Long activityGroupBoardId,
-        ActivityGroupBoardUpdateRequestDto requestDto) throws PermissionDeniedException {
+        ActivityGroupBoardUpdateRequestDto requestDto) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardById(activityGroupBoardId);
         board.validateAccessPermission(currentMember);
@@ -249,8 +245,7 @@ public class ActivityGroupBoardService {
         return mapper.of(board.getId(), board.getActivityGroup().getId(), parentId);
     }
 
-    public ActivityGroupBoardReferenceDto deleteActivityGroupBoard(Long activityGroupBoardId)
-        throws PermissionDeniedException {
+    public ActivityGroupBoardReferenceDto deleteActivityGroupBoard(Long activityGroupBoardId) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupBoard board = getActivityGroupBoardById(activityGroupBoardId);
         board.validateAccessPermission(currentMember);
@@ -271,7 +266,7 @@ public class ActivityGroupBoardService {
 
     public ActivityGroupBoard getActivityGroupBoardById(Long activityGroupBoardId) {
         return activityGroupBoardRepository.findById(activityGroupBoardId)
-            .orElseThrow(() -> new NotFoundException("해당 활동 그룹 게시글을 찾을 수 없습니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND, "해당 활동 그룹 게시글을 찾을 수 없습니다."));
     }
 
     private List<ActivityGroupBoard> getChildBoards(Long activityGroupBoardId) {

@@ -14,7 +14,6 @@ import page.clab.api.domain.activity.review.application.dto.response.ReviewRespo
 import page.clab.api.domain.activity.review.application.port.in.RetrieveMyReviewsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -35,7 +34,7 @@ public class MyReviewsRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ReviewResponseDto.class);
         PagedResponseDto<ReviewResponseDto> myReviews = retrieveMyReviewsUseCase.retrieveMyReviews(pageable);
         return ApiResponse.success(myReviews);

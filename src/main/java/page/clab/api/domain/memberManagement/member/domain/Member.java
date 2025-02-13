@@ -17,7 +17,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationMemberCreationDto;
 import page.clab.api.domain.memberManagement.member.application.dto.request.MemberUpdateRequestDto;
-import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Getter
 @Setter
@@ -54,6 +55,26 @@ public class Member implements UserDetails {
 
     public static Member createUserDetails(Member member) {
         return new Member(member.getId(), member.getPassword(), member.getRole());
+    }
+
+    public static Member toMember(ApplicationMemberCreationDto dto) {
+        return Member.builder()
+            .id(dto.getStudentId())
+            .name(dto.getName())
+            .contact(dto.getContact())
+            .email(dto.getEmail())
+            .department(dto.getDepartment())
+            .grade(dto.getGrade())
+            .birth(dto.getBirth())
+            .address(dto.getAddress())
+            .interests(dto.getInterests())
+            .githubUrl(dto.getGithubUrl())
+            .studentStatus(StudentStatus.CURRENT)
+            .imageUrl("")
+            .role(Role.USER)
+            .isOtpEnabled(false)
+            .isDeleted(false)
+            .build();
     }
 
     @Override
@@ -130,15 +151,15 @@ public class Member implements UserDetails {
         return this.isSameMember(member);
     }
 
-    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+    public void validateAccessPermission(Member member) {
         if (!isOwner(member) && !member.isSuperAdminRole()) {
-            throw new PermissionDeniedException("해당 멤버를 수정/삭제할 권한이 없습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 멤버를 수정/삭제할 권한이 없습니다.");
         }
     }
 
-    public void validateAccessPermissionForCloud(Member member) throws PermissionDeniedException {
+    public void validateAccessPermissionForCloud(Member member) {
         if (!isOwner(member) && !member.isSuperAdminRole()) {
-            throw new PermissionDeniedException("해당 멤버의 클라우드 사용량을 조회할 권한이 없습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 멤버의 클라우드 사용량을 조회할 권한이 없습니다.");
         }
     }
 
@@ -160,25 +181,5 @@ public class Member implements UserDetails {
 
     public void clearImageUrl() {
         this.imageUrl = null;
-    }
-
-    public static Member toMember(ApplicationMemberCreationDto dto) {
-        return Member.builder()
-            .id(dto.getStudentId())
-            .name(dto.getName())
-            .contact(dto.getContact())
-            .email(dto.getEmail())
-            .department(dto.getDepartment())
-            .grade(dto.getGrade())
-            .birth(dto.getBirth())
-            .address(dto.getAddress())
-            .interests(dto.getInterests())
-            .githubUrl(dto.getGithubUrl())
-            .studentStatus(StudentStatus.CURRENT)
-            .imageUrl("")
-            .role(Role.USER)
-            .isOtpEnabled(false)
-            .isDeleted(false)
-            .build();
     }
 }

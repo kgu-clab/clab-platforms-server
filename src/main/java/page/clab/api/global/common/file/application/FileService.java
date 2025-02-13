@@ -36,8 +36,6 @@ import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException
 import page.clab.api.global.common.file.exception.InvalidPathVariableException;
 import page.clab.api.global.exception.BaseException;
 import page.clab.api.global.exception.ErrorCode;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.FileSystemUtil;
 import page.clab.api.global.util.FileUtil;
 
@@ -119,7 +117,7 @@ public class FileService {
     }
 
     public List<UploadedFileResponseDto> saveFiles(List<MultipartFile> multipartFiles, String path, long storagePeriod)
-        throws IOException, PermissionDeniedException {
+        throws IOException {
         List<UploadedFileResponseDto> uploadedFileResponseDtos = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
             UploadedFileResponseDto responseDto = saveFile(multipartFile, path, storagePeriod);
@@ -129,7 +127,7 @@ public class FileService {
     }
 
     public UploadedFileResponseDto saveFile(MultipartFile multipartFile, String path, long storagePeriod)
-        throws IOException, PermissionDeniedException {
+        throws IOException {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
 
         validatePathVariable(path);
@@ -146,14 +144,14 @@ public class FileService {
         return mapper.toDto(uploadedFile);
     }
 
-    public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) throws PermissionDeniedException {
+    public String deleteFile(DeleteFileRequestDto deleteFileRequestDto) {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         UploadedFile uploadedFile = uploadedFileService.getUploadedFileByUrl(deleteFileRequestDto.getUrl());
 
         String filePath = uploadedFile.getSavedPath();
         File storedFile = new File(filePath);
         if (!storedFile.exists()) {
-            throw new NotFoundException("존재하지 않는 파일입니다.");
+            throw new BaseException(ErrorCode.NOT_FOUND, "존재하지 않는 파일입니다.");
         }
 
         uploadedFile.validateAccessPermission(currentMemberInfo);
@@ -174,7 +172,7 @@ public class FileService {
         return pathBuilder.toString();
     }
 
-    public void validatePathVariable(String path) throws InvalidPathVariableException, PermissionDeniedException {
+    public void validatePathVariable(String path) throws InvalidPathVariableException {
         String[] pathParts = path.split(Pattern.quote(File.separator));
         String pathStart = pathParts[0];
 
@@ -198,7 +196,7 @@ public class FileService {
         return baseDirectory.equals("executives");
     }
 
-    private void validateNoticePath(String[] pathParts) throws InvalidPathVariableException, PermissionDeniedException {
+    private void validateNoticePath(String[] pathParts) throws InvalidPathVariableException {
         Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
         String memberId = externalRetrieveMemberUseCase.getCurrentMemberId();
 
@@ -208,7 +206,7 @@ public class FileService {
     }
 
     private void validateWeeklyActivityPath(String[] pathParts)
-        throws InvalidPathVariableException, PermissionDeniedException {
+        throws InvalidPathVariableException {
         Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
         String memberId = externalRetrieveMemberUseCase.getCurrentMemberId();
 
@@ -218,7 +216,7 @@ public class FileService {
     }
 
     private void validateAssignmentPath(String[] pathParts)
-        throws InvalidPathVariableException, PermissionDeniedException {
+        throws InvalidPathVariableException {
         Long activityGroupId = parseId(pathParts[1], "활동 ID가 유효하지 않습니다.");
         String memberId = externalRetrieveMemberUseCase.getCurrentMemberId();
 
@@ -241,7 +239,7 @@ public class FileService {
 
     private void validateActivityGroupExist(Long activityGroupId) {
         if (!activityGroupRepository.existsById(activityGroupId)) {
-            throw new NotFoundException("해당 활동은 존재하지 않습니다.");
+            throw new BaseException(ErrorCode.NOT_FOUND, "해당 활동은 존재하지 않습니다.");
         }
     }
 
@@ -251,10 +249,9 @@ public class FileService {
         }
     }
 
-    private void validateIsMemberGroupLeader(Long activityGroupId, String memberId, String exceptionMessage)
-        throws PermissionDeniedException {
+    private void validateIsMemberGroupLeader(Long activityGroupId, String memberId, String exceptionMessage) {
         if (!activityGroupAdminService.isMemberGroupLeaderRole(activityGroupId, memberId)) {
-            throw new PermissionDeniedException(exceptionMessage);
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, exceptionMessage);
         }
     }
 
@@ -272,7 +269,7 @@ public class FileService {
         }
     }
 
-    private void validateMemberCloudUsage(MultipartFile multipartFile, String path) throws PermissionDeniedException {
+    private void validateMemberCloudUsage(MultipartFile multipartFile, String path) {
         if (path.split(Pattern.quote(File.separator))[0].equals("members")) {
             String memberId = path.split(Pattern.quote(File.separator))[1];
             double usage = externalRetrieveCloudUsageByMemberIdUseCase.retrieveCloudUsage(memberId).getUsage();

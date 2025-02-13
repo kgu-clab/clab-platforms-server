@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.members.donation.application.dto.request.DonationUpdateRequestDto;
 import page.clab.api.domain.members.donation.application.port.in.UpdateDonationUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/donations")
@@ -29,7 +28,7 @@ public class DonationUpdateController {
     public ApiResponse<Long> updateDonation(
         @PathVariable(name = "donationId") Long donationId,
         @Valid @RequestBody DonationUpdateRequestDto requestDto
-    ) throws PermissionDeniedException {
+    ) {
         Long id = updateDonationUseCase.updateDonation(donationId, requestDto);
         return ApiResponse.success(id);
     }

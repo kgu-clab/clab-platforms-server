@@ -10,7 +10,6 @@ import page.clab.api.domain.members.membershipFee.application.port.out.RetrieveM
 import page.clab.api.domain.members.membershipFee.application.port.out.UpdateMembershipFeePort;
 import page.clab.api.domain.members.membershipFee.domain.MembershipFee;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +21,7 @@ public class MembershipFeeUpdateService implements UpdateMembershipFeeUseCase {
 
     @Transactional
     @Override
-    public Long updateMembershipFee(Long membershipFeeId, MembershipFeeUpdateRequestDto requestDto)
-        throws PermissionDeniedException {
+    public Long updateMembershipFee(Long membershipFeeId, MembershipFeeUpdateRequestDto requestDto) {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         MembershipFee membershipFee = retrieveMembershipFeePort.getById(membershipFeeId);
         membershipFee.validateAccessPermission(currentMemberInfo);

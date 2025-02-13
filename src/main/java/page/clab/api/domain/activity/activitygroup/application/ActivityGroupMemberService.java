@@ -45,7 +45,6 @@ import page.clab.api.external.memberManagement.notification.application.port.Ext
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.BaseException;
 import page.clab.api.global.exception.ErrorCode;
-import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.util.PaginationUtils;
 
 @Service
@@ -220,7 +219,7 @@ public class ActivityGroupMemberService {
 
     public ActivityGroup getActivityGroupById(Long activityGroupId) {
         return activityGroupRepository.findById(activityGroupId)
-            .orElseThrow(() -> new NotFoundException("해당 활동이 존재하지 않습니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND, "해당 활동이 존재하지 않습니다."));
     }
 
     public Map<Long, GroupMember> findActivityGroupOwners(List<Long> activityGroupIds) {
@@ -237,7 +236,7 @@ public class ActivityGroupMemberService {
 
     public GroupMember getGroupMemberByActivityGroupAndMember(ActivityGroup activityGroup, String memberId) {
         return groupMemberRepository.findByActivityGroupAndMemberId(activityGroup, memberId)
-            .orElseThrow(() -> new NotFoundException("해당 멤버가 활동에 참여하지 않았습니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND, "해당 멤버가 활동에 참여하지 않았습니다."));
     }
 
     private Page<ActivityGroup> getActivityGroupByCategory(ActivityGroupCategory category, Pageable pageable) {

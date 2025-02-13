@@ -9,7 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.members.donation.application.dto.request.DonationUpdateRequestDto;
-import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Getter
 @Setter
@@ -34,9 +35,9 @@ public class Donation {
         this.isDeleted = true;
     }
 
-    public void validateAccessPermission(boolean isSuperAdmin) throws PermissionDeniedException {
+    public void validateAccessPermission(boolean isSuperAdmin) {
         if (!isSuperAdmin) {
-            throw new PermissionDeniedException("해당 후원 정보를 수정할 권한이 없습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 후원 정보를 수정할 권한이 없습니다.");
         }
     }
 }

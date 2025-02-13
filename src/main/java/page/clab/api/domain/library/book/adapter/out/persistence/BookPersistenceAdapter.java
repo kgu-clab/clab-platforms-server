@@ -8,7 +8,8 @@ import page.clab.api.domain.library.book.application.port.out.RegisterBookPort;
 import page.clab.api.domain.library.book.application.port.out.RemoveBookPort;
 import page.clab.api.domain.library.book.application.port.out.RetrieveBookPort;
 import page.clab.api.domain.library.book.domain.Book;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -36,7 +37,8 @@ public class BookPersistenceAdapter implements
     public Book getById(Long bookId) {
         return bookRepository.findById(bookId)
             .map(bookMapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[Book] id: " + bookId + "에 해당하는 책이 존재하지 않습니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND,
+                "[Book] id: " + bookId + "에 해당하는 책이 존재하지 않습니다."));
     }
 
     @Override

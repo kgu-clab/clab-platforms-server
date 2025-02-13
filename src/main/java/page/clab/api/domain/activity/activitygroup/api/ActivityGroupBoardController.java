@@ -26,8 +26,6 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoa
 import page.clab.api.domain.activity.activitygroup.dto.response.AssignmentSubmissionWithFeedbackResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -52,7 +50,7 @@ public class ActivityGroupBoardController {
         @RequestParam(name = "parentId", required = false) Long parentId,
         @RequestParam(name = "activityGroupId") Long activityGroupId,
         @Valid @RequestBody ActivityGroupBoardRequestDto requestDto
-    ) throws PermissionDeniedException {
+    ) {
         ActivityGroupBoardReferenceDto referenceDto = activityGroupBoardService.createActivityGroupBoard(parentId,
             activityGroupId, requestDto);
         return ApiResponse.success(referenceDto);
@@ -67,7 +65,7 @@ public class ActivityGroupBoardController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
             ActivityGroupBoardResponseDto.class);
         PagedResponseDto<ActivityGroupBoardResponseDto> boards = activityGroupBoardService.getAllActivityGroupBoard(
@@ -80,7 +78,7 @@ public class ActivityGroupBoardController {
     @GetMapping("")
     public ApiResponse<ActivityGroupBoardResponseDto> getActivityGroupBoardById(
         @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId
-    ) throws PermissionDeniedException {
+    ) {
         ActivityGroupBoardResponseDto board = activityGroupBoardService.getActivityGroupBoard(activityGroupBoardId);
         return ApiResponse.success(board);
     }
@@ -96,7 +94,7 @@ public class ActivityGroupBoardController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException, PermissionDeniedException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
             ActivityGroupBoardResponseDto.class);
         PagedResponseDto<ActivityGroupBoardResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByCategory(
@@ -111,7 +109,7 @@ public class ActivityGroupBoardController {
         @RequestParam(name = "parentId") Long parentId,
         @RequestParam(name = "page", defaultValue = "0") int page,
         @RequestParam(name = "size", defaultValue = "20") int size
-    ) throws PermissionDeniedException {
+    ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<ActivityGroupBoardChildResponseDto> boards = activityGroupBoardService.getActivityGroupBoardByParent(
             parentId, pageable);
@@ -135,7 +133,7 @@ public class ActivityGroupBoardController {
     public ApiResponse<ActivityGroupBoardReferenceDto> updateActivityGroupBoard(
         @RequestParam(name = "activityGroupBoardId") Long activityGroupBoardId,
         @Valid @RequestBody ActivityGroupBoardUpdateRequestDto requestDto
-    ) throws PermissionDeniedException {
+    ) {
         ActivityGroupBoardReferenceDto referenceDto = activityGroupBoardService.updateActivityGroupBoard(
             activityGroupBoardId, requestDto);
         return ApiResponse.success(referenceDto);
@@ -146,7 +144,7 @@ public class ActivityGroupBoardController {
     @DeleteMapping("")
     public ApiResponse<ActivityGroupBoardReferenceDto> deleteActivityGroupBoard(
         @RequestParam Long activityGroupBoardId
-    ) throws PermissionDeniedException {
+    ) {
         ActivityGroupBoardReferenceDto referenceDto = activityGroupBoardService.deleteActivityGroupBoard(
             activityGroupBoardId);
         return ApiResponse.success(referenceDto);

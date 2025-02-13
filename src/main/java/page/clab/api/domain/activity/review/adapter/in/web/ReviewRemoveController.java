@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activity.review.application.port.in.RemoveReviewUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/reviews")
@@ -25,7 +24,7 @@ public class ReviewRemoveController {
     @DeleteMapping("/{reviewId}")
     public ApiResponse<Long> removeReview(
         @PathVariable(name = "reviewId") Long reviewId
-    ) throws PermissionDeniedException {
+    ) {
         Long id = removeReviewUseCase.removeReview(reviewId);
         return ApiResponse.success(id);
     }

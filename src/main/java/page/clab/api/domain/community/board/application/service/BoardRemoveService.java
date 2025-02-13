@@ -11,7 +11,6 @@ import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPo
 import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +23,7 @@ public class BoardRemoveService implements RemoveBoardUseCase {
 
     @Transactional
     @Override
-    public String removeBoard(Long boardId) throws PermissionDeniedException {
+    public String removeBoard(Long boardId) {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         Board board = retrieveBoardPort.getById(boardId);
         board.validateAccessPermission(currentMemberInfo);

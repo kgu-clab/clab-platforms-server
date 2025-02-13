@@ -32,7 +32,6 @@ import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.BaseException;
 import page.clab.api.global.exception.ErrorCode;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @Entity
 @Getter
@@ -98,9 +97,9 @@ public class ActivityGroupBoard extends BaseEntity {
         return this.memberId.equals(memberId);
     }
 
-    public void validateAccessPermission(Member member) throws PermissionDeniedException {
+    public void validateAccessPermission(Member member) {
         if (!isOwner(member.getId()) && !member.isAdminRole()) {
-            throw new PermissionDeniedException("해당 활동 그룹 게시판을 수정/삭제할 권한이 없습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 활동 그룹 게시판을 수정/삭제할 권한이 없습니다.");
         }
     }
 
@@ -112,11 +111,11 @@ public class ActivityGroupBoard extends BaseEntity {
         return this.category.equals(ActivityGroupBoardCategory.FEEDBACK);
     }
 
-    public void validateAccessPermission(Member member, List<GroupMember> leaders) throws PermissionDeniedException {
+    public void validateAccessPermission(Member member, List<GroupMember> leaders) {
         if (!member.isAdminRole() && !CollectionUtils.isEmpty(leaders) && leaders.stream()
             .noneMatch(leader -> leader.isOwner(member.getId()))) {
             if (this.isAssignment()) {
-                throw new PermissionDeniedException("과제 게시판에 접근할 권한이 없습니다.");
+                throw new BaseException(ErrorCode.PERMISSION_DENIED, "과제 게시판에 접근할 권한이 없습니다.");
             }
         }
     }

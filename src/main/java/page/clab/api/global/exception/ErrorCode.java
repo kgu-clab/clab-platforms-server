@@ -44,6 +44,11 @@ public enum ErrorCode {
     EXECUTIVE_NOT_A_MEMBER(HttpStatus.BAD_REQUEST, "운영진 등록 대상은 멤버여야 합니다."),
     ALERT_TYPE_NOT_FOUND(HttpStatus.BAD_REQUEST, "알림 타입을 찾을 수 없습니다."),
     INVALID_COLUMN(HttpStatus.BAD_REQUEST, "유효하지 않은 열이 포함되었습니다."),
+    UNSUPPORTED_EMOJI(HttpStatus.BAD_REQUEST, "지원하지 않는 이모지입니다."),
+    RESET_PASSWORD_INFORMATION_MISMATCH(HttpStatus.BAD_REQUEST, "비밀번호 재설정을 위한 회원 정보가 일치하지 않습니다."),
+    INVALID_VERIFICATION_REQUEST(HttpStatus.BAD_REQUEST, "인증 요청 정보가 올바르지 않습니다."),
+    SORTING_ARGUMENT_MISMATCH(HttpStatus.BAD_REQUEST, "정렬 기준과 정렬 순서의 개수가 일치하지 않습니다."),
+    INVALID_SORT_DIRECTION(HttpStatus.BAD_REQUEST, "지원하지 않는 정렬 방식입니다."),
 
     // 401 UNAUTHORIZED Errors
     AUTHENTICATION_NOT_FOUND(HttpStatus.UNAUTHORIZED, "인증 정보가 존재하지 않습니다."),
@@ -68,6 +73,7 @@ public enum ErrorCode {
     MEMBER_NOT_PART_OF_ACTIVITY_GROUP(HttpStatus.FORBIDDEN, "활동 그룹에 속하지 않은 멤버입니다."),
 
     // 404 NOT_FOUND Errors
+    NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 정보를 찾을 수 없습니다."),
     ELEMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 요소를 찾을 수 없습니다."),
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 파일을 찾을 수 없습니다."),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다."),

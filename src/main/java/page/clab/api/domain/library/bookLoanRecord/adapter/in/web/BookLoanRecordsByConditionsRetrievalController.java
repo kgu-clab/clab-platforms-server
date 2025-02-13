@@ -15,7 +15,6 @@ import page.clab.api.domain.library.bookLoanRecord.application.port.in.RetrieveB
 import page.clab.api.domain.library.bookLoanRecord.domain.BookLoanStatus;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -41,7 +40,7 @@ public class BookLoanRecordsByConditionsRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "borrowedAt") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
             BookLoanRecordResponseDto.class);
         PagedResponseDto<BookLoanRecordResponseDto> bookLoanRecords =

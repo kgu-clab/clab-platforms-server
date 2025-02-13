@@ -15,7 +15,6 @@ import page.clab.api.domain.members.schedule.application.dto.response.ScheduleRe
 import page.clab.api.domain.members.schedule.application.port.in.RetrieveActivitySchedulesUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -38,7 +37,7 @@ public class ActivitySchedulesRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "startDateTime") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
-    ) throws SortingArgumentException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, ScheduleResponseDto.class);
         PagedResponseDto<ScheduleResponseDto> schedules =
             retrieveActivitySchedulesUseCase.retrieveActivitySchedules(startDate, endDate, pageable);

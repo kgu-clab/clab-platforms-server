@@ -11,7 +11,8 @@ import page.clab.api.domain.memberManagement.position.application.port.out.Retri
 import page.clab.api.domain.memberManagement.position.application.port.out.UpdatePositionPort;
 import page.clab.api.domain.memberManagement.position.domain.Position;
 import page.clab.api.domain.memberManagement.position.domain.PositionType;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -49,7 +50,8 @@ public class PositionPersistenceAdapter implements
     public Position getById(Long id) {
         return repository.findById(id)
             .map(mapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[Position] id: " + id + "에 해당하는 직책이 존재하지 않습니다."));
+            .orElseThrow(
+                () -> new BaseException(ErrorCode.NOT_FOUND, "[Position] id: " + id + "에 해당하는 직책이 존재하지 않습니다."));
     }
 
     @Override

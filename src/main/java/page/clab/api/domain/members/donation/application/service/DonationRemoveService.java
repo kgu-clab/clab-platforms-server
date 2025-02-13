@@ -9,7 +9,6 @@ import page.clab.api.domain.members.donation.application.port.out.RegisterDonati
 import page.clab.api.domain.members.donation.application.port.out.RetrieveDonationPort;
 import page.clab.api.domain.members.donation.domain.Donation;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +20,7 @@ public class DonationRemoveService implements RemoveDonationUseCase {
 
     @Transactional
     @Override
-    public Long removeDonation(Long donationId) throws PermissionDeniedException {
+    public Long removeDonation(Long donationId) {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         Donation donation = retrieveDonationPort.getById(donationId);
         donation.validateAccessPermission(currentMemberInfo.isSuperAdminRole());

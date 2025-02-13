@@ -10,7 +10,8 @@ import page.clab.api.domain.memberManagement.workExperience.application.port.out
 import page.clab.api.domain.memberManagement.workExperience.application.port.out.RetrieveWorkExperiencePort;
 import page.clab.api.domain.memberManagement.workExperience.application.port.out.UpdateWorkExperiencePort;
 import page.clab.api.domain.memberManagement.workExperience.domain.WorkExperience;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -74,6 +75,7 @@ public class WorkExperiencePersistenceAdapter implements
     public WorkExperience getById(Long id) {
         return repository.findById(id)
             .map(mapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[WorkExperience] id: " + id + "에 해당하는 경력사항이 존재하지 않습니다."));
+            .orElseThrow(
+                () -> new BaseException(ErrorCode.NOT_FOUND, "[WorkExperience] id: " + id + "에 해당하는 경력사항이 존재하지 않습니다."));
     }
 }

@@ -14,7 +14,6 @@ import page.clab.api.domain.memberManagement.award.application.dto.response.Awar
 import page.clab.api.domain.memberManagement.award.application.port.in.RetrieveMyAwardsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -35,7 +34,7 @@ public class MyAwardRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "awardDate") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, AwardResponseDto.class);
         PagedResponseDto<AwardResponseDto> myAwards = retrieveMyAwardsUseCase.retrieveMyAwards(pageable);
         return ApiResponse.success(myAwards);

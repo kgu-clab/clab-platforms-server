@@ -29,8 +29,6 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupMem
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -58,7 +56,7 @@ public class ActivityGroupAdminController {
     public ApiResponse<Long> updateActivityGroup(
         @PathVariable(name = "activityGroupId") Long activityGroupId,
         @Valid @RequestBody ActivityGroupUpdateRequestDto requestDto
-    ) throws PermissionDeniedException {
+    ) {
         Long id = activityGroupAdminService.updateActivityGroup(activityGroupId, requestDto);
         return ApiResponse.success(id);
     }
@@ -80,7 +78,7 @@ public class ActivityGroupAdminController {
     @DeleteMapping("/{activityGroupId}")
     public ApiResponse<Long> deleteActivityGroup(
         @PathVariable(name = "activityGroupId") Long activityGroupId
-    ) throws PermissionDeniedException {
+    ) {
         Long id = activityGroupAdminService.deleteActivityGroup(activityGroupId);
         return ApiResponse.success(id);
     }
@@ -92,7 +90,7 @@ public class ActivityGroupAdminController {
     public ApiResponse<Long> updateProjectProgress(
         @PathVariable(name = "activityGroupId") Long activityGroupId,
         @RequestParam(name = "progress") Long progress
-    ) throws PermissionDeniedException {
+    ) {
         Long id = activityGroupAdminService.updateProjectProgress(activityGroupId, progress);
         return ApiResponse.success(id);
     }
@@ -103,7 +101,7 @@ public class ActivityGroupAdminController {
     public ApiResponse<Long> addSchedule(
         @RequestParam(name = "activityGroupId") Long activityGroupId,
         @Valid @RequestBody List<GroupScheduleDto> scheduleDtos
-    ) throws PermissionDeniedException {
+    ) {
         Long id = activityGroupAdminService.addSchedule(activityGroupId, scheduleDtos);
         return ApiResponse.success(id);
     }
@@ -119,7 +117,7 @@ public class ActivityGroupAdminController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "status") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
-    ) throws SortingArgumentException, PermissionDeniedException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
             ActivityGroupMemberWithApplyReasonResponseDto.class);
         PagedResponseDto<ActivityGroupMemberWithApplyReasonResponseDto> groupMembers = activityGroupAdminService.getGroupMembersWithApplyReason(
@@ -134,7 +132,7 @@ public class ActivityGroupAdminController {
         @RequestParam(name = "activityGroupId") Long activityGroupId,
         @RequestParam(name = "memberId") List<String> memberIds,
         @RequestParam(name = "status") GroupMemberStatus status
-    ) throws PermissionDeniedException {
+    ) {
         Long id = activityGroupAdminService.manageGroupMemberStatus(activityGroupId, memberIds, status);
         return ApiResponse.success(id);
     }
@@ -149,7 +147,7 @@ public class ActivityGroupAdminController {
         @RequestParam(name = "activityGroupId") Long activityGroupId,
         @RequestParam(name = "memberId") String memberId,
         @RequestParam(name = "position") ActivityGroupRole position
-    ) throws PermissionDeniedException {
+    ) {
         Long id = activityGroupAdminService.changeGroupMemberPosition(activityGroupId, memberId, position);
         return ApiResponse.success(id);
     }

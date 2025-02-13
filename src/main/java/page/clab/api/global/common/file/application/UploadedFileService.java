@@ -7,7 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import page.clab.api.global.common.file.dao.UploadFileRepository;
 import page.clab.api.global.common.file.domain.UploadedFile;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 /**
  * {@code UploadedFileService}는 업로드된 파일을 저장, 조회, 및 유효성 검사를 수행하는 서비스입니다.
@@ -24,7 +25,7 @@ import page.clab.api.global.exception.NotFoundException;
  * </ul>
  *
  * <p>이 서비스는 파일 조회와 관련된 기본적인 예외 처리도 포함하고 있으며, 요청된 파일이 존재하지 않을 경우
- * {@link NotFoundException}을 발생시킵니다.</p>
+ * {@link BaseException} - {@code ErrorCode.NOT_FOUNT}을 발생시킵니다.</p>
  */
 @Service
 @RequiredArgsConstructor
@@ -39,7 +40,7 @@ public class UploadedFileService {
 
     public UploadedFile getUploadedFileByUrl(String url) {
         return uploadFileRepository.findByUrl(url)
-            .orElseThrow(() -> new NotFoundException("파일을 찾을 수 없습니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND, "파일을 찾을 수 없습니다."));
     }
 
     public UploadedFile getUniqueUploadedFileByCategory(String category) {
@@ -52,7 +53,7 @@ public class UploadedFileService {
         }
         List<UploadedFile> uploadedFiles = uploadFileRepository.findAllByUrlIn(fileUrls);
         if (uploadedFiles.size() != fileUrls.size()) {
-            throw new NotFoundException("서버에 업로드되지 않은 파일이 포함되어 있습니다.");
+            throw new BaseException(ErrorCode.NOT_FOUND, "서버에 업로드되지 않은 파일이 포함되어 있습니다.");
         }
         return uploadedFiles;
     }

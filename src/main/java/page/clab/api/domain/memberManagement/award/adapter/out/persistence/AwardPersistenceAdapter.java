@@ -9,7 +9,8 @@ import page.clab.api.domain.memberManagement.award.application.port.out.Register
 import page.clab.api.domain.memberManagement.award.application.port.out.RemoveAwardPort;
 import page.clab.api.domain.memberManagement.award.application.port.out.RetrieveAwardPort;
 import page.clab.api.domain.memberManagement.award.domain.Award;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -46,7 +47,8 @@ public class AwardPersistenceAdapter implements
     public Award getById(Long awardId) {
         return awardRepository.findById(awardId)
             .map(awardMapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[Award] id: " + awardId + "에 해당하는 수상 이력이 존재하지 않습니다."));
+            .orElseThrow(
+                () -> new BaseException(ErrorCode.NOT_FOUND, "[Award] id: " + awardId + "에 해당하는 수상 이력이 존재하지 않습니다."));
     }
 
     @Override

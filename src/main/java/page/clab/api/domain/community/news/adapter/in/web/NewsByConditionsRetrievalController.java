@@ -14,7 +14,6 @@ import page.clab.api.domain.community.news.application.dto.response.NewsResponse
 import page.clab.api.domain.community.news.application.port.in.RetrieveNewsByConditionsUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -39,7 +38,7 @@ public class NewsByConditionsRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, NewsResponseDto.class);
         PagedResponseDto<NewsResponseDto> news = retrieveNewsByConditionsUseCase.retrieveNews(title, category,
             pageable);
