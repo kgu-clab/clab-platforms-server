@@ -14,10 +14,11 @@ import page.clab.api.domain.activity.activitygroup.dto.mapper.ActivityGroupDtoMa
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupReportRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupReportUpdateRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupReportResponseDto;
-import page.clab.api.domain.activity.activitygroup.exception.DuplicateReportException;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -88,7 +89,7 @@ public class ActivityGroupReportService {
     private ActivityGroupReport validateReportCreationPermission(ActivityGroupReportRequestDto requestDto,
         ActivityGroup activityGroup) {
         if (activityGroupReportRepository.existsByActivityGroupAndTurn(activityGroup, requestDto.getTurn())) {
-            throw new DuplicateReportException("이미 해당 차시의 보고서가 존재합니다.");
+            throw new BaseException(ErrorCode.DUPLICATE_REPORT);
         }
         return mapper.fromDto(requestDto, activityGroup);
     }

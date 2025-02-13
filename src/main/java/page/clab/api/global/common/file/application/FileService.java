@@ -22,8 +22,6 @@ import page.clab.api.domain.activity.activitygroup.dao.ActivityGroupRepository;
 import page.clab.api.domain.activity.activitygroup.dao.GroupMemberRepository;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupBoard;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMemberStatus;
-import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
-import page.clab.api.domain.activity.activitygroup.exception.MemberNotPartOfActivityException;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.memberManagement.member.domain.Role;
@@ -36,6 +34,8 @@ import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
 import page.clab.api.global.common.file.exception.CloudStorageNotEnoughException;
 import page.clab.api.global.common.file.exception.InvalidPathVariableException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 import page.clab.api.global.util.FileSystemUtil;
@@ -62,25 +62,6 @@ import page.clab.api.global.util.FileUtil;
 @RequiredArgsConstructor
 public class FileService {
 
-    private final FileHandler fileHandler;
-    private final UploadedFileService uploadedFileService;
-    private final ActivityGroupAdminService activityGroupAdminService;
-    private final ActivityGroupBoardService activityGroupBoardService;
-    private final ActivityGroupRepository activityGroupRepository;
-    private final GroupMemberRepository groupMemberRepository;
-    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
-    private final ExternalRetrieveCloudUsageByMemberIdUseCase externalRetrieveCloudUsageByMemberIdUseCase;
-    private final FileDtoMapper mapper;
-
-    @Value("${resource.file.url}")
-    private String fileURL;
-
-    @Value("${resource.file.path}")
-    private String filePath;
-
-    @Value("${spring.servlet.multipart.max-file-size}")
-    private String maxFileSize;
-
     private static final Map<Role, Set<String>> roleCategoryMap = Map.of(
         Role.GUEST, Set.of("boards", "profiles", "activity-photos", "membership-fees", "executives"),
         Role.USER,
@@ -93,7 +74,15 @@ public class FileService {
         Set.of("boards", "profiles", "activity-photos", "membership-fees", "notices", "weekly-activities", "members",
             "assignments", "submits", "executives")
     );
-
+    private final FileHandler fileHandler;
+    private final UploadedFileService uploadedFileService;
+    private final ActivityGroupAdminService activityGroupAdminService;
+    private final ActivityGroupBoardService activityGroupBoardService;
+    private final ActivityGroupRepository activityGroupRepository;
+    private final GroupMemberRepository groupMemberRepository;
+    private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final ExternalRetrieveCloudUsageByMemberIdUseCase externalRetrieveCloudUsageByMemberIdUseCase;
+    private final FileDtoMapper mapper;
     private final Map<String, BiFunction<String, Authentication, Boolean>> categoryAccessMap = Map.of(
         "boards", (url, auth) -> true,
         "profiles", (url, auth) -> true,
@@ -106,6 +95,12 @@ public class FileService {
         "members", this::isMemberAccessible,
         "submits", this::isSubmitAccessible
     );
+    @Value("${resource.file.url}")
+    private String fileURL;
+    @Value("${resource.file.path}")
+    private String filePath;
+    @Value("${spring.servlet.multipart.max-file-size}")
+    private String maxFileSize;
 
     public String saveQRCodeImage(byte[] QRCodeImage, String path, long storagePeriod, String nowDateTime)
         throws IOException {
@@ -252,7 +247,7 @@ public class FileService {
 
     private void validateIsMemberPartOfActivity(String memberId, Long activityGroupId) {
         if (!groupMemberRepository.existsByMemberIdAndActivityGroupId(memberId, activityGroupId)) {
-            throw new MemberNotPartOfActivityException("해당 활동에 참여하고 있지 않은 멤버입니다.");
+            throw new BaseException(ErrorCode.MEMBER_NOT_PART_OF_ACTIVITY_GROUP);
         }
     }
 
@@ -265,7 +260,7 @@ public class FileService {
 
     private void validateIsParentBoardAssignment(ActivityGroupBoard activityGroupBoard) {
         if (!activityGroupBoard.isAssignment()) {
-            throw new InvalidParentBoardException("부모 게시판이 ASSIGNMENT가 아닙니다.");
+            throw new BaseException(ErrorCode.INVALID_PARENT_BOARD, "부모 게시판이 ASSIGNMENT가 아닙니다.");
         }
     }
 

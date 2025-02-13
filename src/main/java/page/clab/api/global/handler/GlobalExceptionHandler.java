@@ -29,25 +29,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
-import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotFinishedException;
-import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotProgressingException;
-import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedException;
-import page.clab.api.domain.activity.activitygroup.exception.AlreadySubmittedThisWeekAssignmentException;
-import page.clab.api.domain.activity.activitygroup.exception.AssignmentBoardHasNoDueDateTimeException;
-import page.clab.api.domain.activity.activitygroup.exception.DuplicateAbsentExcuseException;
-import page.clab.api.domain.activity.activitygroup.exception.DuplicateAttendanceException;
-import page.clab.api.domain.activity.activitygroup.exception.DuplicateReportException;
-import page.clab.api.domain.activity.activitygroup.exception.DuplicateRoleException;
-import page.clab.api.domain.activity.activitygroup.exception.FeedbackBoardHasNoContentException;
-import page.clab.api.domain.activity.activitygroup.exception.InactiveMemberException;
-import page.clab.api.domain.activity.activitygroup.exception.InvalidCategoryException;
-import page.clab.api.domain.activity.activitygroup.exception.InvalidGithubUrlException;
-import page.clab.api.domain.activity.activitygroup.exception.InvalidParentBoardException;
-import page.clab.api.domain.activity.activitygroup.exception.InvalidRoleException;
-import page.clab.api.domain.activity.activitygroup.exception.LeaderStatusChangeNotAllowedException;
-import page.clab.api.domain.activity.activitygroup.exception.MemberNotPartOfActivityException;
-import page.clab.api.domain.activity.activitygroup.exception.SingleLeaderModificationException;
-import page.clab.api.domain.activity.review.application.exception.AlreadyReviewedException;
 import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
 import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.community.accuse.application.exception.AccuseTargetTypeIncorrectException;
@@ -98,17 +79,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
         InvalidInformationException.class,
-        InvalidParentBoardException.class,
-        InvalidCategoryException.class,
+//        InvalidParentBoardException.class,
+//        InvalidCategoryException.class,
         InvalidDateRangeException.class,
         InvalidColumnException.class,
         InvalidEmojiException.class,
         InvalidRoleChangeException.class,
-        InvalidRoleException.class,
+//        InvalidRoleException.class,
         InvalidFileAttributeException.class,
-        InvalidGithubUrlException.class,
-        InactiveMemberException.class,
-        DuplicateRoleException.class,
+//        InvalidGithubUrlException.class,
+//        InactiveMemberException.class,
+//        DuplicateRoleException.class,
 //        RecruitmentNotActiveException.class,
 //        RecruitmentEndDateExceededException.class,
         StringIndexOutOfBoundsException.class,
@@ -120,8 +101,8 @@ public class GlobalExceptionHandler {
         NumberFormatException.class,
         SortingArgumentException.class,
         UnknownPathException.class,
-        AssignmentBoardHasNoDueDateTimeException.class,
-        FeedbackBoardHasNoContentException.class,
+//        AssignmentBoardHasNoDueDateTimeException.class,
+//        FeedbackBoardHasNoContentException.class,
         InvalidBoardCategoryHashtagException.class,
         ExecutiveRegistrationException.class
     })
@@ -152,7 +133,7 @@ public class GlobalExceptionHandler {
         AccessDeniedException.class,
         PermissionDeniedException.class,
         InvalidBorrowerException.class,
-        MemberNotPartOfActivityException.class,
+//        MemberNotPartOfActivityException.class,
     })
     public ApiResponse<Void> deniedException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -185,16 +166,16 @@ public class GlobalExceptionHandler {
         DuplicateMemberContactException.class,
         DuplicateMemberEmailException.class,
         CloudStorageNotEnoughException.class,
-        ActivityGroupNotFinishedException.class,
-        ActivityGroupNotProgressingException.class,
-        AlreadySubmittedThisWeekAssignmentException.class,
-        LeaderStatusChangeNotAllowedException.class,
-        SingleLeaderModificationException.class,
-        AlreadyAppliedException.class,
-        DuplicateReportException.class,
-        DuplicateAttendanceException.class,
-        DuplicateAbsentExcuseException.class,
-        AlreadyReviewedException.class,
+//        ActivityGroupNotFinishedException.class,
+//        ActivityGroupNotProgressingException.class,
+//        AlreadySubmittedThisWeekAssignmentException.class,
+//        LeaderStatusChangeNotAllowedException.class,
+//        SingleLeaderModificationException.class,
+//        AlreadyAppliedException.class,
+//        DuplicateReportException.class,
+//        DuplicateAttendanceException.class,
+//        DuplicateAbsentExcuseException.class,
+//        AlreadyReviewedException.class,
         BookAlreadyBorrowedException.class,
         BookAlreadyReturnedException.class,
         BookAlreadyAppliedForLoanException.class,

@@ -33,6 +33,9 @@ public enum ErrorCode {
     RECRUITMENT_NOT_ACTIVE(HttpStatus.BAD_REQUEST, "모집 공고가 활성 상태가 아닙니다."),
     INVALID_RECRUITMENT_CLOSURE_WINDOW(HttpStatus.BAD_REQUEST, "모집 종료일이 현재 날짜 기준 7일을 초과했거나, 아직 모집이 종료되지 않았습니다."),
     INVALID_DATE_RANGE(HttpStatus.BAD_REQUEST, "시작일은 종료일보다 늦을 수 없습니다."),
+    INACTIVE_ACTIVITY_GROUP_MEMBER(HttpStatus.BAD_REQUEST, "활동에 참여하지 않은 멤버의 직책을 변경할 수 없습니다."),
+    INVALID_GITHUB_URL(HttpStatus.BAD_REQUEST, "유효하지 않은 GitHub URL입니다."),
+    INVALID_ROLE_CHANGE(HttpStatus.BAD_REQUEST, "유효하지 않은 직책 변경입니다."),
 
     // 401 UNAUTHORIZED Errors
     AUTHENTICATION_NOT_FOUND(HttpStatus.UNAUTHORIZED, "인증 정보를 찾을 수 없습니다."),
@@ -52,6 +55,7 @@ public enum ErrorCode {
     AUTHORIZATION_SERVICE_ERROR(HttpStatus.FORBIDDEN, "권한 서비스 오류가 발생했습니다."),
     FILE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "파일 접근이 거부되었습니다."),
     PERMISSION_DENIED(HttpStatus.FORBIDDEN, "권한이 거부되었습니다."),
+    MEMBER_NOT_PART_OF_ACTIVITY_GROUP(HttpStatus.FORBIDDEN, "활동 그룹에 속하지 않은 멤버입니다."),
 
     // 404 NOT_FOUND Errors
     ELEMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 요소를 찾을 수 없습니다."),
@@ -59,11 +63,24 @@ public enum ErrorCode {
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다."),
 
     // 409 CONFLICT Errors
+    ACTIVITY_GROUP_NOT_FINISHED(HttpStatus.CONFLICT, "활동이 종료된 활동 그룹만 리뷰를 작성할 수 있습니다."),
+    ACTIVITY_GROUP_NOT_PROGRESSING(HttpStatus.CONFLICT, "해당 활동은 진행중인 활동이 아닙니다."),
+    ALREADY_APPLIED_ACTIVITY_GROUP(HttpStatus.CONFLICT, "이미 신청한 활동 그룹입니다."),
+    ALREADY_SUBMITTED_THIS_WEEK_ASSIGNMENT(HttpStatus.CONFLICT, "해당 주차의 과제물이 이미 제출되었습니다."),
+    ALREADY_REVIEWED(HttpStatus.CONFLICT, "이미 리뷰를 작성한 활동 그룹입니다."),
+    ASSIGNMENT_BOARD_HAS_NO_DUE_DATE(HttpStatus.CONFLICT, "과제 게시판에 마감 기한이 없습니다."),
+    DUPLICATE_ABSENT_EXCUSE(HttpStatus.CONFLICT, "이미 해당 결석에 대해 불참 사유서가 등록되어 있습니다."),
+    DUPLICATE_ATTENDANCE(HttpStatus.CONFLICT, "이미 해당 날짜에 출석 정보가 등록되어 있습니다."),
+    DUPLICATE_REPORT(HttpStatus.CONFLICT, "이미 해당 차시의 보고서가 존재합니다."),
+    ALREADY_HAS_SAME_ACTIVITY_GROUP_ROLE(HttpStatus.CONFLICT, "이미 해당 직책을 가지고 있습니다."),
+    FEEDBACK_BOARD_HAS_NO_CONTENT(HttpStatus.CONFLICT, "피드백 게시판의 내용이 비어있습니다."),
     BOOK_ALREADY_APPLIED_FOR_LOAN(HttpStatus.CONFLICT, "이미 대출 신청한 도서입니다."),
     ILLEGAL_STATE(HttpStatus.CONFLICT, "잘못된 상태입니다."),
     USER_ALREADY_EXISTS(HttpStatus.CONFLICT, "사용자가 이미 존재합니다."),
     MAX_BORROW_LIMIT_EXCEEDED(HttpStatus.CONFLICT, "대출 가능한 도서의 수를 초과했습니다."),
     NOT_APPROVED_APPLICATION(HttpStatus.CONFLICT, "승인되지 않은 지원서입니다."),
+    LEADER_STATUS_CHANGE_NOT_ALLOWED(HttpStatus.CONFLICT, "리더의 상태는 변경할 수 없습니다."),
+    SINGLE_LEADER_MODIFICATION_NOT_ALLOWED(HttpStatus.CONFLICT, "그룹에는 최소 한 명의 리더가 있어야 하므로, 리더의 역할을 변경할 수 없습니다."),
 
     // 423 LOCKED Errors
     ACCOUNT_LOCKED(HttpStatus.LOCKED, "계정이 잠겼습니다."),

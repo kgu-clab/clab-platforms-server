@@ -26,12 +26,12 @@ import page.clab.api.domain.activity.activitygroup.dto.request.AbsentRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.AttendanceRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.AbsentResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.AttendanceResponseDto;
-import page.clab.api.domain.activity.activitygroup.exception.DuplicateAbsentExcuseException;
-import page.clab.api.domain.activity.activitygroup.exception.DuplicateAttendanceException;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.common.file.application.FileService;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 import page.clab.api.global.exception.InvalidInformationException;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
@@ -114,8 +114,7 @@ public class AttendanceService {
     }
 
     @Transactional
-    public Long writeAbsentExcuse(AbsentRequestDto requestDto)
-        throws IllegalAccessException, DuplicateAbsentExcuseException {
+    public Long writeAbsentExcuse(AbsentRequestDto requestDto) throws IllegalAccessException {
         Member absentee = externalRetrieveMemberUseCase.getById(requestDto.getAbsenteeId());
         ActivityGroup activityGroup = getValidActivityGroup(requestDto.getActivityGroupId());
         validateAbsentExcuseConditions(absentee, activityGroup, requestDto.getAbsentDate());
@@ -175,7 +174,7 @@ public class AttendanceService {
     }
 
     private ActivityGroup validateMemberForAttendance(Member member, Long activityGroupId)
-        throws IllegalAccessException, DuplicateAttendanceException {
+        throws IllegalAccessException {
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.MEMBER,
             activityGroupId)) {
@@ -183,7 +182,7 @@ public class AttendanceService {
         }
         LocalDate today = LocalDate.now();
         if (hasAttendanceHistory(activityGroup, member.getId(), today)) {
-            throw new DuplicateAttendanceException("이미 오늘의 출석 기록이 있습니다.");
+            throw new BaseException(ErrorCode.DUPLICATE_ATTENDANCE);
         }
         return activityGroup;
     }
@@ -227,7 +226,7 @@ public class AttendanceService {
     }
 
     private void validateAbsentExcuseConditions(Member absentee, ActivityGroup activityGroup, LocalDate absentDate)
-        throws IllegalAccessException, DuplicateAbsentExcuseException {
+        throws IllegalAccessException {
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(absentee, ActivityGroupRole.MEMBER,
             activityGroup.getId())) {
             throw new IllegalAccessException("해당 그룹의 멤버가 아닙니다. 불참 사유서를 등록할 수 없습니다.");
@@ -239,7 +238,7 @@ public class AttendanceService {
             throw new IllegalAccessException("해당 요일에 출석한 기록이 있습니다. 불참 사유서를 등록할 수 없습니다.");
         }
         if (hasAbsentExcuseHistory(activityGroup, absentee, absentDate)) {
-            throw new DuplicateAbsentExcuseException("이미 해당 결석에 대해 불참 사유서가 등록되어 있습니다.");
+            throw new BaseException(ErrorCode.DUPLICATE_ABSENT_EXCUSE);
         }
     }
 

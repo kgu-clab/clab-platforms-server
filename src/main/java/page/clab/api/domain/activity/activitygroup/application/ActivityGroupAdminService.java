@@ -29,14 +29,12 @@ import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupUpda
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupBoardStatusUpdatedResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupMemberWithApplyReasonResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupResponseDto;
-import page.clab.api.domain.activity.activitygroup.exception.DuplicateRoleException;
-import page.clab.api.domain.activity.activitygroup.exception.InactiveMemberException;
-import page.clab.api.domain.activity.activitygroup.exception.InvalidRoleException;
-import page.clab.api.domain.activity.activitygroup.exception.SingleLeaderModificationException;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.exception.PermissionDeniedException;
 
@@ -272,7 +270,7 @@ public class ActivityGroupAdminService {
         List<GroupMember> groupMembers = activityGroupMemberService.getGroupMemberByActivityGroupIdAndRole(
             activityGroup.getId(), ActivityGroupRole.LEADER);
         if (groupMembers.size() == 1 && groupMember.isLeader()) {
-            throw new SingleLeaderModificationException("그룹에는 최소 한 명의 리더가 있어야 하므로, 리더의 역할을 변경할 수 없습니다.");
+            throw new BaseException(ErrorCode.SINGLE_LEADER_MODIFICATION_NOT_ALLOWED);
         }
     }
 
@@ -297,16 +295,16 @@ public class ActivityGroupAdminService {
 
     private void validateMemberIsActive(GroupMember groupMember) {
         if (groupMember.isInactive()) {
-            throw new InactiveMemberException("활동에 참여하지 않은 멤버의 직책을 변경할 수 없습니다.");
+            throw new BaseException(ErrorCode.INACTIVE_ACTIVITY_GROUP_MEMBER);
         }
     }
 
     private void validateNewPosition(GroupMember groupMember, ActivityGroupRole position) {
         if (position.isNone()) {
-            throw new InvalidRoleException("직책이 없는 멤버로 변경할 수 없습니다.");
+            throw new BaseException(ErrorCode.INVALID_ROLE_CHANGE, "직책이 없는 멤버로 변경할 수 없습니다.");
         }
         if (groupMember.isSameRole(position)) {
-            throw new DuplicateRoleException("이미 해당 직책을 가지고 있습니다.");
+            throw new BaseException(ErrorCode.ALREADY_HAS_SAME_ACTIVITY_GROUP_ROLE);
         }
     }
 }

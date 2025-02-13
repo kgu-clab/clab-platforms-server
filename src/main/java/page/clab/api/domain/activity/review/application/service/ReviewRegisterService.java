@@ -9,10 +9,8 @@ import page.clab.api.domain.activity.activitygroup.application.ActivityGroupMemb
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.activitygroup.domain.ActivityGroupRole;
 import page.clab.api.domain.activity.activitygroup.domain.GroupMember;
-import page.clab.api.domain.activity.activitygroup.exception.ActivityGroupNotFinishedException;
 import page.clab.api.domain.activity.review.application.dto.mapper.ReviewDtoMapper;
 import page.clab.api.domain.activity.review.application.dto.request.ReviewRequestDto;
-import page.clab.api.domain.activity.review.application.exception.AlreadyReviewedException;
 import page.clab.api.domain.activity.review.application.port.in.RegisterReviewUseCase;
 import page.clab.api.domain.activity.review.application.port.out.RegisterReviewPort;
 import page.clab.api.domain.activity.review.application.port.out.RetrieveReviewPort;
@@ -20,6 +18,8 @@ import page.clab.api.domain.activity.review.domain.Review;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -45,10 +45,10 @@ public class ReviewRegisterService implements RegisterReviewUseCase {
 
     private void validateReviewCreationPermission(ActivityGroup activityGroup, String memberId) {
         if (!activityGroup.isEnded()) {
-            throw new ActivityGroupNotFinishedException("활동이 종료된 활동 그룹만 리뷰를 작성할 수 있습니다.");
+            throw new BaseException(ErrorCode.ACTIVITY_GROUP_NOT_FINISHED);
         }
         if (isExistsByMemberIdAndActivityGroup(memberId, activityGroup)) {
-            throw new AlreadyReviewedException("이미 리뷰를 작성한 활동 그룹입니다.");
+            throw new BaseException(ErrorCode.ALREADY_REVIEWED);
         }
     }
 

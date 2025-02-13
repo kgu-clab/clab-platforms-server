@@ -20,7 +20,6 @@ import page.clab.api.domain.activity.activitygroup.dto.request.AbsentRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.AttendanceRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.AbsentResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.AttendanceResponseDto;
-import page.clab.api.domain.activity.activitygroup.exception.DuplicateAbsentExcuseException;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.InvalidColumnException;
@@ -98,7 +97,7 @@ public class AttendanceController {
     @PostMapping({"/absent"})
     public ApiResponse<Long> writeAbsentExcuse(
         @RequestBody AbsentRequestDto requestDto
-    ) throws IllegalAccessException, DuplicateAbsentExcuseException {
+    ) throws IllegalAccessException {
         Long id = attendanceService.writeAbsentExcuse(requestDto);
         return ApiResponse.success(id);
     }
