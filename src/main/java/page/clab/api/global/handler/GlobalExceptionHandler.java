@@ -29,11 +29,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
-import page.clab.api.domain.memberManagement.executive.application.exception.ExecutiveRegistrationException;
-import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberContactException;
-import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberEmailException;
-import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberIdException;
-import page.clab.api.domain.memberManagement.member.application.exception.InvalidRoleChangeException;
 import page.clab.api.global.auth.exception.AuthenticationInfoNotFoundException;
 import page.clab.api.global.auth.exception.TokenForgeryException;
 import page.clab.api.global.auth.exception.TokenMisuseException;
@@ -72,7 +67,7 @@ public class GlobalExceptionHandler {
         InvalidDateRangeException.class,
         InvalidColumnException.class,
         InvalidEmojiException.class,
-        InvalidRoleChangeException.class,
+//        InvalidRoleChangeException.class,
 //        InvalidRoleException.class,
         InvalidFileAttributeException.class,
 //        InvalidGithubUrlException.class,
@@ -92,7 +87,7 @@ public class GlobalExceptionHandler {
 //        AssignmentBoardHasNoDueDateTimeException.class,
 //        FeedbackBoardHasNoContentException.class,
 //        InvalidBoardCategoryHashtagException.class,
-        ExecutiveRegistrationException.class
+//        ExecutiveRegistrationException.class
     })
     public ErrorResponse<Exception> badRequestException(HttpServletResponse response, Exception e) {
         response.setStatus(HttpServletResponse.SC_OK);
@@ -150,9 +145,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
 //        AccuseTargetTypeIncorrectException.class,
 //        NotApprovedApplicationException.class,
-        DuplicateMemberIdException.class,
-        DuplicateMemberContactException.class,
-        DuplicateMemberEmailException.class,
+//        DuplicateMemberIdException.class,
+//        DuplicateMemberContactException.class,
+//        DuplicateMemberEmailException.class,
         CloudStorageNotEnoughException.class,
 //        ActivityGroupNotFinishedException.class,
 //        ActivityGroupNotProgressingException.class,

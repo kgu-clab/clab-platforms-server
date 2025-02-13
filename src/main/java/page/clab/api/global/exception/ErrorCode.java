@@ -35,9 +35,12 @@ public enum ErrorCode {
     INVALID_DATE_RANGE(HttpStatus.BAD_REQUEST, "시작일은 종료일보다 늦을 수 없습니다."),
     INACTIVE_ACTIVITY_GROUP_MEMBER(HttpStatus.BAD_REQUEST, "활동에 참여하지 않은 멤버의 직책을 변경할 수 없습니다."),
     INVALID_GITHUB_URL(HttpStatus.BAD_REQUEST, "유효하지 않은 GitHub URL입니다."),
-    INVALID_ROLE_CHANGE(HttpStatus.BAD_REQUEST, "유효하지 않은 직책 변경입니다."),
+    INVALID_ROLE_CHANGE(HttpStatus.BAD_REQUEST, "유효하지 않은 권한 변경입니다."),
     UNSUPPORTED_OPERATION(HttpStatus.BAD_REQUEST, "지원되지 않는 작업입니다."),
     INVALID_BOARD_CATEGORY_HASHTAG(HttpStatus.BAD_REQUEST, "해당 게시판에 해시태그를 사용할 수 없습니다."),
+    EXECUTIVE_REGISTRATION_ERROR(HttpStatus.BAD_REQUEST, "임원 등록 중 오류가 발생했습니다."),
+    EXECUTIVE_ALREADY_REGISTERED(HttpStatus.CONFLICT, "이미 등록된 운영진입니다."),
+    EXECUTIVE_NOT_A_MEMBER(HttpStatus.BAD_REQUEST, "운영진 등록 대상은 멤버여야 합니다."),
 
     // 401 UNAUTHORIZED Errors
     AUTHENTICATION_NOT_FOUND(HttpStatus.UNAUTHORIZED, "인증 정보를 찾을 수 없습니다."),
@@ -92,7 +95,9 @@ public enum ErrorCode {
     OVERDUE_BOOK_EXTENSION_NOT_ALLOWED(HttpStatus.CONFLICT, "연체 중인 도서는 연장할 수 없습니다."),
     BOOK_BORROWING_NOT_ALLOWED_DURING_SUSPENSION(HttpStatus.CONFLICT, "대출 정지 중입니다. 대출 정지일까지는 책을 대출할 수 없습니다."),
     BOOK_LOAN_EXTENSION_LIMIT_EXCEEDED(HttpStatus.CONFLICT, "대출 연장 횟수를 초과했습니다."),
-
+    DUPLICATE_MEMBER_CONTACT(HttpStatus.CONFLICT, "이미 해당 연락처로 가입된 멤버가 존재합니다."),
+    DUPLICATE_MEMBER_EMAIL(HttpStatus.CONFLICT, "이미 해당 이메일로 가입된 멤버가 존재합니다."),
+    DUPLICATE_MEMBER_ID(HttpStatus.CONFLICT, "이미 해당 ID로 가입된 멤버가 존재합니다."),
 
     // 423 LOCKED Errors
     ACCOUNT_LOCKED(HttpStatus.LOCKED, "계정이 잠겼습니다."),
