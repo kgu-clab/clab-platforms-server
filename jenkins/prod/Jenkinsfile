@@ -140,31 +140,52 @@ pipeline {
     }
 
     post {
-        failure {
-            script {
-                sendSlackBuildNotification(":scream_cat: Stage *${FAILED_STAGE}* failed.", env.SLACK_COLOR_FAILURE)
-            }
-        }
-
         success {
             script {
-                sendSlackBuildNotification(":rocket: Deployment completed successfully", env.SLACK_COLOR_SUCCESS)
+                sendBuildNotification(":rocket: Deployment completed successfully", env.NOTIFICATION_COLOR_SUCCESS)
+            }
+        }
+        failure {
+            script {
+                sendBuildNotification(":scream_cat: Deployment failed in stage *${FAILED_STAGE}*", env.NOTIFICATION_COLOR_FAILURE)
             }
         }
     }
 }
 
-def sendSlackBuildNotification(String message, String color) {
+def sendBuildNotification(String message, String color) {
     def jobUrl = "${env.JENKINS_DOMAIN}/job/${env.JOB_NAME}"
     def consoleOutputUrl = "${jobUrl}/${env.BUILD_NUMBER}/console"
+    def changelog = env.GIT_CHANGELOG
 
-    def payload = createSlackPayload(message, color, jobUrl, consoleOutputUrl)
-    def payloadJson = groovy.json.JsonOutput.toJson(payload)
+    def notificationPlatforms = readJSON text: env.NOTIFICATION_PLATFORMS_JSON.trim()
 
-    sendHttpPostRequest(env.SLACK_WEBHOOK_URL, payloadJson)
+    notificationPlatforms.each { notification ->
+        if (notification.enabled.toBoolean()) {
+            def platform = notification.platform ? notification.platform.trim().toLowerCase() : ""
+            echo "Processing notification for platform: '${platform}'"
+
+            def payload = null
+            switch (platform) {
+                case 'slack':
+                    payload = createSlackPayload(message, color, jobUrl, consoleOutputUrl, changelog)
+                    break
+                case 'discord':
+                    payload = createDiscordPayload(message, color, jobUrl, consoleOutputUrl, changelog)
+                    break
+                default:
+                    echo "Unsupported or undefined notification platform: '${platform}'"
+            }
+
+            if (payload != null) {
+                def payloadJson = groovy.json.JsonOutput.toJson(payload)
+                sendHttpPostRequest(notification.'webhook-url', payloadJson)
+            }
+        }
+    }
 }
 
-def createSlackPayload(String message, String color, String jobUrl, String consoleOutputUrl) {
+def createSlackPayload(String message, String color, String jobUrl, String consoleOutputUrl, String changelog) {
     return [
         blocks: [
             [
@@ -183,7 +204,7 @@ def createSlackPayload(String message, String color, String jobUrl, String conso
                         type: "section",
                         text: [
                             type: "mrkdwn",
-                            text: "*Change Log:*\n${env.GIT_CHANGELOG}"
+                            text: "*Change Log:*\n${changelog}"
                         ]
                     ],
                     [
@@ -217,6 +238,23 @@ def createSlackPayload(String message, String color, String jobUrl, String conso
     ]
 }
 
+def createDiscordPayload(String message, String color, String jobUrl, String consoleOutputUrl, String changelog) {
+    return [
+        embeds: [
+            [
+                title: message,
+                color: parseColor(color),
+                description: "*Change Log:*\n${changelog}\n\n[Job](${jobUrl}) | [Console Output](${consoleOutputUrl})",
+            ]
+        ]
+    ]
+}
+
+def parseColor(String hexColor) {
+    // Discord requires the color in decimal format
+    return Integer.parseInt(hexColor.replace("#", ""), 16)
+}
+
 def sendHttpPostRequest(String url, String payload) {
     def CONTENT_TYPE_JSON = 'application/json'
     def HTTP_POST = 'POST'
@@ -233,9 +271,9 @@ def loadEnvironmentVariables(String configFile) {
     def config = readYaml(file: configFile)
 
     env.JENKINS_DOMAIN = config.'jenkins-domain'
-    env.SLACK_WEBHOOK_URL = config.slack.'webhook-url'
-    env.SLACK_COLOR_SUCCESS = config.slack.'color-success'
-    env.SLACK_COLOR_FAILURE = config.slack.'color-failure'
+    env.NOTIFICATION_COLOR_SUCCESS = config.notifications.common.'color-success'
+    env.NOTIFICATION_COLOR_FAILURE = config.notifications.common.'color-failure'
+    env.NOTIFICATION_PLATFORMS_JSON = groovy.json.JsonOutput.toJson(config.notifications.platforms)
 
     env.PG_USER = config.postgresql.user
     env.PG_PASSWORD = config.postgresql.password

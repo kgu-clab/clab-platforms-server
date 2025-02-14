@@ -25,7 +25,7 @@ public class WorkExperienceRegisterController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("")
     public ApiResponse<Long> registerWorkExperience(
-            @Valid @RequestBody WorkExperienceRequestDto requestDto
+        @Valid @RequestBody WorkExperienceRequestDto requestDto
     ) {
         Long id = registerWorkExperienceUseCase.registerWorkExperience(requestDto);
         return ApiResponse.success(id);

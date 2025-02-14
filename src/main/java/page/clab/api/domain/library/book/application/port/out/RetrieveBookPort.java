@@ -8,7 +8,8 @@ public interface RetrieveBookPort {
 
     Book getById(Long bookId);
 
-    Page<Book> findByConditions(String title, String category, String publisher, String borrowerId, String borrowerName, Pageable pageable);
+    Page<Book> findByConditions(String title, String category, String publisher, String borrowerId, String borrowerName,
+        Pageable pageable);
 
     int countByBorrowerId(String borrowerId);
 }

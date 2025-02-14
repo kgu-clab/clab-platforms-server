@@ -27,8 +27,8 @@ public class MembershipFeeUpdateController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{membershipFeeId}")
     public ApiResponse<Long> updateMembershipFee(
-            @PathVariable(name = "membershipFeeId") Long membershipFeeId,
-            @Valid @RequestBody MembershipFeeUpdateRequestDto requestDto
+        @PathVariable(name = "membershipFeeId") Long membershipFeeId,
+        @Valid @RequestBody MembershipFeeUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = updateMembershipFeeUseCase.updateMembershipFee(membershipFeeId, requestDto);
         return ApiResponse.success(id);

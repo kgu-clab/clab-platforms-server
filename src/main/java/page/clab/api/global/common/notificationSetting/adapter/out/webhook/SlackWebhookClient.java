@@ -65,9 +65,9 @@ public class SlackWebhookClient extends AbstractWebhookClient {
     private final WebhookCommonService webhookCommonService;
 
     public SlackWebhookClient(
-            NotificationConfigProperties notificationConfigProperties,
-            Environment environment,
-            WebhookCommonService webhookCommonService
+        NotificationConfigProperties notificationConfigProperties,
+        Environment environment,
+        WebhookCommonService webhookCommonService
     ) {
         this.slack = Slack.getInstance();
         this.commonProperties = notificationConfigProperties.getCommon();
@@ -88,19 +88,19 @@ public class SlackWebhookClient extends AbstractWebhookClient {
      * @return 메시지 전송 성공 여부를 나타내는 CompletableFuture<Boolean>
      */
     public CompletableFuture<Boolean> sendMessage(String webhookUrl, AlertType alertType,
-                                                  HttpServletRequest request, Object additionalData) {
+        HttpServletRequest request, Object additionalData) {
         List<LayoutBlock> blocks = createBlocks(alertType, request, additionalData);
 
         return CompletableFuture.supplyAsync(() -> {
             Payload payload = Payload.builder()
-                    .blocks(Collections.singletonList(blocks.getFirst()))
-                    .attachments(Collections.singletonList(
-                            Attachment.builder()
-                                    .color(commonProperties.getColor())
-                                    .blocks(blocks.subList(1, blocks.size()))
-                                    .build()
-                    ))
-                    .build();
+                .blocks(Collections.singletonList(blocks.getFirst()))
+                .attachments(Collections.singletonList(
+                    Attachment.builder()
+                        .color(commonProperties.getColor())
+                        .blocks(blocks.subList(1, blocks.size()))
+                        .build()
+                ))
+                .build();
 
             try {
                 WebhookResponse response = slack.send(webhookUrl, payload);
@@ -146,7 +146,7 @@ public class SlackWebhookClient extends AbstractWebhookClient {
     }
 
     private List<LayoutBlock> createGeneralAlertBlocks(GeneralAlertType alertType, HttpServletRequest request,
-                                                       Object additionalData) {
+        Object additionalData) {
         switch (alertType) {
             case ADMIN_LOGIN:
                 if (additionalData instanceof MemberLoginInfoDto) {
@@ -204,33 +204,33 @@ public class SlackWebhookClient extends AbstractWebhookClient {
         log.error("Server Error: {}", errorMessage);
 
         return Arrays.asList(
-                section(s -> s.text(markdownText(":firecracker: *Server Error*"))),
-                section(s -> s.fields(Arrays.asList(
-                        markdownText("*User:*\n" + username),
-                        markdownText("*Endpoint:*\n[" + httpMethod + "] " + fullUrl)
-                ))),
-                section(s -> s.text(markdownText("*Error Message:*\n" + errorMessage))),
-                section(s -> s.text(markdownText("*Stack Trace:*\n```" + stackTrace + "```")))
+            section(s -> s.text(markdownText(":firecracker: *Server Error*"))),
+            section(s -> s.fields(Arrays.asList(
+                markdownText("*User:*\n" + username),
+                markdownText("*Endpoint:*\n[" + httpMethod + "] " + fullUrl)
+            ))),
+            section(s -> s.text(markdownText("*Error Message:*\n" + errorMessage))),
+            section(s -> s.text(markdownText("*Stack Trace:*\n```" + stackTrace + "```")))
         );
     }
 
     private List<LayoutBlock> createSecurityAlertBlocks(HttpServletRequest request, AlertType alertType,
-                                                        String additionalMessage) {
+        String additionalMessage) {
         String clientIp = HttpReqResUtil.getClientIpAddressIfServletRequestExist();
         String fullUrl = webhookCommonService.getFullUrl(request);
         String username = webhookCommonService.getUsername(request);
         String location = webhookCommonService.getLocation(request);
 
         return Arrays.asList(
-                section(s -> s.text(markdownText(":imp: *" + alertType.getTitle() + "*"))),
-                section(s -> s.fields(Arrays.asList(
-                        markdownText("*User:*\n" + username),
-                        markdownText("*IP Address:*\n" + clientIp),
-                        markdownText("*Location:*\n" + location),
-                        markdownText("*Endpoint:*\n" + fullUrl)
-                ))),
-                section(s -> s.text(
-                        markdownText("*Details:*\n" + alertType.getDefaultMessage() + "\n" + additionalMessage)))
+            section(s -> s.text(markdownText(":imp: *" + alertType.getTitle() + "*"))),
+            section(s -> s.fields(Arrays.asList(
+                markdownText("*User:*\n" + username),
+                markdownText("*IP Address:*\n" + clientIp),
+                markdownText("*Location:*\n" + location),
+                markdownText("*Endpoint:*\n" + fullUrl)
+            ))),
+            section(s -> s.text(
+                markdownText("*Details:*\n" + alertType.getDefaultMessage() + "\n" + additionalMessage)))
         );
     }
 
@@ -239,12 +239,12 @@ public class SlackWebhookClient extends AbstractWebhookClient {
         String location = webhookCommonService.getLocation(request);
 
         return Arrays.asList(
-                section(s -> s.text(markdownText(":mechanic: *" + loginMember.getRole().getDescription() + " Login*"))),
-                section(s -> s.fields(Arrays.asList(
-                        markdownText("*User:*\n" + loginMember.getMemberId() + " " + loginMember.getMemberName()),
-                        markdownText("*IP Address:*\n" + clientIp),
-                        markdownText("*Location:*\n" + location)
-                )))
+            section(s -> s.text(markdownText(":mechanic: *" + loginMember.getRole().getDescription() + " Login*"))),
+            section(s -> s.fields(Arrays.asList(
+                markdownText("*User:*\n" + loginMember.getMemberId() + " " + loginMember.getMemberName()),
+                markdownText("*IP Address:*\n" + clientIp),
+                markdownText("*Location:*\n" + location)
+            )))
         );
     }
 
@@ -253,18 +253,18 @@ public class SlackWebhookClient extends AbstractWebhookClient {
 
         blocks.add(section(s -> s.text(markdownText(":sparkles: *동아리 지원*"))));
         blocks.add(section(s -> s.fields(Arrays.asList(
-                markdownText("*구분:*\n" + requestDto.getApplicationType().getDescription()),
-                markdownText("*학번:*\n" + requestDto.getStudentId()),
-                markdownText("*이름:*\n" + requestDto.getName()),
-                markdownText("*학년:*\n" + requestDto.getGrade() + "학년"),
-                markdownText("*관심 분야:*\n" + requestDto.getInterests())
+            markdownText("*구분:*\n" + requestDto.getApplicationType().getDescription()),
+            markdownText("*학번:*\n" + requestDto.getStudentId()),
+            markdownText("*이름:*\n" + requestDto.getName()),
+            markdownText("*학년:*\n" + requestDto.getGrade() + "학년"),
+            markdownText("*관심 분야:*\n" + requestDto.getInterests())
         ))));
 
         if (requestDto.getGithubUrl() != null && !requestDto.getGithubUrl().isEmpty()) {
             blocks.add(actions(a -> a.elements(asElements(
-                    button(b -> b.text(plainText(pt -> pt.emoji(true).text("Github")))
-                            .url(requestDto.getGithubUrl())
-                            .actionId("click_github"))
+                button(b -> b.text(plainText(pt -> pt.emoji(true).text("Github")))
+                    .url(requestDto.getGithubUrl())
+                    .actionId("click_github"))
             ))));
         }
 
@@ -273,12 +273,12 @@ public class SlackWebhookClient extends AbstractWebhookClient {
 
     private List<LayoutBlock> createBoardBlocks(BoardNotificationInfo board) {
         return Arrays.asList(
-                section(s -> s.text(markdownText(":writing_hand: *새 게시글*"))),
-                section(s -> s.fields(Arrays.asList(
-                        markdownText("*제목:*\n" + board.getTitle()),
-                        markdownText("*분류:*\n" + board.getCategory()),
-                        markdownText("*작성자:*\n" + board.getUsername())
-                )))
+            section(s -> s.text(markdownText(":writing_hand: *새 게시글*"))),
+            section(s -> s.fields(Arrays.asList(
+                markdownText("*제목:*\n" + board.getTitle()),
+                markdownText("*분류:*\n" + board.getCategory()),
+                markdownText("*작성자:*\n" + board.getUsername())
+            )))
         );
     }
 
@@ -286,13 +286,13 @@ public class SlackWebhookClient extends AbstractWebhookClient {
         String username = data.getMemberId() + " " + data.getMemberName();
 
         return Arrays.asList(
-                section(s -> s.text(markdownText(":dollar: *회비 신청*"))),
-                section(s -> s.fields(Arrays.asList(
-                        markdownText("*신청자:*\n" + username),
-                        markdownText("*분류:*\n" + data.getCategory()),
-                        markdownText("*금액:*\n" + data.getAmount() + "원")
-                ))),
-                section(s -> s.text(markdownText("*Content:*\n" + data.getContent())))
+            section(s -> s.text(markdownText(":dollar: *회비 신청*"))),
+            section(s -> s.fields(Arrays.asList(
+                markdownText("*신청자:*\n" + username),
+                markdownText("*분류:*\n" + data.getCategory()),
+                markdownText("*금액:*\n" + data.getAmount() + "원")
+            ))),
+            section(s -> s.text(markdownText("*Content:*\n" + data.getContent())))
         );
     }
 
@@ -300,13 +300,13 @@ public class SlackWebhookClient extends AbstractWebhookClient {
         String username = data.getMemberId() + " " + data.getMemberName();
 
         return Arrays.asList(
-                section(s -> s.text(markdownText(":books: *도서 대여 신청*"))),
-                section(s -> s.fields(Arrays.asList(
-                        markdownText("*도서명:*\n" + data.getBookTitle()),
-                        markdownText("*분류:*\n" + data.getCategory()),
-                        markdownText("*신청자:*\n" + username),
-                        markdownText("*상태:*\n" + (data.isAvailable() ? "대여 가능" : "대여 중"))
-                )))
+            section(s -> s.text(markdownText(":books: *도서 대여 신청*"))),
+            section(s -> s.fields(Arrays.asList(
+                markdownText("*도서명:*\n" + data.getBookTitle()),
+                markdownText("*분류:*\n" + data.getCategory()),
+                markdownText("*신청자:*\n" + username),
+                markdownText("*상태:*\n" + (data.isAvailable() ? "대여 가능" : "대여 중"))
+            )))
         );
     }
 
@@ -317,22 +317,22 @@ public class SlackWebhookClient extends AbstractWebhookClient {
         String memoryUsage = webhookCommonService.getMemoryUsage();
 
         return Arrays.asList(
-                section(s -> s.text(markdownText(":battery: *Server Started*"))),
-                section(s -> s.fields(Arrays.asList(
-                        markdownText("*Environment:* \n" + environment.getProperty("spring.profiles.active")),
-                        markdownText("*OS:* \n" + osInfo),
-                        markdownText("*JDK Version:* \n" + jdkVersion),
-                        markdownText("*CPU Usage:* \n" + String.format("%.2f%%", cpuUsage)),
-                        markdownText("*Memory Usage:* \n" + memoryUsage)
-                ))),
-                actions(a -> a.elements(asElements(
-                        button(b -> b.text(plainText(pt -> pt.emoji(true).text("Web")))
-                                .url(commonProperties.getWebUrl())
-                                .value("click_web")),
-                        button(b -> b.text(plainText(pt -> pt.emoji(true).text("API Docs")))
-                                .url(commonProperties.getApiUrl())
-                                .value("click_apiDocs"))
-                )))
+            section(s -> s.text(markdownText(":battery: *Server Started*"))),
+            section(s -> s.fields(Arrays.asList(
+                markdownText("*Environment:* \n" + environment.getProperty("spring.profiles.active")),
+                markdownText("*OS:* \n" + osInfo),
+                markdownText("*JDK Version:* \n" + jdkVersion),
+                markdownText("*CPU Usage:* \n" + String.format("%.2f%%", cpuUsage)),
+                markdownText("*Memory Usage:* \n" + memoryUsage)
+            ))),
+            actions(a -> a.elements(asElements(
+                button(b -> b.text(plainText(pt -> pt.emoji(true).text("Web")))
+                    .url(commonProperties.getWebUrl())
+                    .value("click_web")),
+                button(b -> b.text(plainText(pt -> pt.emoji(true).text("API Docs")))
+                    .url(commonProperties.getApiUrl())
+                    .value("click_apiDocs"))
+            )))
         );
     }
 }

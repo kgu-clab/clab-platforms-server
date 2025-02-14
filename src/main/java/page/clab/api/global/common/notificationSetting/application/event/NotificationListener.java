@@ -25,13 +25,13 @@ public class NotificationListener {
     private final NotificationConfigProperties notificationConfigProperties;
 
     public NotificationListener(
-            ManageNotificationSettingUseCase manageNotificationSettingUseCase,
-            List<NotificationSender> notificationSenderList,
-            NotificationConfigProperties notificationConfigProperties) {
+        ManageNotificationSettingUseCase manageNotificationSettingUseCase,
+        List<NotificationSender> notificationSenderList,
+        NotificationConfigProperties notificationConfigProperties) {
         this.manageNotificationSettingUseCase = manageNotificationSettingUseCase;
         this.notificationConfigProperties = notificationConfigProperties;
         this.notificationSenders = notificationSenderList.stream()
-                .collect(Collectors.toMap(NotificationSender::getPlatformName, Function.identity()));
+            .collect(Collectors.toMap(NotificationSender::getPlatformName, Function.identity()));
     }
 
     @EventListener
@@ -49,7 +49,7 @@ public class NotificationListener {
         }
 
         mappings.forEach(mapping -> getWebhookUrl(mapping)
-                .ifPresent(webhookUrl -> sendNotification(mapping.getPlatform(), event, webhookUrl)));
+            .ifPresent(webhookUrl -> sendNotification(mapping.getPlatform(), event, webhookUrl)));
     }
 
     private List<PlatformMapping> getMappingsForAlertType(AlertType alertType) {
@@ -57,8 +57,8 @@ public class NotificationListener {
         Map<String, List<PlatformMapping>> categoryMappings = notificationConfigProperties.getCategoryMappings();
 
         return Optional.ofNullable(categoryMappings.get(categoryName))
-                .filter(list -> !list.isEmpty())
-                .orElseGet(notificationConfigProperties::getDefaultMappings);
+            .filter(list -> !list.isEmpty())
+            .orElseGet(notificationConfigProperties::getDefaultMappings);
     }
 
     private Optional<String> getWebhookUrl(PlatformMapping mapping) {
@@ -67,15 +67,15 @@ public class NotificationListener {
         Map<String, PlatformConfig> platforms = notificationConfigProperties.getPlatforms();
 
         return Optional.ofNullable(platforms.get(platform))
-                .map(platformConfig -> platformConfig.getWebhooks().get(webhookKey))
-                .map(url -> {
-                    log.debug("Found webhook URL for platform '{}', key '{}': {}", platform, webhookKey, url);
-                    return url;
-                })
-                .or(() -> {
-                    log.warn("No webhook URL found for platform '{}', key '{}'", platform, webhookKey);
-                    return Optional.empty();
-                });
+            .map(platformConfig -> platformConfig.getWebhooks().get(webhookKey))
+            .map(url -> {
+                log.debug("Found webhook URL for platform '{}', key '{}': {}", platform, webhookKey, url);
+                return url;
+            })
+            .or(() -> {
+                log.warn("No webhook URL found for platform '{}', key '{}'", platform, webhookKey);
+                return Optional.empty();
+            });
     }
 
     private void sendNotification(String platform, NotificationEvent event, String webhookUrl) {

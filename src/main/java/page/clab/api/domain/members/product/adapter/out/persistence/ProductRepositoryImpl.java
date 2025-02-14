@@ -2,14 +2,13 @@ package page.clab.api.domain.members.product.adapter.out.persistence;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import page.clab.api.global.util.OrderSpecifierUtil;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,15 +26,15 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
         }
 
         List<ProductJpaEntity> products = queryFactory.selectFrom(product)
-                .where(builder)
-                .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, product))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+            .where(builder)
+            .orderBy(OrderSpecifierUtil.getOrderSpecifiers(pageable, product))
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
 
         long count = queryFactory.query().from(product)
-                .where(builder)
-                .fetchCount();
+            .where(builder)
+            .fetchCount();
 
         return new PageImpl<>(products, pageable, count);
     }

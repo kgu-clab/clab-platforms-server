@@ -1,5 +1,6 @@
 package page.clab.api.global.config;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,8 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import page.clab.api.global.auth.application.CustomUserDetailsService;
-
-import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -31,9 +30,9 @@ public class AuthenticationConfig {
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
         UserDetails user = User.withUsername(whitelistAccountProperties.getUsername())
-                .password(passwordEncoder().encode(whitelistAccountProperties.getPassword()))
-                .roles(whitelistAccountProperties.getRole())
-                .build();
+            .password(passwordEncoder().encode(whitelistAccountProperties.getPassword()))
+            .roles(whitelistAccountProperties.getRole())
+            .build();
         return new InMemoryUserDetailsManager(user);
     }
 

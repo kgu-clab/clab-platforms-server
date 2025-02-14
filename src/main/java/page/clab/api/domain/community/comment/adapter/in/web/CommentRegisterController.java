@@ -27,9 +27,9 @@ public class CommentRegisterController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/{boardId}")
     public ApiResponse<Long> registerComment(
-            @RequestParam(name = "parentId", required = false) Long parentId,
-            @PathVariable(name = "boardId") Long boardId,
-            @Valid @RequestBody CommentRequestDto requestDto
+        @RequestParam(name = "parentId", required = false) Long parentId,
+        @PathVariable(name = "boardId") Long boardId,
+        @Valid @RequestBody CommentRequestDto requestDto
     ) {
         Long id = registerCommentUseCase.registerComment(parentId, boardId, requestDto);
         return ApiResponse.success(id);

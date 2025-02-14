@@ -1,5 +1,10 @@
 package page.clab.api.domain.memberManagement.member.domain;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,12 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationMemberCreationDto;
 import page.clab.api.domain.memberManagement.member.application.dto.request.MemberUpdateRequestDto;
 import page.clab.api.global.exception.PermissionDeniedException;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
 
 @Getter
 @Setter
@@ -74,7 +73,7 @@ public class Member implements UserDetails {
 
     public void update(MemberUpdateRequestDto requestDto, PasswordEncoder passwordEncoder) {
         Optional.ofNullable(requestDto.getPassword())
-                .ifPresent(password -> setPassword(passwordEncoder.encode(password)));
+            .ifPresent(password -> setPassword(passwordEncoder.encode(password)));
         Optional.ofNullable(requestDto.getContact()).ifPresent(this::setContact);
         Optional.ofNullable(requestDto.getEmail()).ifPresent(this::setEmail);
         Optional.ofNullable(requestDto.getGrade()).ifPresent(this::setGrade);
@@ -165,21 +164,21 @@ public class Member implements UserDetails {
 
     public static Member toMember(ApplicationMemberCreationDto dto) {
         return Member.builder()
-                .id(dto.getStudentId())
-                .name(dto.getName())
-                .contact(dto.getContact())
-                .email(dto.getEmail())
-                .department(dto.getDepartment())
-                .grade(dto.getGrade())
-                .birth(dto.getBirth())
-                .address(dto.getAddress())
-                .interests(dto.getInterests())
-                .githubUrl(dto.getGithubUrl())
-                .studentStatus(StudentStatus.CURRENT)
-                .imageUrl("")
-                .role(Role.USER)
-                .isOtpEnabled(false)
-                .isDeleted(false)
-                .build();
+            .id(dto.getStudentId())
+            .name(dto.getName())
+            .contact(dto.getContact())
+            .email(dto.getEmail())
+            .department(dto.getDepartment())
+            .grade(dto.getGrade())
+            .birth(dto.getBirth())
+            .address(dto.getAddress())
+            .interests(dto.getInterests())
+            .githubUrl(dto.getGithubUrl())
+            .studentStatus(StudentStatus.CURRENT)
+            .imageUrl("")
+            .role(Role.USER)
+            .isOtpEnabled(false)
+            .isDeleted(false)
+            .build();
     }
 }

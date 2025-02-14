@@ -2,12 +2,11 @@ package page.clab.api.global.common.email.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.global.common.email.domain.EmailTemplateType;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -15,7 +14,8 @@ import java.util.List;
 public class EmailDto {
 
     @NotNull(message = "{notNull.email.to}")
-    @Schema(description = "받는 사람 이메일 리스트", example = "[\"" + "clab.coreteam@gmail.com" + "\", \"" + "clab.coreteam@gmail.com" + "\"]")
+    @Schema(description = "받는 사람 이메일 리스트", example = "[\"" + "clab.coreteam@gmail.com" + "\", \""
+        + "clab.coreteam@gmail.com" + "\"]")
     private List<String> to;
 
     @NotNull(message = "{notNull.email.subject}")

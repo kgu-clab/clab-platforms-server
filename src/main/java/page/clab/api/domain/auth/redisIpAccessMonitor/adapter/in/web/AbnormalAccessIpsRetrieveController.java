@@ -24,15 +24,16 @@ public class AbnormalAccessIpsRetrieveController {
     private final RetrieveAbnormalAccessIpsUseCase retrieveAbnormalAccessIpsUseCase;
 
     @Operation(summary = "[S] 비정상 접근으로 인한 차단 IP 목록 조회", description = "ROLE_SUPER 이상의 권한이 필요함<br>" +
-            "지속적인 비정상 접근으로 인해 Redis에 추가된 IP를 조회")
+        "지속적인 비정상 접근으로 인해 Redis에 추가된 IP를 조회")
     @PreAuthorize("hasRole('SUPER')")
     @GetMapping("/abnormal-access")
     public ApiResponse<PagedResponseDto<RedisIpAccessMonitor>> retrieveAbnormalAccessBlacklistIps(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<RedisIpAccessMonitor> abnormalAccessBlacklistIps = retrieveAbnormalAccessIpsUseCase.retrieveAbnormalAccessIps(pageable);
+        PagedResponseDto<RedisIpAccessMonitor> abnormalAccessBlacklistIps = retrieveAbnormalAccessIpsUseCase.retrieveAbnormalAccessIps(
+            pageable);
         return ApiResponse.success(abnormalAccessBlacklistIps);
     }
 }

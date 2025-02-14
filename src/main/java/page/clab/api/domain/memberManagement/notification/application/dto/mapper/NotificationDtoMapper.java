@@ -9,9 +9,9 @@ public class NotificationDtoMapper {
 
     public NotificationResponseDto toDto(Notification notification) {
         return NotificationResponseDto.builder()
-                .id(notification.getId())
-                .content(notification.getContent())
-                .createdAt(notification.getCreatedAt())
-                .build();
+            .id(notification.getId())
+            .content(notification.getContent())
+            .createdAt(notification.getCreatedAt())
+            .build();
     }
 }

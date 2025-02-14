@@ -13,7 +13,8 @@ public interface RetrieveReviewPort {
 
     Page<Review> findAllByMemberId(String memberId, Pageable pageable);
 
-    Page<Review> findByConditions(String memberId, String memberName, Long activityId, Boolean isPublic, Pageable pageable);
+    Page<Review> findByConditions(String memberId, String memberName, Long activityId, Boolean isPublic,
+        Pageable pageable);
 
     boolean existsByMemberIdAndActivityGroup(String memberId, ActivityGroup activityGroup);
 }

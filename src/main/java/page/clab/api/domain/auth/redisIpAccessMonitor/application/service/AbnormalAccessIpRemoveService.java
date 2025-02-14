@@ -23,8 +23,8 @@ public class AbnormalAccessIpRemoveService implements RemoveAbnormalAccessIpUseC
         removeIpAccessMonitorPort.deleteById(ipAddress);
         String abnormalAccessIpDeletedMessage = "Deleted IP: " + ipAddress;
         eventPublisher.publishEvent(
-                new NotificationEvent(this, SecurityAlertType.ABNORMAL_ACCESS_IP_DELETED, request,
-                        abnormalAccessIpDeletedMessage));
+            new NotificationEvent(this, SecurityAlertType.ABNORMAL_ACCESS_IP_DELETED, request,
+                abnormalAccessIpDeletedMessage));
         return ipAddress;
     }
 }

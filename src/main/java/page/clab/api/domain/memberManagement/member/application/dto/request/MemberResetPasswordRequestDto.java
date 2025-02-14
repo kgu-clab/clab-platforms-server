@@ -18,6 +18,6 @@ public class MemberResetPasswordRequestDto {
     private String name;
 
     @NotNull(message = "{notNull.member.email}")
-    @Schema(description = "이메일", example = "clab.coreteam@gamil.com", required = true)
+    @Schema(description = "이메일", example = "clab.coreteam@gmail.com", required = true)
     private String email;
 }

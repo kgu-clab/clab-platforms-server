@@ -1,5 +1,10 @@
 package page.clab.api.global.util;
 
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.Base64;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -9,15 +14,9 @@ import page.clab.api.global.config.AesConfig;
 import page.clab.api.global.exception.DecryptionException;
 import page.clab.api.global.exception.EncryptionException;
 
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.SecureRandom;
-import java.util.Arrays;
-import java.util.Base64;
-
 /**
- * {@code EncryptionUtil}은 AES/GCM 암호화 및 복호화 작업을 수행하는 유틸리티 클래스입니다.
- * 암호화와 복호화에 필요한 키와 IV(초기화 벡터)를 생성하고, AES 암호화 표준을 사용하여 문자열을 암호화하고 복호화하는 기능을 제공합니다.
+ * {@code EncryptionUtil}은 AES/GCM 암호화 및 복호화 작업을 수행하는 유틸리티 클래스입니다. 암호화와 복호화에 필요한 키와 IV(초기화 벡터)를 생성하고, AES 암호화 표준을 사용하여
+ * 문자열을 암호화하고 복호화하는 기능을 제공합니다.
  *
  * <p>주요 기능:
  * <ul>
@@ -38,7 +37,8 @@ public class EncryptionUtil {
     }
 
     public static EncryptionUtil create(AesConfig aesConfig) {
-        return new EncryptionUtil(aesConfig.getSecretKey(), aesConfig.getIvLengthBytes(), aesConfig.getGcmTagLengthBits());
+        return new EncryptionUtil(aesConfig.getSecretKey(), aesConfig.getIvLengthBytes(),
+            aesConfig.getGcmTagLengthBits());
     }
 
     public String encrypt(String strToEncrypt) {

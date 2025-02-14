@@ -1,5 +1,7 @@
 package page.clab.api.domain.community.board.application.port.out;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.community.board.domain.Board;
@@ -10,6 +12,10 @@ public interface RetrieveBoardPort {
     Board getById(Long boardId);
 
     Board findByIdRegardlessOfDeletion(Long boardId);
+
+    List<Board> findAllWithinDateRange(LocalDateTime startDate, LocalDateTime endDate);
+
+    List<Board> findAll();
 
     Page<Board> findAll(Pageable pageable);
 

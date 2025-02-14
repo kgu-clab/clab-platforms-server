@@ -1,9 +1,8 @@
 package page.clab.api.domain.auth.login.application.port.out;
 
-import page.clab.api.domain.auth.login.domain.RedisToken;
-
 import java.util.List;
 import java.util.Optional;
+import page.clab.api.domain.auth.login.domain.RedisToken;
 
 public interface RetrieveRedisTokenPort {
 

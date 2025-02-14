@@ -48,7 +48,7 @@ public class MemberBanService implements BanMemberUseCase {
 
     private AccountLockInfo ensureAccountLockInfo(String memberId) {
         return retrieveAccountLockInfoPort.findByMemberId(memberId)
-                .orElseGet(() -> createAccountLockInfo(memberId));
+            .orElseGet(() -> createAccountLockInfo(memberId));
     }
 
     private AccountLockInfo createAccountLockInfo(String memberId) {
@@ -61,6 +61,6 @@ public class MemberBanService implements BanMemberUseCase {
         String memberName = externalRetrieveMemberUseCase.getMemberBasicInfoById(memberId).getMemberName();
         String memberBannedMessage = "ID: " + memberId + ", Name: " + memberName;
         eventPublisher.publishEvent(
-                new NotificationEvent(this, SecurityAlertType.MEMBER_BANNED, request, memberBannedMessage));
+            new NotificationEvent(this, SecurityAlertType.MEMBER_BANNED, request, memberBannedMessage));
     }
 }

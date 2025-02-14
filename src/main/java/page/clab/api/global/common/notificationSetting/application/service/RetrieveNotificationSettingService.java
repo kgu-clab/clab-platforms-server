@@ -30,7 +30,7 @@ public class RetrieveNotificationSettingService implements RetrieveNotificationS
     @Override
     public List<NotificationSettingResponseDto> retrieveNotificationSettings() {
         return retrieveNotificationSettingPort.findAll().stream()
-                .map(mapper::toDto)
-                .toList();
+            .map(mapper::toDto)
+            .toList();
     }
 }

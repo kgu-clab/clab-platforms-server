@@ -1,8 +1,7 @@
 package page.clab.api.domain.memberManagement.position.application.port.out;
 
-import page.clab.api.domain.memberManagement.position.domain.Position;
-
 import java.util.List;
+import page.clab.api.domain.memberManagement.position.domain.Position;
 
 public interface RegisterPositionPort {
 

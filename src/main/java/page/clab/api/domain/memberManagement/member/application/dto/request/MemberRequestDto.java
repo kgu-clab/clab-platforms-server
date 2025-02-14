@@ -2,11 +2,10 @@ package page.clab.api.domain.memberManagement.member.application.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.memberManagement.member.domain.StudentStatus;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -28,7 +27,7 @@ public class MemberRequestDto {
     private String contact;
 
     @NotNull(message = "{notNull.member.email}")
-    @Schema(description = "이메일", example = "clab.coreteam@gamil.com", required = true)
+    @Schema(description = "이메일", example = "clab.coreteam@gmail.com", required = true)
     private String email;
 
     @NotNull(message = "{notNull.member.department}")

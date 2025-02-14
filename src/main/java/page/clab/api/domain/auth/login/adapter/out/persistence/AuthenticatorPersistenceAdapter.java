@@ -1,5 +1,6 @@
 package page.clab.api.domain.auth.login.adapter.out.persistence;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.auth.login.application.port.out.RegisterAuthenticatorPort;
@@ -8,14 +9,12 @@ import page.clab.api.domain.auth.login.application.port.out.RetrieveAuthenticato
 import page.clab.api.domain.auth.login.domain.Authenticator;
 import page.clab.api.global.exception.NotFoundException;
 
-import java.util.Optional;
-
 @Component
 @RequiredArgsConstructor
 public class AuthenticatorPersistenceAdapter implements
-        RegisterAuthenticatorPort,
-        RetrieveAuthenticatorPort,
-        RemoveAuthenticatorPort {
+    RegisterAuthenticatorPort,
+    RetrieveAuthenticatorPort,
+    RemoveAuthenticatorPort {
 
     private final AuthenticatorRepository authenticatorRepository;
     private final AuthenticatorMapper authenticatorMapper;
@@ -35,8 +34,9 @@ public class AuthenticatorPersistenceAdapter implements
     @Override
     public Authenticator getById(String memberId) {
         return authenticatorRepository.findById(memberId)
-                .map(authenticatorMapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[Authenticator] memberId: " + memberId + "에 해당하는 Authenticator가 존재하지 않습니다."));
+            .map(authenticatorMapper::toDomain)
+            .orElseThrow(() -> new NotFoundException(
+                "[Authenticator] memberId: " + memberId + "에 해당하는 Authenticator가 존재하지 않습니다."));
     }
 
     @Override

@@ -4,5 +4,6 @@ import page.clab.api.domain.members.blog.application.dto.request.BlogUpdateReque
 import page.clab.api.global.exception.PermissionDeniedException;
 
 public interface UpdateBlogUseCase {
+
     Long updateBlog(Long blogId, BlogUpdateRequestDto requestDto) throws PermissionDeniedException;
 }

@@ -25,7 +25,7 @@ public class PositionRegisterController {
     @PreAuthorize("hasRole('SUPER')")
     @PostMapping("")
     public ApiResponse<Long> registerPosition(
-            @Valid @RequestBody PositionRequestDto requestDto
+        @Valid @RequestBody PositionRequestDto requestDto
     ) {
         Long id = registerPositionUseCase.registerPosition(requestDto);
         return ApiResponse.success(id);

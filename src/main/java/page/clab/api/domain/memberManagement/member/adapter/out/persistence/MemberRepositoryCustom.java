@@ -10,5 +10,6 @@ public interface MemberRepositoryCustom {
 
     Page<MemberJpaEntity> findBirthdaysThisMonth(int month, Pageable pageable);
 
-    Page<MemberJpaEntity> findMemberRoleInfoByConditions(String memberId, String memberName, Role role, Pageable pageable);
+    Page<MemberJpaEntity> findMemberRoleInfoByConditions(String memberId, String memberName, Role role,
+        Pageable pageable);
 }

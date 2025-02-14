@@ -25,7 +25,7 @@ public class BookLoanExtensionController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/extend")
     public ApiResponse<Long> extendBookLoan(
-            @Valid @RequestBody BookLoanRecordRequestDto requestDto
+        @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) {
         Long id = extendBookLoanUseCase.extendBookLoan(requestDto);
         return ApiResponse.success(id);

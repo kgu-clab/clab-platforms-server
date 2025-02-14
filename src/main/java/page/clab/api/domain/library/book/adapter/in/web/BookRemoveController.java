@@ -23,7 +23,7 @@ public class BookRemoveController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{bookId}")
     public ApiResponse<Long> removeBook(
-            @PathVariable(name = "bookId") Long bookId
+        @PathVariable(name = "bookId") Long bookId
     ) {
         Long id = removeBookUseCase.removeBook(bookId);
         return ApiResponse.success(id);

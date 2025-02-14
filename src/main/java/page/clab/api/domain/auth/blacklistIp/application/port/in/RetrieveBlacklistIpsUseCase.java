@@ -5,5 +5,6 @@ import page.clab.api.domain.auth.blacklistIp.application.dto.response.BlacklistI
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveBlacklistIpsUseCase {
+
     PagedResponseDto<BlacklistIpResponseDto> retrieveBlacklistIps(Pageable pageable);
 }

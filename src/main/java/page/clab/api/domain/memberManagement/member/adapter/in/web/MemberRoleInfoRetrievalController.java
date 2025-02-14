@@ -2,6 +2,7 @@ package page.clab.api.domain.memberManagement.member.adapter.in.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,8 +19,6 @@ import page.clab.api.global.exception.InvalidColumnException;
 import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
@@ -30,22 +29,24 @@ public class MemberRoleInfoRetrievalController {
     private final PageableUtils pageableUtils;
 
     @Operation(summary = "[A] 멤버 권한 조회", description = "ROLE_ADMIN 이상의 권한이 필요함<br>" +
-            "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
-            "멤버 ID, 멤버 이름, 권한 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
-            "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
+        "3개의 파라미터를 자유롭게 조합하여 필터링 가능<br>" +
+        "멤버 ID, 멤버 이름, 권한 중 하나라도 입력하지 않으면 전체 조회됨<br>" +
+        "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/roles")
     public ApiResponse<PagedResponseDto<MemberRoleInfoResponseDto>> retrieveMemberRoleInfo(
-            @RequestParam(required = false) String memberId,
-            @RequestParam(required = false) String memberName,
-            @RequestParam(required = false) Role role,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "id") List<String> sortBy,
-            @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
+        @RequestParam(required = false) String memberId,
+        @RequestParam(required = false) String memberName,
+        @RequestParam(required = false) Role role,
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size,
+        @RequestParam(name = "sortBy", defaultValue = "id") List<String> sortBy,
+        @RequestParam(name = "sortDirection", defaultValue = "asc") List<String> sortDirection
     ) throws InvalidColumnException, SortingArgumentException {
-        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, MemberRoleInfoResponseDto.class);
-        PagedResponseDto<MemberRoleInfoResponseDto> memberRoles = retrieveMemberRoleInfoUseCase.retrieveMemberRoleInfo(memberId, memberName, role, pageable);
+        Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
+            MemberRoleInfoResponseDto.class);
+        PagedResponseDto<MemberRoleInfoResponseDto> memberRoles = retrieveMemberRoleInfoUseCase.retrieveMemberRoleInfo(
+            memberId, memberName, role, pageable);
         return ApiResponse.success(memberRoles);
     }
 }

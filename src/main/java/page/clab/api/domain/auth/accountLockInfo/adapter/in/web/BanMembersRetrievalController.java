@@ -27,11 +27,12 @@ public class BanMembersRetrievalController {
     @PreAuthorize("hasRole('SUPER')")
     @GetMapping("")
     public ApiResponse<PagedResponseDto<AccountLockInfoResponseDto>> retrieveBanMembers(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<AccountLockInfoResponseDto> banMembers = retrieveBannedMembersUseCase.retrieveBanMembers(pageable);
+        PagedResponseDto<AccountLockInfoResponseDto> banMembers = retrieveBannedMembersUseCase.retrieveBanMembers(
+            pageable);
         return ApiResponse.success(banMembers);
     }
 }

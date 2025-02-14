@@ -26,7 +26,7 @@ public class BookLoanRequestController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("")
     public ApiResponse<Long> requestBookLoan(
-            @Valid @RequestBody BookLoanRecordRequestDto requestDto
+        @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) throws CustomOptimisticLockingFailureException {
         Long id = requestBookLoanUseCase.requestBookLoan(requestDto);
         return ApiResponse.success(id);

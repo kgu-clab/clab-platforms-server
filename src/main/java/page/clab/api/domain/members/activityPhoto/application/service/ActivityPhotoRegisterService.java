@@ -1,5 +1,6 @@
 package page.clab.api.domain.members.activityPhoto.application.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,8 +11,6 @@ import page.clab.api.domain.members.activityPhoto.application.port.out.RegisterA
 import page.clab.api.domain.members.activityPhoto.domain.ActivityPhoto;
 import page.clab.api.global.common.file.application.UploadedFileService;
 import page.clab.api.global.common.file.domain.UploadedFile;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

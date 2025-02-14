@@ -5,6 +5,8 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface BookRepository extends JpaRepository<BookJpaEntity, Long>, BookRepositoryCustom, QuerydslPredicateExecutor<BookJpaEntity> {
+public interface BookRepository extends JpaRepository<BookJpaEntity, Long>, BookRepositoryCustom,
+    QuerydslPredicateExecutor<BookJpaEntity> {
+
     int countByBorrowerId(String memberId);
 }

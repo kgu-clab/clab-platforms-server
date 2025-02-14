@@ -5,5 +5,6 @@ import page.clab.api.domain.memberManagement.cloud.application.dto.response.Clou
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveAllCloudUsageUseCase {
+
     PagedResponseDto<CloudUsageInfo> retrieveAllCloudUsages(Pageable pageable);
 }

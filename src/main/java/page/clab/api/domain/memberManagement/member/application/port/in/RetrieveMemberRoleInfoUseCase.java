@@ -6,5 +6,7 @@ import page.clab.api.domain.memberManagement.member.domain.Role;
 import page.clab.api.global.common.dto.PagedResponseDto;
 
 public interface RetrieveMemberRoleInfoUseCase {
-    PagedResponseDto<MemberRoleInfoResponseDto> retrieveMemberRoleInfo(String memberId, String memberName, Role role, Pageable pageable);
+
+    PagedResponseDto<MemberRoleInfoResponseDto> retrieveMemberRoleInfo(String memberId, String memberName, Role role,
+        Pageable pageable);
 }

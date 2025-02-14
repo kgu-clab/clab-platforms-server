@@ -27,8 +27,8 @@ public class DeletedBlogsRetrievalController {
     @PreAuthorize("hasRole('SUPER')")
     @GetMapping("/deleted")
     public ApiResponse<PagedResponseDto<BlogDetailsResponseDto>> retrieveDeletedBlogs(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         PagedResponseDto<BlogDetailsResponseDto> blogs = retrieveDeletedBlogsUseCase.retrieveDeletedBlogs(pageable);

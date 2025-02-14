@@ -1,13 +1,12 @@
 package page.clab.api.domain.community.board.domain;
 
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -25,11 +24,11 @@ public class BoardEmoji {
 
     public static BoardEmoji create(String memberId, Long boardId, String emoji) {
         return BoardEmoji.builder()
-                .memberId(memberId)
-                .boardId(boardId)
-                .emoji(emoji)
-                .isDeleted(false)
-                .build();
+            .memberId(memberId)
+            .boardId(boardId)
+            .emoji(emoji)
+            .isDeleted(false)
+            .build();
     }
 
     public void toggleIsDeletedStatus() {

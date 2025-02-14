@@ -24,8 +24,8 @@ public class MemberUnbanController {
     @PreAuthorize("hasRole('SUPER')")
     @PostMapping("/unban/{memberId}")
     public ApiResponse<Long> unbanMember(
-            HttpServletRequest request,
-            @PathVariable(name = "memberId") String memberId
+        HttpServletRequest request,
+        @PathVariable(name = "memberId") String memberId
     ) {
         Long id = unbanMemberUseCase.unbanMember(request, memberId);
         return ApiResponse.success(id);

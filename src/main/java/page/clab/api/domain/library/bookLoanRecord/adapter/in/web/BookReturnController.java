@@ -25,7 +25,7 @@ public class BookReturnController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/return")
     public ApiResponse<Long> returnBook(
-            @Valid @RequestBody BookLoanRecordRequestDto requestDto
+        @Valid @RequestBody BookLoanRecordRequestDto requestDto
     ) {
         Long id = returnBookUseCase.returnBook(requestDto);
         return ApiResponse.success(id);

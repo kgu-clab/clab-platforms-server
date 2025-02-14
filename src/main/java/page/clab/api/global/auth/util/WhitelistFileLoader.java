@@ -1,12 +1,5 @@
 package page.clab.api.global.auth.util;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -17,6 +10,12 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * {@code WhitelistFileLoader}는 지정된 경로의 YAML 파일에서 IP 화이트리스트 목록을 로드하는 클래스입니다.
@@ -48,6 +47,7 @@ public class WhitelistFileLoader {
 
     /**
      * 화이트리스트 YAML 파일에서 IP 목록을 로드합니다.
+     *
      * @return 화이트리스트에 포함된 IP 목록
      */
     public List<String> loadWhitelistIps() {
@@ -70,6 +70,7 @@ public class WhitelistFileLoader {
 
     /**
      * 기본 화이트리스트 YAML 파일을 생성합니다.
+     *
      * @param path 파일 경로
      * @param yaml Yaml 객체
      * @throws IOException 파일 생성 중 오류 발생 시
@@ -77,10 +78,10 @@ public class WhitelistFileLoader {
     private void createDefaultWhitelistFile(Path path, Yaml yaml) throws IOException {
         Files.createDirectories(path.getParent());
         Map<String, Map<String, List<String>>> defaultContent = Map.of(
-                "whitelist", Map.of(
-                        "fixedIps", List.of(""),
-                        "temporaryIps", List.of("*")
-                )
+            "whitelist", Map.of(
+                "fixedIps", List.of(""),
+                "temporaryIps", List.of("*")
+            )
         );
         yaml.dump(defaultContent, Files.newBufferedWriter(path));
         log.info("Whitelist YAML file created at {}", whitelistPath);
@@ -88,6 +89,7 @@ public class WhitelistFileLoader {
 
     /**
      * YAML 파일을 파싱하여 화이트리스트 IP 목록을 반환합니다.
+     *
      * @param yaml Yaml 객체
      * @param path YAML 파일 경로
      * @return 화이트리스트에 포함된 IP 목록
@@ -108,8 +110,8 @@ public class WhitelistFileLoader {
             List<String> temporaryIps = whitelist.getOrDefault("temporaryIps", List.of());
 
             return Stream.concat(
-                    fixedIps != null ? fixedIps.stream() : Stream.empty(),
-                    temporaryIps != null ? temporaryIps.stream() : Stream.empty()
+                fixedIps != null ? fixedIps.stream() : Stream.empty(),
+                temporaryIps != null ? temporaryIps.stream() : Stream.empty()
             ).toList();
         } catch (Exception e) {
             log.error("Failed to parse IP whitelist", e);

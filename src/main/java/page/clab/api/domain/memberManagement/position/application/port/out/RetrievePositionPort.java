@@ -1,12 +1,11 @@
 package page.clab.api.domain.memberManagement.position.application.port.out;
 
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.memberManagement.position.domain.Position;
 import page.clab.api.domain.memberManagement.position.domain.PositionType;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface RetrievePositionPort {
 
@@ -19,4 +18,6 @@ public interface RetrievePositionPort {
     Page<Position> findByConditions(String year, PositionType positionType, Pageable pageable);
 
     List<Position> findByMemberId(String memberId);
+
+    Optional<Position> findTopByMemberIdAndYearOrderByCreatedAtDesc(String memberId, String year);
 }

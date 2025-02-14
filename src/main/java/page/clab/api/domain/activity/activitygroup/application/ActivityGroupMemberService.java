@@ -1,5 +1,12 @@
 package page.clab.api.domain.activity.activitygroup.application;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,14 +47,6 @@ import page.clab.api.global.common.dto.PagedResponseDto;
 import page.clab.api.global.exception.NotFoundException;
 import page.clab.api.global.util.PaginationUtils;
 
-import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 public class ActivityGroupMemberService {
@@ -68,56 +67,63 @@ public class ActivityGroupMemberService {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
 
         boolean isOwner = details.getGroupMembers().stream()
-                .anyMatch(groupMember -> groupMember.isOwnerAndLeader(currentMember));
+            .anyMatch(groupMember -> groupMember.isOwnerAndLeader(currentMember));
 
         // 활동 그룹 멤버를 조회합니다.
         List<GroupMemberResponseDto> groupMemberResponseDtos = details.getGroupMembers().stream()
-                .map(groupMember -> mapper.toDto(externalRetrieveMemberUseCase.getById(groupMember.getMemberId()), groupMember))
-                .toList();
+            .map(groupMember -> mapper.toDto(externalRetrieveMemberUseCase.getById(groupMember.getMemberId()),
+                groupMember))
+            .toList();
 
         // 활동 그룹 게시판을 조회합니다.
         List<ActivityGroupBoardResponseDto> activityGroupBoardResponseDtos =
-                details.getActivityGroupBoards().stream()
-                        .map(board -> {
-                            MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(board.getMemberId());
-                            return mapper.toBoardDto(board, memberBasicInfoDto);
-                        })
-                        .toList();
+            details.getActivityGroupBoards().stream()
+                .map(board -> {
+                    MemberBasicInfoDto memberBasicInfoDto = externalRetrieveMemberUseCase.getMemberBasicInfoById(
+                        board.getMemberId());
+                    return mapper.toBoardDto(board, memberBasicInfoDto);
+                })
+                .toList();
 
-        return mapper.toDto(details.getActivityGroup(), activityGroupBoardResponseDtos, groupMemberResponseDtos, isOwner);
+        return mapper.toDto(details.getActivityGroup(), activityGroupBoardResponseDtos, groupMemberResponseDtos,
+            isOwner);
     }
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<ActivityGroupStatusResponseDto> getMyActivityGroups(ActivityGroupStatus status, Pageable pageable) {
+    public PagedResponseDto<ActivityGroupStatusResponseDto> getMyActivityGroups(ActivityGroupStatus status,
+        Pageable pageable) {
         String currentMemberId = externalRetrieveMemberUseCase.getCurrentMemberId();
         List<GroupMember> groupMembers = getGroupMemberByMemberId(currentMemberId);
 
         // 현재 로그인한 멤버가 활동중인 그룹을 조회합니다.
         // 상태가 전달되지 않으면 모든 그룹을 조회합니다.
         List<ActivityGroup> activityGroups = groupMembers.stream()
-                .filter(GroupMember::isAccepted)
-                .map(GroupMember::getActivityGroup)
-                .filter(activityGroup -> status == null || activityGroup.isSameStatus(status))
-                .distinct()
-                .toList();
+            .filter(GroupMember::isAccepted)
+            .map(GroupMember::getActivityGroup)
+            .filter(activityGroup -> status == null || activityGroup.isSameStatus(status))
+            .distinct()
+            .toList();
 
         List<ActivityGroupStatusResponseDto> activityGroupDtos = activityGroups.stream()
-                .map(this::getActivityGroupStatusResponseDto)
-                .toList();
+            .map(this::getActivityGroupStatusResponseDto)
+            .toList();
 
-        List<ActivityGroupStatusResponseDto> paginatedActivityGroupDtos = PaginationUtils.applySortingAndSlicing(activityGroupDtos, pageable);
+        List<ActivityGroupStatusResponseDto> paginatedActivityGroupDtos = PaginationUtils.applySortingAndSlicing(
+            activityGroupDtos, pageable);
 
         return new PagedResponseDto<>(paginatedActivityGroupDtos, activityGroups.size(), pageable);
     }
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<ActivityGroupStatusResponseDto> getActivityGroupsByStatus(ActivityGroupStatus status, Pageable pageable) {
+    public PagedResponseDto<ActivityGroupStatusResponseDto> getActivityGroupsByStatus(ActivityGroupStatus status,
+        Pageable pageable) {
         Page<ActivityGroup> activityGroups = activityGroupRepository.findActivityGroupsByStatus(status, pageable);
         return new PagedResponseDto<>(activityGroups.map(this::getActivityGroupStatusResponseDto));
     }
 
     @Transactional(readOnly = true)
-    public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByCategory(ActivityGroupCategory category, Pageable pageable) {
+    public PagedResponseDto<ActivityGroupResponseDto> getActivityGroupsByCategory(ActivityGroupCategory category,
+        Pageable pageable) {
         Page<ActivityGroup> activityGroupList = getActivityGroupByCategory(category, pageable);
         return new PagedResponseDto<>(activityGroupList.map(mapper::toDto));
     }
@@ -130,7 +136,8 @@ public class ActivityGroupMemberService {
 
     @Transactional(readOnly = true)
     public PagedResponseDto<GroupMemberResponseDto> getActivityGroupMembers(Long activityGroupId, Pageable pageable) {
-        Page<GroupMember> groupMembers = getGroupMemberByActivityGroupIdAndStatus(activityGroupId, GroupMemberStatus.ACCEPTED, pageable);
+        Page<GroupMember> groupMembers = getGroupMemberByActivityGroupIdAndStatus(activityGroupId,
+            GroupMemberStatus.ACCEPTED, pageable);
         return new PagedResponseDto<>(groupMembers.map(groupMember -> {
             Member member = externalRetrieveMemberUseCase.getById(groupMember.getMemberId());
             return mapper.toDto(member, groupMember);
@@ -149,12 +156,16 @@ public class ActivityGroupMemberService {
         ApplyForm form = mapper.fromDto(formRequestDto, activityGroup, currentMember);
         applyFormRepository.save(form);
 
-        GroupMember groupMember = GroupMember.create(currentMember.getId(), activityGroup, ActivityGroupRole.NONE, GroupMemberStatus.WAITING);
+        GroupMember groupMember = GroupMember.create(currentMember.getId(), activityGroup, ActivityGroupRole.NONE,
+            GroupMemberStatus.WAITING);
         groupMemberRepository.save(groupMember);
 
-        List<GroupMember> groupLeaders = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(), ActivityGroupRole.LEADER);
+        List<GroupMember> groupLeaders = getGroupMemberByActivityGroupIdAndRole(activityGroup.getId(),
+            ActivityGroupRole.LEADER);
         if (!CollectionUtils.isEmpty(groupLeaders)) {
-            groupLeaders.forEach(leader -> externalSendNotificationUseCase.sendNotificationToMember(leader.getMemberId(), "[" + activityGroup.getName() + "] " + currentMember.getName() + "님이 활동 참가 신청을 하였습니다."));
+            groupLeaders.forEach(
+                leader -> externalSendNotificationUseCase.sendNotificationToMember(leader.getMemberId(),
+                    "[" + activityGroup.getName() + "] " + currentMember.getName() + "님이 활동 참가 신청을 하였습니다."));
         }
         return activityGroup.getId();
     }
@@ -164,22 +175,23 @@ public class ActivityGroupMemberService {
         List<GroupMember> groupMembers = getGroupMemberByMemberId(currentMemberId);
 
         List<Long> activityGroupIds = groupMembers.stream()
-                .map(GroupMember::getActivityGroup)
-                .map(ActivityGroup::getId)
-                .distinct()
-                .toList();
+            .map(GroupMember::getActivityGroup)
+            .map(ActivityGroup::getId)
+            .distinct()
+            .toList();
 
         Map<Long, GroupMember> activityGroupOwners = findActivityGroupOwners(activityGroupIds);
 
         List<ActivityGroupStatusResponseDto> activityGroups = groupMembers.stream()
-                .filter(groupMember -> !isActivityGroupOwner(groupMember, activityGroupOwners))
-                .map(GroupMember::getActivityGroup)
-                .filter(ActivityGroup::isProgressing)
-                .distinct()
-                .map(this::getActivityGroupStatusResponseDto)
-                .toList();
+            .filter(groupMember -> !isActivityGroupOwner(groupMember, activityGroupOwners))
+            .map(GroupMember::getActivityGroup)
+            .filter(ActivityGroup::isProgressing)
+            .distinct()
+            .map(this::getActivityGroupStatusResponseDto)
+            .toList();
 
-        List<ActivityGroupStatusResponseDto> paginatedActivityGroups = PaginationUtils.applySortingAndSlicing(activityGroups, pageable);
+        List<ActivityGroupStatusResponseDto> paginatedActivityGroups = PaginationUtils.applySortingAndSlicing(
+            activityGroups, pageable);
 
         return new PagedResponseDto<>(paginatedActivityGroups, activityGroups.size(), pageable);
     }
@@ -189,32 +201,33 @@ public class ActivityGroupMemberService {
 
         Long participantCount = groupMemberRepository.countAcceptedMembersByActivityGroupId(activityGroupId);
         List<LeaderInfo> leaderMembers = groupMemberRepository.findLeaderByActivityGroupId(activityGroupId)
-                .stream()
-                .map(leader -> {
-                    Member member = externalRetrieveMemberUseCase.getById(leader.getMemberId());
-                    LocalDateTime createdAt = leader.getCreatedAt();
-                    return mapper.create(member, createdAt);
-                })
-                // LEADER 직책을 가진 사람 중 가장 먼저 활동에 참여한 사람 순으로 정렬
-                .sorted(Comparator.comparing(LeaderInfo::getCreatedAt))
-                .toList();
+            .stream()
+            .map(leader -> {
+                Member member = externalRetrieveMemberUseCase.getById(leader.getMemberId());
+                LocalDateTime createdAt = leader.getCreatedAt();
+                return mapper.create(member, createdAt);
+            })
+            // LEADER 직책을 가진 사람 중 가장 먼저 활동에 참여한 사람 순으로 정렬
+            .sorted(Comparator.comparing(LeaderInfo::getCreatedAt))
+            .toList();
 
-        Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroupId, ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
+        Long weeklyActivityCount = activityGroupBoardRepository.countByActivityGroupIdAndCategory(activityGroupId,
+            ActivityGroupBoardCategory.WEEKLY_ACTIVITY);
 
         return mapper.toDto(activityGroup, leaderMembers, participantCount, weeklyActivityCount);
     }
 
     public ActivityGroup getActivityGroupById(Long activityGroupId) {
         return activityGroupRepository.findById(activityGroupId)
-                .orElseThrow(() -> new NotFoundException("해당 활동이 존재하지 않습니다."));
+            .orElseThrow(() -> new NotFoundException("해당 활동이 존재하지 않습니다."));
     }
 
     public Map<Long, GroupMember> findActivityGroupOwners(List<Long> activityGroupIds) {
         return groupMemberRepository.findFirstByActivityGroupIdIn(activityGroupIds).stream()
-                .collect(Collectors.toMap(
-                        groupMember -> groupMember.getActivityGroup().getId(),
-                        Function.identity()
-                ));
+            .collect(Collectors.toMap(
+                groupMember -> groupMember.getActivityGroup().getId(),
+                Function.identity()
+            ));
     }
 
     public Optional<GroupMember> findGroupMemberByActivityGroupAndMember(ActivityGroup activityGroup, String memberId) {
@@ -223,7 +236,7 @@ public class ActivityGroupMemberService {
 
     public GroupMember getGroupMemberByActivityGroupAndMember(ActivityGroup activityGroup, String memberId) {
         return groupMemberRepository.findByActivityGroupAndMemberId(activityGroup, memberId)
-                .orElseThrow(() -> new NotFoundException("해당 멤버가 활동에 참여하지 않았습니다."));
+            .orElseThrow(() -> new NotFoundException("해당 멤버가 활동에 참여하지 않았습니다."));
     }
 
     private Page<ActivityGroup> getActivityGroupByCategory(ActivityGroupCategory category, Pageable pageable) {
@@ -246,7 +259,8 @@ public class ActivityGroupMemberService {
         return groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, status);
     }
 
-    public Page<GroupMember> getGroupMemberByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status, Pageable pageable) {
+    public Page<GroupMember> getGroupMemberByActivityGroupIdAndStatus(Long activityGroupId, GroupMemberStatus status,
+        Pageable pageable) {
         return groupMemberRepository.findAllByActivityGroupIdAndStatus(activityGroupId, status, pageable);
     }
 
@@ -259,7 +273,8 @@ public class ActivityGroupMemberService {
     }
 
     public boolean isGroupMember(ActivityGroup activityGroup, String memberId) {
-        return groupMemberRepository.existsByActivityGroupAndMemberIdAndStatus(activityGroup, memberId, GroupMemberStatus.ACCEPTED);
+        return groupMemberRepository.existsByActivityGroupAndMemberIdAndStatus(activityGroup, memberId,
+            GroupMemberStatus.ACCEPTED);
     }
 
     private boolean isActivityGroupOwner(GroupMember groupMember, Map<Long, GroupMember> activityGroupOwners) {

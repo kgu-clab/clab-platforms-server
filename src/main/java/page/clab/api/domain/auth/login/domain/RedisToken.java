@@ -1,6 +1,7 @@
 package page.clab.api.domain.auth.login.domain;
 
 import jakarta.persistence.Id;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,8 +12,6 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 import page.clab.api.domain.auth.login.application.dto.response.TokenInfo;
 import page.clab.api.domain.memberManagement.member.domain.Role;
-
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -36,13 +35,13 @@ public class RedisToken {
 
     public static RedisToken create(String memberId, Role role, String ip, TokenInfo tokenInfo) {
         return RedisToken.builder()
-                .id(UUID.randomUUID())
-                .memberId(memberId)
-                .role(role)
-                .ip(ip)
-                .accessToken(tokenInfo.getAccessToken())
-                .refreshToken(tokenInfo.getRefreshToken())
-                .build();
+            .id(UUID.randomUUID())
+            .memberId(memberId)
+            .role(role)
+            .ip(ip)
+            .accessToken(tokenInfo.getAccessToken())
+            .refreshToken(tokenInfo.getRefreshToken())
+            .build();
     }
 
     public boolean isSameIp(String ip) {

@@ -17,11 +17,11 @@ public class BookLoanRecordNotificationInfo {
 
     public static BookLoanRecordNotificationInfo create(Book book, MemberBorrowerInfoDto borrowerInfo) {
         return BookLoanRecordNotificationInfo.builder()
-                .memberId(borrowerInfo.getMemberId())
-                .memberName(borrowerInfo.getMemberName())
-                .bookTitle(book.getTitle())
-                .category(book.getCategory())
-                .isAvailable(book.getBorrowerId() == null)
-                .build();
+            .memberId(borrowerInfo.getMemberId())
+            .memberName(borrowerInfo.getMemberName())
+            .bookTitle(book.getTitle())
+            .category(book.getCategory())
+            .isAvailable(book.getBorrowerId() == null)
+            .build();
     }
 }

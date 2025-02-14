@@ -29,8 +29,8 @@ public class AbnormalAccessIpsClearService implements ClearAbnormalAccessIpsUseC
 
         String abnormalAccessIpClearedMessage = "Deleted IP: ALL";
         eventPublisher.publishEvent(
-                new NotificationEvent(this, SecurityAlertType.ABNORMAL_ACCESS_IP_DELETED, request,
-                        abnormalAccessIpClearedMessage));
+            new NotificationEvent(this, SecurityAlertType.ABNORMAL_ACCESS_IP_DELETED, request,
+                abnormalAccessIpClearedMessage));
 
         return ipAccessMonitors;
     }

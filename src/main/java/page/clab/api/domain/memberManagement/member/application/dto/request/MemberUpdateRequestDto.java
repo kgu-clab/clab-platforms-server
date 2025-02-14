@@ -1,11 +1,10 @@
 package page.clab.api.domain.memberManagement.member.application.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 import page.clab.api.domain.memberManagement.member.domain.StudentStatus;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -17,7 +16,7 @@ public class MemberUpdateRequestDto {
     @Schema(description = "연락처", example = "01012345678")
     private String contact;
 
-    @Schema(description = "이메일", example = "clab.coreteam@gamil.com")
+    @Schema(description = "이메일", example = "clab.coreteam@gmail.com")
     private String email;
 
     @Schema(description = "학년", example = "1")

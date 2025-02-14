@@ -5,5 +5,7 @@ import org.springframework.data.domain.Pageable;
 import page.clab.api.domain.members.membershipFee.domain.MembershipFeeStatus;
 
 public interface MembershipFeeRepositoryCustom {
-    Page<MembershipFeeJpaEntity> findByConditions(String memberId, String memberName, String category, MembershipFeeStatus status, Pageable pageable);
+
+    Page<MembershipFeeJpaEntity> findByConditions(String memberId, String memberName, String category,
+        MembershipFeeStatus status, Pageable pageable);
 }

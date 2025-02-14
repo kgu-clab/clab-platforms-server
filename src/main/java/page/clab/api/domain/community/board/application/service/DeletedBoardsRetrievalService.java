@@ -1,12 +1,14 @@
 package page.clab.api.domain.community.board.application.service;
 
 import com.drew.lang.annotations.NotNull;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.board.application.dto.mapper.BoardDtoMapper;
+import page.clab.api.domain.community.board.application.dto.response.BoardHashtagResponseDto;
 import page.clab.api.domain.community.board.application.dto.response.BoardListResponseDto;
 import page.clab.api.domain.community.board.application.port.in.RetrieveDeletedBoardsUseCase;
 import page.clab.api.domain.community.board.application.port.out.RetrieveBoardPort;
@@ -23,6 +25,7 @@ public class DeletedBoardsRetrievalService implements RetrieveDeletedBoardsUseCa
     private final RetrieveBoardPort retrieveBoardPort;
     private final ExternalRetrieveCommentUseCase externalRetrieveCommentUseCase;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;
+    private final BoardHashtagRetrieveService boardHashtagRetrieveService;
     private final BoardDtoMapper mapper;
 
     @Transactional(readOnly = true)
@@ -30,7 +33,7 @@ public class DeletedBoardsRetrievalService implements RetrieveDeletedBoardsUseCa
     public PagedResponseDto<BoardListResponseDto> retrieveDeletedBoards(Pageable pageable) {
         Page<Board> boards = retrieveBoardPort.findAllByIsDeletedTrue(pageable);
         return new PagedResponseDto<>(boards.map(board ->
-                mapToBoardListResponseDto(board, getMemberDetailedInfoByBoard(board))));
+            mapToBoardListResponseDto(board, getMemberDetailedInfoByBoard(board))));
     }
 
     private MemberDetailedInfoDto getMemberDetailedInfoByBoard(Board board) {
@@ -40,6 +43,8 @@ public class DeletedBoardsRetrievalService implements RetrieveDeletedBoardsUseCa
     @NotNull
     private BoardListResponseDto mapToBoardListResponseDto(Board board, MemberDetailedInfoDto memberInfo) {
         Long commentCount = externalRetrieveCommentUseCase.countByBoardId(board.getId());
-        return mapper.toListDto(board, memberInfo, commentCount);
+        List<BoardHashtagResponseDto> boardHashtagInfos = boardHashtagRetrieveService.getBoardHashtagInfoByBoardId(
+            board.getId());
+        return mapper.toListDto(board, memberInfo, commentCount, boardHashtagInfos);
     }
 }

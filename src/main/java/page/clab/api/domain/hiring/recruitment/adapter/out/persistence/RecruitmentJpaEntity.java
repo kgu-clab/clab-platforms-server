@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,8 +21,6 @@ import org.hibernate.annotations.SQLRestriction;
 import page.clab.api.domain.hiring.application.domain.ApplicationType;
 import page.clab.api.domain.hiring.recruitment.domain.RecruitmentStatus;
 import page.clab.api.global.common.domain.BaseEntity;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "recruitment")
@@ -39,14 +38,30 @@ public class RecruitmentJpaEntity extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
+    @Size(min = 1, max = 100, message = "{size.recruitment.title}")
+    private String title;
+
+    @Column(nullable = false)
+    @Size(min = 1, max = 10000, message = "{size.recruitment.teamIntroduction}")
+    private String teamIntroduction;
+
+    @Column(nullable = false)
     private LocalDateTime startDate;
 
     @Column(nullable = false)
     private LocalDateTime endDate;
 
     @Column(nullable = false)
+    @Size(min = 1, max = 10000, message = "{size.recruitment.processTimeline}")
+    private String processTimeline;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ApplicationType applicationType;
+
+    @Column(nullable = false)
+    @Size(min = 1, max = 10000, message = "{size.recruitment.jobDescription}")
+    private String jobDescription;
 
     @Column(nullable = false)
     @Size(min = 1, message = "{size.recruitment.target}")

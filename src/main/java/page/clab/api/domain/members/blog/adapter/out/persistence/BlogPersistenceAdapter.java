@@ -12,8 +12,8 @@ import page.clab.api.global.exception.NotFoundException;
 @Component
 @RequiredArgsConstructor
 public class BlogPersistenceAdapter implements
-        RegisterBlogPort,
-        RetrieveBlogPort {
+    RegisterBlogPort,
+    RetrieveBlogPort {
 
     private final BlogRepository blogRepository;
     private final BlogMapper blogMapper;
@@ -28,19 +28,19 @@ public class BlogPersistenceAdapter implements
     @Override
     public Blog getById(Long blogId) {
         return blogRepository.findById(blogId)
-                .map(blogMapper::toDomain)
-                .orElseThrow(() -> new NotFoundException("[Blog] id: " + blogId + "에 해당하는 게시글이 존재하지 않습니다."));
+            .map(blogMapper::toDomain)
+            .orElseThrow(() -> new NotFoundException("[Blog] id: " + blogId + "에 해당하는 게시글이 존재하지 않습니다."));
     }
 
     @Override
     public Page<Blog> findByConditions(String title, String memberName, Pageable pageable) {
         return blogRepository.findByConditions(title, memberName, pageable)
-                .map(blogMapper::toDomain);
+            .map(blogMapper::toDomain);
     }
 
     @Override
     public Page<Blog> findAllByIsDeletedTrue(Pageable pageable) {
         return blogRepository.findAllByIsDeletedTrue(pageable)
-                .map(blogMapper::toDomain);
+            .map(blogMapper::toDomain);
     }
 }

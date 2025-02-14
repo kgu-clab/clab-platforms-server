@@ -1,5 +1,7 @@
 package page.clab.api.external.memberManagement.member.application.port;
 
+import java.util.List;
+import java.util.Optional;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBorrowerInfoDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
@@ -8,9 +10,6 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberPositionInfoDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberReviewInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface ExternalRetrieveMemberUseCase {
 

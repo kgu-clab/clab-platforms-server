@@ -3,9 +3,8 @@ package page.clab.api.global.util;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * {@code StringJsonConverter} 클래스는 JPA 엔티티 필드를 JSON 문자열로 변환하거나 JSON 문자열을 리스트로 변환하는 역할을 수행하는 컨버터입니다.

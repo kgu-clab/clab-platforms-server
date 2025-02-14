@@ -1,5 +1,6 @@
 package page.clab.api.global.common.verification.application;
 
+import java.security.SecureRandom;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.stereotype.Service;
@@ -9,14 +10,12 @@ import page.clab.api.global.common.verification.domain.Verification;
 import page.clab.api.global.common.verification.dto.request.VerificationRequestDto;
 import page.clab.api.global.exception.NotFoundException;
 
-import java.security.SecureRandom;
-
 /**
  * {@code VerificationService}는 회원 인증 코드 생성, 저장, 검증 및 삭제 기능을 제공하는 서비스입니다.
  *
  * <p>인증 코드는 사용자의 이메일 또는 전화번호 인증을 위한 임시 코드로,
  * 생성된 코드는 데이터베이스에 저장되고, 유효성 검사를 통해 해당 사용자의 인증을 검증합니다.</p>
- *
+ * <p>
  * 주요 기능:
  * <ul>
  *     <li>{@link #getVerificationCode(String)} - 주어진 코드로 데이터베이스에서 인증 코드를 조회합니다.</li>
@@ -34,7 +33,7 @@ public class VerificationService {
 
     public Verification getVerificationCode(String verificationCode) {
         return verificationRepository.findByVerificationCode(verificationCode)
-                .orElseThrow(() -> new NotFoundException("존재하지 않는 인증코드입니다."));
+            .orElseThrow(() -> new NotFoundException("존재하지 않는 인증코드입니다."));
     }
 
     public void saveVerificationCode(String memberId, String verificationCode) {
@@ -44,7 +43,7 @@ public class VerificationService {
 
     public void deleteVerificationCode(String verificationCode) {
         verificationRepository.findByVerificationCode(verificationCode)
-                .ifPresent(verificationRepository::delete);
+            .ifPresent(verificationRepository::delete);
     }
 
     public Verification validateVerificationCode(VerificationRequestDto verificationRequestDto, Member member) {

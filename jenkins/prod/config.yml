@@ -1,59 +1,74 @@
-jenkins-domain: "https://jenkins.example.com" # Jenkins domain
+jenkins-domain: "https://jenkins.example.com"  # Base URL of the Jenkins instance
 
-slack:
-    webhook-url: "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX" # Slack webhook URL
-    color-success: "#F2C744" # Slack message color for success
-    color-failure: "#8D1E0E" # Slack message color for failure
+notifications:
+  common:
+    color-success: "#F2C744"  # Common hex color code for success messages across all notification platforms
+    color-failure: "#8D1E0E"  # Common hex color code for failure messages across all notification platforms
+
+  platforms:
+    - platform: "slack"  # Name of the notification platform (e.g., Slack)
+      enabled: true      # Enable (true) or disable (false) notifications for this platform
+      webhook-url: "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"  # Webhook URL for sending messages to Slack
+
+    - platform: "discord"  # Name of the notification platform (e.g., Discord)
+      enabled: true        # Enable (true) or disable (false) notifications for this platform
+      webhook-url: "https://discord.com/api/webhooks/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"  # Webhook URL for sending messages to Discord
+
+    # Add additional notification platforms below as needed
+    # Example:
+    # - platform: "microsoft-teams"
+    #   enabled: true
+    #   webhook-url: "https://outlook.office.com/webhook/..."
 
 postgresql:
-    user: "postgres_user" # PostgreSQL username
-    password: "postgres_password" # PostgreSQL password
-    backup-dir: "/var/backups/postgresql" # Directory for PostgreSQL backups
+  user: "postgres_user"                  # Username for PostgreSQL
+  password: "postgres_password"          # Password for PostgreSQL
+  backup-dir: "/var/backups/postgresql"  # Directory where PostgreSQL backups are stored
 
 dockerhub:
-    repo: "yourdockerhub/repository" # Docker Hub repository name
-    user: "dockerhub_user" # Docker Hub username
-    password: "dockerhub_password" # Docker Hub password
+  repo: "yourdockerhub/repository"  # Docker Hub repository name
+  user: "dockerhub_user"            # Docker Hub username
+  password: "dockerhub_password"    # Docker Hub password
 
 external-server:
-    config-path: "/path/to/external/config" # Path for external server configuration
-    cloud-path: "/path/to/external/cloud" # Path for external server cloud storage
-    logs-path: "/path/to/external/logs" # Path for external server logs
+  config-path: "/path/to/external/config"  # Path to external server configuration files
+  cloud-path: "/path/to/external/cloud"    # Path to external server cloud storage
+  logs-path: "/path/to/external/logs"      # Path to external server log files
 
 internal-server:
-    config-path: "/path/to/internal/config" # Path for internal server configuration
-    cloud-path: "/path/to/internal/cloud" # Path for internal server cloud storage
-    logs-path: "/path/to/internal/logs" # Path for internal server logs
+  config-path: "/path/to/internal/config"  # Path to internal server configuration files
+  cloud-path: "/path/to/internal/cloud"    # Path to internal server cloud storage
+  logs-path: "/path/to/internal/logs"      # Path to internal server log files
 
 containers:
-    blue: "blue-container" # Blue-Green deployment: Blue container name
-    green: "green-container" # Blue-Green deployment: Green container name
-    blue-url: "http://blue-container:8080" # URL for the Blue container environment
-    green-url: "http://green-container:8080" # URL for the Green container environment
-    image-name: "application-image" # Docker image name for the application
+  blue: "blue-container"                    # Name of the Blue container in Blue-Green deployment
+  green: "green-container"                  # Name of the Green container in Blue-Green deployment
+  blue-url: "http://blue-container:8080"    # URL for accessing the Blue container environment
+  green-url: "http://green-container:8080"  # URL for accessing the Green container environment
+  image-name: "application-image"           # Docker image name for the application
 
 networks:
-    application: "application-network" # Docker network for the application
-    monitoring: "monitoring-network" # Docker network for monitoring
+  application: "application-network"  # Docker network used by the application
+  monitoring: "monitoring-network"    # Docker network used for monitoring services
 
 spring:
-    profile: "default" # Spring profile setting
-    port-a: 8080 # Application port A
-    port-b: 8081 # Application port B
+  profile: "default"  # Spring profile setting
+  port-a: 8080        # Application port A
+  port-b: 8081        # Application port B
 
 admin:
-    username: "admin" # Backend admin username
-    password: "admin_password" # Backend admin password
+  username: "admin"           # Username for the backend admin
+  password: "admin_password"  # Password for the backend admin
 
 docker:
-    dockerfile-path: "/jenkins/prod/Dockerfile" # Path to the Dockerfile
-    nginx-container-name: "nginx" # Nginx container name
-    postgresql-container-name: "postgresql" # PostgreSQL container name
+  dockerfile-path: "/jenkins/prod/Dockerfile"  # Path to the Dockerfile used for building the application image
+  nginx-container-name: "nginx"                # Name of the Nginx container
+  postgresql-container-name: "postgresql"      # Name of the PostgreSQL container
 
 staging:
-    user: "user" # Staging user name
-    host: "host" # Staging host name or IP address
-    backup-dir-path: "/var/backups/postgresql" # Staging Directory Path for PostgreSQL backups
-    restore-backup-script-path: "/var/restore.sh" # Staging Restore Backup Script Path
-    ssh-port: 22 # Staging SSH Port
-    postgresql-user: "postgres_user" # Staging Postgresql User
+  user: "user"                                   # Username for accessing the staging environment
+  host: "host"                                   # Hostname or IP address of the staging server
+  backup-dir-path: "/var/backups/postgresql"     # Directory path on the staging server for PostgreSQL backups
+  restore-backup-script-path: "/var/restore.sh"  # Path to the script on the staging server for restoring backups
+  ssh-port: 22                                   # SSH port for accessing the staging server
+  postgresql-user: "postgres_user"               # PostgreSQL username on the staging server

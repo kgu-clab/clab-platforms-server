@@ -12,6 +12,6 @@ public abstract class AbstractWebhookClient implements WebhookClient {
 
     @Override
     public abstract CompletableFuture<Boolean> sendMessage(String webhookUrl, AlertType alertType,
-                                                           HttpServletRequest request,
-                                                           Object additionalData);
+        HttpServletRequest request,
+        Object additionalData);
 }

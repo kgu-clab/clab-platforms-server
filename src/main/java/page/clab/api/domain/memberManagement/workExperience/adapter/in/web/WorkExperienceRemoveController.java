@@ -21,11 +21,11 @@ public class WorkExperienceRemoveController {
     private final RemoveWorkExperienceUseCase removeWorkExperienceUseCase;
 
     @Operation(summary = "[U] 경력사항 삭제", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "본인 외의 정보는 ROLE_SUPER만 가능")
+        "본인 외의 정보는 ROLE_SUPER만 가능")
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{workExperienceId}")
     public ApiResponse<Long> removeWorkExperience(
-            @PathVariable(name = "workExperienceId") Long workExperienceId
+        @PathVariable(name = "workExperienceId") Long workExperienceId
     ) throws PermissionDeniedException {
         Long id = removeWorkExperienceUseCase.removeWorkExperience(workExperienceId);
         return ApiResponse.success(id);

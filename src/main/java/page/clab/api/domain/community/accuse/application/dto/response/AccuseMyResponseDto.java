@@ -1,11 +1,10 @@
 package page.clab.api.domain.community.accuse.application.dto.response;
 
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import page.clab.api.domain.community.accuse.domain.AccuseStatus;
 import page.clab.api.domain.community.accuse.domain.TargetType;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Builder

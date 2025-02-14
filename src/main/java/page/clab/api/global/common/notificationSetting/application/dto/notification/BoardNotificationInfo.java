@@ -15,10 +15,10 @@ public class BoardNotificationInfo {
 
     public static BoardNotificationInfo create(Board board, MemberDetailedInfoDto memberInfo) {
         return BoardNotificationInfo.builder()
-                .title(board.getTitle())
-                .category(board.getCategory().getDescription())
-                .username(board.isWantAnonymous() ? board.getNickname()
-                        : memberInfo.getMemberId() + " " + memberInfo.getMemberName())
-                .build();
+            .title(board.getTitle())
+            .category(board.getCategory().getDescription())
+            .username(board.isWantAnonymous() ? board.getNickname()
+                : memberInfo.getMemberId() + " " + memberInfo.getMemberName())
+            .build();
     }
 }

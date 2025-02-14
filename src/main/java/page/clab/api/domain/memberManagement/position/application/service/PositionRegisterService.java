@@ -24,11 +24,11 @@ public class PositionRegisterService implements RegisterPositionUseCase {
     public Long registerPosition(PositionRequestDto requestDto) {
         externalRetrieveMemberUseCase.ensureMemberExists(requestDto.getMemberId());
         return retrievePositionPort.findByMemberIdAndYearAndPositionType(
-                        requestDto.getMemberId(), requestDto.getYear(), requestDto.getPositionType())
-                .map(Position::getId)
-                .orElseGet(() -> {
-                    Position position = mapper.fromDto(requestDto);
-                    return registerPositionPort.save(position).getId();
-                });
+                requestDto.getMemberId(), requestDto.getYear(), requestDto.getPositionType())
+            .map(Position::getId)
+            .orElseGet(() -> {
+                Position position = mapper.fromDto(requestDto);
+                return registerPositionPort.save(position).getId();
+            });
     }
 }

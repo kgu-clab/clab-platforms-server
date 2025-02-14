@@ -24,12 +24,12 @@ public class AwardUpdateController {
     private final UpdateAwardUseCase updateAwardUseCase;
 
     @Operation(summary = "[U] 수상 이력 수정", description = "ROLE_USER 이상의 권한이 필요함<br>" +
-            "본인 외의 정보는 ROLE_SUPER만 가능")
+        "본인 외의 정보는 ROLE_SUPER만 가능")
     @PreAuthorize("hasRole('USER')")
     @PatchMapping("/{awardId}")
     public ApiResponse<Long> updateAward(
-            @PathVariable(name = "awardId") Long awardId,
-            @Valid @RequestBody AwardUpdateRequestDto requestDto
+        @PathVariable(name = "awardId") Long awardId,
+        @Valid @RequestBody AwardUpdateRequestDto requestDto
     ) throws PermissionDeniedException {
         Long id = updateAwardUseCase.updateAward(awardId, requestDto);
         return ApiResponse.success(id);

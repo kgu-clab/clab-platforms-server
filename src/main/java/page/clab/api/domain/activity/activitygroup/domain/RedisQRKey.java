@@ -24,7 +24,7 @@ public class RedisQRKey {
 
     public static RedisQRKey create(String QRCodeKey) {
         return RedisQRKey.builder()
-                .QRCodeKey(QRCodeKey)
-                .build();
+            .QRCodeKey(QRCodeKey)
+            .build();
     }
 }

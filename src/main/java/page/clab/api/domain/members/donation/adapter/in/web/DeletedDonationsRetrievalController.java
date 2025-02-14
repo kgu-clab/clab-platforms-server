@@ -27,11 +27,12 @@ public class DeletedDonationsRetrievalController {
     @PreAuthorize("hasRole('SUPER')")
     @GetMapping("/deleted")
     public ApiResponse<PagedResponseDto<DonationResponseDto>> retrieveDeletedDonations(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        PagedResponseDto<DonationResponseDto> donations = retrieveDeletedDonationsUseCase.retrieveDeletedDonations(pageable);
+        PagedResponseDto<DonationResponseDto> donations = retrieveDeletedDonationsUseCase.retrieveDeletedDonations(
+            pageable);
         return ApiResponse.success(donations);
     }
 }

@@ -8,7 +8,8 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DonationRepository extends JpaRepository<DonationJpaEntity, Long>, DonationRepositoryCustom, QuerydslPredicateExecutor<DonationJpaEntity> {
+public interface DonationRepository extends JpaRepository<DonationJpaEntity, Long>, DonationRepositoryCustom,
+    QuerydslPredicateExecutor<DonationJpaEntity> {
 
     Page<DonationJpaEntity> findByMemberId(String memberId, Pageable pageable);
 

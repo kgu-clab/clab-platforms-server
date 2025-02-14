@@ -1,5 +1,6 @@
 package page.clab.api.domain.members.schedule.domain;
 
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,8 +12,6 @@ import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.exception.InvalidDateRangeException;
 import page.clab.api.global.exception.PermissionDeniedException;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

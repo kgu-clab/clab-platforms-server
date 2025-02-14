@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,8 +24,6 @@ import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.members.schedule.domain.SchedulePriority;
 import page.clab.api.domain.members.schedule.domain.ScheduleType;
 import page.clab.api.global.common.domain.BaseEntity;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "schedule")

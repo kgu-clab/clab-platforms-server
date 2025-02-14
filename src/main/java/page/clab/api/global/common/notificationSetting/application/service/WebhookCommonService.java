@@ -39,9 +39,9 @@ public class WebhookCommonService {
 
     public String getStackTraceSummary(Exception e) {
         return Arrays.stream(e.getStackTrace())
-                .limit(10)
-                .map(StackTraceElement::toString)
-                .collect(Collectors.joining("\n"));
+            .limit(10)
+            .map(StackTraceElement::toString)
+            .collect(Collectors.joining("\n"));
     }
 
     public String getOperatingSystemInfo() {
@@ -74,10 +74,10 @@ public class WebhookCommonService {
     public String getUsername(HttpServletRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return Optional.ofNullable(request.getAttribute("member"))
-                .map(Object::toString)
-                .orElseGet(() -> Optional.ofNullable(auth)
-                        .map(Authentication::getName)
-                        .orElse("anonymous"));
+            .map(Object::toString)
+            .orElseGet(() -> Optional.ofNullable(auth)
+                .map(Authentication::getName)
+                .orElse("anonymous"));
     }
 
     public String getLocation(HttpServletRequest request) {

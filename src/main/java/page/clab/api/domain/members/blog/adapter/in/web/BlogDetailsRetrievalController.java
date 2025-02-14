@@ -24,7 +24,7 @@ public class BlogDetailsRetrievalController {
     @PreAuthorize("hasRole('GUEST')")
     @GetMapping("/{blogId}")
     public ApiResponse<BlogDetailsResponseDto> retrieveBlogDetails(
-            @PathVariable(name = "blogId") Long blogId
+        @PathVariable(name = "blogId") Long blogId
     ) {
         BlogDetailsResponseDto blog = retrieveBlogDetailsUseCase.retrieveBlogDetails(blogId);
         return ApiResponse.success(blog);

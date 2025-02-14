@@ -25,7 +25,7 @@ public class RecruitmentRegisterController {
     @PreAuthorize("hasRole('SUPER')")
     @PostMapping("")
     public ApiResponse<Long> registerRecruitment(
-            @Valid @RequestBody RecruitmentRequestDto requestDto
+        @Valid @RequestBody RecruitmentRequestDto requestDto
     ) {
         Long id = registerRecruitmentUseCase.registerRecruitment(requestDto);
         return ApiResponse.success(id);

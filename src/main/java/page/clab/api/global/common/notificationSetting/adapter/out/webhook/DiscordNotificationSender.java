@@ -20,6 +20,6 @@ public class DiscordNotificationSender implements NotificationSender {
     @Override
     public void sendNotification(NotificationEvent event, String webhookUrl) {
         discordWebhookClient.sendMessage(webhookUrl, event.getAlertType(), event.getRequest(),
-                event.getAdditionalData());
+            event.getAdditionalData());
     }
 }

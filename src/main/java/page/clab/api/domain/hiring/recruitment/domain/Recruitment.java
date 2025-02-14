@@ -1,5 +1,8 @@
 package page.clab.api.domain.hiring.recruitment.domain;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,10 +15,6 @@ import page.clab.api.domain.hiring.application.domain.ApplicationType;
 import page.clab.api.domain.hiring.recruitment.application.dto.request.RecruitmentUpdateRequestDto;
 import page.clab.api.global.exception.InvalidDateRangeException;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 @Getter
 @Setter
 @Builder
@@ -24,19 +23,31 @@ import java.util.Optional;
 public class Recruitment {
 
     private Long id;
+    private String title;
+    private String teamIntroduction;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private String processTimeline;
     private ApplicationType applicationType;
+    private String jobDescription;
     private String target;
     private RecruitmentStatus status;
     private Boolean isDeleted;
     private LocalDateTime updatedAt;
 
     public void update(RecruitmentUpdateRequestDto recruitmentUpdateRequestDto) {
+        Optional.ofNullable(recruitmentUpdateRequestDto.getTitle()).ifPresent(this::setTitle);
+        Optional.ofNullable(recruitmentUpdateRequestDto.getTeamIntroduction()).ifPresent(this::setTeamIntroduction);
         Optional.ofNullable(recruitmentUpdateRequestDto.getStartDate()).ifPresent(this::setStartDate);
         Optional.ofNullable(recruitmentUpdateRequestDto.getEndDate()).ifPresent(this::setEndDate);
+        Optional.ofNullable(recruitmentUpdateRequestDto.getProcessTimeline()).ifPresent(this::setProcessTimeline);
         Optional.ofNullable(recruitmentUpdateRequestDto.getApplicationType()).ifPresent(this::setApplicationType);
+        Optional.ofNullable(recruitmentUpdateRequestDto.getJobDescription()).ifPresent(this::setJobDescription);
         Optional.ofNullable(recruitmentUpdateRequestDto.getTarget()).ifPresent(this::setTarget);
+    }
+
+    public void delete() {
+        this.isDeleted = true;
     }
 
     public void updateStatus(RecruitmentStatus status) {
