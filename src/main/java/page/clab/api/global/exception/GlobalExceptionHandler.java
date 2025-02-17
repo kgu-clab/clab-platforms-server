@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ErrorResponse<Exception> handleServerError(
+    public ErrorResponse<Exception> handleUnhandledException(
         HttpServletRequest request,
         HttpServletResponse response,
         Exception e
