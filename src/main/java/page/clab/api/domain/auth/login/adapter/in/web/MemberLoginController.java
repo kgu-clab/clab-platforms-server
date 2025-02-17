@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.auth.login.application.dto.request.LoginRequestDto;
 import page.clab.api.domain.auth.login.application.dto.response.LoginResult;
-import page.clab.api.domain.auth.login.application.exception.LoginFailedException;
-import page.clab.api.domain.auth.login.application.exception.MemberLockedException;
 import page.clab.api.domain.auth.login.application.port.in.ManageLoginUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -41,7 +39,7 @@ public class MemberLoginController {
         HttpServletRequest request,
         HttpServletResponse response,
         @Valid @RequestBody LoginRequestDto requestDto
-    ) throws MemberLockedException, LoginFailedException {
+    ) {
         LoginResult result = manageLoginUseCase.login(request, requestDto);
         response.setHeader(authHeader, result.getHeader());
         return ApiResponse.success(result.getBody());

@@ -10,7 +10,6 @@ import page.clab.api.domain.members.blog.application.port.out.RegisterBlogPort;
 import page.clab.api.domain.members.blog.application.port.out.RetrieveBlogPort;
 import page.clab.api.domain.members.blog.domain.Blog;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +21,7 @@ public class BlogUpdateService implements UpdateBlogUseCase {
 
     @Transactional
     @Override
-    public Long updateBlog(Long blogId, BlogUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public Long updateBlog(Long blogId, BlogUpdateRequestDto requestDto) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         Blog blog = retrieveBlogPort.getById(blogId);
         blog.validateAccessPermission(currentMember);

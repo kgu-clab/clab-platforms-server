@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.community.comment.application.port.in.RemoveCommentUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/comments")
@@ -25,7 +24,7 @@ public class CommentRemoveController {
     @DeleteMapping("/{commentId}")
     public ApiResponse<Long> removeComment(
         @PathVariable(name = "commentId") Long commentId
-    ) throws PermissionDeniedException {
+    ) {
         Long id = removeCommentUseCase.removeComment(commentId);
         return ApiResponse.success(id);
     }

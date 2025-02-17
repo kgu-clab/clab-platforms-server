@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.community.board.application.port.in.RemoveBoardUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/boards")
@@ -25,7 +24,7 @@ public class BoardRemoveController {
     @DeleteMapping("/{boardId}")
     public ApiResponse<String> removeBoard(
         @PathVariable(name = "boardId") Long boardId
-    ) throws PermissionDeniedException {
+    ) {
         String id = removeBoardUseCase.removeBoard(boardId);
         return ApiResponse.success(id);
     }

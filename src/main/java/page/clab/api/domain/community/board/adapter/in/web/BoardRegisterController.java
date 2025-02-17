@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.community.board.application.dto.request.BoardRequestDto;
 import page.clab.api.domain.community.board.application.port.in.RegisterBoardUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/boards")
@@ -27,7 +26,7 @@ public class BoardRegisterController {
     @PostMapping("")
     public ApiResponse<String> registerBoard(
         @Valid @RequestBody BoardRequestDto requestDto
-    ) throws PermissionDeniedException {
+    ) {
         String id = registerBoardUseCase.registerBoard(requestDto);
         return ApiResponse.success(id);
     }

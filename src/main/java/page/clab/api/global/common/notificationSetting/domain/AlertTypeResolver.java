@@ -1,7 +1,8 @@
 package page.clab.api.global.common.notificationSetting.domain;
 
 import org.springframework.stereotype.Service;
-import page.clab.api.global.common.notificationSetting.application.exception.AlertTypeNotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Service
 public class AlertTypeResolver {
@@ -17,6 +18,6 @@ public class AlertTypeResolver {
                 return type;
             }
         }
-        throw new AlertTypeNotFoundException(alertTypeName);
+        throw new BaseException(ErrorCode.ALERT_TYPE_NOT_FOUND, "알림 타입을 찾을 수 없습니다: " + alertTypeName);
     }
 }

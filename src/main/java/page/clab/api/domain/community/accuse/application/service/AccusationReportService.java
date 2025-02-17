@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.community.accuse.adapter.out.persistence.AccuseTargetId;
 import page.clab.api.domain.community.accuse.application.dto.mapper.AccuseDtoMapper;
 import page.clab.api.domain.community.accuse.application.dto.request.AccuseRequestDto;
-import page.clab.api.domain.community.accuse.application.exception.AccuseTargetTypeIncorrectException;
 import page.clab.api.domain.community.accuse.application.port.in.ReportAccusationUseCase;
 import page.clab.api.domain.community.accuse.application.port.out.RegisterAccusePort;
 import page.clab.api.domain.community.accuse.application.port.out.RegisterAccuseTargetPort;
@@ -21,6 +20,8 @@ import page.clab.api.external.community.board.application.port.ExternalRetrieveB
 import page.clab.api.external.community.comment.application.port.ExternalRetrieveCommentUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -69,17 +70,17 @@ public class AccusationReportService implements ReportAccusationUseCase {
             case BOARD:
                 Board board = externalRetrieveBoardUseCase.getById(targetId);
                 if (board.isOwner(currentMemberId)) {
-                    throw new AccuseTargetTypeIncorrectException("자신의 게시글은 신고할 수 없습니다.");
+                    throw new BaseException(ErrorCode.ACCUSE_TARGET_TYPE_MISMATCH, "자신의 게시글은 신고할 수 없습니다.");
                 }
                 break;
             case COMMENT:
                 Comment comment = externalRetrieveCommentUseCase.getById(targetId);
                 if (comment.isOwner(currentMemberId)) {
-                    throw new AccuseTargetTypeIncorrectException("자신의 댓글은 신고할 수 없습니다.");
+                    throw new BaseException(ErrorCode.ACCUSE_TARGET_TYPE_MISMATCH, "자신의 댓글은 신고할 수 없습니다.");
                 }
                 break;
             default:
-                throw new AccuseTargetTypeIncorrectException("신고 대상 유형이 올바르지 않습니다.");
+                throw new BaseException(ErrorCode.ACCUSE_TARGET_TYPE_MISMATCH, "신고 대상 유형이 올바르지 않습니다.");
         }
     }
 

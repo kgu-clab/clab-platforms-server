@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.global.common.domain.BaseEntity;
-import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Entity
 @Getter
@@ -72,9 +73,9 @@ public class UploadedFile extends BaseEntity {
         return this.uploader.equals(memberId);
     }
 
-    public void validateAccessPermission(MemberDetailedInfoDto memberInfo) throws PermissionDeniedException {
+    public void validateAccessPermission(MemberDetailedInfoDto memberInfo) {
         if (!isOwner(memberInfo.getMemberId()) && !memberInfo.isSuperAdminRole()) {
-            throw new PermissionDeniedException("해당 파일을 삭제할 권한이 없습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 파일을 삭제할 권한이 없습니다.");
         }
     }
 }

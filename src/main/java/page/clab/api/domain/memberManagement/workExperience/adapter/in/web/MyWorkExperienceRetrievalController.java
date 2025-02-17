@@ -14,8 +14,6 @@ import page.clab.api.domain.memberManagement.workExperience.application.dto.resp
 import page.clab.api.domain.memberManagement.workExperience.application.port.in.RetrieveMyWorkExperienceUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.InvalidColumnException;
-import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -37,7 +35,7 @@ public class MyWorkExperienceRetrievalController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "startDate") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException, InvalidColumnException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
             WorkExperienceResponseDto.class);
         PagedResponseDto<WorkExperienceResponseDto> myWorkExperience = retrieveMyWorkExperienceUseCase.retrieveMyWorkExperience(

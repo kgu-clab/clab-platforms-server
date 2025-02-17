@@ -21,7 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.imgscalr.Scalr;
 import org.springframework.web.multipart.MultipartFile;
-import page.clab.api.global.exception.ImageCompressionException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 /**
  * {@code ImageUtil}은 이미지 파일의 처리와 관련된 유틸리티 메서드를 제공합니다. 이미지의 방향을 조정하거나, 압축을 수행하는 등의 기능을 포함합니다.
@@ -117,7 +118,7 @@ public class ImageUtil {
      *
      * @param filePath 압축할 이미지 파일의 경로.
      * @param quality  압축 품질 수준으로, 0.0(높은 압축률, 낮은 품질)에서 1.0(낮은 압축률, 높은 품질) 사이의 값을 가집니다. 이 값의 정확한 효과는 이미지 포맷에 따라 달라집니다.
-     * @throws ImageCompressionException 이미지 압축이 실패한 경우 예외가 발생합니다.
+     * @throws BaseException {@code ErrorCode.IMAGE_COMPRESSION_ERROR} 이미지 압축이 실패한 경우 발생합니다.
      */
     public static void compressImage(String baseDirectory, String filePath, float quality) {
         try {
@@ -139,7 +140,7 @@ public class ImageUtil {
 
             os.close();
         } catch (Exception e) {
-            throw new ImageCompressionException("이미지 압축 실패 : " + filePath);
+            throw new BaseException(ErrorCode.IMAGE_COMPRESSION_ERROR, "이미지 압축 실패 : " + filePath);
         }
     }
 }

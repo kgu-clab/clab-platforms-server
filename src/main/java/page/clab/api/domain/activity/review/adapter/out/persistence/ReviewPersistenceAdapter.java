@@ -8,7 +8,8 @@ import page.clab.api.domain.activity.activitygroup.domain.ActivityGroup;
 import page.clab.api.domain.activity.review.application.port.out.RegisterReviewPort;
 import page.clab.api.domain.activity.review.application.port.out.RetrieveReviewPort;
 import page.clab.api.domain.activity.review.domain.Review;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -30,7 +31,8 @@ public class ReviewPersistenceAdapter implements
     public Review getById(Long reviewId) {
         return repository.findById(reviewId)
             .map(mapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[Review] id: " + reviewId + "에 해당하는 리뷰가 존재하지 않습니다."));
+            .orElseThrow(
+                () -> new BaseException(ErrorCode.NOT_FOUND, "[Review] id: " + reviewId + "에 해당하는 리뷰가 존재하지 않습니다."));
     }
 
     @Override

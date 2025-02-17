@@ -8,7 +8,8 @@ import page.clab.api.domain.members.product.application.port.out.RegisterProduct
 import page.clab.api.domain.members.product.application.port.out.RetrieveProductPort;
 import page.clab.api.domain.members.product.application.port.out.UpdateProductPort;
 import page.clab.api.domain.members.product.domain.Product;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -38,7 +39,8 @@ public class ProductPersistenceAdapter implements
     public Product getById(Long productId) {
         return repository.findById(productId)
             .map(mapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[Product] id: " + productId + "에 해당하는 상품이 존재하지 않습니다."));
+            .orElseThrow(
+                () -> new BaseException(ErrorCode.NOT_FOUND, "[Product] id: " + productId + "에 해당하는 상품이 존재하지 않습니다."));
     }
 
     @Override

@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.comment.application.port.out.RegisterCommentPort;
 import page.clab.api.domain.community.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.community.comment.domain.Comment;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -45,7 +46,8 @@ public class CommentPersistenceAdapter implements
     public Comment getById(Long commentId) {
         return commentRepository.findById(commentId)
             .map(commentMapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[Comment] id: " + commentId + "에 해당하는 댓글이 존재하지 않습니다."));
+            .orElseThrow(
+                () -> new BaseException(ErrorCode.NOT_FOUND, "[Comment] id: " + commentId + "에 해당하는 댓글이 존재하지 않습니다."));
     }
 
     @Override

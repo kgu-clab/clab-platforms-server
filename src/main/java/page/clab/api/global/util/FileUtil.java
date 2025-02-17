@@ -11,9 +11,8 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.io.FilenameUtils;
-import page.clab.api.global.common.file.exception.DirectoryCreationException;
-import page.clab.api.global.common.file.exception.FilePermissionException;
-import page.clab.api.global.common.file.exception.InvalidFileAttributeException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 /**
  * {@code FileUtil}은 파일 및 디렉토리와 관련된 유틸리티 기능을 제공합니다. 파일 경로 검증, 파일 권한 설정, 고유 파일명 생성, 디렉토리 생성 등의 기능을 수행합니다.
@@ -82,7 +81,8 @@ public class FileUtil {
         File parentDir = safePath.getParent().toFile();
         if (!parentDir.exists()) {
             if (!parentDir.mkdirs()) {
-                throw new DirectoryCreationException("Failed to create directory: " + parentDir.getAbsolutePath());
+                throw new BaseException(ErrorCode.DIRECTORY_CREATION_ERROR,
+                    "Failed to create directory: " + parentDir.getAbsolutePath());
             }
         }
     }
@@ -92,16 +92,16 @@ public class FileUtil {
      *
      * @param originalFilename   파일명
      * @param disallowExtensions 허용되지 않은 확장자 목록
-     * @throws IllegalArgumentException 유효하지 않은 파일명이나 확장자일 경우 발생
+     * @throws BaseException {@code ErrorCode.INVALID_FILE_ATTRIBUTE} - 유효하지 않은 파일명이나 확장자일 경우 발생
      */
     public static void validateFileAttributes(String originalFilename, Set<String> disallowExtensions)
         throws IllegalArgumentException {
         String extension = FilenameUtils.getExtension(originalFilename);
         if (!validateFilename(originalFilename)) {
-            throw new InvalidFileAttributeException("Invalid file name: " + originalFilename);
+            throw new BaseException(ErrorCode.INVALID_FILE_ATTRIBUTE, "Invalid file name: " + originalFilename);
         }
         if (!validateExtension(extension, disallowExtensions)) {
-            throw new InvalidFileAttributeException("Invalid file extension: " + extension);
+            throw new BaseException(ErrorCode.INVALID_FILE_ATTRIBUTE, "Invalid file extension: " + extension);
         }
     }
 
@@ -134,7 +134,7 @@ public class FileUtil {
      *
      * @param file     파일 객체
      * @param savePath 파일 경로
-     * @throws FilePermissionException 파일 권한 설정에 실패한 경우 발생
+     * @throws BaseException {@code ErrorCode.FILE_PERMISSION_ERROR} - 파일 권한 설정에 실패한 경우 발생
      */
     public static void setFilePermissions(File file, String savePath, String baseDirectory) {
         try {
@@ -145,7 +145,7 @@ public class FileUtil {
                 FileUtil.setReadOnlyPermissionsUnix(savePath, baseDirectory);
             }
         } catch (Exception e) {
-            throw new FilePermissionException(
+            throw new BaseException(ErrorCode.FILE_PERMISSION_ERROR,
                 "Failed to set file permissions: " + LogSanitizerUtil.sanitizeForLog(savePath));
         }
     }
@@ -155,12 +155,12 @@ public class FileUtil {
      *
      * @param file     파일 객체
      * @param savePath 파일 경로
-     * @throws FilePermissionException 파일 권한 설정에 실패한 경우 발생
+     * @throws BaseException {@code ErrorCode.FILE_PERMISSION_ERROR} - 파일 권한 설정에 실패한 경우 발생
      */
     public static void setReadOnlyPermissionsWindows(File file, String savePath, String baseDirectory) {
         FileUtil.validateFilePath(file.getPath(), baseDirectory);
         if (!file.setReadOnly()) {
-            throw new FilePermissionException(
+            throw new BaseException(ErrorCode.FILE_PERMISSION_ERROR,
                 "Failed to set file read-only: " + LogSanitizerUtil.sanitizeForLog(savePath));
         }
     }

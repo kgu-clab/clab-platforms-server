@@ -8,7 +8,6 @@ import page.clab.api.domain.community.comment.application.port.out.RegisterComme
 import page.clab.api.domain.community.comment.application.port.out.RetrieveCommentPort;
 import page.clab.api.domain.community.comment.domain.Comment;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +19,7 @@ public class CommentRemoveService implements RemoveCommentUseCase {
 
     @Transactional
     @Override
-    public Long removeComment(Long commentId) throws PermissionDeniedException {
+    public Long removeComment(Long commentId) {
         Comment comment = retrieveCommentPort.getById(commentId);
         comment.validateAccessPermission(externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo());
         comment.delete();

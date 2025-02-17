@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.members.schedule.application.port.in.RemoveScheduleUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/schedules")
@@ -25,7 +24,7 @@ public class ScheduleRemoveController {
     @DeleteMapping("/{scheduleId}")
     public ApiResponse<Long> removeSchedule(
         @PathVariable(name = "scheduleId") Long scheduleId
-    ) throws PermissionDeniedException {
+    ) {
         Long id = removeScheduleUseCase.removeSchedule(scheduleId);
         return ApiResponse.success(id);
     }

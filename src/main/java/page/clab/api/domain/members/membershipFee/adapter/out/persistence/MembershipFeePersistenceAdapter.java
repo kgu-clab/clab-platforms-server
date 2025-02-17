@@ -9,7 +9,8 @@ import page.clab.api.domain.members.membershipFee.application.port.out.RetrieveM
 import page.clab.api.domain.members.membershipFee.application.port.out.UpdateMembershipFeePort;
 import page.clab.api.domain.members.membershipFee.domain.MembershipFee;
 import page.clab.api.domain.members.membershipFee.domain.MembershipFeeStatus;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class MembershipFeePersistenceAdapter implements
     public MembershipFee getById(Long id) {
         return repository.findById(id)
             .map(mapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 회비 내역입니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND, "존재하지 않는 회비 내역입니다."));
     }
 
     @Override

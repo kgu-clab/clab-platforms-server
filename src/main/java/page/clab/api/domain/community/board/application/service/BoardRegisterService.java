@@ -20,7 +20,7 @@ import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.common.notificationSetting.application.dto.notification.BoardNotificationInfo;
 import page.clab.api.global.common.notificationSetting.application.event.NotificationEvent;
 import page.clab.api.global.common.notificationSetting.domain.ExecutivesAlertType;
-import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.exception.BaseException;
 
 @Service
 @RequiredArgsConstructor
@@ -44,11 +44,11 @@ public class BoardRegisterService implements RegisterBoardUseCase {
      *
      * @param requestDto 게시글 요청 정보 DTO
      * @return 등록된 게시글의 카테고리 키
-     * @throws PermissionDeniedException 게시글 작성 권한이 없는 경우 예외 발생
+     * @throws BaseException {@code ErrorCode.PERMISSION_DENIED} - 게시글 작성 권한이 없는 경우 예외 발생
      */
     @Transactional
     @Override
-    public String registerBoard(BoardRequestDto requestDto) throws PermissionDeniedException {
+    public String registerBoard(BoardRequestDto requestDto) {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         List<UploadedFile> uploadedFiles = uploadedFileService.getUploadedFilesByUrls(requestDto.getFileUrlList());
         Board board = boardDtoMapper.fromDto(requestDto, currentMemberInfo.getMemberId(), uploadedFiles);

@@ -14,7 +14,6 @@ import page.clab.api.domain.memberManagement.member.application.port.out.UpdateM
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.dto.mapper.FileDtoMapper;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +29,7 @@ public class MemberUpdateService implements UpdateMemberUseCase {
 
     @Transactional
     @Override
-    public String updateMember(String memberId, MemberUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public String updateMember(String memberId, MemberUpdateRequestDto requestDto) {
         Member currentMember = retrieveMemberUseCase.getCurrentMember();
         Member member = retrieveMemberPort.getById(memberId);
         member.validateAccessPermission(currentMember);
@@ -40,7 +39,7 @@ public class MemberUpdateService implements UpdateMemberUseCase {
         return member.getId();
     }
 
-    private void updateMember(MemberUpdateRequestDto requestDto, Member member) throws PermissionDeniedException {
+    private void updateMember(MemberUpdateRequestDto requestDto, Member member) {
         String previousImageUrl = member.getImageUrl();
         member.update(requestDto, passwordEncoder);
         if (requestDto.getImageUrl() != null && requestDto.getImageUrl().isEmpty()) {

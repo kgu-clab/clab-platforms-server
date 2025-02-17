@@ -9,7 +9,6 @@ import page.clab.api.domain.memberManagement.workExperience.application.port.out
 import page.clab.api.domain.memberManagement.workExperience.application.port.out.RetrieveWorkExperiencePort;
 import page.clab.api.domain.memberManagement.workExperience.domain.WorkExperience;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +20,7 @@ public class WorkExperienceRemoveService implements RemoveWorkExperienceUseCase 
 
     @Override
     @Transactional
-    public Long removeWorkExperience(Long workExperienceId) throws PermissionDeniedException {
+    public Long removeWorkExperience(Long workExperienceId) {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         WorkExperience workExperience = retrieveWorkExperiencePort.getById(workExperienceId);
         workExperience.validateAccessPermission(currentMemberInfo);

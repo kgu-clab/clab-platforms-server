@@ -6,7 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.news.application.port.out.RetrieveNewsPort;
 import page.clab.api.domain.community.news.domain.News;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class NewsPersistenceAdapter implements
     public News getById(Long id) {
         return repository.findById(id)
             .map(mapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[News] id: " + id + "에 해당하는 뉴스가 존재하지 않습니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND, "[News] id: " + id + "에 해당하는 뉴스가 존재하지 않습니다."));
     }
 
     @Override

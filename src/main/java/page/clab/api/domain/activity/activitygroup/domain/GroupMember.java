@@ -14,9 +14,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import page.clab.api.domain.activity.activitygroup.exception.LeaderStatusChangeNotAllowedException;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.domain.BaseEntity;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Entity
 @Getter
@@ -99,7 +100,7 @@ public class GroupMember extends BaseEntity {
 
     public void validateAccessPermission() {
         if (this.isLeader()) {
-            throw new LeaderStatusChangeNotAllowedException("리더의 상태는 변경할 수 없습니다.");
+            throw new BaseException(ErrorCode.LEADER_STATUS_CHANGE_NOT_ALLOWED);
         }
     }
 }

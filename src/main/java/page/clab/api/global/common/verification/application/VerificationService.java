@@ -8,7 +8,8 @@ import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.global.common.verification.dao.VerificationRepository;
 import page.clab.api.global.common.verification.domain.Verification;
 import page.clab.api.global.common.verification.dto.request.VerificationRequestDto;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 /**
  * {@code VerificationService}는 회원 인증 코드 생성, 저장, 검증 및 삭제 기능을 제공하는 서비스입니다.
@@ -33,7 +34,7 @@ public class VerificationService {
 
     public Verification getVerificationCode(String verificationCode) {
         return verificationRepository.findByVerificationCode(verificationCode)
-            .orElseThrow(() -> new NotFoundException("존재하지 않는 인증코드입니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND, "존재하지 않는 인증코드입니다."));
     }
 
     public void saveVerificationCode(String memberId, String verificationCode) {

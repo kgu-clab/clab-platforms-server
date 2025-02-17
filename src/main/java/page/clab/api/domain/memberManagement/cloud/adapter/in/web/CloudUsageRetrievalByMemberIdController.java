@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.memberManagement.cloud.application.dto.response.CloudUsageInfo;
 import page.clab.api.domain.memberManagement.cloud.application.port.in.RetrieveCloudUsageByMemberIdUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/clouds")
@@ -27,7 +26,7 @@ public class CloudUsageRetrievalByMemberIdController {
     @GetMapping("/{memberId}")
     public ApiResponse<CloudUsageInfo> retrieveCloudUsageByMemberId(
         @PathVariable(name = "memberId") String memberId
-    ) throws PermissionDeniedException {
+    ) {
         CloudUsageInfo usage = retrieveCloudUsageByMemberIdUseCase.retrieveCloudUsage(memberId);
         return ApiResponse.success(usage);
     }
