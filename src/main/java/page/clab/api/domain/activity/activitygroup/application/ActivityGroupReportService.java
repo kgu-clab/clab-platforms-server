@@ -14,12 +14,11 @@ import page.clab.api.domain.activity.activitygroup.dto.mapper.ActivityGroupDtoMa
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupReportRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupReportUpdateRequestDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupReportResponseDto;
-import page.clab.api.domain.activity.activitygroup.exception.DuplicateReportException;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.PermissionDeniedException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +31,7 @@ public class ActivityGroupReportService {
 
     @Transactional
     public Long writeReport(ActivityGroupReportRequestDto requestDto)
-        throws PermissionDeniedException, IllegalAccessException {
+        throws IllegalAccessException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         Long activityGroupId = requestDto.getActivityGroupId();
         ActivityGroup activityGroup = activityGroupAdminService.validateAndGetActivityGroupForReporting(activityGroupId,
@@ -58,7 +57,7 @@ public class ActivityGroupReportService {
 
     @Transactional
     public Long updateReport(Long reportId, Long activityGroupId, ActivityGroupReportUpdateRequestDto requestDto)
-        throws PermissionDeniedException, IllegalAccessException {
+        throws IllegalAccessException {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroup activityGroup = activityGroupAdminService.getActivityGroupById(activityGroupId);
         validateReportUpdatePermission(activityGroupId, currentMember, activityGroup);
@@ -67,7 +66,7 @@ public class ActivityGroupReportService {
         return activityGroupReportRepository.save(report).getId();
     }
 
-    public Long deleteReport(Long reportId) throws PermissionDeniedException {
+    public Long deleteReport(Long reportId) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         ActivityGroupReport report = validateReportDeletionPermission(reportId, currentMember);
         activityGroupReportRepository.delete(report);
@@ -82,22 +81,22 @@ public class ActivityGroupReportService {
 
     public ActivityGroupReport getReportById(Long reportId) {
         return activityGroupReportRepository.findById(reportId)
-            .orElseThrow(() -> new NotFoundException("활동 보고서를 찾을 수 없습니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND, "활동 보고서를 찾을 수 없습니다."));
     }
 
     private ActivityGroupReport validateReportCreationPermission(ActivityGroupReportRequestDto requestDto,
         ActivityGroup activityGroup) {
         if (activityGroupReportRepository.existsByActivityGroupAndTurn(activityGroup, requestDto.getTurn())) {
-            throw new DuplicateReportException("이미 해당 차시의 보고서가 존재합니다.");
+            throw new BaseException(ErrorCode.DUPLICATE_REPORT);
         }
         return mapper.fromDto(requestDto, activityGroup);
     }
 
     private void validateReportUpdatePermission(Long activityGroupId, Member currentMember, ActivityGroup activityGroup)
-        throws PermissionDeniedException, IllegalAccessException {
+        throws IllegalAccessException {
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(currentMember, ActivityGroupRole.LEADER,
             activityGroupId)) {
-            throw new PermissionDeniedException("해당 그룹의 리더만 보고서를 수정할 수 있습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 그룹의 리더만 보고서를 수정할 수 있습니다.");
         }
         if (!activityGroup.isProgressing()) {
             throw new IllegalAccessException("활동이 진행 중인 그룹이 아닙니다. 차시 보고서를 수정할 수 없습니다.");
@@ -105,12 +104,11 @@ public class ActivityGroupReportService {
     }
 
     @NotNull
-    private ActivityGroupReport validateReportDeletionPermission(Long reportId, Member member)
-        throws PermissionDeniedException {
+    private ActivityGroupReport validateReportDeletionPermission(Long reportId, Member member) {
         ActivityGroupReport report = getReportById(reportId);
         if (!activityGroupAdminService.isMemberHasRoleInActivityGroup(member, ActivityGroupRole.LEADER,
             report.getActivityGroup().getId())) {
-            throw new PermissionDeniedException("해당 그룹의 리더만 보고서를 삭제할 수 있습니다.");
+            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 그룹의 리더만 보고서를 삭제할 수 있습니다.");
         }
         return report;
     }

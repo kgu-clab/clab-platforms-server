@@ -7,8 +7,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
-import page.clab.api.global.exception.InvalidColumnException;
-import page.clab.api.global.exception.SortingArgumentException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 /**
  * {@code PageableUtils} 클래스는 정렬 및 페이지네이션 정보를 기반으로 {@link Pageable} 객체를 생성하는 유틸리티 클래스입니다. 이 클래스는 주어진 정렬 기준이 유효한지 검증하고,
@@ -24,20 +24,20 @@ public class PageableUtils {
     }
 
     public Pageable createPageable(int page, int size, List<String> sortByList, List<String> sortDirectionList,
-        Class<?> domainClass) throws SortingArgumentException, InvalidColumnException {
+        Class<?> domainClass) {
         if (sortByList.size() != sortDirectionList.size()) {
-            throw new SortingArgumentException();
+            throw new BaseException(ErrorCode.SORTING_ARGUMENT_MISMATCH);
         }
 
         for (String sortBy : sortByList) {
             if (!columnValidator.isValidColumn(domainClass, sortBy)) {
-                throw new InvalidColumnException(sortBy + "라는 칼럼이 존재하지 않습니다.");
+                throw new BaseException(ErrorCode.INVALID_COLUMN, "유효하지 않은 컬럼명: " + sortBy);
             }
         }
 
         for (String direction : sortDirectionList) {
             if (!isValidateSortDirection(direction)) {
-                throw new SortingArgumentException(direction + "은 지원하지 않는 정렬 방식입니다.");
+                throw new BaseException(ErrorCode.INVALID_SORT_DIRECTION, direction + "은 지원하지 않는 정렬 방식입니다.");
             }
         }
 

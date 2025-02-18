@@ -7,9 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.memberManagement.member.application.dto.mapper.MemberDtoMapper;
 import page.clab.api.domain.memberManagement.member.application.dto.request.MemberRequestDto;
-import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberContactException;
-import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberEmailException;
-import page.clab.api.domain.memberManagement.member.application.exception.DuplicateMemberIdException;
 import page.clab.api.domain.memberManagement.member.application.port.in.ManageMemberPasswordUseCase;
 import page.clab.api.domain.memberManagement.member.application.port.in.RegisterMemberUseCase;
 import page.clab.api.domain.memberManagement.member.application.port.out.CheckMemberExistencePort;
@@ -20,6 +17,8 @@ import page.clab.api.domain.memberManagement.position.domain.PositionType;
 import page.clab.api.external.memberManagement.position.application.port.ExternalRegisterPositionUseCase;
 import page.clab.api.external.memberManagement.position.application.port.ExternalRetrievePositionUseCase;
 import page.clab.api.global.common.email.application.EmailService;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -43,9 +42,9 @@ public class MemberRegisterService implements RegisterMemberUseCase {
      *
      * @param requestDto 회원 등록 요청 정보를 담은 DTO
      * @return 생성된 멤버의 ID
-     * @throws DuplicateMemberIdException      중복된 아이디가 있을 경우 예외 발생
-     * @throws DuplicateMemberContactException 중복된 연락처가 있을 경우 예외 발생
-     * @throws DuplicateMemberEmailException   중복된 이메일이 있을 경우 예외 발생
+     * @throws BaseException {@code ErrorCode.DUPLICATE_MEMBER_ID}      중복된 아이디가 있을 경우 예외 발생
+     * @throws BaseException {@code ErrorCode.DUPLICATE_MEMBER_CONTACT} 중복된 연락처가 있을 경우 예외 발생
+     * @throws BaseException {@code ErrorCode.DUPLICATE_MEMBER_EMAIL}   중복된 이메일이 있을 경우 예외 발생
      */
     @Transactional
     @Override
@@ -62,13 +61,13 @@ public class MemberRegisterService implements RegisterMemberUseCase {
 
     private void checkMemberUniqueness(MemberRequestDto requestDto) {
         if (checkMemberExistencePort.existsById(requestDto.getId())) {
-            throw new DuplicateMemberIdException("이미 사용 중인 아이디입니다.");
+            throw new BaseException(ErrorCode.DUPLICATE_MEMBER_ID);
         }
         if (checkMemberExistencePort.existsByContact(requestDto.getContact())) {
-            throw new DuplicateMemberContactException("이미 사용 중인 연락처입니다.");
+            throw new BaseException(ErrorCode.DUPLICATE_MEMBER_CONTACT);
         }
         if (checkMemberExistencePort.existsByEmail(requestDto.getEmail())) {
-            throw new DuplicateMemberEmailException("이미 사용 중인 이메일입니다.");
+            throw new BaseException(ErrorCode.DUPLICATE_MEMBER_EMAIL);
         }
     }
 

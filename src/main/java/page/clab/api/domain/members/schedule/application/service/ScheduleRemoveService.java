@@ -9,7 +9,6 @@ import page.clab.api.domain.members.schedule.application.port.out.RegisterSchedu
 import page.clab.api.domain.members.schedule.application.port.out.RetrieveSchedulePort;
 import page.clab.api.domain.members.schedule.domain.Schedule;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +20,7 @@ public class ScheduleRemoveService implements RemoveScheduleUseCase {
 
     @Override
     @Transactional
-    public Long removeSchedule(Long scheduleId) throws PermissionDeniedException {
+    public Long removeSchedule(Long scheduleId) {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         Schedule schedule = retrieveSchedulePort.getById(scheduleId);
         schedule.validateAccessPermission(currentMemberInfo);

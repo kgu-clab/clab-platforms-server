@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.activity.review.application.dto.request.ReviewUpdateRequestDto;
 import page.clab.api.domain.activity.review.application.port.in.UpdateReviewUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/reviews")
@@ -29,7 +28,7 @@ public class ReviewUpdateController {
     public ApiResponse<Long> updateReview(
         @PathVariable(name = "reviewId") Long reviewId,
         @Valid @RequestBody ReviewUpdateRequestDto requestDto
-    ) throws PermissionDeniedException {
+    ) {
         Long id = updateReviewUseCase.updateReview(reviewId, requestDto);
         return ApiResponse.success(id);
     }

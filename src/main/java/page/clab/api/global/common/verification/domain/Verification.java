@@ -10,7 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
-import page.clab.api.global.exception.InvalidInformationException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Getter
 @Builder
@@ -42,7 +43,7 @@ public class Verification {
 
     public void validateRequest(String memberId) {
         if (!isOwner(memberId)) {
-            throw new InvalidInformationException("올바르지 않은 인증 요청입니다.");
+            throw new BaseException(ErrorCode.INVALID_VERIFICATION_REQUEST);
         }
     }
 }

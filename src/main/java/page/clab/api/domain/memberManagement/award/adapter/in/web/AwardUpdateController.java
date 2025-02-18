@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.memberManagement.award.application.dto.request.AwardUpdateRequestDto;
 import page.clab.api.domain.memberManagement.award.application.port.in.UpdateAwardUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/awards")
@@ -30,7 +29,7 @@ public class AwardUpdateController {
     public ApiResponse<Long> updateAward(
         @PathVariable(name = "awardId") Long awardId,
         @Valid @RequestBody AwardUpdateRequestDto requestDto
-    ) throws PermissionDeniedException {
+    ) {
         Long id = updateAwardUseCase.updateAward(awardId, requestDto);
         return ApiResponse.success(id);
     }

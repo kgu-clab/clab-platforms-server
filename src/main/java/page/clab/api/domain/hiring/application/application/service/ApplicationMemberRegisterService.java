@@ -11,7 +11,6 @@ import page.clab.api.domain.hiring.application.application.dto.mapper.Applicatio
 import page.clab.api.domain.hiring.application.application.dto.request.ApplicationMemberCreationDto;
 import page.clab.api.domain.hiring.application.application.event.ApplicationMemberCreatedEvent;
 import page.clab.api.domain.hiring.application.application.event.PositionCreatedByApplicationEvent;
-import page.clab.api.domain.hiring.application.application.exception.NotApprovedApplicationException;
 import page.clab.api.domain.hiring.application.application.port.in.RegisterMembersByRecruitmentUseCase;
 import page.clab.api.domain.hiring.application.application.port.out.RetrieveApplicationPort;
 import page.clab.api.domain.hiring.application.domain.Application;
@@ -19,6 +18,8 @@ import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.memberManagement.position.domain.PositionType;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.position.application.port.ExternalRetrievePositionUseCase;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +53,7 @@ public class ApplicationMemberRegisterService implements RegisterMembersByRecrui
 
     private void validateApplicationIsPass(Application application) {
         if (!application.getIsPass()) {
-            throw new NotApprovedApplicationException("승인되지 않은 지원서입니다.");
+            throw new BaseException(ErrorCode.NOT_APPROVED_APPLICATION);
         }
     }
 

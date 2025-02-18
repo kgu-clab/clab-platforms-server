@@ -19,8 +19,6 @@ import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.file.application.FileService;
 import page.clab.api.global.common.file.dto.request.DeleteFileRequestDto;
 import page.clab.api.global.common.file.dto.response.UploadedFileResponseDto;
-import page.clab.api.global.exception.NotFoundException;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/files")
@@ -36,7 +34,7 @@ public class FileController {
     public ApiResponse<List<UploadedFileResponseDto>> boardUpload(
         @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
         @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws IOException, PermissionDeniedException {
+    ) throws IOException {
         String path = fileService.buildPath("boards");
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, path, storagePeriod);
         return ApiResponse.success(responseDtos);
@@ -48,7 +46,7 @@ public class FileController {
     public ApiResponse<UploadedFileResponseDto> profileUpload(
         @RequestParam(name = "multipartFile") MultipartFile multipartFile,
         @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws IOException, PermissionDeniedException {
+    ) throws IOException {
         String path = fileService.buildPath("profiles");
         UploadedFileResponseDto responseDto = fileService.saveFile(multipartFile, path, storagePeriod);
         return ApiResponse.success(responseDto);
@@ -62,7 +60,7 @@ public class FileController {
         @PathVariable(name = "executiveId") Long executiveId,
         @RequestParam(name = "multipartFile") MultipartFile multipartFile,
         @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws IOException, PermissionDeniedException {
+    ) throws IOException {
         String path = fileService.buildPath("executives", executiveId);
         UploadedFileResponseDto responseDto = fileService.saveFile(multipartFile, path, storagePeriod);
         return ApiResponse.success(responseDto);
@@ -74,7 +72,7 @@ public class FileController {
     public ApiResponse<List<UploadedFileResponseDto>> activityUpload(
         @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
         @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws IOException, PermissionDeniedException {
+    ) throws IOException {
         String path = fileService.buildPath("activity-photos");
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, path, storagePeriod);
         return ApiResponse.success(responseDtos);
@@ -86,7 +84,7 @@ public class FileController {
     public ApiResponse<List<UploadedFileResponseDto>> memberCloudUpload(
         @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
         @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws IOException, PermissionDeniedException {
+    ) throws IOException {
         String path = fileService.buildPath("members");
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, path, storagePeriod);
         return ApiResponse.success(responseDtos);
@@ -98,7 +96,7 @@ public class FileController {
     public ApiResponse<List<UploadedFileResponseDto>> assignmentUpload(
         @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
         @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws PermissionDeniedException, IOException, NotFoundException {
+    ) throws IOException {
         String path = fileService.buildPath("membership-fees");
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, path, storagePeriod);
         return ApiResponse.success(responseDtos);
@@ -111,7 +109,7 @@ public class FileController {
         @PathVariable(name = "activityGroupId") Long activityGroupId,
         @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
         @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws PermissionDeniedException, IOException {
+    ) throws IOException {
         String path = fileService.buildPath("notices", activityGroupId);
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, path, storagePeriod);
         return ApiResponse.success(responseDtos);
@@ -124,7 +122,7 @@ public class FileController {
         @PathVariable(name = "activityGroupId") Long activityGroupId,
         @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
         @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws IOException, PermissionDeniedException {
+    ) throws IOException {
         String path = fileService.buildPath("weekly-activities", activityGroupId);
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, path, storagePeriod);
         return ApiResponse.success(responseDtos);
@@ -137,7 +135,7 @@ public class FileController {
         @PathVariable(name = "activityGroupId") Long activityGroupId,
         @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
         @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws PermissionDeniedException, IOException, NotFoundException {
+    ) throws IOException {
         String path = fileService.buildPath("assignments", activityGroupId);
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, path, storagePeriod);
         return ApiResponse.success(responseDtos);
@@ -153,7 +151,7 @@ public class FileController {
         @PathVariable(name = "parentBoardId") Long parentBoardId,
         @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
         @RequestParam(name = "storagePeriod") long storagePeriod
-    ) throws PermissionDeniedException, IOException, NotFoundException {
+    ) throws IOException {
         String path = fileService.buildPath("submits", activityGroupId, parentBoardId);
         List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, path, storagePeriod);
         return ApiResponse.success(responseDtos);
@@ -163,8 +161,7 @@ public class FileController {
         "본인 외의 정보는 ROLE_SUPER만 가능<br>" + "/resources/files/~를 입력. 즉 생성시 전달받은 url을 입력.")
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("")
-    public ApiResponse<String> deleteFile(@RequestBody DeleteFileRequestDto deleteFileRequestDto)
-        throws PermissionDeniedException {
+    public ApiResponse<String> deleteFile(@RequestBody DeleteFileRequestDto deleteFileRequestDto) {
         String deletedFileUrl = fileService.deleteFile(deleteFileRequestDto);
         return ApiResponse.success(deletedFileUrl);
     }

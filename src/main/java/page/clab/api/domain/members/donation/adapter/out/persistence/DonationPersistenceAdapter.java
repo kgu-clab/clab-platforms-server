@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component;
 import page.clab.api.domain.members.donation.application.port.out.RegisterDonationPort;
 import page.clab.api.domain.members.donation.application.port.out.RetrieveDonationPort;
 import page.clab.api.domain.members.donation.domain.Donation;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -43,7 +44,8 @@ public class DonationPersistenceAdapter implements
     public Donation getById(Long donationId) {
         return repository.findById(donationId)
             .map(donationMapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[Donation] id: " + donationId + "에 해당하는 후원이 존재하지 않습니다."));
+            .orElseThrow(
+                () -> new BaseException(ErrorCode.NOT_FOUND, "[Donation] id: " + donationId + "에 해당하는 후원이 존재하지 않습니다."));
     }
 
     @Override

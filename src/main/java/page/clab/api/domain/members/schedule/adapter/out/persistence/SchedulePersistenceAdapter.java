@@ -12,7 +12,8 @@ import page.clab.api.domain.members.schedule.application.port.out.RegisterSchedu
 import page.clab.api.domain.members.schedule.application.port.out.RetrieveSchedulePort;
 import page.clab.api.domain.members.schedule.domain.Schedule;
 import page.clab.api.domain.members.schedule.domain.SchedulePriority;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -34,7 +35,8 @@ public class SchedulePersistenceAdapter implements
     public Schedule getById(Long id) {
         return repository.findById(id)
             .map(mapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[Schedule] id: " + id + "에 해당하는 스케줄이 존재하지 않습니다."));
+            .orElseThrow(
+                () -> new BaseException(ErrorCode.NOT_FOUND, "[Schedule] id: " + id + "에 해당하는 스케줄이 존재하지 않습니다."));
     }
 
     @Override

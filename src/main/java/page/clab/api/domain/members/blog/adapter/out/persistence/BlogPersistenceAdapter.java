@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 import page.clab.api.domain.members.blog.application.port.out.RegisterBlogPort;
 import page.clab.api.domain.members.blog.application.port.out.RetrieveBlogPort;
 import page.clab.api.domain.members.blog.domain.Blog;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -29,7 +30,8 @@ public class BlogPersistenceAdapter implements
     public Blog getById(Long blogId) {
         return blogRepository.findById(blogId)
             .map(blogMapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[Blog] id: " + blogId + "에 해당하는 게시글이 존재하지 않습니다."));
+            .orElseThrow(
+                () -> new BaseException(ErrorCode.NOT_FOUND, "[Blog] id: " + blogId + "에 해당하는 게시글이 존재하지 않습니다."));
     }
 
     @Override

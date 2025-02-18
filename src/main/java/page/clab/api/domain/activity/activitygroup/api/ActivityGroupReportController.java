@@ -23,9 +23,6 @@ import page.clab.api.domain.activity.activitygroup.dto.request.ActivityGroupRepo
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupReportResponseDto;
 import page.clab.api.global.common.dto.ApiResponse;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.InvalidColumnException;
-import page.clab.api.global.exception.PermissionDeniedException;
-import page.clab.api.global.exception.SortingArgumentException;
 import page.clab.api.global.util.PageableUtils;
 
 @RestController
@@ -42,7 +39,7 @@ public class ActivityGroupReportController {
     @PostMapping("")
     public ApiResponse<Long> writeReport(
         @Valid @RequestBody ActivityGroupReportRequestDto requestDto
-    ) throws PermissionDeniedException, IllegalAccessException {
+    ) throws IllegalAccessException {
         Long id = activityGroupReportService.writeReport(requestDto);
         return ApiResponse.success(id);
     }
@@ -57,7 +54,7 @@ public class ActivityGroupReportController {
         @RequestParam(name = "size", defaultValue = "20") int size,
         @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
         @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
-    ) throws SortingArgumentException, InvalidColumnException {
+    ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection,
             ActivityGroupReportResponseDto.class);
         PagedResponseDto<ActivityGroupReportResponseDto> reports = activityGroupReportService.getReports(
@@ -83,7 +80,7 @@ public class ActivityGroupReportController {
         @PathVariable(name = "reportId") Long reportId,
         @RequestParam(name = "activityGroupId") Long activityGroupId,
         @Valid @RequestBody ActivityGroupReportUpdateRequestDto requestDto
-    ) throws PermissionDeniedException, IllegalAccessException {
+    ) throws IllegalAccessException {
         Long id = activityGroupReportService.updateReport(reportId, activityGroupId, requestDto);
         return ApiResponse.success(id);
     }
@@ -93,7 +90,7 @@ public class ActivityGroupReportController {
     @DeleteMapping("/{reportId}")
     public ApiResponse<Long> deleteAward(
         @PathVariable(name = "reportId") Long reportId
-    ) throws PermissionDeniedException {
+    ) {
         Long id = activityGroupReportService.deleteReport(reportId);
         return ApiResponse.success(id);
     }

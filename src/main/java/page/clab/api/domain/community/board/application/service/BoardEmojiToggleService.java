@@ -13,7 +13,8 @@ import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.community.board.domain.BoardEmoji;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.exception.InvalidEmojiException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 import page.clab.api.global.util.EmojiUtils;
 
 @Service
@@ -35,13 +36,13 @@ public class BoardEmojiToggleService implements ToggleBoardEmojiUseCase {
      * @param boardId 이모지를 추가하거나 토글할 게시글의 ID
      * @param emoji   추가할 이모지
      * @return 게시글의 카테고리 키
-     * @throws InvalidEmojiException 지원하지 않는 이모지를 사용할 경우 예외 발생
+     * @throws BaseException {@code ErrorCode.UNSUPPORTED_EMOJI} - 지원하지 않는 이모지를 사용할 경우 예외 발생
      */
     @Transactional
     @Override
     public BoardEmojiToggleResponseDto toggleEmojiStatus(Long boardId, String emoji) {
         if (!EmojiUtils.isEmoji(emoji)) {
-            throw new InvalidEmojiException("지원하지 않는 이모지입니다.");
+            throw new BaseException(ErrorCode.UNSUPPORTED_EMOJI);
         }
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         String memberId = currentMemberInfo.getMemberId();

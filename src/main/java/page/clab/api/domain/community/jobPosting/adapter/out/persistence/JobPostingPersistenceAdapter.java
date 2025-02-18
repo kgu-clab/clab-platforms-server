@@ -8,7 +8,8 @@ import page.clab.api.domain.community.jobPosting.application.port.out.RetrieveJo
 import page.clab.api.domain.community.jobPosting.domain.CareerLevel;
 import page.clab.api.domain.community.jobPosting.domain.EmploymentType;
 import page.clab.api.domain.community.jobPosting.domain.JobPosting;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -22,7 +23,8 @@ public class JobPostingPersistenceAdapter implements
     public JobPosting getById(Long jobPostingId) {
         return repository.findById(jobPostingId)
             .map(jobPostingMapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[JobPosting] id: " + jobPostingId + "에 해당하는 채용 공고가 존재하지 않습니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND,
+                "[JobPosting] id: " + jobPostingId + "에 해당하는 채용 공고가 존재하지 않습니다."));
     }
 
     @Override

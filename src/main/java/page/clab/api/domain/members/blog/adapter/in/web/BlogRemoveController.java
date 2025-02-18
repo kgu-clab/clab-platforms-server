@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.members.blog.application.port.in.RemoveBlogUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/blogs")
@@ -25,7 +24,7 @@ public class BlogRemoveController {
     @DeleteMapping("/{blogId}")
     public ApiResponse<Long> removeBlog(
         @PathVariable(name = "blogId") Long blogId
-    ) throws PermissionDeniedException {
+    ) {
         Long id = removeBlogUseCase.removeBlog(blogId);
         return ApiResponse.success(id);
     }

@@ -13,8 +13,9 @@ import page.clab.api.domain.auth.login.application.port.out.RemoveRedisTokenPort
 import page.clab.api.domain.auth.login.application.port.out.RetrieveRedisTokenPort;
 import page.clab.api.domain.auth.login.domain.RedisToken;
 import page.clab.api.domain.memberManagement.member.domain.Role;
-import page.clab.api.global.auth.exception.TokenNotFoundException;
 import page.clab.api.global.auth.jwt.JwtTokenProvider;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +28,12 @@ public class RedisTokenManagementService implements ManageRedisTokenUseCase {
 
     public RedisToken findByAccessToken(String accessToken) {
         return retrieveRedisTokenPort.findByAccessToken(accessToken)
-            .orElseThrow(() -> new TokenNotFoundException("존재하지 않는 토큰입니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.TOKEN_INVALID, "존재하지 않는 토큰입니다."));
     }
 
     public RedisToken findByRefreshToken(String refreshToken) {
         return retrieveRedisTokenPort.findByRefreshToken(refreshToken)
-            .orElseThrow(() -> new TokenNotFoundException("존재하지 않는 토큰입니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.TOKEN_INVALID, "존재하지 않는 토큰입니다."));
     }
 
     public List<String> getCurrentLoggedInUsers() {

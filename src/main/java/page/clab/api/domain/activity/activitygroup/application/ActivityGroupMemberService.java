@@ -38,13 +38,13 @@ import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupRes
 import page.clab.api.domain.activity.activitygroup.dto.response.ActivityGroupStatusResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.GroupMemberResponseDto;
 import page.clab.api.domain.activity.activitygroup.dto.response.LeaderInfo;
-import page.clab.api.domain.activity.activitygroup.exception.AlreadyAppliedException;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.external.memberManagement.notification.application.port.ExternalSendNotificationUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 import page.clab.api.global.util.PaginationUtils;
 
 @Service
@@ -150,7 +150,7 @@ public class ActivityGroupMemberService {
         ActivityGroup activityGroup = getActivityGroupById(activityGroupId);
         activityGroup.validateForApplication();
         if (isGroupMember(activityGroup, currentMember.getId())) {
-            throw new AlreadyAppliedException("해당 활동에 신청한 내역이 존재합니다.");
+            throw new BaseException(ErrorCode.ALREADY_APPLIED_ACTIVITY_GROUP);
         }
 
         ApplyForm form = mapper.fromDto(formRequestDto, activityGroup, currentMember);
@@ -219,7 +219,7 @@ public class ActivityGroupMemberService {
 
     public ActivityGroup getActivityGroupById(Long activityGroupId) {
         return activityGroupRepository.findById(activityGroupId)
-            .orElseThrow(() -> new NotFoundException("해당 활동이 존재하지 않습니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND, "해당 활동이 존재하지 않습니다."));
     }
 
     public Map<Long, GroupMember> findActivityGroupOwners(List<Long> activityGroupIds) {
@@ -236,7 +236,7 @@ public class ActivityGroupMemberService {
 
     public GroupMember getGroupMemberByActivityGroupAndMember(ActivityGroup activityGroup, String memberId) {
         return groupMemberRepository.findByActivityGroupAndMemberId(activityGroup, memberId)
-            .orElseThrow(() -> new NotFoundException("해당 멤버가 활동에 참여하지 않았습니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND, "해당 멤버가 활동에 참여하지 않았습니다."));
     }
 
     private Page<ActivityGroup> getActivityGroupByCategory(ActivityGroupCategory category, Pageable pageable) {

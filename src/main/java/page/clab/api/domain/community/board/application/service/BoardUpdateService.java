@@ -21,7 +21,6 @@ import page.clab.api.domain.memberManagement.member.application.dto.shared.Membe
 import page.clab.api.external.hashtag.application.port.ExternalRegisterHashtagUseCase;
 import page.clab.api.external.hashtag.application.port.ExternalRetrieveHashtagUseCase;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +39,7 @@ public class BoardUpdateService implements UpdateBoardUseCase {
 
     @Transactional
     @Override
-    public String updateBoard(Long boardId, BoardUpdateRequestDto requestDto) throws PermissionDeniedException {
+    public String updateBoard(Long boardId, BoardUpdateRequestDto requestDto) {
         MemberDetailedInfoDto currentMemberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         Board board = retrieveBoardPort.getById(boardId);
         board.validateAccessPermission(currentMemberInfo);

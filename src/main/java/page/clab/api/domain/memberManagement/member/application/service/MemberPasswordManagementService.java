@@ -14,7 +14,8 @@ import page.clab.api.global.common.email.application.EmailService;
 import page.clab.api.global.common.verification.application.VerificationService;
 import page.clab.api.global.common.verification.domain.Verification;
 import page.clab.api.global.common.verification.dto.request.VerificationRequestDto;
-import page.clab.api.global.exception.InvalidInformationException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Service
 @RequiredArgsConstructor
@@ -68,7 +69,7 @@ public class MemberPasswordManagementService implements ManageMemberPasswordUseC
     private Member validateResetPasswordRequest(MemberResetPasswordRequestDto requestDto) {
         Member member = retrieveMemberPort.getById(requestDto.getId());
         if (!member.isSameName(requestDto.getName()) || !member.isSameEmail(requestDto.getEmail())) {
-            throw new InvalidInformationException("올바르지 않은 정보입니다.");
+            throw new BaseException(ErrorCode.RESET_PASSWORD_INFORMATION_MISMATCH);
         }
         return member;
     }

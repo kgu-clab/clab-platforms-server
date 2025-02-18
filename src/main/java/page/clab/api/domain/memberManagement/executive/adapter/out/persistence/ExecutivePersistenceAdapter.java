@@ -8,14 +8,15 @@ import page.clab.api.domain.memberManagement.executive.application.port.out.Regi
 import page.clab.api.domain.memberManagement.executive.application.port.out.RetrieveExecutivePort;
 import page.clab.api.domain.memberManagement.executive.application.port.out.UpdateExecutivePort;
 import page.clab.api.domain.memberManagement.executive.domain.Executive;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
 public class ExecutivePersistenceAdapter implements
-        RegisterExecutivePort,
-        RetrieveExecutivePort,
-        UpdateExecutivePort {
+    RegisterExecutivePort,
+    RetrieveExecutivePort,
+    UpdateExecutivePort {
 
     private final ExecutiveMapper executiveMapper;
     private final ExecutiveRepository executiveRepository;
@@ -45,7 +46,8 @@ public class ExecutivePersistenceAdapter implements
     @Override
     public Executive getById(String executiveId) {
         ExecutiveJpaEntity jpaEntity = executiveRepository.findById(executiveId)
-            .orElseThrow(() -> new NotFoundException("[Executive] id: " + executiveId + "에 해당하는 운영진이 존재하지 않습니다."));
+            .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND,
+                "[Executive] id: " + executiveId + "에 해당하는 운영진이 존재하지 않습니다."));
         return executiveMapper.toDomain(jpaEntity);
     }
 

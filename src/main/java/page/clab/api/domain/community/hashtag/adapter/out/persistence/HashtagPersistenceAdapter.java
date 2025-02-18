@@ -6,7 +6,8 @@ import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.hashtag.application.port.out.RegisterHashtagPort;
 import page.clab.api.domain.community.hashtag.application.port.out.RetrieveHashtagPort;
 import page.clab.api.domain.community.hashtag.domain.Hashtag;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class HashtagPersistenceAdapter implements
     public Hashtag getByName(String name) {
         HashtagJpaEntity entity = hashtagRepository.findByName(name);
         if (entity == null) {
-            throw new NotFoundException("[Hashtag] name: " + name + "에 해당하는 해시태그가 존재하지 않습니다.");
+            throw new BaseException(ErrorCode.NOT_FOUND, "[Hashtag] name: " + name + "에 해당하는 해시태그가 존재하지 않습니다.");
         }
         return hashtagMapper.toDomain(entity);
     }
@@ -42,7 +43,8 @@ public class HashtagPersistenceAdapter implements
     public Hashtag getById(Long id) {
         return hashtagRepository.findById(id)
             .map(hashtagMapper::toDomain)
-            .orElseThrow(() -> new NotFoundException("[Hashtag] id: " + id + "에 해당하는 해시태그가 존재하지 않습니다."));
+            .orElseThrow(
+                () -> new BaseException(ErrorCode.NOT_FOUND, "[Hashtag] id: " + id + "에 해당하는 해시태그가 존재하지 않습니다."));
 
     }
 

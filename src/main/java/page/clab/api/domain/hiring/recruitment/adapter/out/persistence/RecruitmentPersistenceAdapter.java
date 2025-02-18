@@ -9,7 +9,8 @@ import page.clab.api.domain.hiring.recruitment.application.port.out.RetrieveRecr
 import page.clab.api.domain.hiring.recruitment.application.port.out.UpdateRecruitmentPort;
 import page.clab.api.domain.hiring.recruitment.domain.Recruitment;
 import page.clab.api.domain.hiring.recruitment.domain.RecruitmentStatus;
-import page.clab.api.global.exception.NotFoundException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Component
 @RequiredArgsConstructor
@@ -40,7 +41,8 @@ public class RecruitmentPersistenceAdapter implements
         return repository.findById(recruitmentId)
             .map(mapper::toDomain)
             .orElseThrow(
-                () -> new NotFoundException("[Recruitment] id: " + recruitmentId + "에 해당하는 모집 공고가 존재하지 않습니다."));
+                () -> new BaseException(ErrorCode.NOT_FOUND,
+                    "[Recruitment] id: " + recruitmentId + "에 해당하는 모집 공고가 존재하지 않습니다."));
     }
 
     @Override

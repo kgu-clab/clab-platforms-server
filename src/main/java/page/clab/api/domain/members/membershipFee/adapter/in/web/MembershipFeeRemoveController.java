@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import page.clab.api.domain.members.membershipFee.application.port.in.RemoveMembershipFeeUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
-import page.clab.api.global.exception.PermissionDeniedException;
 
 @RestController
 @RequestMapping("/api/v1/membership-fees")
@@ -25,7 +24,7 @@ public class MembershipFeeRemoveController {
     @DeleteMapping("/{membershipFeeId}")
     public ApiResponse<Long> removeMembershipFee(
         @PathVariable(name = "membershipFeeId") Long membershipFeeId
-    ) throws PermissionDeniedException {
+    ) {
         Long id = removeMembershipFeeUseCase.removeMembershipFee(membershipFeeId);
         return ApiResponse.success(id);
     }

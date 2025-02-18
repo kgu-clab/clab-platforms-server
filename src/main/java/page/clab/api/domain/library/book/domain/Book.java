@@ -10,8 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import page.clab.api.domain.library.book.application.dto.request.BookUpdateRequestDto;
-import page.clab.api.domain.library.book.application.exception.BookAlreadyBorrowedException;
-import page.clab.api.domain.library.book.application.exception.InvalidBorrowerException;
+import page.clab.api.global.exception.BaseException;
+import page.clab.api.global.exception.ErrorCode;
 
 @Getter
 @Setter
@@ -52,7 +52,7 @@ public class Book {
 
     public void validateBookIsNotBorrowed() {
         if (this.borrowerId != null) {
-            throw new BookAlreadyBorrowedException("이미 대출 중인 도서입니다.");
+            throw new BaseException(ErrorCode.BOOK_ALREADY_BORROWED);
         }
     }
 
@@ -68,7 +68,7 @@ public class Book {
 
     public void validateCurrentBorrower(String borrowerId) {
         if (isBorrower(borrowerId)) {
-            throw new InvalidBorrowerException("대출한 도서와 회원 정보가 일치하지 않습니다.");
+            throw new BaseException(ErrorCode.BOOK_BORROWER_MISMATCH);
         }
     }
 }
