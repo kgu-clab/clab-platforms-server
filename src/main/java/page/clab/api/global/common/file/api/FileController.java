@@ -40,6 +40,18 @@ public class FileController {
         return ApiResponse.success(responseDtos);
     }
 
+    @Operation(summary = "[U] 문의글 파일 업로드", description = "ROLE_USER 이상의 권한이 필요함")
+    @PreAuthorize("hasRole('USER')")
+    @PostMapping(value = "/supports", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponse<List<UploadedFileResponseDto>> supportUpload(
+            @RequestParam(name = "multipartFile") List<MultipartFile> multipartFiles,
+            @RequestParam(name = "storagePeriod") long storagePeriod
+    ) throws IOException {
+        String path = fileService.buildPath("supports");
+        List<UploadedFileResponseDto> responseDtos = fileService.saveFiles(multipartFiles, path, storagePeriod);
+        return ApiResponse.success(responseDtos);
+    }
+
     @Operation(summary = "[U] 멤버 프로필 사진 업로드", description = "ROLE_USER 이상의 권한이 필요함")
     @PreAuthorize("hasRole('USER')")
     @PostMapping(value = "/profiles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
