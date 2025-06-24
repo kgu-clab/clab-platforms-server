@@ -11,15 +11,10 @@ import page.clab.api.domain.members.support.application.dto.mapper.SupportDtoMap
 import page.clab.api.domain.members.support.application.dto.response.SupportListResponseDto;
 import page.clab.api.domain.members.support.application.dto.shared.SupportAnswerInfoDto;
 import page.clab.api.domain.members.support.application.port.in.RetrieveSupportUseCase;
-import page.clab.api.domain.members.support.application.port.out.RetrieveAnswerPort;
 import page.clab.api.domain.members.support.application.port.out.RetrieveSupportPort;
-import page.clab.api.domain.members.support.domain.Answer;
 import page.clab.api.domain.members.support.domain.Support;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.common.dto.PagedResponseDto;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -50,13 +45,6 @@ public class SupportRetrievalService implements RetrieveSupportUseCase {
     public SupportAnswerInfoDto getSupportAnswerInfoById(Long supportId) {
         Support support = retrieveSupportPort.getById(supportId);
         return mapper.toDto(support);
-    }
-
-    private List<String> splitKeywords(String keyword) {
-        if (keyword == null || keyword.isBlank()) return List.of();
-        return Arrays.stream(keyword.trim().split("\\s+"))
-                .filter(k -> !k.isBlank())
-                .toList();
     }
 
 
