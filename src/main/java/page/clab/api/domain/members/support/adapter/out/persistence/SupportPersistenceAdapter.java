@@ -30,14 +30,14 @@ public class SupportPersistenceAdapter implements
     }
 
     @Override
-    public Page<Support> findAllByKeywords(List<String> contents, Pageable pageable) {
-        return supportRepository.findAllByKeywords(contents,pageable)
+    public Page<Support> findAll(Pageable pageable) {
+        return supportRepository.findAll(pageable)
                 .map(supportMapper::toDomain);
     }
 
     @Override
-    public Page<Support> findAllByKeywordsAndTypeNotBug(List<String> contents, Pageable pageable) {
-        return supportRepository.findAllByKeywordsAndIsCategoryNotBug(contents,pageable)
+    public Page<Support> findAllAccessible(String memberId, Pageable pageable) {
+        return supportRepository.findAllAccessible(memberId, pageable)
                 .map(supportMapper::toDomain);
     }
 
