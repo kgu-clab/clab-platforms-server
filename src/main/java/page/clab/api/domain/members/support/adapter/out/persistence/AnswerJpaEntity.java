@@ -28,6 +28,9 @@ public class AnswerJpaEntity extends BaseEntity {
     @Column(name = "admin_id", nullable = false)
     private String adminId;
 
+    @Column(name = "admin_name", nullable = false)
+    private String adminName;
+
     @Column(nullable = false)
     @Size(min = 1, max = 10000, message = "{size.support.content}")
     private String content;

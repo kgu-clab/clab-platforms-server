@@ -136,6 +136,7 @@ public enum ErrorCode {
     BOOK_LOAN_EXTENSION_LIMIT_EXCEEDED(HttpStatus.OK, "대출 연장 횟수를 초과했습니다."),
     BOOK_LOAN_STATUS_NOT_PENDING(HttpStatus.OK, "대출 신청 상태가 아닙니다."),
     DUPLICATE_ABSENT_EXCUSE(HttpStatus.OK, "이미 해당 결석에 대해 불참 사유서가 등록되어 있습니다."),
+    DUPLICATE_SUPPORT_ANSWER(HttpStatus.OK, "이미 해당 문의글에 답변이 등록되어 있습니다."),
     DUPLICATE_ATTENDANCE(HttpStatus.OK, "이미 해당 날짜에 출석 정보가 등록되어 있습니다."),
     DUPLICATE_MEMBER_CONTACT(HttpStatus.OK, "이미 해당 연락처로 가입된 멤버가 존재합니다."),
     DUPLICATE_MEMBER_EMAIL(HttpStatus.OK, "이미 해당 이메일로 가입된 멤버가 존재합니다."),
