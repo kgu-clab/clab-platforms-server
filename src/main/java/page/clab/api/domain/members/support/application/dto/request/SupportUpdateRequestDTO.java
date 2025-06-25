@@ -15,9 +15,6 @@ public class SupportUpdateRequestDTO {
     @Schema(description = "내용", example = "블로그 글에 들어가면 정상적으로 뜨지만......")
     private String content;
 
-    @Schema(description = "이미지 URL", example = "https://www.clab.page/assets/logoWhite-fc1ef9a0.webp")
-    private String imageUrl;
-
     @Schema(description = "카테고리", example = "BUG")
     private SupportCategory category;
 }
