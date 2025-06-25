@@ -68,10 +68,11 @@ public class SupportDtoMapper {
     }
 
     public SupportDetailsResponseDto toDto(Support support, MemberDetailedInfoDto memberInfo, boolean isOwner, Answer answer) {
+        WriterInfo writerInfo = create(support, memberInfo);
         return SupportDetailsResponseDto.builder()
                 .id(support.getId())
-                .writerId(memberInfo.getMemberId())
-                .name(support.isWantAnonymous() ? support.getNickname() : memberInfo.getMemberName())
+                .writerId(writerInfo.getId())
+                .name(support.isWantAnonymous() ? support.getNickname() : writerInfo.getName())
                 .title(support.getTitle())
                 .content(support.getContent())
                 .category(support.getCategory().getKey())

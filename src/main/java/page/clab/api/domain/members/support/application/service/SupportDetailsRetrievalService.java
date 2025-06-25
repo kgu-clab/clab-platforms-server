@@ -3,7 +3,6 @@ package page.clab.api.domain.members.support.application.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.members.support.application.dto.mapper.SupportDtoMapper;
 import page.clab.api.domain.members.support.application.dto.response.SupportDetailsResponseDto;
@@ -16,8 +15,6 @@ import page.clab.api.domain.members.support.domain.SupportCategory;
 import page.clab.api.external.memberManagement.member.application.port.ExternalRetrieveMemberUseCase;
 import page.clab.api.global.exception.BaseException;
 import page.clab.api.global.exception.ErrorCode;
-
-import java.nio.file.AccessDeniedException;
 
 @Service
 @RequiredArgsConstructor
@@ -38,9 +35,15 @@ public class SupportDetailsRetrievalService implements RetrieveSupportDetailsUse
             throw new BaseException(ErrorCode.ACCESS_DENIED);
         }
 
+        MemberDetailedInfoDto boardMemberInfo = getMemberDetailedInfoByBoard(support);
+
         Answer answer = retrieveAnswerPort.findAnswerBySupportId(supportId);
         boolean isOwner = support.isOwner(currentMemberInfo.getMemberId());
-        return mapper.toDto(support, currentMemberInfo, isOwner, answer);
+        return mapper.toDto(support, boardMemberInfo, isOwner, answer);
+    }
+
+    private MemberDetailedInfoDto getMemberDetailedInfoByBoard(Support support) {
+        return externalRetrieveMemberUseCase.getMemberDetailedInfoById(support.getMemberId());
     }
 
     private boolean isAdminRole(MemberDetailedInfoDto memberInfo) {
