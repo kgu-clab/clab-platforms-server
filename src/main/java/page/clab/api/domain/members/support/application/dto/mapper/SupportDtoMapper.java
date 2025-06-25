@@ -70,7 +70,7 @@ public class SupportDtoMapper {
     public SupportDetailsResponseDto toDto(Support support, MemberDetailedInfoDto memberInfo, boolean isOwner, Answer answer) {
         return SupportDetailsResponseDto.builder()
                 .id(support.getId())
-                .memberId(memberInfo.getMemberId())
+                .writerId(memberInfo.getMemberId())
                 .name(support.isWantAnonymous() ? support.getNickname() : memberInfo.getMemberName())
                 .title(support.getTitle())
                 .content(support.getContent())

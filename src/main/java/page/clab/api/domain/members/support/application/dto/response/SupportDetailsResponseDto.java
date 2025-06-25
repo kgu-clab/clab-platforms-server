@@ -14,7 +14,7 @@ import java.util.List;
 public class SupportDetailsResponseDto {
 
     private Long id;
-    private String memberId;
+    private String writerId;
     private String name;
     private String title;
     private String content;
