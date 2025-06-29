@@ -53,11 +53,11 @@ public class Support {
         }
     }
 
-    public void registerAnswer() {
+    public void markAsCompleted() {
         this.status = SupportStatus.COMPLETED;
     }
 
-    public void removeAnswer() {
+    public void markAsPending() {
         this.status = SupportStatus.PENDING;
     }
 }

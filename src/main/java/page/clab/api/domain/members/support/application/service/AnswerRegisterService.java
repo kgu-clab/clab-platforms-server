@@ -41,7 +41,7 @@ public class AnswerRegisterService implements RegisterAnswerUseCase {
         }
 
         Answer answer = mapper.fromDto(membeInfo, supportId, requestDto);
-        support.registerAnswer();
+        support.markAsCompleted();
         registerAnswerPort.save(answer);
         registerSupportPort.save(support);
         sendNotificationForNewComment(answer);
