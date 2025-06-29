@@ -25,8 +25,8 @@ public class AnswerUpdateController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{supportId}/answer")
     public ApiResponse<Long> registerSupport(
-            @PathVariable(name = "supportId") Long supportId,
-            @Valid @RequestBody AnswerUpdateRequestDto requestDto
+        @PathVariable(name = "supportId") Long supportId,
+        @Valid @RequestBody AnswerUpdateRequestDto requestDto
     ) {
         Long id = updateAnswerUseCase.updateSupport(supportId, requestDto);
         return ApiResponse.success(id);

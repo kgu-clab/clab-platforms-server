@@ -26,8 +26,8 @@ public class SupportUpdateController {
     @PreAuthorize("hasRole('USER')")
     @PatchMapping("/{supportId}")
     public ApiResponse<Long> registerSupport(
-            @PathVariable(name = "supportId") Long supportId,
-            @Valid @RequestBody SupportUpdateRequestDto requestDto
+        @PathVariable(name = "supportId") Long supportId,
+        @Valid @RequestBody SupportUpdateRequestDto requestDto
     ) {
         Long id = updateSupportUseCase.updateSupport(supportId, requestDto);
         return ApiResponse.success(id);

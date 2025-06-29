@@ -12,11 +12,11 @@ public class AnswerDtoMapper {
 
     public Answer fromDto(MemberBasicInfoDto member, Long supportId, AnswerRequestDto requestDto) {
         return Answer.builder()
-                .adminId(member.getMemberId())
-                .adminName(member.getMemberName())
-                .supportId(supportId)
-                .content(requestDto.getContent())
-                .isDeleted(false)
-                .build();
+            .adminId(member.getMemberId())
+            .adminName(member.getMemberName())
+            .supportId(supportId)
+            .content(requestDto.getContent())
+            .isDeleted(false)
+            .build();
     }
 }

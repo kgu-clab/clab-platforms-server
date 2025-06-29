@@ -25,7 +25,7 @@ public class SupportRegisterController {
     @PreAuthorize("hasRole('USER')")
     @PostMapping("")
     public ApiResponse<Long> registerSupport(
-            @Valid @RequestBody SupportRequestDto requestDto
+        @Valid @RequestBody SupportRequestDto requestDto
     ) {
         Long id = registerSupportUseCase.registerSupport(requestDto);
         return ApiResponse.success(id);

@@ -16,9 +16,9 @@ public class AnswerResponseDto {
 
     public static AnswerResponseDto from(Answer answer) {
         return AnswerResponseDto.builder()
-                .content(answer.getContent())
-                .responder(answer.getAdminName())
-                .createdAt(answer.getCreatedAt())
-                .build();
+            .content(answer.getContent())
+            .responder(answer.getAdminName())
+            .createdAt(answer.getCreatedAt())
+            .build();
     }
 }

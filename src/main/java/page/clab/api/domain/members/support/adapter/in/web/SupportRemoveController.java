@@ -23,7 +23,7 @@ public class SupportRemoveController {
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{supportId}")
     public ApiResponse<Long> removeBlog(
-            @PathVariable(name = "supportId") Long supportId
+        @PathVariable(name = "supportId") Long supportId
     ) {
         Long id = removeSupportUseCase.removeSupport(supportId);
         return ApiResponse.success(id);

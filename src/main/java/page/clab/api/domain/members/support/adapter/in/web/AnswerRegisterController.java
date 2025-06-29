@@ -26,8 +26,8 @@ public class AnswerRegisterController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{supportId}/answer")
     public ApiResponse<Long> registerSupport(
-            @PathVariable(name = "supportId") final Long supportId,
-            @Valid @RequestBody AnswerRequestDto requestDto
+        @PathVariable(name = "supportId") final Long supportId,
+        @Valid @RequestBody AnswerRequestDto requestDto
     ) {
         Long id = registerAnswerUseCase.registerAnswer(supportId,requestDto);
         return ApiResponse.success(id);

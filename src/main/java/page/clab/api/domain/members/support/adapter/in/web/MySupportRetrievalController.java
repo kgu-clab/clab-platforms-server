@@ -31,10 +31,10 @@ public class MySupportRetrievalController {
     @PreAuthorize("hasRole(('GUEST'))")
     @GetMapping("/my-supports")
     public ApiResponse<PagedResponseDto<SupportMyResponseDto>> retrieveSupports(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
-            @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "20") int size,
+        @RequestParam(name = "sortBy", defaultValue = "createdAt") List<String> sortBy,
+        @RequestParam(name = "sortDirection", defaultValue = "desc") List<String> sortDirection
     ) {
         Pageable pageable = pageableUtils.createPageable(page, size, sortBy, sortDirection, SupportListResponseDto.class);
         PagedResponseDto<SupportMyResponseDto> supports = retrieveMySupportUseCase.retrieveMySupports(pageable);

@@ -22,27 +22,27 @@ public class SupportPersistenceAdapter implements
     @Override
     public Support getById(Long supportId) {
         return supportRepository.findById(supportId)
-                .map(supportMapper::toDomain)
-                .orElseThrow(
-                        () -> new BaseException(ErrorCode.NOT_FOUND, "[Support] id: " + supportId + "에 해당하는 문의글이 존재하지 않습니다."));
+            .map(supportMapper::toDomain)
+            .orElseThrow(
+                () -> new BaseException(ErrorCode.NOT_FOUND, "[Support] id: " + supportId + "에 해당하는 문의글이 존재하지 않습니다."));
     }
 
     @Override
     public Page<Support> findAll(Pageable pageable) {
         return supportRepository.findAll(pageable)
-                .map(supportMapper::toDomain);
+            .map(supportMapper::toDomain);
     }
 
     @Override
     public Page<Support> findAllAccessible(String memberId, Pageable pageable) {
         return supportRepository.findAllAccessible(memberId, pageable)
-                .map(supportMapper::toDomain);
+            .map(supportMapper::toDomain);
     }
 
     @Override
     public Page<Support> findAllByWriterId(String memberId, Pageable pageable) {
         return supportRepository.findAllByMemberIdAndIsDeletedFalse(memberId, pageable)
-                .map(supportMapper::toDomain);
+            .map(supportMapper::toDomain);
     }
 
     @Override

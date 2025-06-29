@@ -22,7 +22,7 @@ public class AnswerRemoveController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{supportId}/answer")
     public ApiResponse<Long> registerSupport(
-            @PathVariable(name = "supportId") final Long supportId
+        @PathVariable(name = "supportId") final Long supportId
     ) {
         Long id = removeAnswerUseCase.removeAnswer(supportId);
         return ApiResponse.success(id);
