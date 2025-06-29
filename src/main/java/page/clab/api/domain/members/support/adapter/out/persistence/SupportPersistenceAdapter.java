@@ -10,8 +10,6 @@ import page.clab.api.domain.members.support.domain.Support;
 import page.clab.api.global.exception.BaseException;
 import page.clab.api.global.exception.ErrorCode;
 
-import java.util.List;
-
 @Component
 @RequiredArgsConstructor
 public class SupportPersistenceAdapter implements

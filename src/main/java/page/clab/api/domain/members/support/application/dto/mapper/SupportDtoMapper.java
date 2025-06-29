@@ -3,8 +3,6 @@ package page.clab.api.domain.members.support.application.dto.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import page.clab.api.domain.community.board.application.dto.response.WriterInfo;
-import page.clab.api.domain.community.board.application.dto.shared.BoardCommentInfoDto;
-import page.clab.api.domain.community.board.domain.Board;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberBasicInfoDto;
 import page.clab.api.domain.memberManagement.member.application.dto.shared.MemberDetailedInfoDto;
 import page.clab.api.domain.members.support.application.dto.request.SupportRequestDto;

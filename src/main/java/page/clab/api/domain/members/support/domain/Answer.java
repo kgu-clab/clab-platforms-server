@@ -1,6 +1,12 @@
 package page.clab.api.domain.members.support.domain;
 
-import lombok.*;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Builder;
 import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.members.support.application.dto.request.AnswerUpdateRequestDto;
 import page.clab.api.global.exception.BaseException;
