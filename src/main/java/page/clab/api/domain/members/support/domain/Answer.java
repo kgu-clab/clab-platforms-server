@@ -7,10 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Builder;
-import page.clab.api.domain.memberManagement.member.domain.Member;
 import page.clab.api.domain.members.support.application.dto.request.AnswerUpdateRequestDto;
-import page.clab.api.global.exception.BaseException;
-import page.clab.api.global.exception.ErrorCode;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -30,12 +27,6 @@ public class Answer {
 
     private Boolean isDeleted;
     private LocalDateTime createdAt;
-
-    public void validateAccessPermission(Member member) {
-        if (!member.isAdminRole()) {
-            throw new BaseException(ErrorCode.PERMISSION_DENIED, "해당 게시글을 수정/삭제할 권한이 없습니다.");
-        }
-    }
 
     public void delete() {
         isDeleted = true;
