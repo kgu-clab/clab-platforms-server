@@ -14,7 +14,7 @@ import page.clab.api.domain.members.support.application.port.in.RegisterSupportU
 import page.clab.api.global.common.dto.ApiResponse;
 
 @RestController
-@RequestMapping("api/v1/supports")
+@RequestMapping("/api/v1/supports")
 @RequiredArgsConstructor
 @Tag(name = "Members - Support", description = "문의 사항")
 public class SupportRegisterController {
