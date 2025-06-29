@@ -29,7 +29,7 @@ public class SupportRetrievalService implements RetrieveSupportUseCase {
     public PagedResponseDto<SupportListResponseDto> retrieveSupports(Pageable pageable) {
         Page<Support> supports;
 
-        if(isCurrentMemberAdmin()) {
+        if (isCurrentMemberAdmin()) {
             supports = retrieveSupportPort.findAll(pageable);
         } else {
             MemberBasicInfoDto memberInfo = externalRetrieveMemberUseCase.getCurrentMemberBasicInfo();
@@ -47,6 +47,11 @@ public class SupportRetrievalService implements RetrieveSupportUseCase {
         return mapper.toDto(support);
     }
 
+    @Transactional(readOnly = true)
+    public Support getById(Long supportId) {
+        return retrieveSupportPort.getById(supportId);
+    }
+
     private MemberDetailedInfoDto getMemberDetailedInfoBySupport(Support support) {
         return externalRetrieveMemberUseCase.getMemberDetailedInfoById(support.getMemberId());
     }
@@ -54,10 +59,5 @@ public class SupportRetrievalService implements RetrieveSupportUseCase {
     private boolean isCurrentMemberAdmin() {
         MemberDetailedInfoDto memberInfo = externalRetrieveMemberUseCase.getCurrentMemberDetailedInfo();
         return memberInfo.isAdminRole();
-    }
-
-    @Transactional(readOnly = true)
-    public Support getById(Long supportId) {
-        return retrieveSupportPort.getById(supportId);
     }
 }

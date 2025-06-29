@@ -12,7 +12,7 @@ public class SupportMyResponseDto {
     private Long id;
     private String title;
     private String name;
-    private LocalDateTime createdAt;
     private String status;
     private String category;
+    private LocalDateTime createdAt;
 }

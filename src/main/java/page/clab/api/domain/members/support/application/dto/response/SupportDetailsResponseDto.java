@@ -21,7 +21,7 @@ public class SupportDetailsResponseDto {
     private List<UploadedFileResponseDto> uploadedFiles;
     private String category;
     private String status;
-    AnswerResponseDto answer;
+    private AnswerResponseDto answer;
     @JsonProperty("isOwner")
     private Boolean isOwner;
     private LocalDateTime createdAt;
