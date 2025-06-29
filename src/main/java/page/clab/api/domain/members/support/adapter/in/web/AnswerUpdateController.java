@@ -28,7 +28,7 @@ public class AnswerUpdateController {
         @PathVariable(name = "supportId") Long supportId,
         @Valid @RequestBody AnswerUpdateRequestDto requestDto
     ) {
-        Long id = updateAnswerUseCase.updateSupport(supportId, requestDto);
+        Long id = updateAnswerUseCase.updateAnswer(supportId, requestDto);
         return ApiResponse.success(id);
     }
 }

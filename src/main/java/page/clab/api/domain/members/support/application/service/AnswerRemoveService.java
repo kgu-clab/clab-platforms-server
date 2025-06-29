@@ -32,7 +32,7 @@ public class AnswerRemoveService implements RemoveAnswerUseCase {
         Support support = retrieveSupportPort.getById(supportId);
         answer.validateAccessPermission(currentMember);
         answer.delete();
-        support.removeAnswer();
+        support.markAsPending();
         registerSupportPort.save(support);
         return registerAnswerPort.save(answer).getId();
     }

@@ -21,7 +21,7 @@ public class AnswerUpdateService implements UpdateAnswerUseCase {
 
     @Transactional
     @Override
-    public Long updateSupport(Long supportId, AnswerUpdateRequestDto requestDto) {
+    public Long updateAnswer(Long supportId, AnswerUpdateRequestDto requestDto) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         Answer answer = retrieveAnswerPort.findAnswerBySupportId(supportId);
         answer.validateAccessPermission(currentMember);

@@ -42,7 +42,7 @@ public class SupportDtoMapper {
     }
 
     public SupportListResponseDto toListDto(Support support, MemberDetailedInfoDto memberInfo) {
-        WriterInfo writerInfo = create(support, memberInfo);
+        WriterInfo writerInfo = createWriterInfo(support, memberInfo);
         return SupportListResponseDto.builder()
             .id(support.getId())
             .title(support.getTitle())
@@ -66,7 +66,7 @@ public class SupportDtoMapper {
     }
 
     public SupportDetailsResponseDto toDto(Support support, MemberDetailedInfoDto memberInfo, boolean isOwner, Answer answer) {
-        WriterInfo writerInfo = create(support, memberInfo);
+        WriterInfo writerInfo = createWriterInfo(support, memberInfo);
         return SupportDetailsResponseDto.builder()
             .id(support.getId())
             .writerId(writerInfo.getId())
@@ -90,7 +90,7 @@ public class SupportDtoMapper {
             .build();
     }
 
-    public WriterInfo create(Support support, MemberDetailedInfoDto memberInfo) {
+    public WriterInfo createWriterInfo(Support support, MemberDetailedInfoDto memberInfo) {
         if (support.isWantAnonymous()) {
             return new WriterInfo(null, support.getNickname());
         }

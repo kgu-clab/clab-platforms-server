@@ -22,7 +22,7 @@ public class SupportRemoveController {
     @Operation(summary = "[U] 문의 사항 삭제", description = "ROLE_USER 이상의 권한이 필요함")
     @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/{supportId}")
-    public ApiResponse<Long> removeBlog(
+    public ApiResponse<Long> removeSupport(
         @PathVariable(name = "supportId") Long supportId
     ) {
         Long id = removeSupportUseCase.removeSupport(supportId);
