@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import page.clab.api.domain.memberManagement.member.domain.Member;
-import page.clab.api.domain.members.support.application.dto.request.SupportUpdateRequestDTO;
+import page.clab.api.domain.members.support.application.dto.request.SupportUpdateRequestDto;
 import page.clab.api.domain.members.support.application.port.in.UpdateSupportUseCase;
 import page.clab.api.domain.members.support.application.port.out.RegisterSupportPort;
 import page.clab.api.domain.members.support.application.port.out.RetrieveSupportPort;
@@ -21,7 +21,7 @@ public class SupportUpdateService implements UpdateSupportUseCase {
 
     @Transactional
     @Override
-    public Long updateSupport(Long supportId, SupportUpdateRequestDTO requestDto) {
+    public Long updateSupport(Long supportId, SupportUpdateRequestDto requestDto) {
         Member currentMember = externalRetrieveMemberUseCase.getCurrentMember();
         Support support = retrieveSupportPort.getById(supportId);
         support.validateAccessPermission(currentMember);

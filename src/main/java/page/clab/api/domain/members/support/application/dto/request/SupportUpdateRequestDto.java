@@ -7,7 +7,7 @@ import page.clab.api.domain.members.support.domain.SupportCategory;
 
 @Getter
 @Setter
-public class SupportUpdateRequestDTO {
+public class SupportUpdateRequestDto {
 
     @Schema(description = "제목", example = "이미지 저장이 이상하게 되는것 같습니다.")
     private String title;

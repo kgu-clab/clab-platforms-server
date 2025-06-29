@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Builder;
 import page.clab.api.domain.memberManagement.member.domain.Member;
-import page.clab.api.domain.members.support.application.dto.request.SupportUpdateRequestDTO;
+import page.clab.api.domain.members.support.application.dto.request.SupportUpdateRequestDto;
 import page.clab.api.global.common.file.domain.UploadedFile;
 import page.clab.api.global.exception.BaseException;
 import page.clab.api.global.exception.ErrorCode;
@@ -35,10 +35,10 @@ public class Support {
     private Boolean isDeleted;
     private LocalDateTime createdAt;
 
-    public void update(SupportUpdateRequestDTO requestDTO) {
-        Optional.ofNullable(requestDTO.getTitle()).ifPresent(this::setTitle);
-        Optional.ofNullable(requestDTO.getContent()).ifPresent(this::setContent);
-        Optional.ofNullable(requestDTO.getCategory()).ifPresent(this::setCategory);
+    public void update(SupportUpdateRequestDto requestDto) {
+        Optional.ofNullable(requestDto.getTitle()).ifPresent(this::setTitle);
+        Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
+        Optional.ofNullable(requestDto.getCategory()).ifPresent(this::setCategory);
     }
 
     public void delete() { this.isDeleted = true; }

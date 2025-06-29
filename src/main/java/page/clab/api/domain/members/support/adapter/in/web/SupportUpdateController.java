@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
-import page.clab.api.domain.members.support.application.dto.request.SupportUpdateRequestDTO;
+import page.clab.api.domain.members.support.application.dto.request.SupportUpdateRequestDto;
 import page.clab.api.domain.members.support.application.port.in.UpdateSupportUseCase;
 import page.clab.api.global.common.dto.ApiResponse;
 
@@ -27,7 +27,7 @@ public class SupportUpdateController {
     @PatchMapping("/{supportId}")
     public ApiResponse<Long> registerSupport(
             @PathVariable(name = "supportId") Long supportId,
-            @Valid @RequestBody SupportUpdateRequestDTO requestDto
+            @Valid @RequestBody SupportUpdateRequestDto requestDto
     ) {
         Long id = updateSupportUseCase.updateSupport(supportId, requestDto);
         return ApiResponse.success(id);

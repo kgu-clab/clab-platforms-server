@@ -41,7 +41,7 @@ public class Answer {
         isDeleted = true;
     }
 
-    public void update(AnswerUpdateRequestDto requestDTO) {
-        Optional.ofNullable(requestDTO.getContent()).ifPresent(this::setContent);
+    public void update(AnswerUpdateRequestDto requestDto) {
+        Optional.ofNullable(requestDto.getContent()).ifPresent(this::setContent);
     }
 }
