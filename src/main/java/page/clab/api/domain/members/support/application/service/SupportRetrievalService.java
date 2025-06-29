@@ -47,7 +47,6 @@ public class SupportRetrievalService implements RetrieveSupportUseCase {
         return mapper.toDto(support);
     }
 
-
     private MemberDetailedInfoDto getMemberDetailedInfoBySupport(Support support) {
         return externalRetrieveMemberUseCase.getMemberDetailedInfoById(support.getMemberId());
     }

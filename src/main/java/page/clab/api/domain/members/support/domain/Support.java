@@ -25,10 +25,8 @@ public class Support {
     private String content;
     private List<UploadedFile> uploadedFiles;
     private boolean wantAnonymous;
-
     private SupportCategory category;
     private SupportStatus status;
-
     private Boolean isDeleted;
     private LocalDateTime createdAt;
 

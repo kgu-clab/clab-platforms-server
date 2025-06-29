@@ -6,6 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class SupportAnswerInfoDto {
+
     private final Long supportId;
     private final String memberId;
     private final String title;

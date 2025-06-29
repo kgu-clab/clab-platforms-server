@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class AnswerResponseDto {
+
     private String content;
     private String responder;
     private LocalDateTime createdAt;
@@ -20,5 +21,4 @@ public class AnswerResponseDto {
                 .createdAt(answer.getCreatedAt())
                 .build();
     }
-
 }

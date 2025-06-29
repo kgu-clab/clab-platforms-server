@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public interface SupportRepository extends JpaRepository<SupportJpaEntity, Long>{
+
     @Query("SELECT s FROM SupportJpaEntity s WHERE s.memberId = ?1 AND s.isDeleted = false")
     Page<SupportJpaEntity> findAllByMemberIdAndIsDeletedFalse(String memberId, Pageable pageable);
 

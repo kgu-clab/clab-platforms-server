@@ -59,5 +59,4 @@ public class SupportJpaEntity extends BaseEntity {
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted;
-
 }

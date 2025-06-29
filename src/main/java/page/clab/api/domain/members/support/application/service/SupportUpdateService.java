@@ -14,6 +14,7 @@ import page.clab.api.external.memberManagement.member.application.port.ExternalR
 @Service
 @RequiredArgsConstructor
 public class SupportUpdateService implements UpdateSupportUseCase {
+
     private final RetrieveSupportPort retrieveSupportPort;
     private final RegisterSupportPort registerSupportPort;
     private final ExternalRetrieveMemberUseCase externalRetrieveMemberUseCase;

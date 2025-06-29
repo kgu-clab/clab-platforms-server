@@ -29,6 +29,4 @@ public class SupportDetailsRetrievalController {
         SupportDetailsResponseDto support = retrieveSupportDetailsUseCase.retrieveSupportDetails(supportId);
         return ApiResponse.success(support);
     }
-
-
 }

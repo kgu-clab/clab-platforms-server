@@ -28,5 +28,4 @@ public class SupportRemoveController {
         Long id = removeSupportUseCase.removeSupport(supportId);
         return ApiResponse.success(id);
     }
-
 }

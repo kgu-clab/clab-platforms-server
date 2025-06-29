@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum SupportStatus {
+
     PENDING("PENDING", "처리 전"),
     COMPLETED("COMPLETED", "처리 완료");
 
