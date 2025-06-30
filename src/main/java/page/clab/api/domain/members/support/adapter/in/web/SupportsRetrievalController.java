@@ -27,10 +27,10 @@ public class SupportsRetrievalController {
     private final RetrieveSupportUseCase retrieveSupportUseCase;
     private final PageableUtils pageableUtils;
 
-    @Operation(summary = "[G] 문의 게시글 목록 조회", description = "INQUIRY 조회는 ROLE_GUEST 이상의 권한이 필요함<br>" +
+    @Operation(summary = "[G] 문의 게시글 목록 조회", description = "INQUIRY 조회는 ROLE_USER 이상의 권한이 필요함<br>" +
         "전체 조회는 ROLE_ADMIN 이상의 권한이 필요함<br>" +
         "DTO의 필드명을 기준으로 정렬 가능하며, 정렬 방향은 오름차순(asc)과 내림차순(desc)이 가능함")
-    @PreAuthorize("hasRole(('GUEST'))")
+    @PreAuthorize("hasRole(('USER'))")
     @GetMapping("")
     public ApiResponse<PagedResponseDto<SupportListResponseDto>> retrieveSupports(
         @RequestParam(name = "page", defaultValue = "0") int page,
